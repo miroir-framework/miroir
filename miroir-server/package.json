@@ -1,0 +1,29 @@
+{
+    "name": "miroir-server",
+    "version": "1.0.0",
+    "description": "server for mirroir-based front-end",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.bundle.js",
+      "build": "webpack",
+      "dev": "nodemon ./server.js localhost 3080"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
+    },
+    "author": "Arnaud Bailly",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXX/issues"
+    },
+    "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
+    "dependencies": {
+      "express": "^4.17.1",
+      "http-proxy-middleware": "^1.0.4"
+    },
+    "devDependencies": {
+      "nodemon": "^2.0.4",
+      "webpack": "^4.43.0"
+    }
+  }
