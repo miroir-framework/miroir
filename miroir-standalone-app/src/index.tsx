@@ -1,16 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import FirstComponent from './components/FirstComponent'
-import UserComponent from "./components/UserComponent";
-import entityEntity from "./entities/Entity.json";
-import reportEntity from "./entities/Report.json";
+import entityEntity from "./miroir-fwk/assets/entities/Entity.json";
+import TableComponent from "./miroir-fwk/view/TableComponent"
 
 ReactDOM.render(
     <div>
-      <h1>Hello, Welcome to React and TypeScript</h1>
-      {entityEntity["name"]}
-      {/* <FirstComponent/> */}
-      <UserComponent name="John Doe" age={26} address="87 Summer St, Boston, MA 02110" dob={new Date()} />
+      <h1>Miroir standalone demo app</h1>
+      <TableComponent></TableComponent>
     </div>,
     document.getElementById("root")
 );

@@ -1,5 +1,5 @@
 {
-  "name": "mirroir_ng",
+  "name": "mirroir",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,6 +8,7 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "ag-grid-react": "^28.2.1",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
@@ -21,7 +22,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "magic": "webpack"
   },
-  "author": "",
+  "author": "Arnaud Bailly",
   "license": "MIT",
   "compilerOptions": {
     "outDir": "./dist/",
