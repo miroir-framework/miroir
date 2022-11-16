@@ -1,2 +1,4 @@
 miroir-server/node_modules*/
+miroir-server/dist*/
 miroir-standalone-app/node_modules*/
+miroir-standalone-app/dist*/
