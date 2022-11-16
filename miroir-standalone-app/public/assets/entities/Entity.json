@@ -1,0 +1,48 @@
+{
+    "uuid":"1",
+    "entity":"Entity",
+    "name":"Entity",
+    "attributes":
+    [
+        {
+            "id": 1,
+            "name": "name",
+            "display": "Name",
+            "type": "STRING"
+        },
+        {
+            "id": 2,
+            "name": "description",
+            "display": "Description",
+            "type": "STRING"
+        },
+        {
+            "id": 3,
+            "name": "attributes",
+            "display": "Entity Attributes",
+            "type": "JSON",
+            "attributeFormat": [
+              {
+                "name": "id",
+                "display": "Id",
+                "type": "NUMBER"
+              },
+              {
+                "name": "name",
+                "display": "Name",
+                "type": "STRING"
+              },
+              {
+                "name": "display",
+                "display": "Display",
+                "type": "STRING"
+              },
+              {
+                "name": "type",
+                "display": "Type",
+                "type": "STRING"
+              }
+            ]
+        }
+    ]
+}

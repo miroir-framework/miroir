@@ -1,0 +1,24 @@
+{
+    "uuid":"2",
+    "entity":"Entity",
+    "name":"Report",
+    "attributes":
+    [
+        {
+            "id": 1,
+            "name": "name",
+            "display": "Name",
+            "required": true,
+            "modifiable": false,
+            "type": "STRING"
+        },
+        {
+            "id": 2,
+            "name": "description",
+            "display": "Description",
+            "required": false,
+            "modifiable": true,
+            "type": "STRING"
+        }
+    ]
+}
