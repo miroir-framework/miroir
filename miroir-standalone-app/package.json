@@ -5,6 +5,9 @@
   "main": "index.js",
   "proxy": "http://localhost:3080",
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.10.14",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "ag-grid-react": "^28.2.1",

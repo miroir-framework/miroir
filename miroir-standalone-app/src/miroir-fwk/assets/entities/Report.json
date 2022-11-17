@@ -8,17 +8,17 @@
             "id": 1,
             "name": "name",
             "display": "Name",
+            "type": "STRING",
             "required": true,
-            "modifiable": false,
-            "type": "STRING"
+            "editable": true
         },
         {
             "id": 2,
             "name": "description",
             "display": "Description",
+            "type": "STRING",
             "required": false,
-            "modifiable": true,
-            "type": "STRING"
+            "editable": true
         }
     ]
 }

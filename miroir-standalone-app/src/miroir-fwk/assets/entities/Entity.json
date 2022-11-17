@@ -8,19 +8,25 @@
             "id": 1,
             "name": "name",
             "display": "Name",
-            "type": "STRING"
+            "type": "STRING",
+            "required": true,
+            "editable": true
         },
         {
             "id": 2,
             "name": "description",
             "display": "Description",
-            "type": "STRING"
+            "type": "STRING",
+            "required": false,
+            "editable": true
         },
         {
             "id": 3,
             "name": "attributes",
             "display": "Entity Attributes",
             "type": "JSON",
+            "required": true,
+            "editable": true,
             "attributeFormat": [
               {
                 "name": "id",
@@ -41,6 +47,20 @@
                 "name": "type",
                 "display": "Type",
                 "type": "STRING"
+              },
+              {
+                "name": "required",
+                "display": "Required",
+                "required": false,
+                "editable": true,
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "editable",
+                "display": "Editable",
+                "required": false,
+                "editable": true,
+                "type": "BOOLEAN"
               }
             ]
         }
