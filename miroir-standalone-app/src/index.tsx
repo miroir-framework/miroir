@@ -1,15 +1,20 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import TableComponent from "./miroir-fwk/view/TableComponent"
-import entity from "./miroir-fwk/assets/entities/Entity.json"
-import report from "./miroir-fwk/assets/entities/Report.json"
 import { Card, CardContent, CardHeader, Container } from "@mui/material";
+import { store } from '../src/miroir-fwk/state/store'
+import {Provider} from "react-redux";
 
-
-ReactDOM.render(
+import { createRoot } from 'react-dom/client';
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(
+  <Provider store={store}>
     <div>
       <h1>Miroir standalone demo app</h1>
       <Container maxWidth='lg'>
+        <h3>
+          {JSON.stringify(store.getState().entities)}
+        </h3>
         <Card>
           <CardHeader>
             AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -17,16 +22,19 @@ ReactDOM.render(
           <CardContent>
             <TableComponent
               columnDefs={
-                entity.attributes.find(a=>a.name==="attributes").attributeFormat.map(
-                  // (a)=>{return {"headerName": a.id.toString(), "field": "{a.id}"}}
+                // const entity = store.getState().entities.find(e=>e.name ==="Entity");
+                store.getState()
+                .entities?.find(e=>e.name ==="Entity")
+                .attributes?.find((a)=>a.name==="attributes")
+                .attributeFormat?.map(
                   (a)=>{return {"headerName": a.display, "field": a.name}}
                 )
               }
-              rowData={report.attributes}
+              rowData={store.getState().entities.find(e=>e.name ==="Entity").attributes}
             ></TableComponent>
           </CardContent>
         </Card>
       </Container>
-    </div>,
-    document.getElementById("root")
-);
+    </div>
+    </Provider>
+  );

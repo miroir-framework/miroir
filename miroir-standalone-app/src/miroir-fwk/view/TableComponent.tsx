@@ -12,12 +12,12 @@ export interface TableComponentProps {
 export default class TableComponent 
   extends React.Component<
     TableComponentProps,
-    TableComponentProps
+    {}
   > {
   constructor (props:TableComponentProps){
     super(props);
 
-    this.state = props;
+    // this.state = props;
   }
   render() {
     return (
@@ -31,8 +31,10 @@ export default class TableComponent
         }
       >
         <AgGridReact
-          columnDefs={this.state.columnDefs}
-          rowData={this.state.rowData}
+          columnDefs={this.props.columnDefs}
+          rowData={this.props.rowData}
+          // columnDefs={this.state.columnDefs}
+          // rowData={this.state.rowData}
           defaultColDef={
             {
               editable: true,
