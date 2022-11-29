@@ -1,5 +1,5 @@
 import * as React from "react";
-import TableComponent from "./miroir-fwk/view/TableComponent"
+import {TableComponent} from "./miroir-fwk/view/TableComponent"
 import { Card, CardContent, CardHeader, Container } from "@mui/material";
 import { store } from '../src/miroir-fwk/state/store'
 import {Provider} from "react-redux";
@@ -22,7 +22,6 @@ root.render(
           <CardContent>
             <TableComponent
               columnDefs={
-                // const entity = store.getState().entities.find(e=>e.name ==="Entity");
                 store.getState()
                 .entities?.find(e=>e.name ==="Entity")
                 .attributes?.find((a)=>a.name==="attributes")
