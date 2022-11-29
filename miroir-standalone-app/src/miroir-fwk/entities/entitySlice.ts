@@ -1,7 +1,8 @@
-import { createReducer, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createReducer, createSlice } from '@reduxjs/toolkit'
 // import type { PayloadAction } from '@reduxjs/toolkit'
 import report from "../assets/entities/Report.json"
 import entity from "../assets/entities/Entity.json"
+import { client } from '../../api/client';
 
 export interface EntityAttribute {
   "id": number,
@@ -27,6 +28,12 @@ export interface Entity {
 export type Entities=Entity[];
 
 const initialState: Entities  = [report,entity]
+
+export const fetchEntities = createAsyncThunk('entities/fetchEntities', async () => {
+  const response = await client.get('/fakeApi/entities')
+  return response.data
+})
+
 
 const entitiesReducer = createReducer([], (builder) => {
   builder
