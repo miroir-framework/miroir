@@ -1,16 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { applyMiddleware, configureStore } from '@reduxjs/toolkit'
 import entitySlice, { miroirEntitiesAdapter } from '../entities/entitySlice'
+import createSagaMiddleware from 'redux-saga'
+import rootSaga from './sagas'
 
 // import { combineReducers } from '@reduxjs/toolkit'
 // const rootReducer = combineReducers({})
 // export type RootState = ReturnType<typeof entitySlice>
+const sagaMiddleware = createSagaMiddleware()
 
 
-export const store = configureStore({
-  reducer: {
-    miroirEntities: entitySlice,
-  },
-})
+export const store = configureStore(
+  {
+    reducer: {
+      miroirEntities: entitySlice,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware)
+  }
+)
+
+sagaMiddleware.run(rootSaga)
+
 
 export type RootState = ReturnType<typeof store.getState>
 

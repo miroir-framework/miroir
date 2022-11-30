@@ -1,9 +1,11 @@
-import { createAsyncThunk, createEntityAdapter, createReducer, createSlice, EntityAdapter, EntityState } from '@reduxjs/toolkit'
-// import type { PayloadAction } from '@reduxjs/toolkit'
-import report from "../assets/entities/Report.json"
-import entity from "../assets/entities/Entity.json"
+import { createAsyncThunk, createEntityAdapter, createReducer, createSlice, EntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { client } from '../../api/client';
+import { all, call, put, takeEvery } from 'redux-saga/effects'
+import { RootState } from '../state/store';
 
+export const miroirEntitiesActions = {
+  fetchMiroirEntities:"entities/fetchMiroirEntities"
+}
 export interface MiroirEntityAttribute {
   "id": number,
   "name": string,
@@ -17,7 +19,6 @@ export interface MiroirEntityAttribute {
   }[],
 };
 
-
 export interface MiroirEntity {
   "uuid": number,
   "entity": string,
@@ -27,14 +28,29 @@ export interface MiroirEntity {
 
 export type MiroirEntities=MiroirEntity[];
 
-// const initialState: Entities  = [report,entity]
-// const initialState: Entities  = []
-
 export const fetchMiroirEntities = createAsyncThunk('entities/fetchEntities', async () => {
-  const response = await client.get('/fakeApi/entities')
-  console.log("recu reponse",response)
-  return response.data
+  // const response = await client.get('/fakeApi/entities')
+  // console.log("recu reponse",response)
+  // return response.data
+  return []
 })
+
+export function* fetchMiroirEntitiesSaga():any {
+  console.log("fetchMiroirEntitiesSaga")
+  try {
+    let result = yield call(
+      () => client.get('/fakeApi/entities')
+    )
+    console.log("fetchMiroirEntitiesSaga2",result.data)
+    yield put({type: "entities/entitiesReceived", payload:result.data})
+    // yield put(miroirEntitiesSlice.actions.entitiesReceived(result.payload))
+    console.log("fetchMiroirEntitiesSaga3")
+    // yield put(miroirEntitiesAdapter.setAll(result.data))
+  } catch (e) {
+    yield put({ type: 'NUMBER_SAGA_FAILED' })
+  }
+}
+
 
 export const miroirEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
   {
@@ -52,37 +68,31 @@ export const miroirEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAd
 //       // state.push(action.payload)
 //     })
 // })
+// const entitiesReducer = createReducer([], (builder) => {
+//   builder
+//     // .addCase('entities/add', (state:RootState, action) => {
+//     .addCase(miroirEntitiesActions.fetchMiroirEntities, (state, action) => {
+//       console.log("fetchMiroirEntities")
+//       // miroirEntitiesAdapter.setAll(state, action.payload.miroirEntities)
+//     })
+// })
 
 export const miroirEntitiesSlice = createSlice({
   name: 'entities',
   // initialState,
   initialState: miroirEntitiesAdapter.getInitialState(),
   reducers: {
-    // entitiesReducer: entitiesReducer,
-    // nothing:(state) => {
-    //   console.log(state);
-    // }
     entityAdded: miroirEntitiesAdapter.addOne,
+    // entitiesReducer,
     entitiesReceived(state, action) {
+      console.log("entitiesReceived", action)
       // Or, call them as "mutating" helpers in a case reducer
-      miroirEntitiesAdapter.setAll(state, action.payload.books)
+      miroirEntitiesAdapter.setAll(state, action.payload)
     },
   },
   extraReducers(builder) {
     builder.addCase(fetchMiroirEntities.fulfilled, miroirEntitiesAdapter.setAll)
   },
 })
-
-// type RootState = ReturnType<typeof miroirEntitiesSlice.getInitialState>
-
-// Action creators are generated for each case reducer function
-// export const { entitiesReducer: createEntity } = entitiesSlice.actions
-
-
-// export const {
-//   selectAll: selectAllMiroirEntities,
-//   selectById: selectMiroirEntityById,
-// } = miroirEntitiesAdapter.getSelectors((state) => state['entities'])
-// } = entitiesAdapter.getSelectors((state:EntityState<Entity>) => state.entities)
 
 export default miroirEntitiesSlice.reducer

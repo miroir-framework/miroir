@@ -9,6 +9,9 @@
       "jsx": "react",
       "allowJs": true,
       "moduleResolution": "node",
-      "baseUrl": "."
+      "baseUrl": ".",
+      "paths": {
+        "src/*":["src/*"]
+      }
     }
   }

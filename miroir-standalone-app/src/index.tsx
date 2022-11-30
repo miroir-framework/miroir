@@ -1,14 +1,15 @@
 import { Container } from "@mui/material";
 import * as React from "react";
-import { Provider } from "react-redux";
-import { store } from '../src/miroir-fwk/state/store';
-
 import { createRoot } from 'react-dom/client';
-import { fetchMiroirEntities } from "./miroir-fwk/entities/entitySlice";
-import { MiroirComponent } from "./miroir-fwk/view/MiroirComponent";
+import { Provider } from "react-redux";
+
+import { miroirEntitiesActions } from "src/miroir-fwk/entities/entitySlice";
+import { store } from 'src/miroir-fwk/state/store';
+import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
 const container = document.getElementById('root');
 const root = createRoot(container);
 
+// const sagaMiddleware = createSagaMiddleware()
 
 
 async function start() {
@@ -19,7 +20,8 @@ async function start() {
   }
 
   // await worker.start({ onUnhandledRequest: 'bypass' })
-  store.dispatch(fetchMiroirEntities())
+  // store.dispatch(fetchMiroirEntities())
+  store.dispatch({type: miroirEntitiesActions.fetchMiroirEntities})
 
   root.render(
     <Provider store={store}>
