@@ -8,6 +8,10 @@ import { setRandom } from 'txtgen'
 
 import { parseISO } from 'date-fns'
 
+import report from "src/miroir-fwk/assets/entities/Report.json"
+import entity from "src/miroir-fwk/assets/entities/Entity.json"
+
+
 const NUM_USERS = 3
 const POSTS_PER_USER = 3
 const RECENT_NOTIFICATIONS_DAYS = 7
@@ -217,16 +221,17 @@ export const handlers = [
   //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(notifications))
   // }),
   rest.get(
-    '/fakeApi/users', 
+    '/fakeApi/entities', 
     (req, res, ctx) => {
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
-        {
-          firstName: "toto",
-          lastName: "tata",
-          name: `${firstName} ${lastName}`,
-          username: "toto@yahoo.com"
-        }
+        [report,entity]
+        // {
+        //   firstName: "toto",
+        //   lastName: "tata",
+        //   name: `${firstName} ${lastName}`,
+        //   username: "toto@yahoo.com"
+        // }
       ))
     }
   ),
