@@ -29,32 +29,6 @@ async function start() {
         <h1>Miroir standalone demo app</h1>
         <Container maxWidth='lg'>
           <MiroirComponent></MiroirComponent>
-          {/* <h3>
-            {JSON.stringify(miroirEntities)}
-          </h3> */
-          }
-          {/* <Card>
-            <CardHeader>
-              AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            </CardHeader>
-            <CardContent>
-              {
-                selectAllMiroirEntities(store.getState().entities)?.length > 0?
-                  <MiroirTableComponent
-                    columnDefs={
-                      selectAllMiroirEntities(store.getState().entities)?.find(e=>e?.name ==="Entity")
-                      .attributes?.find((a)=>a?.name==="attributes")
-                      .attributeFormat?.map(
-                        (a)=>{return {"headerName": a?.display, "field": a?.name}}
-                      )
-                    }
-                    rowData={selectAllMiroirEntities(store.getState().entities)?.find(e=>e?.name ==="Entity")?.attributes}
-                  ></MiroirTableComponent>
-                :
-                  <span>pas d entités</span>
-              }
-            </CardContent>
-          </Card> */}
         </Container>
       </div>
     </Provider>
