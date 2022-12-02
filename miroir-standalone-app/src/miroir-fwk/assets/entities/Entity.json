@@ -1,68 +1,111 @@
 {
-    "uuid":1,
-    "entity":"Entity",
-    "name":"Entity",
-    "attributes":
-    [
-        {
-            "id": 1,
-            "name": "name",
-            "display": "Name",
-            "type": "STRING",
-            "required": true,
-            "editable": true
-        },
-        {
-            "id": 2,
-            "name": "description",
-            "display": "Description",
-            "type": "STRING",
-            "required": false,
-            "editable": true
-        },
-        {
-            "id": 3,
-            "name": "attributes",
-            "display": "Entity Attributes",
-            "type": "JSON",
-            "required": true,
-            "editable": true,
-            "attributeFormat": [
-              {
-                "name": "id",
-                "display": "Id",
-                "type": "NUMBER"
-              },
-              {
-                "name": "name",
-                "display": "Name",
-                "type": "STRING"
-              },
-              {
-                "name": "display",
-                "display": "Display",
-                "type": "STRING"
-              },
-              {
-                "name": "type",
-                "display": "Type",
-                "type": "STRING"
-              },
-              {
-                "name": "required",
-                "display": "Required",
-                "required": false,
-                "editable": true,
-                "type": "BOOLEAN"
-              },
-              {
-                "name": "editable",
-                "display": "Editable",
-                "required": false,
-                "editable": true,
-                "type": "BOOLEAN"
-              }
-            ]
+  "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entity":"Entity",
+  "name":"Entity",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "if": {"properties": {"entity": "Entity"}},
+    "then": { "required": ["uuid","entity","name","instanceValidationJsonSchema"]},
+    "else": { "required": ["uuid","entity","name"]},
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "entity": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "icon": {
+        "title": "Icon",
+        "type": "string"
+      },
+      "instanceValidationJsonSchema":{"type":"object"},
+      "attributes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required":["id","name","defaultLabel","type"],
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "integer"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "entity": {
+              "title": "Entity",
+              "type": "string"
+            },
+            "defaultLabel": {
+              "title": "Default Label",
+              "type": "string"
+            },
+            "type": {
+              "title": "Type",
+              "type": "string"
+            },
+            "nullable": {
+              "title": "Nullable",
+              "type": "boolean"
+            },
+            "editable": {
+              "title": "Editable",
+              "type": "boolean"
+            }
+          }
         }
-    ]
+      }
+    }
+  },
+  "attributes": [
+    {
+        "id": 1,
+        "name": "uuid",
+        "defaultLabel": "Uuid",
+        "type": "string",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 2,
+        "name": "name",
+        "defaultLabel": "Name",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "entity",
+        "defaultLabel": "Entity",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "description",
+        "defaultLabel": "Description",
+        "type": "string",
+        "nullable": true,
+        "editable": true
+    },
+    {
+      "id": 4,
+      "name": "attributes",
+      "defaultLabel": "Entity Attributes",
+      "type": "array",
+      "nullable": false,
+      "editable": true
+    }
+  ]
 }

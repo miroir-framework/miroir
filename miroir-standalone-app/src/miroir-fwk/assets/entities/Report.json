@@ -1,24 +1,64 @@
 {
-    "uuid": 2,
-    "entity":"Entity",
-    "name":"Report",
-    "attributes":
-    [
-        {
-            "id": 1,
-            "name": "name",
-            "display": "Name",
-            "type": "STRING",
-            "required": true,
-            "editable": true
-        },
-        {
-            "id": 2,
-            "name": "description",
-            "display": "Description",
-            "type": "STRING",
-            "required": false,
-            "editable": true
-        }
-    ]
+  "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "entity":"Entity",
+  "name":"Report",
+  "icon": "Interests",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["uuid","entity","name"],
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "entity": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "definition": {
+        "title": "Definition",
+        "type": "object"
+      }
+    }
+  },
+  "attributes":
+  [
+    {
+      "id": 1,
+      "name": "id",
+      "defaultLabel": "id",
+      "type": "integer",
+      "nullable": false,
+      "editable": false
+    },
+    {
+        "id": 2,
+        "name": "name",
+        "defaultLabel": "Name",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "description",
+        "defaultLabel": "Description",
+        "type": "string",
+        "nullable": true,
+        "editable": true
+    },
+    {
+        "id": 4,
+        "name": "definition",
+        "defaultLabel": "Definition",
+        "type": "object",
+        "nullable": true,
+        "editable": true
+    }
+  ]
 }

@@ -1,0 +1,10 @@
+{
+  "uuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+  "entity":"Report",
+  "name":"EntityList",
+  "definition": {
+    "type": "list",
+    "title": "List of Entities",
+    "entity": "Entity"
+  }
+}

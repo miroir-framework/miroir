@@ -5,6 +5,8 @@
   "main": "index.js",
   "proxy": "http://localhost:3080",
   "dependencies": {
+    "@babel/node": "^7.20.5",
+    "@babel/polyfill": "^7.12.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@faker-js/faker": "^7.6.0",
@@ -15,6 +17,7 @@
     "@types/react-dom": "^18.0.9",
     "@types/react-redux": "^7.1.24",
     "ag-grid-react": "^28.2.1",
+    "ajv": "^8.11.2",
     "mock-socket": "^9.1.5",
     "msw": "^0.49.1",
     "prop-types": "^15.8.1",
@@ -27,12 +30,26 @@
     "ts-loader": "^9.4.1",
     "txtgen": "^3.0.4",
     "typescript": "^4.8.4",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-react": "^7.16.0",
+    "babelify": "^10.0.0",
+    "browserify": "^17.0.0",
+    "budo": "^11.6.4",
+    "dts-css-modules-loader": "^2.0.1",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.6.1",
+    "tsconfig-paths": "^4.1.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^4.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-tape": "babel-node src/miroir-fwk/tests/sagas.spec.mjs | tap-spec",
     "magic": "webpack"
   },
   "author": "Arnaud Bailly",
@@ -57,10 +74,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "dts-css-modules-loader": "^2.0.1",
-    "tsconfig-paths": "^4.1.0"
   },
   "msw": {
     "workerDirectory": "public"

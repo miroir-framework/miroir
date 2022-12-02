@@ -1,7 +1,9 @@
 import { Container } from "@mui/material";
+import { nanoid } from "@reduxjs/toolkit";
 import * as React from "react";
 import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
+import { v4 as uuidv4 } from 'uuid';
 
 import { miroirEntitiesActions } from "src/miroir-fwk/entities/entitySlice";
 import { store } from 'src/miroir-fwk/state/store';
@@ -26,8 +28,8 @@ async function start() {
   root.render(
     <Provider store={store}>
       <div>
-        <h1>Miroir standalone demo app</h1>
-        <Container maxWidth='lg'>
+        <h1>Miroir standalone demo app {uuidv4()}</h1>
+        <Container maxWidth='xl'>
           <MiroirComponent></MiroirComponent>
         </Container>
       </div>

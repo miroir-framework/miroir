@@ -8,13 +8,13 @@ export const miroirEntitiesActions = {
 export interface MiroirEntityAttribute {
   "id": number,
   "name": string,
-  "display": string,
+  "defaultLabel": string,
   "type": string,
   "required": boolean,
   "editable": boolean,
   "attributeFormat"?: {
     "name": string,
-    "display": string,
+    "defaultLabel": string,
   }[],
 };
 
@@ -27,7 +27,7 @@ export interface MiroirEntity {
 
 export type MiroirEntities=MiroirEntity[];
 
-export function* fetchMiroirEntitiesSaga():any {
+export function* fetchMiroirEntitiesGen():any {
   console.log("fetchMiroirEntitiesSaga")
   try {
     let result:{
@@ -40,7 +40,7 @@ export function* fetchMiroirEntitiesSaga():any {
     )
     yield put({type: "entities/entitiesReceived", payload:result.data})
   } catch (e) {
-    yield put({ type: 'NUMBER_SAGA_FAILED' })
+    yield put({ type: 'entities/failure/entitiesNotReceived' })
   }
 }
 
@@ -54,19 +54,20 @@ export const miroirEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAd
   }
 )
 
-export const miroirEntitiesSlice = createSlice({
-  name: 'entities',
-  // initialState,
-  initialState: miroirEntitiesAdapter.getInitialState(),
-  reducers: {
-    entityAdded: miroirEntitiesAdapter.addOne,
-    // entitiesReducer,
-    entitiesReceived(state, action) {
-      // console.log("entitiesReceived", action)
-      // Or, call them as "mutating" helpers in a case reducer
-      miroirEntitiesAdapter.setAll(state, action.payload)
+export const miroirEntitiesSlice = createSlice(
+  {
+    name: 'entities',
+    initialState: miroirEntitiesAdapter.getInitialState(),
+    reducers: {
+      entityAdded: miroirEntitiesAdapter.addOne,
+      // entitiesReducer,
+      entitiesReceived(state, action) {
+        // console.log("entitiesReceived", action)
+        // Or, call them as "mutating" helpers in a case reducer
+        miroirEntitiesAdapter.setAll(state, action.payload)
+      },
     },
-  },
-})
+  }
+)
 
 export default miroirEntitiesSlice.reducer

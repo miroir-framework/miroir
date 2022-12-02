@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import * as React from "react";
-import { useSelector } from "react-redux"
+import { useSelector } from "react-redux";
 import { MiroirEntities } from "../entities/entitySlice";
-import { selectAllMiroirEntities } from "../state/store";
-import { MiroirTableComponent } from "./TableComponent";
+import { selectAllMiroirEntities } from "../state/selectors";
+import { MiroirListComponent } from "./MiroirListComponent";
+import { MiroirTableComponent } from "./MiroirTableComponent";
 
 export const MiroirComponent = () => {
   const miroirEntities:MiroirEntities = useSelector(selectAllMiroirEntities)
@@ -17,21 +18,22 @@ export const MiroirComponent = () => {
           AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         </CardHeader>
         <CardContent>
-          {
+          <MiroirListComponent></MiroirListComponent>
+          {/* {
             miroirEntities?.length > 0?
               <MiroirTableComponent
                 columnDefs={
                   miroirEntities?.find(e=>e?.name ==="Entity")
-                  .attributes?.find((a)=>a?.name==="attributes")
-                  .attributeFormat?.map(
-                    (a)=>{return {"headerName": a?.display, "field": a?.name}}
+                  ?.attributes?.find((a)=>a?.name==="attributes")
+                  ?.attributeFormat?.map(
+                    (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
                   )
                 }
                 rowData={miroirEntities?.find(e=>e?.name ==="Entity")?.attributes}
               ></MiroirTableComponent>
             :
               <span>pas d entités</span>
-          }
+          } */}
         </CardContent>
       </Card>
     </div>
