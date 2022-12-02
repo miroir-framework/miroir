@@ -5,9 +5,10 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { miroirEntitiesActions } from "src/miroir-fwk/entities/entitySlice";
+import { miroirEntityActions } from "src/miroir-fwk/entities/entitySlice";
 import { store } from 'src/miroir-fwk/state/store';
 import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
+import { miroirReportsActions } from "./miroir-fwk/entities/reportSlice";
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -23,7 +24,8 @@ async function start() {
 
   // await worker.start({ onUnhandledRequest: 'bypass' })
   // store.dispatch(fetchMiroirEntities())
-  store.dispatch({type: miroirEntitiesActions.fetchMiroirEntities})
+  store.dispatch({type: miroirEntityActions.fetchMiroirEntities})
+  store.dispatch({type: miroirReportsActions.fetchMiroirReports})
 
   root.render(
     <Provider store={store}>

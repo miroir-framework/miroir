@@ -1,34 +1,14 @@
 import { createEntityAdapter, createSlice, EntityAdapter } from '@reduxjs/toolkit';
 import { call, put } from 'redux-saga/effects';
 import { client } from '../../api/client';
+import { MiroirEntity } from './Entity';
 
-export const miroirEntitiesActions = {
+export const miroirEntityActions = {
   fetchMiroirEntities:"entities/fetchMiroirEntities"
 }
-export interface MiroirEntityAttribute {
-  "id": number,
-  "name": string,
-  "defaultLabel": string,
-  "type": string,
-  "required": boolean,
-  "editable": boolean,
-  "attributeFormat"?: {
-    "name": string,
-    "defaultLabel": string,
-  }[],
-};
-
-export interface MiroirEntity {
-  "uuid": number,
-  "entity": string,
-  "name":string,
-  "attributes"?: MiroirEntityAttribute[],
-};
-
-export type MiroirEntities=MiroirEntity[];
 
 export function* fetchMiroirEntitiesGen():any {
-  console.log("fetchMiroirEntitiesSaga")
+  console.log("fetchMiroirEntitiesGen")
   try {
     let result:{
       status: number;

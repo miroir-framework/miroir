@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import * as React from "react";
 import { useSelector } from "react-redux";
-import { MiroirEntities } from "../entities/entitySlice";
+import { MiroirEntities } from "../entities/Entity";
 import { selectAllMiroirEntities } from "../state/selectors";
-import { MiroirListComponent } from "./MiroirListComponent";
-import { MiroirTableComponent } from "./MiroirTableComponent";
+import { MiroirReportComponent } from "./MiroirReportComponent";
 
 export const MiroirComponent = () => {
   const miroirEntities:MiroirEntities = useSelector(selectAllMiroirEntities)
   return (
     <div>
-      <h3>
-        {JSON.stringify(miroirEntities)}
-      </h3>
       <Card>
         <CardHeader>
           AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         </CardHeader>
         <CardContent>
-          <MiroirListComponent></MiroirListComponent>
+          <MiroirReportComponent
+            reportName="EntityList"
+          ></MiroirReportComponent>
           {/* {
             miroirEntities?.length > 0?
               <MiroirTableComponent

@@ -8,8 +8,9 @@ import { setRandom } from 'txtgen'
 
 import { parseISO } from 'date-fns'
 
-import report from "src/miroir-fwk/assets/entities/Report.json"
-import entity from "src/miroir-fwk/assets/entities/Entity.json"
+import entityReport from "src/miroir-fwk/assets/entities/Report.json"
+import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
+import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
 
 
 const NUM_USERS = 3
@@ -225,7 +226,22 @@ export const handlers = [
     (req, res, ctx) => {
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
-        [report,entity]
+        [entityReport,entityEntity]
+        // {
+        //   firstName: "toto",
+        //   lastName: "tata",
+        //   name: `${firstName} ${lastName}`,
+        //   username: "toto@yahoo.com"
+        // }
+      ))
+    }
+  ),
+  rest.get(
+    '/fakeApi/reports', 
+    (req, res, ctx) => {
+      // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
+      return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
+        [reportEntityList]
         // {
         //   firstName: "toto",
         //   lastName: "tata",
