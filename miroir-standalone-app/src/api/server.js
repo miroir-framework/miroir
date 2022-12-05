@@ -237,7 +237,7 @@ export const handlers = [
     }
   ),
   rest.get(
-    '/fakeApi/reports', 
+    '/fakeApi/Report/all', 
     (req, res, ctx) => {
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(

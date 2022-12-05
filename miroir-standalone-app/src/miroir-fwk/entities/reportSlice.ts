@@ -16,7 +16,7 @@ export function* fetchMiroirReportsGen():any {
       headers: Headers;
       url: string;
   } = yield call(
-      () => client.get('/fakeApi/reports')
+      () => client.get('/fakeApi/Report/all')
     )
     yield put({type: "report/reportsReceived", payload:result.data})
   } catch (e) {
