@@ -3,7 +3,7 @@ import { call, put } from 'redux-saga/effects';
 import { client } from '../../api/client';
 import { MiroirReport } from './Report';
 
-export const miroirReportsActions = {
+export const miroirReportsSagaActions = {
   fetchMiroirReports:"entities/fetchMiroirReports"
 }
 

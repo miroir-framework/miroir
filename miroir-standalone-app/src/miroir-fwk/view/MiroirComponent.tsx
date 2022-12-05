@@ -1,12 +1,9 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import * as React from "react";
-import { useSelector } from "react-redux";
-import { MiroirEntities } from "../entities/Entity";
-import { selectAllMiroirEntities } from "../state/selectors";
 import { MiroirReportComponent } from "./MiroirReportComponent";
 
-export const MiroirComponent = () => {
-  const miroirEntities:MiroirEntities = useSelector(selectAllMiroirEntities)
+export const MiroirComponent = (props:any) => {
+  const {store} = props;
   return (
     <div>
       <Card>
@@ -16,6 +13,7 @@ export const MiroirComponent = () => {
         <CardContent>
           <MiroirReportComponent
             reportName="EntityList"
+            // store={store}
           ></MiroirReportComponent>
           {/* {
             miroirEntities?.length > 0?

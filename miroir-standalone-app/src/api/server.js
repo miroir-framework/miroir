@@ -222,7 +222,7 @@ export const handlers = [
   //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(notifications))
   // }),
   rest.get(
-    '/fakeApi/entities', 
+    '/fakeApi/Entity/all', 
     (req, res, ctx) => {
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(

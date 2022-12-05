@@ -1,4 +1,5 @@
 import { MiroirEntities, MiroirEntity } from "./Entity";
+import { MiroirObjectWithName } from "./Instance";
 
 export interface MiroirReportListDefinition {
   "entity": string,
@@ -6,9 +7,9 @@ export interface MiroirReportListDefinition {
 
 export type MiroirReportDefinition = MiroirReportListDefinition;
 
-export interface MiroirReport {
-  "uuid": number,
-  "name":string,
+export interface MiroirReport extends MiroirObjectWithName {
+  // "uuid": number,
+  // "name":string,
   "defaultLabel": string,
   "type": 'list' | 'grid',
   "definition"?: MiroirReportDefinition,
@@ -24,7 +25,7 @@ export function ReportGetInstancesToDispay(
   let result:MiroirEntities;
   const currentMiroirEntity: MiroirEntity = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
 
-  switch (currentMiroirEntity.entity) {
+  switch (currentMiroirEntity?.entity) {
     case "Entity":
       result = miroirEntities
       break;

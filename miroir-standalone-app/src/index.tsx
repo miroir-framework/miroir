@@ -5,10 +5,11 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { miroirEntityActions } from "src/miroir-fwk/entities/entitySlice";
+import { miroirEntityActionsCreators } from "src/miroir-fwk/entities/entitySlice";
 import { store } from 'src/miroir-fwk/state/store';
 import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
-import { miroirReportsActions } from "./miroir-fwk/entities/reportSlice";
+import { miroirReportsSagaActions } from "./miroir-fwk/entities/reportSlice";
+import { miroirInstanceActionsCreators } from "./miroir-fwk/entities/instanceSlice";
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -22,17 +23,16 @@ async function start() {
     await worker.start()
   }
 
-  // await worker.start({ onUnhandledRequest: 'bypass' })
-  // store.dispatch(fetchMiroirEntities())
-  store.dispatch({type: miroirEntityActions.fetchMiroirEntities})
-  store.dispatch({type: miroirReportsActions.fetchMiroirReports})
+  store.dispatch(miroirEntityActionsCreators.fetchMiroirEntities())
 
   root.render(
     <Provider store={store}>
       <div>
         <h1>Miroir standalone demo app {uuidv4()}</h1>
         <Container maxWidth='xl'>
-          <MiroirComponent></MiroirComponent>
+          <MiroirComponent
+          store={store}
+          ></MiroirComponent>
         </Container>
       </div>
     </Provider>
