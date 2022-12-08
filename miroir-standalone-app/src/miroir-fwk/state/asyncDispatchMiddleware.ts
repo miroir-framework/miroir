@@ -1,3 +1,7 @@
+
+/**
+ * adds the asyncDispatch function to actions, that can be used in the reducer to trigger an outgoing event.
+ */
 const asyncDispatchMiddleware = (store:any) => (next:any) => (action:any) => {
   let syncActivityFinished = false;
   let actionQueue:any[] = [];

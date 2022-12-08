@@ -1,4 +1,4 @@
-import { miroirEntitiesAdapter as miroirEntityAdapter } from "../entities/entitySlice"
+import { mEntitiesAdapter as miroirEntityAdapter } from "../entities/entitySlice"
 import { miroirReportAdapter } from "../entities/reportSlice"
 import { RootState } from "./store"
 

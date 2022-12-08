@@ -1,5 +1,5 @@
 import { MiroirEntities, MiroirEntity } from "./Entity";
-import { MiroirObjectWithName } from "./Instance";
+import { MiroirEntityInstanceWithName } from "./Instance";
 
 export interface MiroirReportListDefinition {
   "entity": string,
@@ -7,7 +7,7 @@ export interface MiroirReportListDefinition {
 
 export type MiroirReportDefinition = MiroirReportListDefinition;
 
-export interface MiroirReport extends MiroirObjectWithName {
+export interface MiroirReport extends MiroirEntityInstanceWithName {
   // "uuid": number,
   // "name":string,
   "defaultLabel": string,

@@ -5,16 +5,20 @@ import { all } from 'redux-saga/effects'
 import entitySlice, { entityRootSaga } from 'src/miroir-fwk/entities/entitySlice'
 import instanceSlice, { instanceRootSaga } from '../entities/instanceSlice'
 import asyncDispatchMiddleware from './asyncDispatchMiddleware'
+import { undoableReducer } from './undoableReducer'
 
 const sagaMiddleware = createSagaMiddleware()
-const staticReducers = combineReducers(
-  {
-    miroirEntities: entitySlice,
-    miroirInstances: instanceSlice,
-  }
-)
+const staticReducers = undoableReducer(
+  combineReducers(
+    {
+      miroirEntities: entitySlice,
+      miroirInstances: instanceSlice,
+    }
+  )
+);
 
 interface MiroirStore extends ToolkitStore {
+
 }
 export const store:MiroirStore = <MiroirStore>configureStore(
   {

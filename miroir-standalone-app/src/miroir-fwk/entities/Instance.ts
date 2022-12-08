@@ -1,11 +1,11 @@
-export interface MiroirObject {
+export interface MiroirEntityInstance {
   "uuid": number,
   "entity": string,
   // "name":string,
   // "defaultLabel": string,
 }
 
-export interface MiroirObjectWithName extends MiroirObject {
+export interface MiroirEntityInstanceWithName extends MiroirEntityInstance {
   // "uuid": number,
   // "entity": string,
   "name":string,

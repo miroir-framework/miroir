@@ -1,15 +1,12 @@
 import { Container } from "@mui/material";
-import { nanoid } from "@reduxjs/toolkit";
 import * as React from "react";
 import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { miroirEntityActionsCreators } from "src/miroir-fwk/entities/entitySlice";
+import { mEntityActionsCreators } from "src/miroir-fwk/entities/entitySlice";
 import { store } from 'src/miroir-fwk/state/store';
 import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
-import { miroirReportsSagaActions } from "./miroir-fwk/entities/reportSlice";
-import { miroirInstanceActionsCreators } from "./miroir-fwk/entities/instanceSlice";
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -23,7 +20,7 @@ async function start() {
     await worker.start()
   }
 
-  store.dispatch(miroirEntityActionsCreators.fetchMiroirEntities())
+  store.dispatch(mEntityActionsCreators.fetchMiroirEntities())
 
   root.render(
     <Provider store={store}>

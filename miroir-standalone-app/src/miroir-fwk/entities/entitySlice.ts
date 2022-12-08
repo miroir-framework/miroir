@@ -1,10 +1,26 @@
 import { createAction, createEntityAdapter, createSlice, EntityAdapter, Slice } from '@reduxjs/toolkit';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { client } from '../../api/client';
-import { MiroirEntity } from './Entity';
+import { MiroirEntities, MiroirEntity } from './Entity';
+
+//#########################################################################################
+//# DATA TYPES
+//#########################################################################################
+export interface MactionWithAsyncDispatchType {
+  type: string;
+  asyncDispatch:(asyncAction:any) => void; // brought by asyncDispatchMiddleware
+}
+
+declare type MentitySliceStateType = MiroirEntities;
+interface MentitySliceActionPayloadType extends MactionWithAsyncDispatchType{
+  payload: MentitySliceStateType;
+}
 
 
-export const miroirEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
+//#########################################################################################
+//# ENTITY ADAPTER
+//#########################################################################################
+export const mEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
   {
     // Assume IDs are stored in a field other than `book.id`
     selectId: (entity) => entity.uuid,
@@ -13,41 +29,51 @@ export const miroirEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAd
   }
 )
 
-export const miroirEntitySliceActionNames = {
+//#########################################################################################
+//# ACTION NAMES
+//#########################################################################################
+const mEntitySliceStoreActionNames = {
   entitiesReceived:"entitiesReceived",
 }
 
-export const miroirEntitySagaActionNames = {
+const mEntitySliceSagaActionNames = {
   fetchMiroirEntities:"entities/fetchMiroirEntities",
-  entitiesReceivedSaga:"entitiesReceivedSaga",
 }
 
-export const miroirEntitiesSlice:Slice = createSlice(
+export const mEntitySliceActionNames = {
+  entitiesReceivedNotification:"entitySlice/entitiesReceivedNotification",
+}
+
+//#########################################################################################
+//# SLICE
+//#########################################################################################
+export const mEntitiesSlice:Slice = createSlice(
   {
     name: 'entities',
-    initialState: miroirEntitiesAdapter.getInitialState(),
+    initialState: mEntitiesAdapter.getInitialState(),
     reducers: {
-      entityAdded: miroirEntitiesAdapter.addOne,
-      [miroirEntitySliceActionNames.entitiesReceived](state, action:any) {
-        console.log("entitiesReceived", action)
-        miroirEntitiesAdapter.setAll(state, action.payload);
-        action['asyncDispatch'](miroirEntityActionsCreators[miroirEntitySagaActionNames.entitiesReceivedSaga](action.payload))
+      entityAdded: mEntitiesAdapter.addOne,
+      [mEntitySliceStoreActionNames.entitiesReceived](state, action:MentitySliceActionPayloadType) {
+        console.log("entitiesReceived", state, action)
+        mEntitiesAdapter.setAll(state, action.payload);
+        action.asyncDispatch(mEntityActionsCreators.entitiesReceivedNotification(action.payload))
       },
     },
   }
 )
 
-
-export const miroirEntityActionsCreators:any = {
-  fetchMiroirEntities:createAction(miroirEntitySagaActionNames.fetchMiroirEntities),
-  entitiesReceivedSaga:createAction(miroirEntitySagaActionNames.entitiesReceivedSaga),
-  ...miroirEntitiesSlice.actions
-  
+//#########################################################################################
+//# ACTION DEFINITIONS
+//#########################################################################################
+export const mEntityActionsCreators:any = {
+  fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
+  entitiesReceivedNotification:createAction(mEntitySliceActionNames.entitiesReceivedNotification),
+  ...mEntitiesSlice.actions
 }
 
-console.log('miroirEntityActionsCreators',miroirEntityActionsCreators)
-
-
+//#########################################################################################
+//# SAGAS
+//#########################################################################################
 function* fetchMiroirEntitiesGen():any {
   console.log("fetchMiroirEntitiesGen")
   try {
@@ -59,16 +85,16 @@ function* fetchMiroirEntitiesGen():any {
     } = yield call(
       () => client.get('/fakeApi/Entity/all')
     )
-    yield put(miroirEntityActionsCreators[miroirEntitySliceActionNames.entitiesReceived](result.data))
+    yield put(mEntityActionsCreators[mEntitySliceStoreActionNames.entitiesReceived](result.data))
   } catch (e) {
     yield put({ type: 'entities/failure/entitiesNotReceived' })
   }}
 
 export function* entityRootSaga() {
   yield all([
-    takeEvery(miroirEntitySagaActionNames.fetchMiroirEntities, fetchMiroirEntitiesGen),
+    takeEvery(mEntitySliceSagaActionNames.fetchMiroirEntities, fetchMiroirEntitiesGen),
   ])
 }
 
 
-export default miroirEntitiesSlice.reducer
+export default mEntitiesSlice.reducer
