@@ -1,17 +1,27 @@
-import { rest, setupWorker } from 'msw'
+import { rest } from 'msw'
 // import { factory, oneOf, manyOf, primaryKey } from '@mswjs/data'
-import { nanoid } from '@reduxjs/toolkit'
-import {faker} from '@faker-js/faker'
-import seedrandom from 'seedrandom'
+// import { nanoid } from '@reduxjs/toolkit'
+// import {faker} from '@faker-js/faker'
+// import seedrandom from 'seedrandom'
 import { Server as MockSocketServer } from 'mock-socket'
-import { setRandom } from 'txtgen'
+// import { setRandom } from 'txtgen'
 
-import { parseISO } from 'date-fns'
+// import { parseISO } from 'date-fns
+// import * as fetch from 'node-fetch';
+// const fetchJson = (...args:any[]) => import('node-fetch').then((toto:any) => {const {default: fetch} =toto;fetch(...args)});
+// const entityReport = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\Report.json');
+// const entityEntity = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\Entity.json');
+// const reportEntityList = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\entityList.json');
+import entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json"
+import entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json"
+import reportEntityList from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/reports/entityList.json"
+// import entityReport from "../miroir-fwk/assets/entities/Report.json"
+// import entityEntity from "../miroir-fwk/assets/entities/Entity.json"
+// import reportEntityList from "../miroir-fwk/assets/reports/entityList.json"
 
-import entityReport from "src/miroir-fwk/assets/entities/Report.json"
-import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
-import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
-
+// // const entityReport = {};
+// const entityEntity = {};
+// const reportEntityList = {};
 
 const NUM_USERS = 3
 const POSTS_PER_USER = 3
@@ -95,11 +105,9 @@ const ARTIFICIAL_DELAY_MS = 100
 //   //   post: oneOf('post'),
 //   // },
 // })
-
 // const createUserData = () => {
 //   const firstName = faker.name.firstName()
 //   const lastName = faker.name.lastName()
-
 //   return {
 //     firstName,
 //     lastName,
@@ -107,7 +115,6 @@ const ARTIFICIAL_DELAY_MS = 100
 //     username: faker.internet.userName(),
 //   }
 // }
-
 // const createPostData = (user) => {
 //   return {
 //     title: faker.lorem.words(),
@@ -117,22 +124,23 @@ const ARTIFICIAL_DELAY_MS = 100
 //     reactions: db.reaction.create(),
 //   }
 // }
-
 // Create an initial set of users and posts
 // for (let i = 0; i < NUM_USERS; i++) {
 //   const author = db.user.create(createUserData())
-
 //   // for (let j = 0; j < POSTS_PER_USER; j++) {
 //   //   const newPost = createPostData(author)
 //   //   db.post.create(newPost)
 //   // }
 // }
 
-const serializePost = (post) => ({
+const serializePost = (post:any) => ({
   ...post,
   user: post.user.id,
 })
 
+// import entityReport from "src/miroir-fwk/assets/entities/Report.json"
+// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
+// import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
 /* MSW REST API Handlers */
 
 export const handlers = [
@@ -228,12 +236,6 @@ export const handlers = [
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
         [entityReport,entityEntity]
-        // {
-        //   firstName: "toto",
-        //   lastName: "tata",
-        //   name: `${firstName} ${lastName}`,
-        //   username: "toto@yahoo.com"
-        // }
       ))
     }
   ),
@@ -243,61 +245,55 @@ export const handlers = [
       // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
       return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
         [reportEntityList]
-        // {
-        //   firstName: "toto",
-        //   lastName: "tata",
-        //   name: `${firstName} ${lastName}`,
-        //   username: "toto@yahoo.com"
-        // }
       ))
     }
   ),
 ]
 
-export const worker = setupWorker(...handlers)
-worker.printHandlers() // Optional: nice for debugging to see all available route handlers that will be intercepted
+// export const server:any = setupServer(...handlers);
+export default handlers;
 
 /* Mock Websocket Setup */
 
 const socketServer = new MockSocketServer('ws://localhost')
 
-let currentSocket
+let currentSocket:any
 
-const sendMessage = (socket, obj) => {
+const sendMessage = (socket:any, obj:any) => {
   socket.send(JSON.stringify(obj))
 }
 
 // Allow our UI to fake the server pushing out some notifications over the websocket,
 // as if other users were interacting with the system.
-const sendRandomNotifications = (socket, since) => {
-  const numNotifications = getRandomInt(1, 5)
+// const sendRandomNotifications = (socket:any, since:any) => {
+//   const numNotifications = getRandomInt(1, 5)
 
-  const notifications = generateRandomNotifications(since, numNotifications, db)
+//   const notifications = generateRandomNotifications(since, numNotifications, db)
 
-  sendMessage(socket, { type: 'notifications', payload: notifications })
-}
+//   sendMessage(socket, { type: 'notifications', payload: notifications })
+// }
 
-export const forceGenerateNotifications = (since) => {
-  sendRandomNotifications(currentSocket, since)
-}
+// export const forceGenerateNotifications = (since:any) => {
+//   sendRandomNotifications(currentSocket, since)
+// }
 
-socketServer.on('connection', (socket) => {
-  currentSocket = socket
+// socketServer.on('connection', (socket) => {
+//   currentSocket = socket
 
-  socket.on('message', (data) => {
-    const message = JSON.parse(data)
+//   socket.on('message', (data:any) => {
+//     const message = JSON.parse(data)
 
-    switch (message.type) {
-      case 'notifications': {
-        const since = message.payload
-        sendRandomNotifications(socket, since)
-        break
-      }
-      default:
-        break
-    }
-  })
-})
+//     switch (message.type) {
+//       case 'notifications': {
+//         const since = message.payload
+//         sendRandomNotifications(socket, since)
+//         break
+//       }
+//       default:
+//         break
+//     }
+//   })
+// })
 
 /* Random Notifications Generation */
 
@@ -308,29 +304,29 @@ const notificationTemplates = [
   'sent you a gift',
 ]
 
-function generateRandomNotifications(since, numNotifications, db) {
-  const now = new Date()
-  let pastDate
+// function generateRandomNotifications(since, numNotifications, db) {
+//   const now = new Date()
+//   let pastDate
 
-  if (since) {
-    pastDate = parseISO(since)
-  } else {
-    pastDate = new Date(now.valueOf())
-    pastDate.setMinutes(pastDate.getMinutes() - 15)
-  }
+//   if (since) {
+//     pastDate = parseISO(since)
+//   } else {
+//     pastDate = new Date(now.valueOf())
+//     pastDate.setMinutes(pastDate.getMinutes() - 15)
+//   }
 
-  // Create N random notifications. We won't bother saving these
-  // in the DB - just generate a new batch and return them.
-  const notifications = [...Array(numNotifications)].map(() => {
-    const user = randomFromArray(db.user.getAll())
-    const template = randomFromArray(notificationTemplates)
-    return {
-      id: nanoid(),
-      date: faker.date.between(pastDate, now).toISOString(),
-      message: template,
-      user: user.id,
-    }
-  })
+//   // Create N random notifications. We won't bother saving these
+//   // in the DB - just generate a new batch and return them.
+//   const notifications = [...Array(numNotifications)].map(() => {
+//     const user = randomFromArray(db.user.getAll())
+//     const template = randomFromArray(notificationTemplates)
+//     return {
+//       id: nanoid(),
+//       date: faker.date.between(pastDate, now).toISOString(),
+//       message: template,
+//       user: user.id,
+//     }
+//   })
 
-  return notifications
-}
+//   return notifications
+// }

@@ -1,8 +1,8 @@
 import { AgGridReact } from 'ag-grid-react';
 import * as React from "react";
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+// import 'ag-grid-community/styles/ag-grid.css';
+// import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 export interface MiroirTableComponentProps {
   columnDefs:{"headerName": string, "field": string}[];

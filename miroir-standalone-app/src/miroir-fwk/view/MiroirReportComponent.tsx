@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useSelector } from 'react-redux';
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+// import 'ag-grid-community/styles/ag-grid.css';
+// import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { selectMiroirEntityInstances } from "../entities/instanceSlice";
 
 export interface MiroirReportComponentProps {

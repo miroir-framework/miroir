@@ -1,20 +1,34 @@
+import { MClientCallReturnType, MclientI } from '@App/api/MClient';
 import { createAction, createEntityAdapter, createSlice, EntityAdapter, Slice } from '@reduxjs/toolkit';
+import { Channel } from 'redux-saga';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
-import { client } from '../../api/client';
 import { MiroirEntities, MiroirEntity } from './Entity';
+import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
+
+//#########################################################################################
+//# ACTION NAMES
+//#########################################################################################
+export const mEntitySliceStoreActionNames = {
+  storeEntities:"storeEntities",
+}
+
+const mEntitySliceSagaActionNames = {
+  fetchMiroirEntities:"entities/fetchMiroirEntities",
+  entitiesStored:"entitiesStored",
+}
+
+export const mEntitySliceActionNames = {
+  entitiesReceivedNotification:"entitiesReceivedNotification",
+}
 
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
-export interface MactionWithAsyncDispatchType {
-  type: string;
-  asyncDispatch:(asyncAction:any) => void; // brought by asyncDispatchMiddleware
-}
-
 declare type MentitySliceStateType = MiroirEntities;
 interface MentitySliceActionPayloadType extends MactionWithAsyncDispatchType{
   payload: MentitySliceStateType;
 }
+
 
 
 //#########################################################################################
@@ -30,19 +44,82 @@ export const mEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter
 )
 
 //#########################################################################################
-//# ACTION NAMES
+//# SLICE
 //#########################################################################################
-const mEntitySliceStoreActionNames = {
-  entitiesReceived:"entitiesReceived",
+export class EntitySlice implements Mslice {
+  constructor(
+    public client: MclientI,
+  ) {
+    // console.log("EntitySlice constructor",client)
+  }
+
+//#########################################################################################
+// public actionToDispatchMap:Map<string,ActionWithPayloadCreator[]> = new Map(
+//     [
+//       // [
+//       //   "entities/" + mEntitySliceStoreActionNames.entitiesReceived,
+//       //   [
+//       //     {
+//       //       actionCreator: mEntityActionsCreators.entitiesReceivedNotification,
+//       //       getActionPayload:(state:any, action:ActionWithPayload)=>action.payload
+//       //     }
+//       //   ]
+//       // ]
+//     ]
+//   );
+
+  //#########################################################################################
+  *fetchMentities(
+    _this:EntitySlice,
+    sliceChannel:Channel<any>,
+  ):any {
+    try {
+      const _client = _this.client;
+      const result:MClientCallReturnType = yield call(
+        () => _client.get('/fakeApi/Entity/all')
+      )
+      console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
+      yield put(mEntityActionsCreators[mEntitySliceStoreActionNames.storeEntities](result.data))
+      yield put(mEntityActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
+    } catch (e) {
+      console.error("fetchMentities exception",e)
+      yield put({ type: 'entities/failure/entitiesNotReceived' })
+    }
+  }
+
+  //#########################################################################################
+  *entitiesStored(
+    _this: EntitySlice,
+    sliceChannel:Channel<any>,
+    action:{type:string, payload:MiroirEntities},
+  ):any {
+    console.log("saga entitiesStored called", action)
+    yield put(sliceChannel, action)
+  }
+
+  //#########################################################################################
+  public *entityRootSaga(
+    _this: EntitySlice,
+    sliceChannel:Channel<any>,
+  ) {
+    // take
+    yield all([
+      takeEvery(
+        mEntitySliceSagaActionNames.fetchMiroirEntities, 
+        _this.fetchMentities,
+        _this,
+        sliceChannel,
+      ),
+      takeEvery(
+        mEntitySliceSagaActionNames.entitiesStored, 
+        _this.entitiesStored,
+        _this,
+        sliceChannel,
+      ),
+    ])
+  }
 }
 
-const mEntitySliceSagaActionNames = {
-  fetchMiroirEntities:"entities/fetchMiroirEntities",
-}
-
-export const mEntitySliceActionNames = {
-  entitiesReceivedNotification:"entitySlice/entitiesReceivedNotification",
-}
 
 //#########################################################################################
 //# SLICE
@@ -53,10 +130,13 @@ export const mEntitiesSlice:Slice = createSlice(
     initialState: mEntitiesAdapter.getInitialState(),
     reducers: {
       entityAdded: mEntitiesAdapter.addOne,
-      [mEntitySliceStoreActionNames.entitiesReceived](state, action:MentitySliceActionPayloadType) {
-        console.log("entitiesReceived", state, action)
+      // storeEntities(state, action:MentitySliceActionPayloadType) {
+      [mEntitySliceStoreActionNames.storeEntities](state, action:MentitySliceActionPayloadType) {
+        // console.log("entitiesReceived");
+        console.log("reducer storeEtities called", action)
         mEntitiesAdapter.setAll(state, action.payload);
-        action.asyncDispatch(mEntityActionsCreators.entitiesReceivedNotification(action.payload))
+        // console.log("reducer storeEtities called2", JSON.stringify(state), action)
+        return state;
       },
     },
   }
@@ -67,34 +147,8 @@ export const mEntitiesSlice:Slice = createSlice(
 //#########################################################################################
 export const mEntityActionsCreators:any = {
   fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
-  entitiesReceivedNotification:createAction(mEntitySliceActionNames.entitiesReceivedNotification),
+  entitiesStored:createAction(mEntitySliceSagaActionNames.entitiesStored),
   ...mEntitiesSlice.actions
 }
-
-//#########################################################################################
-//# SAGAS
-//#########################################################################################
-function* fetchMiroirEntitiesGen():any {
-  console.log("fetchMiroirEntitiesGen")
-  try {
-    const result:{
-      status: number;
-      data: any;
-      headers: Headers;
-      url: string;
-    } = yield call(
-      () => client.get('/fakeApi/Entity/all')
-    )
-    yield put(mEntityActionsCreators[mEntitySliceStoreActionNames.entitiesReceived](result.data))
-  } catch (e) {
-    yield put({ type: 'entities/failure/entitiesNotReceived' })
-  }}
-
-export function* entityRootSaga() {
-  yield all([
-    takeEvery(mEntitySliceSagaActionNames.fetchMiroirEntities, fetchMiroirEntitiesGen),
-  ])
-}
-
 
 export default mEntitiesSlice.reducer

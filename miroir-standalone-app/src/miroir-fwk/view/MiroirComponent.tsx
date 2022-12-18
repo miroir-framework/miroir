@@ -3,7 +3,7 @@ import * as React from "react";
 import { MiroirReportComponent } from "./MiroirReportComponent";
 
 export const MiroirComponent = (props:any) => {
-  const {store} = props;
+  // const {store} = props;
   return (
     <div>
       <Card>
