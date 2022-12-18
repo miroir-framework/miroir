@@ -7,12 +7,15 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ["babel-loader","ts-loader"],
+        use: ["ts-loader"],
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
+    roots: [
+      path.resolve(__dirname, "src"),
+   ],
     extensions: ['.tsx', '.ts', '.js', 'json'],
     fallback: {
       util: require.resolve("util/")

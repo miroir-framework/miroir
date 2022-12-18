@@ -1,4 +1,4 @@
-import { MClientCallReturnType, MclientI } from '@App/api/MClient';
+import { MClientCallReturnType, MclientI } from 'src/api/MClient';
 import { createAction, createEntityAdapter, createSlice, EntityAdapter, Slice } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
 import { all, call, put, takeEvery } from 'redux-saga/effects';

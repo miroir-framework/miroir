@@ -3,13 +3,8 @@ import { setupWorker } from "msw";
 import * as React from "react";
 import { createRoot } from 'react-dom/client';
 import { v4 as uuidv4 } from 'uuid';
-
-// import { EntitySlice, mEntityActionsCreators } from "src/miroir-fwk/entities/entitySlice";
-// import { store } from 'src/miroir-fwk/state/store';
-// import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
-// import { MiroirComponent } from "src/miroir-fwk/view/MiroirComponent";
 import { Provider } from "react-redux";
-import { handlers } from "src/api/server";
+import { handlers } from "./api/server";
 import { MClient } from "./api/MClient";
 import { EntitySlice, mEntityActionsCreators } from "./miroir-fwk/entities/entitySlice";
 import { InstanceSlice } from "./miroir-fwk/entities/instanceSlice";
