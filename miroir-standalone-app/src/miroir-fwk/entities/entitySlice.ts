@@ -4,6 +4,7 @@ import { Channel } from 'redux-saga';
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { MiroirEntities, MiroirEntity } from './Entity';
 import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
+import miroirConfig from "../assets/miroirConfig.json"
 
 //#########################################################################################
 //# ACTION NAMES
@@ -61,13 +62,12 @@ export class EntitySlice implements Mslice {
     try {
       const _client = _this.client;
       const result:MClientCallReturnType = yield call(
-        // () => _client.get('/fakeApi/Entity/all')
-        () => _client.get('http://localhost/fakeApi/Entity/all')
+        () => _client.get(miroirConfig.rootApiUrl+'/'+'Entity/all')
       )
       // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
       console.log("fetchMentities received", result.status);
       yield putResolve(_this.mEntityActionsCreators[mEntitySliceStoreActionNames.storeEntities](result.data))
-      console.log("fetchMentities calling entitiesStored");
+      // console.log("fetchMentities calling entitiesStored");
       yield put(_this.mEntityActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
     } catch (e) {
       console.error("fetchMentities exception",e)
@@ -81,7 +81,7 @@ export class EntitySlice implements Mslice {
     sliceChannel:Channel<any>,
     action:{type:string, payload:MiroirEntities},
   ):any {
-    console.log("saga entitiesStored called", action)
+    // console.log("saga entitiesStored called", action)
     yield put(sliceChannel, action)
   }
 
@@ -118,7 +118,7 @@ export class EntitySlice implements Mslice {
         entityAdded: mEntitiesAdapter.addOne,
         // storeEntities(state, action:MentitySliceActionPayloadType) {
         [mEntitySliceStoreActionNames.storeEntities](state, action:MentitySliceActionPayloadType) {
-          console.log("reducer storeEtities called", action)
+          // console.log("reducer storeEtities called", action)
           mEntitiesAdapter.setAll(state, action.payload);
           return state;
         },

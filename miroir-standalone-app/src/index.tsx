@@ -11,9 +11,9 @@ import { InstanceSlice } from "./miroir-fwk/entities/instanceSlice";
 import { MreduxStore } from "./miroir-fwk/state/store";
 import { MiroirComponent } from "./miroir-fwk/view/MiroirComponent";
 
-import entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json"
-import entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json"
-import reportEntityList from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/reports/entityList.json"
+import entityEntity from "../src/miroir-fwk/assets/entities/Entity.json"
+import entityReport from "../src/miroir-fwk/assets/entities/Report.json"
+import reportEntityList from "../src/miroir-fwk/assets/reports/entityList.json"
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -24,18 +24,15 @@ const root = createRoot(container);
 async function start() {
   // Start our mock API server
   const mServer: MServer = new MServer();
+
   await mServer.createObjectStore(["Entity","Instance","Report"]);
-// await this.localIndexedStorage.createObjectStore(["Entity","Instance"]);
   await mServer.localIndexedStorage.putValue("Entity",entityReport);
   await mServer.localIndexedStorage.putValue("Entity",entityEntity);
   await mServer.localIndexedStorage.putValue("Report",reportEntityList);
-// await this.localIndexedStorage.closeObjectStore();
 
   if (process.env.NODE_ENV === 'development') {
-    // export const worker = setupWorker(...handlers)
-    // worker.printHandlers() // Optional: nice for debugging to see all available route handlers that will be intercepted
-    // const serverHandlers = require('./api/server')
     const worker = setupWorker(...mServer.handlers)
+    worker.printHandlers() // Optional: nice for debugging to see all available route handlers that will be intercepted
     await worker.start()
   }
 
@@ -44,7 +41,6 @@ async function start() {
   const instanceSlice: InstanceSlice = new InstanceSlice(client);
 
   const mStore:MreduxStore = new MreduxStore(entitySlice, instanceSlice);
-  // mStore.sagaMiddleware.run(launchStore(entitySlice,instanceSlice))
   mStore.sagaMiddleware.run(
     mStore.rootSaga, mStore
   );

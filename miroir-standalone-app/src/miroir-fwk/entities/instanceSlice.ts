@@ -5,6 +5,7 @@ import { MclientI } from 'src/api/MClient';
 import { MiroirEntities, MiroirEntity } from './Entity';
 import { MiroirEntityInstanceWithName } from './Instance';
 import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
+import miroirConfig from "../assets/miroirConfig.json"
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -20,7 +21,7 @@ const mInstanceSliceInternalSagaActionNames = {
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
 export const mInstanceSliceStoreActionNames = {
-  storeEntityInstancesReceivedFromAPI:"storeEntityInstancesReceivedFromAPI",
+  storeInstancesReceivedFromAPIForEntity:"storeInstancesReceivedFromAPIForEntity",
   updateEntityInstances:"updateEntityInstances",
 }
 
@@ -61,7 +62,7 @@ export class InstanceSlice implements Mslice {
     sliceChannel:Channel<any>,
     args:{type:string, payload:string},
   ):any {
-    console.log("fetchInstancesForEntity", args)
+    // console.log("fetchInstancesForEntity", args)
     try {
       const _client = _this.client;
       const result:{
@@ -70,11 +71,10 @@ export class InstanceSlice implements Mslice {
         headers: Headers;
         url: string;
     } = yield call(
-        // () => _client.get('/fakeApi/'+args.payload+ '/all')
-        () => _client.get('http://localhost/fakeApi/'+args.payload+ '/all')
+        () => _client.get(miroirConfig.rootApiUrl+'/'+args.payload+ '/all')
       )
       yield putResolve(
-        _this.mInstanceSliceInternalActionsCreators[mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI](
+        _this.mInstanceSliceInternalActionsCreators[mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity](
           {instances:result.data, entity:args.payload}
         )
       );
@@ -119,9 +119,7 @@ export class InstanceSlice implements Mslice {
     args:{type:string, payload:string}
   ):any {
     try {
-      // console.log("instanceRefreshedForEntity launched", entityName);
-      console.log("storedInstancesForEntity", args, "left to fetch",_this.entitiesToFetch);
-      // console.log("instanceRefreshedForEntity", args.payload, "left to fetch",_this.entitiesToFetch);
+      // console.log("storedInstancesForEntity", args, "left to fetch",_this.entitiesToFetch);
       const id:number =_this.entitiesToFetch.indexOf(args.payload);
       if (id !== undefined) {
         _this.entitiesAlreadyFetched.push(_this.entitiesToFetch[id]);
@@ -149,7 +147,6 @@ export class InstanceSlice implements Mslice {
         // listening on potentially modified entity definitions, sent by the entitySlice
         takeEvery(sliceChannel, _this.refreshEntityInstances, _this, sliceChannel),
         // listening on input actions
-        // takeEvery(mInstanceSliceInternalActionsCreators.instancesRefreshedForEntity, _this.instanceRefreshedForEntity, _this, sliceChannel),
         takeEvery(mInstanceSliceInternalSagaActionNames.storedInstancesForEntity, _this.storedInstancesForEntity, _this, sliceChannel),
         takeEvery(mInstanceSliceInternalSagaActionNames.refreshEntityInstances, _this.refreshEntityInstances, _this, sliceChannel),
         takeEvery(mInstanceSliceInternalSagaActionNames.fetchInstancesForEntity, _this.fetchInstancesForEntity, _this, sliceChannel),
@@ -174,8 +171,8 @@ export class InstanceSlice implements Mslice {
             }
           );
         },
-        [mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI] (state:any, action:MinstanceSliceActionPayloadType) {
-          console.log(mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI, JSON.stringify(state), action)
+        [mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity] (state:any, action:MinstanceSliceActionPayloadType) {
+          // console.log(mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, JSON.stringify(state), action)
           state[action.payload.entity] = action.payload.instances;
         },
       },

@@ -7,7 +7,7 @@ import { setupServer } from "msw/node";
 
 import * as entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json";
 import * as entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json";
-// import reportEntityList from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standlone-app/src/miroir-fwk/assets/reports/entityList.json"
+import * as reportEntityList from "../src/miroir-fwk/assets/reports/entityList.json"
 
 import fetch from 'node-fetch';
 import { MServer } from '../src/api/server';
@@ -56,12 +56,13 @@ it(
     await mServer.createObjectStore(["Entity","Instance","Report"]);
     await mServer.localIndexedStorage.putValue("Entity",entityReport);
     await mServer.localIndexedStorage.putValue("Entity",entityEntity);
+    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
     
     saga
     // intermediate observations, entities definitions and corresponding instances are stored
     .put.like({action: {type: 'entities/' + mEntitySliceStoreActionNames.storeEntities, payload:data}})
-    .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI, payload:{entity:"Entity"}}})
-    .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI, payload:{entity:"Report"}}})
+    .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, payload:{entity:"Entity"}}})
+    .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, payload:{entity:"Report"}}})
     // end result, we should observe all instances have been refreshed
     .put.like({action: {type: mInstanceSliceActionNames.allInstancesRefreshed}})
     ;

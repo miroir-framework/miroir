@@ -1,8 +1,7 @@
 import { rest } from 'msw'
 import IndexedDb from '../../src/miroir-fwk/state/indexedDb'
-import entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json"
-import entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json"
 import reportEntityList from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/reports/entityList.json"
+import miroirConfig from "../miroir-fwk/assets/miroirConfig.json"
 
 
 const NUM_USERS = 3
@@ -141,7 +140,7 @@ export class MServer {
   public handlers:any[] = [
     rest.get(
       // '/fakeApi/Entity/all', 
-      'http://localhost/fakeApi/Entity/all', 
+      miroirConfig.rootApiUrl+'/'+'Entity/all', 
       async (req, res, ctx) => {
 
       const localData = await this.localIndexedStorage.getAllValue('Entity');
@@ -156,7 +155,7 @@ export class MServer {
     ),
     rest.get(
       // '/fakeApi/Report/all', 
-      'http://localhost/fakeApi/Report/all', 
+      miroirConfig.rootApiUrl+'/'+'Report/all', 
       async (req, res, ctx) => {
         // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
         // const localData = [
@@ -165,7 +164,8 @@ export class MServer {
         // ]
         const localData = await this.localIndexedStorage.getAllValue('Report');
         return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
-          [reportEntityList]
+          // [reportEntityList]
+          localData
         ))
       }
     ),
