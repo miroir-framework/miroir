@@ -1,71 +1,16 @@
 import { combineReducers, configureStore, Store } from '@reduxjs/toolkit'
 import createSagaMiddleware, { Channel, channel } from 'redux-saga'
 import { all, call } from 'redux-saga/effects'
-import entitySlice, { EntitySlice } from '../entities/entitySlice'
+import { EntitySlice } from '../entities/entitySlice'
 // import entitySlice, { EntitySlice } from 'src/miroir-fwk/entities/entitySlice'
-import instanceSlice, { InstanceSlice } from '../entities/instanceSlice'
+import { InstanceSlice } from '../entities/instanceSlice'
 import { createUndoableReducer } from './undoableReducer'
-
-// const sagaMiddleware = createSagaMiddleware()
-// const staticReducers = createUndoableReducer(
-//   combineReducers(
-//     {
-//       miroirEntities: entitySlice,
-//       miroirInstances: instanceSlice,
-//     }
-//   )
-// );
-
-// interface MiroirStore extends Store {
-
-// }
-// export const store:MiroirStore = <MiroirStore>configureStore(
-//   {
-//     reducer: staticReducers,
-//     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(asyncDispatchMiddleware).concat(sagaMiddleware)
-//   }
-// )
-
-// export type RootState = ReturnType<typeof store.getState>
-// export type AppDispatch = typeof store.dispatch
-
-// export function* rootSaga() {
-//   yield all([
-//     entityRootSaga(),
-//     instanceRootSaga(),
-//   ])
-// }
-// sagaMiddleware.run(rootSaga)
-
-
-// const monitorReducerEnhancer =
-//   createStore => (reducer, initialState, enhancer) => {
-//     const monitoredReducer = (state, action) => {
-//       const start = performance.now()
-//       const newState = reducer(state, action)
-//       const end = performance.now()
-//       const diff = round(end - start)
-
-//       console.log('reducer process time:', diff)
-
-//       return newState
-//     }
-
-//     return createStore(monitoredReducer, initialState, enhancer)
-//   }
-
-// const bindMiddleware = (middlewares: Middleware[]) => {
-//   if (process.env.NODE_ENV !== 'production') {
-//     const { composeWithDevTools } = require('redux-devtools-extension')
-//     return composeWithDevTools(applyMiddleware(...middlewares))
-//   }
-//   return applyMiddleware(...middlewares)
-// }
-
+import { omit as _omit } from 'lodash';
 
 // function saveToLocalStorage(state = {}) {
 //   try {
-//     const data = JSON.stringify(_omit(state, ['department', 'category', 'product', 'attribute', 'order', 'customer.error' ]));
+//     // const data = JSON.stringify(_omit(state, ['department', 'category', 'product', 'attribute', 'order', 'customer.error' ]));
+//     const data = JSON.stringify(state);
 //     const serializedData = btoa(`turing:${data}`);
 //     localStorage.setItem('state', serializedData);
 //   } catch (e) {}
@@ -90,12 +35,14 @@ import { createUndoableReducer } from './undoableReducer'
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-declare interface MstoreI {
+declare interface MreduxStoreI {
   entitySliceObject: EntitySlice,
   instanceSliceObject: InstanceSlice,
 }
+// const persistedState = loadFromLocalStorage();
 
-export class Mstore implements MstoreI{
+
+export class MreduxStore implements MreduxStoreI{
   public store:Store;
   public staticReducers:any;
   public sagaMiddleware:any;
@@ -110,8 +57,8 @@ export class Mstore implements MstoreI{
     this.staticReducers = createUndoableReducer(
       combineReducers(
         {
-          miroirEntities: entitySlice,
-          miroirInstances: instanceSlice,
+          miroirEntities: entitySliceObject.mEntitiesSlice.reducer,
+          miroirInstances: instanceSliceObject.mInstanceSlice.reducer,
         }
       )
     );
@@ -127,9 +74,15 @@ export class Mstore implements MstoreI{
       }
     );
     this.dispatch = this.store.dispatch;
+
+    // create indexedDb local storage, in the case the DB accessed through REST runs in a distinct process.
+    // if REST API accesses the indexedDb local storage itself, then the Redux store systematically invalidates
+    // any data found in it, and thus re-calls the Rest API for any access. The Redux store is then not used,
+    // at least not as a store.
+
   } //end constructor
 
-  public *rootSaga(_this:Mstore):any {
+  public *rootSaga(_this:MreduxStore):any {
     console.log("Mstore rootSaga");
     const sliceChannel:Channel<any> = yield call(channel);
     yield all(

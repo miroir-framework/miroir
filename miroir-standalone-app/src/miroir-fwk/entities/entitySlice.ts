@@ -1,7 +1,7 @@
 import { MClientCallReturnType, MclientI } from 'src/api/MClient';
 import { createAction, createEntityAdapter, createSlice, EntityAdapter, Slice } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { MiroirEntities, MiroirEntity } from './Entity';
 import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
 
@@ -53,21 +53,6 @@ export class EntitySlice implements Mslice {
     // console.log("EntitySlice constructor",client)
   }
 
-//#########################################################################################
-// public actionToDispatchMap:Map<string,ActionWithPayloadCreator[]> = new Map(
-//     [
-//       // [
-//       //   "entities/" + mEntitySliceStoreActionNames.entitiesReceived,
-//       //   [
-//       //     {
-//       //       actionCreator: mEntityActionsCreators.entitiesReceivedNotification,
-//       //       getActionPayload:(state:any, action:ActionWithPayload)=>action.payload
-//       //     }
-//       //   ]
-//       // ]
-//     ]
-//   );
-
   //#########################################################################################
   *fetchMentities(
     _this:EntitySlice,
@@ -76,11 +61,14 @@ export class EntitySlice implements Mslice {
     try {
       const _client = _this.client;
       const result:MClientCallReturnType = yield call(
-        () => _client.get('/fakeApi/Entity/all')
+        // () => _client.get('/fakeApi/Entity/all')
+        () => _client.get('http://localhost/fakeApi/Entity/all')
       )
-      console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
-      yield put(mEntityActionsCreators[mEntitySliceStoreActionNames.storeEntities](result.data))
-      yield put(mEntityActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
+      // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
+      console.log("fetchMentities received", result.status);
+      yield putResolve(_this.mEntityActionsCreators[mEntitySliceStoreActionNames.storeEntities](result.data))
+      console.log("fetchMentities calling entitiesStored");
+      yield put(_this.mEntityActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
     } catch (e) {
       console.error("fetchMentities exception",e)
       yield put({ type: 'entities/failure/entitiesNotReceived' })
@@ -118,37 +106,42 @@ export class EntitySlice implements Mslice {
       ),
     ])
   }
-}
 
-
-//#########################################################################################
-//# SLICE
-//#########################################################################################
-export const mEntitiesSlice:Slice = createSlice(
-  {
-    name: 'entities',
-    initialState: mEntitiesAdapter.getInitialState(),
-    reducers: {
-      entityAdded: mEntitiesAdapter.addOne,
-      // storeEntities(state, action:MentitySliceActionPayloadType) {
-      [mEntitySliceStoreActionNames.storeEntities](state, action:MentitySliceActionPayloadType) {
-        // console.log("entitiesReceived");
-        console.log("reducer storeEtities called", action)
-        mEntitiesAdapter.setAll(state, action.payload);
-        // console.log("reducer storeEtities called2", JSON.stringify(state), action)
-        return state;
+  //#########################################################################################
+  //# SLICE
+  //#########################################################################################
+  public mEntitiesSlice:Slice = createSlice(
+    {
+      name: 'entities',
+      initialState: mEntitiesAdapter.getInitialState(),
+      reducers: {
+        entityAdded: mEntitiesAdapter.addOne,
+        // storeEntities(state, action:MentitySliceActionPayloadType) {
+        [mEntitySliceStoreActionNames.storeEntities](state, action:MentitySliceActionPayloadType) {
+          console.log("reducer storeEtities called", action)
+          mEntitiesAdapter.setAll(state, action.payload);
+          return state;
+        },
       },
-    },
+    }
+  )
+
+  //#########################################################################################
+  //# ACTION DEFINITIONS
+  //#########################################################################################
+  public mEntityActionsCreators:any = {
+    fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
+    entitiesStored:createAction(mEntitySliceSagaActionNames.entitiesStored),
+    ...this.mEntitiesSlice.actions
   }
-)
+
+} // end class EntitySlice
+
+
+
 
 //#########################################################################################
-//# ACTION DEFINITIONS
+//# DEFAULT EXPORT
 //#########################################################################################
-export const mEntityActionsCreators:any = {
-  fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
-  entitiesStored:createAction(mEntitySliceSagaActionNames.entitiesStored),
-  ...mEntitiesSlice.actions
-}
+// export default mEntitiesSlice.reducer
 
-export default mEntitiesSlice.reducer

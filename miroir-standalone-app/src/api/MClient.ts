@@ -1,8 +1,6 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-// import { any } from 'prop-types';
-
 export interface MClientCallReturnType {
   status: number;
   data: any;
@@ -12,7 +10,6 @@ export interface MClientCallReturnType {
 }
 
 export interface MclientI {
-  // call(endpoint:string, args:any):Promise<MClientCallReturnType>;
   get(endpoint:string, customConfig?:any): Promise<MClientCallReturnType>;
   post(endpoint:string, body:any, customConfig?:any): Promise<MClientCallReturnType>;
 }
@@ -45,9 +42,8 @@ export class MClient implements MclientI {
     let data
     try {
       const response = await this.customFetch(endpoint, config)
+
       console.log("MwebClient response", response);
-      // const response = await window.fetch(endpoint, config)
-      // const response:any = await fetch(endpoint, config)
       data = await response?.json()
       if (response.ok) {
         // Return a result object similar to Axios
@@ -64,13 +60,13 @@ export class MClient implements MclientI {
     }
   }
   
-  get(endpoint:string, customConfig:any = {}): Promise<MClientCallReturnType> {
+  async get(endpoint:string, customConfig:any = {}): Promise<MClientCallReturnType> {
     const result:Promise<MClientCallReturnType> = this.call(endpoint, { ...customConfig, method: 'GET' })
     console.log('MClient get',endpoint, result)
     return result
   }
   
-  post(endpoint:string, body:any, customConfig = {}): Promise<MClientCallReturnType> {
+  async post(endpoint:string, body:any, customConfig = {}): Promise<MClientCallReturnType> {
     console.log('MClient post',endpoint)
     return this.call(endpoint, { ...customConfig, body })
   }

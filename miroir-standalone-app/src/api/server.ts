@@ -1,37 +1,16 @@
 import { rest } from 'msw'
-// import { factory, oneOf, manyOf, primaryKey } from '@mswjs/data'
-// import { nanoid } from '@reduxjs/toolkit'
-// import {faker} from '@faker-js/faker'
-// import seedrandom from 'seedrandom'
-import { Server as MockSocketServer } from 'mock-socket'
-// import { setRandom } from 'txtgen'
-
-// import { parseISO } from 'date-fns
-// import * as fetch from 'node-fetch';
-// const fetchJson = (...args:any[]) => import('node-fetch').then((toto:any) => {const {default: fetch} =toto;fetch(...args)});
-// const entityReport = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\Report.json');
-// const entityEntity = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\Entity.json');
-// const reportEntityList = fetchJson('C:\\Users\\nono\\Documents\\devhome\\miroir-app\\miroir-standalone-app\\src\\miroir-fwk\\assets\\entities\\entityList.json');
-import entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json"
+import IndexedDb from '../../src/miroir-fwk/state/indexedDb'
 import entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json"
+import entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json"
 import reportEntityList from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/reports/entityList.json"
-// import entityReport from "../miroir-fwk/assets/entities/Report.json"
-// import entityEntity from "../miroir-fwk/assets/entities/Entity.json"
-// import reportEntityList from "../miroir-fwk/assets/reports/entityList.json"
 
-// // const entityReport = {};
-// const entityEntity = {};
-// const reportEntityList = {};
 
 const NUM_USERS = 3
 const POSTS_PER_USER = 3
 const RECENT_NOTIFICATIONS_DAYS = 7
 
 // Add an extra delay to all endpoints, so loading spinners show up.
-// const ARTIFICIAL_DELAY_MS = 2000
 const ARTIFICIAL_DELAY_MS = 100
-
-/* RNG setup */
 
 // Set up a seeded random number generator, so that we get
 // a consistent set of users / entries each time the page loads.
@@ -138,130 +117,79 @@ const serializePost = (post:any) => ({
   user: post.user.id,
 })
 
-// import entityReport from "src/miroir-fwk/assets/entities/Report.json"
-// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
-// import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
+
+// await this.localIndexedStorage.createObjectStore(["Entity","Instance"]);
+// await this.localIndexedStorage.putValue("Entity",entityReport);
+// await this.localIndexedStorage.putValue("Entity",entityEntity);
+// await this.localIndexedStorage.closeObjectStore();
+
+export class MServer {
+  public localIndexedStorage = new IndexedDb('miroir');
+
+  constructor() {
+
+  }
+
+  public async createObjectStore(tableNames:string[]) {
+    return this.localIndexedStorage.createObjectStore(tableNames);
+  }
+
+  public async closeObjectStore() {
+    return this.localIndexedStorage.closeObjectStore;
+  }
+
+  public handlers:any[] = [
+    rest.get(
+      // '/fakeApi/Entity/all', 
+      'http://localhost/fakeApi/Entity/all', 
+      async (req, res, ctx) => {
+
+      const localData = await this.localIndexedStorage.getAllValue('Entity');
+      // console.log('server /fakeApi/Entity/all return',localData)
+      return res(
+          // ctx.delay(ARTIFICIAL_DELAY_MS), 
+          ctx.json(
+            localData
+          )
+        );
+      }
+    ),
+    rest.get(
+      // '/fakeApi/Report/all', 
+      'http://localhost/fakeApi/Report/all', 
+      async (req, res, ctx) => {
+        // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
+        // const localData = [
+        //   await this.localIndexedStorage.getValue('Entity',entityReport.uuid),
+        //   await this.localIndexedStorage.getValue('Entity',entityEntity.uuid),
+        // ]
+        const localData = await this.localIndexedStorage.getAllValue('Report');
+        return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
+          [reportEntityList]
+        ))
+      }
+    ),
+  ]
+  
+
+}
+
+
+// localIndexedStorage.getValue('Entity',entityReport.uuid)
 /* MSW REST API Handlers */
 
-export const handlers = [
-  // rest.get('/fakeApi/posts', function (req, res, ctx) {
-  //   const posts = db.post.getAll().map(serializePost)
-  //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(posts))
-  // }),
-  // rest.post('/fakeApi/posts', function (req, res, ctx) {
-  //   const data = req.body
-
-  //   if (data.content === 'error') {
-  //     return res(
-  //       ctx.delay(ARTIFICIAL_DELAY_MS),
-  //       ctx.status(500),
-  //       ctx.json('Server error saving this post!')
-  //     )
-  //   }
-
-  //   data.date = new Date().toISOString()
-
-  //   const user = db.user.findFirst({ where: { id: { equals: data.user } } })
-  //   data.user = user
-  //   data.reactions = db.reaction.create()
-
-  //   const post = db.post.create(data)
-  //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(serializePost(post)))
-  // }),
-  // rest.get('/fakeApi/posts/:postId', function (req, res, ctx) {
-  //   const post = db.post.findFirst({
-  //     where: { id: { equals: req.params.postId } },
-  //   })
-  //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(serializePost(post)))
-  // }),
-  // rest.patch('/fakeApi/posts/:postId', (req, res, ctx) => {
-  //   const { id, ...data } = req.body
-  //   const updatedPost = db.post.update({
-  //     where: { id: { equals: req.params.postId } },
-  //     data,
-  //   })
-  //   return res(
-  //     ctx.delay(ARTIFICIAL_DELAY_MS),
-  //     ctx.json(serializePost(updatedPost))
-  //   )
-  // }),
-
-  // rest.get('/fakeApi/posts/:postId/comments', (req, res, ctx) => {
-  //   const post = db.post.findFirst({
-  //     where: { id: { equals: req.params.postId } },
-  //   })
-  //   return res(
-  //     ctx.delay(ARTIFICIAL_DELAY_MS),
-  //     ctx.json({ comments: post.comments })
-  //   )
-  // }),
-
-  // rest.post('/fakeApi/posts/:postId/reactions', (req, res, ctx) => {
-  //   const postId = req.params.postId
-  //   const reaction = req.body.reaction
-  //   const post = db.post.findFirst({
-  //     where: { id: { equals: postId } },
-  //   })
-
-  //   const updatedPost = db.post.update({
-  //     where: { id: { equals: postId } },
-  //     data: {
-  //       reactions: {
-  //         ...post.reactions,
-  //         [reaction]: (post.reactions[reaction] += 1),
-  //       },
-  //     },
-  //   })
-
-  //   return res(
-  //     ctx.delay(ARTIFICIAL_DELAY_MS),
-  //     ctx.json(serializePost(updatedPost))
-  //   )
-  // }
-  // ),
-  // rest.get('/fakeApi/notifications', (req, res, ctx) => {
-  //   const numNotifications = getRandomInt(1, 5)
-
-  //   let notifications = generateRandomNotifications(
-  //     undefined,
-  //     numNotifications,
-  //     db
-  //   )
-
-  //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(notifications))
-  // }),
-  rest.get(
-    '/fakeApi/Entity/all', 
-    (req, res, ctx) => {
-      // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
-      return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
-        [entityReport,entityEntity]
-      ))
-    }
-  ),
-  rest.get(
-    '/fakeApi/Report/all', 
-    (req, res, ctx) => {
-      // return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(db.user.getAll()))
-      return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(
-        [reportEntityList]
-      ))
-    }
-  ),
-]
-
 // export const server:any = setupServer(...handlers);
-export default handlers;
+// export default handlers;
 
 /* Mock Websocket Setup */
 
-const socketServer = new MockSocketServer('ws://localhost')
+// const socketServer = new MockSocketServer('ws://localhost')
 
-let currentSocket:any
+// let currentSocket:any
 
-const sendMessage = (socket:any, obj:any) => {
-  socket.send(JSON.stringify(obj))
-}
+// const sendMessage = (socket:any, obj:any) => {
+//   socket.send(JSON.stringify(obj))
+// }
 
 // Allow our UI to fake the server pushing out some notifications over the websocket,
 // as if other users were interacting with the system.
@@ -297,12 +225,12 @@ const sendMessage = (socket:any, obj:any) => {
 
 /* Random Notifications Generation */
 
-const notificationTemplates = [
-  'poked you',
-  'says hi!',
-  `is glad we're friends`,
-  'sent you a gift',
-]
+// const notificationTemplates = [
+//   'poked you',
+//   'says hi!',
+//   `is glad we're friends`,
+//   'sent you a gift',
+// ]
 
 // function generateRandomNotifications(since, numNotifications, db) {
 //   const now = new Date()

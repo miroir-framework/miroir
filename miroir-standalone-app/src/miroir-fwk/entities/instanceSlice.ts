@@ -1,11 +1,10 @@
-import { MclientI } from 'src/api/MClient';
 import { createAction, createSelector, createSlice, Slice } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
-import { makeActionUpdatesUndoable } from '../state/undoableReducer';
+import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
+import { MclientI } from 'src/api/MClient';
 import { MiroirEntities, MiroirEntity } from './Entity';
 import { MiroirEntityInstanceWithName } from './Instance';
-import { ActionWithPayloadCreator, MactionWithAsyncDispatchType, Mslice } from './Mslice';
+import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -56,20 +55,6 @@ export class InstanceSlice implements Mslice {
   private entitiesToFetch:string[] = [];
   private entitiesAlreadyFetched:string[] = [];
 
-  // public actionToDispatchMap:Map<string,ActionWithPayloadCreator[]> = new Map(
-  //   [
-  //     // [
-  //     //   "instance/" + mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI,
-  //     //   [
-  //     //     {
-  //     //       actionCreator: mInstanceSliceInternalActionsCreators.instancesRefreshedForEntity,
-  //     //       getActionPayload:(state:any, action:ActionWithPayload)=>action.payload.entity
-  //     //     }
-  //     //   ]
-  //     // ]
-  //   ]
-  // );
-
   //#########################################################################################
   *fetchInstancesForEntity(
     _this: InstanceSlice, 
@@ -85,15 +70,16 @@ export class InstanceSlice implements Mslice {
         headers: Headers;
         url: string;
     } = yield call(
-        () => _client.get('/fakeApi/'+args.payload+ '/all')
+        // () => _client.get('/fakeApi/'+args.payload+ '/all')
+        () => _client.get('http://localhost/fakeApi/'+args.payload+ '/all')
       )
-      yield put(
-        mInstanceSliceInternalActionsCreators[mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI](
+      yield putResolve(
+        _this.mInstanceSliceInternalActionsCreators[mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI](
           {instances:result.data, entity:args.payload}
         )
       );
       yield put(
-        mInstanceSliceInternalActionsCreators[mInstanceSliceInternalSagaActionNames.storedInstancesForEntity](
+        _this.mInstanceSliceInternalActionsCreators[mInstanceSliceInternalSagaActionNames.storedInstancesForEntity](
           {entity:args.payload}
         )
       );
@@ -117,7 +103,7 @@ export class InstanceSlice implements Mslice {
     console.log("refreshEntityInstances entitiesToFetch", _this.entitiesToFetch);
     try {
       yield all(
-        entityNames.map((e:string) => put(mInstanceSliceInternalActionsCreators.fetchInstancesForEntity(e)))
+        entityNames.map((e:string) => put(_this.mInstanceSliceInternalActionsCreators.fetchInstancesForEntity(e)))
       )
     } catch (error) {
       console.log("refreshEntityInstances error",error)
@@ -143,7 +129,7 @@ export class InstanceSlice implements Mslice {
       }
       console.log("storedInstancesForEntity", args.payload, id, "left to fetch",_this.entitiesToFetch, "already fetched",_this.entitiesAlreadyFetched);
       if (_this.entitiesToFetch.length == 0) {
-        yield put(mInstanceSliceInternalActionsCreators.allInstancesRefreshed());
+        yield put(_this.mInstanceSliceInternalActionsCreators.allInstancesRefreshed());
       }
     } catch (error) {
       console.log("storedInstancesForEntity error",error)
@@ -170,74 +156,60 @@ export class InstanceSlice implements Mslice {
       ]
     )
   }
-}
 
-//#########################################################################################
-//# SLICE
-//#########################################################################################
-const mInstanceSlice:Slice = createSlice(
-  {
-    name: 'instance',
-    initialState: {},
-    reducers: {
-      [mInstanceSliceStoreActionNames.updateEntityInstances] (state:any, action:MinstanceSliceActionPayloadType) {
-        console.log(mInstanceSliceStoreActionNames.updateEntityInstances, state, action)
-        action.payload.instances.forEach(
-          (instance:MiroirEntityInstanceWithName) => {
-            const instanceId:number = state[action.payload.entity].find((i:MiroirEntityInstanceWithName)=>i.uuid === instance.uuid);
-            state[action.payload.entity][instanceId] = instance;
-          }
-        );
+  //#########################################################################################
+  //# SLICE
+  //#########################################################################################
+  public mInstanceSlice:Slice = createSlice(
+    {
+      name: 'instance',
+      initialState: {},
+      reducers: {
+        [mInstanceSliceStoreActionNames.updateEntityInstances] (state:any, action:MinstanceSliceActionPayloadType) {
+          console.log(mInstanceSliceStoreActionNames.updateEntityInstances, state, action)
+          action.payload.instances.forEach(
+            (instance:MiroirEntityInstanceWithName) => {
+              const instanceId:number = state[action.payload.entity].find((i:MiroirEntityInstanceWithName)=>i.uuid === instance.uuid);
+              state[action.payload.entity][instanceId] = instance;
+            }
+          );
+        },
+        [mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI] (state:any, action:MinstanceSliceActionPayloadType) {
+          console.log(mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI, JSON.stringify(state), action)
+          state[action.payload.entity] = action.payload.instances;
+        },
       },
-      [mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI] (state:any, action:MinstanceSliceActionPayloadType) {
-        console.log(mInstanceSliceStoreActionNames.storeEntityInstancesReceivedFromAPI, JSON.stringify(state), action)
-        state[action.payload.entity] = action.payload.instances;
-      },
-    },
+    }
+  )
+  //#########################################################################################
+  //# ACTIONS
+  //#########################################################################################
+  // actions sent by the InstanceSlice, to itself or to the oustide world.
+  public mInstanceSliceInternalActionsCreators:any = {
+    ...this.mInstanceSlice.actions,
+    fetchInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.fetchInstancesForEntity),
+    storedInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.storedInstancesForEntity),
+    instancesRefreshedForEntity: createAction<string>(mInstanceSliceActionNames.instancesRefreshedForEntity),
+    allInstancesRefreshed: createAction(mInstanceSliceActionNames.allInstancesRefreshed),
   }
-)
 
+  //#########################################################################################
+  // notify the undoableReducer
+  // makeActionUpdatesUndoable(mInstanceSliceStoreActionNames.updateEntityInstances);
 
-//#########################################################################################
-//# ACTIONS
-//#########################################################################################
-// actions sent by the InstanceSlice, to itself or to the oustide world.
-export const mInstanceSliceInternalActionsCreators:any = {
-  ...mInstanceSlice.actions,
-  // [mInstanceSliceStoreActionNames.updateEntityInstances]: createAction<any>(mInstanceSliceStoreActionNames.updateEntityInstances),
-  // [mInstanceSliceStoreActionNames.entityInstancesReceivedFromAPI]: createAction<any>(mInstanceSliceStoreActionNames.entityInstancesReceivedFromAPI),
-  fetchInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.fetchInstancesForEntity),
-  storedInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.storedInstancesForEntity),
-  instancesRefreshedForEntity: createAction<string>(mInstanceSliceActionNames.instancesRefreshedForEntity),
-  allInstancesRefreshed: createAction(mInstanceSliceActionNames.allInstancesRefreshed),
-}
+  //#########################################################################################
+  // interface of events creators allowing the outside world to send events to the InstanceSlice.
+  public mInstanceSliceActionsCreators = {
+    refreshEntityInstances: createAction<MiroirEntities>(mInstanceSliceInternalSagaActionNames.refreshEntityInstances),
+  }
 
-//#########################################################################################
-// notify the undoableReducer
-makeActionUpdatesUndoable(mInstanceSliceStoreActionNames.updateEntityInstances);
+  //#########################################################################################
+  //# SELECTORS
+  //#########################################################################################
+  
+}// end class Mslice
 
-//#########################################################################################
-// interface of events creators allowing the outside world to send events to the InstanceSlice.
-export const mInstanceSliceActionsCreators = {
-  refreshEntityInstances: createAction<MiroirEntities>(mInstanceSliceInternalSagaActionNames.refreshEntityInstances),
-}
-
-//#########################################################################################
-//# SELECTORS
-//#########################################################################################
 export const selectMiroirEntityInstances = createSelector((state:any) => state, items=>items)
 
+export default InstanceSlice;
 
-//#########################################################################################
-//# SAGAS
-//#########################################################################################
-
-//#########################################################################################
-export default mInstanceSlice.reducer;
-// export default entityInstancesReducers;
-// export default combineReducers(
-//   {
-//     updateEntityInstances,
-//     entityInstancesReceivedFromAPI
-//   }
-// );
