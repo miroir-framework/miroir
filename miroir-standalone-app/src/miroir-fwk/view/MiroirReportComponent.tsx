@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { selectInstancesForEntity, selectMiroirEntityInstances } from "../entities/instanceSlice";
 import { MiroirEntities, MiroirEntity } from "../entities/Entity";
 import { MiroirReport, MiroirReports, ReportGetInstancesToDispay } from "../entities/Report";
 import { MiroirTableComponent } from "./MiroirTableComponent";
+import { selectInstancesForEntity } from "../entities/InstanceSlice";
 
 export interface MiroirReportComponentProps {
   reportName: string;

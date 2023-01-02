@@ -2,9 +2,11 @@ import { combineReducers, configureStore, EntityState, Store } from '@reduxjs/to
 import createSagaMiddleware, { Channel, channel } from 'redux-saga'
 import { all, call } from 'redux-saga/effects'
 import { MiroirEntity } from '../entities/Entity'
-import { EntitySlice } from '../entities/entitySlice'
+import { EntitySagas } from '../entities/EntitySagas'
+import EntitySlice from '../entities/EntitySlice'
 import { MiroirEntityInstance } from '../entities/Instance'
-import { InstanceSlice } from '../entities/instanceSlice'
+import { InstanceSagas } from '../entities/InstanceSagas'
+import InstanceSlice from '../entities/InstanceSlice'
 import { MactionPayloadType } from '../entities/Mslice'
 import { createUndoableReducer } from './undoableReducer'
 
@@ -13,8 +15,8 @@ import { createUndoableReducer } from './undoableReducer'
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 declare interface MreduxStoreI {
-  entitySliceObject: EntitySlice,
-  instanceSliceObject: InstanceSlice,
+  entitySliceObject: EntitySagas,
+  instanceSagasObject: InstanceSagas,
 }
 // const persistedState = loadFromLocalStorage();
 
@@ -38,15 +40,15 @@ export class MreduxStore implements MreduxStoreI{
   public asyncDispatchMiddleware:any;//TODO: set proper type
 
   constructor(
-    public entitySliceObject: EntitySlice,
-    public instanceSliceObject: InstanceSlice,
+    public entitySliceObject: EntitySagas,
+    public instanceSagasObject: InstanceSagas,
   ) {
 
     this.staticReducers = createUndoableReducer(
       combineReducers(
         {
-          miroirEntities: entitySliceObject.mEntitiesSlice.reducer,
-          miroirInstances: instanceSliceObject.mInstanceSlice.reducer,
+          miroirEntities: EntitySlice.reducer,
+          miroirInstances: InstanceSlice.reducer,
         }
       )
     );
@@ -76,7 +78,7 @@ export class MreduxStore implements MreduxStoreI{
     yield all(
       [
         _this.entitySliceObject.entityRootSaga(_this.entitySliceObject, sliceChannel),
-        _this.instanceSliceObject.instanceRootSaga(_this.instanceSliceObject, sliceChannel),
+        _this.instanceSagasObject.instanceRootSaga(_this.instanceSagasObject, sliceChannel),
       ]
     );
   }

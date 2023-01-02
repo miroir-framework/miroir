@@ -12,7 +12,7 @@ export interface MiroirEntityAttribute {
 };
 
 export interface MiroirEntity {
-  "uuid": number,
+  "uuid": string,
   "entity": string,
   "name":string,
   "instanceValidationJsonSchema": {},

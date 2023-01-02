@@ -1,21 +1,13 @@
-import { createAction, createEntityAdapter, createSlice, EntityAdapter, EntityState, PayloadAction, Slice } from '@reduxjs/toolkit';
-import { Channel } from 'redux-saga';
-import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
-import { MClientCallReturnType, MclientI } from 'src/api/MClient';
-import miroirConfig from "../assets/miroirConfig.json";
+import { createEntityAdapter, createSlice, EntityAdapter, EntityState, PayloadAction, Slice } from '@reduxjs/toolkit';
 import { MiroirEntities, MiroirEntity } from './Entity';
-import { Mslice } from './Mslice';
+
 
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
 export const mEntitySliceStoreActionNames = {
   storeEntities:"storeEntities",
-}
-
-const mEntitySliceSagaActionNames = {
-  fetchMiroirEntities:"entities/fetchMiroirEntities",
-  entitiesStored:"entitiesStored",
+  addEntities:"addEntities"
 }
 
 export const mEntitySliceActionNames = {
@@ -23,19 +15,9 @@ export const mEntitySliceActionNames = {
 }
 
 //#########################################################################################
-//# DATA TYPES
-//#########################################################################################
-declare type MentitySliceStateType = MiroirEntities;
-// export interface MentitySliceActionPayloadType extends ActionWithPayload{
-//   payload: MentitySliceStateType; // TODO: correct type, not necessarily all actions should receive a list of Entity as parameter!
-// }
-
-
-
-//#########################################################################################
 //# ENTITY ADAPTER
 //#########################################################################################
-export const mEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
+export const mEntityAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
   {
     // Assume IDs are stored in a field other than `book.id`
     selectId: (entity) => entity.uuid,
@@ -47,104 +29,32 @@ export const mEntitiesAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class EntitySlice implements Mslice {
-  constructor(
-    public client: MclientI,
-  ) {
-    // console.log("EntitySlice constructor",client)
-  }
-
-  //#########################################################################################
-  *fetchMentities(
-    _this:EntitySlice,
-    sliceChannel:Channel<any>,
-  ):any {
-    try {
-      const _client = _this.client;
-      const result:MClientCallReturnType = yield call(
-        () => _client.get(miroirConfig.rootApiUrl+'/'+'Entity/all')
-      )
-      // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
-      console.log("fetchMentities received", result.status);
-      yield putResolve(_this.mEntityActionsCreators[mEntitySliceStoreActionNames.storeEntities](result.data))
-      // console.log("fetchMentities calling entitiesStored");
-      yield put(_this.mEntityActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
-    } catch (e) {
-      console.error("fetchMentities exception",e)
-      yield put({ type: 'entities/failure/entitiesNotReceived' })
-    }
-  }
-
-  //#########################################################################################
-  *entitiesStored(
-    _this: EntitySlice,
-    sliceChannel:Channel<any>,
-    action:{type:string, payload:MiroirEntities},
-  ):any {
-    // console.log("saga entitiesStored called", action)
-    yield put(sliceChannel, action)
-  }
-
-  //#########################################################################################
-  public *entityRootSaga(
-    _this: EntitySlice,
-    sliceChannel:Channel<any>,
-  ) {
-    // take
-    yield all([
-      takeEvery(
-        mEntitySliceSagaActionNames.fetchMiroirEntities, 
-        _this.fetchMentities,
-        _this,
-        sliceChannel,
-      ),
-      takeEvery(
-        mEntitySliceSagaActionNames.entitiesStored, 
-        _this.entitiesStored,
-        _this,
-        sliceChannel,
-      ),
-    ])
-  }
-
-  //#########################################################################################
-  //# SLICE
-  //#########################################################################################
-  public mEntitiesSlice:Slice = createSlice(
-    {
-      name: 'entities',
-      initialState: mEntitiesAdapter.getInitialState(),
-      reducers: {
-        entityAdded: mEntitiesAdapter.addOne,
-        // storeEntities(state, action:MentitySliceActionPayloadType) {
-        [mEntitySliceStoreActionNames.storeEntities](
-          state:EntityState<MiroirEntity>, 
-          action:PayloadAction<MiroirEntities,string>
-        ) {
-          console.log("reducer storeEtities called", action, JSON.stringify(state))
-          mEntitiesAdapter.setAll(state, action.payload);
-          return state;
-        },
+const EntitySlice:Slice = createSlice(
+  {
+    name: 'entities',
+    initialState: mEntityAdapter.getInitialState(),
+    reducers: {
+      // addEntity: mEntityAdapter.addOne,
+      [mEntitySliceStoreActionNames.addEntities](
+        state:EntityState<MiroirEntity>, 
+        action:any
+        // action:PayloadAction<MiroirEntities,string>
+      ) {return mEntityAdapter.addOne(state, action)},
+      [mEntitySliceStoreActionNames.storeEntities](
+        state:EntityState<MiroirEntity>, 
+        action:PayloadAction<MiroirEntities,string>
+      ) {
+        console.log("reducer storeEtities called", action, JSON.stringify(state))
+        mEntityAdapter.setAll(state, action.payload);
+        return state;
       },
-    }
-  )
-
-  //#########################################################################################
-  //# ACTION DEFINITIONS
-  //#########################################################################################
-  public mEntityActionsCreators:any = {
-    fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
-    entitiesStored:createAction(mEntitySliceSagaActionNames.entitiesStored),
-    ...this.mEntitiesSlice.actions
+    },
   }
+);
 
-} // end class EntitySlice
+export const mEntityActionsCreators:any = {
+  ...EntitySlice.actions
+}
 
 
-
-
-//#########################################################################################
-//# DEFAULT EXPORT
-//#########################################################################################
-// export default mEntitiesSlice.reducer
-
+export default EntitySlice;

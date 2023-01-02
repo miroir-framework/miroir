@@ -1,9 +1,11 @@
-import { mEntitiesAdapter as miroirEntityAdapter } from "../entities/entitySlice"
+// import { mEntitiesAdapter as miroirEntityAdapter } from "../entities/EntitySagas"
 // import { selectMiroirEntityInstances } from "../entities/instanceSlice"
 // import { miroirReportAdapter } from "../entities/reportSlice"
 // import { RootState } from "./store"
 
-const MiroirEntitySelectors = miroirEntityAdapter.getSelectors<any>((state) => state?.miroirEntities)
+import { mEntityAdapter } from "../entities/EntitySlice"
+
+const MiroirEntitySelectors = mEntityAdapter.getSelectors<any>((state) => state?.miroirEntities)
 export const {
   selectAll: selectAllMiroirEntities,
   selectById: selectMiroirEntityById,

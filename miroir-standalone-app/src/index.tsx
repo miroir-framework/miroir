@@ -6,14 +6,14 @@ import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 import { MClient } from "./api/MClient";
 import { MServer } from "./api/server";
-import { EntitySlice } from "./miroir-fwk/entities/entitySlice";
-import { InstanceSlice } from "./miroir-fwk/entities/instanceSlice";
+import { EntitySagas } from "./miroir-fwk/entities/EntitySagas";
+import { InstanceSagas } from "./miroir-fwk/entities/InstanceSagas";
 import { MreduxStore } from "./miroir-fwk/state/store";
 import { MiroirComponent } from "./miroir-fwk/view/MiroirComponent";
 
-import entityEntity from "../src/miroir-fwk/assets/entities/Entity.json"
-import entityReport from "../src/miroir-fwk/assets/entities/Report.json"
-import reportEntityList from "../src/miroir-fwk/assets/reports/entityList.json"
+import entityEntity from "../src/miroir-fwk/assets/entities/Entity.json";
+import entityReport from "../src/miroir-fwk/assets/entities/Report.json";
+import reportEntityList from "../src/miroir-fwk/assets/reports/entityList.json";
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -37,15 +37,15 @@ async function start() {
   }
 
   const client = new MClient(window.fetch);
-  const entitySlice: EntitySlice = new EntitySlice(client);
-  const instanceSlice: InstanceSlice = new InstanceSlice(client);
+  const entitySagas: EntitySagas = new EntitySagas(client);
+  const instanceSagas: InstanceSagas = new InstanceSagas(client);
 
-  const mStore:MreduxStore = new MreduxStore(entitySlice, instanceSlice);
+  const mStore:MreduxStore = new MreduxStore(entitySagas, instanceSagas);
   mStore.sagaMiddleware.run(
     mStore.rootSaga, mStore
   );
 
-  mStore.dispatch(entitySlice.mEntityActionsCreators.fetchMiroirEntities())
+  mStore.dispatch(entitySagas.mEntityActionsCreators.fetchMiroirEntities())
 
   root.render(
     <Provider store={mStore.store}>
