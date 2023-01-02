@@ -11,3 +11,5 @@ export interface MiroirEntityInstanceWithName extends MiroirEntityInstance {
   "name":string,
   // "defaultLabel": string,
 }
+
+export type MiroirEntityInstances = MiroirEntityInstance[];

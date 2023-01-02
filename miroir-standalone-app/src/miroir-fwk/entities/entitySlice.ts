@@ -1,10 +1,10 @@
-import { MClientCallReturnType, MclientI } from 'src/api/MClient';
-import { createAction, createEntityAdapter, createSlice, EntityAdapter, Slice } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSlice, EntityAdapter, EntityState, PayloadAction, Slice } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
+import { MClientCallReturnType, MclientI } from 'src/api/MClient';
+import miroirConfig from "../assets/miroirConfig.json";
 import { MiroirEntities, MiroirEntity } from './Entity';
-import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
-import miroirConfig from "../assets/miroirConfig.json"
+import { Mslice } from './Mslice';
 
 //#########################################################################################
 //# ACTION NAMES
@@ -26,9 +26,9 @@ export const mEntitySliceActionNames = {
 //# DATA TYPES
 //#########################################################################################
 declare type MentitySliceStateType = MiroirEntities;
-interface MentitySliceActionPayloadType extends MactionWithAsyncDispatchType{
-  payload: MentitySliceStateType;
-}
+// export interface MentitySliceActionPayloadType extends ActionWithPayload{
+//   payload: MentitySliceStateType; // TODO: correct type, not necessarily all actions should receive a list of Entity as parameter!
+// }
 
 
 
@@ -117,8 +117,11 @@ export class EntitySlice implements Mslice {
       reducers: {
         entityAdded: mEntitiesAdapter.addOne,
         // storeEntities(state, action:MentitySliceActionPayloadType) {
-        [mEntitySliceStoreActionNames.storeEntities](state, action:MentitySliceActionPayloadType) {
-          // console.log("reducer storeEtities called", action)
+        [mEntitySliceStoreActionNames.storeEntities](
+          state:EntityState<MiroirEntity>, 
+          action:PayloadAction<MiroirEntities,string>
+        ) {
+          console.log("reducer storeEtities called", action, JSON.stringify(state))
           mEntitiesAdapter.setAll(state, action.payload);
           return state;
         },

@@ -1,11 +1,13 @@
-import { createAction, createSelector, createSlice, Slice } from '@reduxjs/toolkit';
+import { createAction, createSelector, createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
+import { memoize as _memoize } from 'lodash';
 import { Channel } from 'redux-saga';
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { MclientI } from 'src/api/MClient';
+import miroirConfig from "../assets/miroirConfig.json";
+import { MReduxStateWithUndoRedo } from '../state/undoableReducer';
 import { MiroirEntities, MiroirEntity } from './Entity';
 import { MiroirEntityInstanceWithName } from './Instance';
-import { MactionWithAsyncDispatchType, Mslice } from './Mslice';
-import miroirConfig from "../assets/miroirConfig.json"
+import { MinstanceAction, Mslice } from './Mslice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -39,16 +41,16 @@ interface MinstanceSliceStateType {
   entity:string;
   instances:MiroirEntityInstanceWithName[];
 }
-interface MinstanceSliceActionPayloadType extends MactionWithAsyncDispatchType{
-  type: string;
-  payload: MinstanceSliceStateType;
-}
+// interface MinstanceSliceActionPayloadType extends MactionWithAsyncDispatchType{
+//   type: string;
+//   payload: MinstanceSliceStateType;
+// }
 
 
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class InstanceSlice implements Mslice {
+export class InstanceSlice implements Mslice { // !!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   constructor(
     private client: MclientI,
   ) {}
@@ -88,7 +90,7 @@ export class InstanceSlice implements Mslice {
       yield put({ type: 'instance/failure/instancesNotReceived' })
     }
   }
-  
+
   //#########################################################################################
   *refreshEntityInstances(
     _this: InstanceSlice, 
@@ -162,7 +164,7 @@ export class InstanceSlice implements Mslice {
       name: 'instance',
       initialState: {},
       reducers: {
-        [mInstanceSliceStoreActionNames.updateEntityInstances] (state:any, action:MinstanceSliceActionPayloadType) {
+        [mInstanceSliceStoreActionNames.updateEntityInstances] (state:any, action:PayloadAction<MinstanceAction,string>) {
           console.log(mInstanceSliceStoreActionNames.updateEntityInstances, state, action)
           action.payload.instances.forEach(
             (instance:MiroirEntityInstanceWithName) => {
@@ -171,7 +173,7 @@ export class InstanceSlice implements Mslice {
             }
           );
         },
-        [mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity] (state:any, action:MinstanceSliceActionPayloadType) {
+        [mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity] (state:any, action:PayloadAction<MinstanceAction,string>) {
           // console.log(mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, JSON.stringify(state), action)
           state[action.payload.entity] = action.payload.instances;
         },
@@ -207,6 +209,19 @@ export class InstanceSlice implements Mslice {
 }// end class Mslice
 
 export const selectMiroirEntityInstances = createSelector((state:any) => state, items=>items)
+
+// const entitySelectors:Map<string,any> = new Map();
+export const selectInstancesForEntity = _memoize(
+  (entityName:string)=>{
+    console.log('creating selectInstancesForEntity',entityName,'selector.');
+    return createSelector(
+    (state:MReduxStateWithUndoRedo) => {
+      // console.log('selectInstancesForEntity',entityName,'selector', state);
+      return state.presentModelSnapshot.miroirInstances[entityName];
+    }, 
+    items=>items
+    )}
+  );
 
 export default InstanceSlice;
 

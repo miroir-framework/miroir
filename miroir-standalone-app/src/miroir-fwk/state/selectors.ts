@@ -1,4 +1,5 @@
 import { mEntitiesAdapter as miroirEntityAdapter } from "../entities/entitySlice"
+// import { selectMiroirEntityInstances } from "../entities/instanceSlice"
 // import { miroirReportAdapter } from "../entities/reportSlice"
 // import { RootState } from "./store"
 
@@ -8,9 +9,15 @@ export const {
   selectById: selectMiroirEntityById,
 } = MiroirEntitySelectors
 
+// const MiroirInstanceSelectors = selectMiroirEntityInstances.getSelectors<RootState>((state) => state?.miroirInstances)
+// export const {
+//   selectAll: selectAllMiroirInstances,
+//   selectById: selectMiroirInstanceById,
+// } = MiroirInstanceSelectors
+
 // export const selectAllMiroirEntitiesForReduce = createDraftSafeSelector(
 //   (state: any) => state,
-//   (state) => state
+//   // (state) => state
 // );
 
 // const MiroirReportSelectors = miroirReportAdapter.getSelectors<RootState>((state) => state?.miroirReports)
@@ -19,8 +26,3 @@ export const {
 //   selectById: selectMiroirReportById,
 // } = MiroirReportSelectors
 
-// const MiroirInstanceSelectors = miroirInstanceAdapter.getSelectors<RootState>((state) => state?.miroirInstances)
-// export const {
-//   selectAll: selectAllMiroirInstances,
-//   selectById: selectMiroirInstanceById,
-// } = MiroirInstanceSelectors

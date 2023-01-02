@@ -1,36 +1,13 @@
-import { combineReducers, configureStore, Store } from '@reduxjs/toolkit'
+import { combineReducers, configureStore, EntityState, Store } from '@reduxjs/toolkit'
 import createSagaMiddleware, { Channel, channel } from 'redux-saga'
 import { all, call } from 'redux-saga/effects'
+import { MiroirEntity } from '../entities/Entity'
 import { EntitySlice } from '../entities/entitySlice'
-// import entitySlice, { EntitySlice } from 'src/miroir-fwk/entities/entitySlice'
+import { MiroirEntityInstance } from '../entities/Instance'
 import { InstanceSlice } from '../entities/instanceSlice'
+import { MactionPayloadType } from '../entities/Mslice'
 import { createUndoableReducer } from './undoableReducer'
-import { omit as _omit } from 'lodash';
 
-// function saveToLocalStorage(state = {}) {
-//   try {
-//     // const data = JSON.stringify(_omit(state, ['department', 'category', 'product', 'attribute', 'order', 'customer.error' ]));
-//     const data = JSON.stringify(state);
-//     const serializedData = btoa(`turing:${data}`);
-//     localStorage.setItem('state', serializedData);
-//   } catch (e) {}
-// }
-
-// // loads state from local storage
-// function loadFromLocalStorage() {
-//   try {
-//     const serializedState = localStorage.getItem('state');
-//     if (serializedState === null) {
-//       return undefined;
-//     }
-//     const state = atob(serializedState).replace(/^turing:/, '');
-    
-//     return JSON.parse(state);
-//   } catch (e) {
-//     try { localStorage.removeItem('state'); } catch (err) {}
-//     return undefined;
-//   }
-// }
 
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
@@ -41,6 +18,17 @@ declare interface MreduxStoreI {
 }
 // const persistedState = loadFromLocalStorage();
 
+export interface InnerStoreStateInterface {
+  miroirEntities: EntityState<MiroirEntity>;
+  miroirInstances: EntityState<MiroirEntityInstance>;
+}
+// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MentitySliceActionPayloadType) => any;
+export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MactionPayloadType) => any;
+
+// export interface InnerReducerInterface {
+//   miroirEntities: (state: EntityState<MiroirEntity>, action:MentitySliceActionPayloadType) => any;
+//   miroirInstances: (state: EntityState<MiroirEntityInstance>, action:MentitySliceActionPayloadType) => any;
+// }
 
 export class MreduxStore implements MreduxStoreI{
   public store:Store;

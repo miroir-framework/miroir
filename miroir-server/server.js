@@ -5,6 +5,7 @@ const app = express(),
 
 // place holder for the data
 const users = [];
+console.log(`Server being set-up, going to execute on the port::${port}`);
 
 app.use(bodyParser.json());
 

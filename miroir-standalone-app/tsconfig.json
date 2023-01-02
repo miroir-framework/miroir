@@ -5,21 +5,11 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports":true,
     "noImplicitAny": true,
-    "module": "ESNext",
+    "module": "es2022",
     "target": "ES5",
     "jsx": "react",
     "allowJs": true,
     "moduleResolution": "node",
     "baseUrl": ".",
-  },
-  "ts-node": {
-    "moduleTypes": {
-      "jest.config.ts": "esm"
-    },
-    "compilerOptions": {
-      "rootDir": ".",
-      "module": "ES2022",
-      "target": "ES5",
-    }
   },
 }

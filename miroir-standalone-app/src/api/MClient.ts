@@ -22,7 +22,7 @@ export class MClient implements MclientI {
   }
 
   async call(endpoint:string, args:any = {}):Promise<MClientCallReturnType> {
-    console.log("MClient call")
+    // console.log("MClient call")
     const { body, ...customConfig } = args;
     const headers = { 'Content-Type': 'application/json' }
   
@@ -43,7 +43,7 @@ export class MClient implements MclientI {
     try {
       const response = await this.customFetch(endpoint, config)
 
-      console.log("MwebClient response", response);
+      // console.log("MwebClient response", response);
       data = await response?.json()
       if (response.ok) {
         // Return a result object similar to Axios
@@ -62,12 +62,12 @@ export class MClient implements MclientI {
   
   async get(endpoint:string, customConfig:any = {}): Promise<MClientCallReturnType> {
     const result:Promise<MClientCallReturnType> = this.call(endpoint, { ...customConfig, method: 'GET' })
-    console.log('MClient get',endpoint, result)
+    // console.log('MClient get',endpoint, result)
     return result
   }
   
   async post(endpoint:string, body:any, customConfig = {}): Promise<MClientCallReturnType> {
-    console.log('MClient post',endpoint)
+    // console.log('MClient post',endpoint)
     return this.call(endpoint, { ...customConfig, body })
   }
 }

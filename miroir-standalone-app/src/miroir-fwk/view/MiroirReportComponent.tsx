@@ -3,7 +3,10 @@ import { useSelector } from 'react-redux';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { selectMiroirEntityInstances } from "../entities/instanceSlice";
+import { selectInstancesForEntity, selectMiroirEntityInstances } from "../entities/instanceSlice";
+import { MiroirEntities, MiroirEntity } from "../entities/Entity";
+import { MiroirReport, MiroirReports, ReportGetInstancesToDispay } from "../entities/Report";
+import { MiroirTableComponent } from "./MiroirTableComponent";
 
 export interface MiroirReportComponentProps {
   reportName: string;
@@ -13,13 +16,17 @@ export interface MiroirReportComponentProps {
 export const MiroirReportComponent = (
   props: MiroirReportComponentProps
 ) => {
+  const miroirEntities:MiroirEntities = useSelector(selectInstancesForEntity('Entity'))
+  const miroirReports:MiroirReports = useSelector(selectInstancesForEntity('Report'))
   // const miroirEntities:MiroirEntities = useSelector(selectAllMiroirEntities)
   // const miroirReports:MiroirReports = useSelector(selectAllMiroirReports)
-  const miroirInstances = useSelector(selectMiroirEntityInstances);
+  // const miroirInstances = useSelector(selectMiroirEntityInstances);
 
+  console.log("MiroirReportComponent",miroirEntities, miroirReports);
 
-  // const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
-  // const currentMiroirEntity: MiroirEntity = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
+  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
+  console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
+  const currentMiroirEntity: MiroirEntity = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
 
 
   return (
@@ -27,13 +34,13 @@ export const MiroirReportComponent = (
       <h3>
         props: {JSON.stringify(props)}
       </h3>
-      <h3>
+      {/* <h3>
         miroirInstances: {JSON.stringify(miroirInstances)}
-      </h3>
+      </h3> */}
       {/* <h3>
         {currentMiroirReport?.defaultLabel}
       </h3> */}
-      {/* {
+      {
         miroirReports?.length > 0?
           <MiroirTableComponent
             columnDefs={
@@ -47,7 +54,7 @@ export const MiroirReportComponent = (
           ></MiroirTableComponent>
           :
           <span>pas d entités</span>
-      } */}
+      }
       {/* <h3>
         List of Entities
       </h3> */}

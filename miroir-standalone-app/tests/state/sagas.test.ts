@@ -1,16 +1,17 @@
 import { ExpectApi, expectSaga } from 'redux-saga-test-plan';
-import MClient, { MclientI } from '../src/api/MClient';
-import { EntitySlice, mEntitySliceStoreActionNames } from '../src/miroir-fwk/entities/entitySlice';
-import { InstanceSlice, mInstanceSliceActionNames, mInstanceSliceStoreActionNames } from '../src/miroir-fwk/entities/instanceSlice';
-import { MreduxStore } from '../src/miroir-fwk/state/store';
+// import MClient, { MclientI } from '../../src/api/MClient';
+import MClient, { MclientI } from 'src/api/MClient';
+import { EntitySlice, mEntitySliceStoreActionNames } from 'src/miroir-fwk/entities/entitySlice';
+import { InstanceSlice, mInstanceSliceActionNames, mInstanceSliceStoreActionNames } from 'src/miroir-fwk/entities/instanceSlice';
+import { MreduxStore } from 'src/miroir-fwk/state/store';
 import { setupServer } from "msw/node";
 
-import * as entityEntity from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Entity.json";
-import * as entityReport from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/entities/Report.json";
-import * as reportEntityList from "../src/miroir-fwk/assets/reports/entityList.json"
+import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
+import entityReport from "src/miroir-fwk/assets/entities/Report.json";
+import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
 
 import fetch from 'node-fetch';
-import { MServer } from '../src/api/server';
+import { MServer } from 'src/api/server';
 const delay = (time:number) => new Promise((resolve) => {
   setTimeout(resolve, time);
 });
@@ -19,22 +20,11 @@ const miroirEntitiesActions = {
   fetchMiroirEntities:"entities/fetchMiroirEntities"
 }
 
-
-// export default server;
-// jest.mock("../src/api/MClient");
-const data:any = [entityReport,entityEntity]; 
-// MClient.prototype.get = jest.fn().mockResolvedValue({data: data});
-
-
 const mServer: MServer = new MServer();
-
-const mockedMclient:MclientI = new MClient(fetch);
-
-const entitySlice: EntitySlice = new EntitySlice(mockedMclient);
-const instanceSlice: InstanceSlice = new InstanceSlice(mockedMclient);
-
+const mClient:MclientI = new MClient(fetch);
+const entitySlice: EntitySlice = new EntitySlice(mClient);
+const instanceSlice: InstanceSlice = new InstanceSlice(mClient);
 const store:MreduxStore = new MreduxStore(entitySlice,instanceSlice);
-
 
 const worker = setupServer(...mServer.handlers)
 
@@ -44,13 +34,12 @@ beforeAll(() => {
 })
 
 afterAll(async () => {
-  // Establish requests interception layer before all tests.
   worker.close();
   await mServer.closeObjectStore();
 })
 
 it(
-  'incrementAsync Saga test',
+  'Refresh all Entity definitions',
   async () => {
     const saga:ExpectApi = expectSaga(store.rootSaga, store);
     await mServer.createObjectStore(["Entity","Instance","Report"]);
@@ -60,7 +49,7 @@ it(
     
     saga
     // intermediate observations, entities definitions and corresponding instances are stored
-    .put.like({action: {type: 'entities/' + mEntitySliceStoreActionNames.storeEntities, payload:data}})
+    .put.like({action: {type: 'entities/' + mEntitySliceStoreActionNames.storeEntities, payload:[entityReport,entityEntity]}})
     .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, payload:{entity:"Entity"}}})
     .put.like({action: {type: 'instance/' + mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, payload:{entity:"Report"}}})
     // end result, we should observe all instances have been refreshed
