@@ -15,6 +15,7 @@ export interface MiroirEntity {
   "uuid": string,
   "entity": string,
   "name":string,
+  "description":string,
   "instanceValidationJsonSchema": {},
   "attributes"?: MiroirEntityAttribute[],
 };

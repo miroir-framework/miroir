@@ -7,7 +7,8 @@ import { MiroirEntities, MiroirEntity } from './Entity';
 //#########################################################################################
 export const mEntitySliceStoreActionNames = {
   storeEntities:"storeEntities",
-  addEntities:"addEntities"
+  addOne:"addOne",
+  updateOne:"updateOne",
 }
 
 export const mEntitySliceActionNames = {
@@ -34,12 +35,14 @@ const EntitySlice:Slice = createSlice(
     name: 'entities',
     initialState: mEntityAdapter.getInitialState(),
     reducers: {
-      // addEntity: mEntityAdapter.addOne,
-      [mEntitySliceStoreActionNames.addEntities](
-        state:EntityState<MiroirEntity>, 
-        action:any
-        // action:PayloadAction<MiroirEntities,string>
-      ) {return mEntityAdapter.addOne(state, action)},
+      [mEntitySliceStoreActionNames.addOne]: mEntityAdapter.addOne,
+      [mEntitySliceStoreActionNames.updateOne]: mEntityAdapter.updateOne,
+      // [mEntitySliceStoreActionNames.addEntities](
+      //   state:EntityState<MiroirEntity>, 
+      //   action:any
+      // ) {
+      //   return mEntityAdapter.addOne(state, action)
+      // },
       [mEntitySliceStoreActionNames.storeEntities](
         state:EntityState<MiroirEntity>, 
         action:PayloadAction<MiroirEntities,string>
