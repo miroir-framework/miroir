@@ -1,7 +1,7 @@
-import { createEntityAdapter, createSelector, createSlice, EntityAdapter, EntityState, PayloadAction, Selector, Slice } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, createSlice, Dictionary, EntityAdapter, EntityState, PayloadAction, Selector, Slice, Update } from '@reduxjs/toolkit';
 import { memoize as _memoize } from 'lodash';
 import { MReduxStateWithUndoRedo } from 'src/miroir-fwk/state/undoableReducer';
-import { MinstanceWithName } from './Instance';
+import { Minstance, MinstanceWithName } from './Instance';
 import { MinstanceAction } from './Mslice';
 
 //#########################################################################################
@@ -37,7 +37,6 @@ const getEntityAdapter:(entityName:string)=>EntityAdapter<MinstanceWithName> = _
 export const InstanceSlice:Slice = createSlice(
   {
     name: 'instance',
-    // initialState: {Entity:{ids:[], entities:[]}},
     initialState: {Entity:getEntityAdapter("Entity").getInitialState()},
     reducers: {
       [mInstanceSliceStoreActionNames.addEntityInstances] (
@@ -66,7 +65,9 @@ export const InstanceSlice:Slice = createSlice(
         action.payload.instances.forEach(
           (instance:MinstanceWithName) => {
             // state[action.payload.entity][instance.uuid] = instance;
-            getEntityAdapter(action.payload.entity).addOne(state[action.payload.entity], instance);
+            const entityUpdate:Update<Minstance> = {id:instance.uuid, changes: instance};
+
+            getEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
           }
         );
       },
@@ -93,8 +94,6 @@ export const InstanceSlice:Slice = createSlice(
 
 export const selectMiroirEntityInstances = createSelector((state:MinstanceSliceState) => state, items=>items)
 
-// const entitySelectors:Map<string,any> = new Map();
-// export const selectInstancesForEntity:(entityName:string)=>Selector<MReduxStateWithUndoRedo,MinstanceWithName[]> = _memoize(
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
   (entityName:string)=>{
@@ -102,11 +101,10 @@ export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
     return (
       createSelector(
         (state:MReduxStateWithUndoRedo) => {
-          console.log('selectInstancesForEntity',entityName,'selector', state);
-          const entitiesObject = state.presentModelSnapshot.miroirInstances[entityName]?.entities;
-          return entitiesObject?Object.values(entitiesObject):[];
+          console.log('selectInstancesForEntity',entityName,'state', state);
+          return state.presentModelSnapshot.miroirInstances[entityName];
         },
-        items=>items
+        (items:EntityState<any>)=>items
       )
     )
   }

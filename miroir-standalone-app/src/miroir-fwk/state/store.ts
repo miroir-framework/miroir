@@ -22,16 +22,9 @@ declare interface MreduxStoreI {
 
 export interface InnerStoreStateInterface {
   miroirEntities: EntityState<MiroirEntity>;
-  // miroirInstances: EntityState<Minstance>;
   miroirInstances: MinstanceSliceState;
 }
-// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MentitySliceActionPayloadType) => any;
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MactionPayloadType) => any;
-
-// export interface InnerReducerInterface {
-//   miroirEntities: (state: EntityState<MiroirEntity>, action:MentitySliceActionPayloadType) => any;
-//   miroirInstances: (state: EntityState<MiroirEntityInstance>, action:MentitySliceActionPayloadType) => any;
-// }
 
 export class MreduxStore implements MreduxStoreI{
   public store:Store;
