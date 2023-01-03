@@ -1,5 +1,5 @@
 import produce, { enablePatches } from "immer";
-import { InnerReducerInterface } from "./store";
+import { InnerReducerInterface, InnerStoreStateInterface } from "./store";
 enablePatches()
 
 /**
@@ -17,6 +17,15 @@ export type cacheInvalidationPolicy = 'routing' | 'never';
 export type cacheFetchPolicy = 'onDemand' |'routing' | 'never' | 'periodic';
 export type undoRedoHistorization = 'actions' |'snapshot' | 'never' | 'periodic'; // what does it make sense for? An Entity?
 
+// /**
+//  * The snapshot type, declaring the global structure of the redux store.
+//  * The format is given in store.ts, when assigning staticReducers.
+//  */
+// export interface MmodelSnapshot {
+//   miroirEntities: any;
+//   miroirInstances: any;
+// };
+
 
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb.
@@ -33,9 +42,9 @@ export type undoRedoHistorization = 'actions' |'snapshot' | 'never' | 'periodic'
  */
 export interface MReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
-  previousModelSnapshot: any, // state recorded on the previous commit.
+  previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
   pastModelPatches: any[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
-  presentModelSnapshot: any, // only effects on the current snapshot goes into the undo/redo history
+  presentModelSnapshot: InnerStoreStateInterface, // only effects on the current snapshot goes into the undo/redo history
   futureModelPatches: any[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
@@ -72,7 +81,7 @@ export function createUndoableReducer(
   // Call the reducer with empty action to populate the initial state
   const initialState:MReduxStateWithUndoRedo = {
     // dataCache:{},
-    previousModelSnapshot: {},
+    previousModelSnapshot: {} as InnerStoreStateInterface,
     pastModelPatches: [],
     presentModelSnapshot: reducer(undefined, {type:undefined, payload: undefined}),
     futureModelPatches: []
@@ -81,8 +90,9 @@ export function createUndoableReducer(
   /** decorates passed reducer with undo/redo capabilities, then call it straightaway with given state and action */
   const callUndoRedoReducer = (
     reducer:InnerReducerInterface,
-    // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void,
-    state:MReduxStateWithUndoRedo, action:any
+    // state:MReduxStateWithUndoRedo,
+    state:InnerStoreStateInterface,
+    action:any
   ):void => {
   // const callUndoRedoReducer = (reducer:(state:MReduxStateWithUndoRedo, action:any)=>void,state:MReduxStateWithUndoRedo, action:any):void => {
     let changes:any[] = []

@@ -1,4 +1,4 @@
-import { createEntityAdapter, createSlice, EntityAdapter, EntityState, PayloadAction, Slice } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityAdapter, EntityState, EntityStateAdapter, PayloadAction, Slice } from '@reduxjs/toolkit';
 import { MiroirEntities, MiroirEntity } from './Entity';
 
 
@@ -35,14 +35,7 @@ const EntitySlice:Slice = createSlice(
     name: 'entities',
     initialState: mEntityAdapter.getInitialState(),
     reducers: {
-      [mEntitySliceStoreActionNames.addOne]: mEntityAdapter.addOne,
-      [mEntitySliceStoreActionNames.updateOne]: mEntityAdapter.updateOne,
-      // [mEntitySliceStoreActionNames.addEntities](
-      //   state:EntityState<MiroirEntity>, 
-      //   action:any
-      // ) {
-      //   return mEntityAdapter.addOne(state, action)
-      // },
+      ...<EntityStateAdapter<MiroirEntity>>mEntityAdapter,
       [mEntitySliceStoreActionNames.storeEntities](
         state:EntityState<MiroirEntity>, 
         action:PayloadAction<MiroirEntities,string>

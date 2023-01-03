@@ -40,7 +40,7 @@ afterAll(async () => {
   await mServer.closeObjectStore();
 })
 
-it.skip(
+it(
   'Refresh all Entity definitions',
   async () => {
     const saga:ExpectApi = expectSaga(store.rootSaga, store);

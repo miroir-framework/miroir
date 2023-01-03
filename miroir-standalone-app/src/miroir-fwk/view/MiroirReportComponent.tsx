@@ -22,7 +22,7 @@ export const MiroirReportComponent = (
   // const miroirReports:MiroirReports = useSelector(selectAllMiroirReports)
   // const miroirInstances = useSelector(selectMiroirEntityInstances);
 
-  console.log("MiroirReportComponent",miroirEntities, miroirReports);
+  console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
 
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
   console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);

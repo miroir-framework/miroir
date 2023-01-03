@@ -4,7 +4,7 @@ import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { MclientI } from 'src/api/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
 import { MiroirEntities, MiroirEntity } from './Entity';
-import { MiroirEntityInstanceWithName } from './Instance';
+import { MinstanceWithName } from './Instance';
 import InstanceSlice, { mInstanceSliceStoreActionNames } from './InstanceSlice';
 import { Mslice } from './Mslice';
 
@@ -31,7 +31,7 @@ export const mInstanceSliceActionNames = {
 //#########################################################################################
 interface MinstanceSliceStateType {
   entity:string;
-  instances:MiroirEntityInstanceWithName[];
+  instances:MinstanceWithName[];
 }
 // interface MinstanceSliceActionPayloadType extends MactionWithAsyncDispatchType{
 //   type: string;
@@ -75,7 +75,8 @@ export class InstanceSagas implements Mslice { // !!!!!!!!!!! Model instances or
       );
       yield put(
         _this.mInstanceSliceInternalActionsCreators[mInstanceSliceInternalSagaActionNames.storedInstancesForEntity](
-          {entity:args.payload}
+          // {entity:args.payload}
+          args.payload
         )
       );
     } catch (e) {
@@ -114,7 +115,7 @@ export class InstanceSagas implements Mslice { // !!!!!!!!!!! Model instances or
     args:{type:string, payload:string}
   ):any {
     try {
-      // console.log("storedInstancesForEntity", args, "left to fetch",_this.entitiesToFetch);
+      console.log("storedInstancesForEntity", args, "left to fetch",_this.entitiesToFetch);
       const id:number =_this.entitiesToFetch.indexOf(args.payload);
       if (id !== undefined) {
         _this.entitiesAlreadyFetched.push(_this.entitiesToFetch[id]);
@@ -155,8 +156,8 @@ export class InstanceSagas implements Mslice { // !!!!!!!!!!! Model instances or
   // actions sent by the InstanceSlice, to itself or to the oustide world.
   public mInstanceSliceInternalActionsCreators:any = {
     ...InstanceSlice.actions,
-    fetchInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.fetchInstancesForEntity),
-    storedInstancesForEntity: createAction<string|undefined>(mInstanceSliceInternalSagaActionNames.storedInstancesForEntity),
+    fetchInstancesForEntity: createAction<string>(mInstanceSliceInternalSagaActionNames.fetchInstancesForEntity),
+    storedInstancesForEntity: createAction<string>(mInstanceSliceInternalSagaActionNames.storedInstancesForEntity),
     instancesRefreshedForEntity: createAction<string>(mInstanceSliceActionNames.instancesRefreshedForEntity),
     allInstancesRefreshed: createAction(mInstanceSliceActionNames.allInstancesRefreshed),
   }

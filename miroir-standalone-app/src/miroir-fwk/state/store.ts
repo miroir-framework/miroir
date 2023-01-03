@@ -4,9 +4,9 @@ import { all, call } from 'redux-saga/effects'
 import { MiroirEntity } from '../entities/Entity'
 import { EntitySagas } from '../entities/EntitySagas'
 import EntitySlice from '../entities/EntitySlice'
-import { MiroirEntityInstance } from '../entities/Instance'
+import { Minstance } from '../entities/Instance'
 import { InstanceSagas } from '../entities/InstanceSagas'
-import InstanceSlice from '../entities/InstanceSlice'
+import InstanceSlice, { MinstanceSliceState } from '../entities/InstanceSlice'
 import { MactionPayloadType } from '../entities/Mslice'
 import { createUndoableReducer } from './undoableReducer'
 
@@ -22,7 +22,8 @@ declare interface MreduxStoreI {
 
 export interface InnerStoreStateInterface {
   miroirEntities: EntityState<MiroirEntity>;
-  miroirInstances: EntityState<MiroirEntityInstance>;
+  // miroirInstances: EntityState<Minstance>;
+  miroirInstances: MinstanceSliceState;
 }
 // export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MentitySliceActionPayloadType) => any;
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:MactionPayloadType) => any;

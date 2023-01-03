@@ -1,11 +1,11 @@
 import { PayloadAction, PayloadActionCreator } from "@reduxjs/toolkit";
 import { MiroirEntities } from "./Entity";
-import { MiroirEntityInstances } from "./Instance";
+import { Minstances, MinstanceWithName } from "./Instance";
 
-export type MpayloadType = MiroirEntities | {entity:string, instances:MiroirEntityInstances};
+export type MpayloadType = MiroirEntities | {entity:string, instances:Minstances};
 
 export interface MinstanceAction {
-  entity:string, instances:MiroirEntityInstances
+  entity:string, instances:MinstanceWithName[]
 }
 
 // TODO: user type PayloadAction<P,T,M,E> as root
