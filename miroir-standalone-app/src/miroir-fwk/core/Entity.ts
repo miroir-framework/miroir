@@ -1,4 +1,4 @@
-export interface MiroirEntityAttribute {
+export interface MentityAttribute {
   "id": number,
   "name": string,
   "defaultLabel": string,
@@ -11,13 +11,13 @@ export interface MiroirEntityAttribute {
   // }[],
 };
 
-export interface MiroirEntity {
+export interface Mentity {
   "uuid": string,
   "entity": string,
   "name":string,
   "description"?:string,
   "instanceValidationJsonSchema": {},
-  "attributes"?: MiroirEntityAttribute[],
+  "attributes"?: MentityAttribute[],
 };
 
-export type MiroirEntities=MiroirEntity[];
+export type mEntities=Mentity[];

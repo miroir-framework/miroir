@@ -1,22 +1,31 @@
-import { createEntityAdapter, createSelector, createSlice, Dictionary, EntityAdapter, EntityState, PayloadAction, Selector, Slice, Update } from '@reduxjs/toolkit';
+import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createEntityAdapter, createSelector, createSlice, EntityAdapter, EntityState, PayloadAction, Slice, Update } from '@reduxjs/toolkit';
 import { memoize as _memoize } from 'lodash';
-import { MReduxStateWithUndoRedo } from 'src/miroir-fwk/state/undoableReducer';
+import { MreduxWithUndoRedoState } from 'src/miroir-fwk/domain/undoableReducer';
 import { Minstance, MinstanceWithName } from './Instance';
-import { MinstanceAction } from './Mslice';
 
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
-export const mInstanceSliceStoreActionNames = {
-  storeInstancesReceivedFromAPIForEntity:"storeInstancesReceivedFromAPIForEntity",
-  updateEntityInstances:"updateEntityInstances",
-  addEntityInstances:"addEntityInstances",
+export const mInstanceSliceInputActionNames = {
+  ReplaceInstancesForEntity:"ReplaceInstancesForEntity",
+  UpdateInstancesForEntity:"UpdateInstancesForEntity",
+  AddInstancesForEntity:"AddInstancesForEntity",
 }
 
+//#########################################################################################
+//# DATA TYPES
+//#########################################################################################
 // instance slice state cannot really be defined statically, since it changes at run-time, depending on the set of defined instances  
 export interface MinstanceSliceState {
   [propName: string]: EntityState<any>;
 }
 
+export interface MinstanceActionPayload {
+  entity:string, instances:MinstanceWithName[]
+}
+
+//#########################################################################################
+//# INTERNAL
+//#########################################################################################
 const getEntityAdapter:(entityName:string)=>EntityAdapter<MinstanceWithName> = _memoize(
   (entityName:string)=>{
     console.log('getEntityAdapter creating EntityAdapter For Entity',entityName);
@@ -39,16 +48,16 @@ export const InstanceSlice:Slice = createSlice(
     name: 'instance',
     initialState: {Entity:getEntityAdapter("Entity").getInitialState()},
     reducers: {
-      [mInstanceSliceStoreActionNames.addEntityInstances] (
+      [mInstanceSliceInputActionNames.AddInstancesForEntity] (
         state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceAction,string>
+        action:PayloadAction<MinstanceActionPayload,string>
       ) {
         const currentEntityName = action.payload.entity;
-        console.log(mInstanceSliceStoreActionNames.addEntityInstances, "action", JSON.stringify(action))
+        console.log(mInstanceSliceInputActionNames.AddInstancesForEntity, "action", JSON.stringify(action))
 
         action.payload.instances.forEach(
           (instance:MinstanceWithName) => {
-            console.log(mInstanceSliceStoreActionNames.addEntityInstances, "instance", JSON.stringify(instance))
+            console.log(mInstanceSliceInputActionNames.AddInstancesForEntity, "instance", JSON.stringify(instance))
             if (state[action.payload.entity]){
               state[action.payload.entity] = getEntityAdapter(currentEntityName).addOne(state[currentEntityName],instance);
             } else {
@@ -56,12 +65,20 @@ export const InstanceSlice:Slice = createSlice(
             }
           }
         );
+        if (action.payload.entity === "Entity") {//check if entity already exists in store, and if not initialize store state for it.
+          action.payload.instances.filter(e=>e.name!=="Entity").forEach(
+            (entity:MinstanceWithName) => { console.log(mInstanceSliceInputActionNames.ReplaceInstancesForEntity, "initializing entity",entity.name);
+              state[entity.name] = getEntityAdapter(entity.name).getInitialState();
+            }
+          )
+        }
       },
-      [mInstanceSliceStoreActionNames.updateEntityInstances] (
+      [mInstanceSliceInputActionNames.UpdateInstancesForEntity] (
         state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceAction,string>
+        action:PayloadAction<MinstanceActionPayload,string>
       ) {
-        console.log(mInstanceSliceStoreActionNames.updateEntityInstances, state, action)
+        console.log(mInstanceSliceInputActionNames.UpdateInstancesForEntity, state, action)
+        // TODO: replace implementation with updateMany
         action.payload.instances.forEach(
           (instance:MinstanceWithName) => {
             // state[action.payload.entity][instance.uuid] = instance;
@@ -71,17 +88,17 @@ export const InstanceSlice:Slice = createSlice(
           }
         );
       },
-      [mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity] (
+      [mInstanceSliceInputActionNames.ReplaceInstancesForEntity] (
         state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceAction,string>
+        action:PayloadAction<MinstanceActionPayload,string>
       ) {
-        console.log(mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, JSON.stringify(state), action)
+        console.log(mInstanceSliceInputActionNames.ReplaceInstancesForEntity, JSON.stringify(state), action)
         // getEntityAdapter(action.payload.entity).removeAll();
         getEntityAdapter(action.payload.entity).setAll(state[action.payload.entity], action.payload.instances);
-        if (action.payload.entity === "Entity") {
+        //TODO: find a better solution!!!!!
+        if (action.payload.entity === "Entity") {//check if entity already exists in store, and if not initialize store state for it.
           action.payload.instances.filter(e=>e.name!=="Entity").forEach(
-            (entity:MinstanceWithName) => {
-              console.log(mInstanceSliceStoreActionNames.storeInstancesReceivedFromAPIForEntity, "initializing entity",entity.name);
+            (entity:MinstanceWithName) => { console.log(mInstanceSliceInputActionNames.ReplaceInstancesForEntity, "initializing entity",entity.name);
               state[entity.name] = getEntityAdapter(entity.name).getInitialState();
             }
           )
@@ -92,6 +109,9 @@ export const InstanceSlice:Slice = createSlice(
 )
 
 
+//#########################################################################################
+//# SELECTORS
+//#########################################################################################
 export const selectMiroirEntityInstances = createSelector((state:MinstanceSliceState) => state, items=>items)
 
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
@@ -100,7 +120,7 @@ export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
     console.log('creating selectInstancesForEntity',entityName,'selector.');
     return (
       createSelector(
-        (state:MReduxStateWithUndoRedo) => {
+        (state:MreduxWithUndoRedoState) => {
           console.log('selectInstancesForEntity',entityName,'state', state);
           return state.presentModelSnapshot.miroirInstances[entityName];
         },
@@ -110,7 +130,13 @@ export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
   }
 );
 
-export const MinstanceActionsCreators:any = {
+//#########################################################################################
+//# ACTION CREATORS
+//#########################################################################################
+// export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
+export const mInstanceSliceActionsCreators: {
+  [actionCreatorName:string]:ActionCreatorWithPayload<any, `${string}/${string}`> | ActionCreatorWithoutPayload<`${string}/${string}`>
+} = {
   ...InstanceSlice.actions
 }
 

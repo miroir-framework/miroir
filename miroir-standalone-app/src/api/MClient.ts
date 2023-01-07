@@ -62,7 +62,7 @@ export class MClient implements MclientI {
   
   async get(endpoint:string, customConfig:any = {}): Promise<MClientCallReturnType> {
     const result:Promise<MClientCallReturnType> = this.call(endpoint, { ...customConfig, method: 'GET' })
-    // console.log('MClient get',endpoint, result)
+    console.log('MClient get',endpoint, result)
     return result
   }
   

@@ -4,11 +4,13 @@ import * as React from "react";
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+
 import SimpleEditor from './SimpleEditor';
 
-export interface MiroirTableComponentProps {
+export interface MTableComponentProps {
   columnDefs:{"headerName": string, "field": string}[];
   rowData:any[];
+  children:any;
 };
 
 // function toto(e:CellClickedEvent) {
@@ -33,13 +35,14 @@ function onCellEditingStopped(e:CellEditingStoppedEvent) {
 }
 
 function onRowDataUpdated(e:RowDataUpdatedEvent) {
-  console.warn("onRowDataUpdated",e)
+  // console.warn("onRowDataUpdated",e)
 }
 
 
-export const MiroirTableComponent = (props: MiroirTableComponentProps) => {
+export const MTableComponent = (props: MTableComponentProps) => {
   return (
     <div
+      id="tata"
       className="ag-theme-alpine"
       style={
         {
@@ -48,6 +51,7 @@ export const MiroirTableComponent = (props: MiroirTableComponentProps) => {
         }
       }
     >
+      {props.children}
       <AgGridReact
         columnDefs={props.columnDefs}
         rowData={props.rowData}

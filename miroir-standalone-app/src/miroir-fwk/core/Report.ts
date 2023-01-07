@@ -1,4 +1,4 @@
-import { MiroirEntities, MiroirEntity } from "./Entity";
+import { mEntities, Mentity } from "./Entity";
 import { MinstanceWithName } from "./Instance";
 
 export interface MiroirReportListDefinition {
@@ -20,10 +20,10 @@ export type MiroirReports=MiroirReport[];
 
 export function ReportGetInstancesToDispay(
   report:MiroirReport,
-  miroirEntities:MiroirEntities
+  miroirEntities:mEntities
 ):any[] {
-  let result:MiroirEntities;
-  const currentMiroirEntity: MiroirEntity = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
+  let result:mEntities;
+  const currentMiroirEntity: Mentity = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
 
   switch (currentMiroirEntity?.entity) {
     case "Entity":

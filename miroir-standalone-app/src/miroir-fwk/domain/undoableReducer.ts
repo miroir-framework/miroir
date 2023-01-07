@@ -1,6 +1,7 @@
+import { Store } from "@reduxjs/toolkit";
 import produce, { enablePatches } from "immer";
 import { InnerReducerInterface, InnerStoreStateInterface } from "./store";
-enablePatches()
+enablePatches(); // to gather undo/redo operation history
 
 /**
  * This reducer wraps a "plain" reducer, enhancing it with undo/redo capabilities.
@@ -12,6 +13,7 @@ enablePatches()
  * 
  */
 
+export type storageKind = 'browser-IndexedDb' | 'sqlite' | 'postgres' | 'mongodb';
 export type DeploymentModes = 'local' | 'remote';
 export type cacheInvalidationPolicy = 'routing' | 'never';
 export type cacheFetchPolicy = 'onDemand' |'routing' | 'never' | 'periodic';
@@ -40,7 +42,7 @@ export type undoRedoHistorization = 'actions' |'snapshot' | 'never' | 'periodic'
  * that is not kept in the datastore: the previousSnapshot, the pastPatches and futurePatches.
  * 
  */
-export interface MReduxStateWithUndoRedo {
+export interface MreduxWithUndoRedoState {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
   previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
   pastModelPatches: any[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
@@ -48,11 +50,9 @@ export interface MReduxStateWithUndoRedo {
   futureModelPatches: any[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
-
-
-
-
-export type ReducerType = (state:MReduxStateWithUndoRedo, action:any) => any
+// TODO: make action type explicit!
+export type MreduxWithUndoRedoReducer = (state:MreduxWithUndoRedoState, action:any) => MreduxWithUndoRedoState
+export type MreduxWithUndoRedoStore = Store<MreduxWithUndoRedoState, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
 
@@ -72,33 +72,35 @@ export const makeActionUpdatesUndoable = (action:string) => {
 }
 
 
-
-export function createUndoableReducer(
-  reducer:InnerReducerInterface
-  // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void
-):(state:MReduxStateWithUndoRedo, action:any) => any
-{
-  // Call the reducer with empty action to populate the initial state
-  const initialState:MReduxStateWithUndoRedo = {
+export function mReduxWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRedoState {
+  return {
     // dataCache:{},
     previousModelSnapshot: {} as InnerStoreStateInterface,
     pastModelPatches: [],
     presentModelSnapshot: reducer(undefined, {type:undefined, payload: undefined}),
     futureModelPatches: []
   }
+}
+
+
+export function createUndoableReducer(
+  reducer:InnerReducerInterface
+  // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void
+):MreduxWithUndoRedoReducer
+{
+  // Call the reducer with empty action to populate the initial state
 
   /** decorates passed reducer with undo/redo capabilities, then call it straightaway with given state and action */
   const callUndoRedoReducer = (
     reducer:InnerReducerInterface,
-    // state:MReduxStateWithUndoRedo,
     state:InnerStoreStateInterface,
     action:any
-  ):void => {
+  ):InnerStoreStateInterface => {
   // const callUndoRedoReducer = (reducer:(state:MReduxStateWithUndoRedo, action:any)=>void,state:MReduxStateWithUndoRedo, action:any):void => {
     let changes:any[] = []
     let inverseChanges:any[] = []
     // console.log('callUndoRedoReducer', action.type, JSON.stringify(state), action)
-    const newState:any = produce(
+    const newState:InnerStoreStateInterface = produce(
       state,
       (draftState:any)=>reducer(draftState, action),
       (patches, inversePatches) => {
@@ -123,7 +125,7 @@ export function createUndoableReducer(
     }
   }
 
-  const callNextReducer = (state:MReduxStateWithUndoRedo, action:any):any => {
+  const callNextReducer = (state:MreduxWithUndoRedoState, action:any):MreduxWithUndoRedoState => {
     // const { dataCache, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
@@ -143,7 +145,7 @@ export function createUndoableReducer(
 
 
   // Returns a reducer function, that handles undo and redo
-  return (state:MReduxStateWithUndoRedo = initialState, action:any):any => {
+  return (state:MreduxWithUndoRedoState = mReduxWithUndoRedoGetInitialState(reducer), action:any):MreduxWithUndoRedoState => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
     if (!TRANSACTIONS_ENABLED) {
@@ -154,18 +156,20 @@ export function createUndoableReducer(
           const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
           const previousState = newPast.reduce((curr:any,acc:any)=>reducer(acc,curr), previousModelSnapshot)
           return {
-            pastPatches: newPast,
-            presentSnapshot: previousState,
-            futurePatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
+            previousModelSnapshot,
+            pastModelPatches: newPast,
+            presentModelSnapshot: previousState,
+            futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
           }
         case 'REDO':
           const newPastPatches = futureModelPatches[0]
           const newFuturePatches = futureModelPatches.slice(1)
           const newPresentSnapshot = reducer(presentModelSnapshot, newPastPatches)
           return {
-            pastPatches: [...pastModelPatches, newPastPatches],
-            presentSnapshot: newPresentSnapshot,
-            futurePatches: newFuturePatches
+            previousModelSnapshot,
+            pastModelPatches: [...pastModelPatches, newPastPatches],
+            presentModelSnapshot: newPresentSnapshot,
+            futureModelPatches: newFuturePatches
           }
         case 'ROLLBACK':
         case 'COMMIT':

@@ -1,8 +1,6 @@
 import { rest } from 'msw'
-import IndexedDb from '../../src/miroir-fwk/state/indexedDb'
-// import miroirConfig from '../miroir-fwk/assets/miroirConfig.json'
+import IndexedDb from '../miroir-fwk/domain/indexedDb'
 import miroirConfig from '../miroir-fwk/assets/miroirConfig.json'
-// import miroirConfig from "C:/Users/nono/Documents/devhome/miroir-app/miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json"
 
 console.log("server.ts miroirConfig", miroirConfig);
 
@@ -31,7 +29,11 @@ export class MServer {
   }
 
   public async closeObjectStore() {
-    return this.localIndexedStorage.closeObjectStore;
+    return this.localIndexedStorage.closeObjectStore();
+  }
+
+  public async openObjectStore() {
+    return this.localIndexedStorage.openObjectStore();
   }
 
   public handlers:any[] = [
@@ -39,9 +41,11 @@ export class MServer {
       // '/fakeApi/Entity/all', 
       miroirConfig.rootApiUrl+'/'+'Entity/all', 
       async (req, res, ctx) => {
+        console.log('Entity/all started');
 
-      const localData = await this.localIndexedStorage.getAllValue('Entity');
-      return res(
+        const localData = await this.localIndexedStorage.getAllValue('Entity');
+        console.log('server Entity/all', localData);
+        return res(
           ctx.json(
             localData
           )

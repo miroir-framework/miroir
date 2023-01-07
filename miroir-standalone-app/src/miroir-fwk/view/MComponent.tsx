@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import * as React from "react";
-import { MiroirReportComponent } from "./MiroirReportComponent";
+import { MReportComponent } from "./MReportComponent";
 
-export const MiroirComponent = (props:any) => {
+export const MComponent = (props:any) => {
   // const {store} = props;
   return (
     <div>
@@ -11,10 +11,11 @@ export const MiroirComponent = (props:any) => {
           AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         </CardHeader>
         <CardContent>
-          <MiroirReportComponent
+          <MReportComponent
             reportName="EntityList"
             // store={store}
-          ></MiroirReportComponent>
+          />
+          {/* </MiroirReportComponent> */}
           {/* {
             miroirEntities?.length > 0?
               <MiroirTableComponent

@@ -1,24 +1,42 @@
 import { createEntityAdapter, createSlice, EntityAdapter, EntityState, EntityStateAdapter, PayloadAction, Slice } from '@reduxjs/toolkit';
-import { MiroirEntities, MiroirEntity } from './Entity';
+import { MdomainEntityInputActionsI, MreduxStore } from '../domain/store';
+import { mEntities, Mentity } from './Entity';
 
 
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-export const mEntitySliceStoreActionNames = {
-  storeEntities:"storeEntities",
+export const mEntitySliceInputActionNames = {
+  replaceEntities:"replaceEntities",
   addOne:"addOne",
   updateOne:"updateOne",
 }
 
-export const mEntitySliceActionNames = {
+export const mEntitySliceOutputActionNames = {
   entitiesReceivedNotification:"entitiesReceivedNotification",
 }
 
 //#########################################################################################
 //# ENTITY ADAPTER
 //#########################################################################################
-export const mEntityAdapter: EntityAdapter<MiroirEntity> = createEntityAdapter<MiroirEntity>(
+export class MEntitySlice implements MdomainEntityInputActionsI {
+  constructor (private store:MreduxStore) {}
+  // public addInstancesForEntity(entityName:string,instances:Minstance[]):void {
+
+  // };
+  // public modifyInstancesForEntity(entityName:string,instances:Minstance[]):void {
+
+  // };
+  replaceEntities(entities:Mentity[]):void {
+    mEntityActionsCreators[mEntitySliceInputActionNames.replaceEntities](entities);
+  };
+
+}
+
+//#########################################################################################
+//# ENTITY ADAPTER
+//#########################################################################################
+export const mEntityAdapter: EntityAdapter<Mentity> = createEntityAdapter<Mentity>(
   {
     // Assume IDs are stored in a field other than `book.id`
     selectId: (entity) => entity.uuid,
@@ -35,10 +53,10 @@ const EntitySlice:Slice = createSlice(
     name: 'entities',
     initialState: mEntityAdapter.getInitialState(),
     reducers: {
-      ...<EntityStateAdapter<MiroirEntity>>mEntityAdapter,
-      [mEntitySliceStoreActionNames.storeEntities](
-        state:EntityState<MiroirEntity>, 
-        action:PayloadAction<MiroirEntities,string>
+      ...<EntityStateAdapter<Mentity>>mEntityAdapter,
+      [mEntitySliceInputActionNames.replaceEntities](
+        state:EntityState<Mentity>, 
+        action:PayloadAction<mEntities,string>
       ) {
         console.log("reducer storeEtities called", action, JSON.stringify(state))
         mEntityAdapter.setAll(state, action.payload);
@@ -48,6 +66,9 @@ const EntitySlice:Slice = createSlice(
   }
 );
 
+//#########################################################################################
+//# ACTION CREATORS
+//#########################################################################################
 export const mEntityActionsCreators:any = {
   ...EntitySlice.actions
 }
