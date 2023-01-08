@@ -1,23 +1,25 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
-import { MClientCallReturnType, MclientI } from 'src/api/MClient';
+
+import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { mEntities } from './Entity';
-import { mEntityActionsCreators, mEntitySliceInputActionNames } from './EntitySlice';
+import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import { mEntityActionsCreators, mEntitySliceInputActionNames } from '../local/EntitySlice';
 
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
 const mEntitySliceSagaActionNames = {
-  fetchMiroirEntities:"entities/fetchMiroirEntities",
-  entitiesStored:"entitiesStored",
+  fetchAllMEntitiesFromDatastore:"entities/fetchAllMEntitiesFromDatastore",
+  allMEntitiesHaveBeenStored:"allMEntitiesHaveBeenStored",
 }
 
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
-declare type MentitySliceStateType = mEntities;
+declare type MentitySliceStateType = MEntityDefinition[];
 // export interface MentitySliceActionPayloadType extends ActionWithPayload{
 //   payload: MentitySliceStateType; // TODO: correct type, not necessarily all actions should receive a list of Entity as parameter!
 // }
@@ -36,7 +38,7 @@ export class EntitySagas {
   }
 
   //#########################################################################################
-  *fetchEntitiesFromDatastore(
+  *fetchAllMEntitiesFromDatastore(
     _this:EntitySagas,
     sliceChannel:Channel<any>,
   ):any {
@@ -50,7 +52,7 @@ export class EntitySagas {
       console.log("fetchEntitiesFromDatastore received", result.status);
       yield putResolve(mEntityActionsCreators[mEntitySliceInputActionNames.replaceEntities](result.data))
       // console.log("fetchMentities calling entitiesStored");
-      yield put(_this.mEntitySagaActionsCreators[mEntitySliceSagaActionNames.entitiesStored](result.data))
+      yield put(_this.mEntitySagaActionsCreators[mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored](result.data))
     } catch (e) {
       console.log("fetchEntitiesFromDatastore exception",e)
       yield put({ type: 'entities/failure/entitiesNotReceived' })
@@ -61,7 +63,7 @@ export class EntitySagas {
   *entitiesStored(
     _this: EntitySagas,
     sliceChannel:Channel<any>,
-    action:{type:string, payload:mEntities},
+    action:{type:string, payload:MEntityDefinition[]},
   ):any {
     // console.log("saga entitiesStored called", action)
     yield put(sliceChannel, action)
@@ -75,13 +77,13 @@ export class EntitySagas {
     // take
     yield all([
       takeEvery(
-        mEntitySliceSagaActionNames.fetchMiroirEntities, 
-        _this.fetchEntitiesFromDatastore,
+        mEntitySliceSagaActionNames.fetchAllMEntitiesFromDatastore, 
+        _this.fetchAllMEntitiesFromDatastore,
         _this,
         sliceChannel,
       ),
       takeEvery(
-        mEntitySliceSagaActionNames.entitiesStored, 
+        mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored, 
         _this.entitiesStored,
         _this,
         sliceChannel,
@@ -89,13 +91,12 @@ export class EntitySagas {
     ])
   }
 
-
   //#########################################################################################
   //# ACTION DEFINITIONS
   //#########################################################################################
   public mEntitySagaActionsCreators:any = {
-    fetchMiroirEntities:createAction(mEntitySliceSagaActionNames.fetchMiroirEntities),
-    entitiesStored:createAction(mEntitySliceSagaActionNames.entitiesStored),
+    fetchAllMEntitiesFromDatastore:createAction(mEntitySliceSagaActionNames.fetchAllMEntitiesFromDatastore),
+    allMEntitiesHaveBeenStored:createAction(mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored),
   }
 
 } // end class EntitySlice

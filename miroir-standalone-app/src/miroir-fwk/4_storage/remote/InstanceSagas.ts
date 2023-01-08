@@ -1,10 +1,10 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Channel } from 'redux-saga';
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
-import { MclientI } from 'src/api/MClient';
+import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { mEntities, Mentity } from './Entity';
-import { mInstanceSliceActionsCreators, mInstanceSliceInputActionNames } from './InstanceSlice';
+import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import MInstanceSlice, { mInstanceSliceInputActionNames } from '../local/MInstanceSlice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -67,7 +67,7 @@ export class InstanceSagas {
         () => _client.get(miroirConfig.rootApiUrl+'/'+args.payload+ '/all')
       )
       yield putResolve(
-        mInstanceSliceActionsCreators[mInstanceSliceInputActionNames.ReplaceInstancesForEntity](
+        MInstanceSlice.actionCreators[mInstanceSliceInputActionNames.ReplaceInstancesForEntity](
           {instances:result.data, entity:args.payload}
         )
       );
@@ -83,14 +83,14 @@ export class InstanceSagas {
   }
 
   //#########################################################################################
-  *fetchInstancesFromDatastoreForAllEntities(
+  *fetchInstancesFromDatastoreForEntityList(
     _this: InstanceSagas, 
     sliceChannel:Channel<any>,
-    action:{type:string, payload:mEntities},
+    action:{type:string, payload:MEntityDefinition[]},
   ):any {
     // console.log("refreshEntityInstances launched", action.payload.map((e:MiroirEntity) => e.name));
     console.log("refreshEntityInstances launched", action);
-    const entityNames: string[] = action.payload.map((e:Mentity) => e.name);
+    const entityNames: string[] = action.payload.map((e:MEntityDefinition) => e.name);
     _this.entitiesToFetch = entityNames.slice();
     _this.entitiesAlreadyFetched = [];
     console.log("refreshEntityInstances entitiesToFetch", _this.entitiesToFetch);
@@ -139,10 +139,10 @@ export class InstanceSagas {
     yield all(
       [
         // listening on potentially modified entity definitions, sent by the entitySlice
-        takeEvery(sliceChannel, _this.fetchInstancesFromDatastoreForAllEntities, _this, sliceChannel),
+        takeEvery(sliceChannel, _this.fetchInstancesFromDatastoreForEntityList, _this, sliceChannel),
         // listening on input actions
         takeEvery(mInstanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity, _this.instancesHaveBeenFecthedForEntity, _this, sliceChannel),
-        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities, _this.fetchInstancesFromDatastoreForAllEntities, _this, sliceChannel),
+        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities, _this.fetchInstancesFromDatastoreForEntityList, _this, sliceChannel),
         takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntity, _this.fetchInstancesFromDatastoreForEntity, _this, sliceChannel),
       ]
     )
@@ -165,8 +165,8 @@ export class InstanceSagas {
 
   //#########################################################################################
   // interface of events creators allowing the outside world to send events to the InstanceSlice.
-  public mInstanceSliceActionsCreators = {
-    fetchInstancesFromDatastoreForAllEntities: createAction<mEntities>(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities),
+  public mInstanceSagaActionsCreators = {
+    fetchInstancesFromDatastoreForEntityList: createAction<MEntityDefinition[]>(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities),
   }
 
   //#########################################################################################

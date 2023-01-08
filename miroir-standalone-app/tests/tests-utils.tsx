@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 
 // import type { AppStore, RootState } from '../app/store'
 // As a basic setup, import your same slice reducers
-import { MreduxWithUndoRedoStore } from 'src/miroir-fwk/domain/undoableReducer'
+import { MreduxWithUndoRedoStore } from 'src/miroir-fwk/2_domain/undoableReducer'
 // import userReducer from '../features/users/userSlice'
 // const store:MreduxStore = new MreduxStore(entitySagas,instanceSagas);
 

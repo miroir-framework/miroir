@@ -3,7 +3,7 @@
 // import { miroirReportAdapter } from "../entities/reportSlice"
 // import { RootState } from "./store"
 
-import { mEntityAdapter } from "../core/EntitySlice"
+import { mEntityAdapter } from "src/miroir-fwk/4_storage/local/EntitySlice"
 
 const MiroirEntitySelectors = mEntityAdapter.getSelectors<any>((state) => state?.miroirEntities)
 export const {

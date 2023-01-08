@@ -1,4 +1,11 @@
-import { CellClickedEvent, CellDoubleClickedEvent, CellEditingStartedEvent, CellEditingStoppedEvent, CellValueChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { 
+  CellClickedEvent, 
+  CellDoubleClickedEvent, 
+  CellEditingStartedEvent, 
+  CellEditingStoppedEvent, 
+  CellValueChangedEvent, 
+  RowDataUpdatedEvent 
+} from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import * as React from "react";
 

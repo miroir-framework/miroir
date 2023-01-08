@@ -1,4 +1,4 @@
-export interface MentityAttribute {
+export interface MEntityAttribute {
   "id": number,
   "name": string,
   "defaultLabel": string,
@@ -11,13 +11,11 @@ export interface MentityAttribute {
   // }[],
 };
 
-export interface Mentity {
+export interface MEntityDefinition {
   "uuid": string,
   "entity": string,
   "name":string,
   "description"?:string,
   "instanceValidationJsonSchema": {},
-  "attributes"?: MentityAttribute[],
+  "attributes"?: MEntityAttribute[],
 };
-
-export type mEntities=Mentity[];

@@ -1,6 +1,6 @@
 import { EntityState, Update } from '@reduxjs/toolkit';
-import { Mentity } from 'src/miroir-fwk/core/Entity';
-import EntitySlice, { mEntityActionsCreators, mEntityAdapter, mEntitySliceInputActionNames } from 'src/miroir-fwk/core/EntitySlice';
+import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import EntitySlice, { mEntityActionsCreators, mEntityAdapter, mEntitySliceInputActionNames } from 'src/miroir-fwk/4_storage/local/EntitySlice';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 
@@ -13,10 +13,10 @@ afterAll(async () => {
 it(
   'add one Entity definition',
   async () => {
-    const initialStore: EntityState<Mentity> = mEntityAdapter.getInitialState();
-    const expectedStore:any = mEntityAdapter.addOne<EntityState<Mentity>>(mEntityAdapter.getInitialState(),entityEntity);
+    const initialStore: EntityState<MEntityDefinition> = mEntityAdapter.getInitialState();
+    const expectedStore:any = mEntityAdapter.addOne<EntityState<MEntityDefinition>>(mEntityAdapter.getInitialState(),entityEntity);
     // instructions under test
-    const modifiedStore: EntityState<Mentity> = EntitySlice.reducer(
+    const modifiedStore: EntityState<MEntityDefinition> = EntitySlice.reducer(
       initialStore,
       mEntityActionsCreators[mEntitySliceInputActionNames.addOne](entityEntity)
     );
@@ -29,14 +29,14 @@ it(
   ('update one Entity definition'),
   async () => {
     const entityChanges = {description:"toto"};
-    const entityUpdate:Update<Mentity> = {id:entityEntity.uuid, changes: entityChanges};
-    const modifiedEntity: Mentity = Object.assign({},entityEntity,entityChanges);
-    const emptyStore: EntityState<Mentity> = mEntityAdapter.getInitialState();
-    const initialStore:any = mEntityAdapter.addOne<EntityState<Mentity>>(emptyStore,entityEntity);
+    const entityUpdate:Update<MEntityDefinition> = {id:entityEntity.uuid, changes: entityChanges};
+    const modifiedEntity: MEntityDefinition = Object.assign({},entityEntity,entityChanges);
+    const emptyStore: EntityState<MEntityDefinition> = mEntityAdapter.getInitialState();
+    const initialStore:any = mEntityAdapter.addOne<EntityState<MEntityDefinition>>(emptyStore,entityEntity);
     // console.log('initialStore',initialStore);
-    const expectedStore:any = mEntityAdapter.updateOne<EntityState<Mentity>>(initialStore,entityUpdate);
+    const expectedStore:any = mEntityAdapter.updateOne<EntityState<MEntityDefinition>>(initialStore,entityUpdate);
     // instructions under test
-    const modifiedStore: EntityState<Mentity> = EntitySlice.reducer(
+    const modifiedStore: EntityState<MEntityDefinition> = EntitySlice.reducer(
       initialStore,
       mEntityActionsCreators[mEntitySliceInputActionNames.updateOne](entityUpdate)
     );

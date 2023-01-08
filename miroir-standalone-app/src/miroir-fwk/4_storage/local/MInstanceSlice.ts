@@ -1,7 +1,7 @@
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createEntityAdapter, createSelector, createSlice, EntityAdapter, EntityState, PayloadAction, Slice, Update } from '@reduxjs/toolkit';
 import { memoize as _memoize } from 'lodash';
-import { MreduxWithUndoRedoState } from 'src/miroir-fwk/domain/undoableReducer';
-import { Minstance, MinstanceWithName } from './Instance';
+import { MreduxWithUndoRedoState } from 'src/miroir-fwk/2_domain/undoableReducer';
+import { Minstance, MinstanceWithName } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
 
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
@@ -134,11 +134,17 @@ export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
 //# ACTION CREATORS
 //#########################################################################################
 // export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-export const mInstanceSliceActionsCreators: {
-  [actionCreatorName:string]:ActionCreatorWithPayload<any, `${string}/${string}`> | ActionCreatorWithoutPayload<`${string}/${string}`>
+export type MInstanceSliceActionCreator = ActionCreatorWithPayload<any, `${string}/${string}`> | ActionCreatorWithoutPayload<`${string}/${string}`>;
+export const actionsCreators: {
+  [actionCreatorName:string]:MInstanceSliceActionCreator
 } = {
   ...InstanceSlice.actions
 }
 
+const MInstanceSlice = {
+  reducer: InstanceSlice.reducer,
+  actionCreators: actionsCreators,
+  inputActionNames: mInstanceSliceInputActionNames,
+}
 
-export default InstanceSlice;
+export default MInstanceSlice;

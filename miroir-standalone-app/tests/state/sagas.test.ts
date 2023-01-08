@@ -1,27 +1,23 @@
 import { ExpectApi, expectSaga } from 'redux-saga-test-plan';
 import { setupServer } from "msw/node";
-import MClient, { MclientI } from 'src/api/MClient';
-import { EntitySagas } from 'src/miroir-fwk/core/EntitySagas';
-import { InstanceSagas, mInstanceSagaOutputActionNames } from 'src/miroir-fwk/core/InstanceSagas';
-import { MreduxStore } from 'src/miroir-fwk/domain/store';
+import MClient, { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
+import { InstanceSagas, mInstanceSagaOutputActionNames } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
+import { MreduxStore } from 'src/miroir-fwk/4_storage/local/MReduxStore';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
 
 import fetch from 'node-fetch';
-import { MServer } from 'src/api/server';
-import { mEntitySliceInputActionNames } from 'src/miroir-fwk/core/EntitySlice';
-import { mInstanceSliceInputActionNames } from 'src/miroir-fwk/core/InstanceSlice';
+import { MDevServer } from 'src/miroir-fwk/4_storage/remote/MDevServer';
+import { mEntitySliceInputActionNames } from 'src/miroir-fwk/4_storage/local/EntitySlice';
+import { mInstanceSliceInputActionNames } from 'src/miroir-fwk/4_storage/local/MInstanceSlice';
 const delay = (time:number) => new Promise((resolve) => {
   setTimeout(resolve, time);
 });
 
-const miroirEntitiesActions = {
-  fetchMiroirEntities:"entities/fetchMiroirEntities"
-}
-
-const mServer: MServer = new MServer();
+const mServer: MDevServer = new MDevServer();
 const mClient:MclientI = new MClient(fetch);
 const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
@@ -63,7 +59,7 @@ it(
     ;
 
     // initial stimulation, we demand the refresh of all entity definitions.
-    saga.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
+    saga.dispatch(entitySagas.mEntitySagaActionsCreators.fetchAllMEntitiesFromDatastore())
     
     return (
       saga.run()

@@ -1,9 +1,9 @@
 import { EntityState } from '@reduxjs/toolkit';
-import { Mentity } from 'src/miroir-fwk/core/Entity';
+import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-import { Minstance } from 'src/miroir-fwk/core/Instance';
-import InstanceSlice, { mInstanceSliceActionsCreators, MinstanceSliceState, mInstanceSliceInputActionNames, selectInstancesForEntity, MinstanceActionPayload } from 'src/miroir-fwk/core/InstanceSlice';
+import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import InstanceSlice, { actionsCreators, MinstanceSliceState, mInstanceSliceInputActionNames, selectInstancesForEntity, MinstanceActionPayload } from 'src/miroir-fwk/4_storage/local/MInstanceSlice';
 
 beforeAll(() => {
 })
@@ -19,7 +19,7 @@ it(
     console.log("expectedStore",expectedStore);
     const action:MinstanceActionPayload = {entity:"Entity", instances:[entityEntity], };
     // instructions under test
-    const modifiedStore:any = InstanceSlice.reducer(initialStore,mInstanceSliceActionsCreators[mInstanceSliceInputActionNames.AddInstancesForEntity](action));
+    const modifiedStore:any = InstanceSlice.reducer(initialStore,actionsCreators[mInstanceSliceInputActionNames.AddInstancesForEntity](action));
     // testing result
     expect(modifiedStore).toStrictEqual(expectedStore);
   }
@@ -29,13 +29,13 @@ it(
   ('update one Instance'),
   async () => {
     const entityChanges = {description:"toto"};
-    const modifiedEntity: Mentity = Object.assign({},entityEntity,entityChanges);
+    const modifiedEntity: MEntityDefinition = Object.assign({},entityEntity,entityChanges);
     const addAction:MinstanceActionPayload = {entity:"Entity", instances:[entityEntity], };
     const updateAction:MinstanceActionPayload = {entity:"Entity", instances:[modifiedEntity], };
     const emptyStore: MinstanceSliceState = {};
-    const initialStore:any = InstanceSlice.reducer(emptyStore,mInstanceSliceActionsCreators[mInstanceSliceInputActionNames.AddInstancesForEntity](addAction));
+    const initialStore:any = InstanceSlice.reducer(emptyStore,actionsCreators[mInstanceSliceInputActionNames.AddInstancesForEntity](addAction));
     // instructions under test
-    const modifiedStore:any = InstanceSlice.reducer(initialStore,mInstanceSliceActionsCreators[mInstanceSliceInputActionNames.UpdateInstancesForEntity](updateAction));
+    const modifiedStore:any = InstanceSlice.reducer(initialStore,actionsCreators[mInstanceSliceInputActionNames.UpdateInstancesForEntity](updateAction));
     const modifiedGlobalState = {presentModelSnapshot:{miroirInstances:modifiedStore}}; // to abstract from Redux implementation
     // console.log('modifiedStore',modifiedStore);
     const modifiedStoreSelector:EntityState<Minstance> = selectInstancesForEntity("Entity")(modifiedGlobalState);

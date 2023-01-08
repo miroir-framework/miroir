@@ -12,12 +12,12 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { waitFor } from '@testing-library/react'
 import fetch from 'node-fetch'
-import MClient, { MclientI } from 'src/api/MClient'
-import { MServer } from 'src/api/server'
-import { EntitySagas } from 'src/miroir-fwk/core/EntitySagas'
-import InstanceSagas from 'src/miroir-fwk/core/InstanceSagas'
-import { MreduxStore } from 'src/miroir-fwk/domain/store'
-import { MReportComponent } from 'src/miroir-fwk/view/MReportComponent'
+import MClient, { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient'
+import { MDevServer } from 'src/miroir-fwk/4_storage/remote/MDevServer'
+import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas'
+import InstanceSagas from 'src/miroir-fwk/4_storage/remote/InstanceSagas'
+import { MreduxStore } from 'src/miroir-fwk/4_storage/local/MReduxStore'
+import { MReportComponent } from 'src/miroir-fwk/4_view/MReportComponent'
 import { renderWithProviders } from 'tests/tests-utils'
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
@@ -26,16 +26,16 @@ import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-const mServer: MServer = new MServer();
+const mServer: MDevServer = new MDevServer();
 const mClient:MclientI = new MClient(fetch);
 const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
-const mStore:MreduxStore = new MreduxStore(entitySagas,instanceSagas);
+const mReduxStore:MreduxStore = new MreduxStore(entitySagas,instanceSagas);
 
 const worker = setupServer(...mServer.handlers)
 
-mStore.sagaMiddleware.run(
-  mStore.rootSaga, mStore
+mReduxStore.sagaMiddleware.run(
+  mReduxStore.rootSaga, mReduxStore
 );
 
 
@@ -67,7 +67,8 @@ test(
     await mServer.localIndexedStorage.putValue("Entity",entityEntity);
     await mServer.localIndexedStorage.putValue("Report",reportEntityList);
 
-    await mStore.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
+    // await mStore.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
+    await mReduxStore.fetchFromApiAndReplaceInstancesForAllEntities();
 
     const {
       getByText,
@@ -77,7 +78,7 @@ test(
       <MReportComponent
         reportName="EntityList"
       />,
-      {store:mStore.store}
+      {store:mReduxStore.store}
     );
 
     await waitFor(
