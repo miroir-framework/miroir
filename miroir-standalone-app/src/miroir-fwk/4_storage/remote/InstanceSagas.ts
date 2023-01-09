@@ -15,6 +15,7 @@ export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 // const mInstanceSliceInternalSagaActions:{[actionName:string]:{name:string,actionPayloadType:Type}} = {
 export const mInstanceSagaInputActionNames = {
   fetchInstancesFromDatastoreForEntity: "instances/fetchInstancesFromDatastoreForEntity",
+  fetchInstancesFromDatastoreForEntityList: "instances/fetchInstancesFromDatastoreForEntityList",
   fetchInstancesFromDatastoreForAllEntities:  "instances/fetchInstancesFromDatastoreForAllEntities",
   // instancesHaveBeenFecthedForEntity:  "instancesHaveBeenFecthedForEntity",
 }
@@ -52,19 +53,18 @@ export class InstanceSagas {
   //#########################################################################################
   *fetchInstancesFromDatastoreForEntity(
     _this: InstanceSagas, 
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<any>,
     args:{type:string, payload:string},
   ):any {
     // console.log("fetchInstancesForEntity", args)
     try {
-      const _client = _this.client;
       const result:{
         status: number;
         data: any;
         headers: Headers;
         url: string;
     } = yield call(
-        () => _client.get(miroirConfig.rootApiUrl+'/'+args.payload+ '/all')
+        () => _this.client.get(miroirConfig.rootApiUrl+'/'+args.payload+ '/all')
       )
       yield putResolve(
         MInstanceSlice.actionCreators[mInstanceSliceInputActionNames.ReplaceInstancesForEntity](
@@ -85,7 +85,7 @@ export class InstanceSagas {
   //#########################################################################################
   *fetchInstancesFromDatastoreForEntityList(
     _this: InstanceSagas, 
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<any>,
     action:{type:string, payload:MEntityDefinition[]},
   ):any {
     // console.log("refreshEntityInstances launched", action.payload.map((e:MiroirEntity) => e.name));
@@ -107,9 +107,10 @@ export class InstanceSagas {
   }
   
   //#########################################################################################
+  // takes entity fetch notifications into account and sends a global notification when done.
   *instancesHaveBeenFecthedForEntity(
     _this: InstanceSagas,
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<any>,
     args:{type:string, payload:string}
   ):any {
     try {
@@ -134,16 +135,15 @@ export class InstanceSagas {
   //#########################################################################################
   public *instanceRootSaga(
     _this: InstanceSagas,
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<any>,
   ) {
     yield all(
       [
-        // listening on potentially modified entity definitions, sent by the entitySlice
-        takeEvery(sliceChannel, _this.fetchInstancesFromDatastoreForEntityList, _this, sliceChannel),
+        takeEvery(mInstanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity, _this.instancesHaveBeenFecthedForEntity, _this, outputChannel),
         // listening on input actions
-        takeEvery(mInstanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity, _this.instancesHaveBeenFecthedForEntity, _this, sliceChannel),
-        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities, _this.fetchInstancesFromDatastoreForEntityList, _this, sliceChannel),
-        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntity, _this.fetchInstancesFromDatastoreForEntity, _this, sliceChannel),
+        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntity, _this.fetchInstancesFromDatastoreForEntity, _this, outputChannel),
+        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntityList, _this.fetchInstancesFromDatastoreForEntityList, _this, outputChannel),
+        takeEvery(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForAllEntities, _this.fetchInstancesFromDatastoreForEntityList, _this, outputChannel),
       ]
     )
   }
@@ -155,6 +155,7 @@ export class InstanceSagas {
   public mInstanceSagaInternalActionsCreators:any = {
     // ...InstanceReduxSlice.actions,
     fetchInstancesFromDatastoreForEntity: createAction<string>(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntity),
+    fetchInstancesFromDatastoreForEntityList: createAction<MEntityDefinition[]>(mInstanceSagaInputActionNames.fetchInstancesFromDatastoreForEntityList),
     instancesHaveBeenFecthedForEntity: createAction<string>(mInstanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity),
     allInstancesRefreshed: createAction(mInstanceSagaOutputActionNames.allInstancesRefreshed),
   }

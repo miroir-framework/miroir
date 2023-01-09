@@ -9,7 +9,7 @@ import {
 } from "@reduxjs/toolkit";
 import { MreduxStore } from "src/miroir-fwk/4_storage/local/MReduxStore";
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { MEntityDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomain";
+import { MEntityDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomainI";
 
 //#########################################################################################
 //# ACTION NAMES
@@ -36,7 +36,7 @@ export class MEntitySlice implements MEntityDomainInputActionsI {
 
   // };
   replaceEntities(entities: MEntityDefinition[]): void {
-    mEntityActionsCreators[mEntitySliceInputActionNames.replaceEntities](
+    mEntitySliceActionsCreators[mEntitySliceInputActionNames.replaceEntities](
       entities
     );
   }
@@ -75,7 +75,7 @@ const EntitySlice: Slice = createSlice({
 //#########################################################################################
 //# ACTION CREATORS
 //#########################################################################################
-export const mEntityActionsCreators: any = {
+export const mEntitySliceActionsCreators: any = {
   ...EntitySlice.actions,
 };
 

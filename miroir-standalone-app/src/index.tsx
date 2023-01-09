@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { MDataControllerI } from "src/miroir-fwk/0_interfaces/3_controllers/MDataController";
+import { MDataControllerI } from "src/miroir-fwk/0_interfaces/3_controllers/MDataControllerI";
 
 import { MreduxStore } from "src/miroir-fwk/4_storage/local/MReduxStore";
 import { EntitySagas } from "src/miroir-fwk/4_storage/remote/EntitySagas";
@@ -43,22 +43,16 @@ async function start() {
 
   const mReduxStore:MreduxStore = new MreduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
-  // mReduxStore.sagaMiddleware.run(
-  //   mReduxStore.rootSaga, mReduxStore
-  // );
-
-  // mReduxStore.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
   const dataController: MDataControllerI = new MDataController(mReduxStore);
   dataController.loadDataFromDataStore();
-  // mReduxStore.fetchFromApiAndReplaceInstancesForAllEntities();
 
   root.render(
-    <Provider store={mReduxStore.store}>
+    <Provider store={mReduxStore.getInnerStore()}>
     <div>
       <h1>Miroir standalone demo app {uuidv4()}</h1>
       <Container maxWidth='xl'>
         <MComponent
-          store={mReduxStore.store}
+          store={mReduxStore.getInnerStore()}
         ></MComponent>
       </Container>
     </div>

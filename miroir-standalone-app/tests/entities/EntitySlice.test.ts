@@ -1,6 +1,6 @@
 import { EntityState, Update } from '@reduxjs/toolkit';
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import EntitySlice, { mEntityActionsCreators, mEntityAdapter, mEntitySliceInputActionNames } from 'src/miroir-fwk/4_storage/local/EntitySlice';
+import EntitySlice, { mEntitySliceActionsCreators, mEntityAdapter, mEntitySliceInputActionNames } from 'src/miroir-fwk/4_storage/local/EntitySlice';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 
@@ -18,7 +18,7 @@ it(
     // instructions under test
     const modifiedStore: EntityState<MEntityDefinition> = EntitySlice.reducer(
       initialStore,
-      mEntityActionsCreators[mEntitySliceInputActionNames.addOne](entityEntity)
+      mEntitySliceActionsCreators[mEntitySliceInputActionNames.addOne](entityEntity)
     );
     // testing result
     expect(modifiedStore).toStrictEqual(expectedStore);
@@ -38,7 +38,7 @@ it(
     // instructions under test
     const modifiedStore: EntityState<MEntityDefinition> = EntitySlice.reducer(
       initialStore,
-      mEntityActionsCreators[mEntitySliceInputActionNames.updateOne](entityUpdate)
+      mEntitySliceActionsCreators[mEntitySliceInputActionNames.updateOne](entityUpdate)
     );
     // console.log('modifiedStore',modifiedStore);
     // testing result

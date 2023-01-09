@@ -23,20 +23,23 @@ import { renderWithProviders } from 'tests/tests-utils'
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
 import entityReport from "src/miroir-fwk/assets/entities/Report.json"
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
+import { MDataControllerI } from 'src/miroir-fwk/0_interfaces/3_controllers/MDataControllerI'
+import { MDataController } from 'src/miroir-fwk/3_controllers/MDataController'
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
 const mServer: MDevServer = new MDevServer();
+const worker = setupServer(...mServer.handlers)
 const mClient:MclientI = new MClient(fetch);
+
 const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:MreduxStore = new MreduxStore(entitySagas,instanceSagas);
+mReduxStore.run();
 
-const worker = setupServer(...mServer.handlers)
+const dataController: MDataControllerI = new MDataController(mReduxStore);
+dataController.loadDataFromDataStore();
 
-mReduxStore.sagaMiddleware.run(
-  mReduxStore.rootSaga, mReduxStore
-);
 
 
 // Enable API mocking before tests.
@@ -78,7 +81,7 @@ test(
       <MReportComponent
         reportName="EntityList"
       />,
-      {store:mReduxStore.store}
+      {store:mReduxStore.getInnerStore()}
     );
 
     await waitFor(

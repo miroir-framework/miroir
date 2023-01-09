@@ -6,14 +6,18 @@ import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_storage/remote
 
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import { mEntityActionsCreators, mEntitySliceInputActionNames } from '../local/EntitySlice';
+import { mEntitySliceActionsCreators, mEntitySliceInputActionNames} from '../local/EntitySlice';
+import { MLocalStoreEvent } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreI';
 
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-const mEntitySliceSagaActionNames = {
+// const mEntitySagaInternalActionNames = {
+//   allMEntitiesHaveBeenStored:"allMEntitiesHaveBeenStored",
+// }
+
+const mEntitySagaInputActionNames = {
   fetchAllMEntitiesFromDatastore:"entities/fetchAllMEntitiesFromDatastore",
-  allMEntitiesHaveBeenStored:"allMEntitiesHaveBeenStored",
 }
 
 //#########################################################################################
@@ -40,63 +44,66 @@ export class EntitySagas {
   //#########################################################################################
   *fetchAllMEntitiesFromDatastore(
     _this:EntitySagas,
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<MLocalStoreEvent<any>>,
   ):any {
     try {
       const _client = _this.client;
-      console.log("fetchEntitiesFromDatastore start client",_client)
+      console.log("fetchAllMEntitiesFromDatastore start client",_client)
       const result:MClientCallReturnType = yield call(
         () => _client.get(miroirConfig.rootApiUrl+'/'+'Entity/all')
       )
       // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
-      console.log("fetchEntitiesFromDatastore received", result.status);
-      yield putResolve(mEntityActionsCreators[mEntitySliceInputActionNames.replaceEntities](result.data))
-      // console.log("fetchMentities calling entitiesStored");
-      yield put(_this.mEntitySagaActionsCreators[mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored](result.data))
+      console.log("fetchAllMEntitiesFromDatastore received", result.status, result.data);
+      yield putResolve(mEntitySliceActionsCreators[mEntitySliceInputActionNames.replaceEntities](result.data))
+      console.log("fetchMentities calling allMEntitiesHaveBeenStored");
+      // yield put(_this.mEntitySagaActionsCreators[mEntitySagaInternalActionNames.allMEntitiesHaveBeenStored](result.data))
+      yield put(outputChannel, {eventName:"allMEntitiesHaveBeenStored",status:'OK', param:result.data})
     } catch (e) {
-      console.log("fetchEntitiesFromDatastore exception",e)
+      console.log("fetchAllMEntitiesFromDatastore exception",e)
       yield put({ type: 'entities/failure/entitiesNotReceived' })
     }
   }
 
-  //#########################################################################################
-  *entitiesStored(
-    _this: EntitySagas,
-    sliceChannel:Channel<any>,
-    action:{type:string, payload:MEntityDefinition[]},
-  ):any {
-    // console.log("saga entitiesStored called", action)
-    yield put(sliceChannel, action)
-  }
+  // //#########################################################################################
+  // *allMEntitiesHaveBeenStored(
+  //   _this: EntitySagas,
+  //   outputChannel:Channel<any>,
+  //   action:{type:string, payload:MEntityDefinition[]},
+  // ):any {
+  //   console.log("Entity saga allMEntitiesHaveBeenStored called with action", action)
+  //   yield put(outputChannel, action)
+  // }
 
   //#########################################################################################
   public *entityRootSaga(
     _this: EntitySagas,
-    sliceChannel:Channel<any>,
+    outputChannel:Channel<MLocalStoreEvent<any>>,
   ) {
     // take
-    yield all([
-      takeEvery(
-        mEntitySliceSagaActionNames.fetchAllMEntitiesFromDatastore, 
-        _this.fetchAllMEntitiesFromDatastore,
-        _this,
-        sliceChannel,
-      ),
-      takeEvery(
-        mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored, 
-        _this.entitiesStored,
-        _this,
-        sliceChannel,
-      ),
-    ])
+    yield all(
+      [
+        takeEvery(
+          mEntitySagaInputActionNames.fetchAllMEntitiesFromDatastore, 
+          _this.fetchAllMEntitiesFromDatastore,
+          _this,
+          outputChannel,
+        ),
+        // takeEvery(
+        //   EntitySagaInternalActionNames.allMEntitiesHaveBeenStored, 
+        //   _this.allMEntitiesHaveBeenStored,
+        //   _this,
+        //   outputChannel,
+        // ),
+      ]
+    )
   }
 
   //#########################################################################################
   //# ACTION DEFINITIONS
   //#########################################################################################
-  public mEntitySagaActionsCreators:any = {
-    fetchAllMEntitiesFromDatastore:createAction(mEntitySliceSagaActionNames.fetchAllMEntitiesFromDatastore),
-    allMEntitiesHaveBeenStored:createAction(mEntitySliceSagaActionNames.allMEntitiesHaveBeenStored),
+  public mEntitySagaActionsCreators = {
+    fetchAllMEntitiesFromDatastore:createAction(mEntitySagaInputActionNames.fetchAllMEntitiesFromDatastore),
+    // allMEntitiesHaveBeenStored:createAction(EntitySagaOutputActionNames.allMEntitiesHaveBeenStored),
   }
 
 } // end class EntitySlice

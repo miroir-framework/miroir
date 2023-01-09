@@ -1,6 +1,6 @@
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createEntityAdapter, createSelector, createSlice, EntityAdapter, EntityState, PayloadAction, Slice, Update } from '@reduxjs/toolkit';
 import { memoize as _memoize } from 'lodash';
-import { MreduxWithUndoRedoState } from 'src/miroir-fwk/2_domain/undoableReducer';
+import { MreduxWithUndoRedoState } from 'src/miroir-fwk/4_storage/local/undoableReducer';
 import { Minstance, MinstanceWithName } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
 
 //#########################################################################################

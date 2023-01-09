@@ -1,15 +1,20 @@
 import { combineReducers, configureStore, EntityState } from '@reduxjs/toolkit'
 import createSagaMiddleware, { Channel, channel } from 'redux-saga'
-import { all, call } from 'redux-saga/effects'
+import { all, call, takeEvery } from 'redux-saga/effects'
+
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity'
-import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas'
-import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice'
 import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance'
-import { InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas'
+import { MLocalStoreEvent, MLocalStoreI, MLocalStoreObserver } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreI'
+import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice'
 import MInstanceSlice, { MinstanceSliceState } from 'src/miroir-fwk/4_storage/local/MInstanceSlice'
+import {
+  createUndoableReducer,
+  MreduxWithUndoRedoReducer,
+  MreduxWithUndoRedoStore
+} from "src/miroir-fwk/4_storage/local/undoableReducer"
+import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas'
+import { InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas'
 import { Maction } from './Mslice'
-import { createUndoableReducer, MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore } from 'src/miroir-fwk/2_domain/undoableReducer'
-import { MInstanceStoreInputActionsI, MreduxStoreI } from 'src/miroir-fwk/0_interfaces/4-storage/local/MReduxStore'
 
 
 //#########################################################################################
@@ -38,20 +43,18 @@ export interface InnerStoreStateInterface {
 }
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Maction) => any;
 
-export class MreduxStore implements MreduxStoreI {
-  public store:MreduxWithUndoRedoStore;
-  public staticReducers:MreduxWithUndoRedoReducer;
-  public sagaMiddleware:any;
-  public asyncDispatchMiddleware:any;//TODO: set proper type
-  // private instanceStore: MInstanceStoreInputActionsI = new InstanceStore(this);
+export class MreduxStore implements MLocalStoreI {
+  private store:MreduxWithUndoRedoStore;
+  private staticReducers:MreduxWithUndoRedoReducer;
+  private sagaMiddleware:any;
+  // private asyncDispatchMiddleware:any;//TODO: set proper type
+  private listeners: Set<MLocalStoreObserver> = new Set();
 
-  // public entitySlice: MEntitySlice = new MEntitySlice(this); 
-
+  // ###############################################################################
   constructor(
     public entitySagasObject: EntitySagas,
     public instanceSagasObject: InstanceSagas,
   ) {
-
     this.staticReducers = createUndoableReducer(
       combineReducers(
         {
@@ -71,26 +74,37 @@ export class MreduxStore implements MreduxStoreI {
         )
       }
     );
-
-    // create indexedDb local storage, in the case the DB accessed through REST runs in a distinct process.
-    // if REST API accesses the indexedDb local storage itself, then the Redux store systematically invalidates
-    // any data found in it, and thus re-calls the Rest API for any access. The Redux store is then not used,
-    // at least not as a store.
-
   } //end constructor
 
-  // public dispatch(a) {
-  //   return this.store.dispatch(a);
-  // }
+  // ###############################################################################
+  getInnerStore() {
+    return this.store;
+  }
+  // ###############################################################################
+  listenerSubscribe(listener:MLocalStoreObserver) {
+    console.log('listenerSubscribe', listener);
+    this.listeners.add(listener);
+  }
+  // ###############################################################################
+  listenerUnsubscribe(listener:MLocalStoreObserver) {
+    this.listeners.delete(listener);
+  }
 
+  // ###############################################################################
   public run():void {
     this.sagaMiddleware.run(
       this.rootSaga, this
     );
   }
+
   // ###############################################################################
   fetchFromApiAndReplaceInstancesForEntity(entityName:string):void {
     // this.dispatch(this.entitySagasObject.mEntitySagaActionsCreators.fetchMiroirEntities())
+  }
+
+  // ###############################################################################
+  fetchInstancesFromDatastoreForEntityList(entities:MEntityDefinition[]):void {
+    this.store.dispatch(this.instanceSagasObject.mInstanceSagaActionsCreators.fetchInstancesFromDatastoreForEntityList(entities))
   }
 
   // ###############################################################################
@@ -118,13 +132,36 @@ export class MreduxStore implements MreduxStoreI {
 
 
   // ###############################################################################
+  *handleEntitySagaOutput (
+    _this:MreduxStore,
+    event:MLocalStoreEvent<any>,
+  ):any {
+    console.log("MreduxStore handleEntitySagaOutput, event", event);
+    const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
+    yield call([listener,listener.notify],event)
+  }
+
+  // ###############################################################################
+  *handleInstanceSagaOutput (
+    _this:MreduxStore,
+    event:MLocalStoreEvent<any>,
+  ):any {
+    console.log("MreduxStore handleInstanceSagaOutput");
+    const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
+    yield call([listener,listener.notify],event)
+  }
+
+  // ###############################################################################
   public *rootSaga(_this:MreduxStore):any {
-    console.log("Mstore rootSaga");
-    const sliceChannel:Channel<any> = yield call(channel);
+    console.log("MreduxStore rootSaga");
+    const entitySagaOutputChannel:Channel<MLocalStoreEvent<any>> = yield call(channel);
+    const instanceSagaOutputChannel:Channel<MLocalStoreEvent<any>> = yield call(channel);
     yield all(
       [
-        _this.entitySagasObject.entityRootSaga(_this.entitySagasObject, sliceChannel),
-        _this.instanceSagasObject.instanceRootSaga(_this.instanceSagasObject, sliceChannel),
+        takeEvery(entitySagaOutputChannel, _this.handleEntitySagaOutput, _this),
+        takeEvery(instanceSagaOutputChannel, _this.handleInstanceSagaOutput, _this),
+        _this.entitySagasObject.entityRootSaga(_this.entitySagasObject, entitySagaOutputChannel),
+        _this.instanceSagasObject.instanceRootSaga(_this.instanceSagasObject, instanceSagaOutputChannel),
       ]
     );
   }
