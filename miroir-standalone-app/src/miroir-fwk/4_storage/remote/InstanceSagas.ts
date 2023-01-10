@@ -4,7 +4,7 @@ import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import MInstanceSlice, { mInstanceSliceInputActionNames } from '../local/MInstanceSlice';
+import instanceSliceObject, { mInstanceSliceInputActionNames } from '../local/InstanceSlice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -42,6 +42,7 @@ export const mInstanceSagaOutputActionNames = {
 //#########################################################################################
 export class InstanceSagas {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
+  // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
     private client: MclientI,
     // public mInstanceSlice:Slice,
@@ -67,7 +68,7 @@ export class InstanceSagas {
         () => _this.client.get(miroirConfig.rootApiUrl+'/'+args.payload+ '/all')
       )
       yield putResolve(
-        MInstanceSlice.actionCreators[mInstanceSliceInputActionNames.ReplaceInstancesForEntity](
+        instanceSliceObject.actionCreators[mInstanceSliceInputActionNames.ReplaceInstancesForEntity](
           {instances:result.data, entity:args.payload}
         )
       );
@@ -131,7 +132,6 @@ export class InstanceSagas {
     }
   }
 
-  
   //#########################################################################################
   public *instanceRootSaga(
     _this: InstanceSagas,

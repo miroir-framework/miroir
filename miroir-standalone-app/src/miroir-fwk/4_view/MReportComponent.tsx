@@ -5,7 +5,7 @@ import { EntityState } from "@reduxjs/toolkit";
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { MiroirReport, MiroirReports } from "src/miroir-fwk/0_interfaces/1_core/Report";
 import { MTableComponent } from "./MTableComponent";
-import { selectInstancesForEntity } from "src/miroir-fwk/4_storage/local/MInstanceSlice";
+import { selectInstancesForEntity } from "src/miroir-fwk/4_storage/local/InstanceSlice";
 import { ReportGetInstancesToDispay } from "src/miroir-fwk/1_core/Report";
 
 export interface MiroirReportComponentProps {

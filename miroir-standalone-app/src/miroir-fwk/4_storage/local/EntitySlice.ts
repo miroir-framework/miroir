@@ -7,9 +7,9 @@ import {
   PayloadAction,
   Slice,
 } from "@reduxjs/toolkit";
-import { MreduxStore } from "src/miroir-fwk/4_storage/local/MReduxStore";
+import { ReduxStore } from "src/miroir-fwk/4_storage/local/ReduxStore";
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { MEntityDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomainI";
+import { MEntityDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomainInterface";
 
 //#########################################################################################
 //# ACTION NAMES
@@ -28,7 +28,7 @@ export const mEntitySliceOutputActionNames = {
 //# ENTITY ADAPTER
 //#########################################################################################
 export class MEntitySlice implements MEntityDomainInputActionsI {
-  constructor(private store: MreduxStore) {}
+  constructor(private store: ReduxStore) {}
   // public addInstancesForEntity(entityName:string,instances:Minstance[]):void {
 
   // };

@@ -1,9 +1,8 @@
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { Minstance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { Event, Observer } from "src/miroir-fwk/1_core/utils/EventManager";
+import { stringTuple } from "src/miroir-fwk/1_core/utils/utils";
 
-function stringTuple<T extends [string] | string[]>(...data: T): T {
-  return data;
-}
 
 
 const EntitySagaOutputActionNames = stringTuple(
@@ -11,21 +10,17 @@ const EntitySagaOutputActionNames = stringTuple(
 );
 export type EntitySagaOutputActionTypeString = typeof EntitySagaOutputActionNames[number];
 
-export const StatusTypeStringValues:string[] = stringTuple('OK', 'Fail');
-export type StatusTypeString = typeof StatusTypeStringValues[number];
 
 export const LocalStoreEventTypeStringValues:string[] = stringTuple(
   ...EntitySagaOutputActionNames
 );
-export type LocalStoreEventTypeString = typeof StatusTypeStringValues[number];
+export type LocalStoreEventTypeString = typeof LocalStoreEventTypeStringValues[number];
 
-export interface MLocalStoreEvent<T> {
-  eventName:LocalStoreEventTypeString, status: StatusTypeString, param?:T
-}
+export type LocalStoreEvent = Event<LocalStoreEventTypeString,any>
+// export interface MLocalStoreObserver<T> {
+//   dispatch(localStoreEvent:Event<LocalStoreEventTypeString, T>):void;
+// }
 
-export interface MLocalStoreObserver {
-  notify(localStoreEvent:MLocalStoreEvent<any>):void;
-}
 
 export interface MEntityDefinitionStoreInputActionsI {
   addEntityDefinition(entityName:string,instances:Minstance[]):void;
@@ -45,10 +40,10 @@ export interface MInstanceStoreInputActionsI {
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface MLocalStoreI extends MInstanceStoreInputActionsI{
+export declare interface LocalStoreInterface extends MInstanceStoreInputActionsI{
   // constructor
   run():void;
   getInnerStore():any; // TODO: local store should not expose its implementation!!
-  listenerSubscribe(listener:MLocalStoreObserver);
-  listenerUnsubscribe(listener:MLocalStoreObserver);
+  observerSubscribe(observer:Observer<LocalStoreEvent>);
+  observerUnsubscribe(observer:Observer<LocalStoreEvent>);
 }

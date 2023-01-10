@@ -7,7 +7,7 @@ import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_storage/remote
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 import { mEntitySliceActionsCreators, mEntitySliceInputActionNames} from '../local/EntitySlice';
-import { MLocalStoreEvent } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreI';
+import { LocalStoreEvent } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreInterface';
 
 //#########################################################################################
 //# ACTION NAMES
@@ -44,7 +44,7 @@ export class EntitySagas {
   //#########################################################################################
   *fetchAllMEntitiesFromDatastore(
     _this:EntitySagas,
-    outputChannel:Channel<MLocalStoreEvent<any>>,
+    outputChannel:Channel<LocalStoreEvent>,
   ):any {
     try {
       const _client = _this.client;
@@ -77,7 +77,7 @@ export class EntitySagas {
   //#########################################################################################
   public *entityRootSaga(
     _this: EntitySagas,
-    outputChannel:Channel<MLocalStoreEvent<any>>,
+    outputChannel:Channel<LocalStoreEvent>,
   ) {
     // take
     yield all(

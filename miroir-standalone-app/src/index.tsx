@@ -5,19 +5,19 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { MDataControllerI } from "src/miroir-fwk/0_interfaces/3_controllers/MDataControllerI";
 
-import { MreduxStore } from "src/miroir-fwk/4_storage/local/MReduxStore";
+import { ReduxStore } from "src/miroir-fwk/4_storage/local/ReduxStore";
 import { EntitySagas } from "src/miroir-fwk/4_storage/remote/EntitySagas";
 import { InstanceSagas } from "src/miroir-fwk/4_storage/remote/InstanceSagas";
 import { MClient } from "src/miroir-fwk/4_storage/remote/MClient";
 import { MDevServer } from "src/miroir-fwk/4_storage/remote/MDevServer";
 import { MComponent } from "src/miroir-fwk/4_view/MComponent";
-import { MDataController } from "src/miroir-fwk/3_controllers/MDataController";
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
+import { DataControllerInterface } from "src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface";
+import { DataController } from "src/miroir-fwk/3_controllers/DataController";
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -41,9 +41,9 @@ async function start() {
   const entitySagas: EntitySagas = new EntitySagas(client);
   const instanceSagas: InstanceSagas = new InstanceSagas(client);
 
-  const mReduxStore:MreduxStore = new MreduxStore(entitySagas, instanceSagas);
+  const mReduxStore:ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
-  const dataController: MDataControllerI = new MDataController(mReduxStore);
+  const dataController: DataControllerInterface = new DataController(mReduxStore);
   dataController.loadDataFromDataStore();
 
   root.render(

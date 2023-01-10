@@ -15,11 +15,11 @@ export const mInstanceSliceInputActionNames = {
 //# DATA TYPES
 //#########################################################################################
 // instance slice state cannot really be defined statically, since it changes at run-time, depending on the set of defined instances  
-export interface MinstanceSliceState {
+export interface InstanceSliceState {
   [propName: string]: EntityState<any>;
 }
 
-export interface MinstanceActionPayload {
+export interface InstanceActionPayload {
   entity:string, instances:MinstanceWithName[]
 }
 
@@ -49,8 +49,8 @@ export const InstanceSlice:Slice = createSlice(
     initialState: {Entity:getEntityAdapter("Entity").getInitialState()},
     reducers: {
       [mInstanceSliceInputActionNames.AddInstancesForEntity] (
-        state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceActionPayload,string>
+        state:InstanceSliceState, 
+        action:PayloadAction<InstanceActionPayload,string>
       ) {
         const currentEntityName = action.payload.entity;
         console.log(mInstanceSliceInputActionNames.AddInstancesForEntity, "action", JSON.stringify(action))
@@ -74,8 +74,8 @@ export const InstanceSlice:Slice = createSlice(
         }
       },
       [mInstanceSliceInputActionNames.UpdateInstancesForEntity] (
-        state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceActionPayload,string>
+        state:InstanceSliceState, 
+        action:PayloadAction<InstanceActionPayload,string>
       ) {
         console.log(mInstanceSliceInputActionNames.UpdateInstancesForEntity, state, action)
         // TODO: replace implementation with updateMany
@@ -89,8 +89,8 @@ export const InstanceSlice:Slice = createSlice(
         );
       },
       [mInstanceSliceInputActionNames.ReplaceInstancesForEntity] (
-        state:MinstanceSliceState, 
-        action:PayloadAction<MinstanceActionPayload,string>
+        state:InstanceSliceState, 
+        action:PayloadAction<InstanceActionPayload,string>
       ) {
         console.log(mInstanceSliceInputActionNames.ReplaceInstancesForEntity, JSON.stringify(state), action)
         // getEntityAdapter(action.payload.entity).removeAll();
@@ -112,7 +112,7 @@ export const InstanceSlice:Slice = createSlice(
 //#########################################################################################
 //# SELECTORS
 //#########################################################################################
-export const selectMiroirEntityInstances = createSelector((state:MinstanceSliceState) => state, items=>items)
+export const selectMiroirEntityInstances = createSelector((state:InstanceSliceState) => state, items=>items)
 
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
@@ -134,17 +134,17 @@ export const selectInstancesForEntity:(entityName:string)=>any = _memoize(
 //# ACTION CREATORS
 //#########################################################################################
 // export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-export type MInstanceSliceActionCreator = ActionCreatorWithPayload<any, `${string}/${string}`> | ActionCreatorWithoutPayload<`${string}/${string}`>;
+export type InstanceSliceActionCreator = ActionCreatorWithPayload<any, `${string}/${string}`> | ActionCreatorWithoutPayload<`${string}/${string}`>;
 export const actionsCreators: {
-  [actionCreatorName:string]:MInstanceSliceActionCreator
+  [actionCreatorName:string]:InstanceSliceActionCreator
 } = {
   ...InstanceSlice.actions
 }
 
-const MInstanceSlice = {
+const instanceSliceObject = {
   reducer: InstanceSlice.reducer,
   actionCreators: actionsCreators,
   inputActionNames: mInstanceSliceInputActionNames,
 }
 
-export default MInstanceSlice;
+export default instanceSliceObject;

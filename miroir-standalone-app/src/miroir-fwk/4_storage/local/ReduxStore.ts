@@ -4,9 +4,10 @@ import { all, call, takeEvery } from 'redux-saga/effects'
 
 import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity'
 import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance'
-import { MLocalStoreEvent, MLocalStoreI, MLocalStoreObserver } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreI'
+import { LocalStoreEvent, LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreInterface'
+import { EventManager, Observer } from 'src/miroir-fwk/1_core/utils/EventManager'
 import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice'
-import MInstanceSlice, { MinstanceSliceState } from 'src/miroir-fwk/4_storage/local/MInstanceSlice'
+import instanceSliceObject, { InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice'
 import {
   createUndoableReducer,
   MreduxWithUndoRedoReducer,
@@ -39,16 +40,21 @@ export interface MDatastoreOutputNotificationsI {
 
 export interface InnerStoreStateInterface {
   miroirEntities: EntityState<MEntityDefinition>;
-  miroirInstances: MinstanceSliceState;
+  miroirInstances: InstanceSliceState;
 }
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Maction) => any;
 
-export class MreduxStore implements MLocalStoreI {
+/**
+ * Local store implementation using Redux.
+ * 
+ */
+export class ReduxStore implements LocalStoreInterface {
   private store:MreduxWithUndoRedoStore;
   private staticReducers:MreduxWithUndoRedoReducer;
   private sagaMiddleware:any;
   // private asyncDispatchMiddleware:any;//TODO: set proper type
-  private listeners: Set<MLocalStoreObserver> = new Set();
+  private eventManager: EventManager<LocalStoreEvent> = new EventManager<LocalStoreEvent>();
+  // private listeners: Set<MLocalStoreObserver> = new Set();
 
   // ###############################################################################
   constructor(
@@ -59,7 +65,7 @@ export class MreduxStore implements MLocalStoreI {
       combineReducers(
         {
           miroirEntities: EntitySlice.reducer,
-          miroirInstances: MInstanceSlice.reducer,
+          miroirInstances: instanceSliceObject.reducer,
         }
       )
     );
@@ -80,15 +86,25 @@ export class MreduxStore implements MLocalStoreI {
   getInnerStore() {
     return this.store;
   }
+
   // ###############################################################################
-  listenerSubscribe(listener:MLocalStoreObserver) {
-    console.log('listenerSubscribe', listener);
-    this.listeners.add(listener);
+  observerSubscribe(observer:Observer<LocalStoreEvent>){
+    this.eventManager.observerSubscribe(observer);
   }
+
   // ###############################################################################
-  listenerUnsubscribe(listener:MLocalStoreObserver) {
-    this.listeners.delete(listener);
+  observerUnsubscribe(observer:Observer<LocalStoreEvent>) {
+    this.eventManager.observerUnsubscribe(observer);
   }
+  // // ###############################################################################
+  // listenerSubscribe(listener:MLocalStoreObserver) {
+  //   console.log('listenerSubscribe', listener);
+  //   this.listeners.add(listener);
+  // }
+  // // ###############################################################################
+  // listenerUnsubscribe(listener:MLocalStoreObserver) {
+  //   this.listeners.delete(listener);
+  // }
 
   // ###############################################################################
   public run():void {
@@ -115,7 +131,7 @@ export class MreduxStore implements MLocalStoreI {
   // ###############################################################################
   addInstancesForEntity(entityName:string,instances:Minstance[]):void { 
     this.store.dispatch(
-      MInstanceSlice.actionCreators[MInstanceSlice.inputActionNames.AddInstancesForEntity](
+      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity](
         {instances:instances, entity: entityName}
       )
     );
@@ -124,7 +140,7 @@ export class MreduxStore implements MLocalStoreI {
   // ###############################################################################
   modifyInstancesForEntity(entityName:string,instances:Minstance[]):void{
     this.store.dispatch(
-      MInstanceSlice.actionCreators[MInstanceSlice.inputActionNames.UpdateInstancesForEntity](
+      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity](
         {instances:instances, entity: entityName}
       )
     );
@@ -133,29 +149,30 @@ export class MreduxStore implements MLocalStoreI {
 
   // ###############################################################################
   *handleEntitySagaOutput (
-    _this:MreduxStore,
-    event:MLocalStoreEvent<any>,
+    _this:ReduxStore,
+    event:LocalStoreEvent,
   ):any {
     console.log("MreduxStore handleEntitySagaOutput, event", event);
-    const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
-    yield call([listener,listener.notify],event)
+    // const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
+    // yield call([listener,listener.dispatch],event)
+    yield call([_this.eventManager,_this.eventManager.dispatch],event)
   }
 
   // ###############################################################################
   *handleInstanceSagaOutput (
-    _this:MreduxStore,
-    event:MLocalStoreEvent<any>,
+    _this:ReduxStore,
+    event:LocalStoreEvent,
   ):any {
     console.log("MreduxStore handleInstanceSagaOutput");
-    const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
-    yield call([listener,listener.notify],event)
+    // const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
+    yield call([_this.eventManager,_this.eventManager.dispatch],event)
   }
 
   // ###############################################################################
-  public *rootSaga(_this:MreduxStore):any {
-    console.log("MreduxStore rootSaga");
-    const entitySagaOutputChannel:Channel<MLocalStoreEvent<any>> = yield call(channel);
-    const instanceSagaOutputChannel:Channel<MLocalStoreEvent<any>> = yield call(channel);
+  public *rootSaga(_this:ReduxStore):any {
+    console.log("MreduxStore rootSaga",this);
+    const entitySagaOutputChannel:Channel<LocalStoreEvent> = yield call(channel);
+    const instanceSagaOutputChannel:Channel<LocalStoreEvent> = yield call(channel);
     yield all(
       [
         takeEvery(entitySagaOutputChannel, _this.handleEntitySagaOutput, _this),
@@ -168,4 +185,4 @@ export class MreduxStore implements MLocalStoreI {
 }
 
   // ###############################################################################
-  export default MreduxStore;
+  export default ReduxStore;
