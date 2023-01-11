@@ -1,7 +1,7 @@
 /**
- * jest-environment-options {"url": "http://localhost/"}
  * jest-environment ./tests/custom-test-env
  * @jest-environment jsdom
+ * @jest-environment-options {"url": "http://localhost/"}
  */
 
 import { TextEncoder, TextDecoder } from 'util'
@@ -38,7 +38,7 @@ const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
 const dataController: DataControllerInterface = new DataController(mReduxStore);
-dataController.loadDataFromDataStore();
+// dataController.loadDataFromDataStore();
 
 
 
@@ -71,12 +71,13 @@ test(
     await mServer.localIndexedStorage.putValue("Report",reportEntityList);
 
     // await mStore.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
-    await mReduxStore.fetchFromApiAndReplaceInstancesForAllEntities();
+    // mReduxStore.fetchFromApiAndReplaceInstancesForAllEntities();
+    dataController.loadDataFromDataStore();
 
     const {
       getByText,
       getAllByRole,
-      container
+      // container
     } = renderWithProviders(
       <MReportComponent
         reportName="EntityList"

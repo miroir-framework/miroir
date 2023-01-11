@@ -126,10 +126,9 @@ export function createUndoableReducer(
   }
 
   const callNextReducer = (state:MreduxWithUndoRedoState, action:any):MreduxWithUndoRedoState => {
-    // const { dataCache, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
-    const newPresentSnapshot:any = callUndoRedoReducer(reducer,presentModelSnapshot, action)
+    const newPresentSnapshot:InnerStoreStateInterface = callUndoRedoReducer(reducer,presentModelSnapshot, action)
     if (presentModelSnapshot === newPresentSnapshot) {
       return state
     } else {
@@ -145,7 +144,10 @@ export function createUndoableReducer(
 
 
   // Returns a reducer function, that handles undo and redo
-  return (state:MreduxWithUndoRedoState = mReduxWithUndoRedoGetInitialState(reducer), action:any):MreduxWithUndoRedoState => {
+  return (
+    state:MreduxWithUndoRedoState = mReduxWithUndoRedoGetInitialState(reducer), 
+    action:any
+  ): MreduxWithUndoRedoState => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
     if (!TRANSACTIONS_ENABLED) {

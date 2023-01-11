@@ -10,32 +10,35 @@ import { LocalStoreEvent, LocalStoreInterface } from 'src/miroir-fwk/0_interface
 export class DataController implements DataControllerInterface {
 
   constructor(private localStore: LocalStoreInterface) {
-    localStore.observerSubscribe(this); // TODO: unsubscribe!?
-  }
-
-  public takeEvery(localStoreEvent: LocalStoreEvent): void {
-    console.log(
-      "MDataController notify reveived localStoreEvent",
-      localStoreEvent,
-      this
-    );
-    this.localStore.fetchInstancesFromDatastoreForEntityList(
-      localStoreEvent.param
-    );
+    localStore.observerMatcherSubscribe(
+      [
+        // TODO: handle failed allEntityDefinitionsHaveBeenLocallyStored
+        /**
+         * whenever allEntityDefinitionsHaveBeenLocallyStored, we need to fetch all
+         * instances for the defined entities.
+         */ 
+        {
+          eventName:'allEntityDefinitionsHaveBeenLocallyStored', 
+          status:'OK',
+          takeEvery: (
+            (localStoreEvent: LocalStoreEvent): void => {
+              console.log(
+                "DataController notify reveived localStoreEvent",
+                localStoreEvent,
+                this
+              );
+              this.localStore.fetchInstancesFromDatastoreForEntityList(
+                localStoreEvent.param
+              );
+            }
+          ).bind(this)
+        }
+      ]
+    )
   }
 
   public loadDataFromDataStore(): void {
     console.log("MDataController notify reveived localStoreEvent", this);
     this.localStore.fetchFromApiAndReplaceInstancesForAllEntities();
   }
-
-  // fetchFromApiAndReplaceInstancesForEntityOK(entityName: string): void {
-  //   console.log("MDataController fetchFromApiAndReplaceInstancesForEntityOK");
-  // }
-
-  // fetchFromApiAndReplaceInstancesForEntityNOK(entityName: string): void {}
-
-  // fetchFromApiAndReplaceInstancesForAllEntitiesOK(): void {}
-
-  // fetchFromApiAndReplaceInstancesForAllEntitiesNOK(): void {}
 }

@@ -1,25 +1,12 @@
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { Minstance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
-import { Event, Observer } from "src/miroir-fwk/1_core/utils/EventManager";
-import { stringTuple } from "src/miroir-fwk/1_core/utils/utils";
+import { Event, EventManagerSubscribeInterface } from "src/miroir-fwk/1_core/utils/EventManager";
+import { EntitySagaOutputActionTypeString } from "src/miroir-fwk/4_storage/remote/EntitySagas";
+import { instanceSagaOutputActionTypeString } from "src/miroir-fwk/4_storage/remote/InstanceSagas";
 
-
-
-const EntitySagaOutputActionNames = stringTuple(
-  'allMEntitiesHaveBeenStored',
-);
-export type EntitySagaOutputActionTypeString = typeof EntitySagaOutputActionNames[number];
-
-
-export const LocalStoreEventTypeStringValues:string[] = stringTuple(
-  ...EntitySagaOutputActionNames
-);
-export type LocalStoreEventTypeString = typeof LocalStoreEventTypeStringValues[number];
+export type LocalStoreEventTypeString = EntitySagaOutputActionTypeString | instanceSagaOutputActionTypeString;
 
 export type LocalStoreEvent = Event<LocalStoreEventTypeString,any>
-// export interface MLocalStoreObserver<T> {
-//   dispatch(localStoreEvent:Event<LocalStoreEventTypeString, T>):void;
-// }
 
 
 export interface MEntityDefinitionStoreInputActionsI {
@@ -40,10 +27,11 @@ export interface MInstanceStoreInputActionsI {
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface LocalStoreInterface extends MInstanceStoreInputActionsI{
+export declare interface LocalStoreInterface
+  extends MInstanceStoreInputActionsI,
+    EventManagerSubscribeInterface<LocalStoreEvent,LocalStoreEventTypeString> 
+{
   // constructor
-  run():void;
-  getInnerStore():any; // TODO: local store should not expose its implementation!!
-  observerSubscribe(observer:Observer<LocalStoreEvent>);
-  observerUnsubscribe(observer:Observer<LocalStoreEvent>);
+  run(): void;
+  getInnerStore(): any; // TODO: local store should not expose its implementation!!
 }

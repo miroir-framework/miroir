@@ -23,6 +23,8 @@ export interface InstanceActionPayload {
   entity:string, instances:MinstanceWithName[]
 }
 
+export type InstanceAction = PayloadAction<InstanceActionPayload>;
+
 //#########################################################################################
 //# INTERNAL
 //#########################################################################################
@@ -50,7 +52,7 @@ export const InstanceSlice:Slice = createSlice(
     reducers: {
       [mInstanceSliceInputActionNames.AddInstancesForEntity] (
         state:InstanceSliceState, 
-        action:PayloadAction<InstanceActionPayload,string>
+        action:InstanceAction
       ) {
         const currentEntityName = action.payload.entity;
         console.log(mInstanceSliceInputActionNames.AddInstancesForEntity, "action", JSON.stringify(action))
@@ -75,7 +77,7 @@ export const InstanceSlice:Slice = createSlice(
       },
       [mInstanceSliceInputActionNames.UpdateInstancesForEntity] (
         state:InstanceSliceState, 
-        action:PayloadAction<InstanceActionPayload,string>
+        action:InstanceAction
       ) {
         console.log(mInstanceSliceInputActionNames.UpdateInstancesForEntity, state, action)
         // TODO: replace implementation with updateMany
@@ -90,7 +92,7 @@ export const InstanceSlice:Slice = createSlice(
       },
       [mInstanceSliceInputActionNames.ReplaceInstancesForEntity] (
         state:InstanceSliceState, 
-        action:PayloadAction<InstanceActionPayload,string>
+        action:InstanceAction
       ) {
         console.log(mInstanceSliceInputActionNames.ReplaceInstancesForEntity, JSON.stringify(state), action)
         // getEntityAdapter(action.payload.entity).removeAll();

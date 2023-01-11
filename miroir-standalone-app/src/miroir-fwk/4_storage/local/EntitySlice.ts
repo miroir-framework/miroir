@@ -5,11 +5,9 @@ import {
   EntityState,
   EntityStateAdapter,
   PayloadAction,
-  Slice,
+  Slice
 } from "@reduxjs/toolkit";
-import { ReduxStore } from "src/miroir-fwk/4_storage/local/ReduxStore";
 import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { MEntityDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomainInterface";
 
 //#########################################################################################
 //# ACTION NAMES
@@ -25,22 +23,12 @@ export const mEntitySliceOutputActionNames = {
 };
 
 //#########################################################################################
-//# ENTITY ADAPTER
+//# DATA TYPES
 //#########################################################################################
-export class MEntitySlice implements MEntityDomainInputActionsI {
-  constructor(private store: ReduxStore) {}
-  // public addInstancesForEntity(entityName:string,instances:Minstance[]):void {
+export type EntitySliceStateType = EntityState<MEntityDefinition>;
+export type EntityActionPayload = MEntityDefinition[];
+export type EntityAction = PayloadAction<MEntityDefinition[]>;
 
-  // };
-  // public modifyInstancesForEntity(entityName:string,instances:Minstance[]):void {
-
-  // };
-  replaceEntities(entities: MEntityDefinition[]): void {
-    mEntitySliceActionsCreators[mEntitySliceInputActionNames.replaceEntities](
-      entities
-    );
-  }
-}
 
 //#########################################################################################
 //# ENTITY ADAPTER
@@ -62,8 +50,8 @@ const EntitySlice: Slice = createSlice({
   reducers: {
     ...(<EntityStateAdapter<MEntityDefinition>>mEntityAdapter),
     [mEntitySliceInputActionNames.replaceEntities](
-      state: EntityState<MEntityDefinition>,
-      action: PayloadAction<MEntityDefinition[], string>
+      state: EntitySliceStateType,
+      action: EntityAction
     ) {
       console.log("reducer storeEtities called", action, JSON.stringify(state));
       mEntityAdapter.setAll(state, action.payload);
