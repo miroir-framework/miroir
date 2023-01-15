@@ -12,6 +12,7 @@
     "@mui/material": "^5.10.14",
     "@redux-devtools/core": "^3.13.1",
     "@reduxjs/toolkit": "^1.9.0",
+    "@teroneko/redux-saga-promise": "^3.0.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@types/react-redux": "^7.1.24",

@@ -1,5 +1,6 @@
 import {
   createEntityAdapter,
+  createSelector,
   createSlice,
   EntityAdapter,
   EntityState,
@@ -7,7 +8,7 @@ import {
   PayloadAction,
   Slice
 } from "@reduxjs/toolkit";
-import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
+import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 
 //#########################################################################################
 //# ACTION NAMES
@@ -25,16 +26,16 @@ export const mEntitySliceOutputActionNames = {
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
-export type EntitySliceStateType = EntityState<MEntityDefinition>;
-export type EntityActionPayload = MEntityDefinition[];
-export type EntityAction = PayloadAction<MEntityDefinition[]>;
+export type EntitySliceStateType = EntityState<EntityDefinition>;
+export type EntityActionPayload = EntityDefinition[];
+export type EntityAction = PayloadAction<EntityDefinition[]>;
 
 
 //#########################################################################################
 //# ENTITY ADAPTER
 //#########################################################################################
-export const mEntityAdapter: EntityAdapter<MEntityDefinition> =
-  createEntityAdapter<MEntityDefinition>({
+export const mEntityAdapter: EntityAdapter<EntityDefinition> =
+  createEntityAdapter<EntityDefinition>({
     // Assume IDs are stored in a field other than `book.id`
     selectId: (entity) => entity.uuid,
     // Keep the "all IDs" array sorted based on book titles
@@ -48,7 +49,7 @@ const EntitySlice: Slice = createSlice({
   name: "entities",
   initialState: mEntityAdapter.getInitialState(),
   reducers: {
-    ...(<EntityStateAdapter<MEntityDefinition>>mEntityAdapter),
+    ...(<EntityStateAdapter<EntityDefinition>>mEntityAdapter),
     [mEntitySliceInputActionNames.replaceEntities](
       state: EntitySliceStateType,
       action: EntityAction
@@ -66,5 +67,10 @@ const EntitySlice: Slice = createSlice({
 export const mEntitySliceActionsCreators: any = {
   ...EntitySlice.actions,
 };
+
+export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefinition[] = createSelector(
+  (state: EntitySliceStateType) => state,
+  (items) => Array.from(Object.values(items.entities))
+);
 
 export default EntitySlice;

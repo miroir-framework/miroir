@@ -12,19 +12,21 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { waitFor } from '@testing-library/react'
 import fetch from 'node-fetch'
+
+
 import MClient, { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient'
 import { MDevServer } from 'src/miroir-fwk/4_storage/remote/MDevServer'
 import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas'
 import InstanceSagas from 'src/miroir-fwk/4_storage/remote/InstanceSagas'
 import { ReduxStore } from 'src/miroir-fwk/4_storage/local/ReduxStore'
 import { MReportComponent } from 'src/miroir-fwk/4_view/MReportComponent'
+import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface'
+import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController'
 import { renderWithProviders } from 'tests/tests-utils'
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
 import entityReport from "src/miroir-fwk/assets/entities/Report.json"
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
-import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface'
-import { DataController } from 'src/miroir-fwk/3_controllers/DataController'
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -37,10 +39,7 @@ const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new DataController(mReduxStore);
-// dataController.loadDataFromDataStore();
-
-
+const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore);
 
 // Enable API mocking before tests.
 beforeAll(
@@ -48,6 +47,10 @@ beforeAll(
     // Establish requests interception layer before all tests.
     worker.listen();
     await mServer.openObjectStore();
+    await mServer.createObjectStore(["Entity","Instance","Report"]);
+    await mServer.localIndexedStorage.putValue("Entity",entityReport);
+    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
+    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
   }
 )
 
@@ -65,14 +68,8 @@ afterAll(
 test(
   'MReportComponent: test loading sequence for Report displaying Entity list',
   async () => {
-    await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.localIndexedStorage.putValue("Entity",entityReport);
-    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
-    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
 
-    // await mStore.dispatch(entitySagas.mEntitySagaActionsCreators.fetchMiroirEntities())
-    // mReduxStore.fetchFromApiAndReplaceInstancesForAllEntities();
-    dataController.loadDataFromDataStore();
+    dataController.loadConfigurationFromRemoteDataStore();
 
     const {
       getByText,

@@ -1,5 +1,5 @@
 import { EntityState } from '@reduxjs/toolkit';
-import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
@@ -29,7 +29,7 @@ it(
   ('update one Instance'),
   async () => {
     const entityChanges = {description:"toto"};
-    const modifiedEntity: MEntityDefinition = Object.assign({},entityEntity,entityChanges);
+    const modifiedEntity: EntityDefinition = Object.assign({},entityEntity,entityChanges);
     const addAction:InstanceActionPayload = {entity:"Entity", instances:[entityEntity], };
     const updateAction:InstanceActionPayload = {entity:"Entity", instances:[modifiedEntity], };
     const emptyStore: InstanceSliceState = {};

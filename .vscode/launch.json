@@ -5,6 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "localRoot": "${workspaceRoot}/miroir-standalone-app",
+      "cwd": "${workspaceFolder}/miroir-standalone-app",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/miroir-standalone-app/dist/**/*.js"],
+      "command": "npm start",
+      "name": "Run npm start",
+      "request": "launch",
+      "type": "node-terminal",
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Jest Tests",
@@ -18,6 +28,6 @@
           "${workspaceRoot}/miroir-standalone-app/dist/**/*"
       ],
       "envFile": "${workspaceRoot}/.env"
-  }
+    }
   ]
 }

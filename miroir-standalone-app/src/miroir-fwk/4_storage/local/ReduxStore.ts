@@ -1,21 +1,25 @@
-import { combineReducers, configureStore, EntityState } from '@reduxjs/toolkit'
-import createSagaMiddleware, { Channel, channel } from 'redux-saga'
-import { all, call, takeEvery } from 'redux-saga/effects'
-
-import { MEntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity'
-import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance'
-import { LocalStoreEvent, LocalStoreEventTypeString, LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/MLocalStoreInterface'
-import { EventManager, EventMatchParameters } from 'src/miroir-fwk/1_core/utils/EventManager'
-import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice'
-import instanceSliceObject, { InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice'
+import { combineReducers, configureStore, EntityState } from '@reduxjs/toolkit';
 import {
-  createUndoableReducer,
-  MreduxWithUndoRedoReducer,
-  MreduxWithUndoRedoStore
-} from "src/miroir-fwk/4_storage/local/undoableReducer"
-import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas'
-import { InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas'
-import { Maction } from './Mslice'
+  implementPromiseAction, promiseActionFactory, promiseMiddleware
+} from "@teroneko/redux-saga-promise";
+import createSagaMiddleware from 'redux-saga';
+import { all, call } from 'redux-saga/effects';
+
+
+import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import { LocalStoreEvent, LocalStoreEventTypeString, LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
+import { EventManager, EventMatchParameters } from 'src/miroir-fwk/1_core/utils/EventManager';
+import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice';
+import instanceSliceObject, { InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
+import {
+  createUndoRedoReducer,
+  MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
+} from "src/miroir-fwk/4_storage/local/UndoRedoReducer";
+import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
+import { instanceSagaInputActionNames, instanceSagaInputActionNamesObject, InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
+import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+import { Maction } from './Mslice';
 
 
 //#########################################################################################
@@ -27,57 +31,70 @@ import { Maction } from './Mslice'
 
 export interface MDatastoreInputActionsI {
   fetchInstancesFromDatastoreForEntity(entityName:string):void;
-  fetchInstancesFromDatastoreForEntityList(entities:MEntityDefinition[]):void;
+  fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
 }
 
 export interface MDatastoreOutputNotificationsI {
   allInstancesRefreshed():void;
 }
 
-
-
-// const persistedState = loadFromLocalStorage();
-
 export interface InnerStoreStateInterface {
-  miroirEntities: EntityState<MEntityDefinition>;
+  miroirEntities: EntityState<EntityDefinition>;
   miroirInstances: InstanceSliceState;
 }
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Maction) => any;
+
+// ###############################################################################
+export function handlePromiseActionForSaga (saga, ...args) {
+  return function*(action) {
+    yield call(implementPromiseAction, action, saga.bind(...args,action))
+  }
+}
 
 /**
  * Local store implementation using Redux.
  * 
  */
 export class ReduxStore implements LocalStoreInterface {
-  private store:MreduxWithUndoRedoStore;
-  private staticReducers:MreduxWithUndoRedoReducer;
-  private sagaMiddleware:any;
-  private eventManager: EventManager<LocalStoreEvent,LocalStoreEventTypeString> = new EventManager<LocalStoreEvent,LocalStoreEventTypeString>();
+  private store: MreduxWithUndoRedoStore;
+  private staticReducers: MreduxWithUndoRedoReducer;
+  private sagaMiddleware: any;
+  private eventManager: EventManager<LocalStoreEvent, LocalStoreEventTypeString> = new EventManager<
+    LocalStoreEvent,
+    LocalStoreEventTypeString
+  >();
 
   // ###############################################################################
   constructor(
+    public client: MclientI,
     public entitySagasObject: EntitySagas,
-    public instanceSagasObject: InstanceSagas,
+    public instanceSagasObject: InstanceSagas
   ) {
-    this.staticReducers = createUndoableReducer(
-      combineReducers(
-        {
-          miroirEntities: EntitySlice.reducer,
-          miroirInstances: instanceSliceObject.reducer,
-        }
-      )
+    this.staticReducers = createUndoRedoReducer(
+      combineReducers({
+        miroirEntities: EntitySlice.reducer,
+        miroirInstances: instanceSliceObject.reducer,
+      })
     );
-    this.sagaMiddleware = createSagaMiddleware()
+    this.sagaMiddleware = createSagaMiddleware();
 
-    this.store = configureStore(
-      {
-        reducer: this.staticReducers,
-        middleware: (getDefaultMiddleware) => (
-          getDefaultMiddleware()
-          .concat(this.sagaMiddleware)
-        )
-      }
-    );
+    this.store = configureStore({
+      reducer: this.staticReducers,
+      middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+          serializableCheck: {
+            // Ignore these action types
+            ignoredActions: [
+              ...entitySagasObject.entitySagaInputActionNames,
+              ...instanceSagaInputActionNames
+            ],
+            // Ignore these field paths in all actions
+            ignoredActionPaths: ["meta.promiseActions"],
+          },
+        })
+          .concat(promiseMiddleware)
+          .concat(this.sagaMiddleware),
+    });
   } //end constructor
 
   // ###############################################################################
@@ -86,97 +103,76 @@ export class ReduxStore implements LocalStoreInterface {
   }
 
   // ###############################################################################
-  observerSubscribe(takeEvery:(localStoreEvent:LocalStoreEvent) => void){
+  observerSubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
     this.eventManager.observerSubscribe(takeEvery);
   }
 
   // ###############################################################################
-  observerMatcherSubscribe(matchingEvents:EventMatchParameters<LocalStoreEvent,LocalStoreEventTypeString>[]) {
+  observerMatcherSubscribe(matchingEvents: EventMatchParameters<LocalStoreEvent, LocalStoreEventTypeString>[]) {
     this.eventManager.observerSubscribeMatcher(matchingEvents);
   }
 
   // ###############################################################################
-  observerUnsubscribe(takeEvery:(localStoreEvent:LocalStoreEvent) => void) {
+  observerUnsubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
     this.eventManager.observerUnsubscribe(takeEvery);
   }
 
   // ###############################################################################
-  public run():void {
-    this.sagaMiddleware.run(
-      this.rootSaga.bind(this)
-    );
+  public run(): void {
+    this.sagaMiddleware.run(this.rootSaga.bind(this));
   }
 
   // ###############################################################################
-  fetchFromApiAndReplaceInstancesForEntity(entityName:string):void {
+  fetchFromApiAndReplaceInstancesForEntity(entityName: string): void {
     // this.dispatch(this.entitySagasObject.mEntitySagaActionsCreators.fetchMiroirEntities())
   }
 
   // ###############################################################################
-  fetchInstancesFromDatastoreForEntityList(entities:MEntityDefinition[]):void {
-    this.store.dispatch(this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesFromDatastoreForEntityList(entities))
+  fetchInstancesFromDatastoreForEntityList(entities: EntityDefinition[]): Promise<EntityDefinition[]> {
+    console.log("ReduxStore fetchInstancesFromDatastoreForEntityList called, entities",entities,);
+    if (entities !== undefined) {
+      console.log("dispatching saga fetchInstancesFromDatastoreForEntityList with entities",entities );
+      return this.store.dispatch(
+        this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesFromDatastoreForEntityList(entities)
+      );
+    }
   }
 
   // ###############################################################################
-  fetchFromApiAndReplaceInstancesForAllEntities():void {
-    this.store.dispatch(this.entitySagasObject.mEntitySagaInputActionsCreators.fetchAllMEntitiesFromDatastore())
+  fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<EntityDefinition[]> {
+    return this.store.dispatch(
+      this.entitySagasObject.mEntitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
+    );
   }
 
   // ###############################################################################
-  addInstancesForEntity(entityName:string,instances:Minstance[]):void { 
+  addInstancesForEntity(entityName: string, instances: Minstance[]): void {
     this.store.dispatch(
-      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity](
-        {instances:instances, entity: entityName}
-      )
+      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity]({
+        instances: instances,
+        entity: entityName,
+      })
     );
   }
 
   // ###############################################################################
-  modifyInstancesForEntity(entityName:string,instances:Minstance[]):void{
+  modifyInstancesForEntity(entityName: string, instances: Minstance[]): void {
     this.store.dispatch(
-      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity](
-        {instances:instances, entity: entityName}
-      )
+      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity]({
+        instances: instances,
+        entity: entityName,
+      })
     );
   }
 
-
   // ###############################################################################
-  *handleEntitySagaOutput (
-    // _this:ReduxStore,
-    event:LocalStoreEvent,
-  ):any {
-    console.log("MreduxStore handleEntitySagaOutput, event", event);
-    // const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
-    // yield call([listener,listener.dispatch],event)
-    yield call([this.eventManager,this.eventManager.dispatch],event)
-  }
-
-  // ###############################################################################
-  *handleInstanceSagaOutput (
-    // _this:ReduxStore,
-    event:LocalStoreEvent,
-  ):any {
-    console.log("MreduxStore handleInstanceSagaOutput, event", event);
-    // const listener:MLocalStoreObserver=Array.from(_this.listeners.keys())[0];
-    yield call([this.eventManager,this.eventManager.dispatch],event)
-  }
-
-  // ###############################################################################
-  // public *rootSaga(_this:ReduxStore):any {
-  public *rootSaga() {
-    console.log("MreduxStore rootSaga",this);
-    const entitySagaOutputChannel:Channel<LocalStoreEvent> = yield call(channel);
-    const instanceSagaOutputChannel:Channel<LocalStoreEvent> = yield call(channel);
-    yield all(
-      [
-        takeEvery(entitySagaOutputChannel, this.handleEntitySagaOutput.bind(this)),
-        takeEvery(instanceSagaOutputChannel, this.handleInstanceSagaOutput.bind(this)),
-        // this.entitySagasObject.entityRootSaga.bind(this.entitySagasObject)(this.entitySagasObject, entitySagaOutputChannel),
-        this.entitySagasObject.entityRootSaga.bind(this.entitySagasObject)(entitySagaOutputChannel),
-        this.instanceSagasObject.instanceRootSaga.bind(this.instanceSagasObject)(this.instanceSagasObject, instanceSagaOutputChannel),
-      ]
-    );
+  public *rootSaga(
+  ) {
+    console.log("ReduxStore rootSaga running", this.entitySagasObject, this.instanceSagasObject);
+    yield all([
+      this.entitySagasObject.entityRootSaga.bind(this.entitySagasObject)(),
+      this.instanceSagasObject.instanceRootSaga.bind(this.instanceSagasObject)(),
+    ]);
   }
 }
 

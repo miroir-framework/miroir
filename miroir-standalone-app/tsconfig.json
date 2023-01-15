@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "types": ["node", "jest"],
+    "sourceMap": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports":true,
     "noImplicitAny": false,

@@ -15,7 +15,7 @@ import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
 
 import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface';
-import { DataController } from 'src/miroir-fwk/3_controllers/DataController';
+import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController';
 import ReduxStore from 'src/miroir-fwk/4_storage/local/ReduxStore';
 import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
 import { InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
@@ -24,19 +24,7 @@ import { MDevServer } from 'src/miroir-fwk/4_storage/remote/MDevServer';
 import { renderWithProviders } from "tests/tests-utils";
 import { TestTableComponent } from "tests/view/TestTableComponent";
 import React from "react";
-// const delay = (time:number) => new Promise((resolve) => {
-//   setTimeout(resolve, time);
-// });
 
-// const mServer: MDevServer = new MDevServer();
-// const worker = setupServer(...mServer.handlers)
-// const client:MclientI = new MClient(fetch);
-// const entitySagas: EntitySagas = new EntitySagas(client);
-// const instanceSagas: InstanceSagas = new InstanceSagas(client);
-
-// const mReduxStore:ReduxStore = new ReduxStore(entitySagas, instanceSagas);
-// mReduxStore.run();
-// const dataController: DataControllerInterface = new DataController(mReduxStore);
 const mServer: MDevServer = new MDevServer();
 const worker = setupServer(...mServer.handlers)
 const mClient:MclientI = new MClient(fetch);
@@ -46,8 +34,7 @@ const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new DataController(mReduxStore);
-// dataController.loadDataFromDataStore();
+const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore);
 
 beforeAll(
   async () => {
@@ -66,7 +53,7 @@ afterAll(
 )
 
 it(
-  'Refresh all Entity definitions',
+  'LocalStoreController: Refresh all Entity definitions',
   async () => {
     // const saga:ExpectApi = expectSaga(mReduxStore.rootSaga, mReduxStore);
     console.log('Refresh all Entity definitions start');
@@ -75,16 +62,14 @@ it(
     await mServer.localIndexedStorage.putValue("Entity",entityEntity);
     await mServer.localIndexedStorage.putValue("Report",reportEntityList);
 
-    dataController.loadDataFromDataStore();
+    dataController.loadConfigurationFromRemoteDataStore();
 
     const {
       getByText,
       getAllByRole,
       // container
     } = renderWithProviders(
-      <TestTableComponent
-        // reportName="EntityList"
-      />,
+      <TestTableComponent/>,
       {store:mReduxStore.getInnerStore()}
     );
 

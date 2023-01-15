@@ -1,4 +1,4 @@
 
 export interface DataControllerInterface {
-  loadDataFromDataStore():void;
+  loadConfigurationFromRemoteDataStore():void;
 }

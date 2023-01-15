@@ -1,12 +1,12 @@
-import { MEntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
+import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { MiroirReport } from "src/miroir-fwk/0_interfaces/1_core/Report";
 
 export function ReportGetInstancesToDispay(
   report:MiroirReport,
-  miroirEntities:MEntityDefinition[]
+  miroirEntities:EntityDefinition[]
 ):any[] {
-  let result:MEntityDefinition[];
-  const currentMiroirEntity: MEntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
+  let result:EntityDefinition[];
+  const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
 
   switch (currentMiroirEntity?.entity) {
     case "Entity":

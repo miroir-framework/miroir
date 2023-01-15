@@ -83,7 +83,7 @@ export function mReduxWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRed
 }
 
 
-export function createUndoableReducer(
+export function createUndoRedoReducer(
   reducer:InnerReducerInterface
   // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void
 ):MreduxWithUndoRedoReducer
