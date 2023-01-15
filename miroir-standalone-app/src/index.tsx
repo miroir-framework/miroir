@@ -41,7 +41,7 @@ async function start() {
   const entitySagas: EntitySagas = new EntitySagas(client);
   const instanceSagas: InstanceSagas = new InstanceSagas(client);
 
-  const mReduxStore:ReduxStore = new ReduxStore(client,entitySagas, instanceSagas);
+  const mReduxStore:ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
   const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore);
   dataController.loadConfigurationFromRemoteDataStore();

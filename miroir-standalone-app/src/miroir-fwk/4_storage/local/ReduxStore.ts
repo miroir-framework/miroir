@@ -66,7 +66,6 @@ export class ReduxStore implements LocalStoreInterface {
 
   // ###############################################################################
   constructor(
-    public client: MclientI,
     public entitySagasObject: EntitySagas,
     public instanceSagasObject: InstanceSagas
   ) {
