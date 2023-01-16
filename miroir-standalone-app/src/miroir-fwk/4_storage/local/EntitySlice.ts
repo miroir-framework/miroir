@@ -8,20 +8,26 @@ import {
   PayloadAction,
   Slice
 } from "@reduxjs/toolkit";
+import { promiseActionFactory } from "@teroneko/redux-saga-promise";
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 
+const sliceName = 'entities';
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-export const mEntitySliceInputActionNames = {
-  replaceEntities: "replaceEntities",
+export const entitySliceInputActionNamesObject = {
+  replaceAllEntityDefinitions: "replaceAllEntityDefinitions",
   addOne: "addOne",
   updateOne: "updateOne",
 };
+export const entitySliceInputFullActionNames = Object.values(entitySliceInputActionNamesObject).map(n=>sliceName+'/'+n);
+export const entitySliceInputActionNames = Object.values(entitySliceInputActionNamesObject);
 
-export const mEntitySliceOutputActionNames = {
+export const entitySliceOutputActionNames = {
   entitiesReceivedNotification: "entitiesReceivedNotification",
 };
+
+export const entitySlicePromiseAction = promiseActionFactory<EntityDefinition[]>().create<EntityDefinition[]>(entitySliceInputActionNamesObject.replaceAllEntityDefinitions);
 
 //#########################################################################################
 //# DATA TYPES
@@ -46,15 +52,15 @@ export const mEntityAdapter: EntityAdapter<EntityDefinition> =
 //# SLICE
 //#########################################################################################
 const EntitySlice: Slice = createSlice({
-  name: "entities",
+  name: sliceName,
   initialState: mEntityAdapter.getInitialState(),
   reducers: {
     ...(<EntityStateAdapter<EntityDefinition>>mEntityAdapter),
-    [mEntitySliceInputActionNames.replaceEntities](
+    [entitySliceInputActionNamesObject.replaceAllEntityDefinitions](
       state: EntitySliceStateType,
       action: EntityAction
     ) {
-      console.log("reducer storeEtities called", action, JSON.stringify(state));
+      console.log("reducer ",entitySliceInputActionNamesObject.replaceAllEntityDefinitions,"called", action);
       mEntityAdapter.setAll(state, action.payload);
       return state;
     },
@@ -64,8 +70,9 @@ const EntitySlice: Slice = createSlice({
 //#########################################################################################
 //# ACTION CREATORS
 //#########################################################################################
-export const mEntitySliceActionsCreators: any = {
+export const entitySliceActionsCreators: any = {
   ...EntitySlice.actions,
+  ['saga-'+entitySliceInputActionNamesObject.replaceAllEntityDefinitions]:(action)=>entitySlicePromiseAction(action),
 };
 
 export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefinition[] = createSelector(
@@ -73,4 +80,10 @@ export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefi
   (items) => Array.from(Object.values(items.entities))
 );
 
-export default EntitySlice;
+const entitySliceObject = {
+  reducer: EntitySlice.reducer,
+  actionCreators: entitySliceActionsCreators,
+  inputActionNames: entitySliceInputActionNamesObject,
+};
+
+export default entitySliceObject;

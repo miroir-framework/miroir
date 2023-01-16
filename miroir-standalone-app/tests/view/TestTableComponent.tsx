@@ -34,30 +34,34 @@ export const TestTableComponent = (
       {miroirEntities?.length > 0 && !!currentMiroirEntity? (
         <div>
           <table>
-            <tr>
+            <thead>
+              <tr>
+                {
+                  currentMiroirEntity?.attributes?.map(
+                    (a, key) => (
+                      <th  key={a.name}>{a.name}</th>
+                    )
+                  )
+                }
+              </tr>
+            </thead>
+            <tbody>
               {
-                currentMiroirEntity?.attributes?.map(
-                  (a, key) => (
-                    <th  key={a.name}>{a.name}</th>
+                miroirEntities.map(
+                  (e) => (
+                    <tr key={e.name}>
+                      {
+                        currentMiroirEntity?.attributes?.map(
+                          (a,k) => (
+                            <td key={a.name} role='gridcell'>{JSON.stringify(e[a.name])}</td>
+                          )
+                        )
+                      }
+                    </tr>
                   )
                 )
               }
-            </tr>
-            {
-              miroirEntities.map(
-                (e) => (
-                  <tr key={e.name}>
-                    {
-                      currentMiroirEntity?.attributes?.map(
-                        (a,k) => (
-                          <td key={a.name} role='gridcell'>{JSON.stringify(e[a.name])}</td>
-                        )
-                      )
-                    }
-                  </tr>
-                )
-              )
-            }
+            </tbody>
           </table>
         </div>
       ) : (

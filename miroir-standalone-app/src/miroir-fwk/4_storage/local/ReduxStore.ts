@@ -1,24 +1,23 @@
 import { combineReducers, configureStore, EntityState } from '@reduxjs/toolkit';
 import {
-  implementPromiseAction, promiseActionFactory, promiseMiddleware
+  implementPromiseAction, promiseMiddleware
 } from "@teroneko/redux-saga-promise";
 import createSagaMiddleware from 'redux-saga';
 import { all, call } from 'redux-saga/effects';
 
 
 import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import { Minstance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { LocalStoreEvent, LocalStoreEventTypeString, LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
-import { EventManager, EventMatchParameters } from 'src/miroir-fwk/1_core/utils/EventManager';
-import EntitySlice from 'src/miroir-fwk/4_storage/local/EntitySlice';
-import instanceSliceObject, { InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
+import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
+import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
+import entitySliceObject, { entitySliceActionsCreators, entitySliceInputActionNamesObject, entitySliceInputFullActionNames, entitySlicePromiseAction } from 'src/miroir-fwk/4_storage/local/EntitySlice';
+import instanceSliceObject, { instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
 import {
   createUndoRedoReducer,
   MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
 } from "src/miroir-fwk/4_storage/local/UndoRedoReducer";
 import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
-import { instanceSagaInputActionNames, instanceSagaInputActionNamesObject, InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
-import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+import { instanceSagaGeneratedActionNames, instanceSagaInputActionNames, InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
 import { Maction } from './Mslice';
 
 
@@ -47,7 +46,11 @@ export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Mac
 // ###############################################################################
 export function handlePromiseActionForSaga (saga, ...args) {
   return function*(action) {
-    yield call(implementPromiseAction, action, saga.bind(...args,action))
+    if (args.length > 0) {
+      yield call(implementPromiseAction, action, saga.bind(...args,action))
+    } else {
+      yield call(implementPromiseAction, action, saga.bind(undefined,action))
+    }
   }
 }
 
@@ -55,14 +58,10 @@ export function handlePromiseActionForSaga (saga, ...args) {
  * Local store implementation using Redux.
  * 
  */
-export class ReduxStore implements LocalStoreInterface {
+export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface {
   private store: MreduxWithUndoRedoStore;
   private staticReducers: MreduxWithUndoRedoReducer;
   private sagaMiddleware: any;
-  private eventManager: EventManager<LocalStoreEvent, LocalStoreEventTypeString> = new EventManager<
-    LocalStoreEvent,
-    LocalStoreEventTypeString
-  >();
 
   // ###############################################################################
   constructor(
@@ -70,23 +69,32 @@ export class ReduxStore implements LocalStoreInterface {
     public instanceSagasObject: InstanceSagas
   ) {
     this.staticReducers = createUndoRedoReducer(
-      combineReducers({
-        miroirEntities: EntitySlice.reducer,
-        miroirInstances: instanceSliceObject.reducer,
-      })
+      combineReducers(
+        {
+          miroirEntities: entitySliceObject.reducer,
+          miroirInstances: instanceSliceObject.reducer,
+        }
+      )
     );
     this.sagaMiddleware = createSagaMiddleware();
 
+    const ignoredActionsList = [
+      ...entitySagasObject.entitySagaInputActionNames,
+      ...entitySagasObject.entitySagaGeneratedActionNames,
+      ...entitySliceInputFullActionNames,
+      ...instanceSagaInputActionNames,
+      ...instanceSagaGeneratedActionNames,
+      ...instanceSliceGeneratedActionNames,
+    ];
+
+    console.log('ignoredActionsList',ignoredActionsList);
     this.store = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
           serializableCheck: {
             // Ignore these action types
-            ignoredActions: [
-              ...entitySagasObject.entitySagaInputActionNames,
-              ...instanceSagaInputActionNames
-            ],
+            ignoredActions: ignoredActionsList,
             // Ignore these field paths in all actions
             ignoredActionPaths: ["meta.promiseActions"],
           },
@@ -101,20 +109,20 @@ export class ReduxStore implements LocalStoreInterface {
     return this.store;
   }
 
-  // ###############################################################################
-  observerSubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
-    this.eventManager.observerSubscribe(takeEvery);
-  }
+  // // ###############################################################################
+  // observerSubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
+  //   this.eventManager.observerSubscribe(takeEvery);
+  // }
 
-  // ###############################################################################
-  observerMatcherSubscribe(matchingEvents: EventMatchParameters<LocalStoreEvent, LocalStoreEventTypeString>[]) {
-    this.eventManager.observerSubscribeMatcher(matchingEvents);
-  }
+  // // ###############################################################################
+  // observerMatcherSubscribe(matchingEvents: EventMatchParameters<LocalStoreEvent, LocalStoreEventTypeString>[]) {
+  //   this.eventManager.observerSubscribeMatcher(matchingEvents);
+  // }
 
-  // ###############################################################################
-  observerUnsubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
-    this.eventManager.observerUnsubscribe(takeEvery);
-  }
+  // // ###############################################################################
+  // observerUnsubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
+  //   this.eventManager.observerUnsubscribe(takeEvery);
+  // }
 
   // ###############################################################################
   public run(): void {
@@ -127,12 +135,12 @@ export class ReduxStore implements LocalStoreInterface {
   }
 
   // ###############################################################################
-  fetchInstancesFromDatastoreForEntityList(entities: EntityDefinition[]): Promise<EntityDefinition[]> {
-    console.log("ReduxStore fetchInstancesFromDatastoreForEntityList called, entities",entities,);
+  fetchInstancesForEntityListFromRemoteDatastore(entities: EntityDefinition[]): Promise<EntityDefinition[]> {
+    console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
     if (entities !== undefined) {
-      console.log("dispatching saga fetchInstancesFromDatastoreForEntityList with entities",entities );
+      console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
       return this.store.dispatch(
-        this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesFromDatastoreForEntityList(entities)
+        this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesForEntityListFromRemoteDatastore(entities)
       );
     }
   }
@@ -140,12 +148,42 @@ export class ReduxStore implements LocalStoreInterface {
   // ###############################################################################
   fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<EntityDefinition[]> {
     return this.store.dispatch(
-      this.entitySagasObject.mEntitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
+      this.entitySagasObject.entitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
     );
   }
 
   // ###############################################################################
-  addInstancesForEntity(entityName: string, instances: Minstance[]): void {
+  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<EntityDefinition[]> {
+    // clears all entities before putting the given ones in the store
+    console.log("ReduxStore replaceAllEntityDefinitions called entityDefinitions",entityDefinitions,);
+    // this.store.dispatch( // calling a slice, this is a synchronous call
+    //   entitySliceActionsCreators['saga-'+entitySliceInputActionNamesObject.replaceAllEntityDefinitions](entityDefinitions)
+    // );
+    // return this.store.dispatch(this.instanceSagasObject.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(entityDefinitions))
+    // return this.store.dispatch(entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](entityDefinitions))
+    return this.store.dispatch(entitySlicePromiseAction(entityDefinitions))
+  }
+
+  // ###############################################################################
+  // addEntityDefinitions(entities: EntityDefinition[]): Promise<void> {
+  //   // returns an exception if at least one of the entities already exists.
+  //   return this.store.dispatch(
+  //     entitySliceObject.actionCreators[entitySliceObject.inputActionNames.replaceEntities](entities)
+  //   );
+  // }
+
+  // ###############################################################################
+  // modifyEntityDefinitions(entityDefinitions: EntityDefinition[]): void {
+  //   this.store.dispatch(
+  //     instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity]({
+  //       instances: instances,
+  //       entity: entityName,
+  //     })
+  //   );
+  // }
+
+  // ###############################################################################
+  addInstancesForEntity(entityName: string, instances: Instance[]): void {
     this.store.dispatch(
       instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity]({
         instances: instances,
@@ -155,7 +193,7 @@ export class ReduxStore implements LocalStoreInterface {
   }
 
   // ###############################################################################
-  modifyInstancesForEntity(entityName: string, instances: Minstance[]): void {
+  modifyInstancesForEntity(entityName: string, instances: Instance[]): void {
     this.store.dispatch(
       instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity]({
         instances: instances,

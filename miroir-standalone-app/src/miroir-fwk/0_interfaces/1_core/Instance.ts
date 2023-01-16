@@ -1,15 +1,13 @@
-export interface Minstance {
+export interface Instance {
   "uuid": string,
   "entity": string,
   // "name":string,
   // "defaultLabel": string,
 }
 
-export interface MinstanceWithName extends Minstance {
+export interface InstanceWithName extends Instance {
   // "uuid": number,
   // "entity": string,
   "name":string,
   // "defaultLabel": string,
 }
-
-export type Minstances = Minstance[];

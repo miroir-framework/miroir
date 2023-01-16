@@ -1,5 +1,7 @@
+import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface';
 import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
+import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
 
 /**
  * controller should allow configuration of local storage / external storage balance.
@@ -9,16 +11,33 @@ import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local
  */
 export class LocalDataStoreController implements DataControllerInterface {
 
-  constructor(private localStore: LocalStoreInterface) {
+  constructor(
+    private localStore: LocalStoreInterface,
+    private remoteStore: RemoteDataStoreInterface,
+  ) {
   }
 
-  public loadConfigurationFromRemoteDataStore(): void {
-    this.localStore.fetchAllEntityDefinitionsFromRemoteDataStore().then(
-      (entities)=>{
-        console.log("DataController received localStoreEvent", entities, "calling fetchInstancesFromDatastoreForEntityList");
-        this.localStore.fetchInstancesFromDatastoreForEntityList(
+  public async loadConfigurationFromRemoteDataStore() {
+    return this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore()
+    .then(
+      (
+        (entities:EntityDefinition[]) => {
+          console.log("DataController loadConfigurationFromRemoteDataStore ", entities, "calling replaceAllEntityDefinitions");
+          return this.localStore.replaceAllEntityDefinitions.bind(this.localStore)(entities);
+        }
+      ).bind(this)
+    )
+    .then(
+      (entities:EntityDefinition[])=>{
+        console.log("DataController loadConfigurationFromRemoteDataStore ", entities, "calling fetchInstancesForEntityListFromRemoteDatastore");
+        return this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore(
           entities
         );
+      }
+    )
+    .catch(
+      error => {
+        console.warn("LocalDataStoreController loadConfigurationFromRemoteDataStore",error)
       }
     )
   }

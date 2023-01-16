@@ -39,7 +39,7 @@ const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore);
+const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore);
 
 // Enable API mocking before tests.
 beforeAll(

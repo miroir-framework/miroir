@@ -43,7 +43,7 @@ async function start() {
 
   const mReduxStore:ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
-  const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore);
+  const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore); // ReduxStore implements both local and remote Data Store access.
   dataController.loadConfigurationFromRemoteDataStore();
 
   root.render(

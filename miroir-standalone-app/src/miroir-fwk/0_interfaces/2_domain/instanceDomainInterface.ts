@@ -1,9 +1,9 @@
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { Minstance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
 
 export interface MInstanceDomainInputActionsI {
-  addInstancesForEntity(entityName:string,instances:Minstance[]):void;
-  modifyInstancesForEntity(entityName:string,instances:Minstance[]):void;
+  addInstancesForEntity(entityName:string,instances:Instance[]):void;
+  modifyInstancesForEntity(entityName:string,instances:Instance[]):void;
 }
 
 
