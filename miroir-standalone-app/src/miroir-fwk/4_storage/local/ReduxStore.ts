@@ -8,7 +8,7 @@ import { all, call } from 'redux-saga/effects';
 
 import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
+import { LocalStoreInterface, StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
 import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
 import entitySliceObject, { entitySliceActionsCreators, entitySliceInputActionNamesObject, entitySliceInputFullActionNames, entitySlicePromiseAction } from 'src/miroir-fwk/4_storage/local/EntitySlice';
 import instanceSliceObject, { InstanceAction, InstanceActionPayload, instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
@@ -88,7 +88,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
       ...instanceSliceGeneratedActionNames,
     ];
 
-    console.log('ignoredActionsList',ignoredActionsList);
+    console.log('ReduxStore ignoredActionsList',ignoredActionsList);
     this.store = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) =>
@@ -110,47 +110,22 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     return this.store;
   }
 
-  // // ###############################################################################
-  // observerSubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
-  //   this.eventManager.observerSubscribe(takeEvery);
-  // }
-
-  // // ###############################################################################
-  // observerMatcherSubscribe(matchingEvents: EventMatchParameters<LocalStoreEvent, LocalStoreEventTypeString>[]) {
-  //   this.eventManager.observerSubscribeMatcher(matchingEvents);
-  // }
-
-  // // ###############################################################################
-  // observerUnsubscribe(takeEvery: (localStoreEvent: LocalStoreEvent) => void) {
-  //   this.eventManager.observerUnsubscribe(takeEvery);
-  // }
-
   // ###############################################################################
   public run(): void {
     this.sagaMiddleware.run(this.rootSaga.bind(this));
   }
 
-  // // ###############################################################################
-  // fetchFromApiAndReplaceInstancesForEntity(entityName: string): void {
-  //   // this.dispatch(this.entitySagasObject.mEntitySagaActionsCreators.fetchMiroirEntities())
-  // }
-
   // ###############################################################################
-  fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<EntityDefinition[]> {
+  fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<StoreReturnType> {
     return this.store.dispatch(
       this.entitySagasObject.entitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
     );
   }
 
   // ###############################################################################
-  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<EntityDefinition[]> {
+  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType> {
     // clears all entities before putting the given ones in the store
     console.log("ReduxStore replaceAllEntityDefinitions called entityDefinitions",entityDefinitions,);
-    // this.store.dispatch( // calling a slice, this is a synchronous call
-    //   entitySliceActionsCreators['saga-'+entitySliceInputActionNamesObject.replaceAllEntityDefinitions](entityDefinitions)
-    // );
-    // return this.store.dispatch(this.instanceSagasObject.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(entityDefinitions))
-    // return this.store.dispatch(entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](entityDefinitions))
     return this.store.dispatch(entitySlicePromiseAction(entityDefinitions))
   }
 

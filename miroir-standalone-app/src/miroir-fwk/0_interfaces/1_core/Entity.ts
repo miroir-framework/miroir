@@ -1,3 +1,5 @@
+import { InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+
 export interface EntityAttribute {
   "id": number,
   "name": string,
@@ -11,10 +13,10 @@ export interface EntityAttribute {
   // }[],
 };
 
-export interface EntityDefinition {
-  "uuid": string,
+export interface EntityDefinition extends InstanceWithName {
+  // "uuid": string,
+  // "name":string,
   "entity": string,
-  "name":string,
   "description"?:string,
   "instanceValidationJsonSchema": {},
   "attributes"?: EntityAttribute[],

@@ -11,7 +11,10 @@ import {
   Update
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
+import { useSelector } from "react-redux";
+import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { Instance, InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { MiroirReport } from "src/miroir-fwk/0_interfaces/1_core/Report";
 import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_storage/local/UndoRedoReducer";
 
 const instanceSliceName = "instance";
@@ -48,7 +51,7 @@ export interface InstanceSliceState {
 
 export interface InstanceActionPayload {
   entity: string;
-  instances: InstanceWithName[];
+  instances: Instance[];
 }
 
 export type InstanceAction = PayloadAction<InstanceActionPayload>;
@@ -57,14 +60,14 @@ export type InstanceAction = PayloadAction<InstanceActionPayload>;
 //# Entity Adapter
 //#########################################################################################
 const getSliceEntityAdapter: (
-  entityName: string) => EntityAdapter<InstanceWithName> = _memoize(
+  entityName: string) => EntityAdapter<Instance> = _memoize(
   (entityName: string) => {
-    console.log("getEntityAdapter creating EntityAdapter For entity", entityName);
-    const result = createEntityAdapter<InstanceWithName>({
+    // console.log("getEntityAdapter creating EntityAdapter For entity", entityName);
+    const result = createEntityAdapter<Instance>({
       // Assume IDs are stored in a field other than `book.id`
       selectId: (entity) => entity.uuid,
       // Keep the "all IDs" array sorted based on book titles
-      sortComparer: (a, b) => a.name.localeCompare(b.name),
+      // sortComparer: (a, b) => a.name.localeCompare(b.name),
     });
 
     console.log("getEntityAdapter creating EntityAdapter For entity", entityName,"result",result);
@@ -101,7 +104,7 @@ export const InstanceSlice: Slice = createSlice({
       if (action.payload.entity === "Entity") {
         //check if entity already exists in store, and if not initialize store state for it.
         action.payload.instances
-          .filter((e) => e.name !== "Entity")
+          .filter((e) => e['name'] !== "Entity")
           .forEach((entity: InstanceWithName) => {
             console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "initializing entity", entity.name);
             state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
@@ -119,28 +122,13 @@ export const InstanceSlice: Slice = createSlice({
       });
     },
     [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances,JSON.stringify(state));
+      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
       const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
       if (!state[action.payload.entity]) {
         state[action.payload.entity] = sliceEntityAdapter.getInitialState();
       }
   
-      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity,"before set", JSON.stringify(state));
       state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
-      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "after set",JSON.stringify(state));
-      //TODO: find a better solution!!!!!
-      // if (action.payload.entity === "Entity") {
-      //   //check if entity already exists in store, and if not initialize store state for it.
-      //   action.payload.instances
-      //     .filter((e) => e.name !== "Entity")
-      //     .forEach(
-      //       (entity: InstanceWithName) => {
-      //         console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "initializing entity", entity.name);
-      //         state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
-      //       }
-      //     )
-      //   ;
-      // }
     },
   },
 });
@@ -166,6 +154,17 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
     );
   }
 );
+
+export function useMiroirEntities():EntityDefinition[] {
+  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'));
+  return miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
+}
+
+export function useMiroirReports():MiroirReport[] {
+  const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
+  const miroirReports:MiroirReport[] = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
+  return miroirReports;
+}
 
 //#########################################################################################
 //# ACTION CREATORS

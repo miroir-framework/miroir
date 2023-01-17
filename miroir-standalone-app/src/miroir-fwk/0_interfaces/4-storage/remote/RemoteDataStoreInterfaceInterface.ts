@@ -1,11 +1,12 @@
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
+import { StoreReturnType } from "src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface";
 import { InstanceActionPayload } from "src/miroir-fwk/4_storage/local/InstanceSlice";
 
 
 export interface EntityDefinitionRemoteDataStoreInputActionsI {
   // fetchEntityDefinitionFromRemoteDataStore(entityName:string):Promise<EntityDefinition>;
   // fetchEntityDefinitionsFromRemoteDataStore():Promise<EntityDefinition[]>;
-  fetchAllEntityDefinitionsFromRemoteDataStore():Promise<EntityDefinition[]>;
+  fetchAllEntityDefinitionsFromRemoteDataStore():Promise<StoreReturnType>;
 }
 
 export interface InstanceRemoteDataStoreInputActionsI {

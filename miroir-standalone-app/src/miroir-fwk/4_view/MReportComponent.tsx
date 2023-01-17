@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useSelector } from 'react-redux';
-import { EntityState } from "@reduxjs/toolkit";
 
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { MiroirReport, MiroirReports } from "src/miroir-fwk/0_interfaces/1_core/Report";
-import { MTableComponent } from "./MTableComponent";
-import { selectInstancesForEntity } from "src/miroir-fwk/4_storage/local/InstanceSlice";
 import { ReportGetInstancesToDispay } from "src/miroir-fwk/1_core/Report";
+import { useMiroirEntities, useMiroirReports } from "src/miroir-fwk/4_storage/local/InstanceSlice";
+import { MTableComponent } from "./MTableComponent";
 
 export interface MiroirReportComponentProps {
   reportName: string;
@@ -15,13 +13,10 @@ export interface MiroirReportComponentProps {
 export const MReportComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))
-  const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
-  const miroirEntities:EntityDefinition[] = miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
-  const miroirReports:MiroirReports = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
-
+  const miroirEntities:EntityDefinition[] = useMiroirEntities();
+  const miroirReports:MiroirReports = useMiroirReports();
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
-
+  
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
   console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)

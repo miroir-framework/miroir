@@ -2,10 +2,16 @@ import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
 import { InstanceActionPayload } from "src/miroir-fwk/4_storage/local/InstanceSlice";
 
+export interface StoreReturnType {
+  status:'ok'|'error',
+  errorMessage?:string, 
+  instances?: Instance[]
+};
+
 
 export interface EntityDefinitionLocalStoreInputActionsI {
   // addEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
-  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<EntityDefinition[]>;
+  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType>;
   // modifyEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
   //
   // replaceEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;

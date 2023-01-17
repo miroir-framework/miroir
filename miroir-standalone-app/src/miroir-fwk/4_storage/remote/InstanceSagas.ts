@@ -67,7 +67,8 @@ export class InstanceSagas {
   private entitiesToFetch: string[] = [];
   private entitiesAlreadyFetched: string[] = [];
 
-  public instanceSagaInputPromiseActions:{
+//#########################################################################################
+public instanceSagaInputPromiseActions:{
     [property in keyof instanceSagaInputActionNamesObjectTuple]
     : {
       name: property,
@@ -91,18 +92,15 @@ export class InstanceSagas {
     fetchInstancesForEntityFromRemoteDatastore: {
       name: "fetchInstancesForEntityFromRemoteDatastore",
       creator: promiseActionFactory<Instance[]>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
-      // generator: this.fetchInstancesForEntityFromRemoteDatastore.bind(this)
       generator: function*(action:PayloadAction<string>) {
         console.log("fetchInstancesForEntityFromRemoteDatastore", action);
         try {
-          const result
-          // : {
-          //   status: number,
-          //   data: any,
-          //   headers: Headers,
-          //   url: string,
-          // } 
-          = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
+          const result: {
+            status: number,
+            data: any,
+            headers: Headers,
+            url: string,
+          } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
           return {entity:action.payload, instances:result['data']};
         } catch (e) {
           console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
@@ -112,7 +110,8 @@ export class InstanceSagas {
     }
   };
 
-  public instanceSliceInputPromiseActions:{
+//#########################################################################################
+public instanceSliceInputPromiseActions:{
     [property in keyof instanceSliceInputActionNamesObjectTuple]
     : {
       name: property,
@@ -170,13 +169,6 @@ export class InstanceSagas {
       }
     },
   };
-
-
-  private instanceSagaInternalActionNames = {
-    fetchInstancesFromDatastoreForEntity: "instances/fetchInstancesFromDatastoreForEntity",
-    instancesHaveBeenFecthedForEntity:  "instancesHaveBeenFecthedForEntity",
-  };
-  
   
   //#########################################################################################
   // *fetchInstancesForEntityFromRemoteDatastore(
@@ -289,19 +281,6 @@ export class InstanceSagas {
       ]
     );
   }
-
-  //#########################################################################################
-  //# ACTIONS
-  //#########################################################################################
-  // actions sent by the InstanceSlice, to itself or to the oustide world.
-  // public instanceSagaInternalActionsCreators: any = {
-  //   fetchInstancesFromDatastoreForEntity: createAction<string>(
-  //     this.instanceSagaInternalActionNames.fetchInstancesFromDatastoreForEntity
-  //   ),
-  //   instancesHaveBeenFecthedForEntity: createAction<string>(
-  //     this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity
-  //   ),
-  // };
 
   //#########################################################################################
   // interface of events creators allowing the outside world to send events to the InstanceSlice.
