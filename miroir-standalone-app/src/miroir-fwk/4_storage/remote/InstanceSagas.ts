@@ -12,7 +12,7 @@ import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
 import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_storage/local/ReduxStore';
 import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import instanceSliceObject, { instanceSliceInputActionNamesObject, instanceSliceInputActionNamesObjectTuple } from '../local/InstanceSlice';
+import instanceSliceObject, { InstanceActionPayload, instanceSliceInputActionNamesObject, instanceSliceInputActionNamesObjectTuple } from '../local/InstanceSlice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -30,7 +30,7 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //#########################################################################################
 export const instanceSagaInputActionNamesObject = {
   'fetchInstancesForEntityListFromRemoteDatastore':'fetchInstancesForEntityListFromRemoteDatastore',
-  'fetchInstancesFromDatastoreForEntity':'fetchInstancesFromDatastoreForEntity',
+  'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
 };
 type instanceSagaInputActionNamesObjectTuple = typeof instanceSagaInputActionNamesObject;
 type instanceSagaInputActionNamesKey = keyof instanceSagaInputActionNamesObjectTuple;
@@ -83,15 +83,32 @@ export class InstanceSagas {
   } = {
     fetchInstancesForEntityListFromRemoteDatastore:{
       name: "fetchInstancesForEntityListFromRemoteDatastore",
-      creator: promiseActionFactory<EntityDefinition[]>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
+      creator: promiseActionFactory<InstanceActionPayload[]>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
         "fetchInstancesForEntityListFromRemoteDatastore"
       ),
       generator:this.fetchInstancesForEntityListFromRemoteDatastore.bind(this)
     },
-    fetchInstancesFromDatastoreForEntity: {
-      name: "fetchInstancesFromDatastoreForEntity",
-      creator: promiseActionFactory<any>().create<string,"fetchInstancesFromDatastoreForEntity">("fetchInstancesFromDatastoreForEntity"),
-      generator: this.fetchInstancesFromDatastoreForEntity.bind(this)
+    fetchInstancesForEntityFromRemoteDatastore: {
+      name: "fetchInstancesForEntityFromRemoteDatastore",
+      creator: promiseActionFactory<Instance[]>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
+      // generator: this.fetchInstancesForEntityFromRemoteDatastore.bind(this)
+      generator: function*(action:PayloadAction<string>) {
+        console.log("fetchInstancesForEntityFromRemoteDatastore", action);
+        try {
+          const result
+          // : {
+          //   status: number,
+          //   data: any,
+          //   headers: Headers,
+          //   url: string,
+          // } 
+          = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
+          return {entity:action.payload, instances:result['data']};
+        } catch (e) {
+          console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
+          yield put({ type: "instance/failure/instancesNotReceived" });
+        }
+      }.bind(this)
     }
   };
 
@@ -119,12 +136,30 @@ export class InstanceSagas {
     },
     ReplaceInstancesForEntity: {
       name: "ReplaceInstancesForEntity",
-      creator: promiseActionFactory<Instance[]>().create<string,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
-      generator: function *(action) {
-        console.log("instanceSliceInputPromiseActions ReplaceInstancesForEntity",action)
+      creator: promiseActionFactory<void>().create<InstanceActionPayload,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
+      generator: function *(action:PayloadAction<InstanceActionPayload>) {
+        console.log("instanceSliceInputPromiseActions ReplaceInstancesForEntity",action);
         yield putResolve(instanceSliceObject.actionCreators["ReplaceInstancesForEntity"](action.payload));
-        return action.payload;
+        return undefined;
       }
+    },
+    ReplaceAllInstances: {
+      name: "ReplaceAllInstances",
+      creator: promiseActionFactory<void>().create<string,"ReplaceAllInstances">("ReplaceAllInstances"),
+      generator: 
+        function *(action:PayloadAction<InstanceActionPayload[]>) {
+          const putResolves = action.payload.map(
+            function (a) {
+              return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
+            },this
+          );
+          console.log("instanceSliceInputPromiseActions ReplaceAllInstances",action,putResolves);
+          for(let f of putResolves) {
+            console.log("instanceSliceInputPromiseActions yield for entity",f.entity);
+            yield f.put;
+          }
+          return undefined;
+        }.bind(this)
     },
     UpdateInstancesForEntity: {
       name: "UpdateInstancesForEntity",
@@ -144,58 +179,62 @@ export class InstanceSagas {
   
   
   //#########################################################################################
-  *fetchInstancesFromDatastoreForEntity(
-    action: PayloadAction<string>
-  ): any {
-    console.log("fetchInstancesFromDatastoreForEntity", action)
-    try {
-      const result: {
-        status: number;
-        data: any;
-        headers: Headers;
-        url: string;
-      } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
-      yield putResolve(
-        instanceSliceObject.actionCreators[instanceSliceInputActionNamesObject.ReplaceInstancesForEntity]({
-          instances: result.data,
-          entity: action.payload,
-        })
-      );
-      return yield put(
-        this.instanceSagaInternalActionsCreators[this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity](
-          action.payload
-        )
-      );
-    } catch (e) {
-      console.warn("fetchInstancesForEntity", e);
-      yield put({ type: "instance/failure/instancesNotReceived" });
-    }
-  }
+  // *fetchInstancesForEntityFromRemoteDatastore(
+  //   action: PayloadAction<string>
+  // ): any {
+  //   console.log("fetchInstancesForEntityFromRemoteDatastore", action)
+  //   try {
+  //     const result: {
+  //       status: number;
+  //       data: Instance[];
+  //       headers: Headers;
+  //       url: string;
+  //     } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
+  //     return {entity:action.payload, entities:result.data};
+  //     // // yield putResolve(
+  //     // //   instanceSliceObject.actionCreators[instanceSliceInputActionNamesObject.ReplaceInstancesForEntity]({
+  //     // //     instances: result.data,
+  //     // //     entity: action.payload,
+  //     // //   })
+  //     // // );
+  //     // return yield put(
+  //     //   this.instanceSagaInternalActionsCreators[this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity](
+  //     //     action.payload
+  //     //   )
+  //     // );
+  //   } catch (e) {
+  //     console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
+  //     yield put({ type: "instance/failure/instancesNotReceived" });
+  //   }
+  // }
 
   //#########################################################################################
   *fetchInstancesForEntityListFromRemoteDatastore(
     action: PayloadAction<EntityDefinition[]>
   ): any {
-    console.log("fetchInstancesFromDatastoreForEntityList saga launched with action", action);
+    console.log("fetchInstancesForEntityListFromRemoteDatastore saga launched with action", action);
     const entityNames: string[] = action.payload.map((e: EntityDefinition) => e.name);
     this.entitiesToFetch = entityNames.slice();
     this.entitiesAlreadyFetched = [];
-    console.log("fetchInstancesFromDatastoreForEntityList entitiesToFetch", this.entitiesToFetch);
+    console.log("fetchInstancesForEntityListFromRemoteDatastore entitiesToFetch", this.entitiesToFetch);
+    // console.log("fetchInstancesForEntityListFromRemoteDatastore this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore", this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore);
     try {
-      yield all(
+      const receivedInstances = yield all(
         entityNames.map(
           (e: string) => {
-            const action = this.instanceSagaInternalActionsCreators.fetchInstancesFromDatastoreForEntity(e);
-            console.log("fetchInstancesFromDatastoreForEntityList fetching entity",action);
-            return put(this.instanceSagaInternalActionsCreators.fetchInstancesFromDatastoreForEntity(e))
+            // const action = this.instanceSagaInternalActionsCreators.fetchInstancesFromDatastoreForEntity(e);
+            console.log("fetchInstancesForEntityListFromRemoteDatastore fetching entity",e);
+            // return put(this.instanceSagaInternalActionsCreators.fetchInstancesFromDatastoreForEntity(e))
+            return putResolve(this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore.creator(e))
           }
         )
       );
-      return action.payload;
+      console.log("fetchInstancesForEntityListFromRemoteDatastore received all instances",receivedInstances);
+      return receivedInstances;
     } catch (error) {
-      console.log("fetchInstancesFromDatastoreForEntityList error", error);
+      console.log("fetchInstancesForEntityListFromRemoteDatastore error", error);
     } finally {
-      console.log("fetchInstancesFromDatastoreForEntityList finished");
+      console.log("fetchInstancesForEntityListFromRemoteDatastore finished");
     }
   }
 
@@ -235,15 +274,10 @@ export class InstanceSagas {
   ) {
     yield all(
       [
-        takeEvery(
-          this.instanceSagaInternalActionNames.fetchInstancesFromDatastoreForEntity,
-          this.fetchInstancesFromDatastoreForEntity.bind(this),
-        ),
-        takeEvery(
-          this.instanceSagaInputPromiseActions.fetchInstancesForEntityListFromRemoteDatastore.name,
-          handlePromiseActionForSaga(
-            this.fetchInstancesForEntityListFromRemoteDatastore,
-            this
+        ...Object.values(this.instanceSagaInputPromiseActions).map(
+          a => takeEvery(
+            a.creator,
+            handlePromiseActionForSaga(a.generator)
           )
         ),
         ...Object.values(this.instanceSliceInputPromiseActions).map(
@@ -260,14 +294,14 @@ export class InstanceSagas {
   //# ACTIONS
   //#########################################################################################
   // actions sent by the InstanceSlice, to itself or to the oustide world.
-  public instanceSagaInternalActionsCreators: any = {
-    fetchInstancesFromDatastoreForEntity: createAction<string>(
-      this.instanceSagaInternalActionNames.fetchInstancesFromDatastoreForEntity
-    ),
-    instancesHaveBeenFecthedForEntity: createAction<string>(
-      this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity
-    ),
-  };
+  // public instanceSagaInternalActionsCreators: any = {
+  //   fetchInstancesFromDatastoreForEntity: createAction<string>(
+  //     this.instanceSagaInternalActionNames.fetchInstancesFromDatastoreForEntity
+  //   ),
+  //   instancesHaveBeenFecthedForEntity: createAction<string>(
+  //     this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity
+  //   ),
+  // };
 
   //#########################################################################################
   // interface of events creators allowing the outside world to send events to the InstanceSlice.

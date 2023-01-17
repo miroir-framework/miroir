@@ -6,7 +6,7 @@ import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
 import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_storage/local/ReduxStore';
 import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { entitySliceActionsCreators, entitySliceInputActionNames, entitySliceInputActionNamesObject, entitySlicePromiseAction } from '../local/EntitySlice';
+import { EntityAction, entitySliceActionsCreators, entitySliceInputActionNames, entitySliceInputActionNamesObject, entitySlicePromiseAction } from '../local/EntitySlice';
 
 // import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
 // import entityReport from "src/miroir-fwk/assets/entities/Report.json"
@@ -90,7 +90,7 @@ export class EntitySagas {
         takeEvery(
           entitySlicePromiseAction,
           handlePromiseActionForSaga(
-            function *(action) {
+            function *(action:EntityAction) {
               console.log("entityRootSaga entitySlicePromiseAction",action)
               yield putResolve(entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.payload));
               return action.payload;

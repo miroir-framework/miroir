@@ -2,6 +2,7 @@ import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface';
 import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
 import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
+import { InstanceActionPayload } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
 
 /**
  * controller should allow configuration of local storage / external storage balance.
@@ -23,16 +24,20 @@ export class LocalDataStoreController implements DataControllerInterface {
       (
         (entities:EntityDefinition[]) => {
           console.log("DataController loadConfigurationFromRemoteDataStore ", entities, "calling replaceAllEntityDefinitions");
-          return this.localStore.replaceAllEntityDefinitions.bind(this.localStore)(entities);
+          return this.localStore.replaceAllEntityDefinitions(entities);
         }
-      ).bind(this)
+      )
     )
     .then(
       (entities:EntityDefinition[])=>{
         console.log("DataController loadConfigurationFromRemoteDataStore ", entities, "calling fetchInstancesForEntityListFromRemoteDatastore");
-        return this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore(
-          entities
-        );
+        return this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore(entities);
+      }
+    )
+    .then(
+      (instances:InstanceActionPayload[])=>{
+        console.log("DataController loadConfigurationFromRemoteDataStore ", instances, "calling replaceAllInstanceDefinitions");
+        return this.localStore.replaceAllInstances(instances);
       }
     )
     .catch(

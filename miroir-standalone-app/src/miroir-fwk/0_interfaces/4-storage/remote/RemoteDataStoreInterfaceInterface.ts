@@ -1,4 +1,5 @@
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
+import { InstanceActionPayload } from "src/miroir-fwk/4_storage/local/InstanceSlice";
 
 
 export interface EntityDefinitionRemoteDataStoreInputActionsI {
@@ -8,8 +9,8 @@ export interface EntityDefinitionRemoteDataStoreInputActionsI {
 }
 
 export interface InstanceRemoteDataStoreInputActionsI {
-  fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
-  fetchInstancesForEntityListFromRemoteDatastore(entities:EntityDefinition[]):void;
+  // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
+  fetchInstancesForEntityListFromRemoteDatastore(entities:EntityDefinition[]):Promise<InstanceActionPayload[]>;
 }
 
 /**

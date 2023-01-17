@@ -61,7 +61,7 @@ const EntitySlice: Slice = createSlice({
       action: EntityAction
     ) {
       console.log("reducer ",entitySliceInputActionNamesObject.replaceAllEntityDefinitions,"called", action);
-      mEntityAdapter.setAll(state, action.payload);
+      state = mEntityAdapter.setAll(state, action.payload);
       return state;
     },
   },

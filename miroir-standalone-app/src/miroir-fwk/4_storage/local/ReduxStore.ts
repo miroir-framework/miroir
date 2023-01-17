@@ -11,7 +11,7 @@ import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
 import { LocalStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
 import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
 import entitySliceObject, { entitySliceActionsCreators, entitySliceInputActionNamesObject, entitySliceInputFullActionNames, entitySlicePromiseAction } from 'src/miroir-fwk/4_storage/local/EntitySlice';
-import instanceSliceObject, { instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
+import instanceSliceObject, { InstanceAction, InstanceActionPayload, instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
 import {
   createUndoRedoReducer,
   MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
@@ -54,6 +54,7 @@ export function handlePromiseActionForSaga (saga, ...args) {
   }
 }
 
+// ###############################################################################
 /**
  * Local store implementation using Redux.
  * 
@@ -129,21 +130,10 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     this.sagaMiddleware.run(this.rootSaga.bind(this));
   }
 
-  // ###############################################################################
-  fetchFromApiAndReplaceInstancesForEntity(entityName: string): void {
-    // this.dispatch(this.entitySagasObject.mEntitySagaActionsCreators.fetchMiroirEntities())
-  }
-
-  // ###############################################################################
-  fetchInstancesForEntityListFromRemoteDatastore(entities: EntityDefinition[]): Promise<EntityDefinition[]> {
-    console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
-    if (entities !== undefined) {
-      console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
-      return this.store.dispatch(
-        this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesForEntityListFromRemoteDatastore(entities)
-      );
-    }
-  }
+  // // ###############################################################################
+  // fetchFromApiAndReplaceInstancesForEntity(entityName: string): void {
+  //   // this.dispatch(this.entitySagasObject.mEntitySagaActionsCreators.fetchMiroirEntities())
+  // }
 
   // ###############################################################################
   fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<EntityDefinition[]> {
@@ -183,23 +173,41 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   // }
 
   // ###############################################################################
-  addInstancesForEntity(entityName: string, instances: Instance[]): void {
-    this.store.dispatch(
-      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity]({
-        instances: instances,
-        entity: entityName,
-      })
+  fetchInstancesForEntityListFromRemoteDatastore(entities: EntityDefinition[]): Promise<InstanceActionPayload[]> {
+    console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
+    if (entities !== undefined) {
+      console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
+      return this.store.dispatch(
+        this.instanceSagasObject.instanceSagaInputActionsCreators.fetchInstancesForEntityListFromRemoteDatastore(entities)
+      );
+    }
+  }
+
+  // ###############################################################################
+  replaceAllInstances(instances:InstanceActionPayload[]):Promise<void> {
+    return this.store.dispatch(
+      this.instanceSagasObject.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
     );
   }
 
   // ###############################################################################
+  addInstancesForEntity(entityName: string, instances: Instance[]): void {
+    // this.store.dispatch(
+    //   instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.AddInstancesForEntity]({
+    //     instances: instances,
+    //     entity: entityName,
+    //   })
+    // );
+  }
+
+  // ###############################################################################
   modifyInstancesForEntity(entityName: string, instances: Instance[]): void {
-    this.store.dispatch(
-      instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity]({
-        instances: instances,
-        entity: entityName,
-      })
-    );
+    // this.store.dispatch(
+    //   instanceSliceObject.actionCreators[instanceSliceObject.inputActionNames.UpdateInstancesForEntity]({
+    //     instances: instances,
+    //     entity: entityName,
+    //   })
+    // );
   }
 
   // ###############################################################################

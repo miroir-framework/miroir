@@ -18,6 +18,7 @@ const instanceSliceName = "instance";
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
 export const instanceSliceInputActionNamesObject = {
+  ReplaceAllInstances: "ReplaceAllInstances",
   ReplaceInstancesForEntity: "ReplaceInstancesForEntity",
   UpdateInstancesForEntity: "UpdateInstancesForEntity",
   AddInstancesForEntity: "AddInstancesForEntity",
@@ -52,40 +53,23 @@ export interface InstanceActionPayload {
 
 export type InstanceAction = PayloadAction<InstanceActionPayload>;
 
-// export const instanceSliceInputPromiseActions = Object.fromEntries(
-//   instanceSliceInputActionNames.map(
-//     n => [
-//       n,
-//       {
-//         name: n,
-//         promiseAction: promiseActionFactory<InstanceWithName[]>().create<InstanceWithName[]>(n),
-//         promiseActionGenerator:
-//       }
-//     ]
-//   )
-// );
-
-// {
-//   fetchInstancesForEntityListFromRemoteDatastore:
-//     promiseActionFactory<EntityDefinition[]>().create<EntityDefinition[]>(
-//       instanceSagaInputActionNamesObject.fetchInstancesForEntityListFromRemoteDatastore
-//     ),
-//   fetchInstancesFromDatastoreForEntity:
-//     promiseActionFactory<any>().create<string>(instanceSagaInputActionNamesObject.fetchInstancesFromDatastoreForEntity),
-// };
-
 //#########################################################################################
 //# Entity Adapter
 //#########################################################################################
-const getSliceEntityAdapter: (entityName: string) => EntityAdapter<InstanceWithName> = _memoize(
+const getSliceEntityAdapter: (
+  entityName: string) => EntityAdapter<InstanceWithName> = _memoize(
   (entityName: string) => {
-    console.log("getEntityAdapter creating EntityAdapter For Entity", entityName);
-    return createEntityAdapter<InstanceWithName>({
+    console.log("getEntityAdapter creating EntityAdapter For entity", entityName);
+    const result = createEntityAdapter<InstanceWithName>({
       // Assume IDs are stored in a field other than `book.id`
       selectId: (entity) => entity.uuid,
       // Keep the "all IDs" array sorted based on book titles
       sortComparer: (a, b) => a.name.localeCompare(b.name),
     });
+
+    console.log("getEntityAdapter creating EntityAdapter For entity", entityName,"result",result);
+
+    return result;
   }
 );
 
@@ -135,22 +119,28 @@ export const InstanceSlice: Slice = createSlice({
       });
     },
     [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, JSON.stringify(state), action);
-      // getEntityAdapter(action.payload.entity).removeAll();
-      getSliceEntityAdapter(action.payload.entity).setAll(state[action.payload.entity], action.payload.instances);
-      //TODO: find a better solution!!!!!
-      if (action.payload.entity === "Entity") {
-        //check if entity already exists in store, and if not initialize store state for it.
-        action.payload.instances
-          .filter((e) => e.name !== "Entity")
-          .forEach(
-            (entity: InstanceWithName) => {
-              console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "initializing entity", entity.name);
-              state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
-            }
-          )
-        ;
+      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances,JSON.stringify(state));
+      const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
+      if (!state[action.payload.entity]) {
+        state[action.payload.entity] = sliceEntityAdapter.getInitialState();
       }
+  
+      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity,"before set", JSON.stringify(state));
+      state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
+      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "after set",JSON.stringify(state));
+      //TODO: find a better solution!!!!!
+      // if (action.payload.entity === "Entity") {
+      //   //check if entity already exists in store, and if not initialize store state for it.
+      //   action.payload.instances
+      //     .filter((e) => e.name !== "Entity")
+      //     .forEach(
+      //       (entity: InstanceWithName) => {
+      //         console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "initializing entity", entity.name);
+      //         state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
+      //       }
+      //     )
+      //   ;
+      // }
     },
   },
 });
@@ -181,10 +171,10 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
 //# ACTION CREATORS
 //#########################################################################################
 // export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-export type InstanceSliceActionCreator =
+type InstanceSliceActionCreator =
   | ActionCreatorWithPayload<any, `${string}/${string}`>
   | ActionCreatorWithoutPayload<`${string}/${string}`>;
-export const actionsCreators: {
+const actionsCreators: {
   [actionCreatorName: string]: InstanceSliceActionCreator;
 } = {
   ...InstanceSlice.actions,
