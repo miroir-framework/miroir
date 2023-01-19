@@ -7,17 +7,17 @@ import { all, call } from 'redux-saga/effects';
 
 
 import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { LocalStoreInterface, StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
-import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-storage/remote/RemoteDataStoreInterfaceInterface';
-import entitySliceObject, { entitySliceActionsCreators, entitySliceInputActionNamesObject, entitySliceInputFullActionNames, entitySlicePromiseAction } from 'src/miroir-fwk/4_storage/local/EntitySlice';
-import instanceSliceObject, { InstanceAction, InstanceActionPayload, instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
+import { Instance, InstanceCollection } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import { LocalStoreInterface, StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
+import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface';
+import entitySliceObject, { entitySliceInputFullActionNames, entitySlicePromiseAction } from 'src/miroir-fwk/4_services/localStore/EntitySlice';
+import instanceSliceObject, { instanceSliceGeneratedActionNames, InstanceSliceState } from 'src/miroir-fwk/4_services/localStore/InstanceSlice';
 import {
   createUndoRedoReducer,
   MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
-} from "src/miroir-fwk/4_storage/local/UndoRedoReducer";
-import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
-import { instanceSagaGeneratedActionNames, instanceSagaInputActionNames, InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
+} from "src/miroir-fwk/4_services/localStore/UndoRedoReducer";
+import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas';
+import { instanceSagaGeneratedActionNames, instanceSagaInputActionNames, InstanceSagas } from 'src/miroir-fwk/4_services/remoteStore/InstanceSagas';
 import { Maction } from './Mslice';
 
 
@@ -148,7 +148,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   // }
 
   // ###############################################################################
-  fetchInstancesForEntityListFromRemoteDatastore(entities: EntityDefinition[]): Promise<InstanceActionPayload[]> {
+  fetchInstancesForEntityListFromRemoteDatastore(entities: EntityDefinition[]): Promise<StoreReturnType> {
     console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
     if (entities !== undefined) {
       console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
@@ -159,7 +159,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  replaceAllInstances(instances:InstanceActionPayload[]):Promise<void> {
+  replaceAllInstances(instances:InstanceCollection[]):Promise<void> {
     return this.store.dispatch(
       this.instanceSagasObject.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
     );

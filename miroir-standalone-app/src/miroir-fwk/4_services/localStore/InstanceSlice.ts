@@ -13,9 +13,9 @@ import {
 import { memoize as _memoize } from "lodash";
 import { useSelector } from "react-redux";
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { Instance, InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { Instance, InstanceCollection, InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
 import { MiroirReport } from "src/miroir-fwk/0_interfaces/1_core/Report";
-import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_storage/local/UndoRedoReducer";
+import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_services/localStore/UndoRedoReducer";
 
 const instanceSliceName = "instance";
 //#########################################################################################
@@ -49,12 +49,8 @@ export interface InstanceSliceState {
   [propName: string]: EntityState<any>;
 }
 
-export interface InstanceActionPayload {
-  entity: string;
-  instances: Instance[];
-}
 
-export type InstanceAction = PayloadAction<InstanceActionPayload>;
+export type InstanceAction = PayloadAction<InstanceCollection>;
 
 //#########################################################################################
 //# Entity Adapter
@@ -141,13 +137,12 @@ export const selectMiroirEntityInstances = createSelector(
   (items) => items
 );
 
+//#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 export const selectInstancesForEntity: (entityName: string) => any = _memoize(
   (entityName: string) => {
-    // console.log("creating selectInstancesForEntity", entityName, "selector.");
     return createSelector(
       (state: MreduxWithUndoRedoState) => {
-        // console.log("selectInstancesForEntity", entityName, "state", state);
         return state.presentModelSnapshot.miroirInstances[entityName];
       },
       (items: EntityState<any>) => items
@@ -155,12 +150,14 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
   }
 );
 
-export function useMiroirEntities():EntityDefinition[] {
+//#########################################################################################
+export function useLocalStoreEntities():EntityDefinition[] {
   const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'));
   return miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
 }
 
-export function useMiroirReports():MiroirReport[] {
+//#########################################################################################
+export function useLocalStoreReports():MiroirReport[] {
   const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
   const miroirReports:MiroirReport[] = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
   return miroirReports;

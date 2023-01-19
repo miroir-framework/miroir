@@ -1,9 +1,9 @@
-import { EntityState } from '@reduxjs/toolkit';
-import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+// import { EntityState } from '@reduxjs/toolkit';
+// import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
 
-import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import InstanceSlice, { InstanceSliceState, instanceSliceInputActionNamesObject, selectInstancesForEntity, InstanceActionPayload } from 'src/miroir-fwk/4_storage/local/InstanceSlice';
+// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
+// import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+// import InstanceSlice, { InstanceSliceState, instanceSliceInputActionNamesObject, selectInstancesForEntity, InstanceCollection } from 'src/miroir-fwk/4_services/localStorage/InstanceSlice';
 
 beforeAll(() => {
 })
@@ -17,7 +17,7 @@ it(
     // const initialStore: InstanceSliceState = {};
     // const expectedStore:any = {Entity:{ids:[entityEntity.uuid], entities: {[entityEntity.uuid]:entityEntity}}};
     // console.log("expectedStore",expectedStore);
-    // const action:InstanceActionPayload = {entity:"Entity", instances:[entityEntity], };
+    // const action:InstanceCollection = {entity:"Entity", instances:[entityEntity], };
     // // instructions under test
     // const modifiedStore:any = InstanceSlice.reducer(initialStore,actionsCreators[instanceSliceInputActionNamesObject.AddInstancesForEntity](action));
     // // testing result
@@ -30,8 +30,8 @@ it.skip(
   async () => {
     // const entityChanges = {description:"toto"};
     // const modifiedEntity: EntityDefinition = Object.assign({},entityEntity,entityChanges);
-    // const addAction:InstanceActionPayload = {entity:"Entity", instances:[entityEntity], };
-    // const updateAction:InstanceActionPayload = {entity:"Entity", instances:[modifiedEntity], };
+    // const addAction:InstanceCollection = {entity:"Entity", instances:[entityEntity], };
+    // const updateAction:InstanceCollection = {entity:"Entity", instances:[modifiedEntity], };
     // const emptyStore: InstanceSliceState = {};
     // const initialStore:any = InstanceSlice.reducer(emptyStore,actionsCreators[instanceSliceInputActionNamesObject.AddInstancesForEntity](addAction));
     // // instructions under test

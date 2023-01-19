@@ -1,6 +1,6 @@
 import { Store } from "@reduxjs/toolkit";
 import produce, { enablePatches } from "immer";
-import { InnerReducerInterface, InnerStoreStateInterface } from "src/miroir-fwk/4_storage/local/ReduxStore";
+import { InnerReducerInterface, InnerStoreStateInterface } from "src/miroir-fwk/4_services/localStore/ReduxStore";
 enablePatches(); // to gather undo/redo operation history
 
 /**

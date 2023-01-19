@@ -3,7 +3,7 @@ import * as React from "react";
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
 import { MiroirReport, MiroirReports } from "src/miroir-fwk/0_interfaces/1_core/Report";
 import { ReportGetInstancesToDispay } from "src/miroir-fwk/1_core/Report";
-import { useMiroirEntities, useMiroirReports } from "src/miroir-fwk/4_storage/local/InstanceSlice";
+import { useLocalStoreEntities, useLocalStoreReports } from "src/miroir-fwk/4_services/localStore/InstanceSlice";
 import { MTableComponent } from "./MTableComponent";
 
 export interface MiroirReportComponentProps {
@@ -13,8 +13,8 @@ export interface MiroirReportComponentProps {
 export const MReportComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const miroirEntities:EntityDefinition[] = useMiroirEntities();
-  const miroirReports:MiroirReports = useMiroirReports();
+  const miroirEntities:EntityDefinition[] = useLocalStoreEntities();
+  const miroirReports:MiroirReports = useLocalStoreReports();
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
@@ -24,9 +24,11 @@ export const MReportComponent = (
 
   return (
     <div>
-      <h3>
+      {/* <h3>
         props: {JSON.stringify(props)}
+            erreurs: {JSON.stringify(errorLog.getErrorLog())}
       </h3>
+      */}
       {
         miroirReports?.length > 0?
           <div>

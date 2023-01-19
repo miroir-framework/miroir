@@ -1,11 +1,13 @@
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
-import { InstanceActionPayload } from "src/miroir-fwk/4_storage/local/InstanceSlice";
+import { Instance, InstanceCollection } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { MError } from "src/miroir-fwk/0_interfaces/4-view/ErrorLogServiceInterface";
+
 
 export interface StoreReturnType {
   status:'ok'|'error',
   errorMessage?:string, 
-  instances?: Instance[]
+  error?:MError,
+  instances?: InstanceCollection[]
 };
 
 
@@ -23,7 +25,7 @@ export interface EntityDefinitionLocalStoreInputActionsI {
 export interface InstanceLocalStoreInputActionsI {
   addInstancesForEntity(entityName:string,instances:Instance[]):void;
   modifyInstancesForEntity(entityName:string,instances:Instance[]):void;
-  replaceAllInstances(instances:InstanceActionPayload[]):Promise<void>;
+  replaceAllInstances(instances:InstanceCollection[]):Promise<void>;
   // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
   // fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
   // // fetchFromApiAndReplaceInstancesForAllEntities():void;

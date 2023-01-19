@@ -1,14 +1,14 @@
 import { promiseActionFactory } from '@teroneko/redux-saga-promise';
 import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effects';
 import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface';
+import { StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
 
 
 import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
-import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_storage/local/ReduxStore';
-import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_services/localStore/ReduxStore';
+import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { EntityAction, entitySliceActionsCreators, entitySliceInputActionNames, entitySliceInputActionNamesObject, entitySlicePromiseAction } from '../local/EntitySlice';
+import { EntityAction, entitySliceActionsCreators, entitySliceInputActionNames, entitySliceInputActionNamesObject, entitySlicePromiseAction } from '../localStore/EntitySlice';
 
 // import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
 // import entityReport from "src/miroir-fwk/assets/entities/Report.json"
@@ -47,7 +47,6 @@ export class EntitySagas {
 
   public entitySagaInputActionNamesObject = {
     fetchAllEntityDefinitionsFromRemoteDatastore:"fetchAllEntityDefinitionsFromRemoteDatastore",
-    // ['saga' + entitySliceInputActionNamesObject.replaceAllEntityDefinitions]:'saga' + entitySliceInputActionNamesObject.replaceAllEntityDefinitions,
   }
 
   
@@ -58,11 +57,11 @@ export class EntitySagas {
 
   //#########################################################################################
   public *fetchAllEntityDefinitionsFromRemoteDatastore(
-    action:any
+    // action:any
   ):SagaGenReturnType {
     try {
-      console.log("fetchAllEntityDefinitionsFromRemoteDatastore action",action,"start client",this.client);
-      throw new Error("TEST");
+      console.log("fetchAllEntityDefinitionsFromRemoteDatastore");
+      // throw new Error("TEST");
       
 
       const result:MClientCallReturnType = yield call(
@@ -70,11 +69,11 @@ export class EntitySagas {
       )
       // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
       console.log("fetchAllEntityDefinitionsFromRemoteDatastore received", result.status, result.data);
-      return yield result.data
+      return yield {status:'ok',  instances:[{entity:'Entity', instances:result.data}]}
     } catch (e:any) {
       console.warn("fetchAllEntityDefinitionsFromRemoteDatastore exception",e)
       yield put({ type: 'entities/failure/entitiesNotReceived' })
-      return {errorMessage: e['message']};
+      return {status:'error', errorMessage: e['message'], error:{errorMessage: e['message'], stack:[e['message']]}} as StoreReturnType;
     }
   }
 
@@ -100,7 +99,7 @@ export class EntitySagas {
             function *(action:EntityAction):SagaGenReturnType {
               console.log("entityRootSaga entitySlicePromiseAction",action)
               yield putResolve(entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.payload));
-              return {instances: action.payload};
+              return {entity: 'Entity', instances: action.payload};
             }
           )
         ),

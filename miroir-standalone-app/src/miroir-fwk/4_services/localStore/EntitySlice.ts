@@ -10,6 +10,7 @@ import {
 } from "@reduxjs/toolkit";
 import { promiseActionFactory } from "@teroneko/redux-saga-promise";
 import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
+import { StoreReturnType } from "src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface";
 
 const sliceName = 'entities';
 //#########################################################################################
@@ -27,7 +28,7 @@ export const entitySliceOutputActionNames = {
   entitiesReceivedNotification: "entitiesReceivedNotification",
 };
 
-export const entitySlicePromiseAction = promiseActionFactory<EntityDefinition[]>().create<EntityDefinition[]>(entitySliceInputActionNamesObject.replaceAllEntityDefinitions);
+export const entitySlicePromiseAction = promiseActionFactory<StoreReturnType>().create<EntityDefinition[]>(entitySliceInputActionNamesObject.replaceAllEntityDefinitions);
 
 //#########################################################################################
 //# DATA TYPES
@@ -72,13 +73,13 @@ const EntitySlice: Slice = createSlice({
 //#########################################################################################
 export const entitySliceActionsCreators: any = {
   ...EntitySlice.actions,
-  ['saga-'+entitySliceInputActionNamesObject.replaceAllEntityDefinitions]:(action)=>entitySlicePromiseAction(action),
 };
 
 export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefinition[] = createSelector(
   (state: EntitySliceStateType) => state,
   (items) => Array.from(Object.values(items.entities))
 );
+
 
 const entitySliceObject = {
   reducer: EntitySlice.reducer,

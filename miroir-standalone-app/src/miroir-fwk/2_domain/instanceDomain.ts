@@ -1,4 +1,4 @@
-import { InstanceLocalStoreInputActionsI } from "src/miroir-fwk/0_interfaces/4-storage/local/LocalStoreInterface";
+import { InstanceLocalStoreInputActionsI } from "src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface";
 import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
 import { MInstanceDomainInputActionsI } from "src/miroir-fwk/0_interfaces/2_domain/instanceDomainInterface";
 

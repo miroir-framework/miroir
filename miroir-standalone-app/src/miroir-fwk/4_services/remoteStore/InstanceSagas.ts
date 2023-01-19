@@ -1,4 +1,4 @@
-import { ActionCreatorWithPayload, createAction, PayloadAction } from '@reduxjs/toolkit';
+import { ActionCreatorWithPayload, PayloadAction } from '@reduxjs/toolkit';
 import {
   promiseActionFactory,
   SagaPromiseActionCreator
@@ -7,12 +7,14 @@ import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
 import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import { Instance, InstanceCollection } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+import { StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
 import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
-import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_storage/local/ReduxStore';
-import { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
+import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_services/localStore/ReduxStore';
+import { SagaGenReturnType } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas';
+import { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import instanceSliceObject, { InstanceActionPayload, instanceSliceInputActionNamesObject, instanceSliceInputActionNamesObjectTuple } from '../local/InstanceSlice';
+import instanceSliceObject, { instanceSliceInputActionNamesObjectTuple } from '../localStore/InstanceSlice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -79,12 +81,13 @@ public instanceSagaInputPromiseActions:{
         ActionCreatorWithPayload<any, property>
       >,
       // generator:() => Generator<EntityDefinition[]>
-      generator:(any) => Generator<any>
+      // generator:(any) => Generator<any>
+      generator:(any) => SagaGenReturnType
     }
   } = {
     fetchInstancesForEntityListFromRemoteDatastore:{
       name: "fetchInstancesForEntityListFromRemoteDatastore",
-      creator: promiseActionFactory<InstanceActionPayload[]>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
+      creator: promiseActionFactory<InstanceCollection[]>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
         "fetchInstancesForEntityListFromRemoteDatastore"
       ),
       generator:this.fetchInstancesForEntityListFromRemoteDatastore.bind(this)
@@ -92,7 +95,7 @@ public instanceSagaInputPromiseActions:{
     fetchInstancesForEntityFromRemoteDatastore: {
       name: "fetchInstancesForEntityFromRemoteDatastore",
       creator: promiseActionFactory<Instance[]>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
-      generator: function*(action:PayloadAction<string>) {
+      generator: function*(action:PayloadAction<string>):SagaGenReturnType {
         console.log("fetchInstancesForEntityFromRemoteDatastore", action);
         try {
           const result: {
@@ -101,7 +104,7 @@ public instanceSagaInputPromiseActions:{
             headers: Headers,
             url: string,
           } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
-          return {entity:action.payload, instances:result['data']};
+          return {status:'ok', instances:{entity:action.payload, instances:result['data']}};
         } catch (e) {
           console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
           yield put({ type: "instance/failure/instancesNotReceived" });
@@ -122,21 +125,22 @@ public instanceSliceInputPromiseActions:{
         ActionCreatorWithPayload<any, property>
       >,
       // generator:() => Generator<EntityDefinition[]>
-      generator:(any) => Generator<any>
+      // generator:(any) => Generator<SagaGenReturnType>
+      generator:(any) => SagaGenReturnType
     }
   } = {
     AddInstancesForEntity:{
       name: "AddInstancesForEntity",
       creator: promiseActionFactory<void>().create<Instance[],"AddInstancesForEntity">("AddInstancesForEntity"),
-      generator: function *(action) {
+      generator: function *(action):SagaGenReturnType {
         // console.log("entityRootSaga entitySlicePromiseAction",action)
         return yield putResolve(instanceSliceObject.actionCreators["AddInstancesForEntity"](action.payload))
       }
     },
     ReplaceInstancesForEntity: {
       name: "ReplaceInstancesForEntity",
-      creator: promiseActionFactory<void>().create<InstanceActionPayload,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
-      generator: function *(action:PayloadAction<InstanceActionPayload>) {
+      creator: promiseActionFactory<void>().create<InstanceCollection,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
+      generator: function *(action:PayloadAction<InstanceCollection>):SagaGenReturnType {
         console.log("instanceSliceInputPromiseActions ReplaceInstancesForEntity",action);
         yield putResolve(instanceSliceObject.actionCreators["ReplaceInstancesForEntity"](action.payload));
         return undefined;
@@ -146,7 +150,7 @@ public instanceSliceInputPromiseActions:{
       name: "ReplaceAllInstances",
       creator: promiseActionFactory<void>().create<string,"ReplaceAllInstances">("ReplaceAllInstances"),
       generator: 
-        function *(action:PayloadAction<InstanceActionPayload[]>) {
+        function *(action:PayloadAction<InstanceCollection[]>):SagaGenReturnType {
           const putResolves = action.payload.map(
             function (a) {
               return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
@@ -163,7 +167,7 @@ public instanceSliceInputPromiseActions:{
     UpdateInstancesForEntity: {
       name: "UpdateInstancesForEntity",
       creator: promiseActionFactory<Instance[]>().create<string,"UpdateInstancesForEntity">("UpdateInstancesForEntity"),
-      generator: function *(action) {
+      generator: function *(action):SagaGenReturnType {
         // console.log("entityRootSaga entitySlicePromiseAction",action)
         return yield putResolve(instanceSliceObject.actionCreators["UpdateInstancesForEntity"](action.payload))
       }
@@ -203,7 +207,7 @@ public instanceSliceInputPromiseActions:{
   //#########################################################################################
   *fetchInstancesForEntityListFromRemoteDatastore(
     action: PayloadAction<EntityDefinition[]>
-  ): any {
+  ): SagaGenReturnType {
     console.log("fetchInstancesForEntityListFromRemoteDatastore saga launched with action", action);
     const entityNames: string[] = action.payload.map((e: EntityDefinition) => e.name);
     this.entitiesToFetch = entityNames.slice();
@@ -211,7 +215,7 @@ public instanceSliceInputPromiseActions:{
     console.log("fetchInstancesForEntityListFromRemoteDatastore entitiesToFetch", this.entitiesToFetch);
     // console.log("fetchInstancesForEntityListFromRemoteDatastore this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore", this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore);
     try {
-      const receivedInstances = yield all(
+      const receivedInstances:StoreReturnType[] = yield all(
         entityNames.map(
           (e: string) => {
             // const action = this.instanceSagaInternalActionsCreators.fetchInstancesFromDatastoreForEntity(e);
@@ -222,7 +226,7 @@ public instanceSliceInputPromiseActions:{
         )
       );
       console.log("fetchInstancesForEntityListFromRemoteDatastore received all instances",receivedInstances);
-      return receivedInstances;
+      return {status: 'ok', instances:receivedInstances.map(i=>i.instances)};
     } catch (error) {
       console.log("fetchInstancesForEntityListFromRemoteDatastore error", error);
     } finally {
@@ -234,7 +238,7 @@ public instanceSliceInputPromiseActions:{
   // takes entity fetch notifications into account and sends a global notification when done.
   *instancesHaveBeenFecthedForEntity(
     action: PayloadAction<string>
-  ): any {
+  ): SagaGenReturnType {
     try {
       console.log("instancesHaveBeenFecthedForEntity", action, "left to fetch", this.entitiesToFetch);
       const id: number = this.entitiesToFetch.indexOf(action.payload);
@@ -263,7 +267,7 @@ public instanceSliceInputPromiseActions:{
 
   //#########################################################################################
   public *instanceRootSaga(
-  ) {
+  ):SagaGenReturnType {
     yield all(
       [
         ...Object.values(this.instanceSagaInputPromiseActions).map(

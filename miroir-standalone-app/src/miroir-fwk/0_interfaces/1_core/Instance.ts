@@ -11,3 +11,8 @@ export interface InstanceWithName extends Instance {
   "name":string,
   // "defaultLabel": string,
 }
+
+export interface InstanceCollection {
+  entity: string;
+  instances: Instance[];
+}

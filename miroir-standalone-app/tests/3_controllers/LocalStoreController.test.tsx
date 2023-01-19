@@ -16,11 +16,11 @@ import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
 
 import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface';
 import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController';
-import ReduxStore from 'src/miroir-fwk/4_storage/local/ReduxStore';
-import { EntitySagas } from 'src/miroir-fwk/4_storage/remote/EntitySagas';
-import { InstanceSagas } from 'src/miroir-fwk/4_storage/remote/InstanceSagas';
-import MClient, { MclientI } from 'src/miroir-fwk/4_storage/remote/MClient';
-import { MDevServer } from 'src/miroir-fwk/4_storage/remote/MDevServer';
+import ReduxStore from 'src/miroir-fwk/4_services/localStore/ReduxStore';
+import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas';
+import { InstanceSagas } from 'src/miroir-fwk/4_services/remoteStore/InstanceSagas';
+import MClient, { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
+import { MDevServer } from 'src/miroir-fwk/4_services/remoteStore/MDevServer';
 import { renderWithProviders } from "tests/tests-utils";
 import { TestTableComponent } from "tests/view/TestTableComponent";
 import React from "react";
