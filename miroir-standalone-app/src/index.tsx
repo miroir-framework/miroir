@@ -18,7 +18,7 @@ import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
 import { DataControllerInterface } from "src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface";
 import { LocalDataStoreController } from "src/miroir-fwk/3_controllers/LocalDataStoreController";
-import { ErrorLogProvider } from "src/miroir-fwk/3_controllers/ErrorLogReactService";
+import { ErrorLogProvider } from "src/miroir-fwk/4_view/ErrorLogReactService";
 
 const container = document.getElementById('root');
 const root = createRoot(container);
