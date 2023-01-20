@@ -25,6 +25,7 @@ export class LocalDataStoreController implements DataControllerInterface {
         // console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore");
         // const storeEntities:StoreReturnType = await throwExceptionIfError(pushError, this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,this.remoteStore);
         // const entities:InstanceCollection[] = storeEntities.instances;
+        // const entities:InstanceCollection[] = (await this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore()).instances;
         const entities:InstanceCollection[] = await throwExceptionIfError(pushError, this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,this.remoteStore);
         console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore entities",entities);
         const instances:InstanceCollection[] = await throwExceptionIfError(pushError, this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,this.remoteStore,entities[0].instances);

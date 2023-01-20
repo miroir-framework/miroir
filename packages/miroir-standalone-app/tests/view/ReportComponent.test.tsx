@@ -47,15 +47,11 @@ beforeAll(
     // Establish requests interception layer before all tests.
     worker.listen();
     await mServer.openObjectStore();
-    await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.localIndexedStorage.putValue("Entity",entityReport);
-    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
-    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
   }
 )
 
 // Reset any runtime request handlers we may add during the tests.
-afterEach(() => worker.resetHandlers())
+// afterEach(() => worker.resetHandlers())
 
 // Disable API mocking after the tests are done.
 afterAll(
@@ -68,6 +64,10 @@ afterAll(
 test(
   'MReportComponent: test loading sequence for Report displaying Entity list',
   async () => {
+    await mServer.createObjectStore(["Entity","Instance","Report"]);
+    await mServer.localIndexedStorage.putValue("Entity",entityReport);
+    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
+    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
 
     dataController.loadConfigurationFromRemoteDataStore();
 

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { MError } from "src/miroir-fwk/0_interfaces/3_controllers/ErrorLogServiceInterface";
 
 export declare type ErrorLogState = MError[];

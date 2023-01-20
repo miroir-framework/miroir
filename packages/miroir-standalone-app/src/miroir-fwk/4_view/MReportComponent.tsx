@@ -13,6 +13,7 @@ export interface MiroirReportComponentProps {
 export const MReportComponent = (
   props: MiroirReportComponentProps
 ) => {
+  // const miroirReports = [1];
   const miroirEntities:EntityDefinition[] = useLocalStoreEntities();
   const miroirReports:MiroirReports = useLocalStoreReports();
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
@@ -21,14 +22,13 @@ export const MReportComponent = (
   console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
 
-
   return (
     <div>
-      {/* <h3>
+      <h3>
         props: {JSON.stringify(props)}
-            erreurs: {JSON.stringify(errorLog.getErrorLog())}
+            {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
       </h3>
-      */}
+     
       {
         miroirReports?.length > 0?
           <div>
@@ -39,6 +39,8 @@ export const MReportComponent = (
                 )
               }
               rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
+              // columnDefs={[{"headerName": "name", "field": "name"}]}
+              // rowData={[{name:'toto'}]}
             >
             </MTableComponent>
           </div>

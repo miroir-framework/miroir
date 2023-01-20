@@ -1,3 +1,4 @@
+import * as React from "react";
 import { 
   CellClickedEvent, 
   CellDoubleClickedEvent, 
@@ -7,7 +8,6 @@ import {
   RowDataUpdatedEvent 
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import * as React from "react";
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -58,7 +58,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
         }
       }
     >
-      {props.children}
+      {/* {props.children} */}
       <AgGridReact
         columnDefs={props.columnDefs}
         rowData={props.rowData}

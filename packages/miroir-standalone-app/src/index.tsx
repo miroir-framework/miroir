@@ -51,7 +51,8 @@ async function start() {
   root.render(
     <Provider store={mReduxStore.getInnerStore()}>
     <div>
-      <h1>Miroir standalone demo app {uuidv4()}</h1>
+      {/* <h1>Miroir standalone demo app {uuidv4()}</h1> */}
+      <h1>Miroir standalone demo app</h1>
       <Container maxWidth='xl'>
         <ErrorLogProvider>
           <MComponent

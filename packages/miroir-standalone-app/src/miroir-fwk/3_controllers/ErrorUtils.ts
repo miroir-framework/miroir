@@ -18,7 +18,7 @@ export async function throwExceptionIfError(pushError:(MError)=>void,f:(...args)
     pushError(error);
     throw error;
   } else {
-    // console.log("throwExceptionIfError",result);
+    console.log("throwExceptionIfError",result);
     return result.instances;
   }
 }

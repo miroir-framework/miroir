@@ -1,5 +1,5 @@
 {
-  "name": "mirroir",
+  "name": "mirroir-standalone-app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -67,15 +67,6 @@
   },
   "author": "Arnaud Bailly",
   "license": "MIT",
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "es2022",
-    "target": "es5",
-    "jsx": "react",
-    "allowJs": true,
-    "moduleResolution": "node"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

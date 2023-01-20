@@ -1,7 +1,10 @@
-miroir-server/node_modules*/
-miroir-server/dist*/
+packages/miroir-server/node_modules*/
+packages/miroir-server/dist*/
+packages/miroir-standalone-app/node_modules*/
+packages/miroir-standalone-app/dist*/
+packages/miroir-standalone-app/miroir*/
+packages/miroir-standalone-app/package-lock.json
 miroir-standalone-app/node_modules*/
 miroir-standalone-app/dist*/
 miroir-standalone-app/miroir*/
-/miroir-standalone-app/package-lock.json
-/miroir-standalone-app/package-lock.json
+miroir-standalone-app/package-lock.json

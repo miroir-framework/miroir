@@ -7,7 +7,7 @@ export const MComponent = (props:any) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
   const errorLogService = useErrorLogService();
 
-  console.log("MComponent",errorLogService);
+  // console.log("MComponent",errorLogService);
 
   // const {store} = props;
   return (
@@ -25,22 +25,6 @@ export const MComponent = (props:any) => {
             reportName="EntityList"
             // store={store}
           />
-          {/* </MiroirReportComponent> */}
-          {/* {
-            miroirEntities?.length > 0?
-              <MiroirTableComponent
-                columnDefs={
-                  miroirEntities?.find(e=>e?.name ==="Entity")
-                  ?.attributes?.find((a)=>a?.name==="attributes")
-                  ?.attributeFormat?.map(
-                    (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
-                  )
-                }
-                rowData={miroirEntities?.find(e=>e?.name ==="Entity")?.attributes}
-              ></MiroirTableComponent>
-            :
-              <span>pas d entités</span>
-          } */}
         </CardContent>
       </Card>
     </div>
