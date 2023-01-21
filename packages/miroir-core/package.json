@@ -1,5 +1,5 @@
 {
-  "name": "mirroir-core",
+  "name": "miroir-core",
   "private": true,
   "version": "0.0.0",
   "description": "The core Miroir components. Without it, Miroir will not work.",
