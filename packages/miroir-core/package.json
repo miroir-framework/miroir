@@ -1,0 +1,26 @@
+{
+  "name": "mirroir-core",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The core Miroir components. Without it, Miroir will not work.",
+  "main": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "dependencies": {
+    "rollup": "^3.10.1",
+    "rollup-plugin-dts": "^5.1.1",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@types/jest": "^29.2.4",
+    "rimraf": "^4.1.1"
+  },
+  "scripts": {
+    "build": "rimraf dist && rollup --config",
+    "test": "jest --silent=false -t"
+  },
+  "author": "Arnaud Bailly",
+  "license": "MIT"
+}

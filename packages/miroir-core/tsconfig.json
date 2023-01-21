@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationDir": "out-ts/dts",
+    "module": "ESNext",
+    "target": "ES5",
+    "outDir": "dist",
+    "rootDir": "./",
+    "moduleResolution": "Node"
+  },
+  "include": ["./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
+}
