@@ -1,5 +1,7 @@
 node_modules*/
 node_modules/.cache*/
+packages/core/node_modules*/
+packages/core/dist*/
 packages/miroir-server/node_modules*/
 packages/miroir-server/dist*/
 packages/miroir-standalone-app/node_modules*/

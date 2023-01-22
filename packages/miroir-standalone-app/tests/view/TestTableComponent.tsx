@@ -2,8 +2,8 @@ import { EntityState } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useSelector } from 'react-redux';
 
-import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { MiroirReport, MiroirReports } from "src/miroir-fwk/0_interfaces/1_core/Report";
+import { EntityDefinition } from 'miroir-core';
+import { MiroirReport } from 'miroir-core';
 import { selectInstancesForEntity } from "src/miroir-fwk/4_services/localStore/InstanceSlice";
 
 export interface MiroirReportComponentProps {
@@ -16,7 +16,7 @@ export const TestTableComponent = (
   const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))
   const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
   const miroirEntities:EntityDefinition[] = miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
-  const miroirReports:MiroirReports = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
+  const miroirReports:MiroirReport[] = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
 
   console.log("TestTableComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
 

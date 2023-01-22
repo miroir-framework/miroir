@@ -12,10 +12,10 @@ import {
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
 import { useSelector } from "react-redux";
-import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { Instance, InstanceCollection, InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
-import { MiroirReport } from "src/miroir-fwk/0_interfaces/1_core/Report";
-import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_services/localStore/UndoRedoReducer";
+import { EntityDefinition } from 'miroir-core';
+import { Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
+import { MiroirReport } from 'miroir-core';
+import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_services/localStore/UndoRedoReducer.js";
 
 const instanceSliceName = "instance";
 //#########################################################################################

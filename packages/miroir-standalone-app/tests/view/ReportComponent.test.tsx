@@ -20,7 +20,7 @@ import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas'
 import InstanceSagas from 'src/miroir-fwk/4_services/remoteStore/InstanceSagas'
 import { ReduxStore } from 'src/miroir-fwk/4_services/localStore/ReduxStore'
 import { MReportComponent } from 'src/miroir-fwk/4_view/MReportComponent'
-import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface'
+import { DataControllerInterface } from 'miroir-core'
 import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController'
 import { renderWithProviders } from 'tests/tests-utils'
 

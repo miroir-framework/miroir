@@ -3,10 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "description": "The core Miroir components. Without it, Miroir will not work.",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "type": "module",
   "dependencies": {
+    "@jridgewell/sourcemap-codec": "^1.4.14",
+    "@rollup/plugin-commonjs": "^24.0.1",
     "rollup": "^3.10.1",
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-typescript2": "^0.34.1",
@@ -18,7 +20,7 @@
     "rimraf": "^4.1.1"
   },
   "scripts": {
-    "build": "rimraf dist && rollup --config",
+    "build": "rimraf dist && tsc && rollup --config",
     "test": "jest --silent=false -t"
   },
   "author": "Arnaud Bailly",

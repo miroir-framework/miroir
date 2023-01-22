@@ -1,9 +1,8 @@
-import { InstanceLocalStoreInputActionsI } from "src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface";
-import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
-import { MInstanceDomainInputActionsI } from "miroir-core";
+import { InstanceLocalStoreInputActionsI } from 'miroir-core';
+import { Instance } from 'miroir-core';
+import { MInstanceDomainInputActionsI } from 'miroir-core';
 
 export class InstanceDomain implements MInstanceDomainInputActionsI {
-// export class InstanceDomain {
   constructor(
     private store:InstanceLocalStoreInputActionsI
   ){

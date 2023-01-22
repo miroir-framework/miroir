@@ -6,15 +6,15 @@ import {
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
-import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
-import { Instance, InstanceCollection } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
-import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
+import { EntityDefinition } from 'miroir-core';
+import { Instance, InstanceCollection } from 'miroir-core';
+import { StoreReturnType } from 'miroir-core';
 import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_services/localStore/ReduxStore';
 import { SagaGenReturnType } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas';
 import { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
 import instanceSliceObject, { instanceSliceInputActionNamesObjectTuple } from '../localStore/InstanceSlice';
+import { stringTuple } from 'src/miroir-fwk/tools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

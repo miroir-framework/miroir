@@ -1,5 +1,5 @@
-// import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-// import { Instance } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+// import { EntityDefinition } from 'miroir-core';
+// import { Instance } from 'miroir-core';
 
 export interface MInstanceDomainInputActionsI {
   addInstancesForEntity(entityName:string,instances:any[]):void;
@@ -16,3 +16,5 @@ export interface MEntityDomainInputActionsI {
   replaceEntities(entities:any[]):void;
   // replaceEntities(entities:EntityDefinition[]):void;
 }
+
+export default {}

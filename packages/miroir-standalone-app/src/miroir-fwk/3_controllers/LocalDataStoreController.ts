@@ -1,9 +1,11 @@
-import { InstanceCollection } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { DataControllerInterface } from 'src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface';
-import { LocalStoreInterface, StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
-import { RemoteDataStoreInterface } from 'src/miroir-fwk/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface';
-import { throwExceptionIfError } from 'src/miroir-fwk/3_controllers/ErrorUtils';
+import {
+  DataControllerInterface,
+  InstanceCollection,
+  LocalStoreInterface,
+  RemoteDataStoreInterface,
+} from "miroir-core";
 import { pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
+import { throwExceptionIfError } from "src/miroir-fwk/3_controllers/ErrorUtils";
 
 /**
  * controller should allow configuration of local storage / external storage balance.
@@ -12,28 +14,36 @@ import { pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
  * allow monitoring of local storage resources.
  */
 export class LocalDataStoreController implements DataControllerInterface {
-
+  _;
   constructor(
     // private errorLog: ErrorLogServiceInterface,
     private localStore: LocalStoreInterface,
-    private remoteStore: RemoteDataStoreInterface,
-  ) {
-  }
+    private remoteStore: RemoteDataStoreInterface
+  ) {}
 
   public async loadConfigurationFromRemoteDataStore() {
     try {
-        // console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore");
-        // const storeEntities:StoreReturnType = await throwExceptionIfError(pushError, this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,this.remoteStore);
-        // const entities:InstanceCollection[] = storeEntities.instances;
-        // const entities:InstanceCollection[] = (await this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore()).instances;
-        const entities:InstanceCollection[] = await throwExceptionIfError(pushError, this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,this.remoteStore);
-        console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore entities",entities);
-        const instances:InstanceCollection[] = await throwExceptionIfError(pushError, this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,this.remoteStore,entities[0].instances);
-        console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore instances",instances);
-        await this.localStore.replaceAllInstances(instances);
+      // console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore");
+      // const storeEntities:StoreReturnType = await throwExceptionIfError(pushError, this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,this.remoteStore);
+      // const entities:InstanceCollection[] = storeEntities.instances;
+      // const entities:InstanceCollection[] = (await this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore()).instances;
+      const entities: InstanceCollection[] = await throwExceptionIfError(
+        pushError,
+        this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,
+        this.remoteStore
+      );
+      console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore entities", entities);
+      const instances: InstanceCollection[] = await throwExceptionIfError(
+        pushError,
+        this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,
+        this.remoteStore,
+        entities[0].instances
+      );
+      console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore instances", instances);
+      await this.localStore.replaceAllInstances(instances);
       return;
     } catch (error) {
-      console.warn("LocalDataStoreController loadConfigurationFromRemoteDataStore",error)
+      console.warn("LocalDataStoreController loadConfigurationFromRemoteDataStore", error);
     }
   }
 }

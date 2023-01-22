@@ -1,19 +1,10 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "types": ["node", "jest"],
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports":true,
-    "noImplicitAny": false,
-    "module": "es2022",
-    "target": "ES5",
-    "jsx": "react",
-    "allowJs": true,
-    "moduleResolution": "node",
     "baseUrl": ".",
-    "plugins": [
-      { "name": "typescript-plugin-css-modules" }
-    ],
+    "rootDir": "./",
   },
+  "exclude": ["./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx"],
+  "include": ["./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
 }

@@ -16,7 +16,7 @@ import { MComponent } from "src/miroir-fwk/4_view/MComponent";
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
-import { DataControllerInterface } from "src/miroir-fwk/0_interfaces/3_controllers/DataControllerInterface";
+import { DataControllerInterface } from 'miroir-core';
 import { LocalDataStoreController } from "src/miroir-fwk/3_controllers/LocalDataStoreController";
 import { ErrorLogProvider } from "src/miroir-fwk/4_view/ErrorLogReactService";
 

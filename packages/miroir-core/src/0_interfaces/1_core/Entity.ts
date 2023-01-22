@@ -1,4 +1,4 @@
-import { InstanceWithName } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { InstanceWithName } from "./Instance.js";
 
 export interface EntityAttribute {
   "id": number,
@@ -21,3 +21,5 @@ export interface EntityDefinition extends InstanceWithName {
   "instanceValidationJsonSchema": {},
   "attributes"?: EntityAttribute[],
 };
+
+export default {}

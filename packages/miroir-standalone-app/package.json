@@ -5,6 +5,7 @@
   "main": "index.js",
   "proxy": "http://localhost:3080",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -61,7 +62,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start-dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --silent=false -t",
     "magic": "webpack"

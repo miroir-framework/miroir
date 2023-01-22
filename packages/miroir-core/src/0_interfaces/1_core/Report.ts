@@ -1,4 +1,4 @@
-import { InstanceWithName } from "./Instance";
+import { InstanceWithName } from "./Instance.js";
 
 export interface MiroirReportListDefinition {
   "entity": string,
@@ -16,3 +16,4 @@ export interface MiroirReport extends InstanceWithName {
 
 export type MiroirReports=MiroirReport[];
 
+export default {}

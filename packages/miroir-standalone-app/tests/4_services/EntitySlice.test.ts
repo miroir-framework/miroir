@@ -1,5 +1,5 @@
 import { EntityState, Update } from '@reduxjs/toolkit';
-import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+import { EntityDefinition } from 'miroir-core';
 import EntitySlice, { entitySliceActionsCreators, mEntityAdapter, entitySliceInputActionNamesObject } from 'src/miroir-fwk/4_services/localStore/EntitySlice';
 
 import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";

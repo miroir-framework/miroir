@@ -16,3 +16,5 @@ export interface InstanceCollection {
   entity: string;
   instances: Instance[];
 }
+
+export default {}

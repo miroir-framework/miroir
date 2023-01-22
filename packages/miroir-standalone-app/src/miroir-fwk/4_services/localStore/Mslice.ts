@@ -1,6 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { InstanceCollection } from "src/miroir-fwk/0_interfaces/1_core/Instance";
+import { EntityDefinition } from 'miroir-core';
+import { InstanceCollection } from 'miroir-core';
 
 
 export type MinstanceAction = PayloadAction<InstanceCollection,string>;

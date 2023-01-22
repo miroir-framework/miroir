@@ -1,8 +1,8 @@
 // import { EntityState } from '@reduxjs/toolkit';
-// import { EntityDefinition } from 'src/miroir-fwk/0_interfaces/1_core/Entity';
+// import { EntityDefinition } from 'miroir-core';
 
 // import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-// import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
+// import { Instance } from 'miroir-core';
 // import InstanceSlice, { InstanceSliceState, instanceSliceInputActionNamesObject, selectInstancesForEntity, InstanceCollection } from 'src/miroir-fwk/4_services/localStorage/InstanceSlice';
 
 beforeAll(() => {

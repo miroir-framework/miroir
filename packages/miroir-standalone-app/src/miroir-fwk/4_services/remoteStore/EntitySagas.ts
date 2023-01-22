@@ -1,14 +1,19 @@
 import { promiseActionFactory } from '@teroneko/redux-saga-promise';
+import { StoreReturnType } from 'miroir-core';
 import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effects';
-import { Instance } from 'src/miroir-fwk/0_interfaces/1_core/Instance';
-import { StoreReturnType } from 'src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface';
 
 
-import { stringTuple } from 'src/miroir-fwk/1_core/utils/utils';
 import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_services/localStore/ReduxStore';
 import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
 import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { EntityAction, entitySliceActionsCreators, entitySliceInputActionNames, entitySliceInputActionNamesObject, entitySlicePromiseAction } from '../localStore/EntitySlice';
+import { stringTuple } from 'src/miroir-fwk/tools';
+import {
+  EntityAction,
+  entitySliceActionsCreators,
+  entitySliceInputActionNames,
+  entitySliceInputActionNamesObject,
+  entitySlicePromiseAction
+} from "../localStore/EntitySlice";
 
 // import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
 // import entityReport from "src/miroir-fwk/assets/entities/Report.json"

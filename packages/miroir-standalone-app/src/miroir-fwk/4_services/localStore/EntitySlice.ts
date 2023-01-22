@@ -9,8 +9,8 @@ import {
   Slice
 } from "@reduxjs/toolkit";
 import { promiseActionFactory } from "@teroneko/redux-saga-promise";
-import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { StoreReturnType } from "src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface";
+import { EntityDefinition } from 'miroir-core';
+import { StoreReturnType } from 'miroir-core';
 
 const sliceName = 'entities';
 //#########################################################################################

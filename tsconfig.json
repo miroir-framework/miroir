@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {  
+    "types": ["node", "jest"],
+    "removeComments": true,
+    "module": "ES2020",
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports":true,
+    "resolveJsonModule": true,
+    "plugins": [
+      { "name": "typescript-plugin-css-modules" }
+    ],
+  },
+}

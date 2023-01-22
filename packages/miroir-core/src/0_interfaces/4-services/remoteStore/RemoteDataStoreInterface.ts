@@ -1,6 +1,7 @@
-import { EntityDefinition } from "src/miroir-fwk/0_interfaces/1_core/Entity";
-import { StoreReturnType } from "src/miroir-fwk/0_interfaces/4-services/localStore/LocalStoreInterface";
+import { EntityDefinition } from 'src/0_interfaces/1_core/Entity.js';
+import { StoreReturnType } from "../localStore/LocalStoreInterface.js";
 
+export default {}
 
 export interface EntityDefinitionRemoteDataStoreInputActionsI {
   // fetchEntityDefinitionFromRemoteDataStore(entityName:string):Promise<EntityDefinition>;

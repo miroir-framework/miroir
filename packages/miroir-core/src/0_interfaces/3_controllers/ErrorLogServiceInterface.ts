@@ -12,7 +12,7 @@ export interface ErrorLogServiceInterface {
    * Add an error to the current log
    * @param error 
    */
-  pushError(error:MError);
+  pushError(error:MError):void;
 
 
   /**
@@ -21,3 +21,5 @@ export interface ErrorLogServiceInterface {
    */
   getErrorLog():MError[];
 }
+
+export default {}
