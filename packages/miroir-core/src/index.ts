@@ -59,10 +59,13 @@ export {
 
 // import stringTuple from './1_core/utils/utils.js';
 
-import ReportGetInstancesToDispay from './1_core/Report.js';
+import Report from './1_core/Report.js';
 // export {ReportGetInstancesToDispay} from './1_core/Report.js';
 // import * as ReportGetInstancesToDispay from './1_core/Report.js';
-// const ReportGetInstancesToDispay = ReportGetInstancesToDispay.
+const ReportGetInstancesToDispay = Report.ReportGetInstancesToDispay;
+
+console.log("miroir-core ReportGetInstancesToDispay",ReportGetInstancesToDispay);
+
 export {
   ReportGetInstancesToDispay
 };

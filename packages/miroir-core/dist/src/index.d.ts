@@ -6,7 +6,7 @@ export { DataControllerInterface, } from './0_interfaces/3_controllers/DataContr
 export { MError, ErrorLogServiceInterface, } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 export { EntityDefinitionLocalStoreInputActionsI, InstanceLocalStoreInputActionsI, LocalStoreInterface, StoreReturnType, } from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
 export { EntityDefinitionRemoteDataStoreInputActionsI, InstanceRemoteDataStoreInputActionsI, RemoteDataStoreInterface, } from './0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
-import ReportGetInstancesToDispay from './1_core/Report.js';
+declare const ReportGetInstancesToDispay: (report: import("./0_interfaces/1_core/Report.js").MiroirReport, miroirEntities: import("./0_interfaces/1_core/Entity.js").EntityDefinition[]) => any[];
 export { ReportGetInstancesToDispay };
 declare const _default: {};
 export default _default;

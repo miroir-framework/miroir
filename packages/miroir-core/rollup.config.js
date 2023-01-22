@@ -12,8 +12,8 @@ export default {
         }
     ],
     plugins: [
-      dts(),
       typescript(),
+      dts(),
     ],
     // external: ["react"]
 };

@@ -40,7 +40,7 @@ export const MReportComponent = (
                 )
               }
               // rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
-              rowData={ReportGetInstancesToDispay.ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
+              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
               // columnDefs={[{"headerName": "name", "field": "name"}]}
               // rowData={[{name:'toto'}]}
             >
