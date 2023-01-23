@@ -1,6 +1,8 @@
+import { ErrorLogServiceInterface } from "miroir-core";
 import * as React from "react";
-import { ErrorLogServiceInterface } from 'miroir-core';
 import { getErrorLog, pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
+// import { ErrorLogServiceInterface } from 'miroir-core';
+// import { getErrorLog, pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
 
 const ErrorLogContext = React.createContext<ErrorLogServiceInterface>(undefined);
 

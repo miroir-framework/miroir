@@ -1,6 +1,6 @@
-import { EntityDefinition } from 'src/0_interfaces/1_core/Entity.js';
-import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
-import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { EntityDefinition } from '../../../0_interfaces/1_core/Entity.js';
+import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
+import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 
 export default {}
 

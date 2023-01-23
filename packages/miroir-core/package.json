@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "description": "The core Miroir components. Without it, Miroir will not work.",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/bundle.js",
+  "types": "dist/bundle.d.ts",
   "type": "module",
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.14",
@@ -17,7 +17,8 @@
   "devDependencies": {
     "@jest/globals": "^29.3.1",
     "@types/jest": "^29.2.4",
-    "rimraf": "^4.1.1"
+    "rimraf": "^4.1.1",
+    "tsconfig-paths": "^4.1.2"
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup --config",

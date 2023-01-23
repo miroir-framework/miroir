@@ -1,7 +1,8 @@
-import { InstanceCollection } from 'miroir-core';
-import { StoreReturnType } from 'miroir-core';
-import { MError } from 'miroir-core';
+import { InstanceCollection } from "../0_interfaces/1_core/Instance";
+import { MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { StoreReturnType } from "../0_interfaces/4-services/localStore/LocalStoreInterface";
 
+export default {}
 
 /**
  * convert errors to exceptions for controllers using store controllers, 

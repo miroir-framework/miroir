@@ -1,11 +1,11 @@
-import {
-  DataControllerInterface,
-  InstanceCollection,
-  LocalStoreInterface,
-  RemoteDataStoreInterface,
-} from "miroir-core";
-import { pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
-import { throwExceptionIfError } from "src/miroir-fwk/3_controllers/ErrorUtils";
+import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
+import { MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
+import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
+import { RemoteDataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { throwExceptionIfError } from "../3_controllers/ErrorUtils.js";
+
+export default {}
 
 /**
  * controller should allow configuration of local storage / external storage balance.
@@ -14,11 +14,13 @@ import { throwExceptionIfError } from "src/miroir-fwk/3_controllers/ErrorUtils";
  * allow monitoring of local storage resources.
  */
 export class LocalDataStoreController implements DataControllerInterface {
-  _;
+
   constructor(
     // private errorLog: ErrorLogServiceInterface,
     private localStore: LocalStoreInterface,
-    private remoteStore: RemoteDataStoreInterface
+    private remoteStore: RemoteDataStoreInterface,
+    private pushError:(error:MError)=>void,
+    // private getErrorLog:()=>MError[]
   ) {}
 
   public async loadConfigurationFromRemoteDataStore() {
@@ -28,13 +30,13 @@ export class LocalDataStoreController implements DataControllerInterface {
       // const entities:InstanceCollection[] = storeEntities.instances;
       // const entities:InstanceCollection[] = (await this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore()).instances;
       const entities: InstanceCollection[] = await throwExceptionIfError(
-        pushError,
+        this.pushError,
         this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,
         this.remoteStore
       );
       console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore entities", entities);
       const instances: InstanceCollection[] = await throwExceptionIfError(
-        pushError,
+        this.pushError,
         this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,
         this.remoteStore,
         entities[0].instances

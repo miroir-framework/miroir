@@ -1,5 +1,7 @@
 import { MError } from 'miroir-core';
 
+export default {}
+
 export declare type ErrorLogState = MError[];
 
 const errorLog: ErrorLogState = [];

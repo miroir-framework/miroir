@@ -11,7 +11,6 @@ global.TextDecoder = TextDecoder
 import { setupServer } from 'msw/node'
 import React from 'react'
 import { waitFor } from '@testing-library/react'
-import fetch from 'node-fetch'
 
 
 import MClient, { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient'

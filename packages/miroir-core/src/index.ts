@@ -42,35 +42,16 @@ export {
   RemoteDataStoreInterface,
 } from './0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 
-// export {Report};
-// export {ReportGetInstancesToDispay} from './1_core/Report.js';
-
-// export {
-//   ReportGetInstancesToDispay
-// } from './1_core/Report.js';
-// export {default.ReportGetInstancesToDispay as ReportGetInstancesToDispay} from './1_core/Report.js';
-// import stringTuple from './1_core/utils/utils.js';
-// export * from './1_core/Report.js';
-// export * from './1_core/utils/utils.js';
-
-// import * as utils from './1_core/utils/utils.js';
-// export {utils};
-
-
-// import stringTuple from './1_core/utils/utils.js';
 
 export {ReportGetInstancesToDispay} from './1_core/Report.js';
-// import * as ReportGetInstancesToDispay from './1_core/Report.js';
 
+export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
 
+export {LocalDataStoreController} from './3_controllers/LocalDataStoreController.js'
 
-// import Report from './1_core/Report.js';
-// const ReportGetInstancesToDispay = Report.ReportGetInstancesToDispay;
+export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 
-// console.log("miroir-core ReportGetInstancesToDispay",ReportGetInstancesToDispay);
-
-// export {
-//   ReportGetInstancesToDispay
-// };
-
-export default {}
+const myDefaultExport = "Miroir-core default export"
+export default {
+  myDefaultExport
+}
