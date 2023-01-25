@@ -3,21 +3,22 @@ import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effect
 
 
 import { StoreReturnType } from 'miroir-core';
-import { handlePromiseActionForSaga } from 'src/miroir-fwk/4_services/localStore/ReduxStore';
-import { MClientCallReturnType, MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient';
-import miroirConfig from "src/miroir-fwk/assets/miroirConfig.json";
-import { stringTuple } from 'src/miroir-fwk/tools';
+import { stringTuple } from 'miroir-fwk/tools';
+// import { stringTuple } from 'miroir-standalone-app/src/miroir-fwk/tools';
+import { handlePromiseActionForSaga } from 'sagaTools';
+import { MClientCallReturnType, MclientI } from 'miroir-fwk/4_services/remoteStore/MClient';
+import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import {
   EntityAction,
   entitySliceActionsCreators,
   entitySliceInputActionNames,
   entitySliceInputActionNamesObject,
   entitySlicePromiseAction
-} from "src/miroir-fwk/4_services/localStore/EntitySlice";
+} from "miroir-fwk/4_services/localStore/EntitySlice";
 
-// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
-// import entityReport from "src/miroir-fwk/assets/entities/Report.json"
-// import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
+// import entityEntity from "miroir-fwk/assets/entities/Entity.json"
+// import entityReport from "miroir-fwk/assets/entities/Report.json"
+// import reportEntityList from "miroir-fwk/assets/reports/entityList.json"
 
 //#########################################################################################
 //# ACTION NAMES

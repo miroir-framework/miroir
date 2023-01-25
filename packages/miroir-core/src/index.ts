@@ -51,7 +51,13 @@ export {LocalDataStoreController} from './3_controllers/LocalDataStoreController
 
 export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 
-const myDefaultExport = "Miroir-core default export"
+
+import entityEntity from './assets/entities/Entity.json';
+import entityReport from './assets/entities/Report.json';
+import reportEntityList from './assets/reports/entityList.json';
+
+export {entityEntity, entityReport, reportEntityList}
+// const myDefaultExport = "Miroir-core default export"
 export default {
-  myDefaultExport
+  // myDefaultExport
 }

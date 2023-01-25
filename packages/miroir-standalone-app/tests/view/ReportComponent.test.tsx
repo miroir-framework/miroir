@@ -12,33 +12,37 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { waitFor } from '@testing-library/react'
 
+// const fetch = require('node-fetch');
 
-import MClient, { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient'
-import { MDevServer } from 'src/miroir-fwk/4_services/remoteStore/MDevServer'
-import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas'
-import InstanceSagas from 'src/miroir-fwk/4_services/remoteStore/InstanceSagas'
-import { ReduxStore } from 'src/miroir-fwk/4_services/localStore/ReduxStore'
-import { MReportComponent } from 'src/miroir-fwk/4_view/MReportComponent'
+import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient'
+import { MDevServer } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer'
+import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas'
+import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas'
+import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
+import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
 import { DataControllerInterface } from 'miroir-core'
-import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController'
-import { renderWithProviders } from 'tests/tests-utils'
+import { LocalDataStoreController } from 'miroir-core'
+import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
-import entityEntity from "src/miroir-fwk/assets/entities/Entity.json"
-import entityReport from "src/miroir-fwk/assets/entities/Report.json"
-import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json"
+import {entityEntity} from "miroir-core"
+import {entityReport} from "miroir-core"
+import {reportEntityList} from "miroir-core"
+import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService'
+
+import Fetch from "node-fetch";
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
 const mServer: MDevServer = new MDevServer();
 const worker = setupServer(...mServer.handlers)
-const mClient:MclientI = new MClient(fetch);
+const mClient:MclientI = new MClient(Fetch);
 
 const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore);
+const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
 
 // Enable API mocking before tests.
 beforeAll(
@@ -60,7 +64,7 @@ afterAll(
   }
 )
 
-test(
+it(
   'MReportComponent: test loading sequence for Report displaying Entity list',
   async () => {
     await mServer.createObjectStore(["Entity","Instance","Report"]);

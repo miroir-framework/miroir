@@ -1,5 +1,6 @@
 // import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
+import pluginJson from '@rollup/plugin-json';
 // import esbuild from 'rollup-plugin-esbuild';
 
 export default [
@@ -15,6 +16,7 @@ export default [
         }
     ],
     plugins: [
+      pluginJson()
       // typescript(),
       // esbuild()
     ],
@@ -31,6 +33,7 @@ export default [
         }
     ],
     plugins: [
+      pluginJson(),
       dts(),
     ],
     // external: ["react"]

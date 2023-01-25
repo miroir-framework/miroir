@@ -1,6 +1,6 @@
 import { rest } from 'msw'
-import IndexedDb from 'src/miroir-fwk/4_services/localStore/indexedDb'
-import miroirConfig from 'src/miroir-fwk/assets/miroirConfig.json'
+import { IndexedDb } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/indexedDb'
+import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
 
 console.log("server.ts miroirConfig", miroirConfig);
 

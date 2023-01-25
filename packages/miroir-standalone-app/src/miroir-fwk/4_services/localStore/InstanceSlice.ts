@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { EntityDefinition } from 'miroir-core';
 import { Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
 import { MiroirReport } from 'miroir-core';
-import { MreduxWithUndoRedoState } from "src/miroir-fwk/4_services/localStore/UndoRedoReducer.js";
+import { MreduxWithUndoRedoState } from "miroir-fwk/4_services/localStore/UndoRedoReducer.js";
 
 const instanceSliceName = "instance";
 //#########################################################################################
@@ -75,7 +75,7 @@ const getSliceEntityAdapter: (
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export const InstanceSlice: Slice = createSlice({
+export const InstanceSliceObject: Slice = createSlice({
   name: instanceSliceName,
   initialState: { Entity: getSliceEntityAdapter("Entity").getInitialState() },
   reducers: {
@@ -173,13 +173,13 @@ type InstanceSliceActionCreator =
 const actionsCreators: {
   [actionCreatorName: string]: InstanceSliceActionCreator;
 } = {
-  ...InstanceSlice.actions,
+  ...InstanceSliceObject.actions,
 };
 
-const instanceSliceObject = {
-  reducer: InstanceSlice.reducer,
+export const InstanceSlice = {
+  reducer: InstanceSliceObject.reducer,
   actionCreators: actionsCreators,
   inputActionNames: instanceSliceInputActionNamesObject,
 };
 
-export default instanceSliceObject;
+export default {};

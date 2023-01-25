@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { EntityDefinition } from 'miroir-core';
 import { MiroirReport } from 'miroir-core';
-import { selectInstancesForEntity } from "src/miroir-fwk/4_services/localStore/InstanceSlice";
+import { selectInstancesForEntity } from "miroir-standalone-app/src/miroir-fwk/4_services/localStore/InstanceSlice";
 
 export interface MiroirReportComponentProps {
   reportName: string;

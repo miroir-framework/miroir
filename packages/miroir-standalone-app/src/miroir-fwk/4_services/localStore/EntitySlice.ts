@@ -52,7 +52,7 @@ export const mEntityAdapter: EntityAdapter<EntityDefinition> =
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-const EntitySlice: Slice = createSlice({
+const EntitySliceObject: Slice = createSlice({
   name: sliceName,
   initialState: mEntityAdapter.getInitialState(),
   reducers: {
@@ -72,7 +72,7 @@ const EntitySlice: Slice = createSlice({
 //# ACTION CREATORS
 //#########################################################################################
 export const entitySliceActionsCreators: any = {
-  ...EntitySlice.actions,
+  ...EntitySliceObject.actions,
 };
 
 export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefinition[] = createSelector(
@@ -81,10 +81,10 @@ export const selectEntityDefinitions:(state: EntitySliceStateType) => EntityDefi
 );
 
 
-const entitySliceObject = {
-  reducer: EntitySlice.reducer,
+export const EntitySlice = {
+  reducer: EntitySliceObject.reducer,
   actionCreators: entitySliceActionsCreators,
   inputActionNames: entitySliceInputActionNamesObject,
 };
 
-export default entitySliceObject;
+export default {};

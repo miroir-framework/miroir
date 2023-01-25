@@ -4,21 +4,19 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 
 import { DataControllerInterface, LocalDataStoreController } from 'miroir-core';
-// import * as miroirCore from 'miroir-core';
+import { entityEntity, entityReport, reportEntityList } from "miroir-core";
 
-import { ReduxStore } from "src/miroir-fwk/4_services/localStore/ReduxStore";
-import { EntitySagas } from "src/miroir-fwk/4_services/remoteStore/EntitySagas";
-import { InstanceSagas } from "src/miroir-fwk/4_services/remoteStore/InstanceSagas";
-import { MClient } from "src/miroir-fwk/4_services/remoteStore/MClient";
-import { MDevServer } from "src/miroir-fwk/4_services/remoteStore/MDevServer";
-import { ErrorLogProvider } from "src/miroir-fwk/4_view/ErrorLogReactService";
-import { MComponent } from "src/miroir-fwk/4_view/MComponent";
+import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
+import { EntitySagas } from "miroir-fwk/4_services/remoteStore/EntitySagas";
+import { InstanceSagas } from "miroir-fwk/4_services/remoteStore/InstanceSagas";
+import { MClient } from "miroir-fwk/4_services/remoteStore/MClient";
+import { MDevServer } from "miroir-fwk/4_services/remoteStore/MDevServer";
+import { ErrorLogProvider } from "miroir-fwk/4_view/ErrorLogReactService";
+import { MComponent } from "miroir-fwk/4_view/MComponent";
 
-import { pushError } from "src/miroir-fwk/3_controllers/ErrorLogService";
-import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-import entityReport from "src/miroir-fwk/assets/entities/Report.json";
-import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
+import { pushError } from "miroir-fwk/3_controllers/ErrorLogService";
 
+console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -44,9 +42,6 @@ async function start() {
   const mReduxStore:ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
 
-  // console.log("index miroirCore",miroirCore);
-  console.log("index LocalDataStoreController",LocalDataStoreController);
-  // const dataController: miroirCore.DataControllerInterface = new miroirCore.LocalDataStoreController(mReduxStore,mReduxStore,pushError); // ReduxStore implements both local and remote Data Store access.
   const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError); // ReduxStore implements both local and remote Data Store access.
   dataController.loadConfigurationFromRemoteDataStore();
 

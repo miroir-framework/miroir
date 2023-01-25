@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import * as React from "react";
-import { useErrorLogService } from "src/miroir-fwk/4_view/ErrorLogReactService";
+import { useErrorLogService } from "miroir-fwk/4_view/ErrorLogReactService";
 import { MReportComponent } from "./MReportComponent";
 
 export const MComponent = (props:any) => {

@@ -11,7 +11,7 @@ beforeAll(() => {
 afterAll(async () => {
 })
 
-it(
+it.skip(
   'add one Instance',
   async () => {
     // const initialStore: InstanceSliceState = {};

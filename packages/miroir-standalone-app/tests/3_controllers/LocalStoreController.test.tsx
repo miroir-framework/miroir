@@ -5,36 +5,41 @@
 import { waitFor } from "@testing-library/react";
 import { setupServer } from "msw/node";
 
+
 import { TextDecoder, TextEncoder } from 'util';
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
-import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-import entityReport from "src/miroir-fwk/assets/entities/Report.json";
-import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
+
+import { entityEntity, entityReport, reportEntityList } from "miroir-core";
+// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
+// import entityReport from "src/miroir-fwk/assets/entities/Report.json";
+// import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
+import { pushError } from "miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService";
 
 import { DataControllerInterface } from 'miroir-core';
 import { LocalDataStoreController } from 'miroir-core';
-// import { LocalDataStoreController } from 'src/miroir-fwk/3_controllers/LocalDataStoreController';
-import ReduxStore from 'src/miroir-fwk/4_services/localStore/ReduxStore.js';
-import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas.js';
-import { InstanceSagas } from 'src/miroir-fwk/4_services/remoteStore/InstanceSagas.js';
-import MClient, { MclientI } from 'src/miroir-fwk/4_services/remoteStore/MClient.js';
-import { MDevServer } from 'src/miroir-fwk/4_services/remoteStore/MDevServer.js';
-// import { renderWithProviders } from "tests/tests-utils";
-// import { TestTableComponent } from "tests/view/TestTableComponent";
+import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore';
+import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas';
+import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas';
+import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient';
+import { MDevServer } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer';
+import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
+import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
 import React from "react";
+
+import Fetch from "node-fetch";
 
 const mServer: MDevServer = new MDevServer();
 const worker = setupServer(...mServer.handlers)
-const mClient:MclientI = new MClient(fetch);
+const mClient:MclientI = new MClient(Fetch);
 
 const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore);
+const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
 
 beforeAll(
   async () => {

@@ -101,4 +101,4 @@ export class IndexedDb {
   }
 }
 
-export default IndexedDb;
+export default {};

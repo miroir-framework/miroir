@@ -1,6 +1,10 @@
+import { Maction } from './Mslice';
+
+import { EntitySagas } from 'miroir-fwk/4_services/remoteStore/EntitySagas';
+
 import { combineReducers, configureStore, EntityState } from '@reduxjs/toolkit';
 import {
-  implementPromiseAction, promiseMiddleware
+  promiseMiddleware
 } from "@teroneko/redux-saga-promise";
 // import _default from 'react-redux/es/components/connect.js';
 import sagaMiddleware from 'redux-saga';
@@ -16,25 +20,25 @@ import {
   RemoteDataStoreInterface,
   StoreReturnType,
 } from "miroir-core";
-import entitySliceObject, {
-  entitySliceInputFullActionNames,
-  entitySlicePromiseAction
-} from "src/miroir-fwk/4_services/localStore/EntitySlice";
-import instanceSliceObject, {
+import {
+  InstanceSlice,
   instanceSliceGeneratedActionNames,
   InstanceSliceState
-} from "src/miroir-fwk/4_services/localStore/InstanceSlice";
+} from "miroir-fwk/4_services/localStore/InstanceSlice";
+import {
+  EntitySlice,
+  entitySliceInputFullActionNames,
+  entitySlicePromiseAction
+} from "miroir-fwk/4_services/localStore/EntitySlice";
 import {
   createUndoRedoReducer,
   MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
-} from "src/miroir-fwk/4_services/localStore/UndoRedoReducer";
-import { EntitySagas } from 'src/miroir-fwk/4_services/remoteStore/EntitySagas';
+} from "miroir-fwk/4_services/localStore/UndoRedoReducer";
 import {
   instanceSagaGeneratedActionNames,
   instanceSagaInputActionNames,
   InstanceSagas
-} from "src/miroir-fwk/4_services/remoteStore/InstanceSagas";
-import { Maction } from './Mslice';
+} from "miroir-fwk/4_services/remoteStore/InstanceSagas";
 
 
 //#########################################################################################
@@ -59,16 +63,6 @@ export interface InnerStoreStateInterface {
 }
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Maction) => any;
 
-// ###############################################################################
-export function handlePromiseActionForSaga (saga, ...args) {
-  return function*(action) {
-    if (args.length > 0) {
-      yield call(implementPromiseAction, action, saga.bind(...args,action))
-    } else {
-      yield call(implementPromiseAction, action, saga.bind(undefined,action))
-    }
-  }
-}
 
 // ###############################################################################
 /**
@@ -88,8 +82,8 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     this.staticReducers = createUndoRedoReducer(
       combineReducers(
         {
-          miroirEntities: entitySliceObject.reducer,
-          miroirInstances: instanceSliceObject.reducer,
+          miroirEntities: EntitySlice.reducer,
+          miroirInstances: InstanceSlice.reducer,
         }
       )
     );
@@ -214,4 +208,4 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 }
 
   // ###############################################################################
-  export default ReduxStore;
+  export default {};
