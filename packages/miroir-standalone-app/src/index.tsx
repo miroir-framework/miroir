@@ -14,7 +14,7 @@ import { MDevServer } from "miroir-fwk/4_services/remoteStore/MDevServer";
 import { ErrorLogProvider } from "miroir-fwk/4_view/ErrorLogReactService";
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 
-import { pushError } from "miroir-fwk/3_controllers/ErrorLogService";
+import { pushError } from "miroir-core";
 
 console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById('root');

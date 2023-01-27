@@ -1,4 +1,4 @@
-import { MError } from 'miroir-core';
+import { MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
 
 export default {}
 

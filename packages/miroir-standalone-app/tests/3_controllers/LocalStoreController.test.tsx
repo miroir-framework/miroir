@@ -15,7 +15,7 @@ import { entityEntity, entityReport, reportEntityList } from "miroir-core";
 // import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
 // import entityReport from "src/miroir-fwk/assets/entities/Report.json";
 // import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
-import { pushError } from "miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService";
+import { pushError } from "miroir-core";
 
 import { DataControllerInterface } from 'miroir-core';
 import { LocalDataStoreController } from 'miroir-core';
