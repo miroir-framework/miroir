@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
-import * as React from "react";
-import { useErrorLogServiceHook } from "miroir-fwk/4_view/ErrorLogReactService";
+import { useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
+// import * as React from "react";
 import { MReportComponent } from "./MReportComponent";
 
 export const MComponent = (props:any) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
-  const errorLogService = useErrorLogServiceHook();
+  const errorLog = useErrorLogServiceHook();
 
   // console.log("MComponent",errorLogService);
 
@@ -14,7 +14,7 @@ export const MComponent = (props:any) => {
     <div>
       <h3>
         {/* props: {JSON.stringify(props)} */}
-            erreurs: {JSON.stringify(errorLogService.getErrorLog())}
+            erreurs: {JSON.stringify(errorLog)}
       </h3>
       <Card>
         <CardHeader>

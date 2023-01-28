@@ -1,15 +1,25 @@
-import { MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { ErrorLogServiceInterface, MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
 
 export default {}
 
 export declare type ErrorLogState = MError[];
 
-const errorLog: ErrorLogState = [];
+export class ErrorLogService implements ErrorLogServiceInterface {
+  public errorLog: ErrorLogState = [];
 
-export function pushError(error:MError) {
-  console.log("pushError",error);
-  errorLog.push(error)
-}
-export function getErrorLog():MError[] {
-    return errorLog;
+  constructor() {
+    
+  }
+
+  public pushError(error:MError) {
+    console.log("ErrorLogService pushError",error,this.errorLog);
+    this.errorLog = this.errorLog.concat([error]);
+    console.log("ErrorLogService after pushError",error,this.errorLog);
+  }
+
+  public getErrorLog():MError[] {
+    console.log("ErrorLogService getErrorLog() called",this.errorLog);
+    return this.errorLog;
+  }
+  
 }

@@ -11,14 +11,15 @@ global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
 
-import { entityEntity, entityReport, reportEntityList } from "miroir-core";
-// import entityEntity from "src/miroir-fwk/assets/entities/Entity.json";
-// import entityReport from "src/miroir-fwk/assets/entities/Report.json";
-// import reportEntityList from "src/miroir-fwk/assets/reports/entityList.json";
-import { pushError } from "miroir-core";
+import {
+  entityEntity,
+  entityReport,
+  ErrorLogService,
+  ErrorLogServiceInterface, MiroirContext,
+  reportEntityList
+} from "miroir-core";
 
-import { DataControllerInterface } from 'miroir-core';
-import { LocalDataStoreController } from 'miroir-core';
+import { DataControllerInterface, LocalDataStoreController } from 'miroir-core';
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore';
 import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas';
 import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas';
@@ -38,8 +39,10 @@ const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
+const errorLogService: ErrorLogServiceInterface = new ErrorLogService();
+const miroirContext = new MiroirContext(errorLogService);
 
-const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
+const dataController: DataControllerInterface = new LocalDataStoreController(miroirContext, mReduxStore, mReduxStore);
 
 beforeAll(
   async () => {

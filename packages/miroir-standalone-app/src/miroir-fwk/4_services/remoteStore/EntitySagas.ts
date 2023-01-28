@@ -16,10 +16,6 @@ import {
   entitySlicePromiseAction
 } from "miroir-fwk/4_services/localStore/EntitySlice";
 
-// import entityEntity from "miroir-fwk/assets/entities/Entity.json"
-// import entityReport from "miroir-fwk/assets/entities/Report.json"
-// import reportEntityList from "miroir-fwk/assets/reports/entityList.json"
-
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
@@ -67,7 +63,7 @@ export class EntitySagas {
   ):SagaGenReturnType {
     try {
       console.log("fetchAllEntityDefinitionsFromRemoteDatastore");
-      // throw new Error("TEST");
+      throw new Error("TEST");
       
 
       const result:MClientCallReturnType = yield call(

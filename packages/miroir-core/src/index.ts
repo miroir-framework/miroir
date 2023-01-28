@@ -51,7 +51,12 @@ export {LocalDataStoreController} from './3_controllers/LocalDataStoreController
 
 export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 
-export {getErrorLog,pushError} from './3_controllers/ErrorLogService.js'
+export {ConfigurationService, PackageConfiguration} from './3_controllers/ConfigurationService.js'
+
+export {MiroirContextInterface, MiroirContext} from './3_controllers/MiroirContext.js'
+
+export {ErrorLogService} from './3_controllers/ErrorLogService.js'
+
 
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';
