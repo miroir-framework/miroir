@@ -3,8 +3,7 @@ import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effect
 
 
 import { StoreReturnType } from 'miroir-core';
-import { stringTuple } from 'miroir-fwk/tools';
-// import { stringTuple } from 'miroir-standalone-app/src/miroir-fwk/tools';
+import { stringTuple } from 'miroir-core';
 import { handlePromiseActionForSaga } from 'sagaTools';
 import { MClientCallReturnType, MclientI } from 'miroir-fwk/4_services/remoteStore/MClient';
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
@@ -63,7 +62,7 @@ export class EntitySagas {
   ):SagaGenReturnType {
     try {
       console.log("fetchAllEntityDefinitionsFromRemoteDatastore");
-      throw new Error("TEST");
+      // throw new Error("TEST");
       
 
       const result:MClientCallReturnType = yield call(
@@ -79,7 +78,6 @@ export class EntitySagas {
     }
   }
 
-  // [entitySliceInputActionNamesObject.replaceAllEntityDefinitions]
 
   // #########################################################################################
   public *entityRootSaga(

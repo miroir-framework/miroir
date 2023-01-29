@@ -1,6 +1,6 @@
-import { ErrorLogService, MiroirContext, MiroirContextInterface } from "miroir-core";
+import { MiroirContext, MiroirContextInterface } from "miroir-core";
 import * as React from "react";
-
+  
 
 const miroirReactContext = React.createContext<{miroirContext:MiroirContextInterface}>(undefined);
 
@@ -19,7 +19,7 @@ export function MiroirContextReactProvider(
   }
 ) {
   const value = {
-    miroirContext: props.miroirContext || new MiroirContext(new ErrorLogService()),
+    miroirContext: props.miroirContext || new MiroirContext(),
     // miroirContext: props.miroirContext,
   };
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;

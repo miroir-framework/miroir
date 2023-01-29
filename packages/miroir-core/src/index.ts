@@ -57,6 +57,8 @@ export {MiroirContextInterface, MiroirContext} from './3_controllers/MiroirConte
 
 export {ErrorLogService} from './3_controllers/ErrorLogService.js'
 
+export { stringTuple } from './tools.js'
+export { miroirCoreStartup } from './startup.js'
 
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';

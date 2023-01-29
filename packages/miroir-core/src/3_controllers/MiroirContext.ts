@@ -1,20 +1,17 @@
-import { ErrorLogServiceInterface, MError } from "src/0_interfaces/3_controllers/ErrorLogServiceInterface";
-
+import { ErrorLogServiceInterface } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { ErrorLogService } from "../3_controllers/ErrorLogService";
 export interface MiroirContextInterface {
   errorLogService:ErrorLogServiceInterface,
-  // getErrorLog:()=>MError[],
-  // pushError:(error:MError)=>void,
 }
 
 
 export class MiroirContext implements MiroirContextInterface {
+  public errorLogService:ErrorLogServiceInterface;
 
   constructor(
-    public errorLogService:ErrorLogServiceInterface,
-    // public getErrorLog:()=>MError[],
-    // public pushError:(error:MError)=>void,
+    // public errorLogService:ErrorLogServiceInterface,
   ){
-
+    this.errorLogService = new ErrorLogService();
   }
 
 }

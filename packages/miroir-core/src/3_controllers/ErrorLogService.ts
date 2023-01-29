@@ -5,7 +5,7 @@ export default {}
 export declare type ErrorLogState = MError[];
 
 export class ErrorLogService implements ErrorLogServiceInterface {
-  public errorLog: ErrorLogState = [];
+  private errorLog: ErrorLogState = [];
 
   constructor() {
     
@@ -13,12 +13,13 @@ export class ErrorLogService implements ErrorLogServiceInterface {
 
   public pushError(error:MError) {
     console.log("ErrorLogService pushError",error,this.errorLog);
-    this.errorLog = this.errorLog.concat([error]);
-    console.log("ErrorLogService after pushError",error,this.errorLog);
+    // this.errorLog = this.errorLog.concat([error]);
+    this.errorLog.push(error);
+    // console.log("ErrorLogService after pushError",error,this.errorLog);
   }
 
   public getErrorLog():MError[] {
-    console.log("ErrorLogService getErrorLog() called",this.errorLog);
+    // console.log("ErrorLogService getErrorLog() called",this.errorLog);
     return this.errorLog;
   }
   

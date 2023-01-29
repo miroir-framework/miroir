@@ -1,4 +1,4 @@
-import { MiroirContextInterface } from "src/3_controllers/MiroirContext.js";
+import { MiroirContextInterface } from "../3_controllers/MiroirContext.js";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
 import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";

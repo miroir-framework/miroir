@@ -7,7 +7,8 @@ export interface PackageConfiguration {
  * Allows Miroir packages to inject (and access?) configuration information.
  */
 export class ConfigurationService {
-  
+  static packages:PackageConfiguration[] = [];
+
   constructor() {
     
   }
@@ -15,8 +16,9 @@ export class ConfigurationService {
   /**
    * registerPackageConfiguration
    */
-  public registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
-    
+  public static registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
+    console.log("ConfigurationService registerPackageConfiguration",packageConfiguration);
+    this.packages.push(packageConfiguration);
   }
 
 }

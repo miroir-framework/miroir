@@ -13,9 +13,7 @@ global.TextDecoder = TextDecoder
 
 import {
   entityEntity,
-  entityReport,
-  ErrorLogService,
-  ErrorLogServiceInterface, MiroirContext,
+  entityReport, MiroirContext,
   reportEntityList
 } from "miroir-core";
 
@@ -39,8 +37,7 @@ const entitySagas: EntitySagas = new EntitySagas(mClient);
 const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
-const errorLogService: ErrorLogServiceInterface = new ErrorLogService();
-const miroirContext = new MiroirContext(errorLogService);
+const miroirContext = new MiroirContext();
 
 const dataController: DataControllerInterface = new LocalDataStoreController(miroirContext, mReduxStore, mReduxStore);
 

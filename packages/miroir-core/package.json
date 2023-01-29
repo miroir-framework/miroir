@@ -23,7 +23,7 @@
     "tsconfig-paths": "^4.1.2"
   },
   "scripts": {
-    "build": "rimraf dist && tsc && npm run copy-files && rollup --config",
+    "build": "tsc && npm run copy-files && rollup --config",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/out-tsc/dts/src",
     "test": "jest --verbose --silent=false -t"
   },
