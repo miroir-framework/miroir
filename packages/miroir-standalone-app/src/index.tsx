@@ -4,19 +4,17 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
-import { EntitySagas } from "miroir-fwk/4_services/remoteStore/EntitySagas";
-import { InstanceSagas } from "miroir-fwk/4_services/remoteStore/InstanceSagas";
-import { MClient } from "miroir-fwk/4_services/remoteStore/MClient";
-import { MDevServer } from "miroir-fwk/4_services/remoteStore/MDevServer";
+import { EntityRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
+import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+import { RestClient } from "miroir-fwk/4_services/remoteStore/RestClient";
+import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
 import { MComponent } from "miroir-fwk/4_view/MComponent";
-
-import { ConfigurationService } from 'miroir-core'
-import packageJson from '../package.json'
 
 import {
   DataControllerInterface,
   entityEntity,
-  entityReport, LocalDataStoreController,
+  entityReport,
+  DataStoreController,
   MiroirContext,
   reportEntityList
 } from "miroir-core";
@@ -30,7 +28,7 @@ const root = createRoot(container);
 
 async function start() {
   // Start our mock API server
-  const mServer: MDevServer = new MDevServer();
+  const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
 
   await mServer.createObjectStore(["Entity", "Instance", "Report"]);
   await mServer.localIndexedStorage.putValue("Entity", entityReport);
@@ -47,16 +45,16 @@ async function start() {
     await worker.start();
   }
 
-  const client = new MClient(window.fetch);
-  const entitySagas: EntitySagas = new EntitySagas(client);
-  const instanceSagas: InstanceSagas = new InstanceSagas(client);
+  const client = new RestClient(window.fetch);
+  const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(client);
+  const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(client);
 
   const mReduxStore: ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();
   
   const miroirContext = new MiroirContext();
 
-  const dataController: DataControllerInterface = new LocalDataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
+  const dataController: DataControllerInterface = new DataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
   dataController.loadConfigurationFromRemoteDataStore();
 
   root.render(

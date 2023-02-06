@@ -15,7 +15,7 @@ import { waitFor } from '@testing-library/react'
 // const fetch = require('node-fetch');
 
 import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient'
-import { MDevServer } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer'
+import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer'
 import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas'
 import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas'
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
@@ -33,7 +33,7 @@ import Fetch from "node-fetch";
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-const mServer: MDevServer = new MDevServer();
+const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
 const worker = setupServer(...mServer.handlers)
 const mClient:MclientI = new MClient(Fetch);
 

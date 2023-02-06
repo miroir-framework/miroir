@@ -7,11 +7,11 @@ import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
 import { EntityDefinition, Instance, InstanceCollection, StoreReturnType, stringTuple } from "miroir-core";
-import { SagaGenReturnType } from 'miroir-fwk/4_services/remoteStore/EntitySagas';
-import { MclientI } from 'miroir-fwk/4_services/remoteStore/MClient';
+import { SagaGenReturnType } from 'miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga';
+import { RestClientInterface } from 'miroir-fwk/4_services/remoteStore/RestClient';
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import { handlePromiseActionForSaga } from 'sagaTools';
-import { InstanceSlice, instanceSliceInputActionNamesObjectTuple } from '../localStore/InstanceSlice';
+import { InstanceSlice, instanceSliceInputActionNamesObjectTuple } from '../localStore/InstanceReduxSlice';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -27,15 +27,14 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-export const instanceSagaInputActionNamesObject = {
+const instanceSagaInputActionNamesObject = {
   'fetchInstancesForEntityListFromRemoteDatastore':'fetchInstancesForEntityListFromRemoteDatastore',
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
 };
-type instanceSagaInputActionNamesObjectTuple = typeof instanceSagaInputActionNamesObject;
-type instanceSagaInputActionNamesKey = keyof instanceSagaInputActionNamesObjectTuple;
-export const instanceSagaInputActionNames:instanceSagaInputActionNamesKey[] = 
-  Object.keys(instanceSagaInputActionNamesObject) as instanceSagaInputActionNamesKey[];
-export const instanceSagaGeneratedActionNames = getPromiseActionStoreActionNames(instanceSagaInputActionNames);
+export type instanceSagaInputActionName = keyof typeof instanceSagaInputActionNamesObject;
+export const instanceSagaInputActionNamesArray:instanceSagaInputActionName[] = 
+  Object.keys(instanceSagaInputActionNamesObject) as instanceSagaInputActionName[];
+export const instanceSagaGeneratedActionNames = getPromiseActionStoreActionNames(instanceSagaInputActionNamesArray);
 
 
 //#########################################################################################
@@ -57,10 +56,10 @@ export type InstanceSagaAction = PayloadAction<InstanceSagaEntitiesActionPayload
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class InstanceSagas {
+export class InstanceRemoteAccessReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
-  constructor(private client: MclientI) // public mInstanceSlice:Slice,
+  constructor(private client: RestClientInterface) // public mInstanceSlice:Slice,
   {}
 
   private entitiesToFetch: string[] = [];
@@ -68,7 +67,8 @@ export class InstanceSagas {
 
 //#########################################################################################
 public instanceSagaInputPromiseActions:{
-    [property in keyof instanceSagaInputActionNamesObjectTuple]
+    // [property in keyof instanceSagaInputActionNamesObjectTuple]
+    [property in instanceSagaInputActionName]
     : {
       name: property,
       creator:SagaPromiseActionCreator<
@@ -172,36 +172,6 @@ public instanceSliceInputPromiseActions:{
   };
   
   //#########################################################################################
-  // *fetchInstancesForEntityFromRemoteDatastore(
-  //   action: PayloadAction<string>
-  // ): any {
-  //   console.log("fetchInstancesForEntityFromRemoteDatastore", action)
-  //   try {
-  //     const result: {
-  //       status: number;
-  //       data: Instance[];
-  //       headers: Headers;
-  //       url: string;
-  //     } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
-  //     return {entity:action.payload, entities:result.data};
-  //     // // yield putResolve(
-  //     // //   instanceSliceObject.actionCreators[instanceSliceInputActionNamesObject.ReplaceInstancesForEntity]({
-  //     // //     instances: result.data,
-  //     // //     entity: action.payload,
-  //     // //   })
-  //     // // );
-  //     // return yield put(
-  //     //   this.instanceSagaInternalActionsCreators[this.instanceSagaInternalActionNames.instancesHaveBeenFecthedForEntity](
-  //     //     action.payload
-  //     //   )
-  //     // );
-  //   } catch (e) {
-  //     console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
-  //     yield put({ type: "instance/failure/instancesNotReceived" });
-  //   }
-  // }
-
-  //#########################################################################################
   *fetchInstancesForEntityListFromRemoteDatastore(
     action: PayloadAction<EntityDefinition[]>
   ): SagaGenReturnType {
@@ -295,5 +265,5 @@ public instanceSliceInputPromiseActions:{
   //#########################################################################################
 }// end class Mslice
 
-export default InstanceSagas;
+export default InstanceRemoteAccessReduxSaga;
 

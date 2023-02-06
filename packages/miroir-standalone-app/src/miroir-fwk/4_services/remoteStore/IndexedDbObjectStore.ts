@@ -13,7 +13,7 @@ const serializePost = (post:any) => ({
 })
 
 
-export class MDevServer {
+export class IndexedDbObjectStore {
   public localIndexedStorage = new IndexedDb('miroir');
 
   constructor() {

@@ -1,6 +1,11 @@
-import { EntityDefinition } from '../../../0_interfaces/1_core/Entity.js';
+import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { DomainAction } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
+// import { DomainAction } from 'src/0_interfaces/2_domain/DomainLanguageInterface.js';
+// import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
+// import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
+// import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 
 export default {}
 
@@ -44,4 +49,5 @@ export declare interface LocalStoreInterface extends
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
+  handleAction(action:DomainAction):Promise<StoreReturnType>
 }

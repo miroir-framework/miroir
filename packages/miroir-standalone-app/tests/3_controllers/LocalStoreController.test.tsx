@@ -22,14 +22,14 @@ import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/loca
 import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas';
 import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas';
 import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient';
-import { MDevServer } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer';
+import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer';
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
 import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
 import React from "react";
 
 import Fetch from "node-fetch";
 
-const mServer: MDevServer = new MDevServer();
+const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
 const worker = setupServer(...mServer.handlers)
 const mClient:MclientI = new MClient(Fetch);
 

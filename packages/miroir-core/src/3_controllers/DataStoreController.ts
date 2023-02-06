@@ -1,9 +1,9 @@
-import { MiroirContextInterface } from "../3_controllers/MiroirContext.js";
+import { MiroirContextInterface } from "./MiroirContext.js";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
 import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
 import { RemoteDataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-import { throwExceptionIfError } from "../3_controllers/ErrorUtils.js";
+import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {}
 
@@ -13,7 +13,7 @@ export default {}
  * use asynchrony or saga-like implementation for data controller, instead of notifications?
  * allow monitoring of local storage resources.
  */
-export class LocalDataStoreController implements DataControllerInterface {
+export class DataStoreController implements DataControllerInterface {
 
   constructor(
     private miroirContext: MiroirContextInterface,

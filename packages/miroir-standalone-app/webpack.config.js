@@ -25,7 +25,9 @@ module.exports = {
   // externalsPresets: { node: undefined },
   externals: [nodeExternals()],
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
+    chunkFilename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: path.resolve(__dirname, 'dist'),
   },
 };

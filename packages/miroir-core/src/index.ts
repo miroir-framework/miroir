@@ -1,12 +1,19 @@
 export {
-  MInstanceDomainInputActionsI,
-  MEntityDomainInputActionsI
+  InstanceDomainInputActionsInterface,
+  EntityDomainInputActionsInterface
 } from './0_interfaces/2_domain/instanceDomainInterface.js';
+
+export {
+  DomainAction,
+  DomainActionName,
+  domainActionNamesArray,
+  domainActionNamesObject,
+} from './0_interfaces/2_domain/DomainLanguageInterface';
 
 export {
   EntityAttribute,
   EntityDefinition,
-} from './0_interfaces/1_core/Entity.js';
+} from './0_interfaces/1_core/EntityDefinition.js';
 
 export {
   Instance,
@@ -47,7 +54,7 @@ export {ReportGetInstancesToDispay} from './1_core/Report.js';
 
 export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
 
-export {LocalDataStoreController} from './3_controllers/LocalDataStoreController.js'
+export {DataStoreController} from './3_controllers/DataStoreController.js'
 
 export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 

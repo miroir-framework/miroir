@@ -1,7 +1,7 @@
 // import { EntityDefinition } from 'miroir-core';
 // import { Instance } from 'miroir-core';
 
-export interface MInstanceDomainInputActionsI {
+export interface InstanceDomainInputActionsInterface {
   addInstancesForEntity(entityName:string,instances:any[]):void;
   modifyInstancesForEntity(entityName:string,instances:any[]):void;
   // addInstancesForEntity(entityName:string,instances:Instance[]):void;
@@ -10,7 +10,7 @@ export interface MInstanceDomainInputActionsI {
 
 
 
-export interface MEntityDomainInputActionsI {
+export interface EntityDomainInputActionsInterface {
   // addInstancesForEntity(entityName:string,instances:Minstance[]):void;
   // modifyInstancesForEntity(entityName:string,instances:Minstance[]):void;
   replaceEntities(entities:any[]):void;

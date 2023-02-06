@@ -1,5 +1,7 @@
-import { EntityDefinition } from '../../../0_interfaces/1_core/Entity.js';
+import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { StoreReturnType } from "../localStore/LocalStoreInterface.js";
+// import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
+// import { StoreReturnType } from 'src/0_interfaces/4-services/localStore/LocalStoreInterface';
 
 export default {}
 
