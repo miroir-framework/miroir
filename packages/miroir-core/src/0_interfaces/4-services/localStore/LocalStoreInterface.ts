@@ -1,8 +1,6 @@
 import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { DomainAction } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
-// import { DomainAction } from 'src/0_interfaces/2_domain/DomainLanguageInterface.js';
 // import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
 // import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
 // import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
@@ -20,6 +18,7 @@ export interface StoreReturnType {
 export interface EntityDefinitionLocalStoreInputActionsI {
   // addEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
   replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType>;
+  // handleAction(action:DomainAction):Promise<StoreReturnType>;
   // modifyEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
   //
   // replaceEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
@@ -49,5 +48,4 @@ export declare interface LocalStoreInterface extends
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
-  handleAction(action:DomainAction):Promise<StoreReturnType>
 }

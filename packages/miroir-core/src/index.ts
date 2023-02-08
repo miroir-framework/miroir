@@ -8,7 +8,7 @@ export {
   DomainActionName,
   domainActionNamesArray,
   domainActionNamesObject,
-} from './0_interfaces/2_domain/DomainLanguageInterface';
+} from './0_interfaces/2_domain/DomainLanguageInterface.js';
 
 export {
   EntityAttribute,
@@ -47,7 +47,14 @@ export {
   EntityDefinitionRemoteDataStoreInputActionsI,
   InstanceRemoteDataStoreInputActionsI,
   RemoteDataStoreInterface,
+  RemoteStoreClientInterface,
+  RestClientCallReturnType,
+  RestClientInterface,
 } from './0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
+
+export {
+  RestClient
+} from './4_services/RestClient.js';
 
 
 export {ReportGetInstancesToDispay} from './1_core/Report.js';

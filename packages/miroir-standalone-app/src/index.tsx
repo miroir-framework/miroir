@@ -3,12 +3,7 @@ import { setupWorker } from "msw";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
-import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
-import { EntityRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
-import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
-import { RestClient } from "miroir-fwk/4_services/remoteStore/RestClient";
-import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
-import { MComponent } from "miroir-fwk/4_view/MComponent";
+import { RestClient } from "miroir-core";
 
 import {
   DataControllerInterface,
@@ -18,9 +13,17 @@ import {
   MiroirContext,
   reportEntityList
 } from "miroir-core";
+import { miroirCoreStartup } from "miroir-core";
+
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { miroirAppStartup } from "startup";
-import { miroirCoreStartup } from "miroir-core";
+import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
+import { EntityRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
+import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
+import { MComponent } from "miroir-fwk/4_view/MComponent";
+import RemoteStoreClient from "miroir-fwk/4_services/remoteStore/RemoteStoreClient";
+
 
 console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById("root");
@@ -45,9 +48,10 @@ async function start() {
     await worker.start();
   }
 
-  const client = new RestClient(window.fetch);
-  const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(client);
-  const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(client);
+  const client:RestClient = new RestClient(window.fetch);
+  const remoteStoreClient = new RemoteStoreClient(client);
+  const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
+  const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
 
   const mReduxStore: ReduxStore = new ReduxStore(entitySagas, instanceSagas);
   mReduxStore.run();

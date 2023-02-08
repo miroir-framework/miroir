@@ -1,4 +1,4 @@
-import { Instance } from "../../0_interfaces/1_core/Instance";
+import { Instance } from "../../0_interfaces/1_core/Instance.js";
 // import { Instance } from "src/0_interfaces/1_core/Instance";
 
 export const domainActionNamesObject = {

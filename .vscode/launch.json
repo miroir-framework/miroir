@@ -5,12 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "localRoot": "${workspaceRoot}/miroir-standalone-app",
-      "cwd": "${workspaceFolder}/miroir-standalone-app",
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/miroir-standalone-app/dist/**/*.js"],
-      "command": "npm start",
-      "name": "Run npm start",
+      "localRoot": "${workspaceRoot}",
+      "cwd": "${workspaceFolder}",
+      "command": "cmd /V /C \"set BROWSER=none&& npx lerna run start-dev\"",
+      "name": "npm run start-dev",
       "request": "launch",
       "type": "node-terminal",
     },

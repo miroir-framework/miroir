@@ -8,6 +8,7 @@ import { all, call } from 'redux-saga/effects';
 import { Maction } from './Mslice';
 import { EntityRemoteAccessReduxSaga } from 'miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga';
 import {
+  DomainAction,
   EntityDefinition,
   Instance,
   InstanceCollection,
@@ -65,7 +66,7 @@ export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Mac
  * 
  */
 export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface {
-  private store: MreduxWithUndoRedoStore;
+  private localStore: MreduxWithUndoRedoStore;
   private staticReducers: MreduxWithUndoRedoReducer;
   private sagaMiddleware: any;
 
@@ -95,7 +96,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     ];
 
     console.log('ReduxStore ignoredActionsList',ignoredActionsList);
-    this.store = configureStore({
+    this.localStore = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -113,7 +114,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   getInnerStore() {
-    return this.store;
+    return this.localStore;
   }
 
   // ###############################################################################
@@ -123,12 +124,14 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   handleAction(action: DomainAction): Promise<StoreReturnType> {
-
+    return this.localStore.dispatch(
+      this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+    );
   }
-  
+
   // ###############################################################################
   fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<StoreReturnType> {
-    return this.store.dispatch(
+    return this.localStore.dispatch(
       this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
     );
   }
@@ -137,7 +140,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType> {
     // clears all entities before putting the given ones in the store
     console.log("ReduxStore replaceAllEntityDefinitions called entityDefinitions",entityDefinitions,);
-    return this.store.dispatch(entitySlicePromiseAction(entityDefinitions))
+    return this.localStore.dispatch(entitySlicePromiseAction(entityDefinitions))
   }
 
   // ###############################################################################
@@ -163,7 +166,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
     if (entities !== undefined) {
       console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
-      return this.store.dispatch(
+      return this.localStore.dispatch(
         this.instanceRemoteAccessReduxSaga.instanceSagaInputActionsCreators.fetchInstancesForEntityListFromRemoteDatastore(entities)
       );
     }
@@ -171,7 +174,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   replaceAllInstances(instances:InstanceCollection[]):Promise<void> {
-    return this.store.dispatch(
+    return this.localStore.dispatch(
       this.instanceRemoteAccessReduxSaga.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
     );
   }

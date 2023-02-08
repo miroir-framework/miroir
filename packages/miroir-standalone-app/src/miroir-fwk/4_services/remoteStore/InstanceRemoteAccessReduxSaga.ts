@@ -6,9 +6,15 @@ import {
 import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
-import { EntityDefinition, Instance, InstanceCollection, StoreReturnType, stringTuple } from "miroir-core";
+import {
+  EntityDefinition,
+  Instance,
+  InstanceCollection,
+  RestClientInterface,
+  StoreReturnType,
+  stringTuple,
+} from "miroir-core";
 import { SagaGenReturnType } from 'miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga';
-import { RestClientInterface } from 'miroir-fwk/4_services/remoteStore/RestClient';
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import { handlePromiseActionForSaga } from 'sagaTools';
 import { InstanceSlice, instanceSliceInputActionNamesObjectTuple } from '../localStore/InstanceReduxSlice';
@@ -112,8 +118,9 @@ public instanceSagaInputPromiseActions:{
 
 //#########################################################################################
 public instanceSliceInputPromiseActions:{
-    [property in keyof instanceSliceInputActionNamesObjectTuple]
-    : {
+  [property in keyof instanceSliceInputActionNamesObjectTuple]
+  : 
+    {
       name: property,
       creator:SagaPromiseActionCreator<
         any,
@@ -125,51 +132,51 @@ public instanceSliceInputPromiseActions:{
       // generator:(any) => Generator<SagaGenReturnType>
       generator:(any) => SagaGenReturnType
     }
-  } = {
-    AddInstancesForEntity:{
-      name: "AddInstancesForEntity",
-      creator: promiseActionFactory<void>().create<Instance[],"AddInstancesForEntity">("AddInstancesForEntity"),
-      generator: function *(action):SagaGenReturnType {
-        // console.log("entityRootSaga entitySlicePromiseAction",action)
-        return yield putResolve(InstanceSlice.actionCreators["AddInstancesForEntity"](action.payload))
-      }
-    },
-    ReplaceInstancesForEntity: {
-      name: "ReplaceInstancesForEntity",
-      creator: promiseActionFactory<void>().create<InstanceCollection,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
-      generator: function *(action:PayloadAction<InstanceCollection>):SagaGenReturnType {
-        console.log("instanceSliceInputPromiseActions ReplaceInstancesForEntity",action);
-        yield putResolve(InstanceSlice.actionCreators["ReplaceInstancesForEntity"](action.payload));
+} = {
+  AddInstancesForEntity:{
+    name: "AddInstancesForEntity",
+    creator: promiseActionFactory<void>().create<Instance[],"AddInstancesForEntity">("AddInstancesForEntity"),
+    generator: function *(action):SagaGenReturnType {
+      // console.log("entityRootSaga entitySlicePromiseAction",action)
+      return yield putResolve(InstanceSlice.actionCreators["AddInstancesForEntity"](action.payload))
+    }
+  },
+  ReplaceInstancesForEntity: {
+    name: "ReplaceInstancesForEntity",
+    creator: promiseActionFactory<void>().create<InstanceCollection,"ReplaceInstancesForEntity">("ReplaceInstancesForEntity"),
+    generator: function *(action:PayloadAction<InstanceCollection>):SagaGenReturnType {
+      console.log("instanceSliceInputPromiseActions ReplaceInstancesForEntity",action);
+      yield putResolve(InstanceSlice.actionCreators["ReplaceInstancesForEntity"](action.payload));
+      return undefined;
+    }
+  },
+  ReplaceAllInstances: {
+    name: "ReplaceAllInstances",
+    creator: promiseActionFactory<void>().create<string,"ReplaceAllInstances">("ReplaceAllInstances"),
+    generator: 
+      function *(action:PayloadAction<InstanceCollection[]>):SagaGenReturnType {
+        const putResolves = action.payload.map(
+          function (a) {
+            return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
+          },this
+        );
+        console.log("instanceSliceInputPromiseActions ReplaceAllInstances",action,putResolves);
+        for(let f of putResolves) {
+          console.log("instanceSliceInputPromiseActions yield for entity",f.entity);
+          yield f.put;
+        }
         return undefined;
-      }
-    },
-    ReplaceAllInstances: {
-      name: "ReplaceAllInstances",
-      creator: promiseActionFactory<void>().create<string,"ReplaceAllInstances">("ReplaceAllInstances"),
-      generator: 
-        function *(action:PayloadAction<InstanceCollection[]>):SagaGenReturnType {
-          const putResolves = action.payload.map(
-            function (a) {
-              return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
-            },this
-          );
-          console.log("instanceSliceInputPromiseActions ReplaceAllInstances",action,putResolves);
-          for(let f of putResolves) {
-            console.log("instanceSliceInputPromiseActions yield for entity",f.entity);
-            yield f.put;
-          }
-          return undefined;
-        }.bind(this)
-    },
-    UpdateInstancesForEntity: {
-      name: "UpdateInstancesForEntity",
-      creator: promiseActionFactory<Instance[]>().create<string,"UpdateInstancesForEntity">("UpdateInstancesForEntity"),
-      generator: function *(action):SagaGenReturnType {
-        // console.log("entityRootSaga entitySlicePromiseAction",action)
-        return yield putResolve(InstanceSlice.actionCreators["UpdateInstancesForEntity"](action.payload))
-      }
-    },
-  };
+      }.bind(this)
+  },
+  UpdateInstancesForEntity: {
+    name: "UpdateInstancesForEntity",
+    creator: promiseActionFactory<Instance[]>().create<string,"UpdateInstancesForEntity">("UpdateInstancesForEntity"),
+    generator: function *(action):SagaGenReturnType {
+      // console.log("entityRootSaga entitySlicePromiseAction",action)
+      return yield putResolve(InstanceSlice.actionCreators["UpdateInstancesForEntity"](action.payload))
+    }
+  },
+};
   
   //#########################################################################################
   *fetchInstancesForEntityListFromRemoteDatastore(

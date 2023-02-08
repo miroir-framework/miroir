@@ -1,18 +1,7 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-export interface RestClientCallReturnType {
-  status: number;
-  data: any;
-  // headers: any;
-  headers: Headers;
-  url: string;
-}
-
-export interface RestClientInterface {
-  get(endpoint:string, customConfig?:any): Promise<RestClientCallReturnType>;
-  post(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
-}
+import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 
 export class RestClient implements RestClientInterface {
   constructor(
@@ -59,13 +48,13 @@ export class RestClient implements RestClientInterface {
       return Promise.reject(err.message ? err.message : data)
     }
   }
-  
+
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call(endpoint, { ...customConfig, method: 'GET' })
     console.log('RestClient get',endpoint, result)
     return result
   }
-  
+
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     // console.log('MClient post',endpoint)
     return this.call(endpoint, { ...customConfig, body })

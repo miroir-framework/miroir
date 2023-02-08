@@ -4,6 +4,7 @@ import { DataControllerInterface } from "../0_interfaces/3_controllers/DataContr
 import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
 import { RemoteDataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
+import { DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface.js";
 
 export default {}
 
@@ -25,8 +26,13 @@ export class DataStoreController implements DataControllerInterface {
     try {
       const entities: InstanceCollection[] = await throwExceptionIfError(
         this.miroirContext.errorLogService,
-        this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,
-        this.remoteStore
+        // this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,
+        this.remoteStore.handleAction,
+        this.remoteStore,
+        {
+          action: "read",
+          entityName:'Entity'
+        } as DomainAction
       );
       console.log("LocalDataStoreController loadConfigurationFromRemoteDataStore entities", entities);
       const instances: InstanceCollection[] = await throwExceptionIfError(
