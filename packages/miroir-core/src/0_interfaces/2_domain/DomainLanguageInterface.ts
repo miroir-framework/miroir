@@ -1,12 +1,15 @@
-import { Instance } from "../../0_interfaces/1_core/Instance.js";
+import { networkCRUDActionNamesObject } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { Instance, InstanceCollection } from "../../0_interfaces/1_core/Instance.js";
 // import { Instance } from "src/0_interfaces/1_core/Instance";
 
+
 export const domainActionNamesObject = {
-  'create': 'create',
-  'read': 'read',
-  'update': 'update',
-  'delete': 'delete',
-  'replace': 'replace',
+  // 'create': 'create',
+  // 'read': 'read',
+  // 'update': 'update',
+  // 'delete': 'delete',
+  ...networkCRUDActionNamesObject,
+  'replace': 'replace', // for local storage
   // 'getRemoteEntityDefinitionList':'getRemoteEntityDefinitionList',
   // 'addEntityDefinition':'addEntityDefinition',
   // 'removeEntityDefinition':'removeEntityDefinition',
@@ -21,8 +24,8 @@ export const domainActionNamesArray:DomainActionName[] = Object.keys(domainActio
 
 
 export interface DomainAction {
-  action: DomainActionName;
+  actionName: DomainActionName;
   entityName: string;
   uuid?:string;
-  objects?:Instance[];
+  objects?:Instance[]|InstanceCollection[];
 }

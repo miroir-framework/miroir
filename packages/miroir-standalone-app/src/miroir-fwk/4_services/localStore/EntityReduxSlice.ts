@@ -71,7 +71,7 @@ const EntitySliceObject: Slice = createSlice({
 //#########################################################################################
 //# ACTION CREATORS
 //#########################################################################################
-export const entitySliceActionsCreators: any = {
+export const entitySliceActionsCreators = {
   ...EntitySliceObject.actions,
 };
 

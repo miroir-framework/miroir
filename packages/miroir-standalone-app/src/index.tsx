@@ -22,7 +22,7 @@ import { EntityRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/E
 import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
 import { MComponent } from "miroir-fwk/4_view/MComponent";
-import RemoteStoreClient from "miroir-fwk/4_services/remoteStore/RemoteStoreClient";
+import RemoteStoreClient from "miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
 
 
 console.log("entityEntity", JSON.stringify(entityEntity));

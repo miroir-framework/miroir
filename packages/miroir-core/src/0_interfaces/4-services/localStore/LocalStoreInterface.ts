@@ -1,6 +1,7 @@
 import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { DomainAction } from 'src/0_interfaces/2_domain/DomainLanguageInterface.js';
 // import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
 // import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
 // import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
@@ -30,7 +31,7 @@ export interface EntityDefinitionLocalStoreInputActionsI {
 export interface InstanceLocalStoreInputActionsI {
   addInstancesForEntity(entityName:string,instances:Instance[]):void;
   modifyInstancesForEntity(entityName:string,instances:Instance[]):void;
-  replaceAllInstances(instances:InstanceCollection[]):Promise<void>;
+  replaceAllInstances(instances:InstanceCollection[]):void;
   // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
   // fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
   // // fetchFromApiAndReplaceInstancesForAllEntities():void;
@@ -48,4 +49,7 @@ export declare interface LocalStoreInterface extends
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
+  // handleDomainAction(action:DomainAction):StoreReturnType;
+  handleDomainAction(action:DomainAction);
+
 }

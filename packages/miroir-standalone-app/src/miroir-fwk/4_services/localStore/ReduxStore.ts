@@ -13,22 +13,27 @@ import {
   Instance,
   InstanceCollection,
   LocalStoreInterface,
+  NetworkCRUDAction,
   RemoteDataStoreInterface,
   StoreReturnType,
 } from "miroir-core";
 import {
   InstanceSlice,
   instanceSliceGeneratedActionNames,
+  instanceSliceInputActionNames,
+  instanceSliceInputActionNamesObject,
   InstanceSliceState
 } from "miroir-fwk/4_services/localStore/InstanceReduxSlice";
 import {
   EntitySlice,
+  entitySliceActionsCreators,
+  entitySliceInputActionNamesObject,
   entitySliceInputFullActionNames,
   entitySlicePromiseAction
 } from "miroir-fwk/4_services/localStore/EntityReduxSlice";
 import {
   createUndoRedoReducer,
-  MreduxWithUndoRedoReducer, MreduxWithUndoRedoStore
+  ReduxReducerWithUndoRedo, ReduxStoreWithUndoRedo
 } from "miroir-fwk/4_services/localStore/UndoRedoReducer";
 import {
   instanceSagaGeneratedActionNames,
@@ -44,12 +49,12 @@ import {
  * The external view of the world for the domain model
  */
 
-export interface MDatastoreInputActionsI {
+export interface DatastoreInputActionsInterface {
   fetchInstancesFromDatastoreForEntity(entityName:string):void;
   fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
 }
 
-export interface MDatastoreOutputNotificationsI {
+export interface DatastoreOutputNotificationsInterface {
   allInstancesRefreshed():void;
 }
 
@@ -66,8 +71,8 @@ export type InnerReducerInterface = (state: InnerStoreStateInterface, action:Mac
  * 
  */
 export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface {
-  private localStore: MreduxWithUndoRedoStore;
-  private staticReducers: MreduxWithUndoRedoReducer;
+  private innerReduxStore: ReduxStoreWithUndoRedo;
+  private staticReducers: ReduxReducerWithUndoRedo;
   private sagaMiddleware: any;
 
   // ###############################################################################
@@ -96,7 +101,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     ];
 
     console.log('ReduxStore ignoredActionsList',ignoredActionsList);
-    this.localStore = configureStore({
+    this.innerReduxStore = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -114,7 +119,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   getInnerStore() {
-    return this.localStore;
+    return this.innerReduxStore;
   }
 
   // ###############################################################################
@@ -123,24 +128,73 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleAction(action: DomainAction): Promise<StoreReturnType> {
-    return this.localStore.dispatch(
-      this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
-    );
+  handleRemoteCRUDAction(action: NetworkCRUDAction): Promise<StoreReturnType> {
+    switch (action.entityName) {
+      case 'Entity': 
+        return this.innerReduxStore.dispatch(
+          // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+          this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleRemoteCRUDAction(action),
+        );
+      case 'Instance':
+        return this.innerReduxStore.dispatch(
+          // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+          this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteCRUDAction.creator(action)
+          // EntitySlice.actionCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.objects)
+        )
+    }
+    // if (action.entityName === 'Entity') {
+    //   return this.innerReduxStore.dispatch(
+    //     this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+    //   );
+    // } else {
+      
+    // }
   }
 
   // ###############################################################################
-  fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<StoreReturnType> {
-    return this.localStore.dispatch(
-      this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
-    );
+  handleDomainAction(action:DomainAction) {
+    switch (action.entityName) {
+      case 'Entity': 
+        this.innerReduxStore.dispatch(
+          // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+          EntitySlice.actionCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.objects)
+        );
+        break;
+      case 'Instance':
+        this.innerReduxStore.dispatch(
+          // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+          InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.ReplaceAllInstances](action.objects)
+        )
+    }
+    // if (action.entityName === 'Entity') {
+    //   this.innerReduxStore.dispatch(
+    //     // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+    //     EntitySlice.actionCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.objects)
+    //   );
+    // } else {
+
+    // }
   }
+
+  // ###############################################################################
+  // handleDomainAction(action: DomainAction): Promise<StoreReturnType> {
+  //   return this.localStore.dispatch(
+  //     this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+  //   );
+  // }
+
+  // ###############################################################################
+  // fetchAllEntityDefinitionsFromRemoteDataStore(): Promise<StoreReturnType> {
+  //   return this.localStore.dispatch(
+  //     this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.fetchAllEntityDefinitionsFromRemoteDatastore()
+  //   );
+  // }
 
   // ###############################################################################
   replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType> {
     // clears all entities before putting the given ones in the store
     console.log("ReduxStore replaceAllEntityDefinitions called entityDefinitions",entityDefinitions,);
-    return this.localStore.dispatch(entitySlicePromiseAction(entityDefinitions))
+    return this.innerReduxStore.dispatch(entitySlicePromiseAction(entityDefinitions))
   }
 
   // ###############################################################################
@@ -166,16 +220,24 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     console.log("ReduxStore fetchInstancesForEntityListFromRemoteDatastore called, entities",entities,);
     if (entities !== undefined) {
       console.log("dispatching saga fetchInstancesForEntityListFromRemoteDatastore with entities",entities );
-      return this.localStore.dispatch(
+      return this.innerReduxStore.dispatch(
         this.instanceRemoteAccessReduxSaga.instanceSagaInputActionsCreators.fetchInstancesForEntityListFromRemoteDatastore(entities)
       );
     }
   }
 
+  // // ###############################################################################
+  // replaceAllInstances(instances:InstanceCollection[]):Promise<void> {
+  //   return this.innerReduxStore.dispatch(
+  //     this.instanceRemoteAccessReduxSaga.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
+  //   );
+  // }
+
   // ###############################################################################
-  replaceAllInstances(instances:InstanceCollection[]):Promise<void> {
-    return this.localStore.dispatch(
-      this.instanceRemoteAccessReduxSaga.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
+  replaceAllInstances(instances:InstanceCollection[]):void {
+    this.innerReduxStore.dispatch(
+      InstanceSlice.actionCreators["ReplaceAllInstances"](instances)
+      // this.instanceRemoteAccessReduxSaga.instanceSliceInputPromiseActions.ReplaceAllInstances.creator(instances)
     );
   }
 

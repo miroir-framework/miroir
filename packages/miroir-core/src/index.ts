@@ -44,10 +44,14 @@ export {
 } from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
 
 export {
-  EntityDefinitionRemoteDataStoreInputActionsI,
+  EntityDefinitionRemoteDataStoreInputActionsInterface as EntityDefinitionRemoteDataStoreInputActionsI,
   InstanceRemoteDataStoreInputActionsI,
+  NetworkCRUDAction,
+  NetworkCRUDActionName,
+  networkCRUDActionNamesArray,
+  networkCRUDActionNamesObject,
   RemoteDataStoreInterface,
-  RemoteStoreClientInterface,
+  RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
 } from './0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';

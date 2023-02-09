@@ -1,8 +1,24 @@
-import { DomainAction } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
+import { Instance } from '../../../0_interfaces/1_core/Instance.js';
 import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { StoreReturnType } from '../localStore/LocalStoreInterface.js';
 // import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
 // import { StoreReturnType } from 'src/0_interfaces/4-services/localStore/LocalStoreInterface';
+
+export const networkCRUDActionNamesObject = {
+  'create': 'create',
+  'read': 'read',
+  'update': 'update',
+  'delete': 'delete',
+}
+export type NetworkCRUDActionName = keyof typeof networkCRUDActionNamesObject;
+export const networkCRUDActionNamesArray:NetworkCRUDActionName[] = Object.keys(networkCRUDActionNamesObject) as NetworkCRUDActionName[];
+
+export interface NetworkCRUDAction {
+  actionName: NetworkCRUDActionName;
+  entityName: string;
+  uuid?:string;
+  objects?:Instance[];
+}
 
 export interface RestClientCallReturnType {
   status: number;
@@ -17,17 +33,17 @@ export interface RestClientInterface {
   post(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
 }
 
-export interface RemoteStoreClientInterface extends RestClientInterface  {
-  resolveAction(domainAction:DomainAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
+export interface RemoteStoreNetworkClientInterface extends RestClientInterface  {
+  handleNetworkAction(networkAction:NetworkCRUDAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
 }
 
 export default {}
 
-export interface EntityDefinitionRemoteDataStoreInputActionsI {
+export interface EntityDefinitionRemoteDataStoreInputActionsInterface {
   // fetchEntityDefinitionFromRemoteDataStore(entityName:string):Promise<EntityDefinition>;
   // fetchEntityDefinitionsFromRemoteDataStore():Promise<EntityDefinition[]>;
-  fetchAllEntityDefinitionsFromRemoteDataStore():Promise<StoreReturnType>;
-  handleAction(action:DomainAction):Promise<StoreReturnType>;
+  // fetchAllEntityDefinitionsFromRemoteDataStore():Promise<StoreReturnType>;
+  handleRemoteCRUDAction(action:NetworkCRUDAction):Promise<StoreReturnType>;
 }
 
 export interface InstanceRemoteDataStoreInputActionsI {
@@ -39,7 +55,7 @@ export interface InstanceRemoteDataStoreInputActionsI {
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface RemoteDataStoreInterface extends 
-  EntityDefinitionRemoteDataStoreInputActionsI,
+  EntityDefinitionRemoteDataStoreInputActionsInterface,
   InstanceRemoteDataStoreInputActionsI
 {
   // constructor

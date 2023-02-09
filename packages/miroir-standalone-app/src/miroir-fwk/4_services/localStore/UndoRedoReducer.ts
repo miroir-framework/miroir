@@ -51,8 +51,8 @@ export interface MreduxWithUndoRedoState {
 }
 
 // TODO: make action type explicit!
-export type MreduxWithUndoRedoReducer = (state:MreduxWithUndoRedoState, action:any) => MreduxWithUndoRedoState
-export type MreduxWithUndoRedoStore = Store<MreduxWithUndoRedoState, any>;
+export type ReduxReducerWithUndoRedo = (state:MreduxWithUndoRedoState, action:any) => MreduxWithUndoRedoState
+export type ReduxStoreWithUndoRedo = Store<MreduxWithUndoRedoState, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
 
@@ -72,7 +72,7 @@ export const makeActionUpdatesUndoable = (action:string) => {
 }
 
 
-export function mReduxWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRedoState {
+export function reduxStoreWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRedoState {
   return {
     // dataCache:{},
     previousModelSnapshot: {} as InnerStoreStateInterface,
@@ -86,7 +86,7 @@ export function mReduxWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRed
 export function createUndoRedoReducer(
   reducer:InnerReducerInterface
   // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void
-):MreduxWithUndoRedoReducer
+):ReduxReducerWithUndoRedo
 {
   // Call the reducer with empty action to populate the initial state
 
@@ -145,7 +145,7 @@ export function createUndoRedoReducer(
 
   // Returns a reducer function, that handles undo and redo
   return (
-    state:MreduxWithUndoRedoState = mReduxWithUndoRedoGetInitialState(reducer), 
+    state:MreduxWithUndoRedoState = reduxStoreWithUndoRedoGetInitialState(reducer), 
     action:any
   ): MreduxWithUndoRedoState => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state

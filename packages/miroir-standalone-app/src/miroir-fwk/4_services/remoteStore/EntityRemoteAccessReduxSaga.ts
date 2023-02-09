@@ -2,12 +2,11 @@ import { promiseActionFactory } from '@teroneko/redux-saga-promise';
 import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
-import { RemoteStoreClientInterface, RestClientCallReturnType, RestClientInterface } from 'miroir-core';
+import { NetworkCRUDAction, RemoteStoreNetworkClientInterface, RestClientCallReturnType, RestClientInterface } from 'miroir-core';
 import { DomainAction, StoreReturnType } from 'miroir-core';
 import { stringTuple } from 'miroir-core';
 
 import { handlePromiseActionForSaga } from 'sagaTools';
-import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import {
   EntityAction,
   entitySliceActionsCreators,
@@ -43,64 +42,64 @@ export type SagaGenReturnType = Effect | Generator<StoreReturnType>;
 //#########################################################################################
 export class EntityRemoteAccessReduxSaga {
   // constructor(public client: RestClientInterface) {
-  constructor(public client: RemoteStoreClientInterface) {
+  constructor(public client: RemoteStoreNetworkClientInterface) {
     // console.log("EntitySlice constructor",client)
   }
 
   public entitySagaInputActionNamesObject = {
-    fetchAllEntityDefinitionsFromRemoteDatastore: "fetchAllEntityDefinitionsFromRemoteDatastore",
+    // fetchAllEntityDefinitionsFromRemoteDatastore: "fetchAllEntityDefinitionsFromRemoteDatastore",
     handleAction: "handleAction",
   };
 
   public entitySagaInputActionNames = Object.values(this.entitySagaInputActionNamesObject);
   public entitySagaGeneratedActionNames = getPromiseActionStoreActionNames(entitySliceInputActionNames);
 
-  public entitySagaPromiseAction = promiseActionFactory<StoreReturnType>().create(
-    this.entitySagaInputActionNamesObject.fetchAllEntityDefinitionsFromRemoteDatastore
-  );
+  // public entitySagaPromiseAction = promiseActionFactory<StoreReturnType>().create(
+  //   this.entitySagaInputActionNamesObject.fetchAllEntityDefinitionsFromRemoteDatastore
+  // );
 
-  public entitySagaHandlePromiseAction = promiseActionFactory<StoreReturnType>().create<DomainAction>(
+  public entitySagaRemoteCRUDActionHandler = promiseActionFactory<StoreReturnType>().create<DomainAction>(
     this.entitySagaInputActionNamesObject.handleAction
   );
 
   //#########################################################################################
-  public *fetchAllEntityDefinitionsFromRemoteDatastore(): SagaGenReturnType {
-    try {
-      console.log("fetchAllEntityDefinitionsFromRemoteDatastore");
-      // throw new Error("TEST");
+  // public *fetchAllEntityDefinitionsFromRemoteDatastore(): SagaGenReturnType {
+  //   // try {
+  //     console.log("fetchAllEntityDefinitionsFromRemoteDatastore");
+  //     // throw new Error("TEST");
 
-      const result: RestClientCallReturnType = yield call(() =>
-        this.client.get(miroirConfig.rootApiUrl + "/" + "Entity/all")
-      );
-      // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
-      console.log("fetchAllEntityDefinitionsFromRemoteDatastore received", result.status, result.data);
-      return yield { status: "ok", instances: [{ entity: "Entity", instances: result.data }] };
-    } catch (e: any) {
-      console.warn("fetchAllEntityDefinitionsFromRemoteDatastore exception", e);
-      yield put({ type: "entities/failure/entitiesNotReceived" });
-      return {
-        status: "error",
-        errorMessage: e["message"],
-        error: { errorMessage: e["message"], stack: [e["message"]] },
-      } as StoreReturnType;
-    }
-  }
+  //   //   const result: RestClientCallReturnType = yield call(() =>
+  //   //     this.client.get(miroirConfig.rootApiUrl + "/" + "Entity/all")
+  //   //   );
+  //   //   // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
+  //   //   console.log("fetchAllEntityDefinitionsFromRemoteDatastore received", result.status, result.data);
+  //   //   return yield { status: "ok", instances: [{ entity: "Entity", instances: result.data }] };
+  //   // } catch (e: any) {
+  //   //   console.warn("fetchAllEntityDefinitionsFromRemoteDatastore exception", e);
+  //   //   yield put({ type: "entities/failure/entitiesNotReceived" });
+  //   //   return {
+  //   //     status: "error",
+  //   //     errorMessage: e["message"],
+  //   //     error: { errorMessage: e["message"], stack: [e["message"]] },
+  //   //   } as StoreReturnType;
+  //   // }
+  // }
 
   //#########################################################################################
-  public *handleAction(action: PayloadAction<DomainAction>): SagaGenReturnType {
+  public *handleRemoteCRUDAction(action: PayloadAction<NetworkCRUDAction>): SagaGenReturnType {
     try {
-      console.log("EntityRemoteAccessReduxSaga handleAction",action);
+      console.log("EntityRemoteAccessReduxSaga handleRemoteCRUDAction",action);
       // throw new Error("TEST");
 
       const result: RestClientCallReturnType = yield call(() =>
         // this.client.get(miroirConfig.rootApiUrl + "/" + "Entity/all")
-        this.client.resolveAction(action.payload)
+        this.client.handleNetworkAction(action.payload as NetworkCRUDAction)
       );
       // console.log("fetchMentities sending", mEntitySliceStoreActionNames.storeEntities, result)
-      console.log("handleAction received", result.status, result.data);
+      console.log("handleRemoteCRUDAction received result", result.status, result.data);
       return yield { status: "ok", instances: [{ entity: "Entity", instances: result.data }] };
     } catch (e: any) {
-      console.warn("handleAction exception", e);
+      console.warn("handleRemoteCRUDAction exception", e);
       yield put({ type: "entities/failure/entitiesNotReceived" });
       return {
         status: "error",
@@ -114,24 +113,24 @@ export class EntityRemoteAccessReduxSaga {
   public *entityRootSaga(): SagaGenReturnType {
     console.log("entityRootSaga running...", this);
     yield all([
+      // takeEvery(
+      //   this.entitySagaPromiseAction,
+      //   handlePromiseActionForSaga(this.fetchAllEntityDefinitionsFromRemoteDatastore, this)
+      // ),
       takeEvery(
-        this.entitySagaPromiseAction,
-        handlePromiseActionForSaga(this.fetchAllEntityDefinitionsFromRemoteDatastore, this)
+        this.entitySagaRemoteCRUDActionHandler,
+        handlePromiseActionForSaga(this.handleRemoteCRUDAction, this)
       ),
-      takeEvery(
-        this.entitySagaHandlePromiseAction,
-        handlePromiseActionForSaga(this.handleAction, this)
-      ),
-      takeEvery(
-        entitySlicePromiseAction,
-        handlePromiseActionForSaga(function* (action: EntityAction): SagaGenReturnType {
-          console.log("entityRootSaga entitySlicePromiseAction", action);
-          yield putResolve(
-            entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.payload)
-          );
-          return { entity: "Entity", instances: action.payload };
-        })
-      ),
+      // takeEvery(
+      //   entitySlicePromiseAction,
+      //   handlePromiseActionForSaga(function* (action: EntityAction): SagaGenReturnType {
+      //     console.log("entityRootSaga entitySlicePromiseAction", action);
+      //     yield putResolve(
+      //       entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions](action.payload)
+      //     );
+      //     return { entity: "Entity", instances: action.payload };
+      //   })
+      // ),
     ]);
   }
 
@@ -139,8 +138,8 @@ export class EntityRemoteAccessReduxSaga {
   //# ACTION DEFINITIONS
   //#########################################################################################
   public entitySagaInputActionsCreators = {
-    fetchAllEntityDefinitionsFromRemoteDatastore: () => this.entitySagaPromiseAction(),
-    handleAction: this.entitySagaHandlePromiseAction,
+    // fetchAllEntityDefinitionsFromRemoteDatastore: () => this.entitySagaPromiseAction(),
+    handleRemoteCRUDAction: this.entitySagaRemoteCRUDActionHandler,
     // [entitySliceInputActionNamesObject.replaceAllEntityDefinitions]: entitySliceActionsCreators[entitySliceInputActionNamesObject.replaceAllEntityDefinitions],
   };
 } // end class EntitySlice

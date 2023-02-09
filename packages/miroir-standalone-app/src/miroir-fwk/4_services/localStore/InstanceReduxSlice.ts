@@ -73,6 +73,21 @@ const getSliceEntityAdapter: (
 );
 
 //#########################################################################################
+//# REDUCER FUNCTION
+//#########################################################################################
+function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAction) {
+  console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
+  const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
+  if (!state[action.payload.entity]) {
+    state[action.payload.entity] = sliceEntityAdapter.getInitialState();
+  }
+
+  state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
+}
+
+
+
+//#########################################################################################
 //# SLICE
 //#########################################################################################
 export const InstanceSliceObject: Slice = createSlice({
@@ -118,13 +133,33 @@ export const InstanceSliceObject: Slice = createSlice({
       });
     },
     [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
-      const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
-      if (!state[action.payload.entity]) {
-        state[action.payload.entity] = sliceEntityAdapter.getInitialState();
-      }
+      ReplaceInstancesForEntity(state,action)
+      // console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
+      // const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
+      // if (!state[action.payload.entity]) {
+      //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
+      // }
   
-      state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
+      // state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
+    },
+    [instanceSliceInputActionNamesObject.ReplaceAllInstances](state: InstanceSliceState, action: PayloadAction<InstanceCollection[]>) {
+      console.log(instanceSliceInputActionNamesObject.ReplaceAllInstances, action.payload,InstanceSliceObject);
+      action.payload.forEach(
+        function (a:InstanceCollection) {
+          // return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
+          // return {entity:a.entity, put:putResolve(InstanceSlice.actionCreators["ReplaceInstancesForEntity"](a))}
+          // InstanceSlice.actionCreators["ReplaceInstancesForEntity"](a)
+          // InstanceSliceObject.caseReducers["ReplaceInstancesForEntity"](state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
+          ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
+        },this
+      );
+
+      // const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
+      // if (!state[action.payload.entity]) {
+      //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
+      // }
+  
+      // state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
     },
   },
 });
