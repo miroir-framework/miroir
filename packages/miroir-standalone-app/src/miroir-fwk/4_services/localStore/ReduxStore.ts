@@ -117,17 +117,18 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
-    switch (action.entityName) {
-      case 'Entity': 
-        return this.innerReduxStore.dispatch(
-          // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
-          this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleRemoteStoreAction(action),
-        );
-      case 'Instance':
+    // switch (action.entityName) {
+    //   case 'Entity': 
+    //     return this.innerReduxStore.dispatch(
+    //       // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
+    //       this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleRemoteStoreAction(action),
+    //     );
+    //   // case 'Instance':
+    //   default:
         return this.innerReduxStore.dispatch(
           this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
         )
-    }
+    // }
   }
 
   // ###############################################################################
