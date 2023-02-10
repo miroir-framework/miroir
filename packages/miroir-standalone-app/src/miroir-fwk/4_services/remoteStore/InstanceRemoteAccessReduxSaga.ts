@@ -3,20 +3,19 @@ import {
   promiseActionFactory,
   SagaPromiseActionCreator
 } from "@teroneko/redux-saga-promise";
-import { all, call, put, putResolve, takeEvery } from 'redux-saga/effects';
+import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effects';
 
 
 import {
-  EntityDefinition,
-  Instance,
-  InstanceCollection,
-  RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple
+  EntityDefinition, RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple
 } from "miroir-core";
-import { SagaGenReturnType } from 'miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga';
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import { handlePromiseActionForSaga } from 'sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
+
+export type SagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
+
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
   return promiseActionNames 
@@ -31,7 +30,6 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //# ACTION NAMES
 //#########################################################################################
 const instanceSagaInputActionNamesObject = {
-  // 'fetchInstancesForEntityListFromRemoteDatastore':'fetchInstancesForEntityListFromRemoteDatastore',
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
   'handleRemoteStoreAction':'handleRemoteStoreAction',
 };
@@ -83,38 +81,6 @@ public instanceSagaInputPromiseActions:{
       generator:(any) => SagaGenReturnType
     }
   } = {
-    // fetchInstancesForEntityListFromRemoteDatastore:{
-    //   name: "fetchInstancesForEntityListFromRemoteDatastore",
-    //   // creator: promiseActionFactory<InstanceCollection[]>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
-    //   creator: promiseActionFactory<RemoteStoreActionReturnType>().create<EntityDefinition[],"fetchInstancesForEntityListFromRemoteDatastore">(
-    //     "fetchInstancesForEntityListFromRemoteDatastore"
-    //   ),
-    //   generator:function* (
-    //     action: PayloadAction<EntityDefinition[]>
-    //   ): SagaGenReturnType {
-    //     console.log("fetchInstancesForEntityListFromRemoteDatastore saga launched with action", action);
-    //     const entityNames: string[] = action.payload.map((e: EntityDefinition) => e.name);
-    //     this.entitiesToFetch = entityNames.slice();
-    //     this.entitiesAlreadyFetched = [];
-    //     console.log("fetchInstancesForEntityListFromRemoteDatastore entitiesToFetch", this.entitiesToFetch);
-    //     try {
-    //       const receivedInstances:RemoteStoreActionReturnType[] = yield all(
-    //         entityNames.map(
-    //           (e: string) => {
-    //             console.log("fetchInstancesForEntityListFromRemoteDatastore fetching entity",e);
-    //             return putResolve(this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore.creator(e))
-    //           }
-    //         )
-    //       );
-    //       console.log("fetchInstancesForEntityListFromRemoteDatastore received all instances",receivedInstances);
-    //       return {status: 'ok', instances:receivedInstances.map(i=>i.instances)};
-    //     } catch (error) {
-    //       console.log("fetchInstancesForEntityListFromRemoteDatastore error", error);
-    //     } finally {
-    //       console.log("fetchInstancesForEntityListFromRemoteDatastore finished");
-    //     }
-    //   }.bind(this)
-    // },
     fetchInstancesForEntityFromRemoteDatastore: {
       name: "fetchInstancesForEntityFromRemoteDatastore",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
@@ -213,18 +179,6 @@ public instanceSagaInputPromiseActions:{
       ]
     );
   }
-
-//   //#########################################################################################
-//   // interface of events creators allowing the outside world to send events to the InstanceSlice.
-// public instanceSagaInputActionsCreators = {
-//     // fetchInstancesForEntityListFromRemoteDatastore: (action) => this.instanceSagaInputPromiseActions.fetchInstancesForEntityListFromRemoteDatastore(action),
-//     // handleRemoteStoreAction: this.entitySagaRemoteCRUDActionHandler,
-//     // fetchInstancesForEntityListFromRemoteDatastore: this.instanceSagaInputPromiseActions.fetchInstancesForEntityListFromRemoteDatastore.creator,
-//   };
-
-  //#########################################################################################
-  //# SELECTORS
-  //#########################################################################################
 }// end class Mslice
 
 export default InstanceRemoteAccessReduxSaga;

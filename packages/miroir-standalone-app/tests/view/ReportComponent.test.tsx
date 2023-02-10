@@ -15,13 +15,12 @@ import React from 'react'
 // import fetch from "node-fetch";
 const fetch = require('node-fetch');
 
-import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore'
-import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
 import { DataControllerInterface, DataStoreController, MiroirContext, RestClient } from 'miroir-core'
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
-import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
-import { EntityRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga"
+import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore'
 import { InstanceRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga"
+import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
+import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
 import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup"
@@ -43,10 +42,10 @@ const worker = setupServer(...mServer.handlers)
 // const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const client:RestClient = new RestClient(fetch);
 const remoteStoreClient = new RemoteStoreClient(client);
-const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
+// const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
 const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
 
-const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
+const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();
 
 // const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
@@ -60,6 +59,7 @@ beforeAll(
     // Establish requests interception layer before all tests.
     worker.listen();
     await mServer.openObjectStore();
+    console.log('ReportComponent: Done beforeAll');
   }
 )
 
@@ -75,7 +75,7 @@ afterAll(
 )
 
 it(
-  'MReportComponent: test loading sequence for Report displaying Entity list',
+  'ReportComponent: test loading sequence for Report displaying Entity list',
   async () => {
     await mServer.createObjectStore(["Entity","Instance","Report"]);
     await mServer.localIndexedStorage.putValue("Entity",entityReport);

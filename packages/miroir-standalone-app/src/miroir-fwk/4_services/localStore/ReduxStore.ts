@@ -22,7 +22,6 @@ import {
   createUndoRedoReducer,
   ReduxReducerWithUndoRedo, ReduxStoreWithUndoRedo
 } from "miroir-fwk/4_services/localStore/UndoRedoReducer";
-import { EntityRemoteAccessReduxSaga } from 'miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga';
 import {
   InstanceRemoteAccessReduxSaga, instanceSagaGeneratedActionNames,
   instanceSagaInputActionNamesArray
@@ -65,7 +64,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   constructor(
-    public entityRemoteAccessReduxSaga: EntityRemoteAccessReduxSaga,
+    // public entityRemoteAccessReduxSaga: EntityRemoteAccessReduxSaga,
     public instanceRemoteAccessReduxSaga: InstanceRemoteAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
@@ -80,8 +79,8 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     this.sagaMiddleware = sagaMiddleware();
 
     const ignoredActionsList = [
-      ...entityRemoteAccessReduxSaga.entitySagaInputActionNames,
-      ...entityRemoteAccessReduxSaga.entitySagaGeneratedActionNames,
+      // ...entityRemoteAccessReduxSaga.entitySagaInputActionNames,
+      // ...entityRemoteAccessReduxSaga.entitySagaGeneratedActionNames,
       ...entitySliceInputFullActionNames,
       ...instanceSagaInputActionNamesArray,
       ...instanceSagaGeneratedActionNames,
@@ -168,9 +167,9 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   // ###############################################################################
   public *rootSaga(
   ) {
-    console.log("ReduxStore rootSaga running", this.entityRemoteAccessReduxSaga, this.instanceRemoteAccessReduxSaga);
+    console.log("ReduxStore rootSaga running", this.instanceRemoteAccessReduxSaga);
     yield all([
-      this.entityRemoteAccessReduxSaga.entityRootSaga.bind(this.entityRemoteAccessReduxSaga)(),
+      // this.entityRemoteAccessReduxSaga.entityRootSaga.bind(this.entityRemoteAccessReduxSaga)(),
       this.instanceRemoteAccessReduxSaga.instanceRootSaga.bind(this.instanceRemoteAccessReduxSaga)(),
     ]);
   }

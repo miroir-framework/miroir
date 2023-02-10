@@ -66,7 +66,7 @@
   "scripts": {
     "start-dev": "react-scripts start",
     "build": "react-scripts build --verbose",
-    "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t",
+    "test": "cross-env NODE_ENV=test jest --runInBand --verbose --silent=false -t",
     "magic": "webpack"
   },
   "author": "Arnaud Bailly",

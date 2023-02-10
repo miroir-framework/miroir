@@ -28,10 +28,9 @@ import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/loca
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
 import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
-import { EntityRemoteAccessReduxSaga } from "../../src/miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
+import { IndexedDbObjectStore } from "../../src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
 import InstanceRemoteAccessReduxSaga from "../../src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import RemoteStoreClient from "../../src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
-import { IndexedDbObjectStore } from "../../src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
 
 
 miroirAppStartup();
@@ -42,10 +41,10 @@ const worker = setupServer(...mServer.handlers)
 
 const client:RestClient = new RestClient(fetch);
 const remoteStoreClient = new RemoteStoreClient(client);
-const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
+// const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
 const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
 
-const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
+const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();
 const miroirContext = new MiroirContext();
 
