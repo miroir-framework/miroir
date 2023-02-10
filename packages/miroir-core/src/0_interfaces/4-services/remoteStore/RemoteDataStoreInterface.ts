@@ -1,24 +1,28 @@
-import { Instance } from '../../../0_interfaces/1_core/Instance.js';
-import { EntityDefinition } from '../../1_core/EntityDefinition.js';
-import { StoreReturnType } from '../localStore/LocalStoreInterface.js';
-// import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
-// import { StoreReturnType } from 'src/0_interfaces/4-services/localStore/LocalStoreInterface';
+import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 
-export const networkCRUDActionNamesObject = {
+export const RemoteStoreActionNamesObject = {
   'create': 'create',
   'read': 'read',
   'update': 'update',
   'delete': 'delete',
 }
-export type NetworkCRUDActionName = keyof typeof networkCRUDActionNamesObject;
-export const networkCRUDActionNamesArray:NetworkCRUDActionName[] = Object.keys(networkCRUDActionNamesObject) as NetworkCRUDActionName[];
+export type RemoteStoreActionName = keyof typeof RemoteStoreActionNamesObject;
+export const RemoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(RemoteStoreActionNamesObject) as RemoteStoreActionName[];
 
-export interface NetworkCRUDAction {
-  actionName: NetworkCRUDActionName;
+export interface RemoteStoreAction {
+  actionName: RemoteStoreActionName;
   entityName: string;
   uuid?:string;
   objects?:Instance[];
 }
+
+export interface RemoteStoreActionReturnType {
+  status:'ok'|'error',
+  errorMessage?:string, 
+  error?:MError,
+  instances?: InstanceCollection[]
+};
 
 export interface RestClientCallReturnType {
   status: number;
@@ -33,8 +37,12 @@ export interface RestClientInterface {
   post(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
 }
 
+/**
+ * Decorator for RestClientInterface, should eventually replace it entirely.
+ * Should allow to hide implementation details, such as the use of REST and/or GraphQL
+ */
 export interface RemoteStoreNetworkClientInterface extends RestClientInterface  {
-  handleNetworkAction(networkAction:NetworkCRUDAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
+  handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
 }
 
 export default {}
@@ -42,13 +50,13 @@ export default {}
 export interface EntityDefinitionRemoteDataStoreInputActionsInterface {
   // fetchEntityDefinitionFromRemoteDataStore(entityName:string):Promise<EntityDefinition>;
   // fetchEntityDefinitionsFromRemoteDataStore():Promise<EntityDefinition[]>;
-  // fetchAllEntityDefinitionsFromRemoteDataStore():Promise<StoreReturnType>;
-  handleRemoteCRUDAction(action:NetworkCRUDAction):Promise<StoreReturnType>;
+  // fetchAllEntityDefinitionsFromRemoteDataStore():Promise<RemoteStoreActionReturnType>;
+  // handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
 }
 
 export interface InstanceRemoteDataStoreInputActionsI {
   // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
-  fetchInstancesForEntityListFromRemoteDatastore(entities:EntityDefinition[]):Promise<StoreReturnType>;
+  // fetchInstancesForEntityListFromRemoteDatastore(entities:EntityDefinition[]):Promise<RemoteStoreActionReturnType>;
 }
 
 /**
@@ -58,6 +66,7 @@ export declare interface RemoteDataStoreInterface extends
   EntityDefinitionRemoteDataStoreInputActionsInterface,
   InstanceRemoteDataStoreInputActionsI
 {
+  handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
   // constructor
   // run(): void;
   // getInnerStore(): any; // TODO: local store should not expose its implementation!!

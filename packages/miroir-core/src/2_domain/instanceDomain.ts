@@ -10,10 +10,10 @@ export class InstanceDomain implements InstanceDomainInputActionsInterface {
   }
 
   addInstancesForEntity(entityName:string,instances:Instance[]):void{
-    this.store.addInstancesForEntity(entityName,instances);
+    // this.store.addInstancesForEntity(entityName,instances);
   };
   modifyInstancesForEntity(entityName:string,instances:Instance[]):void {
-    this.store.modifyInstancesForEntity(entityName,instances);
+    // this.store.modifyInstancesForEntity(entityName,instances);
   };
   // replaceInstancesForEntity(entityName:string,instances:Minstance[]):void {
   //   this.store.replaceInstancesForEntity(entityName,instances);

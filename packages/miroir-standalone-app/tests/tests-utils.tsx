@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 
 // import type { AppStore, RootState } from '../app/store'
 // As a basic setup, import your same slice reducers
-import { MreduxWithUndoRedoStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/UndoRedoReducer'
+import { ReduxStoreWithUndoRedo } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/UndoRedoReducer'
 // import userReducer from '../features/users/userSlice'
 // const store:MreduxStore = new MreduxStore(entitySagas,instanceSagas);
 
@@ -14,8 +14,8 @@ import { MreduxWithUndoRedoStore } from 'miroir-standalone-app/src/miroir-fwk/4_
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   // preloadedState?: PreloadedState<RootState>
   // store?: AppStore
-  // preloadedState?: PreloadedState<MreduxWithUndoRedoState>
-  store?: MreduxWithUndoRedoStore
+  // preloadedState?: PreloadedState<ReduxStateWithUndoRedo>
+  store: ReduxStoreWithUndoRedo
 }
 
 export function renderWithProviders(
@@ -28,7 +28,7 @@ export function renderWithProviders(
     // Automatically create a store instance if no store was passed in
     store,
     ...renderOptions
-  }: ExtendedRenderOptions = {}
+  }: ExtendedRenderOptions
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return <Provider store={store}>{children}</Provider>

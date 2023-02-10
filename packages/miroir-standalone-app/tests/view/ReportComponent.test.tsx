@@ -4,45 +4,55 @@
  * @jest-environment-options {"url": "http://localhost/"}
  */
 
-import { TextEncoder, TextDecoder } from 'util'
+import { TextDecoder, TextEncoder } from 'util'
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
+import { waitFor } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import React from 'react'
-import { waitFor } from '@testing-library/react'
 
-// const fetch = require('node-fetch');
+// import fetch from "node-fetch";
+const fetch = require('node-fetch');
 
-import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient'
-import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer'
-import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas'
-import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas'
+import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore'
+import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
+import { DataControllerInterface, DataStoreController, MiroirContext, RestClient } from 'miroir-core'
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
 import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
-import { DataControllerInterface } from 'miroir-core'
-import { LocalDataStoreController } from 'miroir-core'
+import { EntityRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga"
+import { InstanceRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga"
 import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
-import {entityEntity} from "miroir-core"
-import {entityReport} from "miroir-core"
-import {reportEntityList} from "miroir-core"
-import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService'
+import { miroirAppStartup } from "miroir-standalone-app/src/startup"
 
-import Fetch from "node-fetch";
+
+import { entityEntity, entityReport, miroirCoreStartup, reportEntityList } from "miroir-core"
+// import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService'
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
+miroirAppStartup();
+miroirCoreStartup();
+
 const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
 const worker = setupServer(...mServer.handlers)
-const mClient:MclientI = new MClient(Fetch);
+// const mClient:RemoteStoreNetworkClientInterface = new RemoteStoreClient(Fetch);
 
-const entitySagas: EntitySagas = new EntitySagas(mClient);
-const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
+// const entitySagas: EntitySagas = new EntitySagas(mClient);
+// const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
+const client:RestClient = new RestClient(fetch);
+const remoteStoreClient = new RemoteStoreClient(client);
+const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
+const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
+
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 
-const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
+// const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
+const miroirContext = new MiroirContext();
+
+const dataController: DataControllerInterface = new DataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
 
 // Enable API mocking before tests.
 beforeAll(

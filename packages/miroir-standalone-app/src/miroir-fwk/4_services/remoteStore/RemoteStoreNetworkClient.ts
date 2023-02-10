@@ -1,5 +1,5 @@
 import {
-  NetworkCRUDAction,
+  RemoteStoreAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
@@ -18,7 +18,7 @@ export class RemoteStoreClient implements RemoteStoreNetworkClientInterface {
   constructor(private restClient: RestClientInterface) {}
 
   // ##################################################################################
-  handleNetworkAction(networkAction: NetworkCRUDAction): Promise<RestClientCallReturnType> {
+  handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType> {
     //TODO: return type must be independent of actually called client
     console.log("RemoteStoreNetworkClient handleAction", networkAction);
     if (networkAction.actionName === "read") {

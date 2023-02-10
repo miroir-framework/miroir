@@ -1,25 +1,19 @@
 import { EntityDefinition } from '../../1_core/EntityDefinition.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { DomainAction } from 'src/0_interfaces/2_domain/DomainLanguageInterface.js';
+import { DomainAction } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
+import { RemoteStoreActionReturnType } from '../../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 // import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
 // import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
 // import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 
 export default {}
 
-export interface StoreReturnType {
-  status:'ok'|'error',
-  errorMessage?:string, 
-  error?:MError,
-  instances?: InstanceCollection[]
-};
-
-
 export interface EntityDefinitionLocalStoreInputActionsI {
+  // replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<RemoteStoreActionReturnType>;
+
+
   // addEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
-  replaceAllEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<StoreReturnType>;
-  // handleAction(action:DomainAction):Promise<StoreReturnType>;
+  // handleAction(action:DomainAction):Promise<RemoteStoreActionReturnType>;
   // modifyEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
   //
   // replaceEntityDefinitions(entityDefinitions:EntityDefinition[]):Promise<void>;
@@ -29,9 +23,10 @@ export interface EntityDefinitionLocalStoreInputActionsI {
 }
 
 export interface InstanceLocalStoreInputActionsI {
-  addInstancesForEntity(entityName:string,instances:Instance[]):void;
-  modifyInstancesForEntity(entityName:string,instances:Instance[]):void;
-  replaceAllInstances(instances:InstanceCollection[]):void;
+  // addInstancesForEntity(entityName:string,instances:Instance[]):void;
+  // modifyInstancesForEntity(entityName:string,instances:Instance[]):void;
+  // replaceAllInstances(instances:InstanceCollection[]):void;
+
   // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
   // fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
   // // fetchFromApiAndReplaceInstancesForAllEntities():void;
@@ -49,7 +44,7 @@ export declare interface LocalStoreInterface extends
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
-  // handleDomainAction(action:DomainAction):StoreReturnType;
-  handleDomainAction(action:DomainAction);
+  // handleLocalCacheAction(action:DomainAction):RemoteStoreActionReturnType;
+  handleLocalCacheAction(action:DomainAction);
 
 }

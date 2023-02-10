@@ -42,7 +42,7 @@ export type undoRedoHistorization = 'actions' |'snapshot' | 'never' | 'periodic'
  * that is not kept in the datastore: the previousSnapshot, the pastPatches and futurePatches.
  * 
  */
-export interface MreduxWithUndoRedoState {
+export interface ReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
   previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
   pastModelPatches: any[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
@@ -51,8 +51,8 @@ export interface MreduxWithUndoRedoState {
 }
 
 // TODO: make action type explicit!
-export type ReduxReducerWithUndoRedo = (state:MreduxWithUndoRedoState, action:any) => MreduxWithUndoRedoState
-export type ReduxStoreWithUndoRedo = Store<MreduxWithUndoRedoState, any>;
+export type ReduxReducerWithUndoRedo = (state:ReduxStateWithUndoRedo, action:any) => ReduxStateWithUndoRedo
+export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
 
@@ -72,7 +72,7 @@ export const makeActionUpdatesUndoable = (action:string) => {
 }
 
 
-export function reduxStoreWithUndoRedoGetInitialState(reducer:any):MreduxWithUndoRedoState {
+export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWithUndoRedo {
   return {
     // dataCache:{},
     previousModelSnapshot: {} as InnerStoreStateInterface,
@@ -125,7 +125,7 @@ export function createUndoRedoReducer(
     }
   }
 
-  const callNextReducer = (state:MreduxWithUndoRedoState, action:any):MreduxWithUndoRedoState => {
+  const callNextReducer = (state:ReduxStateWithUndoRedo, action:any):ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
     const newPresentSnapshot:InnerStoreStateInterface = callUndoRedoReducer(reducer,presentModelSnapshot, action)
@@ -145,9 +145,9 @@ export function createUndoRedoReducer(
 
   // Returns a reducer function, that handles undo and redo
   return (
-    state:MreduxWithUndoRedoState = reduxStoreWithUndoRedoGetInitialState(reducer), 
+    state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(reducer), 
     action:any
-  ): MreduxWithUndoRedoState => {
+  ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
     if (!TRANSACTIONS_ENABLED) {

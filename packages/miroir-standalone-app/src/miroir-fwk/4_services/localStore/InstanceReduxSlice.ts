@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { EntityDefinition } from 'miroir-core';
 import { Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
 import { MiroirReport } from 'miroir-core';
-import { MreduxWithUndoRedoState } from "miroir-fwk/4_services/localStore/UndoRedoReducer.js";
+import { ReduxStateWithUndoRedo } from "miroir-fwk/4_services/localStore/UndoRedoReducer";
 
 const instanceSliceName = "instance";
 //#########################################################################################
@@ -177,7 +177,7 @@ export const selectMiroirEntityInstances = createSelector(
 export const selectInstancesForEntity: (entityName: string) => any = _memoize(
   (entityName: string) => {
     return createSelector(
-      (state: MreduxWithUndoRedoState) => {
+      (state: ReduxStateWithUndoRedo) => {
         return state.presentModelSnapshot.miroirInstances[entityName];
       },
       (items: EntityState<any>) => items

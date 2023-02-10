@@ -10,7 +10,7 @@ import {
 } from "@reduxjs/toolkit";
 import { promiseActionFactory } from "@teroneko/redux-saga-promise";
 import { EntityDefinition } from 'miroir-core';
-import { StoreReturnType } from 'miroir-core';
+import { RemoteStoreActionReturnType } from 'miroir-core';
 
 const sliceName = 'entities';
 //#########################################################################################
@@ -28,7 +28,7 @@ export const entitySliceOutputActionNames = {
   entitiesReceivedNotification: "entitiesReceivedNotification",
 };
 
-export const entitySlicePromiseAction = promiseActionFactory<StoreReturnType>().create<EntityDefinition[]>(entitySliceInputActionNamesObject.replaceAllEntityDefinitions);
+export const entitySlicePromiseAction = promiseActionFactory<RemoteStoreActionReturnType>().create<EntityDefinition[]>(entitySliceInputActionNamesObject.replaceAllEntityDefinitions);
 
 //#########################################################################################
 //# DATA TYPES

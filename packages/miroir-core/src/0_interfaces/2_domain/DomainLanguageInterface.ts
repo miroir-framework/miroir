@@ -1,4 +1,4 @@
-import { networkCRUDActionNamesObject } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { RemoteStoreActionNamesObject } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { Instance, InstanceCollection } from "../../0_interfaces/1_core/Instance.js";
 // import { Instance } from "src/0_interfaces/1_core/Instance";
 
@@ -8,7 +8,7 @@ export const domainActionNamesObject = {
   // 'read': 'read',
   // 'update': 'update',
   // 'delete': 'delete',
-  ...networkCRUDActionNamesObject,
+  ...RemoteStoreActionNamesObject,
   'replace': 'replace', // for local storage
   // 'getRemoteEntityDefinitionList':'getRemoteEntityDefinitionList',
   // 'addEntityDefinition':'addEntityDefinition',

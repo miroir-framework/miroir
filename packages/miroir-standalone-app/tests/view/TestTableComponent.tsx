@@ -1,10 +1,10 @@
-import { EntityState } from "@reduxjs/toolkit";
 import * as React from "react";
+import { EntityState } from "@reduxjs/toolkit";
 import { useSelector } from 'react-redux';
 
 import { EntityDefinition } from 'miroir-core';
 import { MiroirReport } from 'miroir-core';
-import { selectInstancesForEntity } from "miroir-standalone-app/src/miroir-fwk/4_services/localStore/InstanceSlice";
+import { selectInstancesForEntity } from "miroir-standalone-app/src/miroir-fwk/4_services/localStore/InstanceReduxSlice";
 
 export interface MiroirReportComponentProps {
   reportName: string;

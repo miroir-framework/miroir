@@ -6,23 +6,18 @@ import { Provider } from "react-redux";
 import { RestClient } from "miroir-core";
 
 import {
-  DataControllerInterface,
-  entityEntity,
-  entityReport,
-  DataStoreController,
-  MiroirContext,
-  reportEntityList
+  DataControllerInterface, DataStoreController, entityEntity,
+  entityReport, MiroirContext, miroirCoreStartup, reportEntityList
 } from "miroir-core";
-import { miroirCoreStartup } from "miroir-core";
 
-import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { miroirAppStartup } from "startup";
 import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
 import { EntityRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
-import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
-import { MComponent } from "miroir-fwk/4_view/MComponent";
+import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import RemoteStoreClient from "miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
+import { MComponent } from "miroir-fwk/4_view/MComponent";
+import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { miroirAppStartup } from "startup";
 
 
 console.log("entityEntity", JSON.stringify(entityEntity));

@@ -4,6 +4,9 @@
  */
 import { waitFor } from "@testing-library/react";
 import { setupServer } from "msw/node";
+import React from "react";
+
+const fetch = require('node-fetch');
 
 
 import { TextDecoder, TextEncoder } from 'util';
@@ -12,34 +15,41 @@ global.TextDecoder = TextDecoder
 
 
 import {
+  DataStoreController,
   entityEntity,
   entityReport, MiroirContext,
-  reportEntityList
+  miroirCoreStartup,
+  reportEntityList,
+  RestClient
 } from "miroir-core";
 
-import { DataControllerInterface, LocalDataStoreController } from 'miroir-core';
+import { DataControllerInterface } from 'miroir-core';
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore';
-import { EntitySagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/EntitySagas';
-import { InstanceSagas } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceSagas';
-import MClient, { MclientI } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MClient';
-import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/MDevServer';
+import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
 import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
-import React from "react";
+import { EntityRemoteAccessReduxSaga } from "../../src/miroir-fwk/4_services/remoteStore/EntityRemoteAccessReduxSaga";
+import InstanceRemoteAccessReduxSaga from "../../src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+import RemoteStoreClient from "../../src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
+import { IndexedDbObjectStore } from "../../src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
 
-import Fetch from "node-fetch";
+
+miroirAppStartup();
+miroirCoreStartup();
 
 const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
 const worker = setupServer(...mServer.handlers)
-const mClient:MclientI = new MClient(Fetch);
 
-const entitySagas: EntitySagas = new EntitySagas(mClient);
-const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
+const client:RestClient = new RestClient(fetch);
+const remoteStoreClient = new RemoteStoreClient(client);
+const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
+const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
+
 const mReduxStore:ReduxStore = new ReduxStore(entitySagas,instanceSagas);
 mReduxStore.run();
 const miroirContext = new MiroirContext();
 
-const dataController: DataControllerInterface = new LocalDataStoreController(miroirContext, mReduxStore, mReduxStore);
+const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore);
 
 beforeAll(
   async () => {
