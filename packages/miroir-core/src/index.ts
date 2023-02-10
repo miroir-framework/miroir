@@ -43,8 +43,6 @@ export {
 } from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
 
 export {
-  EntityDefinitionRemoteDataStoreInputActionsInterface as EntityDefinitionRemoteDataStoreInputActionsI,
-  InstanceRemoteDataStoreInputActionsI,
   RemoteStoreAction,
   RemoteStoreActionName,
   RemoteStoreActionNamesArray,

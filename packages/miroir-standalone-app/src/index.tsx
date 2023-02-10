@@ -3,11 +3,9 @@ import { setupWorker } from "msw";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
-import { RestClient } from "miroir-core";
-
 import {
   DataControllerInterface, DataStoreController, entityEntity,
-  entityReport, MiroirContext, miroirCoreStartup, reportEntityList
+  entityReport, MiroirContext, miroirCoreStartup, reportEntityList, RestClient
 } from "miroir-core";
 
 import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
@@ -32,7 +30,6 @@ async function start() {
   await mServer.localIndexedStorage.putValue("Entity", entityEntity);
   await mServer.localIndexedStorage.putValue("Report", reportEntityList);
 
-  // ConfigurationService.registerPackageConfiguration({packageName:packageJson.name,packageVersion:packageJson.version})
   miroirAppStartup();
   miroirCoreStartup();
 
@@ -44,7 +41,6 @@ async function start() {
 
   const client:RestClient = new RestClient(window.fetch);
   const remoteStoreClient = new RemoteStoreClient(client);
-  // const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
   const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
 
   const mReduxStore: ReduxStore = new ReduxStore(instanceSagas);

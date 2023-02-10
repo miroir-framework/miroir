@@ -25,7 +25,7 @@ export const domainActionNamesArray:DomainActionName[] = Object.keys(domainActio
 
 export interface DomainAction {
   actionName: DomainActionName;
-  entityName: string;
+  entityName?: string;
   uuid?:string;
   objects?:Instance[]|InstanceCollection[];
 }

@@ -47,25 +47,10 @@ export interface RemoteStoreNetworkClientInterface extends RestClientInterface  
 
 export default {}
 
-export interface EntityDefinitionRemoteDataStoreInputActionsInterface {
-  // fetchEntityDefinitionFromRemoteDataStore(entityName:string):Promise<EntityDefinition>;
-  // fetchEntityDefinitionsFromRemoteDataStore():Promise<EntityDefinition[]>;
-  // fetchAllEntityDefinitionsFromRemoteDataStore():Promise<RemoteStoreActionReturnType>;
-  // handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
-}
-
-export interface InstanceRemoteDataStoreInputActionsI {
-  // fetchFromApiAndReplaceInstancesForEntity(entityName:string):void;
-  // fetchInstancesForEntityListFromRemoteDatastore(entities:EntityDefinition[]):Promise<RemoteStoreActionReturnType>;
-}
-
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface RemoteDataStoreInterface extends 
-  EntityDefinitionRemoteDataStoreInputActionsInterface,
-  InstanceRemoteDataStoreInputActionsI
-{
+export declare interface RemoteDataStoreInterface {
   handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
   // constructor
   // run(): void;
