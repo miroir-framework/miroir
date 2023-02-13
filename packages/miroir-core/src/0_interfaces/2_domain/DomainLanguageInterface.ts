@@ -1,5 +1,5 @@
+import { InstanceCollection } from "../../0_interfaces/1_core/Instance.js";
 import { RemoteStoreActionNamesObject } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-import { Instance, InstanceCollection } from "../../0_interfaces/1_core/Instance.js";
 // import { Instance } from "src/0_interfaces/1_core/Instance";
 
 
@@ -27,5 +27,6 @@ export interface DomainAction {
   actionName: DomainActionName;
   entityName?: string;
   uuid?:string;
-  objects?:Instance[]|InstanceCollection[];
+  // objects?:Instance[]|InstanceCollection[];
+  objects?:InstanceCollection[];
 }

@@ -1,8 +1,5 @@
 import { rest } from 'msw'
-import { IndexedDb } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/indexedDb'
-import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
-
-console.log("server.ts miroirConfig", miroirConfig);
+import { IndexedDb } from '../../4_services/localStore/indexedDb';
 
 // Add an extra delay to all endpoints, so loading spinners show up.
 const ARTIFICIAL_DELAY_MS = 100
@@ -16,7 +13,7 @@ const serializePost = (post:any) => ({
 export class IndexedDbObjectStore {
   public localIndexedStorage = new IndexedDb('miroir');
 
-  constructor() {
+  constructor(private rootApiUrl:string) {
 
   }
 
@@ -34,8 +31,7 @@ export class IndexedDbObjectStore {
 
   public handlers:any[] = [
     rest.get(
-      // '/fakeApi/Entity/all', 
-      miroirConfig.rootApiUrl+'/'+'Entity/all', 
+      this.rootApiUrl+'/'+'Entity/all', 
       async (req, res, ctx) => {
         console.log('Entity/all started');
 
@@ -49,7 +45,7 @@ export class IndexedDbObjectStore {
       }
     ),
     rest.get(
-      miroirConfig.rootApiUrl+'/'+'Report/all', 
+      this.rootApiUrl+'/'+'Report/all', 
       async (req, res, ctx) => {
         const localData = await this.localIndexedStorage.getAllValue('Report');
         return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(

@@ -13,7 +13,7 @@ export class IndexedDb {
     await this.db?.close();
     this.db = undefined;
     this.subLevels?.clear();
-    return new Promise((resolve)=>{resolve(undefined);});
+    return Promise.resolve(undefined);
   }
 
   public async openObjectStore() {
@@ -41,16 +41,16 @@ export class IndexedDb {
         await this.db.open();
         console.log('createObjectStore opened db')
         this.subLevels = createSubLevels();
-        return new Promise((resolve)=>{resolve(undefined);});
+        return Promise.resolve(undefined);
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
         this.subLevels = createSubLevels();
         console.log('createObjectStore created db')
-        return new Promise((resolve)=>{resolve(undefined);});
+        return Promise.resolve(undefined);
       }
     } catch (error) {
       console.error('could not open Level DB', this.databaseName)
-      return new Promise((resolve)=>{resolve(undefined);});
+      return Promise.resolve(undefined);
     }
   }
 
@@ -59,14 +59,14 @@ export class IndexedDb {
     // console.log('IndexedDb getValue ',tableName);
     const result = await table?.get(id, {valueEncoding: 'json'});
     // console.log('IndexedDb getValue ', tableName, result);
-    return new Promise((resolve=>resolve(result)));
+    return Promise.resolve(result);
   }
 
   public async getAllValue(tableName: string):Promise<any> {
-    const store = await this.subLevels.get(tableName);
+    const store = this.subLevels.get(tableName);
     const result = store.values({valueEncoding: 'json'}).all();
     // console.log('IndexedDb getAllValue', JSON.stringify(result));
-    return new Promise((resolve=>resolve(result)));
+    return Promise.resolve(result);
   }
 
   public async putValue(tableName: string, value: any) {
@@ -74,7 +74,7 @@ export class IndexedDb {
     console.log('IndexedDb PutValue ', tableName, value);
     const result1 = await store.put(value.uuid, value, {valueEncoding: 'json'});
     // console.log('IndexedDb PutValue written', tableName,);
-    return new Promise((resolve=>resolve(result1)));
+    return Promise.resolve(result1);
   }
 
   // public async putBulkValue(tableName: string, values: any[]) {
@@ -93,7 +93,7 @@ export class IndexedDb {
     const result = await store.get(id);
     if (!result) {
       console.warn('IndexedDb deleteValue Id not found', id);
-      return new Promise((resolve=>resolve(result)));
+      return Promise.resolve(result);
     }
     await store.del(id);
     console.log('IndexedDb DeleteValue', id);

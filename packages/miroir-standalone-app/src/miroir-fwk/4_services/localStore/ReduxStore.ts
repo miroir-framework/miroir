@@ -66,7 +66,6 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     this.staticReducers = createUndoRedoReducer(
       combineReducers(
         {
-          // miroirEntities: EntitySlice.reducer,
           miroirInstances: InstanceSlice.reducer,
         }
       )
@@ -75,9 +74,6 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     this.sagaMiddleware = sagaMiddleware();
 
     const ignoredActionsList = [
-      // ...entityRemoteAccessReduxSaga.entitySagaInputActionNames,
-      // ...entityRemoteAccessReduxSaga.entitySagaGeneratedActionNames,
-      // ...entitySliceInputFullActionNames,
       ...instanceSagaInputActionNamesArray,
       ...instanceSagaGeneratedActionNames,
       ...instanceSliceGeneratedActionNames,
@@ -131,7 +127,8 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
     switch (action.actionName) {
       case 'replace': {
         this.innerReduxStore.dispatch(
-          InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.ReplaceAllInstances](action.objects)
+          // InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.ReplaceAllInstances](action.objects)
+          InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.handleLocalCacheAction](action)
         );
         break;
       }

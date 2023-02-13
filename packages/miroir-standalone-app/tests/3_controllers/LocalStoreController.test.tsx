@@ -28,15 +28,15 @@ import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/loca
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
 import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
-import { IndexedDbObjectStore } from "../../src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
+import { IndexedDbObjectStore } from "miroir-redux";
 import InstanceRemoteAccessReduxSaga from "../../src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import RemoteStoreClient from "../../src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
-
+import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
 
 miroirAppStartup();
 miroirCoreStartup();
 
-const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
+const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 const worker = setupServer(...mServer.handlers)
 
 const client:RestClient = new RestClient(fetch);

@@ -17,13 +17,14 @@ const fetch = require('node-fetch');
 
 import { DataControllerInterface, DataStoreController, MiroirContext, RestClient } from 'miroir-core'
 import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
-import { IndexedDbObjectStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/IndexedDbObjectStore'
+import { IndexedDbObjectStore } from 'miroir-redux'
 import { InstanceRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga"
 import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
 import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
 import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup"
+import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
 
 
 import { entityEntity, entityReport, miroirCoreStartup, reportEntityList } from "miroir-core"
@@ -34,7 +35,7 @@ export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 miroirAppStartup();
 miroirCoreStartup();
 
-const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
+const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 const worker = setupServer(...mServer.handlers)
 // const mClient:RemoteStoreNetworkClientInterface = new RemoteStoreClient(Fetch);
 

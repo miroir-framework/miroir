@@ -1,6 +1,7 @@
 import {
   ActionCreatorWithoutPayload,
   ActionCreatorWithPayload,
+  CaseReducerActions,
   createEntityAdapter,
   createSelector,
   createSlice,
@@ -8,21 +9,23 @@ import {
   EntityState,
   PayloadAction,
   Slice,
+  SliceCaseReducers,
   Update
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
 import { useSelector } from "react-redux";
-import { EntityDefinition } from 'miroir-core';
+import { DomainAction, EntityDefinition } from 'miroir-core';
 import { Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
 import { MiroirReport } from 'miroir-core';
 import { ReduxStateWithUndoRedo } from "miroir-fwk/4_services/localStore/UndoRedoReducer";
 
-const instanceSliceName = "instance";
+const instanceSliceName:string = "instance";
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
 export const instanceSliceInputActionNamesObject = {
-  ReplaceAllInstances: "ReplaceAllInstances",
-  ReplaceInstancesForEntity: "ReplaceInstancesForEntity",
+  handleLocalCacheAction: "handleLocalCacheAction",
+  // ReplaceAllInstances: "ReplaceAllInstances",
+  // ReplaceInstancesForEntity: "ReplaceInstancesForEntity",
   UpdateInstancesForEntity: "UpdateInstancesForEntity",
   AddInstancesForEntity: "AddInstancesForEntity",
 };
@@ -76,7 +79,7 @@ const getSliceEntityAdapter: (
 //# REDUCER FUNCTION
 //#########################################################################################
 function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAction) {
-  console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
+  console.log('ReplaceInstancesForEntity', action.payload.entity,action.payload.instances);
   const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
   if (!state[action.payload.entity]) {
     state[action.payload.entity] = sliceEntityAdapter.getInitialState();
@@ -90,7 +93,7 @@ function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAc
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export const InstanceSliceObject: Slice = createSlice({
+export const InstanceSliceObject: Slice<InstanceSliceState> = createSlice({
   name: instanceSliceName,
   initialState: { Entity: getSliceEntityAdapter("Entity").getInitialState() },
   reducers: {
@@ -117,7 +120,7 @@ export const InstanceSliceObject: Slice = createSlice({
         action.payload.instances
           .filter((e) => e['name'] !== "Entity")
           .forEach((entity: InstanceWithName) => {
-            console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, "initializing entity", entity.name);
+            console.log(instanceSliceInputActionNamesObject.AddInstancesForEntity, "initializing entity", entity.name);
             state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
           });
       }
@@ -132,34 +135,27 @@ export const InstanceSliceObject: Slice = createSlice({
         getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
       });
     },
-    [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      ReplaceInstancesForEntity(state,action)
-      // console.log(instanceSliceInputActionNamesObject.ReplaceInstancesForEntity, action.payload.entity,action.payload.instances);
-      // const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
-      // if (!state[action.payload.entity]) {
-      //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
-      // }
-  
-      // state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
-    },
-    [instanceSliceInputActionNamesObject.ReplaceAllInstances](state: InstanceSliceState, action: PayloadAction<InstanceCollection[]>) {
-      console.log(instanceSliceInputActionNamesObject.ReplaceAllInstances, action.payload,InstanceSliceObject);
-      action.payload.forEach(
-        function (a:InstanceCollection) {
-          // return {entity:a.entity, put:putResolve(this.instanceSliceInputPromiseActions.ReplaceInstancesForEntity.creator(a))}
-          // return {entity:a.entity, put:putResolve(InstanceSlice.actionCreators["ReplaceInstancesForEntity"](a))}
-          // InstanceSlice.actionCreators["ReplaceInstancesForEntity"](a)
-          // InstanceSliceObject.caseReducers["ReplaceInstancesForEntity"](state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
-          ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
-        },this
-      );
-
-      // const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
-      // if (!state[action.payload.entity]) {
-      //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
-      // }
-  
-      // state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
+    // [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
+    //   ReplaceInstancesForEntity(state,action)
+    // },
+    // [instanceSliceInputActionNamesObject.ReplaceAllInstances](state: InstanceSliceState, action: PayloadAction<InstanceCollection[]>) {
+    //   console.log(instanceSliceInputActionNamesObject.ReplaceAllInstances, action.payload,InstanceSliceObject);
+    //   action.payload.forEach(
+    //     function (a:InstanceCollection) {
+    //       ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
+    //     },this
+    //   );
+    // },
+    [instanceSliceInputActionNamesObject.handleLocalCacheAction](state: InstanceSliceState, action: PayloadAction<DomainAction>) {
+      console.log(instanceSliceInputActionNamesObject.handleLocalCacheAction, action.payload);
+      switch (action.payload.actionName) {
+        case 'replace': {
+          for (let instanceCollection of action.payload.objects) {
+            ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:instanceCollection} as InstanceAction);
+          }
+          break;
+        }
+      }
     },
   },
 });
@@ -202,11 +198,13 @@ export function useLocalStoreReports():MiroirReport[] {
 //# ACTION CREATORS
 //#########################################################################################
 // export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-type InstanceSliceActionCreator =
-  | ActionCreatorWithPayload<any, `${string}/${string}`>
-  | ActionCreatorWithoutPayload<`${string}/${string}`>;
+type InstanceSliceActionCreator<P> =
+  | ActionCreatorWithPayload<P, `${string}/${string}`>
+  | ActionCreatorWithoutPayload<`${string}/${string}`>
+;
+
 const actionsCreators: {
-  [actionCreatorName: string]: InstanceSliceActionCreator;
+  [actionCreatorName: string]: InstanceSliceActionCreator<any>;
 } = {
   ...InstanceSliceObject.actions,
 };

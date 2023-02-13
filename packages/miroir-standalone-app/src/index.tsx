@@ -9,12 +9,13 @@ import {
 } from "miroir-core";
 
 import { ReduxStore } from "miroir-fwk/4_services/localStore/ReduxStore";
-import { IndexedDbObjectStore } from "miroir-fwk/4_services/remoteStore/IndexedDbObjectStore";
+import { IndexedDbObjectStore } from "miroir-redux";
 import { InstanceRemoteAccessReduxSaga } from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import RemoteStoreClient from "miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { miroirAppStartup } from "startup";
+import miroirConfig from 'miroir-fwk/assets/miroirConfig.json'
 
 
 console.log("entityEntity", JSON.stringify(entityEntity));
@@ -23,7 +24,7 @@ const root = createRoot(container);
 
 async function start() {
   // Start our mock API server
-  const mServer: IndexedDbObjectStore = new IndexedDbObjectStore();
+  const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
   await mServer.createObjectStore(["Entity", "Instance", "Report"]);
   await mServer.localIndexedStorage.putValue("Entity", entityReport);
