@@ -4,7 +4,6 @@ import {
   RestClientCallReturnType,
   RestClientInterface,
 } from "miroir-core";
-import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 
 /**
  * Facade / decorator for restClient and GraphQL client.
@@ -15,14 +14,17 @@ export class RemoteStoreClient implements RemoteStoreNetworkClientInterface {
   // const entityEndpoint ={
   //   "Entity": "Entity"
   // }
-  constructor(private restClient: RestClientInterface) {}
+  constructor(
+    private rootApiUrl: string,
+    private restClient: RestClientInterface
+  ) {}
 
   // ##################################################################################
   handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType> {
     //TODO: return type must be independent of actually called client
     console.log("RemoteStoreNetworkClient handleAction", networkAction);
     if (networkAction.actionName === "read") {
-      return this.get(miroirConfig.rootApiUrl + "/" + networkAction.entityName + "/all");
+      return this.get(this.rootApiUrl + "/" + networkAction.entityName + "/all");
     } else {
       throw new Error(
         "RemoteStoreNetworkClient handleNetworkAction does not know how to handle action in networkAction " +

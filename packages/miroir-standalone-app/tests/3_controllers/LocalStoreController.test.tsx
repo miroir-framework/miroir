@@ -15,23 +15,22 @@ global.TextDecoder = TextDecoder
 
 
 import {
+  DataControllerInterface,
   DataStoreController,
   entityEntity,
-  entityReport, MiroirContext,
+  entityReport,
+  MiroirContext,
   miroirCoreStartup,
   reportEntityList,
-  RestClient
+  RestClient,
 } from "miroir-core";
+import { IndexedDbObjectStore, InstanceRemoteAccessReduxSaga, ReduxStore } from "miroir-redux";
 
-import { DataControllerInterface } from 'miroir-core';
-import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore';
+import RemoteStoreClient from "miroir-redux/src/4_services/remoteStore/RemoteStoreNetworkClient";
+import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json';
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
 import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
-import { IndexedDbObjectStore } from "miroir-redux";
-import InstanceRemoteAccessReduxSaga from "../../src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
-import RemoteStoreClient from "../../src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient";
-import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -40,9 +39,9 @@ const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.root
 const worker = setupServer(...mServer.handlers)
 
 const client:RestClient = new RestClient(fetch);
-const remoteStoreClient = new RemoteStoreClient(client);
+const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
 // const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
-const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
+const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreClient);
 
 const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();

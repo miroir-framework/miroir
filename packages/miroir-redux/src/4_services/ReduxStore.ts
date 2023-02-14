@@ -6,20 +6,26 @@ import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
 import {
-  DomainAction, LocalStoreInterface, RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType
+  DomainAction,
+  LocalStoreInterface,
+  RemoteDataStoreInterface,
+  RemoteStoreAction,
+  RemoteStoreActionReturnType,
 } from "miroir-core";
 import {
   createUndoRedoReducer,
-  ReduxReducerWithUndoRedo, ReduxStoreWithUndoRedo
-} from "miroir-redux";
+  ReduxReducerWithUndoRedo,
+  ReduxStoreWithUndoRedo,
+} from "../4_services/localStore/UndoRedoReducer";
+import InstanceRemoteAccessReduxSaga, {
+  instanceSagaGeneratedActionNames,
+  instanceSagaInputActionNamesArray,
+} from "../4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import {
   InstanceSlice,
-  instanceSliceGeneratedActionNames, instanceSliceInputActionNamesObject
-} from "miroir-redux";
-import {
-  InstanceRemoteAccessReduxSaga, instanceSagaGeneratedActionNames,
-  instanceSagaInputActionNamesArray
-} from "miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+  instanceSliceGeneratedActionNames,
+  instanceSliceInputActionNamesObject,
+} from "../4_services/localStore/InstanceReduxSlice";
 
 
 //#########################################################################################

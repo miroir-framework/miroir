@@ -1,9 +1,8 @@
-import { EntityState, Store } from "@reduxjs/toolkit";
+import { EntityState, PayloadAction, Store } from "@reduxjs/toolkit";
 import produce, { enablePatches } from "immer";
 
-import { EntityDefinition } from "miroir-core";
+import { EntityDefinition, InstanceCollection } from "miroir-core";
 import { InstanceSliceState } from "../../4_services/localStore/InstanceReduxSlice";
-import { Maction } from "../../4_services/localStore/Mslice";
 enablePatches(); // to gather undo/redo operation history
 
 /**
@@ -69,6 +68,11 @@ const undoableSliceUpdateActionsTypes: string[] = [
 const undoableInstanceUpdateActionsTypes: string[] = [
   // the action to be reduced will update very minor part of the instances in the slice. The action is saved, to be replayed from the last consolidated state in history, in case an undo is required.
 ];
+
+export type MinstanceAction = PayloadAction<InstanceCollection,string>;
+export type MentityAction = PayloadAction<EntityDefinition[],string>;
+
+export type Maction = MinstanceAction | MentityAction;
 
 export interface InnerStoreStateInterface {
   miroirEntities: EntityState<EntityDefinition>;

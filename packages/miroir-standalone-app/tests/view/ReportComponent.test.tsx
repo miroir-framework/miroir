@@ -15,19 +15,25 @@ import React from 'react'
 // import fetch from "node-fetch";
 const fetch = require('node-fetch');
 
-import { DataControllerInterface, DataStoreController, MiroirContext, RestClient } from 'miroir-core'
-import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/localStore/ReduxStore'
-import { IndexedDbObjectStore } from 'miroir-redux'
-import { InstanceRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga"
-import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
+import {
+  DataControllerInterface,
+  DataStoreController,
+  entityEntity,
+  entityReport,
+  MiroirContext,
+  miroirCoreStartup,
+  reportEntityList,
+  RestClient,
+} from "miroir-core";
+import { IndexedDbObjectStore, InstanceRemoteAccessReduxSaga, ReduxStore, RemoteStoreClient } from "miroir-redux";
+
 import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent'
 import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
-import { miroirAppStartup } from "miroir-standalone-app/src/startup"
 import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
+import { miroirAppStartup } from "miroir-standalone-app/src/startup"
 
 
-import { entityEntity, entityReport, miroirCoreStartup, reportEntityList } from "miroir-core"
 // import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService'
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
@@ -42,9 +48,9 @@ const worker = setupServer(...mServer.handlers)
 // const entitySagas: EntitySagas = new EntitySagas(mClient);
 // const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const client:RestClient = new RestClient(fetch);
-const remoteStoreClient = new RemoteStoreClient(client);
+const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
 // const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
-const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(remoteStoreClient);
+const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreClient);
 
 const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();

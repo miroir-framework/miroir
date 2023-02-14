@@ -7,11 +7,14 @@ export default [
     input: ["src/index.ts"],
     external: [
       '@reduxjs/toolkit',
+      '@teroneko/redux-saga-promise',
       'immer',
       'level',
       'lodash',
       'miroir-core',
-      'msw'
+      'msw',
+      'redux-saga',
+      'redux-saga/effects'
     ],
     output: [
         {
@@ -23,7 +26,7 @@ export default [
     ],
     plugins: [
       typescript2(),
-      pluginJson()
+      pluginJson(),
     ],
   },
   {

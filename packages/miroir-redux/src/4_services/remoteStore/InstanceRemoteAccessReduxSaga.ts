@@ -9,8 +9,7 @@ import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effect
 import {
   EntityDefinition, RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple
 } from "miroir-core";
-import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
-import { handlePromiseActionForSaga } from 'sagaTools';
+import { handlePromiseActionForSaga } from '../../sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
@@ -61,7 +60,10 @@ export type InstanceSagaAction = PayloadAction<InstanceSagaEntitiesActionPayload
 export class InstanceRemoteAccessReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
-  constructor(private client: RemoteStoreNetworkClientInterface) // public mInstanceSlice:Slice,
+  constructor(
+    private rootApiUrl:string,
+    private client: RemoteStoreNetworkClientInterface
+  ) // public mInstanceSlice:Slice,
   {}
 
   private entitiesToFetch: string[] = [];
@@ -92,7 +94,7 @@ public instanceSagaInputPromiseActions:{
             data: any,
             headers: Headers,
             url: string,
-          } = yield call(() => this.client.get(miroirConfig.rootApiUrl + "/" + action.payload + "/all"));
+          } = yield call(() => this.client.get(this.rootApiUrl + "/" + action.payload + "/all"));
           return {
             status:'ok', 
             instances:[

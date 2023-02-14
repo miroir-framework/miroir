@@ -1,5 +1,5 @@
 import {
-  implementPromiseAction, promiseMiddleware
+  implementPromiseAction
 } from "@teroneko/redux-saga-promise";
 
 import { call } from 'redux-saga/effects';
