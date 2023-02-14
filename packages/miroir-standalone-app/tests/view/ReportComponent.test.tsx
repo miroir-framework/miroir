@@ -20,7 +20,7 @@ import { ReduxStore } from 'miroir-standalone-app/src/miroir-fwk/4_services/loca
 import { IndexedDbObjectStore } from 'miroir-redux'
 import { InstanceRemoteAccessReduxSaga } from "miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/InstanceRemoteAccessReduxSaga"
 import RemoteStoreClient from 'miroir-standalone-app/src/miroir-fwk/4_services/remoteStore/RemoteStoreNetworkClient'
-import { MReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/MReportComponent'
+import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent'
 import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup"
@@ -90,7 +90,7 @@ it(
       getAllByRole,
       // container
     } = renderWithProviders(
-      <MReportComponent
+      <ReportComponent
         reportName="EntityList"
       />,
       {store:mReduxStore.getInnerStore()}

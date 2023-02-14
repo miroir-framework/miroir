@@ -1,8 +1,8 @@
 import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from "miroir-core";
+import { useLocalStoreEntities, useLocalStoreReports } from "miroir-fwk/4_view/selectors";
 import * as React from "react";
 
 // import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from 'miroir-core';
-import { useLocalStoreEntities, useLocalStoreReports } from "miroir-fwk/4_services/localStore/InstanceReduxSlice";
 import { MTableComponent } from "./MTableComponent";
 
 export interface MiroirReportComponentProps {
@@ -10,7 +10,7 @@ export interface MiroirReportComponentProps {
 };
 
 
-export const MReportComponent = (
+export const ReportComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const miroirReports = [1];

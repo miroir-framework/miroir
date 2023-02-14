@@ -1,23 +1,16 @@
 import {
   ActionCreatorWithoutPayload,
-  ActionCreatorWithPayload,
-  CaseReducerActions,
-  createEntityAdapter,
+  ActionCreatorWithPayload, createEntityAdapter,
   createSelector,
   createSlice,
   EntityAdapter,
   EntityState,
   PayloadAction,
-  Slice,
-  SliceCaseReducers,
-  Update
+  Slice, Update
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
-import { useSelector } from "react-redux";
-import { DomainAction, EntityDefinition } from 'miroir-core';
-import { Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
-import { MiroirReport } from 'miroir-core';
-import { ReduxStateWithUndoRedo } from "miroir-fwk/4_services/localStore/UndoRedoReducer";
+import { DomainAction, Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
+import { ReduxStateWithUndoRedo } from "src/4_services/localStore/UndoRedoReducer";
 
 const instanceSliceName:string = "instance";
 //#########################################################################################
@@ -181,18 +174,6 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
   }
 );
 
-//#########################################################################################
-export function useLocalStoreEntities():EntityDefinition[] {
-  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'));
-  return miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
-}
-
-//#########################################################################################
-export function useLocalStoreReports():MiroirReport[] {
-  const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
-  const miroirReports:MiroirReport[] = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
-  return miroirReports;
-}
 
 //#########################################################################################
 //# ACTION CREATORS

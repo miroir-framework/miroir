@@ -2,11 +2,13 @@ node_modules*/
 node_modules/.cache*/
 packages/miroir-core/node_modules*/
 packages/miroir-core/dist*/
-packages/miroir-server/node_modules*/
-packages/miroir-server/dist*/
 packages/miroir-core/dist/index.js
 packages/miroir-core/dist/src/0_interfaces/2_domain/instanceDomainInterface.d.ts
 packages/miroir-core/dist/src/index.d.ts
+packages/miroir-server/node_modules*/
+packages/miroir-server/dist*/
+packages/miroir-redux/node_modules*/
+packages/miroir-redux/dist*/
 packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/dist*/
 packages/miroir-standalone-app/build*/

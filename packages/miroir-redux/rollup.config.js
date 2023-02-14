@@ -1,10 +1,18 @@
 import dts from 'rollup-plugin-dts';
 import pluginJson from '@rollup/plugin-json';
+import typescript2 from 'rollup-plugin-typescript2'
 
 export default [
   {
-    input: ["dist/out-tsc/src/index.js"],
-    external: ['level','msw'],
+    input: ["src/index.ts"],
+    external: [
+      '@reduxjs/toolkit',
+      'immer',
+      'level',
+      'lodash',
+      'miroir-core',
+      'msw'
+    ],
     output: [
         {
             file: `dist/bundle.js`,
@@ -14,11 +22,12 @@ export default [
         }
     ],
     plugins: [
+      typescript2(),
       pluginJson()
     ],
   },
   {
-    input: ["dist/out-tsc/dts/src/index.d.ts"],
+    input: ["src/index.ts"],
     output: [
         {
           file: `dist/bundle.d.ts`,

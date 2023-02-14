@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@mui/material";
 import { ConfigurationService } from "miroir-core";
 import { useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 // import * as React from "react";
-import { MReportComponent } from "./MReportComponent";
+import { ReportComponent } from "./ReportComponent";
 
 export const MComponent = (props:any) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
@@ -25,7 +25,7 @@ export const MComponent = (props:any) => {
           AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         </CardHeader>
         <CardContent>
-          <MReportComponent
+          <ReportComponent
             reportName="EntityList"
             // store={store}
           />

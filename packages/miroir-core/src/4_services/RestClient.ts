@@ -2,7 +2,7 @@
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
-
+ 
 export class RestClient implements RestClientInterface {
   constructor(
     private customFetch:(...args:any) => any
