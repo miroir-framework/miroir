@@ -1,7 +1,7 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { RestClientCallReturnType, RestClientInterface } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
  
 export class RestClient implements RestClientInterface {
   constructor(

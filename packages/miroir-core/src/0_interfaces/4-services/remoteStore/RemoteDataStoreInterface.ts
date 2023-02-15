@@ -1,5 +1,5 @@
-import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
+import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
 
 export const RemoteStoreActionNamesObject = {
   'create': 'create',

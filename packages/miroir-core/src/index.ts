@@ -37,8 +37,6 @@ export {
 
 
 export {
-  EntityDefinitionLocalStoreInputActionsI,
-  InstanceLocalStoreInputActionsI,
   LocalStoreInterface,
 } from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
 
@@ -63,7 +61,7 @@ export {ReportGetInstancesToDispay} from './1_core/Report.js';
 
 export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
 
-export {DataStoreController} from './3_controllers/DataStoreController.js'
+export {DataController as DataStoreController} from './3_controllers/DataController.js'
 
 export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 

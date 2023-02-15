@@ -1,5 +1,5 @@
-import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
-import { MiroirReport } from '../0_interfaces/1_core/Report.js';
+import { EntityDefinition } from 'src/0_interfaces/1_core/EntityDefinition.js';
+import { MiroirReport } from 'src/0_interfaces/1_core/Report.js';
 
 function ReportGetInstancesToDispay (
     report:MiroirReport,

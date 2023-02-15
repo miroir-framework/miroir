@@ -9,7 +9,7 @@ import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effect
 import {
   EntityDefinition, RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple
 } from "miroir-core";
-import { handlePromiseActionForSaga } from '../../sagaTools';
+import { handlePromiseActionForSaga } from 'src/sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

@@ -2,7 +2,7 @@ import { EntityState, PayloadAction, Store } from "@reduxjs/toolkit";
 import produce, { enablePatches } from "immer";
 
 import { EntityDefinition, InstanceCollection } from "miroir-core";
-import { InstanceSliceState } from "../../4_services/localStore/InstanceReduxSlice";
+import { InstanceSliceState } from "src/4_services/localStore/InstanceReduxSlice";
 enablePatches(); // to gather undo/redo operation history
 
 /**

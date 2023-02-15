@@ -1,5 +1,5 @@
 import { rest } from 'msw'
-import { IndexedDb } from '../../4_services/localStore/indexedDb';
+import { IndexedDb } from 'src/4_services/localStore/indexedDb';
 
 // Add an extra delay to all endpoints, so loading spinners show up.
 const ARTIFICIAL_DELAY_MS = 100

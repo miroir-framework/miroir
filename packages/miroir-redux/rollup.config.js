@@ -1,4 +1,3 @@
-import dts from 'rollup-plugin-dts';
 import pluginJson from '@rollup/plugin-json';
 import typescript2 from 'rollup-plugin-typescript2'
 
@@ -29,17 +28,4 @@ export default [
       pluginJson(),
     ],
   },
-  {
-    input: ["src/index.ts"],
-    output: [
-        {
-          file: `dist/bundle.d.ts`,
-          format: 'es',
-        }
-    ],
-    plugins: [
-      pluginJson(),
-      dts(),
-    ],
-  }
 ];

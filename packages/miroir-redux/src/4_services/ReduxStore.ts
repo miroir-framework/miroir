@@ -16,16 +16,16 @@ import {
   createUndoRedoReducer,
   ReduxReducerWithUndoRedo,
   ReduxStoreWithUndoRedo,
-} from "../4_services/localStore/UndoRedoReducer";
+} from "src/4_services/localStore/UndoRedoReducer";
 import InstanceRemoteAccessReduxSaga, {
   instanceSagaGeneratedActionNames,
   instanceSagaInputActionNamesArray,
-} from "../4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+} from "src/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import {
   InstanceSlice,
   instanceSliceGeneratedActionNames,
   instanceSliceInputActionNamesObject,
-} from "../4_services/localStore/InstanceReduxSlice";
+} from "src/4_services/localStore/InstanceReduxSlice";
 
 
 //#########################################################################################
