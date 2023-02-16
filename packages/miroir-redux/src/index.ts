@@ -1,5 +1,5 @@
-export { IndexedDb } from "./4_services/localStore/indexedDb";
-export { IndexedDbObjectStore } from "./4_services/localStore/IndexedDbObjectStore";
+export { IndexedDb } from "./4_services/remoteStore/indexedDb";
+export { IndexedDbObjectStore } from "./4_services/remoteStore/IndexedDbObjectStore";
 export {
   InstanceAction,
   InstanceSlice,
@@ -44,4 +44,4 @@ export {
   instanceSagaOutputActionTypeString,
 } from "./4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 export { ReduxStore } from "./4_services/ReduxStore";
-export { RemoteStoreClient } from "./4_services/remoteStore/RemoteStoreNetworkClient";
+export { RemoteStoreNetworkRestClient } from "./4_services/remoteStore/RemoteStoreNetworkRestClient";

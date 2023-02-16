@@ -1,4 +1,4 @@
-import { ErrorLogServiceInterface, MError } from "src/0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { ErrorLogServiceInterface, MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
 
 export default {}
 

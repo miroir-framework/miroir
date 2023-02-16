@@ -6,8 +6,6 @@
       "options": {
         "parallel": 5,
         "cacheableOperations": [
-          "build",
-          "test"
         ]
       }
     }
@@ -36,7 +34,7 @@
         "^prod"
       ]
     },
-    "dev": {
+    "start-dev": {
       "dependsOn": [
         "^build"
       ]

@@ -1,4 +1,4 @@
-import { DomainAction } from 'src/0_interfaces/2_domain/DomainLanguageInterface.js';
+import { DomainAction } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
 
 export default {}
 

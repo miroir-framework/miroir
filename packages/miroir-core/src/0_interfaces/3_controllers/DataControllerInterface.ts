@@ -1,5 +1,5 @@
-import { DomainAction } from "src/0_interfaces/2_domain/DomainLanguageInterface";
-import { RemoteStoreAction, RemoteStoreActionReturnType } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { DomainAction } from "../../0_interfaces/2_domain/DomainLanguageInterface";
+import { RemoteStoreAction, RemoteStoreActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 
 export interface DataControllerInterface {
   loadConfigurationFromRemoteDataStore():void;

@@ -95,6 +95,7 @@ public instanceSagaInputPromiseActions:{
             headers: Headers,
             url: string,
           } = yield call(() => this.client.get(this.rootApiUrl + "/" + action.payload + "/all"));
+          // } = yield call(() => this.client.handleNetworkAction(networkAction:RemoteStoreAction));
           return {
             status:'ok', 
             instances:[
@@ -113,14 +114,19 @@ public instanceSagaInputPromiseActions:{
       generator: function*(action:PayloadAction<RemoteStoreAction>):SagaGenReturnType {
         try {
           console.log("InstanceRemoteAccessReduxSaga handleRemoteStoreAction",action);
+          const clientResult: {
+            status: number,
+            data: any,
+            headers: Headers,
+            url: string,
+          } = yield call(() => this.client.handleNetworkAction(action.payload));
+          const result = {
+            status:'ok',
+            instances:[
+              {entity:action.payload.entityName, instances:clientResult['data']}
+            ]
+          };
 
-          let result: RemoteStoreActionReturnType;
-          switch (action.payload.actionName) {
-            case 'read':
-              result = yield putResolve(this.instanceSagaInputPromiseActions.fetchInstancesForEntityFromRemoteDatastore.creator(action.payload.entityName))
-              break;
-          }
-          // const result:RemoteStoreActionReturnType = yield putResolve(this.instanceSagaInputPromiseActions.fetchInstancesForEntityListFromRemoteDatastore.creator(action.payload.objects));
           console.log("InstanceRemoteAccessReduxSaga handleRemoteStoreAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {

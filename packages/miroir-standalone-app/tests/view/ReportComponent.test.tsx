@@ -43,19 +43,13 @@ miroirCoreStartup();
 
 const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 const worker = setupServer(...mServer.handlers)
-// const mClient:RemoteStoreNetworkClientInterface = new RemoteStoreClient(Fetch);
-
-// const entitySagas: EntitySagas = new EntitySagas(mClient);
-// const instanceSagas: InstanceSagas = new InstanceSagas(mClient);
 const client:RestClient = new RestClient(fetch);
 const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
-// const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
 const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreClient);
 
 const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();
 
-// const dataController: DataControllerInterface = new LocalDataStoreController(mReduxStore,mReduxStore,pushError);
 const miroirContext = new MiroirContext();
 
 const dataController: DataControllerInterface = new DataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.

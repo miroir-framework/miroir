@@ -1,8 +1,8 @@
-import { InstanceCollection } from "src/0_interfaces/1_core/Instance.js";
-import { DomainAction } from "src/0_interfaces/2_domain/DomainLanguageInterface.js";
-import { DataControllerInterface } from "src/0_interfaces/3_controllers/DataControllerInterface.js";
-import { LocalStoreInterface } from "src/0_interfaces/4-services/localStore/LocalStoreInterface.js";
-import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface.js";
+import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
+import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
+import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 import { MiroirContextInterface } from "./MiroirContext.js";
 
@@ -21,15 +21,18 @@ export class DataController implements DataControllerInterface {
     private remoteStore: RemoteDataStoreInterface,
   ) {}
 
+  //####################################################################################
   public async handleLocalCacheAction(action:DomainAction) {
     return this.localStore.handleLocalCacheAction(action);
   }
 
 
+  //####################################################################################
   public async handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>{
     return this.remoteStore.handleRemoteStoreAction(action);
   }
 
+  //####################################################################################
   public async loadConfigurationFromRemoteDataStore() {
     try {
       const entities: InstanceCollection = (await throwExceptionIfError(

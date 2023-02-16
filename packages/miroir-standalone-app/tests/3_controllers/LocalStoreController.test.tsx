@@ -26,7 +26,7 @@ import {
 } from "miroir-core";
 import { IndexedDbObjectStore, InstanceRemoteAccessReduxSaga, ReduxStore } from "miroir-redux";
 
-import RemoteStoreClient from "miroir-redux/src/4_services/remoteStore/RemoteStoreNetworkClient";
+import RemoteStoreClient from "miroir-redux/src/4_services/remoteStore/RemoteStoreNetworkRestClient";
 import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json';
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";

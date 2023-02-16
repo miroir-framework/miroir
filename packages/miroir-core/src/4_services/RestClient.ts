@@ -1,7 +1,7 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
-import { RestClientCallReturnType, RestClientInterface } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
  
 export class RestClient implements RestClientInterface {
   constructor(
@@ -10,13 +10,14 @@ export class RestClient implements RestClientInterface {
     console.log("RestClient constructor")
   }
 
-  async call(endpoint:string, args:any = {}):Promise<RestClientCallReturnType> {
+  async call(method:string, endpoint:string, args:any = {}):Promise<RestClientCallReturnType> {
     // console.log("RestClient call")
     const { body, ...customConfig } = args;
     const headers = { 'Content-Type': 'application/json' }
   
     const config = {
-      method: body ? 'POST' : 'GET',
+      // method: body ? 'POST' : 'GET',
+      method: method,
       ...customConfig,
       headers: {
         ...headers,
@@ -50,14 +51,24 @@ export class RestClient implements RestClientInterface {
   }
 
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
-    const result:Promise<RestClientCallReturnType> = this.call(endpoint, { ...customConfig, method: 'GET' })
-    console.log('RestClient get',endpoint, result)
+    const result:Promise<RestClientCallReturnType> = this.call('GET', endpoint, { ...customConfig, method: 'GET' })
+    console.log('RestClient get', endpoint, result)
     return result
   }
 
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     // console.log('MClient post',endpoint)
-    return this.call(endpoint, { ...customConfig, body })
+    return this.call('POST', endpoint, { ...customConfig, body })
+  }
+
+  async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
+    // console.log('MClient post',endpoint)
+    return this.call('PUT', endpoint, { ...customConfig, body })
+  }
+
+  async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
+    // console.log('MClient post',endpoint)
+    return this.call('DELETE', endpoint, { ...customConfig, body })
   }
 }
 

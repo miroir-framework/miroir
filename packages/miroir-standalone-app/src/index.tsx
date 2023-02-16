@@ -17,7 +17,7 @@ import {
   IndexedDbObjectStore, 
   InstanceRemoteAccessReduxSaga, 
   ReduxStore, 
-  RemoteStoreClient 
+  RemoteStoreNetworkRestClient 
 } from "miroir-redux";
 
 import { MComponent } from "miroir-fwk/4_view/MComponent";
@@ -34,24 +34,26 @@ async function start() {
   const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
   await mServer.createObjectStore(["Entity", "Instance", "Report"]);
-  await mServer.localIndexedStorage.putValue("Entity", entityReport);
-  await mServer.localIndexedStorage.putValue("Entity", entityEntity);
-  await mServer.localIndexedStorage.putValue("Report", reportEntityList);
+  await mServer.localIndexedDb.putValue("Entity", entityEntity);
+  await mServer.localIndexedDb.putValue("Entity", entityReport);
+  // await mServer.localIndexedDb.putValue("Report", reportEntityList);
 
   miroirAppStartup();
   miroirCoreStartup();
 
   if (process.env.NODE_ENV === "development") {
-    const worker = setupWorker(...mServer.handlers);
-    worker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
-    await worker.start();
+    const mswWorker = setupWorker(...mServer.handlers);
+    console.log('##############################################');
+    mswWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
+    console.log('##############################################');
+    await mswWorker.start();
   }
 
   const client: RestClient = new RestClient(window.fetch);
-  const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
+  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
   const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(
     miroirConfig.rootApiUrl,
-    remoteStoreClient
+    remoteStoreNetworkRestClient
   );
 
   const mReduxStore: ReduxStore = new ReduxStore(instanceSagas);
@@ -62,6 +64,11 @@ async function start() {
   const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
   dataController.loadConfigurationFromRemoteDataStore();
 
+  dataController.handleRemoteStoreAction({
+    actionName:'create',
+    entityName:'Report',
+    objects:[reportEntityList]
+  })
   root.render(
     <Provider store={mReduxStore.getInnerStore()}>
       <div>

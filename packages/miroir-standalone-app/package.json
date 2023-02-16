@@ -59,6 +59,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
+    "watch-dev": "lerna watch --scope='miroir-standalone-app' --include-dependencies -- lerna run start-dev --scope='miroir-standalone-app'",
     "start-dev": "react-scripts start",
     "build": "react-scripts build --verbose",
     "test": "cross-env NODE_ENV=test jest --runInBand --verbose --silent=false -t",

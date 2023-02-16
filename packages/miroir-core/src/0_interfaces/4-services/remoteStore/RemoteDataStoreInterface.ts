@@ -1,5 +1,5 @@
-import { MError } from 'src/0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { Instance, InstanceCollection } from 'src/0_interfaces/1_core/Instance.js';
+import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 
 export const RemoteStoreActionNamesObject = {
   'create': 'create',
@@ -35,14 +35,17 @@ export interface RestClientCallReturnType {
 export interface RestClientInterface {
   get(endpoint:string, customConfig?:any): Promise<RestClientCallReturnType>;
   post(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
+  put(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
+  delete(endpoint:string, body:any, customConfig?:any): Promise<RestClientCallReturnType>;
 }
 
 /**
  * Decorator for RestClientInterface, should eventually replace it entirely.
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
-export interface RemoteStoreNetworkClientInterface extends RestClientInterface  {
+export interface RemoteStoreNetworkClientInterface {
   handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
+  // dtc();
 }
 
 export default {}
