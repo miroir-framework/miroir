@@ -1,17 +1,9 @@
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-
-export const RemoteStoreActionNamesObject = {
-  'create': 'create',
-  'read': 'read',
-  'update': 'update',
-  'delete': 'delete',
-}
-export type RemoteStoreActionName = keyof typeof RemoteStoreActionNamesObject;
-export const RemoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(RemoteStoreActionNamesObject) as RemoteStoreActionName[];
+import { CRUDActionName } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
 
 export interface RemoteStoreAction {
-  actionName: RemoteStoreActionName;
+  actionName: CRUDActionName;
   entityName: string;
   uuid?:string;
   objects?:Instance[];
@@ -45,7 +37,6 @@ export interface RestClientInterface {
  */
 export interface RemoteStoreNetworkClientInterface {
   handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
-  // dtc();
 }
 
 export default {}

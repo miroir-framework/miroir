@@ -6,6 +6,8 @@ import { Provider } from "react-redux";
 import {
   DataControllerInterface,
   DataStoreController,
+  DomainActionInterface,
+  DomainController,
   entityEntity,
   entityReport,
   MiroirContext,
@@ -62,13 +64,23 @@ async function start() {
   const miroirContext = new MiroirContext();
 
   const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
+  const domainController:DomainActionInterface = new DomainController(dataController);
+
   dataController.loadConfigurationFromRemoteDataStore();
 
-  dataController.handleRemoteStoreAction({
+  domainController.handleDomainAction({
     actionName:'create',
-    entityName:'Report',
-    objects:[reportEntityList]
+    // entityName:'Report',
+    objects:[{entity:'Report',instances:[reportEntityList]}]
   })
+
+  dataController.loadConfigurationFromRemoteDataStore();
+
+  // dataController.handleRemoteStoreAction({
+  //   actionName:'create',
+  //   entityName:'Report',
+  //   objects:[reportEntityList]
+  // })
   root.render(
     <Provider store={mReduxStore.getInnerStore()}>
       <div>

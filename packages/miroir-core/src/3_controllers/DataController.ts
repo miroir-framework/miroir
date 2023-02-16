@@ -1,7 +1,7 @@
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
-import { LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
+import { LocalCacheAction, LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
 import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 import { MiroirContextInterface } from "./MiroirContext.js";
@@ -22,7 +22,7 @@ export class DataController implements DataControllerInterface {
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheAction(action:DomainAction) {
+  public async handleLocalCacheAction(action:LocalCacheAction) {
     return this.localStore.handleLocalCacheAction(action);
   }
 

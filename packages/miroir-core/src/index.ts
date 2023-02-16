@@ -1,9 +1,11 @@
 export {
-  InstanceDomainInputActionsInterface,
-  EntityDomainInputActionsInterface
+  DomainActionInterface,
 } from './0_interfaces/2_domain/instanceDomainInterface.js';
 
 export {
+  CRUDActionName,
+  CRUDActionNamesArray,
+  CRUDActionNamesObject,
   DomainAction,
   DomainActionName,
   domainActionNamesArray,
@@ -37,14 +39,12 @@ export {
 
 
 export {
+  LocalCacheAction,
   LocalStoreInterface,
 } from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
 
 export {
   RemoteStoreAction,
-  RemoteStoreActionName,
-  RemoteStoreActionNamesArray,
-  RemoteStoreActionNamesObject,
   RemoteDataStoreInterface,
   RemoteStoreActionReturnType,
   RemoteStoreNetworkClientInterface,
@@ -59,6 +59,8 @@ export {
 
 export {ReportGetInstancesToDispay} from './1_core/Report.js';
 
+export { DomainController } from './2_domain/DomainController'
+
 export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
 
 export {DataController as DataStoreController} from './3_controllers/DataController.js'
@@ -70,6 +72,7 @@ export {ConfigurationService, PackageConfiguration} from './3_controllers/Config
 export {MiroirContextInterface, MiroirContext} from './3_controllers/MiroirContext.js'
 
 export {ErrorLogService} from './3_controllers/ErrorLogService.js'
+
 
 export { stringTuple } from './tools.js'
 export { miroirCoreStartup } from './startup.js'

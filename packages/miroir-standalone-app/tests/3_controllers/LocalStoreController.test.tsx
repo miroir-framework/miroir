@@ -68,7 +68,6 @@ afterAll(
 it(
   'LocalStoreController: Refresh all Entity definitions',
   async () => {
-    // const saga:ExpectApi = expectSaga(mReduxStore.rootSaga, mReduxStore);
     console.log('Refresh all Entity definitions start');
     await mServer.createObjectStore(["Entity","Instance","Report"]);
     await mServer.localIndexedStorage.putValue("Entity",entityReport);

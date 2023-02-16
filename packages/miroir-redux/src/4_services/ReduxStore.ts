@@ -6,44 +6,26 @@ import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
 import {
-  DomainAction,
+  LocalCacheAction,
   LocalStoreInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
-  RemoteStoreActionReturnType,
+  RemoteStoreActionReturnType
 } from "miroir-core";
-import {
-  createUndoRedoReducer,
-  ReduxReducerWithUndoRedo,
-  ReduxStoreWithUndoRedo,
-} from "src/4_services/localStore/UndoRedoReducer";
-import InstanceRemoteAccessReduxSaga, {
-  instanceSagaGeneratedActionNames,
-  instanceSagaInputActionNamesArray,
-} from "src/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 import {
   InstanceSlice,
   instanceSliceGeneratedActionNames,
-  instanceSliceInputActionNamesObject,
+  instanceSliceInputActionNamesObject
 } from "src/4_services/localStore/InstanceReduxSlice";
-
-
-//#########################################################################################
-//# INSTANCE INTERACTOR
-//#########################################################################################
-/**
- * The external view of the world for the domain model
- */
-
-// export interface DatastoreInputActionsInterface {
-//   fetchInstancesFromDatastoreForEntity(entityName:string):void;
-//   fetchInstancesFromDatastoreForEntityList(entities:EntityDefinition[]):void;
-// }
-
-// export interface DatastoreOutputNotificationsInterface {
-//   allInstancesRefreshed():void;
-// }
-
+import {
+  createUndoRedoReducer,
+  ReduxReducerWithUndoRedo,
+  ReduxStoreWithUndoRedo
+} from "src/4_services/localStore/UndoRedoReducer";
+import InstanceRemoteAccessReduxSaga, {
+  instanceSagaGeneratedActionNames,
+  instanceSagaInputActionNamesArray
+} from "src/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
 
 
 // ###############################################################################
@@ -106,39 +88,23 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
-    // switch (action.entityName) {
-    //   case 'Entity': 
-    //     return this.innerReduxStore.dispatch(
-    //       // this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleAction(action),
-    //       this.entityRemoteAccessReduxSaga.entitySagaInputActionsCreators.handleRemoteStoreAction(action),
-    //     );
-    //   // case 'Instance':
-    //   default:
-        return this.innerReduxStore.dispatch(
-          this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
-        )
-    // }
+    return this.innerReduxStore.dispatch(
+      this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
+    )
   }
 
   // ###############################################################################
-  handleLocalCacheAction(action:DomainAction) {
-    switch (action.actionName) {
-      case 'replace': {
-        this.innerReduxStore.dispatch(
-          // InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.ReplaceAllInstances](action.objects)
-          InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.handleLocalCacheAction](action)
-        );
-        break;
-      }
-    }
+  handleLocalCacheAction(action:LocalCacheAction) {
+    this.innerReduxStore.dispatch(
+      InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.handleLocalCacheAction](action)
+    );
   }
 
   // ###############################################################################
-  public *rootSaga(
+  private *rootSaga(
   ) {
     console.log("ReduxStore rootSaga running", this.instanceRemoteAccessReduxSaga);
     yield all([
-      // this.entityRemoteAccessReduxSaga.entityRootSaga.bind(this.entityRemoteAccessReduxSaga)(),
       this.instanceRemoteAccessReduxSaga.instanceRootSaga.bind(this.instanceRemoteAccessReduxSaga)(),
     ]);
   }
