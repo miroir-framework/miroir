@@ -17,6 +17,8 @@ global.TextDecoder = TextDecoder
 import {
   DataControllerInterface,
   DataStoreController,
+  DomainActionInterface,
+  DomainController,
   entityEntity,
   entityReport,
   MiroirContext,
@@ -26,29 +28,31 @@ import {
 } from "miroir-core";
 import { IndexedDbObjectStore, InstanceRemoteAccessReduxSaga, ReduxStore } from "miroir-redux";
 
-import RemoteStoreClient from "miroir-redux/src/4_services/remoteStore/RemoteStoreNetworkRestClient";
+import { RemoteStoreNetworkRestClient } from "miroir-redux";
 import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json';
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { renderWithProviders } from "miroir-standalone-app/tests/tests-utils";
-import { TestTableComponent } from "miroir-standalone-app/tests/view/TestTableComponent";
+import { renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 
 miroirAppStartup();
 miroirCoreStartup();
 
-const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
-const worker = setupServer(...mServer.handlers)
+// const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
+// const worker = setupServer(...mServer.handlers)
 
-const client:RestClient = new RestClient(fetch);
-const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
-// const entitySagas: EntityRemoteAccessReduxSaga = new EntityRemoteAccessReduxSaga(remoteStoreClient);
-const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreClient);
+// const client:RestClient = new RestClient(fetch);
+// const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
+// const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
-const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
-mReduxStore.run();
-const miroirContext = new MiroirContext();
+// const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
+// mReduxStore.run();
+// const miroirContext = new MiroirContext();
 
-const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore);
+// const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore);
+// const domainController:DomainActionInterface = new DomainController(dataController);
 
+const {mServer, worker, reduxStore, dataController, domainController} = createMswStore(miroirConfig.rootApiUrl,fetch,setupServer)
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
@@ -70,9 +74,9 @@ it(
   async () => {
     console.log('Refresh all Entity definitions start');
     await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.localIndexedStorage.putValue("Entity",entityReport);
-    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
-    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
+    await mServer.localIndexedDb.putValue("Entity",entityReport);
+    await mServer.localIndexedDb.putValue("Entity",entityEntity);
+    await mServer.localIndexedDb.putValue("Report",reportEntityList);
 
     dataController.loadConfigurationFromRemoteDataStore();
 
@@ -81,8 +85,8 @@ it(
       getAllByRole,
       // container
     } = renderWithProviders(
-      <TestTableComponent/>,
-      {store:mReduxStore.getInnerStore()}
+      <TestUtilsTableComponent/>,
+      {store:reduxStore.getInnerStore()}
     );
 
     await waitFor(

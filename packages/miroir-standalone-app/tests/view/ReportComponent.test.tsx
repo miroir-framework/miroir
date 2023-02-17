@@ -18,6 +18,8 @@ const fetch = require('node-fetch');
 import {
   DataControllerInterface,
   DataStoreController,
+  DomainActionInterface,
+  DomainController,
   entityEntity,
   entityReport,
   MiroirContext,
@@ -25,10 +27,15 @@ import {
   reportEntityList,
   RestClient,
 } from "miroir-core";
-import { IndexedDbObjectStore, InstanceRemoteAccessReduxSaga, ReduxStore, RemoteStoreClient } from "miroir-redux";
+import {
+  IndexedDbObjectStore,
+  InstanceRemoteAccessReduxSaga,
+  ReduxStore,
+  RemoteStoreNetworkRestClient,
+} from "miroir-redux";
 
 import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent'
-import { renderWithProviders } from 'miroir-standalone-app/tests/tests-utils'
+import { renderWithProviders } from 'miroir-standalone-app/tests/utils/tests-utils'
 
 import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
 import { miroirAppStartup } from "miroir-standalone-app/src/startup"
@@ -43,9 +50,11 @@ miroirCoreStartup();
 
 const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 const worker = setupServer(...mServer.handlers)
+
 const client:RestClient = new RestClient(fetch);
-const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
-const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreClient);
+const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
+// const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
+const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
 const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();
@@ -53,6 +62,7 @@ mReduxStore.run();
 const miroirContext = new MiroirContext();
 
 const dataController: DataControllerInterface = new DataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
+const domainController:DomainActionInterface = new DomainController(dataController);
 
 // Enable API mocking before tests.
 beforeAll(
@@ -79,9 +89,9 @@ it(
   'ReportComponent: test loading sequence for Report displaying Entity list',
   async () => {
     await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.localIndexedStorage.putValue("Entity",entityReport);
-    await mServer.localIndexedStorage.putValue("Entity",entityEntity);
-    await mServer.localIndexedStorage.putValue("Report",reportEntityList);
+    await mServer.localIndexedDb.putValue("Entity",entityReport);
+    await mServer.localIndexedDb.putValue("Entity",entityEntity);
+    await mServer.localIndexedDb.putValue("Report",reportEntityList);
 
     dataController.loadConfigurationFromRemoteDataStore();
 

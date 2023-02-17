@@ -77,15 +77,15 @@ export class IndexedDb {
     return Promise.resolve(result1);
   }
 
-  // public async putBulkValue(tableName: string, values: any[]) {
-  //   // const tx = this.db.transaction(tableName, 'readwrite');
-  //   const store = this.subLevels.get(tableName);
-  //   for (const value of values) {
-  //     const result = await store.put(value);
-  //     console.log('IndexedDb PutBulkValue ', JSON.stringify(result));
-  //   }
-  //   return this.getAllValue(tableName);
-  // }
+  public async putBulkValue(tableName: string, values: any[]) {
+    // const tx = this.db.transaction(tableName, 'readwrite');
+    const store = this.subLevels.get(tableName);
+    for (const value of values) {
+      const result = await store.put(value.uuid,value, {valueEncoding: 'json'});
+      console.log('IndexedDb PutBulkValue ', JSON.stringify(result));
+    }
+    return this.getAllValue(tableName); // TODO: do not return the full table!
+  }
 
   public async deleteValue(tableName: string, id: string):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');

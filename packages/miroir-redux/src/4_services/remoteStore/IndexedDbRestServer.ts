@@ -20,7 +20,7 @@ const serializePost = (post: any) => ({
   user: post.user.id,
 });
 
-export class IndexedDbObjectStore {
+export class IndexedDbRestServer {
   public handlers: any[];
   // private operationMap: Map<>
 
@@ -47,7 +47,7 @@ export class IndexedDbObjectStore {
       rest.get(this.rootApiUrl + "/" + ":entityName/all", async (req, res, ctx) => {
         
         const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('get', entityName+"/all started #####################################");
+        console.log('get', entityName+"/all started get #####################################");
         // const localData = await this.localIndexedDb.getAllValue("Entity");
         const localData = await this.localIndexedDb.getAllValue(entityName);
         console.log("server " + entityName + "/all", localData);
@@ -55,7 +55,17 @@ export class IndexedDbObjectStore {
       }),
       rest.post(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
         const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('post', entityName+" started #####################################");
+        console.log('post', entityName+" started post #####################################");
+        
+        const addedObjects:any[] = await req.json();
+        // const localData = await this.localIndexedDb.getAllValue("Entity");
+        const localData = await this.localIndexedDb.putValue(entityName,addedObjects[0]);
+        console.log("server " + entityName + "put first object of", addedObjects);
+        return res(ctx.json(addedObjects[0]));
+      }),
+      rest.put(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
+        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
+        console.log('post', entityName+" started put #####################################");
         
         const addedObjects:any[] = await req.json();
         // const localData = await this.localIndexedDb.getAllValue("Entity");

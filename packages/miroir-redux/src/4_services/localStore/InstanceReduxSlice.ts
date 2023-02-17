@@ -52,7 +52,8 @@ export type InstanceAction = PayloadAction<InstanceCollection>;
 //# Entity Adapter
 //#########################################################################################
 const getSliceEntityAdapter: (
-  entityName: string) => EntityAdapter<Instance> = _memoize(
+  entityName: string
+) => EntityAdapter<Instance> = _memoize(
   (entityName: string) => {
     // console.log("getEntityAdapter creating EntityAdapter For entity", entityName);
     const result = createEntityAdapter<Instance>({
@@ -68,15 +69,23 @@ const getSliceEntityAdapter: (
   }
 );
 
+function getInitializedEntityAdapter(entityName: string, state: InstanceSliceState) {
+  const sliceEntityAdapter = getSliceEntityAdapter(entityName);
+  if (!state[entityName]) {
+    state[entityName] = sliceEntityAdapter.getInitialState();
+  }
+  return sliceEntityAdapter;
+} 
+
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
 function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAction) {
   console.log('ReplaceInstancesForEntity', action.payload.entity,action.payload.instances);
-  const sliceEntityAdapter = getSliceEntityAdapter(action.payload.entity);
-  if (!state[action.payload.entity]) {
-    state[action.payload.entity] = sliceEntityAdapter.getInitialState();
-  }
+  const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.entity,state);
+  // if (!state[action.payload.entity]) {
+  //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
+  // }
 
   state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
 }
@@ -128,17 +137,6 @@ export const InstanceSliceObject: Slice<InstanceSliceState> = createSlice({
         getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
       });
     },
-    // [instanceSliceInputActionNamesObject.ReplaceInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-    //   ReplaceInstancesForEntity(state,action)
-    // },
-    // [instanceSliceInputActionNamesObject.ReplaceAllInstances](state: InstanceSliceState, action: PayloadAction<InstanceCollection[]>) {
-    //   console.log(instanceSliceInputActionNamesObject.ReplaceAllInstances, action.payload,InstanceSliceObject);
-    //   action.payload.forEach(
-    //     function (a:InstanceCollection) {
-    //       ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:a} as InstanceAction)
-    //     },this
-    //   );
-    // },
     [instanceSliceInputActionNamesObject.handleLocalCacheAction](state: InstanceSliceState, action: PayloadAction<DomainAction>) {
       console.log(instanceSliceInputActionNamesObject.handleLocalCacheAction, action.payload);
       switch (action.payload.actionName) {
@@ -148,6 +146,30 @@ export const InstanceSliceObject: Slice<InstanceSliceState> = createSlice({
           }
           break;
         }
+        case 'create': {
+          for (let instanceCollection of action.payload.objects) {
+            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+            sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances)
+          }
+          break;
+        }
+        case 'delete': {
+          for (let instanceCollection of action.payload.objects) {
+            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+            sliceEntityAdapter.removeMany(state[instanceCollection.entity], action.payload.uuid?[action.payload.uuid]:instanceCollection.instances.map(i=>i.uuid))
+          }
+          break;
+        }
+        case 'update': {
+          for (let instanceCollection of action.payload.objects) {
+            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+            sliceEntityAdapter.updateMany(state[instanceCollection.entity], instanceCollection.instances.map(i=>({ id: i.uuid, changes: i })))
+            // getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
+          }
+          break;
+        }
+        default:
+          console.warn('handleLocalCacheAction action could not be taken into account, unkown action', action.payload.actionName)
       }
     },
   },

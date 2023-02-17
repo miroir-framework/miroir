@@ -47,7 +47,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  getCallParams(networkAction: RemoteStoreAction):{
+  getRestCallParams(networkAction: RemoteStoreAction):{
     operation:(endpoint: string, customConfig: any)=> Promise<RestClientCallReturnType>,url:string,args:any[]} {
       return {
         operation:this.operationMethod[actionHttpMethods[networkAction.actionName]],
@@ -60,7 +60,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   async handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType> {
     //TODO: return type must be independent of actually called client
     console.log("RemoteStoreNetworkRestClient handleAction", networkAction);
-    const callParams = this.getCallParams(networkAction);
+    const callParams = this.getRestCallParams(networkAction);
     return callParams.operation(callParams.url, callParams.args)
   }
 }

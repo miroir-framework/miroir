@@ -10,7 +10,7 @@ export interface MiroirReportComponentProps {
   reportName: string;
 };
 
-export const TestTableComponent = (
+export const TestUtilsTableComponent = (
   // props: MiroirReportComponentProps
 ) => {
   const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))

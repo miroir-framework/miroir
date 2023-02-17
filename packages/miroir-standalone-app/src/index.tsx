@@ -26,6 +26,7 @@ import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
 import { miroirAppStartup } from "startup";
+import { createMswStore } from "miroir-fwk/createStore";
 
 console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById("root");
@@ -33,61 +34,47 @@ const root = createRoot(container);
 
 async function start() {
   // Start our mock API server
-  const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
+  // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
-  await mServer.createObjectStore(["Entity", "Instance", "Report"]);
-  await mServer.localIndexedDb.putValue("Entity", entityEntity);
-  await mServer.localIndexedDb.putValue("Entity", entityReport);
-  // await mServer.localIndexedDb.putValue("Report", reportEntityList);
 
   miroirAppStartup();
   miroirCoreStartup();
 
+  let mReduxStore,myMiroirContext;
   if (process.env.NODE_ENV === "development") {
-    const mswWorker = setupWorker(...mServer.handlers);
+
+    const {mServer, worker, reduxStore, dataController, domainController, miroirContext} = createMswStore(
+      miroirConfig.rootApiUrl,
+      window.fetch.bind(window),
+      setupWorker
+    );
+    mReduxStore = reduxStore;
+    myMiroirContext = miroirContext;
+
+    // const mswWorker = setupWorker(...mServer.handlers);
     console.log('##############################################');
-    mswWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
+    worker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
     console.log('##############################################');
-    await mswWorker.start();
+    await worker.start();
+    await mServer.createObjectStore(["Entity", "Instance", "Report"]);
+    await mServer.localIndexedDb.putValue("Entity", entityEntity);
+    await mServer.localIndexedDb.putValue("Entity", entityReport);
+    dataController.loadConfigurationFromRemoteDataStore();
+    domainController.handleDomainAction({
+      actionName:'create',
+      objects:[{entity:'Report',instances:[reportEntityList]}]
+    })
+  
+    dataController.loadConfigurationFromRemoteDataStore();
   }
 
-  const client: RestClient = new RestClient(window.fetch);
-  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
-  const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(
-    miroirConfig.rootApiUrl,
-    remoteStoreNetworkRestClient
-  );
-
-  const mReduxStore: ReduxStore = new ReduxStore(instanceSagas);
-  mReduxStore.run();
-
-  const miroirContext = new MiroirContext();
-
-  const dataController: DataControllerInterface = new DataStoreController(miroirContext, mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
-  const domainController:DomainActionInterface = new DomainController(dataController);
-
-  dataController.loadConfigurationFromRemoteDataStore();
-
-  domainController.handleDomainAction({
-    actionName:'create',
-    // entityName:'Report',
-    objects:[{entity:'Report',instances:[reportEntityList]}]
-  })
-
-  dataController.loadConfigurationFromRemoteDataStore();
-
-  // dataController.handleRemoteStoreAction({
-  //   actionName:'create',
-  //   entityName:'Report',
-  //   objects:[reportEntityList]
-  // })
   root.render(
     <Provider store={mReduxStore.getInnerStore()}>
       <div>
         {/* <h1>Miroir standalone demo app {uuidv4()}</h1> */}
         <h1>Miroir standalone demo app</h1>
         <Container maxWidth="xl">
-          <MiroirContextReactProvider miroirContext={miroirContext}>
+          <MiroirContextReactProvider miroirContext={myMiroirContext}>
             <MComponent store={mReduxStore.getInnerStore()} reduxStore={mReduxStore}></MComponent>
           </MiroirContextReactProvider>
         </Container>
