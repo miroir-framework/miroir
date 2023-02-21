@@ -80,8 +80,9 @@ export { miroirCoreStartup } from './startup.js'
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';
 import reportEntityList from './assets/reports/entityList.json';
+import reportReportList from './assets/reports/ReportList.json';
 
-export {entityEntity, entityReport, reportEntityList}
+export {entityEntity, entityReport, reportEntityList, reportReportList}
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport

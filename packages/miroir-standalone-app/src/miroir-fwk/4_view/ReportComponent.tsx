@@ -41,7 +41,7 @@ export const ReportComponent = (
                 )
               }
               // rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
-              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
+              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities,miroirReports)}
               // columnDefs={[{"headerName": "name", "field": "name"}]}
               // rowData={[{name:'toto'}]}
             >

@@ -87,10 +87,12 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
-    return this.innerReduxStore.dispatch(
+  async handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
+    const result:Promise<RemoteStoreActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
       this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
     )
+    console.log("handleRemoteStoreAction", action, "returned", result)
+    return Promise.resolve(result);
   }
 
   // ###############################################################################

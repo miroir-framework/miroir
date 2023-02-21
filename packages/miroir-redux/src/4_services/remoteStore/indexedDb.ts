@@ -20,6 +20,10 @@ export class IndexedDb {
     return this.db?.open();
   }
 
+  public async clearObjectStore() {
+    return this.db?.clear();
+  }
+
 
   public async createObjectStore(tableNames: string[]):Promise<Level> {
     const createSubLevels = () => new Map<string, any>(

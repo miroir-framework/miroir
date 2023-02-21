@@ -2,31 +2,19 @@ import { Container } from "@mui/material";
 import { setupWorker } from "msw";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import { v4 as uuidv4 } from 'uuid';
 
 import {
-  DataControllerInterface,
-  DataStoreController,
-  DomainActionInterface,
-  DomainController,
   entityEntity,
-  entityReport,
-  MiroirContext,
-  miroirCoreStartup,
-  reportEntityList,
-  RestClient,
+  entityReport, miroirCoreStartup,
+  reportEntityList,reportReportList
 } from "miroir-core";
-import { 
-  IndexedDbObjectStore, 
-  InstanceRemoteAccessReduxSaga, 
-  ReduxStore, 
-  RemoteStoreNetworkRestClient 
-} from "miroir-redux";
 
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
-import { miroirAppStartup } from "startup";
 import { createMswStore } from "miroir-fwk/createStore";
+import { miroirAppStartup } from "startup";
 
 console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById("root");
@@ -59,6 +47,7 @@ async function start() {
     await mServer.createObjectStore(["Entity", "Instance", "Report"]);
     await mServer.localIndexedDb.putValue("Entity", entityEntity);
     await mServer.localIndexedDb.putValue("Entity", entityReport);
+    await mServer.localIndexedDb.putValue("Report", reportReportList);
     dataController.loadConfigurationFromRemoteDataStore();
     domainController.handleDomainAction({
       actionName:'create',
@@ -71,8 +60,8 @@ async function start() {
   root.render(
     <Provider store={mReduxStore.getInnerStore()}>
       <div>
-        {/* <h1>Miroir standalone demo app {uuidv4()}</h1> */}
-        <h1>Miroir standalone demo app</h1>
+        <h1>Miroir standalone demo app {uuidv4()}</h1>
+        {/* <h1>Miroir standalone demo app</h1> */}
         <Container maxWidth="xl">
           <MiroirContextReactProvider miroirContext={myMiroirContext}>
             <MComponent store={mReduxStore.getInnerStore()} reduxStore={mReduxStore}></MComponent>

@@ -33,7 +33,11 @@ export class DataController implements DataControllerInterface {
   }
 
   //####################################################################################
-  public async loadConfigurationFromRemoteDataStore() {
+  /**
+   * performs remote update before local update, so that whenever remote update fails, local value is not modified (going into the "catch").
+   * @returns undefined when loading is finished
+   */
+  public async loadConfigurationFromRemoteDataStore():Promise<void> {
     try {
       const entities: InstanceCollection = (await throwExceptionIfError(
         this.miroirContext.errorLogService,
@@ -72,7 +76,7 @@ export class DataController implements DataControllerInterface {
           objects: instances
         } as DomainAction
       );
-      return;
+      return Promise.resolve();
     } catch (error) {
       console.warn("DataStoreController loadConfigurationFromRemoteDataStore", error);
     }

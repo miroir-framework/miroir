@@ -1,0 +1,10 @@
+{
+  "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+  "entity":"Report",
+  "name":"ReportList",
+  "defaultLabel": "List of Reports",
+  "type": "list",
+  "definition": {
+    "entity": "Report"
+  }
+}

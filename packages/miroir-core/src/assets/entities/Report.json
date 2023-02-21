@@ -30,9 +30,9 @@
   [
     {
       "id": 1,
-      "name": "id",
-      "defaultLabel": "id",
-      "type": "integer",
+      "name": "uuid",
+      "defaultLabel": "uuid",
+      "type": "string",
       "nullable": false,
       "editable": false
     },
@@ -46,14 +46,6 @@
     },
     {
         "id": 3,
-        "name": "description",
-        "defaultLabel": "Description",
-        "type": "string",
-        "nullable": true,
-        "editable": true
-    },
-    {
-        "id": 4,
         "name": "definition",
         "defaultLabel": "Definition",
         "type": "object",

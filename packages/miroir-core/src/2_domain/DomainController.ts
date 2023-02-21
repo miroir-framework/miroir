@@ -1,4 +1,3 @@
-import { InstanceCollection } from "../0_interfaces/1_core/Instance";
 import { CRUDActionName, CRUDActionNamesArray, DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface";
 import { DomainActionInterface } from "../0_interfaces/2_domain/instanceDomainInterface";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface";
@@ -15,13 +14,14 @@ export class DomainController implements DomainActionInterface {
 
   }
 
-  handleDomainAction(domainAction:DomainAction){
+  async handleDomainAction(domainAction:DomainAction){
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
-      domainAction.objects.forEach(
-        (instances:InstanceCollection) => {
+      // domainAction.objects.forEach(
+        for (const instances of domainAction.objects) {
+        // async (instances:InstanceCollection) => {
           console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction handling instances',instances);
-          this.dataController.handleRemoteStoreAction({
+          await this.dataController.handleRemoteStoreAction({
             // actionName: domainActionToCRUDAction(domainAction.actionName),
             actionName: domainAction.actionName.toString() as CRUDActionName,
             entityName: instances.entity,
@@ -35,10 +35,13 @@ export class DomainController implements DomainActionInterface {
             // }
           );
         }
-      );
+
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction end',domainAction);
+
     } else {
       console.warn('DomainController handleDomainAction',domainAction);
     }
+    return Promise.resolve()
   };
 
 }

@@ -5,7 +5,7 @@ import {
   DomainController, MiroirContext, RestClient
 } from "miroir-core";
 import {
-  IndexedDbObjectStore,
+  IndexedDbRestServer,
   InstanceRemoteAccessReduxSaga,
   ReduxStore,
   RemoteStoreNetworkRestClient,
@@ -17,7 +17,7 @@ export function createMswStore(
   fetch:(input: RequestInfo | URL, init?: RequestInit)=> Promise<Response>,
   createWorkerFromHandlers:(...handlers)=>any
 ) {
-  const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(rootApiUrl);
+  const mServer: IndexedDbRestServer = new IndexedDbRestServer(rootApiUrl);
   // const worker = setupServer(...mServer.handlers);
   const worker = createWorkerFromHandlers(...mServer.handlers);
 

@@ -1,5 +1,5 @@
 export { IndexedDb } from "./4_services/remoteStore/indexedDb";
-export { IndexedDbRestServer as IndexedDbObjectStore } from "./4_services/remoteStore/IndexedDbRestServer";
+export { IndexedDbRestServer } from "./4_services/remoteStore/IndexedDbRestServer";
 export {
   InstanceAction,
   InstanceSlice,

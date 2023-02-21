@@ -73,6 +73,19 @@ export class IndexedDbRestServer {
         console.log("server " + entityName + "put first object of", addedObjects);
         return res(ctx.json(addedObjects[0]));
       }),
+      rest.delete(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
+        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
+        console.log('delete', entityName+" started #####################################");
+        
+        const addedObjects:any[] = await req.json();
+        // const localData = await this.localIndexedDb.getAllValue("Entity");
+        for(const o of addedObjects) {
+          const localData = await this.localIndexedDb.deleteValue(entityName,o['uuid']);
+        }
+        // const localData = await this.localIndexedDb.deleteValue(entityName,addedObjects[0]);
+        console.log("server " + entityName + "deleted objects of", addedObjects);
+        return res(ctx.json(addedObjects.map(o=>o['uuid'])));
+      }),
       // rest.get(this.rootApiUrl + "/" + "Report/all", async (req, res, ctx) => {
       //   const localData = await this.localIndexedDb.getAllValue("Report");
       //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(localData));
@@ -93,5 +106,10 @@ export class IndexedDbRestServer {
   // ##################################################################################
   public async openObjectStore() {
     return this.localIndexedDb.openObjectStore();
+  }
+
+  // ##################################################################################
+  public async clearObjectStore() {
+    return this.localIndexedDb.clearObjectStore();
   }
 }
