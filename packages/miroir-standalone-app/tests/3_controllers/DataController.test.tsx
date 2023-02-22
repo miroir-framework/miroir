@@ -17,7 +17,7 @@ global.TextDecoder = TextDecoder
 
 import {
   entityEntity,
-  entityReport, miroirCoreStartup,
+  entityReport, Instance, miroirCoreStartup,
   reportEntityList,
   reportReportList
 } from "miroir-core";
@@ -49,250 +49,371 @@ afterAll(
   }
 )
 
-// ###########################################################################################
-it(
-  'DataController: Refresh all Entity definitions',
-  async () => {
-    console.log('Refresh all Entity definitions start');
-    const displayLoadingInfo=<DisplayLoadingInfo/>
-    const user = userEvent.setup()
-
-    await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.localIndexedDb.putValue("Entity",entityReport);
-    await mServer.localIndexedDb.putValue("Entity",entityEntity);
-    await mServer.localIndexedDb.putValue("Report",reportEntityList);
-
-    const {
-      getByText,
-      getAllByRole,
-      // container
-    } = renderWithProviders(
-      <TestUtilsTableComponent
-        entityName="Entity"
-        DisplayLoadingInfo={displayLoadingInfo}
-      />
-      ,
-      {store:reduxStore.getInnerStore()}
-    );
-
-    await act(
+describe(
+  'DataController',
+  () => {
+    // ###########################################################################################
+    it(
+      'Refresh all Entity definitions',
       async () => {
-        await dataController.loadConfigurationFromRemoteDataStore();
+        console.log('Refresh all Entity definitions start');
+        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const user = userEvent.setup()
+
+        await mServer.createObjectStore(["Entity","Instance","Report"]);
+        await mServer.localIndexedDb.putValue("Entity",entityReport);
+        await mServer.localIndexedDb.putValue("Entity",entityEntity);
+        await mServer.localIndexedDb.putValue("Report",reportEntityList);
+
+        const {
+          getByText,
+          getAllByRole,
+          // container
+        } = renderWithProviders(
+          <TestUtilsTableComponent
+            entityName="Entity"
+            DisplayLoadingInfo={displayLoadingInfo}
+          />
+          ,
+          {store:reduxStore.getInnerStore()}
+        );
+
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByRole(/step:1/)
+          },
+        ).then(
+          ()=> {
+            expect(getByText(/952d2c65-4da2-45c2-9394-a0920ceedfb6/i)).toBeTruthy() // Report
+            expect(getByText(/bdd7ad43-f0fc-4716-90c1-87454c40dd95/i)).toBeTruthy() // Entity
+          }
+        );
       }
-    );
+    )
 
-    await user.click(screen.getByRole('button'))
-
-    await waitFor(
-      () => {
-        getAllByRole(/step:1/)
-      },
-    ).then(
-      ()=> {
-        expect(getByText(/952d2c65-4da2-45c2-9394-a0920ceedfb6/i)).toBeTruthy() // Report
-        expect(getByText(/bdd7ad43-f0fc-4716-90c1-87454c40dd95/i)).toBeTruthy() // Entity
-      }
-    );
-  }
-)
-
-// ###########################################################################################
-it(
-  'DataController: add Report definition',
-  async () => {
-    console.log('add Report definition start');
-
-    const displayLoadingInfo=<DisplayLoadingInfo/>
-    const user = userEvent.setup()
-    // const loadingStateService = new LoadingStateService();
-
-    await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.clearObjectStore();
-    await mServer.localIndexedDb.putValue("Entity", entityReport);
-    await mServer.localIndexedDb.putValue("Entity", entityEntity);
-    await mServer.localIndexedDb.putValue("Report", reportReportList);
-    // Entity List Report is not added.
-    // await mServer.localIndexedDb.putValue("Report", reportEntityList);
-
-
-    const {
-      getByText,
-      getAllByRole,
-      container
-    } = renderWithProviders(
-      <TestUtilsTableComponent
-        entityName="Report"
-        DisplayLoadingInfo={displayLoadingInfo}
-      />,
-      {store:reduxStore.getInnerStore(),}
-    );
-
-    // ##########################################################################################################
-    console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
-    await act(
+    // ###########################################################################################
+    it(
+      'Add Report definition',
       async () => {
-        await dataController.loadConfigurationFromRemoteDataStore();
+        console.log('add Report definition start');
+
+        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const user = userEvent.setup()
+        // const loadingStateService = new LoadingStateService();
+
+        await mServer.createObjectStore(["Entity","Instance","Report"]);
+        await mServer.clearObjectStore();
+        await mServer.localIndexedDb.putValue("Entity", entityReport);
+        await mServer.localIndexedDb.putValue("Entity", entityEntity);
+        await mServer.localIndexedDb.putValue("Report", reportReportList);
+        // Entity List Report is not added.
+        // await mServer.localIndexedDb.putValue("Report", reportEntityList);
+
+
+        const {
+          getByText,
+          getAllByRole,
+          container
+        } = renderWithProviders(
+          <TestUtilsTableComponent
+            entityName="Report"
+            DisplayLoadingInfo={displayLoadingInfo}
+          />,
+          {store:reduxStore.getInnerStore(),}
+        );
+
+        // ##########################################################################################################
+        console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByRole(/step:1/)
+          },
+        ).then(
+          ()=> {
+            const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+            // console.log("absentReport", absentReport);
+            expect(absentReport).toBeNull() 
+            // const presentReport = screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i); // Report List
+            expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+            console.log('end test 1')
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('add Report definition step 2: adding reportEntityList, it must then be present in the report list.')
+        await act(
+          async () => {
+            await domainController.handleDomainAction({
+              actionName:'create',
+              objects:[{entity:'Report',instances:[reportEntityList]}]
+            });
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            // getAllByText(container,/finished/)
+            getAllByText(container,/step:2/)
+          },
+        ).then(
+          ()=> {
+            expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
+            expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('add Report definition step 3: refreshing report list from remote store, reportEntityList must still be present in the report list.')
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByText(container,/step:3/)
+          },
+        ).then(
+          ()=> {
+            expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
+            expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+          }
+        );
       }
-    );
+    )
 
-    await user.click(screen.getByRole('button'))
-
-    await waitFor(
-      () => {
-        getAllByRole(/step:1/)
-      },
-    ).then(
-      ()=> {
-        const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-        // console.log("absentReport", absentReport);
-        expect(absentReport).toBeNull() 
-        // const presentReport = screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i); // Report List
-        expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-        console.log('end test 1')
-      }
-    );
-
-    // ##########################################################################################################
-    console.log('add Report definition step 2: adding reportEntityList, it must then be present in the report list.')
-    await act(
+    // ###########################################################################################
+    it(
+      'Remove Report definition',
       async () => {
-        await domainController.handleDomainAction({
-          actionName:'create',
-          objects:[{entity:'Report',instances:[reportEntityList]}]
-        });
+        console.log('remove Report definition start');
+        await mServer.createObjectStore(["Entity","Instance","Report"]);
+        await mServer.clearObjectStore();
+        await mServer.localIndexedDb.putValue("Entity", entityReport);
+        await mServer.localIndexedDb.putValue("Entity", entityEntity);
+        await mServer.localIndexedDb.putValue("Report", reportEntityList);
+        await mServer.localIndexedDb.putValue("Report", reportReportList);
+
+        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const user = userEvent.setup()
+
+        const {
+          getByText,
+          getAllByRole,
+          container
+        } = renderWithProviders(
+            <TestUtilsTableComponent
+              entityName="Report"
+              DisplayLoadingInfo={displayLoadingInfo}
+            />,
+          {store:reduxStore.getInnerStore()}
+          // {store:reduxStore.getInnerStore(),loadingStateService:loadingStateService}
+        );
+
+        // ##########################################################################################################
+        console.log('remove Report definition step  1: refreshing report list from remote store, reportEntityList must still be present in the report list.')
+
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByText(container,/step:1/)
+          },
+        ).then(
+          ()=> {
+            expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
+            expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
+        await act(
+          async () => {
+            await domainController.handleDomainAction({
+              actionName:'delete',
+              objects:[{entity:'Report',instances:[reportEntityList]}]
+            });
+          }
+        );
+        
+        await user.click(screen.getByRole('button'))
+        await waitFor(
+          () => {
+            getAllByText(container,/step:2/)
+          },
+        ).then(
+          ()=> {
+            const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+            // console.log("absentReport", absentReport);
+            expect(absentReport).toBeNull()
+            expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('remove Report definition step 3: refreshing local store from remote store, reportEntityList must still be absent from the report list.')
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+        await user.click(screen.getByRole('button'))
+        await waitFor(
+          () => {
+            getAllByText(container,/step:3/)
+          },
+        ).then(
+          ()=> {
+            const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+            expect(absentReport).toBeNull()
+            expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+          }
+        );
       }
-    );
+    )
 
-    await user.click(screen.getByRole('button'))
-
-    await waitFor(
-      () => {
-        // getAllByText(container,/finished/)
-        getAllByText(container,/step:2/)
-      },
-    ).then(
-      ()=> {
-        expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-        expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-      }
-    );
-
-    // ##########################################################################################################
-    console.log('add Report definition step 3: refreshing report list from remote store, reportEntityList must still be present in the report list.')
-    await act(
+    // ###########################################################################################
+    it(
+      'Update Report definition',
       async () => {
-        await dataController.loadConfigurationFromRemoteDataStore();
+        console.log('update Report definition start');
+
+        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const user = userEvent.setup()
+        // const loadingStateService = new LoadingStateService();
+
+        await mServer.createObjectStore(["Entity","Instance","Report"]);
+        await mServer.clearObjectStore();
+        await mServer.localIndexedDb.putValue("Entity", entityReport);
+        await mServer.localIndexedDb.putValue("Entity", entityEntity);
+        await mServer.localIndexedDb.putValue("Report", reportReportList);
+        // Entity List Report is not added.
+        // await mServer.localIndexedDb.putValue("Report", reportEntityList);
+
+
+        const {
+          getByText,
+          getAllByRole,
+          container
+        } = renderWithProviders(
+          <TestUtilsTableComponent
+            entityName="Report"
+            DisplayLoadingInfo={displayLoadingInfo}
+          />,
+          {store:reduxStore.getInnerStore(),}
+        );
+
+        // ##########################################################################################################
+        console.log('Update Report definition step 1: loading initial configuration, reportEntityList must be present in report list.')
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByRole(/step:1/)
+          },
+        ).then(
+          ()=> {
+            // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+            // // console.log("absentReport", absentReport);
+            // expect(absentReport).toBeNull() 
+            // const presentReport = screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i); // Report List
+            expect(screen.queryByText(/ReportList/i)).toBeTruthy() // Report List
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+        await act(
+          async () => {
+            await domainController.handleDomainAction({
+              actionName: "update",
+              objects: [
+                {
+                  entity: "Report",
+                  instances: [
+                    {
+                      "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                      "entity":"Report",
+                      "name":"Report2List",
+                      "defaultLabel": "List of Reports",
+                      "type": "list",
+                      "definition": {
+                        "entity": "Report"
+                      }
+                    } as Instance,
+                  ],
+                },
+              ],
+            });
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByRole(/step:2/)
+          },
+        ).then(
+          ()=> {
+            expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+          }
+        );
+
+        // ##########################################################################################################
+        console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
+        await act(
+          async () => {
+            await dataController.loadConfigurationFromRemoteDataStore();
+          }
+        );
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(
+          () => {
+            getAllByText(container,/step:3/)
+          },
+        ).then(
+          ()=> {
+            expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+          }
+        );
       }
-    );
-
-    await user.click(screen.getByRole('button'))
-
-    await waitFor(
-      () => {
-        getAllByText(container,/step:3/)
-      },
-    ).then(
-      ()=> {
-        expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-        expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-      }
-    );
-  }
-)
-
-// ###########################################################################################
-it(
-  'DataController: remove Report definition',
-  async () => {
-    console.log('remove Report definition start');
-    await mServer.createObjectStore(["Entity","Instance","Report"]);
-    await mServer.clearObjectStore();
-    await mServer.localIndexedDb.putValue("Entity", entityReport);
-    await mServer.localIndexedDb.putValue("Entity", entityEntity);
-    await mServer.localIndexedDb.putValue("Report", reportEntityList);
-    await mServer.localIndexedDb.putValue("Report", reportReportList);
-
-    const displayLoadingInfo=<DisplayLoadingInfo/>
-    const user = userEvent.setup()
-
-    const {
-      getByText,
-      getAllByRole,
-      container
-    } = renderWithProviders(
-        <TestUtilsTableComponent
-          entityName="Report"
-          DisplayLoadingInfo={displayLoadingInfo}
-        />,
-      {store:reduxStore.getInnerStore()}
-      // {store:reduxStore.getInnerStore(),loadingStateService:loadingStateService}
-    );
-
-    // ##########################################################################################################
-    console.log('remove Report definition step  1: refreshing report list from remote store, reportEntityList must still be present in the report list.')
-
-    await act(
-      async () => {
-        await dataController.loadConfigurationFromRemoteDataStore();
-      }
-    );
-    await user.click(screen.getByRole('button'))
-
-    await waitFor(
-      () => {
-        getAllByText(container,/step:1/)
-      },
-    ).then(
-      ()=> {
-        expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-        expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-      }
-    );
-
-    // ##########################################################################################################
-    console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
-    await act(
-      async () => {
-        await domainController.handleDomainAction({
-          actionName:'delete',
-          objects:[{entity:'Report',instances:[reportEntityList]}]
-        });
-      }
-    );
+    )
     
-    await user.click(screen.getByRole('button'))
-    await waitFor(
-      () => {
-        getAllByText(container,/step:2/)
-      },
-    ).then(
-      ()=> {
-        const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-        // console.log("absentReport", absentReport);
-        expect(absentReport).toBeNull()
-        expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-      }
-    );
-
-    // ##########################################################################################################
-    console.log('remove Report definition step 3: refreshing local store from remote store, reportEntityList must still be absent from the report list.')
-    await act(
-      async () => {
-        await dataController.loadConfigurationFromRemoteDataStore();
-      }
-    );
-    await user.click(screen.getByRole('button'))
-    await waitFor(
-      () => {
-        getAllByText(container,/step:3/)
-      },
-    ).then(
-      ()=> {
-        const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-        expect(absentReport).toBeNull()
-        expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-      }
-    );
-
-  }
+  }  
 )
