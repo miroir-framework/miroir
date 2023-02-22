@@ -14,7 +14,7 @@ export class DomainController implements DomainActionInterface {
 
   }
 
-  async handleDomainAction(domainAction:DomainAction){
+  async handleDomainAction(domainAction:DomainAction):Promise<void>{
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
       // domainAction.objects.forEach(

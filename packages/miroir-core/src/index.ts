@@ -63,7 +63,7 @@ export { DomainController } from './2_domain/DomainController'
 
 export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
 
-export {DataController as DataStoreController} from './3_controllers/DataController.js'
+export {DataController} from './3_controllers/DataController.js'
 
 export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
 

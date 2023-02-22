@@ -17,7 +17,7 @@ const fetch = require('node-fetch');
 
 import {
   DataControllerInterface,
-  DataStoreController,
+  DataController,
   DomainActionInterface,
   DomainController,
   entityEntity,
@@ -61,7 +61,7 @@ mReduxStore.run();
 
 const miroirContext = new MiroirContext();
 
-const dataController: DataControllerInterface = new DataStoreController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
+const dataController: DataControllerInterface = new DataController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
 const domainController:DomainActionInterface = new DomainController(dataController);
 
 // Enable API mocking before tests.

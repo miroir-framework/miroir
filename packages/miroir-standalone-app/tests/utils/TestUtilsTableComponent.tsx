@@ -4,10 +4,11 @@ import { useSelector } from 'react-redux';
 
 import { EntityDefinition, MiroirReport } from 'miroir-core';
 import { selectInstancesForEntity } from "miroir-redux";
-import { useLoadingStateServiceHook } from "./tests-utils";
+import { LoadingStateInterface } from "./tests-utils";
 
 export interface MiroirReportComponentProps {
   entityName: string;
+  DisplayLoadingInfo:JSX.Element;
 };
 
 export const TestUtilsTableComponent = (
@@ -15,7 +16,7 @@ export const TestUtilsTableComponent = (
 ) => {
   const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))
   const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
-  const a = useLoadingStateServiceHook();
+  // const loadingState:LoadingStateInterface = useLoadingStateServiceHook();
   const entityInstances = {
     Entity: miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [],
     Report:miroirReportsState?.entities ? Object.values(miroirReportsState.entities) : [],
@@ -32,15 +33,13 @@ export const TestUtilsTableComponent = (
 
   return (
     <div>
-      <span>
-        loaded: {a?'finished':'not'}
-      </span>
       {/* <span>
         fin: 
         {
         entityInstances['Report']?.length == 2?'finished':''
         }
       </span> */}
+      {props.DisplayLoadingInfo}
       {entityInstances[props.entityName]?.length > 0 && !!currentEntityDefinition? (
         <div>
           <table>

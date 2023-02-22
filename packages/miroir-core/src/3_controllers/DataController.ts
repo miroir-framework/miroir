@@ -49,11 +49,11 @@ export class DataController implements DataControllerInterface {
           entityName:'Entity'
         } as RemoteStoreAction
       ))[0];
-      console.log("DataStoreController loadConfigurationFromRemoteDataStore found entities", entities);
+      console.log("DataController loadConfigurationFromRemoteDataStore found entities", entities);
 
       let instances: InstanceCollection[] = []; //TODO: replace with functional implementation
       for (const e of entities.instances) { // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
-        console.log("DataStoreController loadConfigurationFromRemoteDataStore loading instances for entity", e['name']);
+        console.log("DataController loadConfigurationFromRemoteDataStore loading instances for entity", e['name']);
         const entityInstances:InstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
           // this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,
@@ -64,11 +64,11 @@ export class DataController implements DataControllerInterface {
             entityName:e['name'],
           } as RemoteStoreAction
         );
-        console.log("DataStoreController loadConfigurationFromRemoteDataStore found instances for entity", e['name'], entityInstances);
+        console.log("DataController loadConfigurationFromRemoteDataStore found instances for entity", e['name'], entityInstances);
         instances.push(entityInstances[0]);
       }
-
-      console.log("DataStoreController loadConfigurationFromRemoteDataStore instances", instances);
+      
+      console.log("DataController loadConfigurationFromRemoteDataStore instances", instances);
       this.localStore.handleLocalCacheAction(
         {
           actionName: "replace",
@@ -78,7 +78,7 @@ export class DataController implements DataControllerInterface {
       );
       return Promise.resolve();
     } catch (error) {
-      console.warn("DataStoreController loadConfigurationFromRemoteDataStore", error);
+      console.warn("DataController loadConfigurationFromRemoteDataStore", error);
     }
   }
 }
