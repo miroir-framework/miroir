@@ -1,47 +1,46 @@
 export { IndexedDb } from "./4_services/remoteStore/indexedDb";
 export { IndexedDbRestServer } from "./4_services/remoteStore/IndexedDbRestServer";
 export {
-  InstanceAction,
-  InstanceSlice,
-  InstanceSliceObject,
-  InstanceSliceState,
+  // LocalCacheSlice,
+  // localCacheSliceObject,
+  // LocalCacheSliceState,
   getPromiseActionStoreActionNames,
-  instanceSliceGeneratedActionNames,
-  instanceSliceInputActionNames,
-  instanceSliceInputActionNamesKey,
-  instanceSliceInputActionNamesObject,
-  instanceSliceInputActionNamesObjectTuple,
-  instanceSliceInputFullActionNames,
+  // localCacheSliceGeneratedActionNames,
+  // localCacheSliceInputActionNames,
+  // LocalCacheSliceInputActionNamesKey,
+  // localCacheSliceInputActionNamesObject,
+  // LocalCacheSliceInputActionNamesObjectTuple,
+  // localCacheSliceInputFullActionNames,
   selectInstancesForEntity,
   selectMiroirEntityInstances,
-} from "./4_services/localStore/InstanceReduxSlice";
+} from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
   DeploymentModes,
   InnerReducerInterface,
   InnerStoreStateInterface,
-  ReduxReducerWithUndoRedo,
+  ReduxReducerWithUndoRedoInterface as ReduxReducerWithUndoRedo,
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   createUndoRedoReducer,
-  makeActionUpdatesUndoable,
+  // makeActionUpdatesUndoable,
   reduxStoreWithUndoRedoGetInitialState,
   storageKind,
   undoRedoHistorization,
-} from "./4_services/localStore/UndoRedoReducer";
+} from "./4_services/localStore/LocalCacheSliceUndoRedoReducer";
 export {
-  InstanceRemoteAccessReduxSaga,
-  InstanceSagaAction,
-  InstanceSagaEntitiesActionPayload,
-  InstanceSagaStringActionPayload,
-  SagaGenReturnType,
-  instanceSagaGeneratedActionNames,
-  instanceSagaInputActionName,
-  instanceSagaInputActionNamesArray,
-  instanceSagaOutputActionNames,
-  instanceSagaOutputActionTypeString,
-} from "./4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+  RemoteStoreAccessReduxSaga,
+  // InstanceSagaAction,
+  // InstanceSagaEntitiesActionPayload,
+  // InstanceSagaStringActionPayload,
+  RemoteStoreSagaGenReturnType,
+  // RemoteStoreSagaGeneratedActionNames,
+  // RemoteStoreSagaInputActionName,
+  // RemoteStoreSagaInputActionNamesArray,
+  // RemoteStoreSagaOutputActionNames,
+  // RemoteStoreSagaOutputActionTypeString,
+} from "./4_services/remoteStore/RemoteStoreAccessSaga";
 export { ReduxStore } from "./4_services/ReduxStore";
 export { RemoteStoreNetworkRestClient } from "./4_services/remoteStore/RemoteStoreNetworkRestClient";

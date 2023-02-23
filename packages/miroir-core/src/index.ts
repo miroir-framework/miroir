@@ -1,8 +1,4 @@
 export {
-  DomainActionInterface,
-} from './0_interfaces/2_domain/instanceDomainInterface.js';
-
-export {
   CRUDActionName,
   CRUDActionNamesArray,
   CRUDActionNamesObject,
@@ -10,7 +6,8 @@ export {
   DomainActionName,
   domainActionNamesArray,
   domainActionNamesObject,
-} from './0_interfaces/2_domain/DomainLanguageInterface.js';
+  DomainControllerInterface,
+} from './0_interfaces/2_domain/DomainControllerInterface.js';
 
 export {
   EntityAttribute,
@@ -40,8 +37,8 @@ export {
 
 export {
   LocalCacheAction,
-  LocalStoreInterface,
-} from './0_interfaces/4-services/localStore/LocalStoreInterface.js';
+  LocalCacheInterface,
+} from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 
 export {
   RemoteStoreAction,

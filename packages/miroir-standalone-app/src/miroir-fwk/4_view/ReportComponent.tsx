@@ -1,5 +1,5 @@
 import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from "miroir-core";
-import { useLocalStoreEntities, useLocalStoreReports } from "miroir-fwk/4_view/selectors";
+import { useLocalCacheEntities, useLocalCacheReports } from "miroir-fwk/4_view/selectors";
 import * as React from "react";
 
 // import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from 'miroir-core';
@@ -14,8 +14,8 @@ export const ReportComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const miroirReports = [1];
-  const miroirEntities:EntityDefinition [] = useLocalStoreEntities();
-  const miroirReports:MiroirReport[] = useLocalStoreReports();
+  const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
+  const miroirReports:MiroirReport[] = useLocalCacheReports();
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)

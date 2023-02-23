@@ -1,5 +1,4 @@
-import { CRUDActionName, CRUDActionNamesArray, DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface";
-import { DomainActionInterface } from "../0_interfaces/2_domain/instanceDomainInterface";
+import { CRUDActionName, CRUDActionNamesArray, DomainAction, DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface";
 
 /**
@@ -7,32 +6,29 @@ import { DataControllerInterface } from "../0_interfaces/3_controllers/DataContr
  * application: entities, reports, reducers, users, etc.
  * example: get the list of reports accessible by a given user.
  */
-export class DomainController implements DomainActionInterface {
+export class DomainController implements DomainControllerInterface {
   constructor(
     private dataController: DataControllerInterface
   ){
 
   }
 
+  currentTransaction():any[]{
+    return this.dataController.currentLocalCacheTransaction();
+  };
+
   async handleDomainAction(domainAction:DomainAction):Promise<void>{
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
-      // domainAction.objects.forEach(
-        for (const instances of domainAction.objects) {
-        // async (instances:InstanceCollection) => {
+        for (const instances of domainAction.objects) { // TODO: replace with parallel implementation Promise.all?
           console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction handling instances',instances);
           await this.dataController.handleRemoteStoreAction({
-            // actionName: domainActionToCRUDAction(domainAction.actionName),
             actionName: domainAction.actionName.toString() as CRUDActionName,
             entityName: instances.entity,
             objects: instances.instances
           });
           this.dataController.handleLocalCacheAction(
             domainAction
-            // {
-            //   actionName: domainActionToCRUDAction(action.actionName),
-            //   objects: instances
-            // }
           );
         }
 

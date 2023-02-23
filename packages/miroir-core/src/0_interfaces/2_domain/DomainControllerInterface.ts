@@ -1,4 +1,4 @@
-import { InstanceCollection } from "../../0_interfaces/1_core/Instance.js";
+import { InstanceCollection } from "../1_core/Instance.js";
 
 export const CRUDActionNamesObject = {
   'create': 'create',
@@ -29,4 +29,9 @@ export interface DomainAction {
   // entityName?: string;
   uuid?:string;
   objects?:InstanceCollection[];
+}
+
+export interface DomainControllerInterface {
+  handleDomainAction(action:DomainAction):Promise<void>;
+  currentTransaction():any[];
 }

@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { CombinedState, combineReducers, configureStore, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
@@ -7,25 +7,28 @@ import { all } from 'redux-saga/effects';
 
 import {
   LocalCacheAction,
-  LocalStoreInterface,
+  LocalCacheInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
   RemoteStoreActionReturnType
 } from "miroir-core";
 import {
-  InstanceSlice,
-  instanceSliceGeneratedActionNames,
-  instanceSliceInputActionNamesObject
-} from "src/4_services/localStore/InstanceReduxSlice";
+  LocalCacheSlice,
+  localCacheSliceGeneratedActionNames,
+  localCacheSliceInputActionNamesObject,
+  LocalCacheSliceState
+} from "src/4_services/localStore/LocalCacheSlice";
 import {
   createUndoRedoReducer,
-  ReduxReducerWithUndoRedo,
+  InnerStoreStateInterface,
+  ReduxReducerWithUndoRedoInterface,
+  ReduxStateChanges,
   ReduxStoreWithUndoRedo
-} from "src/4_services/localStore/UndoRedoReducer";
-import InstanceRemoteAccessReduxSaga, {
-  instanceSagaGeneratedActionNames,
-  instanceSagaInputActionNamesArray
-} from "src/4_services/remoteStore/InstanceRemoteAccessReduxSaga";
+} from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
+import RemoteStoreAccessReduxSaga, {
+  RemoteStoreSagaGeneratedActionNames,
+  RemoteStoreSagaInputActionNamesArray
+} from "src/4_services/remoteStore/RemoteStoreAccessSaga";
 
 
 // ###############################################################################
@@ -33,30 +36,32 @@ import InstanceRemoteAccessReduxSaga, {
  * Local store implementation using Redux.
  * 
  */
-export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface {
+export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface {
   private innerReduxStore: ReduxStoreWithUndoRedo;
-  private staticReducers: ReduxReducerWithUndoRedo;
+  private staticReducers: ReduxReducerWithUndoRedoInterface;
   private sagaMiddleware: any;
 
   // ###############################################################################
   constructor(
     // public entityRemoteAccessReduxSaga: EntityRemoteAccessReduxSaga,
-    public instanceRemoteAccessReduxSaga: InstanceRemoteAccessReduxSaga
+    public RemoteStoreAccessReduxSaga: RemoteStoreAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
-      combineReducers(
+      combineReducers<InnerStoreStateInterface,PayloadAction<LocalCacheAction>>(
+      // combineReducers(
         {
-          miroirInstances: InstanceSlice.reducer,
+          miroirInstances: LocalCacheSlice.reducer,
         }
-      )
+      ) 
+      // ) as Reducer<CombinedState<InnerStoreStateInterface>, PayloadAction<LocalCacheAction>>
     );
 
     this.sagaMiddleware = sagaMiddleware();
 
     const ignoredActionsList = [
-      ...instanceSagaInputActionNamesArray,
-      ...instanceSagaGeneratedActionNames,
-      ...instanceSliceGeneratedActionNames,
+      ...RemoteStoreSagaInputActionNamesArray,
+      ...RemoteStoreSagaGeneratedActionNames,
+      ...localCacheSliceGeneratedActionNames,
     ];
 
     console.log('ReduxStore ignoredActionsList',ignoredActionsList);
@@ -89,7 +94,7 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   // ###############################################################################
   async handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
     const result:Promise<RemoteStoreActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.instanceRemoteAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
+      this.RemoteStoreAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
     )
     console.log("handleRemoteStoreAction", action, "returned", result)
     return Promise.resolve(result);
@@ -98,16 +103,22 @@ export class ReduxStore implements LocalStoreInterface, RemoteDataStoreInterface
   // ###############################################################################
   handleLocalCacheAction(action:LocalCacheAction) {
     this.innerReduxStore.dispatch(
-      InstanceSlice.actionCreators[instanceSliceInputActionNamesObject.handleLocalCacheAction](action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
     );
+  }
+
+  // ###############################################################################
+  currentTransaction():ReduxStateChanges[]{
+    console.log("ReduxStore currentTransaction called");
+    return this.innerReduxStore.getState().pastModelPatches;
   }
 
   // ###############################################################################
   private *rootSaga(
   ) {
-    console.log("ReduxStore rootSaga running", this.instanceRemoteAccessReduxSaga);
+    console.log("ReduxStore rootSaga running", this.RemoteStoreAccessReduxSaga);
     yield all([
-      this.instanceRemoteAccessReduxSaga.instanceRootSaga.bind(this.instanceRemoteAccessReduxSaga)(),
+      this.RemoteStoreAccessReduxSaga.instanceRootSaga.bind(this.RemoteStoreAccessReduxSaga)(),
     ]);
   }
 }

@@ -1,7 +1,7 @@
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DomainAction } from "../0_interfaces/2_domain/DomainLanguageInterface.js";
+import { DomainAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
-import { LocalCacheAction, LocalStoreInterface } from "../0_interfaces/4-services/localStore/LocalStoreInterface.js";
+import { LocalCacheAction, LocalCacheInterface } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 import { MiroirContextInterface } from "./MiroirContext.js";
@@ -17,13 +17,13 @@ export class DataController implements DataControllerInterface {
 
   constructor(
     private miroirContext: MiroirContextInterface,
-    private localStore: LocalStoreInterface,
+    private localCache: LocalCacheInterface,
     private remoteStore: RemoteDataStoreInterface,
   ) {}
 
   //####################################################################################
   public async handleLocalCacheAction(action:LocalCacheAction) {
-    return this.localStore.handleLocalCacheAction(action);
+    return this.localCache.handleLocalCacheAction(action);
   }
 
 
@@ -31,6 +31,16 @@ export class DataController implements DataControllerInterface {
   public async handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>{
     return this.remoteStore.handleRemoteStoreAction(action);
   }
+
+  //####################################################################################
+  /**
+   * .
+   * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
+   */
+  currentLocalCacheTransaction():any[]{
+    return this.localCache.currentTransaction();
+  }
+
 
   //####################################################################################
   /**
@@ -69,7 +79,7 @@ export class DataController implements DataControllerInterface {
       }
       
       console.log("DataController loadConfigurationFromRemoteDataStore instances", instances);
-      this.localStore.handleLocalCacheAction(
+      this.localCache.handleLocalCacheAction(
         {
           actionName: "replace",
           // entityName:'Instance',

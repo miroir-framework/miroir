@@ -16,6 +16,7 @@ global.TextDecoder = TextDecoder
 
 
 import {
+  DomainAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
   reportEntityList,
@@ -356,31 +357,35 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+        const updateAcion: DomainAction = {
+          actionName: "update",
+          objects: [
+            {
+              entity: "Report",
+              instances: [
+                {
+                  "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                  "entity":"Report",
+                  "name":"Report2List",
+                  "defaultLabel": "List of Reports",
+                  "type": "list",
+                  "definition": {
+                    "entity": "Report"
+                  }
+                } as Instance,
+              ],
+            },
+          ],
+        };
         await act(
           async () => {
-            await domainController.handleDomainAction({
-              actionName: "update",
-              objects: [
-                {
-                  entity: "Report",
-                  instances: [
-                    {
-                      "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                      "entity":"Report",
-                      "name":"Report2List",
-                      "defaultLabel": "List of Reports",
-                      "type": "list",
-                      "definition": {
-                        "entity": "Report"
-                      }
-                    } as Instance,
-                  ],
-                },
-              ],
-            });
+            await domainController.handleDomainAction(updateAcion);
           }
         );
 
+        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
+
+        expect(domainController.currentTransaction()[0]['action']['payload']).toEqual(updateAcion);
         await user.click(screen.getByRole('button'))
 
         await waitFor(

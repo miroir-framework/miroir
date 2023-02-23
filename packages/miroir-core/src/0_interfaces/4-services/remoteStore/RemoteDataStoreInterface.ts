@@ -1,6 +1,6 @@
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { CRUDActionName } from '../../../0_interfaces/2_domain/DomainLanguageInterface.js';
+import { CRUDActionName } from '../../2_domain/DomainControllerInterface.js';
 
 export interface RemoteStoreAction {
   actionName: CRUDActionName;

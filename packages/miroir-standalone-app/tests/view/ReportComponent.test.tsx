@@ -18,7 +18,7 @@ const fetch = require('node-fetch');
 import {
   DataControllerInterface,
   DataController,
-  DomainActionInterface,
+  DomainControllerInterface,
   DomainController,
   entityEntity,
   entityReport,
@@ -29,7 +29,7 @@ import {
 } from "miroir-core";
 import {
   IndexedDbRestServer,
-  InstanceRemoteAccessReduxSaga,
+  RemoteStoreAccessReduxSaga,
   ReduxStore,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
@@ -54,7 +54,7 @@ const worker = setupServer(...mServer.handlers)
 const client:RestClient = new RestClient(fetch);
 const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
 // const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
-const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
+const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
 const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 mReduxStore.run();
@@ -62,7 +62,7 @@ mReduxStore.run();
 const miroirContext = new MiroirContext();
 
 const dataController: DataControllerInterface = new DataController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
-const domainController:DomainActionInterface = new DomainController(dataController);
+const domainController:DomainControllerInterface = new DomainController(dataController);
 
 // Enable API mocking before tests.
 beforeAll(

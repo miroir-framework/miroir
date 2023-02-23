@@ -6,26 +6,24 @@ import {
   EntityAdapter,
   EntityState,
   PayloadAction,
-  Slice, Update
+  Slice
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
-import { DomainAction, Instance, InstanceCollection, InstanceWithName } from 'miroir-core';
-import { ReduxStateWithUndoRedo } from "src/4_services/localStore/UndoRedoReducer";
+import { Instance, InstanceCollection, LocalCacheAction } from 'miroir-core';
+import { ReduxStateWithUndoRedo } from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
 
-const instanceSliceName:string = "instance";
+export const localCacheSliceName:string = "localCache";
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
-export const instanceSliceInputActionNamesObject = {
+export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheAction: "handleLocalCacheAction",
-  // ReplaceAllInstances: "ReplaceAllInstances",
-  // ReplaceInstancesForEntity: "ReplaceInstancesForEntity",
-  UpdateInstancesForEntity: "UpdateInstancesForEntity",
-  AddInstancesForEntity: "AddInstancesForEntity",
+  // UpdateInstancesForEntity: "UpdateInstancesForEntity",
+  // AddInstancesForEntity: "AddInstancesForEntity",
 };
-export type instanceSliceInputActionNamesObjectTuple = typeof instanceSliceInputActionNamesObject;
-export type instanceSliceInputActionNamesKey = keyof instanceSliceInputActionNamesObjectTuple;
-export const instanceSliceInputActionNames = Object.values(instanceSliceInputActionNamesObject);
-export const instanceSliceInputFullActionNames = Object.values(instanceSliceInputActionNamesObject).map(n=>instanceSliceName+'/'+n);
+export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
+export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;
+export const localCacheSliceInputActionNames = Object.values(localCacheSliceInputActionNamesObject);
+export const localCacheSliceInputFullActionNames = Object.values(localCacheSliceInputActionNamesObject).map(n=>localCacheSliceName+'/'+n); // TODO: use map type?
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
   return promiseActionNames 
@@ -35,23 +33,24 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
   ;
 }
 
-export const instanceSliceGeneratedActionNames = getPromiseActionStoreActionNames(instanceSliceInputActionNames);
+export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNames(localCacheSliceInputActionNames);
 
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
 // instance slice state cannot really be defined statically, since it changes at run-time, depending on the set of defined instances
-export interface InstanceSliceState {
-  [propName: string]: EntityState<any>;
+export interface LocalCacheSliceState {
+  // [propName: string]: EntityState<any>;
+  [propName: string]: EntityState<Instance>;
 }
 
 
-export type InstanceAction = PayloadAction<InstanceCollection>;
+// export type LocalCacheAction = PayloadAction<InstanceCollection>;
 
 //#########################################################################################
 //# Entity Adapter
 //#########################################################################################
-const getSliceEntityAdapter: (
+const getLocalCacheSliceEntityAdapter: (
   entityName: string
 ) => EntityAdapter<Instance> = _memoize(
   (entityName: string) => {
@@ -69,8 +68,8 @@ const getSliceEntityAdapter: (
   }
 );
 
-function getInitializedEntityAdapter(entityName: string, state: InstanceSliceState) {
-  const sliceEntityAdapter = getSliceEntityAdapter(entityName);
+function getInitializedEntityAdapter(entityName: string, state: LocalCacheSliceState) {
+  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityName);
   if (!state[entityName]) {
     state[entityName] = sliceEntityAdapter.getInitialState();
   }
@@ -80,7 +79,7 @@ function getInitializedEntityAdapter(entityName: string, state: InstanceSliceSta
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAction) {
+function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadAction<InstanceCollection>) {
   console.log('ReplaceInstancesForEntity', action.payload.entity,action.payload.instances);
   const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.entity,state);
   // if (!state[action.payload.entity]) {
@@ -95,54 +94,54 @@ function ReplaceInstancesForEntity(state: InstanceSliceState, action: InstanceAc
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export const InstanceSliceObject: Slice<InstanceSliceState> = createSlice({
-  name: instanceSliceName,
-  initialState: { Entity: getSliceEntityAdapter("Entity").getInitialState() },
+export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
+  name: localCacheSliceName,
+  initialState: { Entity: getLocalCacheSliceEntityAdapter("Entity").getInitialState() },
   reducers: {
-    [instanceSliceInputActionNamesObject.AddInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      const currentEntityName = action.payload.entity;
-      console.log(instanceSliceInputActionNamesObject.AddInstancesForEntity, "action", JSON.stringify(action));
+    // [localCacheSliceInputActionNamesObject.AddInstancesForEntity](state: LocalCacheSliceState, action: LocalCacheAction) {
+    //   const currentEntityName = action.payload.entity;
+    //   console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "action", JSON.stringify(action));
 
-      action.payload.instances.forEach((instance: InstanceWithName) => {
-        console.log(instanceSliceInputActionNamesObject.AddInstancesForEntity, "instance", JSON.stringify(instance));
-        if (state[action.payload.entity]) {
-          state[action.payload.entity] = getSliceEntityAdapter(currentEntityName).addOne(
-            state[currentEntityName],
-            instance
-          );
-        } else {
-          state[action.payload.entity] = getSliceEntityAdapter(currentEntityName).addOne(
-            getSliceEntityAdapter(currentEntityName).getInitialState(),
-            instance
-          );
-        }
-      });
-      if (action.payload.entity === "Entity") {
-        //check if entity already exists in store, and if not initialize store state for it.
-        action.payload.instances
-          .filter((e) => e['name'] !== "Entity")
-          .forEach((entity: InstanceWithName) => {
-            console.log(instanceSliceInputActionNamesObject.AddInstancesForEntity, "initializing entity", entity.name);
-            state[entity.name] = getSliceEntityAdapter(entity.name).getInitialState();
-          });
-      }
-    },
-    [instanceSliceInputActionNamesObject.UpdateInstancesForEntity](state: InstanceSliceState, action: InstanceAction) {
-      console.log(instanceSliceInputActionNamesObject.UpdateInstancesForEntity, state, action);
-      // TODO: replace implementation with updateMany
-      action.payload.instances.forEach((instance: InstanceWithName) => {
-        // state[action.payload.entity][instance.uuid] = instance;
-        const entityUpdate: Update<Instance> = { id: instance.uuid, changes: instance };
+    //   action.payload.instances.forEach((instance: InstanceWithName) => {
+    //     console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "instance", JSON.stringify(instance));
+    //     if (state[action.payload.entity]) {
+    //       state[action.payload.entity] = getLocalCacheSliceEntityAdapter(currentEntityName).addOne(
+    //         state[currentEntityName],
+    //         instance
+    //       );
+    //     } else {
+    //       state[action.payload.entity] = getLocalCacheSliceEntityAdapter(currentEntityName).addOne(
+    //         getLocalCacheSliceEntityAdapter(currentEntityName).getInitialState(),
+    //         instance
+    //       );
+    //     }
+    //   });
+    //   if (action.payload.entity === "Entity") {
+    //     //check if entity already exists in store, and if not initialize store state for it.
+    //     action.payload.instances
+    //       .filter((e) => e['name'] !== "Entity")
+    //       .forEach((entity: InstanceWithName) => {
+    //         console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "initializing entity", entity.name);
+    //         state[entity.name] = getLocalCacheSliceEntityAdapter(entity.name).getInitialState();
+    //       });
+    //   }
+    // },
+    // [localCacheSliceInputActionNamesObject.UpdateInstancesForEntity](state: LocalCacheSliceState, action: LocalCacheAction) {
+    //   console.log(localCacheSliceInputActionNamesObject.UpdateInstancesForEntity, state, action);
+    //   // TODO: replace implementation with updateMany
+    //   action.payload.instances.forEach((instance: InstanceWithName) => {
+    //     // state[action.payload.entity][instance.uuid] = instance;
+    //     const entityUpdate: Update<Instance> = { id: instance.uuid, changes: instance };
 
-        getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
-      });
-    },
-    [instanceSliceInputActionNamesObject.handleLocalCacheAction](state: InstanceSliceState, action: PayloadAction<DomainAction>) {
-      console.log(instanceSliceInputActionNamesObject.handleLocalCacheAction, action.payload);
+    //     getLocalCacheSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
+    //   });
+    // },
+    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+      console.log('localCacheSliceObject',localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'called',action);
       switch (action.payload.actionName) {
         case 'replace': {
           for (let instanceCollection of action.payload.objects) {
-            ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:instanceCollection} as InstanceAction);
+            ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:instanceCollection} as PayloadAction<InstanceCollection>);
           }
           break;
         }
@@ -179,7 +178,7 @@ export const InstanceSliceObject: Slice<InstanceSliceState> = createSlice({
 //# SELECTORS
 //#########################################################################################
 export const selectMiroirEntityInstances = createSelector(
-  (state: InstanceSliceState) => state,
+  (state: LocalCacheSliceState) => state,
   (items) => items
 );
 
@@ -201,21 +200,21 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
 //# ACTION CREATORS
 //#########################################################################################
 // export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-type InstanceSliceActionCreator<P> =
+type LocalCacheSliceActionCreator<P> =
   | ActionCreatorWithPayload<P, `${string}/${string}`>
   | ActionCreatorWithoutPayload<`${string}/${string}`>
 ;
 
 const actionsCreators: {
-  [actionCreatorName: string]: InstanceSliceActionCreator<any>;
+  [actionCreatorName: string]: LocalCacheSliceActionCreator<any>;
 } = {
-  ...InstanceSliceObject.actions,
+  ...localCacheSliceObject.actions,
 };
 
-export const InstanceSlice = {
-  reducer: InstanceSliceObject.reducer,
+export const LocalCacheSlice = {
+  reducer: localCacheSliceObject.reducer,
   actionCreators: actionsCreators,
-  inputActionNames: instanceSliceInputActionNamesObject,
+  inputActionNames: localCacheSliceInputActionNamesObject,
 };
 
 export default {};

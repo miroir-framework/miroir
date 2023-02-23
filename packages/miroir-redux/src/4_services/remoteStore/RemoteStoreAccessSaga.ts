@@ -13,7 +13,7 @@ import { handlePromiseActionForSaga } from 'src/sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type SagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
+export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
 
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
@@ -32,32 +32,32 @@ const instanceSagaInputActionNamesObject = {
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
   'handleRemoteStoreAction':'handleRemoteStoreAction',
 };
-export type instanceSagaInputActionName = keyof typeof instanceSagaInputActionNamesObject;
-export const instanceSagaInputActionNamesArray:instanceSagaInputActionName[] = 
-  Object.keys(instanceSagaInputActionNamesObject) as instanceSagaInputActionName[];
-export const instanceSagaGeneratedActionNames = getPromiseActionStoreActionNames(instanceSagaInputActionNamesArray);
+export type RemoteStoreSagaInputActionName = keyof typeof instanceSagaInputActionNamesObject;
+export const RemoteStoreSagaInputActionNamesArray:RemoteStoreSagaInputActionName[] = 
+  Object.keys(instanceSagaInputActionNamesObject) as RemoteStoreSagaInputActionName[];
+export const RemoteStoreSagaGeneratedActionNames = getPromiseActionStoreActionNames(RemoteStoreSagaInputActionNamesArray);
 
 
 //#########################################################################################
-// events sent by the InstanceSlice, that can be intercepted and acted upon by the outside world
-export const instanceSagaOutputActionNames = stringTuple(
+// events sent by the LocalCacheSlice, that can be intercepted and acted upon by the outside world
+export const RemoteStoreSagaOutputActionNames = stringTuple(
   'instancesRefreshedForEntity', 'allInstancesRefreshed'
 );
-export type instanceSagaOutputActionTypeString = typeof instanceSagaOutputActionNames[number];
+export type RemoteStoreSagaOutputActionTypeString = typeof RemoteStoreSagaOutputActionNames[number];
 
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export type InstanceSagaStringActionPayload = string;
-export type InstanceSagaEntitiesActionPayload = EntityDefinition[];
+// export type InstanceSagaStringActionPayload = string;
+// export type InstanceSagaEntitiesActionPayload = EntityDefinition[];
 
-export type InstanceSagaAction = PayloadAction<InstanceSagaEntitiesActionPayload|InstanceSagaStringActionPayload>;
+// export type InstanceSagaAction = PayloadAction<InstanceSagaEntitiesActionPayload|InstanceSagaStringActionPayload>;
 
 
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class InstanceRemoteAccessReduxSaga {
+export class RemoteStoreAccessReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
@@ -71,7 +71,7 @@ export class InstanceRemoteAccessReduxSaga {
 
 //#########################################################################################
 public instanceSagaInputPromiseActions:{
-    [property in instanceSagaInputActionName]
+    [property in RemoteStoreSagaInputActionName]
     : {
       name: property,
       creator:SagaPromiseActionCreator<
@@ -80,13 +80,13 @@ public instanceSagaInputPromiseActions:{
         property,
         ActionCreatorWithPayload<any, property>
       >,
-      generator:(any) => SagaGenReturnType
+      generator:(any) => RemoteStoreSagaGenReturnType
     }
   } = {
     fetchInstancesForEntityFromRemoteDatastore: {
       name: "fetchInstancesForEntityFromRemoteDatastore",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
-      generator: function*(action:PayloadAction<string>):SagaGenReturnType {
+      generator: function*(action:PayloadAction<string>):RemoteStoreSagaGenReturnType {
         console.log("fetchInstancesForEntityFromRemoteDatastore", action);
         try {
           const result: {
@@ -104,16 +104,16 @@ public instanceSagaInputPromiseActions:{
           };
         } catch (e) {
           console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
-          yield put({ type: "instance/failure/instancesNotReceived" });
+          yield put({ type: "remoteStore/failure/instancesNotReceived" });
         }
       }.bind(this)
     },
     handleRemoteStoreAction: {
       name: "handleRemoteStoreAction",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<RemoteStoreAction,"handleRemoteStoreAction">("handleRemoteStoreAction"),
-      generator: function*(action:PayloadAction<RemoteStoreAction>):SagaGenReturnType {
+      generator: function*(action:PayloadAction<RemoteStoreAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("InstanceRemoteAccessReduxSaga handleRemoteStoreAction",action);
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -127,10 +127,10 @@ public instanceSagaInputPromiseActions:{
             ]
           };
 
-          console.log("InstanceRemoteAccessReduxSaga handleRemoteStoreAction received result", result.status, result.instances);
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("InstanceRemoteAccessReduxSaga handleRemoteStoreAction exception", e);
+          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -146,7 +146,7 @@ public instanceSagaInputPromiseActions:{
   // takes entity fetch notifications into account and sends a global notification when done.
   *instancesHaveBeenFecthedForEntity(
     action: PayloadAction<string>
-  ): SagaGenReturnType {
+  ): RemoteStoreSagaGenReturnType {
     try {
       console.log("instancesHaveBeenFecthedForEntity", action, "left to fetch", this.entitiesToFetch);
       const id: number = this.entitiesToFetch.indexOf(action.payload);
@@ -175,7 +175,7 @@ public instanceSagaInputPromiseActions:{
 
   //#########################################################################################
   public *instanceRootSaga(
-  ):SagaGenReturnType {
+  ):RemoteStoreSagaGenReturnType {
     yield all(
       [
         ...Object.values(this.instanceSagaInputPromiseActions).map(
@@ -189,5 +189,5 @@ public instanceSagaInputPromiseActions:{
   }
 }// end class Mslice
 
-export default InstanceRemoteAccessReduxSaga;
+export default RemoteStoreAccessReduxSaga;
 

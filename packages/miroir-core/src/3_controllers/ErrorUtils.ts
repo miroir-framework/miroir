@@ -1,7 +1,7 @@
 import { RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ErrorLogServiceInterface, MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
-// import { RemoteStoreActionReturnType } from "../0_interfaces/4-services/localStore/LocalStoreInterface";
+// import { RemoteStoreActionReturnType } from "../0_interfaces/4-services/localStore/LocalCacheInterface";
 
 export default {}
 

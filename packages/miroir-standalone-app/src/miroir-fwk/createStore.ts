@@ -1,12 +1,12 @@
 import {
   DataControllerInterface,
   DataController,
-  DomainActionInterface,
+  DomainControllerInterface,
   DomainController, MiroirContext, RestClient
 } from "miroir-core";
 import {
   IndexedDbRestServer,
-  InstanceRemoteAccessReduxSaga,
+  RemoteStoreAccessReduxSaga,
   ReduxStore,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
@@ -23,14 +23,14 @@ export function createMswStore(
 
   const client:RestClient = new RestClient(fetch);
   const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(rootApiUrl, client);
-  const instanceSagas: InstanceRemoteAccessReduxSaga = new InstanceRemoteAccessReduxSaga(rootApiUrl, remoteStoreNetworkRestClient);
+  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(rootApiUrl, remoteStoreNetworkRestClient);
 
   const reduxStore:ReduxStore = new ReduxStore(instanceSagas);
   reduxStore.run();
   const miroirContext = new MiroirContext();
 
   const dataController: DataControllerInterface = new DataController(miroirContext, reduxStore, reduxStore);
-  const domainController:DomainActionInterface = new DomainController(dataController);
+  const domainController:DomainControllerInterface = new DomainController(dataController);
 
   
   return {mServer, worker, reduxStore, dataController, domainController, miroirContext}
