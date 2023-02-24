@@ -1,0 +1,52 @@
+{
+  "uuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+  "entity":"Entity",
+  "name":"Author",
+  "description": "author",
+  "icon": "Person",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "entity": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      }
+    }
+  },
+  "attributes": [
+    {
+        "id": 1,
+        "name": "uuid",
+        "defaultLabel": "Uuid",
+        "type": "string",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 2,
+        "name": "name",
+        "defaultLabel": "Name",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "entity",
+        "defaultLabel": "Entity",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    }
+  ]
+}

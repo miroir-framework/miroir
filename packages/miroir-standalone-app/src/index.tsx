@@ -10,6 +10,13 @@ import {
   reportEntityList,reportReportList
 } from "miroir-core";
 
+import entityAuthor from "assets/entities/Author.json"
+import entityBook from "assets/entities/Book.json"
+import reportBookList from "assets/reports/BookList.json"
+import author1 from "assets/instances/Author - Cornell Woolrich.json"
+import author2 from "assets/instances/Author - Don Norman.json"
+import book1 from "assets/instances/Book - The Bride Wore Black.json"
+import book2 from "assets/instances/Book - The Design of Everyday Things.json"
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import miroirConfig from "assets/miroirConfig.json";
@@ -31,7 +38,7 @@ async function start() {
   let mReduxStore,myMiroirContext;
   if (process.env.NODE_ENV === "development") {
 
-    const {mServer, worker, reduxStore, dataController, domainController, miroirContext} = createMswStore(
+    const { mServer, worker, reduxStore, dataController, domainController, miroirContext } = createMswStore(
       miroirConfig.rootApiUrl,
       window.fetch.bind(window),
       setupWorker
@@ -44,10 +51,19 @@ async function start() {
     worker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
     console.log('##############################################');
     await worker.start();
-    await mServer.createObjectStore(["Entity", "Instance", "Report"]);
+    await mServer.createObjectStore(["Entity", "Instance", "Report", "Author", "Book"]);
+    await mServer.clearObjectStore();
     await mServer.localIndexedDb.putValue("Entity", entityEntity);
     await mServer.localIndexedDb.putValue("Entity", entityReport);
     await mServer.localIndexedDb.putValue("Report", reportReportList);
+    await mServer.localIndexedDb.putValue("Entity", entityAuthor);
+    await mServer.localIndexedDb.putValue("Entity", entityBook);
+    await mServer.localIndexedDb.putValue("Report", reportBookList);
+    await mServer.localIndexedDb.putValue("Author", author1);
+    await mServer.localIndexedDb.putValue("Author", author2);
+    await mServer.localIndexedDb.putValue("Book", book1);
+    await mServer.localIndexedDb.putValue("Book", book2);
+
     dataController.loadConfigurationFromRemoteDataStore();
     domainController.handleDomainAction({
       actionName:'create',

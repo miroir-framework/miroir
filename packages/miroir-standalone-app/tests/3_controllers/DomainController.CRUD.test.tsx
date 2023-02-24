@@ -62,6 +62,7 @@ describe(
         const user = userEvent.setup()
 
         await mServer.createObjectStore(["Entity","Instance","Report"]);
+        await mServer.clearObjectStore();
         await mServer.localIndexedDb.putValue("Entity",entityReport);
         await mServer.localIndexedDb.putValue("Entity",entityEntity);
         await mServer.localIndexedDb.putValue("Report",reportEntityList);

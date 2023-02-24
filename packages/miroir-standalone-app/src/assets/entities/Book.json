@@ -1,0 +1,56 @@
+{
+  "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
+  "entity":"Entity",
+  "name":"Book",
+  "icon": "Book",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["uuid","entity","name"],
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "entity": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "author": {
+        "title": "Author",
+        "type": "object"
+      }
+    }
+  },
+  "attributes":
+  [
+    {
+      "id": 1,
+      "name": "uuid",
+      "defaultLabel": "uuid",
+      "type": "string",
+      "nullable": false,
+      "editable": false
+    },
+    {
+        "id": 2,
+        "name": "name",
+        "defaultLabel": "title",
+        "type": "string",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "author",
+        "defaultLabel": "Author",
+        "type": "object",
+        "nullable": true,
+        "editable": true
+    }
+  ]
+}

@@ -26,7 +26,8 @@ export const MComponent = (props:any) => {
         </CardHeader>
         <CardContent>
           <ReportComponent
-            reportName="ReportList"
+            reportName="BookList"
+            // reportName="ReportList"
             // reportName="EntityList"
             // store={store}
           />

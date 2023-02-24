@@ -1,5 +1,5 @@
-import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheReports } from "miroir-fwk/4_view/selectors";
+import { EntityDefinition, Instance, MiroirReport, ReportGetInstancesToDispay } from "miroir-core";
+import { useLocalCacheEntities, useLocalCacheInstances, useLocalCacheReports } from "miroir-fwk/4_view/selectors";
 import * as React from "react";
 
 // import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from 'miroir-core';
@@ -16,11 +16,13 @@ export const ReportComponent = (
   // const miroirReports = [1];
   const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
+  const miroirBooks:Instance[] = useLocalCacheInstances('Book');
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
   console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
+  // const currentMiroirBooks: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
 
   console.log("MiroirReportComponent ReportGetInstancesToDispay",ReportGetInstancesToDispay);
 
@@ -41,7 +43,7 @@ export const ReportComponent = (
                 )
               }
               // rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
-              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities,miroirReports)}
+              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities,miroirReports,miroirBooks)}
               // columnDefs={[{"headerName": "name", "field": "name"}]}
               // rowData={[{name:'toto'}]}
             >
