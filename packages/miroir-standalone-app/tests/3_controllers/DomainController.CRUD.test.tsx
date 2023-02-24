@@ -23,7 +23,7 @@ import {
   reportReportList
 } from "miroir-core";
 
-import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json';
+import miroirConfig from 'miroir-standalone-app/src/assets/miroirConfig.json';
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
@@ -32,7 +32,7 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 miroirAppStartup();
 miroirCoreStartup();
 
-const {mServer, worker, reduxStore, dataController, domainController, miroirContext} = createMswStore(miroirConfig.rootApiUrl,fetch,setupServer)
+const {mServer, worker, reduxStore, domainController, miroirContext} = createMswStore(miroirConfig.rootApiUrl,fetch,setupServer)
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
@@ -51,7 +51,7 @@ afterAll(
 )
 
 describe(
-  'DataController',
+  'DomainController.CRUD',
   () => {
     // ###########################################################################################
     it(
@@ -81,7 +81,7 @@ describe(
 
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
 
@@ -135,7 +135,7 @@ describe(
         console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
 
@@ -185,7 +185,7 @@ describe(
         console.log('add Report definition step 3: refreshing report list from remote store, reportEntityList must still be present in the report list.')
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
 
@@ -237,7 +237,7 @@ describe(
 
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -282,7 +282,7 @@ describe(
         console.log('remove Report definition step 3: refreshing local store from remote store, reportEntityList must still be absent from the report list.')
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -308,7 +308,6 @@ describe(
 
         const displayLoadingInfo=<DisplayLoadingInfo/>
         const user = userEvent.setup()
-        // const loadingStateService = new LoadingStateService();
 
         await mServer.createObjectStore(["Entity","Instance","Report"]);
         await mServer.clearObjectStore();
@@ -335,7 +334,7 @@ describe(
         console.log('Update Report definition step 1: loading initial configuration, reportEntityList must be present in report list.')
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
 
@@ -357,7 +356,7 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-        const updateAcion: DomainAction = {
+        const updateAction: DomainAction = {
           actionName: "update",
           objects: [
             {
@@ -379,13 +378,13 @@ describe(
         };
         await act(
           async () => {
-            await domainController.handleDomainAction(updateAcion);
+            await domainController.handleDomainAction(updateAction);
           }
         );
 
         console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
 
-        expect(domainController.currentTransaction()[0]['action']['payload']).toEqual(updateAcion);
+        expect(domainController.currentTransaction()[0]['action']['payload']).toEqual(updateAction);
         await user.click(screen.getByRole('button'))
 
         await waitFor(
@@ -402,7 +401,7 @@ describe(
         console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
         await act(
           async () => {
-            await dataController.loadConfigurationFromRemoteDataStore();
+            await domainController.handleDomainAction({actionName: "replace"});
           }
         );
 

@@ -12,7 +12,7 @@ import {
 
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import miroirConfig from "miroir-fwk/assets/miroirConfig.json";
+import miroirConfig from "assets/miroirConfig.json";
 import { createMswStore } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
 

@@ -16,19 +16,14 @@ export {
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
-  DeploymentModes,
   InnerReducerInterface,
   InnerStoreStateInterface,
   ReduxReducerWithUndoRedoInterface as ReduxReducerWithUndoRedo,
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,
-  cacheFetchPolicy,
-  cacheInvalidationPolicy,
   createUndoRedoReducer,
   // makeActionUpdatesUndoable,
   reduxStoreWithUndoRedoGetInitialState,
-  storageKind,
-  undoRedoHistorization,
 } from "./4_services/localStore/LocalCacheSliceUndoRedoReducer";
 export {
   RemoteStoreAccessReduxSaga,

@@ -15,21 +15,6 @@ enablePatches(); // to gather undo/redo operation history
  * 
  */
 
-export type storageKind = 'browser-IndexedDb' | 'sqlite' | 'postgres' | 'mongodb';
-export type DeploymentModes = 'local' | 'remote';
-export type cacheInvalidationPolicy = 'routing' | 'periodic' | 'never';
-export type cacheFetchPolicy = 'onDemand' |'routing' | 'periodic' | 'never';
-export type undoRedoHistorization = 'actions' |'snapshot' | 'periodic' | 'never'; // what does it make sense for? An Entity?
-
-// /**
-//  * The snapshot type, declaring the global structure of the redux store.
-//  * The format is given in store.ts, when assigning staticReducers.
-//  */
-// export interface MmodelSnapshot {
-//   miroirEntities: any;
-//   miroirInstances: any;
-// };
-
 export interface InnerStoreStateInterface {
   // miroirEntities: EntityState<EntityDefinition>;
   miroirInstances: LocalCacheSliceState;
@@ -207,8 +192,8 @@ export function createUndoRedoReducer(
             presentModelSnapshot: newPresentSnapshot,
             futureModelPatches: newFuturePatches
           }
-        case 'ROLLBACK':
-        case 'COMMIT':
+        case 'ROLLBACK': // TODO: here?
+        case 'COMMIT': // TODO: here?
         default:
           return callNextReducer(state, action)
           // Delegate handling the action to the passed reducer

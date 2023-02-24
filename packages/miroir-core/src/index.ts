@@ -1,4 +1,17 @@
 export {
+  EntityAttribute,
+  EntityDefinition
+} from './0_interfaces/1_core/EntityDefinition.js';
+export {
+  Instance,
+  InstanceCollection,
+  InstanceWithName
+} from './0_interfaces/1_core/Instance.js';
+export {
+  MiroirReport,
+  MiroirReportDefinition
+} from './0_interfaces/1_core/Report.js';
+export {
   CRUDActionName,
   CRUDActionNamesArray,
   CRUDActionNamesObject,
@@ -6,80 +19,54 @@ export {
   DomainActionName,
   domainActionNamesArray,
   domainActionNamesObject,
-  DomainControllerInterface,
+  DomainControllerInterface
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
-
 export {
-  EntityAttribute,
-  EntityDefinition,
-} from './0_interfaces/1_core/EntityDefinition.js';
-
-export {
-  Instance,
-  InstanceCollection,
-  InstanceWithName,
-} from './0_interfaces/1_core/Instance.js';
-
-export {
-  MiroirReport,
-  MiroirReportDefinition,
-} from './0_interfaces/1_core/Report.js';
-
-export {
-  DataControllerInterface,
+  DataControllerInterface
 } from './0_interfaces/3_controllers/DataControllerInterface.js';
-
 export {
-  MError,
-  ErrorLogServiceInterface,
+  ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-
-
 export {
   LocalCacheAction,
-  LocalCacheInterface,
+  LocalCacheInterface
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
-
 export {
-  RemoteStoreAction,
   RemoteDataStoreInterface,
+  RemoteStoreAction,
   RemoteStoreActionReturnType,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
-} from './0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
-
+} from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+export { ReportGetInstancesToDispay } from './1_core/Report.js';
+export { DomainController } from './2_domain/DomainController';
+export {
+  cacheFetchPolicy,
+  cacheInvalidationPolicy,
+  ConfigurationService,
+  DeploymentModes,
+  PackageConfiguration,
+  serverStorageKind as storageKind,
+  undoRedoHistorization,
+} from "./3_controllers/ConfigurationService.js";
+export { DataController } from './3_controllers/DataController.js';
+export { ErrorLogService } from './3_controllers/ErrorLogService.js';
+export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
+export { MiroirContext, MiroirContextInterface } from './3_controllers/MiroirContext.js';
+export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
   RestClient
 } from './4_services/RestClient.js';
-
-
-export {ReportGetInstancesToDispay} from './1_core/Report.js';
-
-export { DomainController } from './2_domain/DomainController'
-
-export {throwExceptionIfError} from './3_controllers/ErrorUtils.js'
-
-export {DataController} from './3_controllers/DataController.js'
-
-export {RemoteDataStoreController} from './3_controllers/RemoteDataStoreController.js'
-
-export {ConfigurationService, PackageConfiguration} from './3_controllers/ConfigurationService.js'
-
-export {MiroirContextInterface, MiroirContext} from './3_controllers/MiroirContext.js'
-
-export {ErrorLogService} from './3_controllers/ErrorLogService.js'
-
-
-export { stringTuple } from './tools.js'
-export { miroirCoreStartup } from './startup.js'
+export { miroirCoreStartup } from './startup.js';
+export { stringTuple } from './tools.js';
+export { entityEntity, entityReport, reportEntityList, reportReportList };
 
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';
 import reportEntityList from './assets/reports/entityList.json';
 import reportReportList from './assets/reports/ReportList.json';
 
-export {entityEntity, entityReport, reportEntityList, reportReportList}
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport

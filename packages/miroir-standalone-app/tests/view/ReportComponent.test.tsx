@@ -37,7 +37,7 @@ import {
 import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent'
 import { renderWithProviders } from 'miroir-standalone-app/tests/utils/tests-utils'
 
-import miroirConfig from 'miroir-standalone-app/src/miroir-fwk/assets/miroirConfig.json'
+import miroirConfig from 'miroir-standalone-app/src/assets/miroirConfig.json'
 import { miroirAppStartup } from "miroir-standalone-app/src/startup"
 
 
