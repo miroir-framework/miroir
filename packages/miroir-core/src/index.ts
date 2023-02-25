@@ -47,7 +47,7 @@ export {
   RestClientCallReturnType,
   RestClientInterface,
 } from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-export { ReportGetInstancesToDispay } from './1_core/Report.js';
+export { } from './1_core/Report.js';
 export { DomainController } from './2_domain/DomainController';
 export {
   cacheFetchPolicy,

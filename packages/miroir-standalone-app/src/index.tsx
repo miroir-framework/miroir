@@ -84,6 +84,7 @@ async function start() {
             {/* store={mReduxStore.getInnerStore() */}
             <MComponent 
               reportName="BookList"
+              // reportName="EntityList"
           ></MComponent>
           </MiroirContextReactProvider>
         </Container>

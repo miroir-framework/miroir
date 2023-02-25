@@ -18,9 +18,5 @@ export function useLocalCacheReports():MiroirReport[] {
 
 //#########################################################################################
 export function useLocalCacheInstancesForReport(reportName:string):Instance[] {
-  // const instanceState:EntityState<Instance> = useSelector(selectInstancesForEntity(entityName))
-  // const instanceState:EntityState<Instance> = useSelector(selectInstancesFromDomainSelector(selectReportInstances('BookList')))
-  // const instances:Instance[] = instanceState?.entities?Object.values(instanceState.entities):[];
-  const instances:Instance[] = useSelector(selectInstancesFromDomainSelector(selectReportInstances(reportName)));
-  return instances;
+  return useSelector(selectInstancesFromDomainSelector(selectReportInstances(reportName)));
 }

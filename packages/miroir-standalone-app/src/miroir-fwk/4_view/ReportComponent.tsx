@@ -1,8 +1,7 @@
-import { EntityDefinition, Instance, MiroirReport, ReportGetInstancesToDispay } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/selectors";
+import { EntityDefinition, Instance, MiroirReport } from "miroir-core";
+import { useLocalCacheEntities, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
 import * as React from "react";
 
-// import { EntityDefinition, MiroirReport, ReportGetInstancesToDispay } from 'miroir-core';
 import { MTableComponent } from "./MTableComponent";
 
 export interface MiroirReportComponentProps {
@@ -10,21 +9,17 @@ export interface MiroirReportComponentProps {
 };
 
 
-export const ReportComponent = (
+export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   props: MiroirReportComponentProps
 ) => {
-  // const miroirReports = [1];
   const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const miroirBooks:Instance[] = useLocalCacheInstancesForReport('BookList');
+  const instancesToDisplay:Instance[] = useLocalCacheInstancesForReport(props.reportName);
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
-  console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
-  // const currentMiroirBooks: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
-
-  console.log("MiroirReportComponent ReportGetInstancesToDispay",ReportGetInstancesToDispay);
+  console.log("MiroirReportComponent instancesToDisplay",instancesToDisplay);
 
   return (
     <div>
@@ -42,10 +37,7 @@ export const ReportComponent = (
                   (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
                 )
               }
-              // rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities)}
-              rowData={ReportGetInstancesToDispay(currentMiroirReport,miroirEntities,miroirReports,miroirBooks)}
-              // columnDefs={[{"headerName": "name", "field": "name"}]}
-              // rowData={[{name:'toto'}]}
+              rowData={instancesToDisplay}
             >
             </MTableComponent>
           </div>
