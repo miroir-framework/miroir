@@ -9,7 +9,7 @@ import {
   Slice
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
-import { Instance, InstanceCollection, LocalCacheAction } from 'miroir-core';
+import { DomainStateSelector, Instance, InstanceCollection, LocalCacheAction } from 'miroir-core';
 import { ReduxStateWithUndoRedo } from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
 
 export const localCacheSliceName:string = "localCache";
@@ -40,7 +40,6 @@ export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNa
 //#########################################################################################
 // instance slice state cannot really be defined statically, since it changes at run-time, depending on the set of defined instances
 export interface LocalCacheSliceState {
-  // [propName: string]: EntityState<any>;
   [propName: string]: EntityState<Instance>;
 }
 
@@ -184,6 +183,7 @@ export const selectMiroirEntityInstances = createSelector(
 
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
+// TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
 export const selectInstancesForEntity: (entityName: string) => any = _memoize(
   (entityName: string) => {
     return createSelector(
@@ -194,6 +194,22 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
     );
   }
 );
+
+//#########################################################################################
+export const selectInstancesFromDomainSelector: (selector:DomainStateSelector) => any = 
+  // _memoize(
+    // (entityName: string) => {
+  (selector:DomainStateSelector) => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        return selector(Object.fromEntries(Object.entries(state.presentModelSnapshot.miroirInstances).map(e=>[e[0],Object.values(e[1].entities)])));
+      },
+      (items: Instance[]) => items
+    );
+  }
+    // }
+  // )
+;
 
 
 //#########################################################################################

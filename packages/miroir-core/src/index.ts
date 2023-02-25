@@ -19,8 +19,16 @@ export {
   DomainActionName,
   domainActionNamesArray,
   domainActionNamesObject,
-  DomainControllerInterface
+  DomainControllerInterface,
+  DomainState,
+  DomainStateReducer,
+  DomainStateSelector,
+  DomainStateTransformer,
+  
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
+export {
+  selectReportInstances
+} from './2_domain/ReportDisplay';
 export {
   DataControllerInterface
 } from './0_interfaces/3_controllers/DataControllerInterface.js';
@@ -47,7 +55,7 @@ export {
   ConfigurationService,
   DeploymentModes,
   PackageConfiguration,
-  serverStorageKind as storageKind,
+  serverStorageKind,
   undoRedoHistorization,
 } from "./3_controllers/ConfigurationService.js";
 export { DataController } from './3_controllers/DataController.js';

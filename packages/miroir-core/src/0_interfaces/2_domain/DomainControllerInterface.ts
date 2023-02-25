@@ -1,4 +1,4 @@
-import { InstanceCollection } from "../1_core/Instance.js";
+import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
 export const CRUDActionNamesObject = {
   'create': 'create',
@@ -30,6 +30,14 @@ export interface DomainAction {
   uuid?:string;
   objects?:InstanceCollection[];
 }
+
+export interface DomainState {
+  [propName: string]: Instance[];
+}
+
+export type DomainStateTransformer=(domainState:DomainState)=>DomainState
+export type DomainStateSelector=(domainState:DomainState)=>Instance[]
+export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
   handleDomainAction(action:DomainAction):Promise<void>;

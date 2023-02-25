@@ -1,4 +1,4 @@
-import { Instance } from 'src/0_interfaces/1_core/Instance.js';
+import { Instance } from '../0_interfaces/1_core/Instance.js';
 import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
 import { MiroirReport } from '../0_interfaces/1_core/Report.js';
 
@@ -10,12 +10,12 @@ function ReportGetInstancesToDispay (
   ):any[] {
     let result:any[];
     const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
-  
+
     switch (currentMiroirEntity?.name) {
       case "Entity":
         result = miroirEntities
         break;
-    
+
       case "Report":
         result = miroirReports
         break;

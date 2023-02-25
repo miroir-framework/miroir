@@ -1,6 +1,6 @@
 import { EntityState } from "@reduxjs/toolkit";
-import { EntityDefinition, Instance, MiroirReport } from "miroir-core";
-import { selectInstancesForEntity } from "miroir-redux";
+import { EntityDefinition, Instance, MiroirReport, selectReportInstances } from "miroir-core";
+import { selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
 import { useSelector } from "react-redux";
 
 //#########################################################################################
@@ -17,8 +17,10 @@ export function useLocalCacheReports():MiroirReport[] {
 }
 
 //#########################################################################################
-export function useLocalCacheInstances(entityName:string):Instance[] {
-  const instanceState:EntityState<Instance> = useSelector(selectInstancesForEntity(entityName))
-  const instances:Instance[] = instanceState?.entities?Object.values(instanceState.entities):[];
+export function useLocalCacheInstancesForReport(reportName:string):Instance[] {
+  // const instanceState:EntityState<Instance> = useSelector(selectInstancesForEntity(entityName))
+  // const instanceState:EntityState<Instance> = useSelector(selectInstancesFromDomainSelector(selectReportInstances('BookList')))
+  // const instances:Instance[] = instanceState?.entities?Object.values(instanceState.entities):[];
+  const instances:Instance[] = useSelector(selectInstancesFromDomainSelector(selectReportInstances(reportName)));
   return instances;
 }

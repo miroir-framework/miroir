@@ -55,6 +55,7 @@ async function start() {
     await mServer.clearObjectStore();
     await mServer.localIndexedDb.putValue("Entity", entityEntity);
     await mServer.localIndexedDb.putValue("Entity", entityReport);
+    await mServer.localIndexedDb.putValue("Report", reportEntityList);
     await mServer.localIndexedDb.putValue("Report", reportReportList);
     await mServer.localIndexedDb.putValue("Entity", entityAuthor);
     await mServer.localIndexedDb.putValue("Entity", entityBook);
@@ -64,13 +65,13 @@ async function start() {
     await mServer.localIndexedDb.putValue("Book", book1);
     await mServer.localIndexedDb.putValue("Book", book2);
 
-    dataController.loadConfigurationFromRemoteDataStore();
-    domainController.handleDomainAction({
-      actionName:'create',
-      objects:[{entity:'Report',instances:[reportEntityList]}]
-    })
+    // await dataController.loadConfigurationFromRemoteDataStore();
+    // domainController.handleDomainAction({
+    //   actionName:'create',
+    //   objects:[{entity:'Report',instances:[reportEntityList]}]
+    // })
   
-    dataController.loadConfigurationFromRemoteDataStore();
+    await dataController.loadConfigurationFromRemoteDataStore();
   }
 
   root.render(
@@ -80,7 +81,10 @@ async function start() {
         {/* <h1>Miroir standalone demo app</h1> */}
         <Container maxWidth="xl">
           <MiroirContextReactProvider miroirContext={myMiroirContext}>
-            <MComponent store={mReduxStore.getInnerStore()} reduxStore={mReduxStore}></MComponent>
+            {/* store={mReduxStore.getInnerStore() */}
+            <MComponent 
+              reportName="BookList"
+          ></MComponent>
           </MiroirContextReactProvider>
         </Container>
       </div>

@@ -3,8 +3,12 @@ import { ConfigurationService } from "miroir-core";
 import { useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 // import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
+export interface MComponentProps {
+  // store:any;
+  reportName:string
+}
 
-export const MComponent = (props:any) => {
+export const MComponent = (props:MComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
   const errorLog = useErrorLogServiceHook();
 
@@ -26,7 +30,7 @@ export const MComponent = (props:any) => {
         </CardHeader>
         <CardContent>
           <ReportComponent
-            reportName="BookList"
+            reportName={props.reportName}
             // reportName="ReportList"
             // reportName="EntityList"
             // store={store}

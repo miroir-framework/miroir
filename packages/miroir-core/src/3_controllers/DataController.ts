@@ -82,7 +82,6 @@ export class DataController implements DataControllerInterface {
       this.localCache.handleLocalCacheAction(
         {
           actionName: "replace",
-          // entityName:'Instance',
           objects: instances
         } as DomainAction
       );
