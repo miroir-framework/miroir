@@ -31,8 +31,14 @@ export interface DomainAction {
   objects?:InstanceCollection[];
 }
 
+// export interface DomainState {
+//   [propName: string]: Instance[];
+// }
+export interface DomainInstancesUuidIndex {
+  [uuid: string]: Instance
+}
 export interface DomainState {
-  [propName: string]: Instance[];
+  [propName: string]: DomainInstancesUuidIndex;
 }
 
 export type DomainStateTransformer=(domainState:DomainState)=>DomainState

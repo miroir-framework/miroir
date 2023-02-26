@@ -9,7 +9,7 @@ import {
   Slice
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
-import { DomainStateSelector, Instance, InstanceCollection, LocalCacheAction } from 'miroir-core';
+import { DomainState, DomainStateSelector, Instance, InstanceCollection, LocalCacheAction } from 'miroir-core';
 import { ReduxStateWithUndoRedo } from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
 
 export const localCacheSliceName:string = "localCache";
@@ -196,20 +196,27 @@ export const selectInstancesForEntity: (entityName: string) => any = _memoize(
 );
 
 //#########################################################################################
-export const selectInstancesFromDomainSelector: (selector:DomainStateSelector) => any = 
+export const selectInstancesFromDomainSelector: (
+  selector: DomainStateSelector
+) => (state: ReduxStateWithUndoRedo) => Instance[] =
   // _memoize(
-    // (entityName: string) => {
-  (selector:DomainStateSelector) => {
+  // (entityName: string) => {
+  (selector: DomainStateSelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
-        return selector(Object.fromEntries(Object.entries(state.presentModelSnapshot.miroirInstances).map(e=>[e[0],Object.values(e[1].entities)])));
+        return selector(
+          Object.fromEntries(
+            Object.entries(state.presentModelSnapshot.miroirInstances).map(
+              (e) => [e[0], e[1].entities]
+            )
+          ) as DomainState
+        );
       },
       (items: Instance[]) => items
     );
-  }
-    // }
-  // )
-;
+  };
+// }
+// )
 
 
 //#########################################################################################

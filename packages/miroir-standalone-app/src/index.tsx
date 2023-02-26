@@ -71,7 +71,8 @@ async function start() {
     //   objects:[{entity:'Report',instances:[reportEntityList]}]
     // })
   
-    await dataController.loadConfigurationFromRemoteDataStore();
+    // await dataController.loadConfigurationFromRemoteDataStore();
+    await domainController.handleDomainAction({actionName: "replace"});
   }
 
   root.render(
