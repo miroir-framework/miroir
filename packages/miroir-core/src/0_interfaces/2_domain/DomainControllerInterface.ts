@@ -1,3 +1,4 @@
+import { LocalCacheInfo } from "src/0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
 export const CRUDActionNamesObject = {
@@ -48,4 +49,5 @@ export type DomainStateReducer=(domainState:DomainState)=>any
 export interface DomainControllerInterface {
   handleDomainAction(action:DomainAction):Promise<void>;
   currentTransaction():any[];
+  currentLocalCacheInfo(): LocalCacheInfo;
 }

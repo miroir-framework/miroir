@@ -73,25 +73,32 @@ async function start() {
   
     // await dataController.loadConfigurationFromRemoteDataStore();
     await domainController.handleDomainAction({actionName: "replace"});
+    root.render(
+      <Provider store={mReduxStore.getInnerStore()}>
+        <div>
+          <h1>Miroir standalone demo app {uuidv4()}</h1>
+          {/* <h1>Miroir standalone demo app</h1> */}
+          <Container maxWidth="xl">
+            <MiroirContextReactProvider miroirContext={myMiroirContext}>
+              {/* store={mReduxStore.getInnerStore() */}
+              <span>transactions: {JSON.stringify(domainController.currentTransaction())}</span>
+              <p/>
+              <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
+              <MComponent 
+                reportName="BookList"
+                // reportName="EntityList"
+            ></MComponent>
+            </MiroirContextReactProvider>
+          </Container>
+        </div>
+      </Provider>
+    );
+  } else {
+    root.render(
+      <span>Production mode not implemented yet!</span>
+    )
   }
 
-  root.render(
-    <Provider store={mReduxStore.getInnerStore()}>
-      <div>
-        <h1>Miroir standalone demo app {uuidv4()}</h1>
-        {/* <h1>Miroir standalone demo app</h1> */}
-        <Container maxWidth="xl">
-          <MiroirContextReactProvider miroirContext={myMiroirContext}>
-            {/* store={mReduxStore.getInnerStore() */}
-            <MComponent 
-              reportName="BookList"
-              // reportName="EntityList"
-          ></MComponent>
-          </MiroirContextReactProvider>
-        </Container>
-      </div>
-    </Provider>
-  );
 }
 
 start();

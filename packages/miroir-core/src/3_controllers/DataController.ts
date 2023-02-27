@@ -1,10 +1,10 @@
+import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
-import { LocalCacheAction, LocalCacheInterface } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheAction, LocalCacheInfo, LocalCacheInterface } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
-import { MiroirContextInterface } from "./MiroirContext.js";
 
 export default {}
 
@@ -39,6 +39,15 @@ export class DataController implements DataControllerInterface {
    */
   currentLocalCacheTransaction():any[]{
     return this.localCache.currentTransaction();
+  }
+
+  //####################################################################################
+  /**
+   * .
+   * @returns the stats about the current local cache.
+   */
+  currentLocalCacheInfo():LocalCacheInfo{
+    return this.localCache.currentInfo();
   }
 
 

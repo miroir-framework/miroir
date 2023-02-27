@@ -5,7 +5,8 @@ export {
 export {
   Instance,
   InstanceCollection,
-  InstanceWithName
+  InstanceWithName,
+  ApplicationConceptLevel,
 } from './0_interfaces/1_core/Instance.js';
 export {
   MiroirReport,
@@ -36,8 +37,12 @@ export {
   ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 export {
+  MiroirContextInterface
+} from './0_interfaces/3_controllers/MiroirContextInterface';
+export {
   LocalCacheAction,
-  LocalCacheInterface
+  LocalCacheInterface,
+  LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
   RemoteDataStoreInterface,
@@ -62,7 +67,7 @@ export {
 export { DataController } from './3_controllers/DataController.js';
 export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
-export { MiroirContext, MiroirContextInterface } from './3_controllers/MiroirContext.js';
+export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
   RestClient

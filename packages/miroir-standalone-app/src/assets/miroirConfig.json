@@ -1,3 +1,6 @@
 {
-  "rootApiUrl":"http://localhost/fakeApi"
+  "rootApiUrl":"http://localhost/fakeApi",
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false
 }

@@ -1,4 +1,4 @@
-import { CombinedState, combineReducers, configureStore, PayloadAction, Reducer } from '@reduxjs/toolkit';
+import { combineReducers, configureStore, PayloadAction } from '@reduxjs/toolkit';
 import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
@@ -10,13 +10,13 @@ import {
   LocalCacheInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
-  RemoteStoreActionReturnType
+  RemoteStoreActionReturnType,
+  LocalCacheInfo,
 } from "miroir-core";
 import {
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
-  localCacheSliceInputActionNamesObject,
-  LocalCacheSliceState
+  localCacheSliceInputActionNamesObject
 } from "src/4_services/localStore/LocalCacheSlice";
 import {
   createUndoRedoReducer,
@@ -31,6 +31,39 @@ import RemoteStoreAccessReduxSaga, {
 } from "src/4_services/remoteStore/RemoteStoreAccessSaga";
 
 
+function roughSizeOfObject( object ) {
+
+  var objectList = [];
+  var stack = [ object ];
+  var bytes = 0;
+
+  while ( stack.length ) {
+      var value = stack.pop();
+
+      if ( typeof value === 'boolean' ) {
+          bytes += 4;
+      }
+      else if ( typeof value === 'string' ) {
+          bytes += value.length * 2;
+      }
+      else if ( typeof value === 'number' ) {
+          bytes += 8;
+      }
+      else if
+      (
+          typeof value === 'object'
+          && objectList.indexOf( value ) === -1
+      )
+      {
+          objectList.push( value );
+
+          for( var i in value ) {
+              stack.push( value[ i ] );
+          }
+      }
+  }
+  return bytes;
+}
 // ###############################################################################
 /**
  * Local store implementation using Redux.
@@ -89,6 +122,14 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   // ###############################################################################
   public run(): void {
     this.sagaMiddleware.run(this.rootSaga.bind(this));
+  }
+
+  // ###############################################################################
+  public currentInfo(): LocalCacheInfo {
+    // this.sagaMiddleware.run(this.rootSaga.bind(this));
+    return {
+      localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot)
+    }
   }
 
   // ###############################################################################

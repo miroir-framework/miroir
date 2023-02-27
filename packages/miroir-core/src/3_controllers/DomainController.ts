@@ -1,3 +1,4 @@
+import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { CRUDActionName, CRUDActionNamesArray, DomainAction, DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface";
 
@@ -13,10 +14,17 @@ export class DomainController implements DomainControllerInterface {
 
   }
 
+  // ########################################################################################
   currentTransaction():any[]{
     return this.dataController.currentLocalCacheTransaction();
   };
 
+  // ########################################################################################
+  currentLocalCacheInfo(): LocalCacheInfo {
+    return this.dataController.currentLocalCacheInfo();
+  }
+
+  // ########################################################################################
   async handleDomainAction(domainAction:DomainAction):Promise<void>{
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {

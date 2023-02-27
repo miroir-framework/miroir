@@ -1,6 +1,7 @@
 {
   "uuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
   "entity":"Report",
+  "conceptLevel":"Model",
   "name":"EntityList",
   "defaultLabel": "List of Entities",
   "type": "list",

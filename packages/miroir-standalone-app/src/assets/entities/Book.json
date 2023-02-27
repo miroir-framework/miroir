@@ -1,6 +1,7 @@
 {
   "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
   "entity":"Entity",
+  "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",
   "instanceValidationJsonSchema": {
@@ -14,6 +15,10 @@
       },
       "entity": {
         "title": "Entity",
+        "type": "string"
+      },
+      "conceptLevel": {
+        "title": "Concept Level",
         "type": "string"
       },
       "name": {
@@ -37,7 +42,15 @@
       "editable": false
     },
     {
-        "id": 2,
+      "id": 2,
+      "name": "conceptLevel",
+      "defaultLabel": "Concept Level",
+      "type": "string",
+      "nullable": true,
+      "editable": false
+    },
+    {
+        "id": 3,
         "name": "name",
         "defaultLabel": "title",
         "type": "string",
@@ -45,7 +58,7 @@
         "editable": true
     },
     {
-        "id": 3,
+        "id": 4,
         "name": "author",
         "defaultLabel": "Author",
         "type": "object",

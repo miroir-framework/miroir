@@ -1,6 +1,7 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "entity":"Entity",
+  "conceptLevel":"MetaModel",
   "name":"Report",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
