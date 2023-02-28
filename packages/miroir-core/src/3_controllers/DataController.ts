@@ -37,7 +37,7 @@ export class DataController implements DataControllerInterface {
    * .
    * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
    */
-  currentLocalCacheTransaction():any[]{
+  currentLocalCacheTransaction():LocalCacheAction[]{
     return this.localCache.currentTransaction();
   }
 
@@ -60,7 +60,6 @@ export class DataController implements DataControllerInterface {
     try {
       const entities: InstanceCollection = (await throwExceptionIfError(
         this.miroirContext.errorLogService,
-        // this.remoteStore.fetchAllEntityDefinitionsFromRemoteDataStore,
         this.remoteStore.handleRemoteStoreAction,
         this.remoteStore,
         {
@@ -75,7 +74,6 @@ export class DataController implements DataControllerInterface {
         console.log("DataController loadConfigurationFromRemoteDataStore loading instances for entity", e['name']);
         const entityInstances:InstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
-          // this.remoteStore.fetchInstancesForEntityListFromRemoteDatastore,
           this.remoteStore.handleRemoteStoreAction,
           this.remoteStore,
           {

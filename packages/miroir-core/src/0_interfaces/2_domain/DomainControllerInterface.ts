@@ -48,6 +48,6 @@ export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
   handleDomainAction(action:DomainAction):Promise<void>;
-  currentTransaction():any[];
+  currentTransaction():DomainAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

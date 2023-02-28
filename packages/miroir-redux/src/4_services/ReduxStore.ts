@@ -6,12 +6,10 @@ import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
 import {
-  LocalCacheAction,
-  LocalCacheInterface,
+  LocalCacheAction, LocalCacheInfo, LocalCacheInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
-  RemoteStoreActionReturnType,
-  LocalCacheInfo,
+  RemoteStoreActionReturnType
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -21,9 +19,7 @@ import {
 import {
   createUndoRedoReducer,
   InnerStoreStateInterface,
-  ReduxReducerWithUndoRedoInterface,
-  ReduxStateChanges,
-  ReduxStoreWithUndoRedo
+  ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo
 } from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
 import RemoteStoreAccessReduxSaga, {
   RemoteStoreSagaGeneratedActionNames,
@@ -149,9 +145,9 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  currentTransaction():ReduxStateChanges[]{
+  currentTransaction():LocalCacheAction[]{
     console.log("ReduxStore currentTransaction called");
-    return this.innerReduxStore.getState().pastModelPatches;
+    return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action.payload);
   }
 
   // ###############################################################################

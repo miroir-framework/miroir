@@ -15,7 +15,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  currentTransaction():any[]{
+  currentTransaction():DomainAction[]{
     return this.dataController.currentLocalCacheTransaction();
   };
 
@@ -28,13 +28,14 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(domainAction:DomainAction):Promise<void>{
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
+      // CRUD actions. The same action is performed on the local cache and on the remote store
       for (const instances of domainAction.objects) { // TODO: replace with parallel implementation Promise.all?
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction handling instances',instances);
-        await this.dataController.handleRemoteStoreAction({
-          actionName: domainAction.actionName.toString() as CRUDActionName,
-          entityName: instances.entity,
-          objects: instances.instances
-        });
+        // await this.dataController.handleRemoteStoreAction({
+        //   actionName: domainAction.actionName.toString() as CRUDActionName,
+        //   entityName: instances.entity,
+        //   objects: instances.instances
+        // });
         this.dataController.handleLocalCacheAction(
           domainAction
         );
@@ -43,8 +44,24 @@ export class DomainController implements DomainControllerInterface {
     } else {
       if (domainAction.actionName == 'replace') {
         await this.dataController.loadConfigurationFromRemoteDataStore();
+      } else if (domainAction.actionName == 'commit') {
+        for (const replayAction of this.dataController.currentLocalCacheTransaction()) {
+          console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit',replayAction);
+          for (const instances of replayAction.objects) { // TODO: replace with parallel implementation Promise.all?
+            await this.dataController.handleRemoteStoreAction(
+              {
+                actionName: replayAction.actionName.toString() as CRUDActionName,
+                entityName: instances.entity,
+                objects: instances.instances
+              }
+            );
+          }
+          this.dataController.handleLocalCacheAction(
+            domainAction
+          );
+        }
       } else {
-        console.warn('DomainController handleDomainAction',domainAction);
+        console.warn('DomainController handleDomainAction unknown action name',domainAction);
       }
     }
     return Promise.resolve()

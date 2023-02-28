@@ -17,6 +17,7 @@ export declare interface LocalCacheInterface
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
   // handleLocalCacheAction(action:DomainAction):RemoteStoreActionReturnType;
   handleLocalCacheAction(action:LocalCacheAction);
-  currentTransaction():any[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():LocalCacheAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentInfo(): LocalCacheInfo;
+
 }

@@ -32,6 +32,7 @@ export {
   // InstanceSagaEntitiesActionPayload,
   // InstanceSagaStringActionPayload,
   RemoteStoreSagaGenReturnType,
+  RemoteStoreSagaInputActionNamesObject,
   // RemoteStoreSagaGeneratedActionNames,
   // RemoteStoreSagaInputActionName,
   // RemoteStoreSagaInputActionNamesArray,

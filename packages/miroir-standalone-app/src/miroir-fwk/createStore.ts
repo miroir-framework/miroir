@@ -2,7 +2,7 @@ import {
   DataControllerInterface,
   DataController,
   DomainControllerInterface,
-  DomainController, MiroirContext, RestClient
+  DomainController, MiroirContext, RestClient, MiroirConfig
 } from "miroir-core";
 import {
   IndexedDbRestServer,
@@ -13,17 +13,18 @@ import {
 
 
 export function createMswStore(
-  rootApiUrl:string,
+  // rootApiUrl:string,
+  miroirConfig:MiroirConfig,
   fetch:(input: RequestInfo | URL, init?: RequestInit)=> Promise<Response>,
   createWorkerFromHandlers:(...handlers)=>any
 ) {
-  const mServer: IndexedDbRestServer = new IndexedDbRestServer(rootApiUrl);
+  const mServer: IndexedDbRestServer = new IndexedDbRestServer(miroirConfig.rootApiUrl);
   // const worker = setupServer(...mServer.handlers);
   const worker = createWorkerFromHandlers(...mServer.handlers);
 
   const client:RestClient = new RestClient(fetch);
-  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(rootApiUrl, client);
-  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(rootApiUrl, remoteStoreNetworkRestClient);
+  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
+  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
   const reduxStore:ReduxStore = new ReduxStore(instanceSagas);
   reduxStore.run();

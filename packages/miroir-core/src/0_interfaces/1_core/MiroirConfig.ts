@@ -3,4 +3,5 @@ export interface MiroirConfig {
   deploymentMode: 'monoUser' | 'multiUser';
   monoUserAutentification: boolean;
   monoUserVersionControl: boolean;
+  versionControlForDataConceptLevel: boolean;
 }

@@ -13,6 +13,9 @@ export {
   MiroirReportDefinition
 } from './0_interfaces/1_core/Report.js';
 export {
+  MiroirConfig
+} from './0_interfaces/1_core/MiroirConfig';
+export {
   CRUDActionName,
   CRUDActionNamesArray,
   CRUDActionNamesObject,

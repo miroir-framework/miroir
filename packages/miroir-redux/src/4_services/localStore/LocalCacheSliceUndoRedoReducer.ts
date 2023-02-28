@@ -1,8 +1,9 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import produce, { enablePatches, Patch } from "immer";
 
-import { EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
+import { domainActionNamesObject, EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
+import { RemoteStoreSagaInputActionNamesArray, RemoteStoreSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
 /**
@@ -56,21 +57,18 @@ const forgetHistoryActionsTypes: string[] = [
   // refresh from database restores the current local state to the one found in the database. All local changes are cancelled.
   // mInstanceSliceActionNames.entityInstancesRefreshed
 ];
-const undoableSliceUpdateActions: {type:string,actionName:string}[] = [
+const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
-  {
-    type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
-    actionName:'add'
-  },
-  {
-    type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
-    actionName:'delete'
-  },
-  {
-    type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
-    actionName:'update'
-  },
-];
+  [
+    domainActionNamesObject.create,
+    domainActionNamesObject.delete,
+    domainActionNamesObject.update,
+  ].map(a => ({
+        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
+        actionName: a
+      })
+    )
+;
 const undoableInstanceUpdateActionsTypes: string[] = [
   // the action to be reduced will update very minor part of the instances in the slice. The action is saved, to be replayed from the last consolidated state in history, in case an undo is required.
 ];
@@ -99,7 +97,7 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 // ####################################################################################################
 // ####################################################################################################
 export function createUndoRedoReducer(
-  reducer:InnerReducerInterface
+  innerReducer:InnerReducerInterface
   // reducer:(state:MReduxStateWithUndoRedo, action:any)=>void
 ):ReduxReducerWithUndoRedoInterface
 {
@@ -111,19 +109,15 @@ export function createUndoRedoReducer(
     reducer:InnerReducerInterface,
     state:InnerStoreStateInterface,
     action:PayloadAction<LocalCacheAction>
-  // ):InnerStoreStateInterface => {
   ) => {newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} = (
     reducer:InnerReducerInterface,
     state:InnerStoreStateInterface,
     action:PayloadAction<LocalCacheAction>
-  ) => {
-    // console.log('callUndoRedoReducer called with action', JSON.stringify(action))
+  ):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} => {
     console.log('callUndoRedoReducer called with action', action, 'state', state);
-    // const callUndoRedoReducer = (reducer:(state:MReduxStateWithUndoRedo, action:any)=>void,state:MReduxStateWithUndoRedo, action:any):void => {
-    let changes:Patch[] = []
-    let inverseChanges:Patch[] = []
-    // console.log('callUndoRedoReducer', action.type, JSON.stringify(state), action)
-    const newState:InnerStoreStateInterface = produce(
+    let changes:Patch[] = [];
+    let inverseChanges:Patch[] = [];
+    const newPresentModelSnapshot:InnerStoreStateInterface = produce(
       state,
       (draftState:InnerStoreStateInterface)=>reducer(draftState, action),
       (patches, inversePatches) => {
@@ -132,50 +126,52 @@ export function createUndoRedoReducer(
         inverseChanges.push(...inversePatches)
       }
     );
-    // console.log('callUndoRedoReducer action type', action.type, 'changes',changes, 'inverseChanges', inverseChanges);
-    // console.log('callUndoRedoReducer action type', action.type, 'newState',newState)
     if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.actionName)) {
-      return {action, newSnapshot:newState, changes: changes, inverseChanges: inverseChanges};
+      return {newSnapshot:newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges};
     } else {
       // console.log('callUndoRedoReducer not undoable', action.type, 'newState', JSON.stringify(newState), action,changes,inverseChanges)
-      return {undefined, newSnapshot:newState, changes: [], inverseChanges: []};
+      return {newSnapshot:newPresentModelSnapshot, changes: [], inverseChanges: []};
     }
   }
 
   // ####################################################################################################
-  const callNextReducer = (state:ReduxStateWithUndoRedo, action:PayloadAction<LocalCacheAction>):ReduxStateWithUndoRedo => {
+  const callNextReducer = (
+    state: ReduxStateWithUndoRedo,
+    action: PayloadAction<LocalCacheAction>,
+    updateUndoRedo: boolean = true,
+  ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
-    const {newSnapshot, changes, inverseChanges} = callUndoRedoReducer(reducer,presentModelSnapshot, action)
+    const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
     if (presentModelSnapshot === newSnapshot) {
-      return state
+      return state;
     } else {
       return {
         // dataCache,
         previousModelSnapshot,
-        pastModelPatches: changes.length>0?[...pastModelPatches, {action,changes,inverseChanges}]:pastModelPatches,
+        pastModelPatches:
+          changes.length > 0 ? [...pastModelPatches, { action, changes, inverseChanges }] : pastModelPatches,
         presentModelSnapshot: newSnapshot,
-        futureModelPatches: []
-      }
+        futureModelPatches: [],
+      };
     }
   };
 
 
   // Returns a reducer function, that handles undo and redo
   return (
-    state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(reducer), 
+    state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
     action:PayloadAction<LocalCacheAction>
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
-    console.log('UndoRedoReducer action',action)
     if (!TRANSACTIONS_ENABLED) {
       return callNextReducer(state, action)
     } else {
       switch (action.type) {
         case 'UNDO':
           const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
-          const previousState = newPast.reduce((curr:any,acc:any)=>reducer(acc,curr), previousModelSnapshot)
+          const previousState = newPast.reduce((curr:any,acc:any)=>innerReducer(acc,curr), previousModelSnapshot)
           return {
             previousModelSnapshot,
             pastModelPatches: newPast,
@@ -185,16 +181,53 @@ export function createUndoRedoReducer(
         case 'REDO':
           const newPastPatches = futureModelPatches[0]
           const newFuturePatches = futureModelPatches.slice(1)
-          const newPresentSnapshot = reducer(presentModelSnapshot, newPastPatches.action)
+          const newPresentSnapshot = innerReducer(presentModelSnapshot, newPastPatches.action)
           return {
             previousModelSnapshot,
             pastModelPatches: [...pastModelPatches, newPastPatches],
             presentModelSnapshot: newPresentSnapshot,
-            futureModelPatches: newFuturePatches
-          }
+            futureModelPatches: newFuturePatches,
+          };
         case 'ROLLBACK': // TODO: here?
+        case localCacheSliceName+'/'+RemoteStoreSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
+        console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
+        const newPresentModelSnapshot:InnerStoreStateInterface = produce(
+            state.presentModelSnapshot,
+            (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),
+          );
+          // innerReducer(state.presentModelSnapshot, action);
+          return {
+            previousModelSnapshot,
+            pastModelPatches: pastModelPatches,
+            presentModelSnapshot: newPresentModelSnapshot,
+            futureModelPatches: newFuturePatches,
+          };;
+        case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: // TODO: here?
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction', action)
+          if (action.payload.actionName == 'replace') {
+            const next = callNextReducer(state, action)
+            return {
+              // dataCache,
+              previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+              pastModelPatches: [],
+              presentModelSnapshot: next.presentModelSnapshot,
+              futureModelPatches: []
+            }
+          } else if (action.payload.actionName == 'commit') {
+            // no effect on local storage contents, just clears the present transaction contents.
+            return {
+              previousModelSnapshot: state.presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+              pastModelPatches: [],
+              presentModelSnapshot: state.presentModelSnapshot,
+              futureModelPatches: []
+            }
+          } else {
+            return callNextReducer(state, action)
+          }
+          // break;
         case 'COMMIT': // TODO: here?
         default:
+          console.log('UndoRedoReducer default handling action',action)
           return callNextReducer(state, action)
           // Delegate handling the action to the passed reducer
       }

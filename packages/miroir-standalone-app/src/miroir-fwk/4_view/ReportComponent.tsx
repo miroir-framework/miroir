@@ -24,8 +24,9 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   return (
     <div>
       <h3>
-        props: {JSON.stringify(props)}
-            {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
+        {/* props: {JSON.stringify(props)} */}
+        {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
+        {currentMiroirReport.defaultLabel}
       </h3>
      
       {

@@ -28,13 +28,13 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-const instanceSagaInputActionNamesObject = {
+export const RemoteStoreSagaInputActionNamesObject = {
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
   'handleRemoteStoreAction':'handleRemoteStoreAction',
 };
-export type RemoteStoreSagaInputActionName = keyof typeof instanceSagaInputActionNamesObject;
+export type RemoteStoreSagaInputActionName = keyof typeof RemoteStoreSagaInputActionNamesObject;
 export const RemoteStoreSagaInputActionNamesArray:RemoteStoreSagaInputActionName[] = 
-  Object.keys(instanceSagaInputActionNamesObject) as RemoteStoreSagaInputActionName[];
+  Object.keys(RemoteStoreSagaInputActionNamesObject) as RemoteStoreSagaInputActionName[];
 export const RemoteStoreSagaGeneratedActionNames = getPromiseActionStoreActionNames(RemoteStoreSagaInputActionNamesArray);
 
 
