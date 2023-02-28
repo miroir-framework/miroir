@@ -19,6 +19,7 @@ export {
   CRUDActionName,
   CRUDActionNamesArray,
   CRUDActionNamesObject,
+  CRUDActionNamesArrayString,
   DomainAction,
   DomainActionName,
   domainActionNamesArray,
@@ -31,7 +32,8 @@ export {
   DomainInstancesUuidIndex,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  selectReportInstances
+  selectReportInstances,
+  selectEntityInstances,
 } from './2_domain/ReportDisplay';
 export {
   DataControllerInterface

@@ -6,8 +6,14 @@ import { DomainState, DomainStateSelector } from "../0_interfaces/2_domain/Domai
 export function selectReportInstances(reportName:string):DomainStateSelector{
   return (domainState:DomainState):Instance[] => {
     const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState['Report'])?.find(e=>e['name'] === reportName) as MiroirReport;
-    console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.entity])
-    // const currentMiroirEntity: EntityDefinition = domainState['Entity']?.find(e=>e['name'] === currentReport.entity)
+    // console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.entity])
     return DomainInstanceUuidIndexToArray(domainState[currentReport.definition.entity]);
+  }
+}
+
+export function selectEntityInstances(entityName:string):DomainStateSelector{
+  return (domainState:DomainState):Instance[] => {
+    // console.log('selectEntityInstances', entityName, Object.keys(domainState))
+    return DomainInstanceUuidIndexToArray(domainState[entityName]);
   }
 }

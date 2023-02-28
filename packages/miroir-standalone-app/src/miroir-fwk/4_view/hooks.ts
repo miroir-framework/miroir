@@ -1,5 +1,5 @@
 import { EntityState } from "@reduxjs/toolkit";
-import { EntityDefinition, Instance, MiroirReport, selectReportInstances } from "miroir-core";
+import { EntityDefinition, Instance, MiroirReport, selectEntityInstances, selectReportInstances } from "miroir-core";
 import { selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
 import { useSelector } from "react-redux";
 
@@ -19,4 +19,9 @@ export function useLocalCacheReports():MiroirReport[] {
 //#########################################################################################
 export function useLocalCacheInstancesForReport(reportName:string):Instance[] {
   return useSelector(selectInstancesFromDomainSelector(selectReportInstances(reportName)));
+}
+
+//#########################################################################################
+export function useLocalCacheInstancesForEntity(entityName:string):Instance[] {
+  return useSelector(selectInstancesFromDomainSelector(selectEntityInstances(entityName)));
 }

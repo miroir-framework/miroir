@@ -1,9 +1,9 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import produce, { enablePatches, Patch } from "immer";
 
-import { domainActionNamesObject, EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
+import { CRUDActionNamesArrayString, domainActionNamesObject, EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
-import { RemoteStoreSagaInputActionNamesArray, RemoteStoreSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreAccessSaga";
+import { RemoteStoreSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
 /**
@@ -64,7 +64,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
     domainActionNamesObject.delete,
     domainActionNamesObject.update,
   ].map(a => ({
-        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
+        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheModelAction,
         actionName: a
       })
     )
@@ -142,18 +142,33 @@ export function createUndoRedoReducer(
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
-    const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
-    if (presentModelSnapshot === newSnapshot) {
-      return state;
+
+    if (updateUndoRedo) {
+      const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
+      if (presentModelSnapshot === newSnapshot) {
+        return state;
+      } else {
+        return {
+          // dataCache,
+          previousModelSnapshot,
+          pastModelPatches:
+            changes.length > 0 ? [...pastModelPatches, { action, changes, inverseChanges }] : pastModelPatches,
+          presentModelSnapshot: newSnapshot,
+          futureModelPatches: [],
+        };
+      }
     } else {
+      const newPresentModelSnapshot:InnerStoreStateInterface = produce(
+        state.presentModelSnapshot,
+        (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),
+      );
       return {
-        // dataCache,
         previousModelSnapshot,
-        pastModelPatches:
-          changes.length > 0 ? [...pastModelPatches, { action, changes, inverseChanges }] : pastModelPatches,
-        presentModelSnapshot: newSnapshot,
-        futureModelPatches: [],
+        pastModelPatches: pastModelPatches,
+        presentModelSnapshot: newPresentModelSnapshot,
+        futureModelPatches: futureModelPatches,
       };
+
     }
   };
 
@@ -166,7 +181,7 @@ export function createUndoRedoReducer(
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
     if (!TRANSACTIONS_ENABLED) {
-      return callNextReducer(state, action)
+      return callNextReducer(state, action,false);
     } else {
       switch (action.type) {
         case 'UNDO':
@@ -190,8 +205,8 @@ export function createUndoRedoReducer(
           };
         case 'ROLLBACK': // TODO: here?
         case localCacheSliceName+'/'+RemoteStoreSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
-        console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
-        const newPresentModelSnapshot:InnerStoreStateInterface = produce(
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
+          const newPresentModelSnapshot:InnerStoreStateInterface = produce(
             state.presentModelSnapshot,
             (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),
           );
@@ -200,10 +215,10 @@ export function createUndoRedoReducer(
             previousModelSnapshot,
             pastModelPatches: pastModelPatches,
             presentModelSnapshot: newPresentModelSnapshot,
-            futureModelPatches: newFuturePatches,
-          };;
-        case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: // TODO: here?
-          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction', action)
+            futureModelPatches: futureModelPatches,
+          };
+        case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheModelAction: {// TODO: here? 
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction', action)
           if (action.payload.actionName == 'replace') {
             const next = callNextReducer(state, action)
             return {
@@ -224,7 +239,15 @@ export function createUndoRedoReducer(
           } else {
             return callNextReducer(state, action)
           }
-          // break;
+        }
+        case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheDataAction: // TODO: here?
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheDataAction', action)
+            if (CRUDActionNamesArrayString.includes(action.payload.actionName)) {
+              return callNextReducer(state, action, false);
+            } else {
+              // TODO: raise exception?
+              console.warn('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheDataAction action not recognized', action)
+            }
         case 'COMMIT': // TODO: here?
         default:
           console.log('UndoRedoReducer default handling action',action)

@@ -16,7 +16,8 @@ export const localCacheSliceName:string = "localCache";
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
 export const localCacheSliceInputActionNamesObject = {
-  handleLocalCacheAction: "handleLocalCacheAction",
+  handleLocalCacheModelAction: "handleLocalCacheModelAction",
+  handleLocalCacheDataAction: "handleLocalCacheDataAction",
   // UpdateInstancesForEntity: "UpdateInstancesForEntity",
   // AddInstancesForEntity: "AddInstancesForEntity",
 };
@@ -89,6 +90,41 @@ function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadA
 }
 
 
+function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action);
+  switch (action.payload.actionName) {
+    case 'replace': {
+      for (let instanceCollection of action.payload.objects) {
+        ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<InstanceCollection>);
+      }
+      break;
+    }
+    case 'create': {
+      for (let instanceCollection of action.payload.objects) {
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+        sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances);
+      }
+      break;
+    }
+    case 'delete': {
+      for (let instanceCollection of action.payload.objects) {
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+        sliceEntityAdapter.removeMany(state[instanceCollection.entity], action.payload.uuid ? [action.payload.uuid] : instanceCollection.instances.map(i => i.uuid));
+      }
+      break;
+    }
+    case 'update': {
+      for (let instanceCollection of action.payload.objects) {
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+        sliceEntityAdapter.updateMany(state[instanceCollection.entity], instanceCollection.instances.map(i => ({ id: i.uuid, changes: i })));
+        // getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
+      }
+      break;
+    }
+    default:
+      console.warn('handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
+  }
+}
 
 //#########################################################################################
 //# SLICE
@@ -135,40 +171,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     //     getLocalCacheSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
     //   });
     // },
-    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
-      console.log('localCacheSliceObject',localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'called',action);
-      switch (action.payload.actionName) {
-        case 'replace': {
-          for (let instanceCollection of action.payload.objects) {
-            ReplaceInstancesForEntity(state,{type:"ReplaceInstancesForEntity",payload:instanceCollection} as PayloadAction<InstanceCollection>);
-          }
-          break;
-        }
-        case 'create': {
-          for (let instanceCollection of action.payload.objects) {
-            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
-            sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances)
-          }
-          break;
-        }
-        case 'delete': {
-          for (let instanceCollection of action.payload.objects) {
-            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
-            sliceEntityAdapter.removeMany(state[instanceCollection.entity], action.payload.uuid?[action.payload.uuid]:instanceCollection.instances.map(i=>i.uuid))
-          }
-          break;
-        }
-        case 'update': {
-          for (let instanceCollection of action.payload.objects) {
-            const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
-            sliceEntityAdapter.updateMany(state[instanceCollection.entity], instanceCollection.instances.map(i=>({ id: i.uuid, changes: i })))
-            // getSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
-          }
-          break;
-        }
-        default:
-          console.warn('handleLocalCacheAction action could not be taken into account, unkown action', action.payload.actionName)
-      }
+    [localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+      handleLocalCacheAction(state,action);
+    },
+    [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+      handleLocalCacheAction(state,action);
     },
   },
 });
@@ -204,13 +211,14 @@ export const selectInstancesFromDomainSelector: (
   (selector: DomainStateSelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
-        return selector(
-          Object.fromEntries(
-            Object.entries(state.presentModelSnapshot.miroirInstances).map(
-              (e) => [e[0], e[1].entities]
-            )
-          ) as DomainState
-        );
+        const domainState: DomainState = Object.fromEntries(
+          Object.entries(state.presentModelSnapshot.miroirInstances).map((e) => {
+            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+            return [e[0], e[1].entities];
+          })
+        ) as DomainState;
+        // console.log("selectInstancesFromDomainSelector domainState",domainState)
+        return selector(domainState);
       },
       (items: Instance[]) => items
     );

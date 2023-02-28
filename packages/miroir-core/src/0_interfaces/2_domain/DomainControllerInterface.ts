@@ -1,4 +1,4 @@
-import { LocalCacheInfo } from "src/0_interfaces/4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
 export const CRUDActionNamesObject = {
@@ -9,6 +9,7 @@ export const CRUDActionNamesObject = {
 }
 export type CRUDActionName = keyof typeof CRUDActionNamesObject;
 export const CRUDActionNamesArray:CRUDActionName[] = Object.keys(CRUDActionNamesObject) as CRUDActionName[];
+export const CRUDActionNamesArrayString:string[] = CRUDActionNamesArray.map(a=>a);
 
 export const domainActionNamesObject = {
   ...CRUDActionNamesObject,

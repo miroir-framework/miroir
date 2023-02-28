@@ -4,7 +4,8 @@ import { LocalCacheAction, LocalCacheInfo } from "../../0_interfaces/4-services/
 
 export interface DataControllerInterface {
   loadConfigurationFromRemoteDataStore():Promise<void>;
-  handleLocalCacheAction(action:DomainAction);
+  handleLocalCacheModelAction(action:DomainAction);
+  handleLocalCacheDataAction(action:DomainAction);
   handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
   currentLocalCacheTransaction():LocalCacheAction[];
   currentLocalCacheInfo(): LocalCacheInfo;

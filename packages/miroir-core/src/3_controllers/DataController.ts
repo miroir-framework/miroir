@@ -22,8 +22,13 @@ export class DataController implements DataControllerInterface {
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheAction(action:LocalCacheAction) {
-    return this.localCache.handleLocalCacheAction(action);
+  public async handleLocalCacheModelAction(action:LocalCacheAction) {
+    return this.localCache.handleLocalCacheModelAction(action);
+  }
+
+  //####################################################################################
+  public async handleLocalCacheDataAction(action:LocalCacheAction) {
+    return this.localCache.handleLocalCacheDataAction(action);
   }
 
 
@@ -86,7 +91,7 @@ export class DataController implements DataControllerInterface {
       }
       
       console.log("DataController loadConfigurationFromRemoteDataStore instances", instances);
-      this.localCache.handleLocalCacheAction(
+      this.localCache.handleLocalCacheModelAction(
         {
           actionName: "replace",
           objects: instances

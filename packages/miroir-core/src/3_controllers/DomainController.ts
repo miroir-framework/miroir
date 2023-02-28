@@ -28,19 +28,27 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(domainAction:DomainAction):Promise<void>{
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction',domainAction);
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
-      // CRUD actions. The same action is performed on the local cache and on the remote store
-      for (const instances of domainAction.objects) { // TODO: replace with parallel implementation Promise.all?
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction handling instances',instances);
-        // await this.dataController.handleRemoteStoreAction({
-        //   actionName: domainAction.actionName.toString() as CRUDActionName,
-        //   entityName: instances.entity,
-        //   objects: instances.instances
-        // });
-        this.dataController.handleLocalCacheAction(
-          domainAction
-        );
+      // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances, 
+      // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
+      if (["Entity", "Report"].includes(domainAction.objects[0].entity)) {
+        this.dataController.handleLocalCacheModelAction(domainAction);
+      } else {
+        for (const instances of domainAction.objects) {
+          // TODO: replace with parallel implementation Promise.all?
+          console.log(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction handling instances",
+            instances
+          );
+          await this.dataController.handleRemoteStoreAction({
+            actionName: domainAction.actionName.toString() as CRUDActionName,
+            entityName: instances.entity,
+            objects: instances.instances,
+          });
+        }
+        this.dataController.handleLocalCacheDataAction(domainAction);
       }
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction end',domainAction);
+      // }
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction end", domainAction);
     } else {
       if (domainAction.actionName == 'replace') {
         await this.dataController.loadConfigurationFromRemoteDataStore();
@@ -56,10 +64,10 @@ export class DomainController implements DomainControllerInterface {
               }
             );
           }
-          this.dataController.handleLocalCacheAction(
-            domainAction
-          );
         }
+        this.dataController.handleLocalCacheModelAction(
+          domainAction
+        );
       } else {
         console.warn('DomainController handleDomainAction unknown action name',domainAction);
       }
