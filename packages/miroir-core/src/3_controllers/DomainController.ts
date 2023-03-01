@@ -30,7 +30,8 @@ export class DomainController implements DomainControllerInterface {
     if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
       // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances, 
       // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
-      if (["Entity", "Report"].includes(domainAction.objects[0].entity)) {
+      if (["Entity", "Report"].includes(domainAction.objects[0].entity)) { //TODO: detect Data Entities based on their "conceptLevel" property
+        // transactional modification: the changes are done only locally, until commit
         this.dataController.handleLocalCacheModelAction(domainAction);
       } else {
         for (const instances of domainAction.objects) {
@@ -50,26 +51,41 @@ export class DomainController implements DomainControllerInterface {
       // }
       console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainAction end", domainAction);
     } else {
-      if (domainAction.actionName == 'replace') {
-        await this.dataController.loadConfigurationFromRemoteDataStore();
-      } else if (domainAction.actionName == 'commit') {
-        for (const replayAction of this.dataController.currentLocalCacheTransaction()) {
-          console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit',replayAction);
-          for (const instances of replayAction.objects) { // TODO: replace with parallel implementation Promise.all?
-            await this.dataController.handleRemoteStoreAction(
-              {
-                actionName: replayAction.actionName.toString() as CRUDActionName,
-                entityName: instances.entity,
-                objects: instances.instances
-              }
-            );
-          }
+      // non-CRUD actions, all at Model level (not Data level)
+      switch (domainAction.actionName) {
+        case 'replace': {
+          await this.dataController.loadConfigurationFromRemoteDataStore();
+          break;
         }
-        this.dataController.handleLocalCacheModelAction(
-          domainAction
-        );
-      } else {
-        console.warn('DomainController handleDomainAction unknown action name',domainAction);
+        case 'undo':
+        case 'redo': {
+          this.dataController.handleLocalCacheModelAction(
+            domainAction
+          );
+          break;
+        }
+        case 'commit': {
+          for (const replayAction of this.dataController.currentLocalCacheTransaction()) {
+            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit',replayAction);
+            for (const instances of replayAction.objects) { // TODO: replace with parallel implementation Promise.all?
+              await this.dataController.handleRemoteStoreAction(
+                {
+                  actionName: replayAction.actionName.toString() as CRUDActionName,
+                  entityName: instances.entity,
+                  objects: instances.instances
+                }
+              );
+            }
+          }
+          this.dataController.handleLocalCacheModelAction(
+            domainAction
+          );
+          break;
+        }
+        default: {
+          console.warn('DomainController handleDomainAction cannot handle action name',domainAction);
+          break;
+        }
       }
     }
     return Promise.resolve()

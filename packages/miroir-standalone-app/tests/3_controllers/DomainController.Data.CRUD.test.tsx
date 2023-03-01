@@ -141,7 +141,7 @@ describe(
       async () => {
         console.log('Add Book definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -265,7 +265,7 @@ describe(
       async () => {
         console.log('Remove Book definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -389,7 +389,7 @@ describe(
       async () => {
         console.log('update Book definition start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
         const user = userEvent.setup()
 
         await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
@@ -469,8 +469,7 @@ describe(
           }
         );
 
-        // console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
-
+        // update does not generate any redo / undo
         expect(domainController.currentTransaction().length).toEqual(0);
 
         await user.click(screen.getByRole('button'))

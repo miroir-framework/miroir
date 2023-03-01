@@ -122,7 +122,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadActi
       break;
     }
     default:
-      console.warn('handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
+      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
   }
 }
 
@@ -133,44 +133,6 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: { Entity: getLocalCacheSliceEntityAdapter("Entity").getInitialState() },
   reducers: {
-    // [localCacheSliceInputActionNamesObject.AddInstancesForEntity](state: LocalCacheSliceState, action: LocalCacheAction) {
-    //   const currentEntityName = action.payload.entity;
-    //   console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "action", JSON.stringify(action));
-
-    //   action.payload.instances.forEach((instance: InstanceWithName) => {
-    //     console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "instance", JSON.stringify(instance));
-    //     if (state[action.payload.entity]) {
-    //       state[action.payload.entity] = getLocalCacheSliceEntityAdapter(currentEntityName).addOne(
-    //         state[currentEntityName],
-    //         instance
-    //       );
-    //     } else {
-    //       state[action.payload.entity] = getLocalCacheSliceEntityAdapter(currentEntityName).addOne(
-    //         getLocalCacheSliceEntityAdapter(currentEntityName).getInitialState(),
-    //         instance
-    //       );
-    //     }
-    //   });
-    //   if (action.payload.entity === "Entity") {
-    //     //check if entity already exists in store, and if not initialize store state for it.
-    //     action.payload.instances
-    //       .filter((e) => e['name'] !== "Entity")
-    //       .forEach((entity: InstanceWithName) => {
-    //         console.log(localCacheSliceInputActionNamesObject.AddInstancesForEntity, "initializing entity", entity.name);
-    //         state[entity.name] = getLocalCacheSliceEntityAdapter(entity.name).getInitialState();
-    //       });
-    //   }
-    // },
-    // [localCacheSliceInputActionNamesObject.UpdateInstancesForEntity](state: LocalCacheSliceState, action: LocalCacheAction) {
-    //   console.log(localCacheSliceInputActionNamesObject.UpdateInstancesForEntity, state, action);
-    //   // TODO: replace implementation with updateMany
-    //   action.payload.instances.forEach((instance: InstanceWithName) => {
-    //     // state[action.payload.entity][instance.uuid] = instance;
-    //     const entityUpdate: Update<Instance> = { id: instance.uuid, changes: instance };
-
-    //     getLocalCacheSliceEntityAdapter(action.payload.entity).updateOne(state[action.payload.entity], entityUpdate);
-    //   });
-    // },
     [localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
       handleLocalCacheAction(state,action);
     },

@@ -1,5 +1,5 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
-import produce, { enablePatches, Patch } from "immer";
+import produce, { enablePatches, Patch, applyPatches } from "immer";
 
 import { CRUDActionNamesArrayString, domainActionNamesObject, EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
@@ -147,9 +147,8 @@ export function createUndoRedoReducer(
       const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
       if (presentModelSnapshot === newSnapshot) {
         return state;
-      } else {
+      } else { // presentModelSnapshot !== newSnapshot
         return {
-          // dataCache,
           previousModelSnapshot,
           pastModelPatches:
             changes.length > 0 ? [...pastModelPatches, { action, changes, inverseChanges }] : pastModelPatches,
@@ -184,15 +183,15 @@ export function createUndoRedoReducer(
       return callNextReducer(state, action,false);
     } else {
       switch (action.type) {
-        case 'UNDO':
-          const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
-          const previousState = newPast.reduce((curr:any,acc:any)=>innerReducer(acc,curr), previousModelSnapshot)
-          return {
-            previousModelSnapshot,
-            pastModelPatches: newPast,
-            presentModelSnapshot: previousState,
-            futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
-          }
+        // case 'UNDO':
+        //   const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
+        //   const previousState = newPast.reduce((curr:any,acc:any)=>innerReducer(acc,curr), previousModelSnapshot)
+        //   return {
+        //     previousModelSnapshot,
+        //     pastModelPatches: newPast,
+        //     presentModelSnapshot: previousState,
+        //     futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
+        //   }
         case 'REDO':
           const newPastPatches = futureModelPatches[0]
           const newFuturePatches = futureModelPatches.slice(1)
@@ -203,7 +202,7 @@ export function createUndoRedoReducer(
             presentModelSnapshot: newPresentSnapshot,
             futureModelPatches: newFuturePatches,
           };
-        case 'ROLLBACK': // TODO: here?
+        // case 'ROLLBACK': // TODO: here?
         case localCacheSliceName+'/'+RemoteStoreSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
           console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
           const newPresentModelSnapshot:InnerStoreStateInterface = produce(
@@ -218,26 +217,74 @@ export function createUndoRedoReducer(
             futureModelPatches: futureModelPatches,
           };
         case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheModelAction: {// TODO: here? 
-          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction', action)
-          if (action.payload.actionName == 'replace') {
-            const next = callNextReducer(state, action)
-            return {
-              // dataCache,
-              previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-              pastModelPatches: [],
-              presentModelSnapshot: next.presentModelSnapshot,
-              futureModelPatches: []
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction', action);
+          switch (action.payload.actionName) {
+            case 'replace': {
+              const next = callNextReducer(state, action)
+              return {
+                // dataCache,
+                previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+                pastModelPatches: [],
+                presentModelSnapshot: next.presentModelSnapshot,
+                futureModelPatches: []
+              }
             }
-          } else if (action.payload.actionName == 'commit') {
-            // no effect on local storage contents, just clears the present transaction contents.
-            return {
-              previousModelSnapshot: state.presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
-              pastModelPatches: [],
-              presentModelSnapshot: state.presentModelSnapshot,
-              futureModelPatches: []
+            case 'commit': {
+              // no effect on local storage contents, just clears the present transaction contents.
+              return {
+                previousModelSnapshot: state.presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+                pastModelPatches: [],
+                presentModelSnapshot: state.presentModelSnapshot,
+                futureModelPatches: []
+              }
             }
-          } else {
-            return callNextReducer(state, action)
+            case 'undo': {
+              if (pastModelPatches.length > 0) {
+                const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
+                // const previousState = newPast.reduce((curr:any,acc:any)=>innerReducer(acc,curr), previousModelSnapshot)
+                const newPresentSnapshot = applyPatches(presentModelSnapshot,pastModelPatches[pastModelPatches.length-1].inverseChanges)
+                console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction undo patches',pastModelPatches,'undo',pastModelPatches[0],pastModelPatches[1])
+                return {
+                  previousModelSnapshot,
+                  pastModelPatches: newPast,
+                  presentModelSnapshot: newPresentSnapshot,
+                  futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
+                }
+              } else {
+                // do nothing
+                console.warn('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction cannot further undo, ignoring undo action')
+                return {
+                  previousModelSnapshot,
+                  pastModelPatches,
+                  presentModelSnapshot,
+                  futureModelPatches
+                }
+              }
+            }
+            case 'redo': {
+              if (futureModelPatches.length > 0) {
+                const newPastPatches = futureModelPatches[0];
+                const newFuturePatches = futureModelPatches.slice(1);
+                const newPresentSnapshot = applyPatches(presentModelSnapshot,newPastPatches.changes);
+                return {
+                  previousModelSnapshot,
+                  pastModelPatches: [...pastModelPatches, newPastPatches],
+                  presentModelSnapshot: newPresentSnapshot,
+                  futureModelPatches: newFuturePatches,
+                };
+              } else {
+                // do nothing
+                console.warn('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction cannot further redo, ignoring redo action')
+                return {
+                  previousModelSnapshot,
+                  pastModelPatches,
+                  presentModelSnapshot,
+                  futureModelPatches
+                }
+              }
+            }
+            default:
+              return callNextReducer(state, action)
           }
         }
         case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheDataAction: // TODO: here?

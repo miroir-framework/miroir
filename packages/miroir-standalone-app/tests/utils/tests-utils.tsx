@@ -88,12 +88,12 @@ const loadingStateContext = React.createContext<{loadingStateService:LoadingStat
 //   return <loadingStateContext.Provider value={value}>{props.children}</loadingStateContext.Provider>;
 // }
 
-export const DisplayLoadingInfo:React.FC<{}> = () => {
+export const DisplayLoadingInfo:React.FC<{reportName:string}> = (props:{reportName:string}) => {
   const [step,setStep] = useState(0);
   const [loaded,setLoaded] = useState(false);
   return (
     <div>
-      <button onClick={()=>setStep(step+1)} name='next step' role='button'></button>
+      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportName} role='button'>{'next step '+props.reportName}</button>
       <span role={"step:" + step}>loaded step:{step}</span>
       <span>loaded:{loaded ? "finished" : "not"}</span>
     </div>

@@ -13,6 +13,8 @@ export const CRUDActionNamesArrayString:string[] = CRUDActionNamesArray.map(a=>a
 
 export const domainActionNamesObject = {
   ...CRUDActionNamesObject,
+  'undo': 'undo',
+  'redo': 'redo',
   'replace': 'replace', // to refresh data in local storage
   'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
 };
@@ -28,7 +30,7 @@ export function domainActionToCRUDAction(domainActionName:DomainActionName):CRUD
 }
 export interface DomainAction {
   actionName: DomainActionName;
-  // entityName?: string;
+  steps?:number; // for undo / redo
   uuid?:string;
   objects?:InstanceCollection[];
 }
