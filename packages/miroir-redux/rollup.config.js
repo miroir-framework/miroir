@@ -8,7 +8,6 @@ export default [
       '@reduxjs/toolkit',
       '@teroneko/redux-saga-promise',
       'immer',
-      'level',
       'lodash',
       'miroir-core',
       'msw',

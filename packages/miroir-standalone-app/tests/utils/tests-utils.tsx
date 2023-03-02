@@ -88,7 +88,7 @@ const loadingStateContext = React.createContext<{loadingStateService:LoadingStat
 //   return <loadingStateContext.Provider value={value}>{props.children}</loadingStateContext.Provider>;
 // }
 
-export const DisplayLoadingInfo:React.FC<{reportName:string}> = (props:{reportName:string}) => {
+export const DisplayLoadingInfo:React.FC<{reportName?:string}> = (props:{reportName?:string}) => {
   const [step,setStep] = useState(0);
   const [loaded,setLoaded] = useState(false);
   return (

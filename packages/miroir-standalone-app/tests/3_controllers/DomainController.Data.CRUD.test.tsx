@@ -44,7 +44,7 @@ miroirCoreStartup();
 const {mServer, worker, reduxStore, domainController, miroirContext} = 
   createMswStore(
     {
-      "rootApiUrl":"http://localhost/fakeApi",
+      "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
       "deploymentMode":"monoUser",
       "monoUserAutentification": false,
       "monoUserVersionControl": false,

@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "server for mirroir-based front-end",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.bundle.js",
     "build": "webpack",
-    "dev": "nodemon ./server.js localhost 3080"
+    "dev": "nodemon ./server.ts localhost 3080",
+    "dev2": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js localhost 3080\""
   },
   "repository": {
     "type": "git",
@@ -20,11 +22,17 @@
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "http-proxy-middleware": "^1.0.4"
+    "http-proxy-middleware": "^1.0.4",
+    "miroir-core": "*"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.14.4",
+    "body-parser": "^1.20.2",
+    "concurrently": "^7.6.0",
     "nodemon": "^2.0.4",
     "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.5",
     "webpack": "^4.43.0"
   }
 }

@@ -9,7 +9,7 @@ import {
   RestHandler,
   RestRequest,
 } from "msw";
-import { IndexedDb } from "src/4_services/remoteStore/localEmulation/indexedDb";
+import { deleteInstances, getInstances, IndexedDb, upsertInstance } from "miroir-core";
 import { HttpMethods } from "src/4_services/remoteStore/RemoteStoreNetworkRestClient";
 
 // Add an extra delay to all endpoints, so loading spinners show up.
@@ -42,57 +42,61 @@ export class IndexedDbRestServer {
   };
 
   // ##################################################################################
-  constructor(private rootApiUrl: string, public localIndexedDb: IndexedDb = new IndexedDb("miroir")) {
+  constructor(
+    private rootApiUrl: string, 
+    public localIndexedDb: IndexedDb = new IndexedDb("miroir")
+  ) {
     this.handlers = [
       rest.get(this.rootApiUrl + "/" + ":entityName/all", async (req, res, ctx) => {
-        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('get', entityName+"/all started get #####################################");
-        // const localData = await this.localIndexedDb.getAllValue("Entity");
-        const localData = await this.localIndexedDb.getAllValue(entityName);
+        const entityName: string =
+          typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+        console.log("get", entityName + "/all started get #####################################");
+        // const localData = await this.localIndexedDb.getAllValue(entityName);
+        const localData = await getInstances(localIndexedDb, entityName);
         console.log("server " + entityName + "/all", localData);
         return res(ctx.json(localData));
       }),
       rest.post(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
-        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('post', entityName+" started post #####################################");
-        
-        const addedObjects:any[] = await req.json();
-        const localData = await this.localIndexedDb.putValue(entityName,addedObjects[0]);
+        const entityName: string =
+          typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+        console.log("post", entityName + " started post #####################################");
+
+        const addedObjects: any[] = await req.json();
+        // const localData = await this.localIndexedDb.putValue(entityName, addedObjects[0]);
+        const localData = await upsertInstance(localIndexedDb, entityName, addedObjects[0]);
         console.log("server " + entityName + "put first object of", addedObjects);
         return res(ctx.json(addedObjects[0]));
       }),
       rest.put(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
-        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('post', entityName+" started put #####################################");
-        
-        const addedObjects:any[] = await req.json();
+        const entityName: string =
+          typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+        console.log("post", entityName + " started put #####################################");
+
+        const addedObjects: any[] = await req.json();
 
         // prepare localIndexedDb, in the case we receive a new Entity
-        if (entityName == 'Entity') {
-          localIndexedDb.addSubLevels([entityName]);
-        }
+        // if (entityName == "Entity") {
+        //   localIndexedDb.addSubLevels([entityName]);
+        // }
 
-        const localData = await this.localIndexedDb.putValue(entityName,addedObjects[0]);
+        // const localData = await this.localIndexedDb.putValue(entityName, addedObjects[0]);
+        const localData = await upsertInstance(localIndexedDb, entityName, addedObjects[0]);
         console.log("server " + entityName + "put first object of", addedObjects);
         return res(ctx.json(addedObjects[0]));
       }),
       rest.delete(this.rootApiUrl + "/" + ":entityName", async (req, res, ctx) => {
-        const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
-        console.log('delete', entityName+" started #####################################");
-        
-        const addedObjects:any[] = await req.json();
-        // const localData = await this.localIndexedDb.getAllValue("Entity");
-        for(const o of addedObjects) {
-          const localData = await this.localIndexedDb.deleteValue(entityName,o['uuid']);
-        }
-        // const localData = await this.localIndexedDb.deleteValue(entityName,addedObjects[0]);
+        const entityName: string =
+          typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+        console.log("delete", entityName + " started #####################################");
+
+        const addedObjects: any[] = await req.json();
+        // for (const o of addedObjects) {
+        //   const localData = await this.localIndexedDb.deleteValue(entityName, o["uuid"]);
+        // }
+        await deleteInstances(localIndexedDb,entityName,addedObjects);
         console.log("server " + entityName + "deleted objects of", addedObjects);
-        return res(ctx.json(addedObjects.map(o=>o['uuid'])));
+        return res(ctx.json(addedObjects.map((o) => o["uuid"])));
       }),
-      // rest.get(this.rootApiUrl + "/" + "Report/all", async (req, res, ctx) => {
-      //   const localData = await this.localIndexedDb.getAllValue("Report");
-      //   return res(ctx.delay(ARTIFICIAL_DELAY_MS), ctx.json(localData));
-      // }),
     ];
   }
 

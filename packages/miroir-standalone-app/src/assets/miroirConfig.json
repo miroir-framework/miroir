@@ -1,5 +1,8 @@
 {
-  "rootApiUrl":"http://localhost/fakeApi",
+  "serverConfig":{
+    "emulateServer": false,
+    "rootApiUrl":"http://localhost:3080/miroir"
+  },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,
   "monoUserVersionControl": false,

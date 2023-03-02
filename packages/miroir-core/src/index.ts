@@ -77,6 +77,14 @@ export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreContro
 export {
   RestClient
 } from './4_services/RestClient.js';
+export {
+  getInstances,
+  upsertInstance,
+  deleteInstances
+} from './4_services/IndexedDbRestServerFunctions.js';
+export {
+  IndexedDb
+} from './4_services/indexedDb.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple } from './tools.js';
 export { entityEntity, entityReport, reportEntityList, reportReportList };

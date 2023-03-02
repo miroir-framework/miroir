@@ -13,18 +13,16 @@ import {
 
 
 export function createMswStore(
-  // rootApiUrl:string,
   miroirConfig:MiroirConfig,
   fetch:(input: RequestInfo | URL, init?: RequestInit)=> Promise<Response>,
   createWorkerFromHandlers:(...handlers)=>any
 ) {
-  const mServer: IndexedDbRestServer = new IndexedDbRestServer(miroirConfig.rootApiUrl);
-  // const worker = setupServer(...mServer.handlers);
-  const worker = createWorkerFromHandlers(...mServer.handlers);
+  const mServer: IndexedDbRestServer = miroirConfig.serverConfig.emulateServer?new IndexedDbRestServer(miroirConfig.serverConfig.rootApiUrl):undefined;
+  const worker = miroirConfig.serverConfig.emulateServer?createWorkerFromHandlers(...mServer.handlers):undefined;
 
   const client:RestClient = new RestClient(fetch);
-  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
-  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
+  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.serverConfig.rootApiUrl, client);
+  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(miroirConfig.serverConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
   const reduxStore:ReduxStore = new ReduxStore(instanceSagas);
   reduxStore.run();

@@ -34,7 +34,7 @@ miroirCoreStartup();
 const {mServer, worker, reduxStore, domainController, miroirContext} = 
   createMswStore(
     {
-      "rootApiUrl":"http://localhost/fakeApi",
+      "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
       "deploymentMode":"monoUser",
       "monoUserAutentification": false,
       "monoUserVersionControl": false,
@@ -119,7 +119,7 @@ describe(
       async () => {
         console.log('Add Report definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -230,7 +230,7 @@ describe(
       async () => {
         console.log('Add Report definition then commit start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -488,7 +488,7 @@ describe(
       async () => {
         console.log('update Report definition start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
         const user = userEvent.setup()
 
         await mServer.createObjectStore(["Entity","Instance","Report"]);
