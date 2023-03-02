@@ -35,9 +35,6 @@ export interface DomainAction {
   objects?:InstanceCollection[];
 }
 
-// export interface DomainState {
-//   [propName: string]: Instance[];
-// }
 export interface DomainInstancesUuidIndex {
   [uuid: string]: Instance
 }

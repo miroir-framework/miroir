@@ -34,6 +34,7 @@ export class DomainController implements DomainControllerInterface {
         // transactional modification: the changes are done only locally, until commit
         this.dataController.handleLocalCacheModelAction(domainAction);
       } else {
+        // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
         for (const instances of domainAction.objects) {
           // TODO: replace with parallel implementation Promise.all?
           console.log(

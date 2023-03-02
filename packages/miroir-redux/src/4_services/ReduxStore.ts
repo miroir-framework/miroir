@@ -72,17 +72,14 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   constructor(
-    // public entityRemoteAccessReduxSaga: EntityRemoteAccessReduxSaga,
     public RemoteStoreAccessReduxSaga: RemoteStoreAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
       combineReducers<InnerStoreStateInterface,PayloadAction<LocalCacheAction>>(
-      // combineReducers(
         {
           miroirInstances: LocalCacheSlice.reducer,
         }
       ) 
-      // ) as Reducer<CombinedState<InnerStoreStateInterface>, PayloadAction<LocalCacheAction>>
     );
 
     this.sagaMiddleware = sagaMiddleware();
@@ -99,10 +96,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
           serializableCheck: {
-            // Ignore these action types
-            ignoredActions: ignoredActionsList,
-            // Ignore these field paths in all actions
-            ignoredActionPaths: ["meta.promiseActions"],
+            ignoredActions: ignoredActionsList, // Ignore these action types
+            ignoredActionPaths: ["meta.promiseActions"], // Ignore these field paths in all actions
           },
         })
         .concat(promiseMiddleware)

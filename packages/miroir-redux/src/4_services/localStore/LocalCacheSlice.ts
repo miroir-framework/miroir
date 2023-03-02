@@ -82,14 +82,12 @@ function getInitializedEntityAdapter(entityName: string, state: LocalCacheSliceS
 function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadAction<InstanceCollection>) {
   console.log('ReplaceInstancesForEntity', action.payload.entity,action.payload.instances);
   const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.entity,state);
-  // if (!state[action.payload.entity]) {
-  //   state[action.payload.entity] = sliceEntityAdapter.getInitialState();
-  // }
 
   state[action.payload.entity] = sliceEntityAdapter.setAll(state[action.payload.entity], action.payload.instances);
 }
 
 
+//#########################################################################################
 function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action);
   switch (action.payload.actionName) {

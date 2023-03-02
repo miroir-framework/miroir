@@ -192,16 +192,16 @@ export function createUndoRedoReducer(
         //     presentModelSnapshot: previousState,
         //     futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
         //   }
-        case 'REDO':
-          const newPastPatches = futureModelPatches[0]
-          const newFuturePatches = futureModelPatches.slice(1)
-          const newPresentSnapshot = innerReducer(presentModelSnapshot, newPastPatches.action)
-          return {
-            previousModelSnapshot,
-            pastModelPatches: [...pastModelPatches, newPastPatches],
-            presentModelSnapshot: newPresentSnapshot,
-            futureModelPatches: newFuturePatches,
-          };
+        // case 'REDO':
+        //   const newPastPatches = futureModelPatches[0]
+        //   const newFuturePatches = futureModelPatches.slice(1)
+        //   const newPresentSnapshot = innerReducer(presentModelSnapshot, newPastPatches.action)
+        //   return {
+        //     previousModelSnapshot,
+        //     pastModelPatches: [...pastModelPatches, newPastPatches],
+        //     presentModelSnapshot: newPresentSnapshot,
+        //     futureModelPatches: newFuturePatches,
+        //   };
         // case 'ROLLBACK': // TODO: here?
         case localCacheSliceName+'/'+RemoteStoreSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
           console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
@@ -295,7 +295,7 @@ export function createUndoRedoReducer(
               // TODO: raise exception?
               console.warn('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheDataAction action not recognized', action)
             }
-        case 'COMMIT': // TODO: here?
+        // case 'COMMIT': // TODO: here?
         default:
           console.log('UndoRedoReducer default handling action',action)
           return callNextReducer(state, action)
