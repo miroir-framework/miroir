@@ -77,17 +77,13 @@ describe(
 
         const displayLoadingInfo=<DisplayLoadingInfo reportName="Entity"/>
         const user = userEvent.setup()
-        // const loadingStateService = new LoadingStateService();
 
-        await mServer.createObjectStore(["Entity","Instance","Report","Book"]);
+        await mServer.createObjectStore(["Entity","Report",]);
         await mServer.clearObjectStore();
         await mServer.localIndexedDb.putValue("Entity", entityReport);
         await mServer.localIndexedDb.putValue("Entity", entityEntity);
         await mServer.localIndexedDb.putValue("Report", reportReportList);
         await mServer.localIndexedDb.putValue("Report", reportEntityList);
-        // await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-        // await mServer.localIndexedDb.putValue("Entity", entityBook);
-        // Entity List Report is not added.
 
 
         const {

@@ -9,7 +9,7 @@ import {
   RestHandler,
   RestRequest,
 } from "msw";
-import { IndexedDb } from "src/4_services/remoteStore/indexedDb";
+import { IndexedDb } from "src/4_services/remoteStore/localEmulation/indexedDb";
 import { HttpMethods } from "src/4_services/remoteStore/RemoteStoreNetworkRestClient";
 
 // Add an extra delay to all endpoints, so loading spinners show up.
@@ -45,7 +45,6 @@ export class IndexedDbRestServer {
   constructor(private rootApiUrl: string, public localIndexedDb: IndexedDb = new IndexedDb("miroir")) {
     this.handlers = [
       rest.get(this.rootApiUrl + "/" + ":entityName/all", async (req, res, ctx) => {
-        
         const entityName:string = typeof req.params['entityName'] == 'string'?req.params['entityName']:req.params['entityName'][0];
         console.log('get', entityName+"/all started get #####################################");
         // const localData = await this.localIndexedDb.getAllValue("Entity");
@@ -58,7 +57,6 @@ export class IndexedDbRestServer {
         console.log('post', entityName+" started post #####################################");
         
         const addedObjects:any[] = await req.json();
-        // const localData = await this.localIndexedDb.getAllValue("Entity");
         const localData = await this.localIndexedDb.putValue(entityName,addedObjects[0]);
         console.log("server " + entityName + "put first object of", addedObjects);
         return res(ctx.json(addedObjects[0]));
@@ -68,7 +66,12 @@ export class IndexedDbRestServer {
         console.log('post', entityName+" started put #####################################");
         
         const addedObjects:any[] = await req.json();
-        // const localData = await this.localIndexedDb.getAllValue("Entity");
+
+        // prepare localIndexedDb, in the case we receive a new Entity
+        if (entityName == 'Entity') {
+          localIndexedDb.addSubLevels([entityName]);
+        }
+
         const localData = await this.localIndexedDb.putValue(entityName,addedObjects[0]);
         console.log("server " + entityName + "put first object of", addedObjects);
         return res(ctx.json(addedObjects[0]));

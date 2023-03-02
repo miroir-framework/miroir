@@ -24,31 +24,52 @@ export class IndexedDb {
     return this.db?.clear();
   }
 
+  // #############################################################################
+  private createSubLevels(db: Level, tableNames:string[]) {
+    return new Map<string, any>([
+      ...tableNames.map(
+          (tableName: string) => {
+          const result: [string, any] = [
+            tableName,
+            <any>db.sublevel(tableName),
+          ];
+          return result;
+        }
+      ),
+    ]);
+  }
 
+    // #############################################################################
+  public hasSubLevel(tableName:string):boolean {
+    return this.subLevels.has(tableName);
+  }
+  // #############################################################################
+  public addSubLevels(tableNames:string[]) {
+    this.subLevels = new Map<string, any>([
+      ...this.subLevels.entries(),
+      ...tableNames.filter(n=>!this.hasSubLevel(n)).map(
+          (tableName: string) => {
+          const result: [string, any] = [
+            tableName,
+            <any>this.db.sublevel(tableName),
+          ];
+          return result;
+        }
+      ),
+    ]);
+  }
+
+  // #############################################################################
   public async createObjectStore(tableNames: string[]):Promise<Level> {
-    const createSubLevels = () => new Map<string, any>(
-      [
-        ...(tableNames.map(
-          (tableName:string) => {
-            const result: [string,any] = [
-              tableName,
-              // <any>this.db.sublevel(tableName, {keyEncoding: 'utf8', valueEncoding: 'utf8'})
-              <any>this.db.sublevel(tableName)
-            ];
-            return result;
-          }
-        ))
-      ]
-    );
     try {
       if(this.db !== undefined) {
         await this.db.open();
         console.log('createObjectStore opened db')
-        this.subLevels = createSubLevels();
+        this.subLevels = this.createSubLevels(this.db,tableNames);
         return Promise.resolve(undefined);
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
-        this.subLevels = createSubLevels();
+        this.subLevels = this.createSubLevels(this.db,tableNames);
         console.log('createObjectStore created db')
         return Promise.resolve(undefined);
       }

@@ -1,5 +1,5 @@
-export { IndexedDb } from "./4_services/remoteStore/indexedDb";
-export { IndexedDbRestServer } from "./4_services/remoteStore/IndexedDbRestServer";
+export { IndexedDb } from "./4_services/remoteStore/localEmulation/indexedDb";
+export { IndexedDbRestServer } from "./4_services/remoteStore/localEmulation/IndexedDbRestServer";
 export {
   // LocalCacheSlice,
   // localCacheSliceObject,
