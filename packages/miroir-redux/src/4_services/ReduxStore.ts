@@ -21,10 +21,10 @@ import {
   InnerStoreStateInterface,
   ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo
 } from "src/4_services/localStore/LocalCacheSliceUndoRedoReducer";
-import RemoteStoreAccessReduxSaga, {
-  RemoteStoreSagaGeneratedActionNames,
-  RemoteStoreSagaInputActionNamesArray
-} from "src/4_services/remoteStore/RemoteStoreAccessSaga";
+import RemoteStoreRestAccessReduxSaga, {
+  RemoteStoreRestSagaGeneratedActionNames,
+  RemoteStoreRestSagaInputActionNamesArray
+} from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
 
 
 function roughSizeOfObject( object ) {
@@ -72,7 +72,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   constructor(
-    public RemoteStoreAccessReduxSaga: RemoteStoreAccessReduxSaga
+    public RemoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
       combineReducers<InnerStoreStateInterface,PayloadAction<LocalCacheAction>>(
@@ -85,8 +85,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     this.sagaMiddleware = sagaMiddleware();
 
     const ignoredActionsList = [
-      ...RemoteStoreSagaInputActionNamesArray,
-      ...RemoteStoreSagaGeneratedActionNames,
+      ...RemoteStoreRestSagaInputActionNamesArray,
+      ...RemoteStoreRestSagaGeneratedActionNames,
       ...localCacheSliceGeneratedActionNames,
     ];
 
@@ -126,7 +126,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   // ###############################################################################
   async handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
     const result:Promise<RemoteStoreActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.instanceSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
+      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
     )
     console.log("handleRemoteStoreAction", action, "returned", result)
     return Promise.resolve(result);

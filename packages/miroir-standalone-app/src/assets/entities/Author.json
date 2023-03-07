@@ -29,7 +29,7 @@
         "id": 1,
         "name": "uuid",
         "defaultLabel": "Uuid",
-        "type": "string",
+        "type": "STRING",
         "nullable": false,
         "editable": false
     },
@@ -37,7 +37,7 @@
         "id": 2,
         "name": "name",
         "defaultLabel": "Name",
-        "type": "string",
+        "type": "STRING",
         "nullable": false,
         "editable": true
     },
@@ -45,7 +45,7 @@
         "id": 3,
         "name": "entity",
         "defaultLabel": "Entity",
-        "type": "string",
+        "type": "STRING",
         "nullable": false,
         "editable": true
     }

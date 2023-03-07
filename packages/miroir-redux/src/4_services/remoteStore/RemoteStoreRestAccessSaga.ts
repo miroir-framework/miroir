@@ -3,12 +3,10 @@ import {
   promiseActionFactory,
   SagaPromiseActionCreator
 } from "@teroneko/redux-saga-promise";
-import { all, call, Effect, put, putResolve, takeEvery } from 'redux-saga/effects';
+import { all, call, Effect, put, takeEvery } from 'redux-saga/effects';
 
 
-import {
-  EntityDefinition, RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple
-} from "miroir-core";
+import { RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
@@ -28,36 +26,27 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //#########################################################################################
 //# ACTION NAMES
 //#########################################################################################
-export const RemoteStoreSagaInputActionNamesObject = {
+export const RemoteStoreRestSagaInputActionNamesObject = {
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
   'handleRemoteStoreAction':'handleRemoteStoreAction',
 };
-export type RemoteStoreSagaInputActionName = keyof typeof RemoteStoreSagaInputActionNamesObject;
-export const RemoteStoreSagaInputActionNamesArray:RemoteStoreSagaInputActionName[] = 
-  Object.keys(RemoteStoreSagaInputActionNamesObject) as RemoteStoreSagaInputActionName[];
-export const RemoteStoreSagaGeneratedActionNames = getPromiseActionStoreActionNames(RemoteStoreSagaInputActionNamesArray);
+export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
+export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
+  Object.keys(RemoteStoreRestSagaInputActionNamesObject) as RemoteStoreRestSagaInputActionName[];
+export const RemoteStoreRestSagaGeneratedActionNames = getPromiseActionStoreActionNames(RemoteStoreRestSagaInputActionNamesArray);
 
 
 //#########################################################################################
 // events sent by the LocalCacheSlice, that can be intercepted and acted upon by the outside world
-export const RemoteStoreSagaOutputActionNames = stringTuple(
+export const RemoteStoreRestSagaOutputActionNames = stringTuple(
   'instancesRefreshedForEntity', 'allInstancesRefreshed'
 );
-export type RemoteStoreSagaOutputActionTypeString = typeof RemoteStoreSagaOutputActionNames[number];
+export type RemoteStoreRestSagaOutputActionTypeString = typeof RemoteStoreRestSagaOutputActionNames[number];
 
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-// export type InstanceSagaStringActionPayload = string;
-// export type InstanceSagaEntitiesActionPayload = EntityDefinition[];
-
-// export type InstanceSagaAction = PayloadAction<InstanceSagaEntitiesActionPayload|InstanceSagaStringActionPayload>;
-
-
-//#########################################################################################
-//# SLICE
-//#########################################################################################
-export class RemoteStoreAccessReduxSaga {
+export class RemoteStoreRestAccessReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
@@ -70,8 +59,8 @@ export class RemoteStoreAccessReduxSaga {
   private entitiesAlreadyFetched: string[] = [];
 
 //#########################################################################################
-public instanceSagaInputPromiseActions:{
-    [property in RemoteStoreSagaInputActionName]
+public remoteStoreRestAccessSagaInputPromiseActions:{
+    [property in RemoteStoreRestSagaInputActionName]
     : {
       name: property,
       creator:SagaPromiseActionCreator<
@@ -178,7 +167,7 @@ public instanceSagaInputPromiseActions:{
   ):RemoteStoreSagaGenReturnType {
     yield all(
       [
-        ...Object.values(this.instanceSagaInputPromiseActions).map(
+        ...Object.values(this.remoteStoreRestAccessSagaInputPromiseActions).map(
           a => takeEvery(
             a.creator,
             handlePromiseActionForSaga(a.generator)
@@ -189,5 +178,5 @@ public instanceSagaInputPromiseActions:{
   }
 }// end class Mslice
 
-export default RemoteStoreAccessReduxSaga;
+export default RemoteStoreRestAccessReduxSaga;
 

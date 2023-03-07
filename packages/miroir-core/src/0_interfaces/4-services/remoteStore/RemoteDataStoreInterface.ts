@@ -50,3 +50,10 @@ export declare interface RemoteDataStoreInterface {
   // run(): void;
   // getInnerStore(): any; // TODO: local store should not expose its implementation!!
 }
+
+export interface DataStoreInterface {
+  getInstances(entityName:string):Promise<Instance[]>;
+  upsertInstance(entityName:string, instance:Instance):Promise<any>;
+  deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
+
+}

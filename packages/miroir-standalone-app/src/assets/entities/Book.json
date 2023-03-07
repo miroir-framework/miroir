@@ -37,7 +37,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "string",
+      "type": "STRING",
       "nullable": false,
       "editable": false
     },
@@ -45,7 +45,7 @@
       "id": 2,
       "name": "conceptLevel",
       "defaultLabel": "Concept Level",
-      "type": "string",
+      "type": "STRING",
       "nullable": true,
       "editable": false
     },
@@ -53,7 +53,7 @@
         "id": 3,
         "name": "name",
         "defaultLabel": "title",
-        "type": "string",
+        "type": "STRING",
         "nullable": false,
         "editable": true
     },
@@ -61,7 +61,7 @@
         "id": 4,
         "name": "author",
         "defaultLabel": "Author",
-        "type": "object",
+        "type": "OBJECT",
         "nullable": true,
         "editable": true
     }

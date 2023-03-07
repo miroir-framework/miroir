@@ -1,6 +1,7 @@
 {
   "uuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
   "entity":"Report",
+  "conceptLevel":"Model",
   "name":"BookList",
   "defaultLabel": "List of Books",
   "type": "list",

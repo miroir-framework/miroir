@@ -26,24 +26,29 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
       <h3>
         {/* props: {JSON.stringify(props)} */}
         {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
-        {currentMiroirReport.defaultLabel}
+        {currentMiroirReport?.defaultLabel}
       </h3>
      
       {
-        miroirReports?.length > 0?
-          <div>
-            <MTableComponent
-              columnDefs={
-                currentMiroirEntity?.attributes?.map(
-                  (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
-                )
-              }
-              rowData={instancesToDisplay}
-            >
-            </MTableComponent>
-          </div>
+        currentMiroirReport?
+          (
+            miroirReports?.length > 0?
+              <div>
+                <MTableComponent
+                  columnDefs={
+                    currentMiroirEntity?.attributes?.map(
+                      (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
+                    )
+                  }
+                  rowData={instancesToDisplay}
+                >
+                </MTableComponent>
+              </div>
+            :
+              <span>No elements in the report</span>
+          )
         :
-          <span>pas d entités</span>
+          <span>no report to display</span>
       }
    </div>
   );

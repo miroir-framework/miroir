@@ -1,6 +1,7 @@
 {
   "uuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
   "entity":"Report",
+  "conceptLevel":"Model",
   "name":"AuthorList",
   "defaultLabel": "List of Authors",
   "type": "list",

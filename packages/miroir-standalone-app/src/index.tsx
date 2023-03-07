@@ -6,25 +6,26 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   DomainAction,
+  DomainControllerInterface,
   entityEntity,
   entityReport, Instance, MiroirConfig, miroirCoreStartup,
-  reportEntityList,reportReportList
+  reportEntityList, reportReportList
 } from "miroir-core";
 
-import entityAuthor from "assets/entities/Author.json"
-import entityBook from "assets/entities/Book.json"
-import reportBookList from "assets/reports/BookList.json"
-import reportAuthorList from "assets/reports/AuthorList.json"
-import author1 from "assets/instances/Author - Cornell Woolrich.json"
-import author2 from "assets/instances/Author - Don Norman.json"
-import author3 from "assets/instances/Author - Paul Veyne.json"
-import book1 from "assets/instances/Book - The Bride Wore Black.json"
-import book2 from "assets/instances/Book - The Design of Everyday Things.json"
-import book3 from "assets/instances/Book - Et dans l'éternité.json"
-import book4 from "assets/instances/Book - Rear Window.json"
+import entityAuthor from "assets/entities/Author.json";
+import entityBook from "assets/entities/Book.json";
+import author1 from "assets/instances/Author - Cornell Woolrich.json";
+import author2 from "assets/instances/Author - Don Norman.json";
+import author3 from "assets/instances/Author - Paul Veyne.json";
+import book3 from "assets/instances/Book - Et dans l'éternité.json";
+import book4 from "assets/instances/Book - Rear Window.json";
+import book1 from "assets/instances/Book - The Bride Wore Black.json";
+import book2 from "assets/instances/Book - The Design of Everyday Things.json";
+import miroirConfig from "assets/miroirConfig.json";
+import reportAuthorList from "assets/reports/AuthorList.json";
+import reportBookList from "assets/reports/BookList.json";
 import { MComponent } from "miroir-fwk/4_view/MComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import miroirConfig from "assets/miroirConfig.json";
 import { createMswStore } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
 
@@ -32,10 +33,83 @@ console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById("root");
 const root = createRoot(container);
 
+async function uploadConfiguration(domainController:DomainControllerInterface) {
+  const updateEntitiesAction: DomainAction = {
+    actionName: "create",
+    objects: [
+      {
+        entity: "Entity",
+        instances: [
+          entityEntity as Instance,
+          entityReport as Instance,
+          // entityAuthor as Instance,
+          // entityBook as Instance
+        ],
+      },
+      {
+        entity: "Report",
+        instances: [
+          reportEntityList as Instance,
+          reportReportList as Instance,
+        ],
+      },
+    ],
+  };
+  await domainController.handleDomainAction(updateEntitiesAction);
+  await domainController.handleDomainAction({actionName: "commit"});
+}
+
+async function uploadBooksAndReports(domainController:DomainControllerInterface) {
+  const updateEntitiesAction: DomainAction = {
+    actionName: "create",
+    objects: [
+      {
+        entity: "Entity",
+        instances: [
+          entityAuthor as Instance,
+          entityBook as Instance
+        ],
+      },
+    ],
+  };
+  await domainController.handleDomainAction(updateEntitiesAction);
+  await domainController.handleDomainAction({actionName: "commit"});
+  const updateInstancesAction: DomainAction = {
+    actionName: "create",
+    objects: [
+      {
+        entity: "Author",
+        instances: [
+          author1 as Instance,
+          author2 as Instance,
+          author3 as Instance,
+        ],
+      },
+      {
+        entity: "Book",
+        instances: [
+          book1 as Instance,
+          book2 as Instance,
+          book3 as Instance,
+          book4 as Instance,
+        ],
+      },
+      {
+        entity: "Report",
+        instances: [
+          reportAuthorList as Instance,
+          reportBookList as Instance,
+        ],
+      },
+    ],
+  };
+  await domainController.handleDomainAction(updateInstancesAction);
+  // await domainController.handleDomainAction({actionName: "commit"});
+}
+
 async function start() {
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
-
 
   miroirAppStartup();
   miroirCoreStartup();
@@ -59,111 +133,16 @@ async function start() {
       await worker.start();
     }
     if (!!mServer) {
-      await mServer.createObjectStore(["Entity", "Instance", "Report", "Author", "Book"]);
+      await mServer.createObjectStore(["Entity", "Report"]);
       await mServer.clearObjectStore();
       await mServer.localIndexedDb.putValue("Entity", entityEntity);
       await mServer.localIndexedDb.putValue("Entity", entityReport);
       await mServer.localIndexedDb.putValue("Report", reportEntityList);
       await mServer.localIndexedDb.putValue("Report", reportReportList);
-      await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-      await mServer.localIndexedDb.putValue("Entity", entityBook);
-      await mServer.localIndexedDb.putValue("Report", reportBookList);
-      await mServer.localIndexedDb.putValue("Author", author1);
-      await mServer.localIndexedDb.putValue("Author", author2);
-      await mServer.localIndexedDb.putValue("Author", author3);
-      await mServer.localIndexedDb.putValue("Book", book1);
-      await mServer.localIndexedDb.putValue("Book", book2);
-      await mServer.localIndexedDb.putValue("Book", book3);
-      await mServer.localIndexedDb.putValue("Book", book4);
     }
 
     // load Miroir Configuration
-    await domainController.handleDomainAction({actionName: "replace"});
-
-    const updateEntitiesAction: DomainAction = {
-      actionName: "create",
-      objects: [
-        {
-          entity: "Entity",
-          instances: [
-            entityAuthor as Instance,
-            entityBook as Instance
-          ],
-        },
-      ],
-    };
-    await domainController.handleDomainAction(updateEntitiesAction);
-
-    await domainController.handleDomainAction({actionName: "commit"});
-
-    const updateAuthorsAction: DomainAction = {
-      actionName: "create",
-      objects: [
-        {
-          entity: "Author",
-          instances: [
-            author1 as Instance,
-            author2 as Instance,
-            author3 as Instance,
-          ],
-        },
-      ],
-    };
-    await domainController.handleDomainAction(updateAuthorsAction);
-
-    const updateBooksAction: DomainAction = {
-      actionName: "create",
-      objects: [
-        {
-          entity: "Book",
-          instances: [
-            book1 as Instance,
-            book2 as Instance,
-            book3 as Instance,
-          ],
-        },
-      ],
-    };
-    await domainController.handleDomainAction(updateBooksAction);
-
-    const updateReportsAction: DomainAction = {
-      actionName: "create",
-      objects: [
-        {
-          entity: "Report",
-          instances: [
-            reportAuthorList as Instance,
-            reportBookList as Instance,
-          ],
-        },
-      ],
-    };
-    await domainController.handleDomainAction(updateReportsAction);
-
-    await domainController.handleDomainAction({actionName: "commit"});
-    await domainController.handleDomainAction({actionName: "replace"});
-
-    // const updateReportsAction: DomainAction = {
-    //   actionName: "update",
-    //   objects: [
-    //     {
-    //       entity: "Report",
-    //       instances: [
-    //         {
-    //           "uuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-    //           "entity":"Report",
-    //           "name":"BookList",
-    //           "defaultLabel": "List of Books 2",
-    //           "type": "list",
-    //           "definition": {
-    //             "entity": "Book"
-    //           }
-    //         } as Instance,
-    //       ],
-    //     },
-    //   ],
-    // };
-    // await domainController.handleDomainAction(updateReportsAction);
+    // await domainController.handleDomainAction({actionName: "replace"});
 
     root.render(
       <Provider store={mReduxStore.getInnerStore()}>
@@ -176,10 +155,17 @@ async function start() {
               <span>transactions: {JSON.stringify(domainController.currentTransaction())}</span>
               <p/>
               <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
+              <p/>
+              <span><button onClick={async() => {await uploadConfiguration(domainController)}}>upload Miroir configuration to database</button></span>
+              <p/>
+              <span><button onClick={async() => {await uploadBooksAndReports(domainController)}}>upload App configuration to database</button></span>
+              <p/>
+              <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "replace"})}}>fetch Miroir & App configurations from database</button></span>
+              <p/>
               <MComponent 
                 // reportName="AuthorList"
-                reportName="BookList"
-                // reportName="EntityList"
+                // reportName="BookList"
+                reportName="EntityList"
             ></MComponent>
             </MiroirContextReactProvider>
           </Container>

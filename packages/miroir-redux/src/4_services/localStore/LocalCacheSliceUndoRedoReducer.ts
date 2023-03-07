@@ -3,7 +3,7 @@ import produce, { enablePatches, Patch, applyPatches } from "immer";
 
 import { CRUDActionNamesArrayString, domainActionNamesObject, EntityDefinition, InstanceCollection, LocalCacheAction } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
-import { RemoteStoreSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreAccessSaga";
+import { RemoteStoreRestSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
 /**
@@ -203,7 +203,7 @@ export function createUndoRedoReducer(
         //     futureModelPatches: newFuturePatches,
         //   };
         // case 'ROLLBACK': // TODO: here?
-        case localCacheSliceName+'/'+RemoteStoreSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
+        case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
           console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
           const newPresentModelSnapshot:InnerStoreStateInterface = produce(
             state.presentModelSnapshot,

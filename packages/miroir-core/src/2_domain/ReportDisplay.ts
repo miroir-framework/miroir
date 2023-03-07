@@ -7,7 +7,7 @@ export function selectReportInstances(reportName:string):DomainStateSelector{
   return (domainState:DomainState):Instance[] => {
     const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState['Report'])?.find(e=>e['name'] === reportName) as MiroirReport;
     // console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.entity])
-    return DomainInstanceUuidIndexToArray(domainState[currentReport.definition.entity]);
+    return currentReport?.definition?.entity?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.entity]):[];
   }
 }
 

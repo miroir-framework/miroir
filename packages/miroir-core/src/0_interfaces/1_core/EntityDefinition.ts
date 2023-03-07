@@ -1,10 +1,22 @@
 import { InstanceWithName } from "./Instance.js";
 
+// export const EntityAttributeTypeObject:{[id in string]:id} = {
+export const EntityAttributeTypeObject = {
+  'STRING': 'STRING', 
+  'ARRAY': 'ARRAY', 
+  'OBJECT': 'OBJECT',
+}
+export type EntityAttributeType = keyof typeof EntityAttributeTypeObject;
+export const EntityAttributeTypeNameArray: EntityAttributeType[] = Object.keys(EntityAttributeTypeObject) as EntityAttributeType[];
+
+
+
 export interface EntityAttribute {
   "id": number,
   "name": string,
   "defaultLabel": string,
-  "type": string,
+  // "type": string,
+  "type": EntityAttributeType,
   "nullable": boolean,
   "editable": boolean,
 };

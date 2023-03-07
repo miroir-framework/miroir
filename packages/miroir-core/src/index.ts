@@ -1,6 +1,9 @@
 export {
   EntityAttribute,
-  EntityDefinition
+  EntityAttributeType,
+  EntityAttributeTypeNameArray,
+  EntityAttributeTypeObject,
+  EntityDefinition,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
   Instance,
@@ -50,6 +53,7 @@ export {
   LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
+  DataStoreInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
   RemoteStoreActionReturnType,
@@ -78,9 +82,7 @@ export {
   RestClient
 } from './4_services/RestClient.js';
 export {
-  getInstances,
-  upsertInstance,
-  deleteInstances
+  IndexedDbServer,
 } from './4_services/IndexedDbRestServerFunctions.js';
 export {
   IndexedDb

@@ -33,7 +33,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "string",
+      "type": "STRING",
       "nullable": false,
       "editable": false
     },
@@ -41,17 +41,41 @@
         "id": 2,
         "name": "name",
         "defaultLabel": "Name",
-        "type": "string",
+        "type": "STRING",
         "nullable": false,
         "editable": true
     },
     {
-        "id": 3,
-        "name": "definition",
-        "defaultLabel": "Definition",
-        "type": "object",
-        "nullable": true,
-        "editable": true
+      "id": 3,
+      "name": "entity",
+      "defaultLabel": "Entity",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
+    },
+    {
+      "id": 4,
+      "name": "defaultLabel",
+      "defaultLabel": "Default Label",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
+    },
+    {
+      "id": 5,
+      "name": "type",
+      "defaultLabel": "Type of Report",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
+    },
+    {
+      "id": 6,
+      "name": "definition",
+      "defaultLabel": "Definition",
+      "type": "OBJECT",
+      "nullable": true,
+      "editable": true
     }
   ]
 }

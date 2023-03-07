@@ -1,7 +1,20 @@
-import express, { Express, Request, Response } from 'express';
+import express from 'express';
 
-import bodyParser from 'body-parser'
-import { entityEntity, entityReport, getInstances, IndexedDb, reportEntityList, reportReportList, upsertInstance } from 'miroir-core';
+
+import { DataTypes, Sequelize, ModelStatic, Model } from 'sequelize';
+
+import bodyParser from 'body-parser';
+import {
+  DataStoreInterface,
+  entityEntity,
+  entityReport,
+  IndexedDb,
+  IndexedDbServer,
+  Instance,
+  reportEntityList,
+  reportReportList,
+} from "miroir-core";
+import { sqlDbServer } from './sqlDbServer.js';
 
 // const express = require('express');
 const app = express(),
@@ -10,7 +23,7 @@ const app = express(),
 // place holder for the data
 const users = [];
 
-const localIndexedDb: IndexedDb = new IndexedDb("miroir")
+const localIndexedDb: IndexedDb = new IndexedDb("miroir-indexedDb")
 
 
 await localIndexedDb.createObjectStore(["Entity", "Instance", "Report", "Author", "Book"]);
@@ -32,14 +45,35 @@ await localIndexedDb.putValue("Report", reportReportList);
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
+const sequelize:Sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres',{logging: (...msg) => console.log(msg)}) // Example for postgres
+try {
+  await sequelize.authenticate();
+  console.log('Connection to postgres has been established successfully.');
+} catch (error) {
+  console.error('Unable to connect to the postgres database:', error);
+}
+
+const sqlDataStore:DataStoreInterface = new sqlDbServer(sequelize);
+
+await sequelize.sync({ force: true });
+
+// await sqlDataStore.upsertInstance('Entity',entityEntity as Instance);
+// await sqlDataStore.upsertInstance('Entity',entityReport as Instance);
+// await sqlDataStore.upsertInstance('Report', reportEntityList as Instance);
+// await sqlDataStore.upsertInstance('Report', reportReportList as Instance);
+
+
+const localIndexedDbDataStore:DataStoreInterface = new IndexedDbServer(localIndexedDb);
+
+
 app.use(bodyParser.json());
 
 app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
   console.log("get", entityName + "/all started get #####################################");
-  // const localData = await this.localIndexedDb.getAllValue(entityName);
-  const localData = await getInstances(localIndexedDb, entityName);
+  // const localData = await localIndexedDbDataStore.getInstances(entityName);
+  const localData = await sqlDataStore.getInstances(entityName);
   console.log("server " + entityName + "/all", localData);
   return res.json(localData);
 });
@@ -52,7 +86,9 @@ app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
   const addedObjects: any[] = await req.body;
   // const localData = await this.localIndexedDb.putValue(entityName, addedObjects[0]);
   for (const instance of addedObjects) {
-    await upsertInstance(localIndexedDb, entityName, instance);
+    // await indexedDbUpsertInstance(localIndexedDb, entityName, instance);
+    // await localIndexedDbDataStore.upsertInstance(entityName, instance);
+    await sqlDataStore.upsertInstance(entityName, instance);
 
     console.log("server " + entityName + "put first object of", addedObjects);
   }
@@ -66,13 +102,8 @@ app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
 
   const addedObjects: any[] = await req.body;
 
-  // prepare localIndexedDb, in the case we receive a new Entity
-  // if (entityName == "Entity") {
-  //   localIndexedDb.addSubLevels([entityName]);
-  // }
-
-  // const localData = await this.localIndexedDb.putValue(entityName, addedObjects[0]);
-  const localData = await upsertInstance(localIndexedDb, entityName, addedObjects[0]);
+  // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
+  const localData = await sqlDataStore.upsertInstance(entityName, addedObjects[0]);
   console.log("server " + entityName + "put first object of", addedObjects);
   return res.json(addedObjects[0]);
 });
