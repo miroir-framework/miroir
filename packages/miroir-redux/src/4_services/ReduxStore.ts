@@ -9,7 +9,9 @@ import {
   LocalCacheAction, LocalCacheInfo, LocalCacheInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
-  RemoteStoreActionReturnType
+  RemoteStoreCRUDAction,
+  RemoteStoreCRUDActionReturnType,
+  RemoteStoreModelAction
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -124,11 +126,20 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  async handleRemoteStoreAction(action: RemoteStoreAction): Promise<RemoteStoreActionReturnType> {
-    const result:Promise<RemoteStoreActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreAction.creator(action)
+  async handleRemoteStoreCRUDAction(action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
+    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
+      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
     )
-    console.log("handleRemoteStoreAction", action, "returned", result)
+    console.log("handleRemoteStoreCRUDAction", action, "returned", result)
+    return Promise.resolve(result);
+  }
+
+  // ###############################################################################
+  async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
+    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
+      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
+    )
+    console.log("handleRemoteStoreCRUDAction", action, "returned", result)
     return Promise.resolve(result);
   }
 

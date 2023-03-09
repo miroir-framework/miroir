@@ -203,8 +203,8 @@ export function createUndoRedoReducer(
         //     futureModelPatches: newFuturePatches,
         //   };
         // case 'ROLLBACK': // TODO: here?
-        case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreAction: // TODO: here?
-          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreAction', action)
+        case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction: // TODO: here?
+          console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleRemoteStoreCRUDAction', action)
           const newPresentModelSnapshot:InnerStoreStateInterface = produce(
             state.presentModelSnapshot,
             (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),

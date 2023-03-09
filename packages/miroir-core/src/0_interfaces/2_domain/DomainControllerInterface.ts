@@ -19,21 +19,21 @@ export const localCacheOnlyActionNamesObject = {
   'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
 }
 export type LocalCacheOnlyActionName = keyof typeof localCacheOnlyActionNamesObject;
-export const localCacheOnlyActionNamesArray:DomainActionName[] = Object.keys(localCacheOnlyActionNamesObject) as DomainActionName[];
+export const localCacheOnlyActionNamesArray:DomainCRUDActionName[] = Object.keys(localCacheOnlyActionNamesObject) as DomainCRUDActionName[];
 
 
 export const remoteStoreOnlyActionNamesObject = {
   'resetModel': 'resetModel', // to delete all DB contents. TEMPORARY.
 }
 export type RemoteStoreOnlyActionName = keyof typeof remoteStoreOnlyActionNamesObject;
-export const remoteStoreOnlyActionNamesArray:DomainActionName[] = Object.keys(remoteStoreOnlyActionNamesObject) as DomainActionName[];
+export const remoteStoreOnlyActionNamesArray:DomainCRUDActionName[] = Object.keys(remoteStoreOnlyActionNamesObject) as DomainCRUDActionName[];
 
 export const remoteStoreActionNamesObject = {
   ...CRUDActionNamesObject,
   ...remoteStoreOnlyActionNamesObject,
 }
 export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
-export const remoteStoreActionNamesArray:DomainActionName[] = Object.keys(remoteStoreActionNamesObject) as DomainActionName[];
+export const remoteStoreActionNamesArray:DomainCRUDActionName[] = Object.keys(remoteStoreActionNamesObject) as DomainCRUDActionName[];
 
 
 export const domainActionNamesObject = {
@@ -41,18 +41,18 @@ export const domainActionNamesObject = {
   ...localCacheOnlyActionNamesObject,
   ...remoteStoreOnlyActionNamesObject,
 };
-export type DomainActionName = keyof typeof domainActionNamesObject;
-export const domainActionNamesArray:DomainActionName[] = Object.keys(domainActionNamesObject) as DomainActionName[];
+export type DomainCRUDActionName = keyof typeof domainActionNamesObject;
+export const domainActionNamesArray:DomainCRUDActionName[] = Object.keys(domainActionNamesObject) as DomainCRUDActionName[];
 
-export function domainActionToCRUDAction(domainActionName:DomainActionName):CRUDActionName{
-  if (domainActionName in CRUDActionNamesArray) {
-    return domainActionName as CRUDActionName
-  } else {
-    return undefined;
-  }
-}
-export interface DomainAction {
-  actionName: DomainActionName;
+// export function domainActionToCRUDAction(domainActionName:DomainCRUDActionName):CRUDActionName{
+//   if (domainActionName in CRUDActionNamesArray) {
+//     return domainActionName as CRUDActionName
+//   } else {
+//     return undefined;
+//   }
+// }
+export interface DomainCRUDAction {
+  actionName: DomainCRUDActionName;
   steps?:number; // for undo / redo
   uuid?:string;
   objects?:InstanceCollection[];
@@ -70,7 +70,7 @@ export type DomainStateSelector=(domainState:DomainState)=>Instance[]
 export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
-  handleDomainAction(action:DomainAction):Promise<void>;
-  currentTransaction():DomainAction[];
+  handleDomainCRUDAction(action:DomainCRUDAction):Promise<void>;
+  currentTransaction():DomainCRUDAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

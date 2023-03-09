@@ -6,12 +6,12 @@ import {
 import { all, call, Effect, put, takeEvery } from 'redux-saga/effects';
 
 
-import { RemoteStoreAction, RemoteStoreActionReturnType, RemoteStoreNetworkClientInterface, stringTuple } from "miroir-core";
+import { RemoteStoreAction, RemoteStoreCRUDAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction, RemoteStoreNetworkClientInterface, stringTuple } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
+export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreCRUDActionReturnType>;
 
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
@@ -28,7 +28,8 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //#########################################################################################
 export const RemoteStoreRestSagaInputActionNamesObject = {
   'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
-  'handleRemoteStoreAction':'handleRemoteStoreAction',
+  'handleRemoteStoreCRUDAction':'handleRemoteStoreCRUDAction',
+  'handleRemoteStoreModelAction':'handleRemoteStoreModelAction',
 };
 export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
 export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
@@ -74,7 +75,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
   } = {
     fetchInstancesForEntityFromRemoteDatastore: {
       name: "fetchInstancesForEntityFromRemoteDatastore",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
+      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
       generator: function*(action:PayloadAction<string>):RemoteStoreSagaGenReturnType {
         console.log("fetchInstancesForEntityFromRemoteDatastore", action);
         try {
@@ -97,12 +98,12 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
         }
       }.bind(this)
     },
-    handleRemoteStoreAction: {
-      name: "handleRemoteStoreAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<RemoteStoreAction,"handleRemoteStoreAction">("handleRemoteStoreAction"),
-      generator: function*(action:PayloadAction<RemoteStoreAction>):RemoteStoreSagaGenReturnType {
+    handleRemoteStoreCRUDAction: {
+      name: "handleRemoteStoreCRUDAction",
+      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreCRUDAction,"handleRemoteStoreCRUDAction">("handleRemoteStoreCRUDAction"),
+      generator: function*(action:PayloadAction<RemoteStoreCRUDAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreAction",action);
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -112,20 +113,52 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
           const result = {
             status:'ok',
             instances:[
-              {entity:action.payload.entityName, instances:clientResult['data']}
+              {entity:action.payload?.entityName, instances:clientResult['data']}
             ]
           };
 
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreAction received result", result.status, result.instances);
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreAction exception", e);
+          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
             errorMessage: e["message"],
             error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreActionReturnType;
+          } as RemoteStoreCRUDActionReturnType;
+        }
+      }.bind(this)
+    },
+    handleRemoteStoreModelAction: {
+      name: "handleRemoteStoreModelAction",
+      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreModelAction,"handleRemoteStoreModelAction">("handleRemoteStoreModelAction"),
+      generator: function*(action:PayloadAction<RemoteStoreModelAction>):RemoteStoreSagaGenReturnType {
+        try {
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreModelAction",action);
+          const clientResult: {
+            status: number,
+            data: any,
+            headers: Headers,
+            url: string,
+          } = yield call(() => this.client.handleNetworkAction(action.payload));
+          const result = {
+            status:'ok',
+            instances:[
+              // {entity:action.payload?.entityName, instances:clientResult['data']}
+            ]
+          };
+
+          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
+          return yield { status: "ok", instances: result.instances };
+        } catch (e: any) {
+          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
+          yield put({ type: "instances/failure/instancesNotReceived" });
+          return {
+            status: "error",
+            errorMessage: e["message"],
+            error: { errorMessage: e["message"], stack: [e["message"]] },
+          } as RemoteStoreCRUDActionReturnType;
         }
       }.bind(this)
     },

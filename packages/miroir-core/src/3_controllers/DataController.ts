@@ -1,9 +1,9 @@
-import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DomainAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainCRUDAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
+import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import { LocalCacheAction, LocalCacheInfo, LocalCacheInterface } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
-import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreCRUDAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {}
@@ -33,8 +33,13 @@ export class DataController implements DataControllerInterface {
 
 
   //####################################################################################
-  public async handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>{
-    return this.remoteStore.handleRemoteStoreAction(action);
+  public async handleRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>{
+    return this.remoteStore.handleRemoteStoreCRUDAction(action);
+  }
+
+  //####################################################################################
+  public async handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>{
+    return this.remoteStore.handleRemoteStoreModelAction(action);
   }
 
   //####################################################################################
@@ -65,7 +70,7 @@ export class DataController implements DataControllerInterface {
     try {
       const entities: InstanceCollection = (await throwExceptionIfError(
         this.miroirContext.errorLogService,
-        this.remoteStore.handleRemoteStoreAction,
+        this.remoteStore.handleRemoteStoreCRUDAction,
         this.remoteStore,
         {
           actionName: "read",
@@ -79,7 +84,7 @@ export class DataController implements DataControllerInterface {
         console.log("DataController loadConfigurationFromRemoteDataStore loading instances for entity", e['name']);
         const entityInstances:InstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
-          this.remoteStore.handleRemoteStoreAction,
+          this.remoteStore.handleRemoteStoreCRUDAction,
           this.remoteStore,
           {
             actionName: "read",
@@ -95,7 +100,7 @@ export class DataController implements DataControllerInterface {
         {
           actionName: "replace",
           objects: instances
-        } as DomainAction
+        } as DomainCRUDAction
       );
       return Promise.resolve();
     } catch (error) {

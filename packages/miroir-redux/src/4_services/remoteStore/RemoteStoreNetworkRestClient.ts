@@ -26,7 +26,7 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethods } = 
 
 /**
  * Facade / decorator for restClient and GraphQL client.
- * Resolves a DomainAction into a network query, using the proper protocol / address.
+ * Resolves a DomainCRUDAction into a network query, using the proper protocol / address.
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
@@ -44,7 +44,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
 
   // ##################################################################################
   private networkActionUrlAddition(networkAction: RemoteStoreAction): string {
-    return networkAction.uuid ? "/" + networkAction.uuid : networkAction.actionName == "read" ? "/all" : "";
+    return networkAction['uuid'] ? "/" + networkAction['uuid'] : networkAction.actionName == "read" ? "/all" : "";
   }
 
   // ##################################################################################
@@ -66,7 +66,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return {
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
       url: this.networkActionUrl(networkAction),
-      args: networkAction.objects ? networkAction.objects : [],
+      args: networkAction['objects'] ? networkAction['objects'] : networkAction['actions'],
     };
   }
 

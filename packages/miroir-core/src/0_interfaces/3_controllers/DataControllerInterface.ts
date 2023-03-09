@@ -1,12 +1,13 @@
-import { DomainAction } from "../2_domain/DomainControllerInterface";
-import { RemoteStoreAction, RemoteStoreActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { DomainCRUDAction } from "../2_domain/DomainControllerInterface";
+import { RemoteStoreAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { LocalCacheAction, LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface";
 
 export interface DataControllerInterface {
   loadConfigurationFromRemoteDataStore():Promise<void>;
-  handleLocalCacheModelAction(action:DomainAction);
-  handleLocalCacheDataAction(action:DomainAction);
-  handleRemoteStoreAction(action:RemoteStoreAction):Promise<RemoteStoreActionReturnType>;
+  handleLocalCacheModelAction(action:DomainCRUDAction);
+  handleLocalCacheDataAction(action:DomainCRUDAction);
+  handleRemoteStoreCRUDAction(action:RemoteStoreAction):Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
   currentLocalCacheTransaction():LocalCacheAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 

@@ -1,7 +1,7 @@
-import { RemoteStoreActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { RemoteStoreCRUDActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ErrorLogServiceInterface, MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
-// import { RemoteStoreActionReturnType } from "../0_interfaces/4-services/localStore/LocalCacheInterface";
+// import { RemoteStoreCRUDActionReturnType } from "../0_interfaces/4-services/localStore/LocalCacheInterface";
 
 export default {}
 
@@ -11,11 +11,11 @@ export default {}
  */ 
 export async function throwExceptionIfError(
   errorLogService: ErrorLogServiceInterface,
-  f: (...args) => Promise<RemoteStoreActionReturnType>,
+  f: (...args) => Promise<RemoteStoreCRUDActionReturnType>,
   _this,
   ...args
 ): Promise<InstanceCollection[]> {
-  const result: RemoteStoreActionReturnType = await f.bind(_this)(...args);
+  const result: RemoteStoreCRUDActionReturnType = await f.bind(_this)(...args);
   // console.log("unwrap",result);
   if (result && result['status'] == "error") {
     //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.

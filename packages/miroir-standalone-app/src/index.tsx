@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  DomainAction,
+  DomainCRUDAction,
   DomainControllerInterface,
   entityEntity,
   entityReport, Instance, MiroirConfig, miroirCoreStartup,
@@ -34,7 +34,7 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 async function uploadConfiguration(domainController:DomainControllerInterface) {
-  const updateEntitiesAction: DomainAction = {
+  const updateEntitiesAction: DomainCRUDAction = {
     actionName: "create",
     objects: [
       {
@@ -55,12 +55,12 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
       },
     ],
   };
-  await domainController.handleDomainAction(updateEntitiesAction);
-  await domainController.handleDomainAction({actionName: "commit"});
+  await domainController.handleDomainCRUDAction(updateEntitiesAction);
+  await domainController.handleDomainCRUDAction({actionName: "commit"});
 }
 
 async function uploadBooksAndReports(domainController:DomainControllerInterface) {
-  const updateEntitiesAction: DomainAction = {
+  const updateEntitiesAction: DomainCRUDAction = {
     actionName: "create",
     objects: [
       {
@@ -72,9 +72,9 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
       },
     ],
   };
-  await domainController.handleDomainAction(updateEntitiesAction);
-  await domainController.handleDomainAction({actionName: "commit"});
-  const updateInstancesAction: DomainAction = {
+  await domainController.handleDomainCRUDAction(updateEntitiesAction);
+  await domainController.handleDomainCRUDAction({actionName: "commit"});
+  const updateInstancesAction: DomainCRUDAction = {
     actionName: "create",
     objects: [
       {
@@ -103,8 +103,8 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
       },
     ],
   };
-  await domainController.handleDomainAction(updateInstancesAction);
-  // await domainController.handleDomainAction({actionName: "commit"});
+  await domainController.handleDomainCRUDAction(updateInstancesAction);
+  // await domainController.handleDomainCRUDAction({actionName: "commit"});
 }
 
 async function start() {
@@ -142,7 +142,7 @@ async function start() {
     }
 
     // load Miroir Configuration
-    // await domainController.handleDomainAction({actionName: "replace"});
+    // await domainController.handleDomainCRUDAction({actionName: "replace"});
 
     root.render(
       <Provider store={mReduxStore.getInnerStore()}>
@@ -156,13 +156,13 @@ async function start() {
               <p/>
               <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
               <p/>
-              <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "resetModel"})}}>Reset database</button></span>
+              <span><button onClick={async() => {await domainController.handleDomainCRUDAction({actionName: "resetModel"})}}>Reset database</button></span>
               <p/>
               <span><button onClick={async() => {await uploadConfiguration(domainController)}}>upload Miroir configuration to database</button></span>
               <p/>
               <span><button onClick={async() => {await uploadBooksAndReports(domainController)}}>upload App configuration to database</button></span>
               <p/>
-              <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "replace"})}}>fetch Miroir & App configurations from database</button></span>
+              <span><button onClick={async() => {await domainController.handleDomainCRUDAction({actionName: "replace"})}}>fetch Miroir & App configurations from database</button></span>
               <p/>
               <RootComponent 
                 // reportName="AuthorList"
