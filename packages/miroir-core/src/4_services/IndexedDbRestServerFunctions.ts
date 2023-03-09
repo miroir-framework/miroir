@@ -7,7 +7,15 @@ export class IndexedDbServer implements DataStoreInterface{
   constructor(
     private localIndexedDb: IndexedDb,
   ){}
-  
+
+  async init():Promise<void> {
+    return Promise.resolve();
+  }
+
+  getEntities(): string[] {
+      return this.localIndexedDb.getSubLevels();
+  }
+
   getInstances(entityName:string):Promise<any> {
     return this.localIndexedDb.getAllValue(entityName);
   }

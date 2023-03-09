@@ -1,10 +1,12 @@
-import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { CRUDActionName } from '../../2_domain/DomainControllerInterface.js';
+import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
+import { RemoteStoreActionName } from '../../2_domain/DomainControllerInterface.js';
+
+
 
 export interface RemoteStoreAction {
-  actionName: CRUDActionName;
-  entityName: string;
+  actionName: RemoteStoreActionName;
+  entityName?: string;
   uuid?:string;
   objects?:Instance[];
 }
@@ -51,7 +53,12 @@ export declare interface RemoteDataStoreInterface {
   // getInnerStore(): any; // TODO: local store should not expose its implementation!!
 }
 
+
+
 export interface DataStoreInterface {
+  init():Promise<void>;
+  getEntities():string[]; //TODO: remove!
+
   getInstances(entityName:string):Promise<Instance[]>;
   upsertInstance(entityName:string, instance:Instance):Promise<any>;
   deleteInstances(entityName:string, instances:Instance[]):Promise<any>;

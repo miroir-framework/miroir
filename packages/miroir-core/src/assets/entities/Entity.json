@@ -87,14 +87,22 @@
     },
     {
         "id": 3,
-        "name": "entity",
-        "defaultLabel": "Entity",
+        "name": "name",
+        "defaultLabel": "Name",
         "type": "STRING",
         "nullable": false,
         "editable": true
     },
     {
         "id": 4,
+        "name": "conceptLevel",
+        "defaultLabel": "Concept Level",
+        "type": "STRING",
+        "nullable": true,
+        "editable": false
+    },
+    {
+        "id": 5,
         "name": "description",
         "defaultLabel": "Description",
         "type": "STRING",
@@ -102,7 +110,7 @@
         "editable": true
     },
     {
-      "id": 5,
+      "id": 6,
       "name": "attributes",
       "defaultLabel": "Entity Attributes",
       "type": "ARRAY",

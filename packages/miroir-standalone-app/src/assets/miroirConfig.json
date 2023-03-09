@@ -1,7 +1,7 @@
 {
   "serverConfig":{
     "emulateServer": false,
-    "rootApiUrl":"http://localhost:3080/miroir"
+    "rootApiUrl":"http://localhost:3080"
   },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,

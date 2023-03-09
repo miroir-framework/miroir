@@ -1,4 +1,4 @@
-import { DataStoreInterface, EntityAttributeType, EntityAttributeTypeObject, EntityDefinition, Instance } from "miroir-core";
+import { DataStoreInterface, EntityAttributeType, EntityDefinition, entityEntity, Instance } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from 'sequelize';
 
 const dataTypesMapping:{[type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor} = {
@@ -13,56 +13,90 @@ function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   return Object.fromEntries(
     entityDefinition.attributes.map(
       (a) => {
-        // return [[a.name],{type:DataTypes.STRING, allowNull:true}]
-        return [[a.name],{type:dataTypesMapping[a.type], allowNull:true, primaryKey:a.name=='uuid'}]
+        return [[a.name],{type:dataTypesMapping[a.type], allowNull:a.nullable, primaryKey:a.name=='uuid'}]
       }
     )
   );
-    // uuid: {
-    //   type: DataTypes.UUID,
-    //   primaryKey: true,
-    //   allowNull: false
-    // },
-  // }
 }
 
-export class sqlDbServer implements DataStoreInterface {
+export type SqlEntityDefinition = {[entityName in string]:ModelStatic<Model<any,any>>};
 
-  private sqlEntities:{[entityName in string]:ModelStatic<Model<any,any>>} = {};
+export class SqlDbServer implements DataStoreInterface {
+
+  private sqlEntities:SqlEntityDefinition = undefined;
 
   constructor(
     // private localIndexedDb: IndexedDb,
     private sequelize:Sequelize,
   ){}
-  
+
+  getEntities():string[] {
+    return this.sqlEntities?Object.keys(this.sqlEntities):[];
+  }
+
+  sqlEntityDefinition(entityDefinition:EntityDefinition):SqlEntityDefinition {
+    return {
+      [entityDefinition.name]:this.sequelize.define(
+        entityDefinition.name, 
+        fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
+        {
+          freezeTableName: true
+        }
+      )
+    }
+  }
+
+  async init():Promise<void> {
+    if (this.sqlEntities) {
+      console.warn('sqlDbServer init initialization can not be done a second time', this.sqlEntities);
+    } else {
+      console.warn('sqlDbServer init initialization started');
+      // this.sqlEntities = this.sqlEntityDefinition(entityEntity as EntityDefinition);
+      const entities:EntityDefinition[] = await this.getInstances('Entity',this.sqlEntityDefinition(entityEntity as EntityDefinition));
+      this.sqlEntities = entities.reduce(
+        (prev,curr:EntityDefinition) => {
+          console.warn('sqlDbServer init initializing',curr);
+          return Object.assign(prev,this.sqlEntityDefinition(curr));
+        },{})
+    }
+    return Promise.resolve()
+  }
   // getInstances(entityName:string):Promise<Instance[]> {
-  getInstances(entityName:string):Promise<any> {
-    return this.sqlEntities[entityName]?this.sqlEntities[entityName].findAll():Promise.resolve([]);
+  getInstances(entityName:string,sqlEntities?:SqlEntityDefinition):Promise<any> {
+    return sqlEntities? (
+      sqlEntities[entityName]?
+        sqlEntities[entityName].findAll()
+        : 
+        Promise.resolve()
+      )
+      : 
+      (
+        this.sqlEntities[entityName]?
+          this.sqlEntities[entityName].findAll()
+          :
+          Promise.resolve([])
+      )
+    ;
   }
 
   // upsertInstance(entityName:string, instance:Instance):Promise<Instance> {
   async upsertInstance(entityName:string, instance:Instance):Promise<any> {
   
-    if (instance.entity == "Entity" && !this.sqlEntities[instance['name']]) {
+    if (instance.entity == "Entity" && (this.sqlEntities == undefined || !this.sqlEntities[instance['name']])) {
+      console.log('upsertInstance create entity', instance['name']);
       const entityDefinition: EntityDefinition = instance as EntityDefinition;
       // this.localIndexedDb.addSubLevels([entityName]);
       this.sqlEntities = 
         Object.assign(
-          this.sqlEntities,
-          {
-            [entityDefinition.name]:this.sequelize.define(
-              entityDefinition.name, 
-              // {...fromMiroirEntityDefinitionToSequelizeEntityDefinition(instance as EntityDefinition)}
-              fromMiroirEntityDefinitionToSequelizeEntityDefinition(instance as EntityDefinition),
-              {
-                freezeTableName: true
-              }
-            )
-          }
+          !!this.sqlEntities?this.sqlEntities:{}, this.sqlEntityDefinition(instance as EntityDefinition)
         )
       ;
       console.log('upsertInstance create entity', entityDefinition.name);
       await this.sqlEntities[entityDefinition.name].sync({ force: true });
+    } else {
+      if (instance.entity == "Entity") {
+        console.log('upsertInstance entity', instance['name'],'already exists this.sqlEntities:',Object.keys(this.sqlEntities));
+      }
     }
   
     return this.sqlEntities[instance.entity].create(instance as any);

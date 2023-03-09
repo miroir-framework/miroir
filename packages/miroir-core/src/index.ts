@@ -33,6 +33,15 @@ export {
   DomainStateSelector,
   DomainStateTransformer,
   DomainInstancesUuidIndex,
+  LocalCacheOnlyActionName,
+  localCacheOnlyActionNamesArray,
+  localCacheOnlyActionNamesObject,
+  RemoteStoreOnlyActionName,
+  remoteStoreOnlyActionNamesArray,
+  remoteStoreOnlyActionNamesObject,
+  RemoteStoreActionName,
+  remoteStoreActionNamesArray,
+  remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
   selectReportInstances,

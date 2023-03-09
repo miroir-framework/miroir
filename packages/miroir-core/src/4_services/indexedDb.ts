@@ -39,9 +39,14 @@ export class IndexedDb {
     ]);
   }
 
-    // #############################################################################
+  // #############################################################################
   public hasSubLevel(tableName:string):boolean {
     return this.subLevels.has(tableName);
+  }
+
+  // #############################################################################
+  public getSubLevels():string[] {
+    return Array.from(this.subLevels.keys());
   }
   // #############################################################################
   public addSubLevels(tableNames:string[]) {

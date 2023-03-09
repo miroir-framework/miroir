@@ -83,6 +83,16 @@ export class DomainController implements DomainControllerInterface {
           );
           break;
         }
+        case 'resetModel': {
+          await this.dataController.handleRemoteStoreAction(
+            {
+              actionName: domainAction.actionName.toString() as CRUDActionName,
+              // entityName: undefined,
+              // objects: instances.instances
+            }
+          );
+          break;
+        }
         default: {
           console.warn('DomainController handleDomainAction cannot handle action name',domainAction);
           break;

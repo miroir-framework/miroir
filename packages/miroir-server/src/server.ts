@@ -14,7 +14,7 @@ import {
   reportEntityList,
   reportReportList,
 } from "miroir-core";
-import { sqlDbServer } from './sqlDbServer.js';
+import { SqlDbServer } from './sqlDbServer.js';
 
 // const express = require('express');
 const app = express(),
@@ -53,9 +53,15 @@ try {
   console.error('Unable to connect to the postgres database:', error);
 }
 
-const sqlDataStore:DataStoreInterface = new sqlDbServer(sequelize);
+const sqlDbServer:DataStoreInterface = new SqlDbServer(sequelize);
 
-await sequelize.sync({ force: true });
+try {
+  await sqlDbServer.init();
+} catch(e) {
+  console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServer.getEntities());
+}
+
+// await sequelize.sync({ force: true });
 
 // await sqlDataStore.upsertInstance('Entity',entityEntity as Instance);
 // await sqlDataStore.upsertInstance('Entity',entityReport as Instance);
@@ -71,9 +77,9 @@ app.use(bodyParser.json());
 app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
-  console.log("get", entityName + "/all started get #####################################");
+  console.log("get", entityName + "/all started #####################################");
   // const localData = await localIndexedDbDataStore.getInstances(entityName);
-  const localData = await sqlDataStore.getInstances(entityName);
+  const localData = await sqlDbServer.getInstances(entityName);
   console.log("server " + entityName + "/all", localData);
   return res.json(localData);
 });
@@ -81,16 +87,14 @@ app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
 app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
-  console.log("post", entityName + " started post #####################################");
+  console.log("post /miroir/", entityName + " started #####################################");
 
   const addedObjects: any[] = await req.body;
   // const localData = await this.localIndexedDb.putValue(entityName, addedObjects[0]);
   for (const instance of addedObjects) {
-    // await indexedDbUpsertInstance(localIndexedDb, entityName, instance);
-    // await localIndexedDbDataStore.upsertInstance(entityName, instance);
-    await sqlDataStore.upsertInstance(entityName, instance);
+    await sqlDbServer.upsertInstance(entityName, instance);
 
-    console.log("server " + entityName + "put first object of", addedObjects);
+    console.log("server " + entityName + "put object", instance);
   }
   return res.json(addedObjects);
 });
@@ -98,14 +102,35 @@ app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
 app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
-  console.log("post", entityName + " started put #####################################");
+  console.log("put miroir/", entityName + " started #####################################");
 
   const addedObjects: any[] = await req.body;
 
   // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
-  const localData = await sqlDataStore.upsertInstance(entityName, addedObjects[0]);
-  console.log("server " + entityName + "put first object of", addedObjects);
-  return res.json(addedObjects[0]);
+  for (const instance of addedObjects) {
+    await sqlDbServer.upsertInstance(entityName, instance);
+
+    console.log("server " + entityName + "put object", instance);
+  }
+  // console.log("server " + entityName + "put object of", addedObjects);
+  return res.json(addedObjects);
+});
+
+app.post("/model/", async (req, res, ctx) => {
+  // const entityName: string =
+  //   typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+  console.log("post model/"," started #####################################");
+
+  // const addedObjects: any[] = await req.body;
+
+  // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
+  // for (const instance of addedObjects) {
+  await sequelize.drop();
+
+  //   console.log("server " + entityName + "put object", instance);
+  // }
+  // console.log("server " + entityName + "put object of", addedObjects);
+  return res.json();
 });
 
 app.get('/api/users', (req, res) => {

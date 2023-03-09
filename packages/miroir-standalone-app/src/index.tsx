@@ -24,7 +24,7 @@ import book2 from "assets/instances/Book - The Design of Everyday Things.json";
 import miroirConfig from "assets/miroirConfig.json";
 import reportAuthorList from "assets/reports/AuthorList.json";
 import reportBookList from "assets/reports/BookList.json";
-import { MComponent } from "miroir-fwk/4_view/MComponent";
+import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { createMswStore } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
@@ -133,12 +133,12 @@ async function start() {
       await worker.start();
     }
     if (!!mServer) {
-      await mServer.createObjectStore(["Entity", "Report"]);
-      await mServer.clearObjectStore();
-      await mServer.localIndexedDb.putValue("Entity", entityEntity);
-      await mServer.localIndexedDb.putValue("Entity", entityReport);
-      await mServer.localIndexedDb.putValue("Report", reportEntityList);
-      await mServer.localIndexedDb.putValue("Report", reportReportList);
+      // await mServer.createObjectStore(["Entity", "Report"]);
+      // await mServer.clearObjectStore();
+      // await mServer.localIndexedDb.putValue("Entity", entityEntity);
+      // await mServer.localIndexedDb.putValue("Entity", entityReport);
+      // await mServer.localIndexedDb.putValue("Report", reportEntityList);
+      // await mServer.localIndexedDb.putValue("Report", reportReportList);
     }
 
     // load Miroir Configuration
@@ -156,17 +156,19 @@ async function start() {
               <p/>
               <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
               <p/>
+              <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "resetModel"})}}>Reset database</button></span>
+              <p/>
               <span><button onClick={async() => {await uploadConfiguration(domainController)}}>upload Miroir configuration to database</button></span>
               <p/>
               <span><button onClick={async() => {await uploadBooksAndReports(domainController)}}>upload App configuration to database</button></span>
               <p/>
               <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "replace"})}}>fetch Miroir & App configurations from database</button></span>
               <p/>
-              <MComponent 
+              <RootComponent 
                 // reportName="AuthorList"
                 // reportName="BookList"
                 reportName="EntityList"
-            ></MComponent>
+            ></RootComponent>
             </MiroirContextReactProvider>
           </Container>
         </div>
