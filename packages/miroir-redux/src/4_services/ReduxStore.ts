@@ -4,7 +4,6 @@ import {
 } from "@teroneko/redux-saga-promise";
 import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
-import asyncDispatchMiddleware from "async-dispatch";
 
 
 import {
