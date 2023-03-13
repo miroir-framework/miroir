@@ -21,6 +21,9 @@ function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
 
 export type SqlEntityDefinition = {[entityName in string]:ModelStatic<Model<any,any>>};
 
+
+// ##############################################################################################
+// ##############################################################################################
 export class SqlDbServer implements DataStoreInterface {
 
   private sqlEntities:SqlEntityDefinition = undefined;
@@ -30,10 +33,12 @@ export class SqlDbServer implements DataStoreInterface {
     private sequelize:Sequelize,
   ){}
 
+  // ##############################################################################################
   getEntities():string[] {
     return this.sqlEntities?Object.keys(this.sqlEntities):[];
   }
 
+  // ##############################################################################################
   sqlEntityDefinition(entityDefinition:EntityDefinition):SqlEntityDefinition {
     return {
       [entityDefinition.name]:this.sequelize.define(
@@ -46,6 +51,7 @@ export class SqlDbServer implements DataStoreInterface {
     }
   }
 
+  // ##############################################################################################
   async init():Promise<void> {
     if (this.sqlEntities) {
       console.warn('sqlDbServer init initialization can not be done a second time', this.sqlEntities);
@@ -61,6 +67,8 @@ export class SqlDbServer implements DataStoreInterface {
     }
     return Promise.resolve()
   }
+
+  // ##############################################################################################
   // getInstances(entityName:string):Promise<Instance[]> {
   getInstances(entityName:string,sqlEntities?:SqlEntityDefinition):Promise<any> {
     return sqlEntities? (
@@ -79,6 +87,7 @@ export class SqlDbServer implements DataStoreInterface {
     ;
   }
 
+  // ##############################################################################################
   // upsertInstance(entityName:string, instance:Instance):Promise<Instance> {
   async upsertInstance(entityName:string, instance:Instance):Promise<any> {
   
@@ -102,6 +111,7 @@ export class SqlDbServer implements DataStoreInterface {
     return this.sqlEntities[instance.entity].create(instance as any);
   }
 
+  // ##############################################################################################
   // async deleteInstances(entityName:string, instances:Instance[]):Promise<Instance[]> {
   async deleteInstances(entityName:string, instances:Instance[]):Promise<any> {
     // for (const o of instances) {

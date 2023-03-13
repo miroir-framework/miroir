@@ -16,7 +16,7 @@ global.TextDecoder = TextDecoder
 
 
 import {
-  DomainCRUDAction,
+  DomainDataAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
   reportEntityList,
@@ -94,7 +94,7 @@ describe(
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -148,7 +148,7 @@ describe(
         console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -168,14 +168,14 @@ describe(
 
         // ##########################################################################################################
         console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
-        const createAction: DomainCRUDAction = {
+        const createAction: DomainDataAction = {
           actionName:'create',
           objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(createAction);
+            await domainController.handleDomainDataAction(createAction);
           }
         );
 
@@ -201,7 +201,7 @@ describe(
         console.log('add Report definition step 3: rollbacking/refreshing report list from remote store, reportEntityList be absent in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -259,7 +259,7 @@ describe(
         console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -279,14 +279,14 @@ describe(
 
         // ##########################################################################################################
         console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
-        const createAction: DomainCRUDAction = {
+        const createAction: DomainDataAction = {
           actionName:'create',
           objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(createAction);
+            await domainController.handleDomainDataAction(createAction);
           }
         );
 
@@ -312,7 +312,7 @@ describe(
         console.log('add Report definition step 3: committing report list to remote store, reportEntityList must be present in the report list afterwards.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "commit"});
+            await domainController.handleDomainDataAction({actionName: "commit"});
           }
         );
 
@@ -336,7 +336,7 @@ describe(
         console.log('add Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -393,7 +393,7 @@ describe(
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -413,7 +413,7 @@ describe(
         console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({
+            await domainController.handleDomainDataAction({
               actionName:'delete',
               objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
             });
@@ -438,7 +438,7 @@ describe(
         console.log('remove Report definition step 3: commit to remote store, reportEntityList must still be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "commit"});
+            await domainController.handleDomainDataAction({actionName: "commit"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -458,7 +458,7 @@ describe(
         console.log('remove Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be absent in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -516,7 +516,7 @@ describe(
         console.log('Update Report definition step 1: loading initial configuration, reportEntityList must be present in report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -538,7 +538,7 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-        const updateAction: DomainCRUDAction = {
+        const updateAction: DomainDataAction = {
           actionName: "update",
           objects: [
             {
@@ -560,7 +560,7 @@ describe(
         };
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(updateAction);
+            await domainController.handleDomainDataAction(updateAction);
           }
         );
 
@@ -585,7 +585,7 @@ describe(
         console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "commit"});
+            await domainController.handleDomainDataAction({actionName: "commit"});
           }
         );
 
@@ -605,7 +605,7 @@ describe(
         console.log('update Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, modified reportEntityList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 

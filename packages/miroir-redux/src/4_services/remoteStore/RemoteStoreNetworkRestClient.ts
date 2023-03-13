@@ -1,4 +1,7 @@
 import {
+  CRUDActionNamesArrayString,
+  ModelActionNamesArray,
+  ModelActionNamesArrayString,
   RemoteStoreAction,
   RemoteStoreActionName,
   RemoteStoreNetworkClientInterface,
@@ -21,12 +24,13 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethods } = 
   read: "get",
   update: "put",
   delete: "delete",
-  resetModel: "post",
+  // resetModel: "post",
+  updateModel: "post",
 };
 
 /**
  * Facade / decorator for restClient and GraphQL client.
- * Resolves a DomainCRUDAction into a network query, using the proper protocol / address.
+ * Resolves a DomainDataAction into a network query, using the proper protocol / address.
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
@@ -49,12 +53,14 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
 
   // ##################################################################################
   private networkActionUrlRoot(networkAction: RemoteStoreAction): string {
-    return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
+    // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
+    // return ModelActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
+    return CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : "/model" ;
   }
 
   // ##################################################################################
   private networkActionUrl(networkAction: RemoteStoreAction): string {
-    return this.networkActionUrlRoot(networkAction) + "/" + (networkAction.actionName == 'resetModel' ? "" : networkAction.entityName +this.networkActionUrlAddition(networkAction));
+    return this.networkActionUrlRoot(networkAction) + "/" + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? networkAction['entityName'] +this.networkActionUrlAddition(networkAction):"");
   }
 
   // ##################################################################################
@@ -66,15 +72,15 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return {
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
       url: this.networkActionUrl(networkAction),
-      args: networkAction['objects'] ? networkAction['objects'] : networkAction['actions'],
+      args: networkAction['objects'] ? networkAction['objects'] : networkAction['updates'],
     };
   }
 
   // ##################################################################################
   async handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType> {
     //TODO: return type must be independent of actually called client
-    console.log("RemoteStoreNetworkRestClient handleAction", networkAction);
     const callParams = this.getRestCallParams(networkAction);
+    console.log("RemoteStoreNetworkRestClient handleAction", networkAction, 'callParams', callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
 }

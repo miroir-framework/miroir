@@ -16,7 +16,7 @@ global.TextDecoder = TextDecoder
 
 
 import {
-  DomainCRUDAction,
+  DomainDataAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
   reportEntityList
@@ -114,7 +114,7 @@ describe(
 
     //     await act(
     //       async () => {
-    //         await domainController.handleDomainCRUDAction({actionName: "replace"});
+    //         await domainController.handleDomainDataAction({actionName: "replace"});
     //       }
     //     );
 
@@ -178,7 +178,7 @@ describe(
         console.log('add Book step 1: the Book must be absent in the local cache report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -200,14 +200,14 @@ describe(
 
         // ##########################################################################################################
         console.log('add Book step 2: the Book must then be present in the local cache report list.')
-        const createAction: DomainCRUDAction = {
+        const createAction: DomainDataAction = {
           actionName:'create',
           objects:[{entity:'Book',instances:[book3 as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(createAction);
+            await domainController.handleDomainDataAction(createAction);
           }
         );
 
@@ -235,7 +235,7 @@ describe(
         console.log('add Book definition step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -302,7 +302,7 @@ describe(
         console.log('Remove Book step 1: the Book must be present in the local cache report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -325,14 +325,14 @@ describe(
 
         // ##########################################################################################################
         console.log('remove Book step 2: the Book must then be absent from the local cache report list.')
-        const createAction: DomainCRUDAction = {
+        const createAction: DomainDataAction = {
           actionName:'delete',
           objects:[{entity:'Book',instances:[book3 as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(createAction);
+            await domainController.handleDomainDataAction(createAction);
           }
         );
 
@@ -359,7 +359,7 @@ describe(
         console.log('Remove Book definition step 3: rollbacking/refreshing report list from remote store, removed book must still be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -425,7 +425,7 @@ describe(
         console.log('Update Bool definition step 1: loading initial configuration, book must be present in report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 
@@ -447,7 +447,7 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-        const updateAction: DomainCRUDAction = {
+        const updateAction: DomainDataAction = {
           actionName: "update",
           objects: [
             {
@@ -465,7 +465,7 @@ describe(
         };
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction(updateAction);
+            await domainController.handleDomainDataAction(updateAction);
           }
         );
 
@@ -488,7 +488,7 @@ describe(
         console.log('Update Book definition step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainCRUDAction({actionName: "replace"});
+            await domainController.handleDomainDataAction({actionName: "replace"});
           }
         );
 

@@ -44,7 +44,8 @@ export const RootComponent = (props:RootComponentProps) => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             // value={displayedReportName?displayedReportName:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined)}
-            value={defaultToEntityList(displayedReportName,miroirReports)}
+            // value={defaultToEntityList(displayedReportName,miroirReports)}
+            value={displayedReportName}
             label="displayedReportName"
             onChange={handleChange}
           >

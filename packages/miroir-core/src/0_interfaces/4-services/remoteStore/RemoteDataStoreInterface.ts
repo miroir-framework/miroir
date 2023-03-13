@@ -1,6 +1,6 @@
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { CRUDActionName, RemoteStoreOnlyActionName } from '../../2_domain/DomainControllerInterface.js';
+import { CRUDActionName, DomainModelAction } from '../../2_domain/DomainControllerInterface.js';
 
 export interface RemoteStoreCRUDAction {
   actionName: CRUDActionName;
@@ -9,10 +9,11 @@ export interface RemoteStoreCRUDAction {
   objects?:Instance[];
 }
 
-export interface RemoteStoreModelAction {
-  actionName: RemoteStoreOnlyActionName;
-  // actions: 
-}
+export type RemoteStoreModelAction = DomainModelAction;
+// export interface RemoteStoreModelAction {
+//   actionName: ModelActionName;
+//   actions: 
+// }
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 // export interface RemoteStoreAction {

@@ -6,7 +6,7 @@ import {
 import { all, call, Effect, put, takeEvery } from 'redux-saga/effects';
 
 
-import { RemoteStoreAction, RemoteStoreCRUDAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction, RemoteStoreNetworkClientInterface, stringTuple } from "miroir-core";
+import { RemoteStoreCRUDAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction, RemoteStoreNetworkClientInterface, stringTuple } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
@@ -103,7 +103,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreCRUDAction,"handleRemoteStoreCRUDAction">("handleRemoteStoreCRUDAction"),
       generator: function*(action:PayloadAction<RemoteStoreCRUDAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction",action);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -117,10 +117,10 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             ]
           };
 
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
+          console.warn("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -135,7 +135,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreModelAction,"handleRemoteStoreModelAction">("handleRemoteStoreModelAction"),
       generator: function*(action:PayloadAction<RemoteStoreModelAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreModelAction",action);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -149,10 +149,10 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             ]
           };
 
-          console.log("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("RemoteStoreAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
+          console.warn("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",

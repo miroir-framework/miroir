@@ -6,12 +6,15 @@ import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
 import {
-  LocalCacheAction, LocalCacheInfo, LocalCacheInterface,
+  LocalCacheAction,
+  LocalCacheDataAction,
+  LocalCacheInfo,
+  LocalCacheInterface,
+  LocalCacheModelAction,
   RemoteDataStoreInterface,
-  RemoteStoreAction,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
-  RemoteStoreModelAction
+  RemoteStoreModelAction,
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -77,7 +80,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     public RemoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
-      combineReducers<InnerStoreStateInterface,PayloadAction<LocalCacheAction>>(
+      combineReducers<InnerStoreStateInterface,PayloadAction<LocalCacheDataAction>>(
         {
           miroirInstances: LocalCacheSlice.reducer,
         }
@@ -137,28 +140,38 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   // ###############################################################################
   async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
     const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
+      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(action)
     )
-    console.log("handleRemoteStoreCRUDAction", action, "returned", result)
+    console.log("handleRemoteStoreModelAction", action, "returned", result)
     return Promise.resolve(result);
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(action:LocalCacheAction) {
+  handleLocalCacheModelAction(action:LocalCacheModelAction) {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
     );
   }
 
   // ###############################################################################
-  handleLocalCacheDataAction(action:LocalCacheAction) {
+  handleLocalCacheDataAction(action:LocalCacheDataAction) {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
     );
   }
 
   // ###############################################################################
-  currentTransaction():LocalCacheAction[]{
+  handleLocalCacheAction(action:LocalCacheAction) {
+    this.innerReduxStore.dispatch(
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
+    );
+  }
+
+  // ###############################################################################
+  currentTransaction():LocalCacheModelAction[]{
     console.log("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action.payload);
   }

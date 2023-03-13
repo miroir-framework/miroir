@@ -1,8 +1,8 @@
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DomainCRUDAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainDataAction, DomainModelAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
-import { LocalCacheAction, LocalCacheInfo, LocalCacheInterface } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheAction, LocalCacheDataAction, LocalCacheInfo, LocalCacheInterface, LocalCacheModelAction } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { RemoteDataStoreInterface, RemoteStoreAction, RemoteStoreCRUDAction, RemoteStoreCRUDActionReturnType, RemoteStoreModelAction } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
@@ -22,13 +22,18 @@ export class DataController implements DataControllerInterface {
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(action:LocalCacheAction) {
+  public async handleLocalCacheModelAction(action:LocalCacheModelAction) {
     return this.localCache.handleLocalCacheModelAction(action);
   }
 
   //####################################################################################
-  public async handleLocalCacheDataAction(action:LocalCacheAction) {
+  public async handleLocalCacheDataAction(action:LocalCacheDataAction) {
     return this.localCache.handleLocalCacheDataAction(action);
+  }
+
+  //####################################################################################
+  public async handleLocalCacheAction(action:LocalCacheAction) {
+    return this.localCache.handleLocalCacheAction(action);
   }
 
 
@@ -47,7 +52,7 @@ export class DataController implements DataControllerInterface {
    * .
    * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
    */
-  currentLocalCacheTransaction():LocalCacheAction[]{
+  currentLocalCacheTransaction():LocalCacheModelAction[]{
     return this.localCache.currentTransaction();
   }
 
@@ -75,7 +80,7 @@ export class DataController implements DataControllerInterface {
         {
           actionName: "read",
           entityName:'Entity'
-        } as RemoteStoreAction
+        }
       ))[0];
       console.log("DataController loadConfigurationFromRemoteDataStore found entities", entities);
 
@@ -89,7 +94,7 @@ export class DataController implements DataControllerInterface {
           {
             actionName: "read",
             entityName:e['name'],
-          } as RemoteStoreAction
+          }
         );
         console.log("DataController loadConfigurationFromRemoteDataStore found instances for entity", e['name'], entityInstances);
         instances.push(entityInstances[0]);
@@ -99,8 +104,9 @@ export class DataController implements DataControllerInterface {
       this.localCache.handleLocalCacheModelAction(
         {
           actionName: "replace",
+          actionType:"DomainModelAction",
           objects: instances
-        } as DomainCRUDAction
+        }
       );
       return Promise.resolve();
     } catch (error) {

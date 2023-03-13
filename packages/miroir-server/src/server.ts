@@ -11,6 +11,7 @@ import {
   IndexedDb,
   IndexedDbServer,
   Instance,
+  RemoteStoreModelAction,
   reportEntityList,
   reportReportList,
 } from "miroir-core";
@@ -74,6 +75,7 @@ const localIndexedDbDataStore:DataStoreInterface = new IndexedDbServer(localInde
 
 app.use(bodyParser.json());
 
+// ##############################################################################################
 app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
@@ -99,6 +101,7 @@ app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
   return res.json(addedObjects);
 });
 
+// ##############################################################################################
 app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
@@ -116,28 +119,42 @@ app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
   return res.json(addedObjects);
 });
 
+// ##############################################################################################
 app.post("/model/", async (req, res, ctx) => {
   // const entityName: string =
   //   typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+  
+  const updates: RemoteStoreModelAction[] = await req.body;
   console.log("post model/"," started #####################################");
-
-  // const addedObjects: any[] = await req.body;
+  console.log("post model/ updates",updates);
 
   // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  await sequelize.drop();
+  if (updates[0]) {
+    switch (updates[0]['action']) {
+      case 'resetModel':
+        await sequelize.drop();
+        break;
+      default:
+        break;
+    }
+  } else {
+    console.log('post model/ has no update to execute!')
+  }
 
   //   console.log("server " + entityName + "put object", instance);
   // }
   // console.log("server " + entityName + "put object of", addedObjects);
-  return res.json();
+  return res.json([]);
 });
 
+// ##############################################################################################
 app.get('/api/users', (req, res) => {
   console.log('api/users called!!!!')
   res.json(users);
 });
 
+// ##############################################################################################
 app.post('/api/user', (req, res) => {
   const user = req.body.user;
   console.log('Adding user::::::::', user);
@@ -145,10 +162,12 @@ app.post('/api/user', (req, res) => {
   res.json("user addedd");
 });
 
+// ##############################################################################################
 app.get('/', (req,res) => {
     res.send('App Works !!!!');
 });
 
+// ##############################################################################################
 app.listen(port, () => {
     console.log(`Server listening on the port::${port}`);
 });

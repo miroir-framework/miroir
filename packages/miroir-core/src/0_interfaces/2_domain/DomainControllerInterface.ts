@@ -1,11 +1,18 @@
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
-export const CRUDActionNamesObject = {
+export const CUDActionNamesObject = {
   'create': 'create',
-  'read': 'read',
   'update': 'update',
   'delete': 'delete',
+}
+export type CUDActionName = keyof typeof CUDActionNamesObject;
+export const CUDActionNamesArray:CRUDActionName[] = Object.keys(CUDActionNamesObject) as CRUDActionName[];
+export const CUDActionNamesArrayString:string[] = CUDActionNamesArray.map(a=>a);
+
+export const CRUDActionNamesObject = {
+  ...CUDActionNamesObject,
+  'read': 'read',
 }
 export type CRUDActionName = keyof typeof CRUDActionNamesObject;
 export const CRUDActionNamesArray:CRUDActionName[] = Object.keys(CRUDActionNamesObject) as CRUDActionName[];
@@ -19,44 +26,64 @@ export const localCacheOnlyActionNamesObject = {
   'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
 }
 export type LocalCacheOnlyActionName = keyof typeof localCacheOnlyActionNamesObject;
-export const localCacheOnlyActionNamesArray:DomainCRUDActionName[] = Object.keys(localCacheOnlyActionNamesObject) as DomainCRUDActionName[];
+export const localCacheOnlyActionNamesArray:LocalCacheOnlyActionName[] = Object.keys(localCacheOnlyActionNamesObject) as LocalCacheOnlyActionName[];
 
 
-export const remoteStoreOnlyActionNamesObject = {
-  'resetModel': 'resetModel', // to delete all DB contents. TEMPORARY.
+export const ModelActionNamesObject = {
+  // 'resetModel': 'resetModel', // to delete all DB contents. TEMPORARY.
+  'updateModel': 'updateModel',
 }
-export type RemoteStoreOnlyActionName = keyof typeof remoteStoreOnlyActionNamesObject;
-export const remoteStoreOnlyActionNamesArray:DomainCRUDActionName[] = Object.keys(remoteStoreOnlyActionNamesObject) as DomainCRUDActionName[];
+export type ModelActionName = keyof typeof ModelActionNamesObject;
+export const ModelActionNamesArray:RemoteStoreActionName[] = Object.keys(ModelActionNamesObject) as ModelActionName[];
+export const ModelActionNamesArrayString:string[] = ModelActionNamesArray.map(a=>a);
 
 export const remoteStoreActionNamesObject = {
   ...CRUDActionNamesObject,
-  ...remoteStoreOnlyActionNamesObject,
+  ...ModelActionNamesObject,
 }
 export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
-export const remoteStoreActionNamesArray:DomainCRUDActionName[] = Object.keys(remoteStoreActionNamesObject) as DomainCRUDActionName[];
+export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(remoteStoreActionNamesObject) as RemoteStoreActionName[];
 
 
-export const domainActionNamesObject = {
+export const domainDataActionNamesObject = {
   ...CRUDActionNamesObject,
-  ...localCacheOnlyActionNamesObject,
-  ...remoteStoreOnlyActionNamesObject,
+  // ...localCacheOnlyActionNamesObject,
+  // ...ModelActionNamesObject,
 };
-export type DomainCRUDActionName = keyof typeof domainActionNamesObject;
-export const domainActionNamesArray:DomainCRUDActionName[] = Object.keys(domainActionNamesObject) as DomainCRUDActionName[];
+export type DomainDataActionName = keyof typeof domainDataActionNamesObject;
+export const domainDataActionNamesArray:DomainDataActionName[] = Object.keys(domainDataActionNamesObject) as DomainDataActionName[];
 
-// export function domainActionToCRUDAction(domainActionName:DomainCRUDActionName):CRUDActionName{
+export const domainModelActionNamesObject = {
+  ...CUDActionNamesObject,
+  ...localCacheOnlyActionNamesObject,
+  ...ModelActionNamesObject,
+};
+export type DomainModelActionName = keyof typeof domainModelActionNamesObject;
+export const domainModelActionNamesArray:DomainModelActionName[] = Object.keys(domainModelActionNamesObject) as DomainModelActionName[];
+
+// export function domainActionToCRUDAction(domainActionName:DomainDataActionName):CRUDActionName{
 //   if (domainActionName in CRUDActionNamesArray) {
 //     return domainActionName as CRUDActionName
 //   } else {
 //     return undefined;
 //   }
 // }
-export interface DomainCRUDAction {
-  actionName: DomainCRUDActionName;
+export interface DomainDataAction {
+  actionType:'DomainDataAction',
+  actionName: DomainDataActionName;
   steps?:number; // for undo / redo
   uuid?:string;
   objects?:InstanceCollection[];
 }
+
+export interface DomainModelAction {
+  actionType:'DomainModelAction',
+  actionName: DomainModelActionName;
+  objects?:InstanceCollection[];
+  updates?:any[];
+}
+
+export type DomainAction = DomainDataAction | DomainModelAction;
 
 export interface DomainInstancesUuidIndex {
   [uuid: string]: Instance
@@ -70,7 +97,8 @@ export type DomainStateSelector=(domainState:DomainState)=>Instance[]
 export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
-  handleDomainCRUDAction(action:DomainCRUDAction):Promise<void>;
-  currentTransaction():DomainCRUDAction[];
+  handleDomainDataAction(action:DomainDataAction):Promise<void>;
+  handleDomainModelAction(action:DomainModelAction):Promise<void>;
+  currentTransaction():DomainModelAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

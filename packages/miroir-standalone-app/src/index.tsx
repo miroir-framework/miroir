@@ -5,9 +5,7 @@ import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  DomainCRUDAction,
-  DomainControllerInterface,
-  entityEntity,
+  DomainControllerInterface, DomainDataAction, DomainModelAction, entityEntity,
   entityReport, Instance, MiroirConfig, miroirCoreStartup,
   reportEntityList, reportReportList
 } from "miroir-core";
@@ -24,8 +22,8 @@ import book2 from "assets/instances/Book - The Design of Everyday Things.json";
 import miroirConfig from "assets/miroirConfig.json";
 import reportAuthorList from "assets/reports/AuthorList.json";
 import reportBookList from "assets/reports/BookList.json";
-import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createMswStore } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
 
@@ -33,9 +31,12 @@ console.log("entityEntity", JSON.stringify(entityEntity));
 const container = document.getElementById("root");
 const root = createRoot(container);
 
+// ###################################################################################
 async function uploadConfiguration(domainController:DomainControllerInterface) {
-  const updateEntitiesAction: DomainCRUDAction = {
+  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONNALLY
+  const updateEntitiesAction: DomainDataAction = {
     actionName: "create",
+    actionType:"DomainDataAction",
     objects: [
       {
         entity: "Entity",
@@ -55,13 +56,15 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
       },
     ],
   };
-  await domainController.handleDomainCRUDAction(updateEntitiesAction);
-  await domainController.handleDomainCRUDAction({actionName: "commit"});
+  await domainController.handleDomainDataAction(updateEntitiesAction);
+  // await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"});
 }
 
+// ###################################################################################
 async function uploadBooksAndReports(domainController:DomainControllerInterface) {
-  const updateEntitiesAction: DomainCRUDAction = {
+  const updateEntitiesAction: DomainModelAction = {
     actionName: "create",
+    actionType:"DomainModelAction",
     objects: [
       {
         entity: "Entity",
@@ -70,12 +73,20 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
           entityBook as Instance
         ],
       },
+      {
+        entity: "Report",
+        instances: [
+          reportAuthorList as Instance,
+          reportBookList as Instance,
+        ],
+      },
     ],
   };
-  await domainController.handleDomainCRUDAction(updateEntitiesAction);
-  await domainController.handleDomainCRUDAction({actionName: "commit"});
-  const updateInstancesAction: DomainCRUDAction = {
+  await domainController.handleDomainModelAction(updateEntitiesAction);
+  await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"});
+  const updateInstancesAction: DomainDataAction = {
     actionName: "create",
+    actionType:"DomainDataAction",
     objects: [
       {
         entity: "Author",
@@ -94,19 +105,13 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
           book4 as Instance,
         ],
       },
-      {
-        entity: "Report",
-        instances: [
-          reportAuthorList as Instance,
-          reportBookList as Instance,
-        ],
-      },
     ],
   };
-  await domainController.handleDomainCRUDAction(updateInstancesAction);
-  // await domainController.handleDomainCRUDAction({actionName: "commit"});
+  await domainController.handleDomainDataAction(updateInstancesAction);
+  // await domainController.handleDomainDataAction({actionName: "commit"});
 }
 
+// ###################################################################################
 async function start() {
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
@@ -142,7 +147,7 @@ async function start() {
     }
 
     // load Miroir Configuration
-    // await domainController.handleDomainCRUDAction({actionName: "replace"});
+    // await domainController.handleDomainDataAction({actionName: "replace"});
 
     root.render(
       <Provider store={mReduxStore.getInnerStore()}>
@@ -156,13 +161,15 @@ async function start() {
               <p/>
               <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
               <p/>
-              <span><button onClick={async() => {await domainController.handleDomainCRUDAction({actionName: "resetModel"})}}>Reset database</button></span>
+              <span><button onClick={async() => {await domainController.handleDomainModelAction({actionName: "updateModel", actionType:"DomainModelAction", updates:[{action:"resetModel"}]})}}>Reset database</button></span>
+
+              <span><button onClick={async() => {await domainController.handleDomainModelAction({actionName: "replace", actionType:"DomainModelAction"})}}>fetch Miroir & App configurations from database</button></span>
               <p/>
               <span><button onClick={async() => {await uploadConfiguration(domainController)}}>upload Miroir configuration to database</button></span>
-              <p/>
+              {/* <p/> */} 
               <span><button onClick={async() => {await uploadBooksAndReports(domainController)}}>upload App configuration to database</button></span>
+              <span><button onClick={async() => {await domainController.handleDomainModelAction({actionName: "updateModel", actionType:"DomainModelAction", updates:[{action:""}]})}}>Update Report List</button></span>
               <p/>
-              <span><button onClick={async() => {await domainController.handleDomainCRUDAction({actionName: "replace"})}}>fetch Miroir & App configurations from database</button></span>
               <p/>
               <RootComponent 
                 // reportName="AuthorList"
