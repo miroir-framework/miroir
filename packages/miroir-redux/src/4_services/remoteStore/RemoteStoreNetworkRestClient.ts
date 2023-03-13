@@ -1,12 +1,9 @@
 import {
-  CRUDActionNamesArrayString,
-  ModelActionNamesArray,
-  ModelActionNamesArrayString,
-  RemoteStoreAction,
+  CRUDActionNamesArrayString, RemoteStoreAction,
   RemoteStoreActionName,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
-  RestClientInterface,
+  RestClientInterface
 } from "miroir-core";
 
 export const HttpMethodsObject = {

@@ -4,6 +4,8 @@ import {
 } from "@teroneko/redux-saga-promise";
 import sagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
+import asyncDispatchMiddleware from "async-dispatch";
+
 
 import {
   LocalCacheAction,
@@ -102,13 +104,17 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
         getDefaultMiddleware({
           serializableCheck: {
             ignoredActions: ignoredActionsList, // Ignore these action types
-            ignoredActionPaths: ["meta.promiseActions"], // Ignore these field paths in all actions
+            ignoredActionPaths: [
+              "meta.promiseActions",
+              "pastModelPatches.0.action.asyncDispatch",
+            ], // Ignore these field paths in all actions
           },
         })
         .concat(promiseMiddleware)
-        .concat(this.sagaMiddleware),
-    });
-  } //end constructor
+        .concat(asyncDispatchMiddleware)
+        .concat(this.sagaMiddleware)
+      });
+    } //end constructor
 
   // ###############################################################################
   getInnerStore() {

@@ -71,6 +71,8 @@ export declare interface RemoteDataStoreInterface {
 export interface DataStoreInterface {
   init():Promise<void>;
   getEntities():string[]; //TODO: remove!
+  dropEntity(entityName:string);
+  dropEntities(entityNames:string[]);
 
   getInstances(entityName:string):Promise<Instance[]>;
   upsertInstance(entityName:string, instance:Instance):Promise<any>;

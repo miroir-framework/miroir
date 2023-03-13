@@ -39,6 +39,22 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
+  dropEntity(entityName:string) {
+    if (this.sequelize.isDefined(entityName)) {
+      console.warn('dropEntity entityName',entityName,'is defined.');
+      if (this.sqlEntities && this.sqlEntities[entityName]) {delete this.sqlEntities[entityName];}
+      this.sequelize.modelManager.removeModel(this.sequelize.model(entityName));
+    } else {
+      console.warn('dropEntity entityName',entityName,'not found.');
+    }
+  }
+
+    // ##############################################################################################
+    dropEntities(entityNames:string[]) {
+      entityNames.forEach(e =>this.dropEntity(e));
+    }
+
+  // ##############################################################################################
   sqlEntityDefinition(entityDefinition:EntityDefinition):SqlEntityDefinition {
     return {
       [entityDefinition.name]:this.sequelize.define(
@@ -57,7 +73,6 @@ export class SqlDbServer implements DataStoreInterface {
       console.warn('sqlDbServer init initialization can not be done a second time', this.sqlEntities);
     } else {
       console.warn('sqlDbServer init initialization started');
-      // this.sqlEntities = this.sqlEntityDefinition(entityEntity as EntityDefinition);
       const entities:EntityDefinition[] = await this.getInstances('Entity',this.sqlEntityDefinition(entityEntity as EntityDefinition));
       this.sqlEntities = entities.reduce(
         (prev,curr:EntityDefinition) => {
@@ -79,10 +94,14 @@ export class SqlDbServer implements DataStoreInterface {
       )
       : 
       (
-        this.sqlEntities[entityName]?
-          this.sqlEntities[entityName].findAll()
-          :
-          Promise.resolve([])
+        this.sqlEntities?(
+          this.sqlEntities[entityName]?
+            this.sqlEntities[entityName].findAll()
+            :
+            Promise.resolve([])
+        )
+        :
+        Promise.resolve([])
       )
     ;
   }

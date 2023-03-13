@@ -133,7 +133,13 @@ app.post("/model/", async (req, res, ctx) => {
   if (updates[0]) {
     switch (updates[0]['action']) {
       case 'resetModel':
+        console.log('resetModel before drop sequelize.models', Object.keys(sequelize.models));
         await sequelize.drop();
+        // await sequelize.sync();
+        console.log('resetModel after drop sequelize.models', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
+        sqlDbServer.dropEntities(Object.keys(sequelize.models));
+        console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
+        
         break;
       default:
         break;

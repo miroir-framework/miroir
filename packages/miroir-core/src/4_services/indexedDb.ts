@@ -48,6 +48,13 @@ export class IndexedDb {
   public getSubLevels():string[] {
     return Array.from(this.subLevels.keys());
   }
+
+  // #############################################################################
+  public removeSubLevels(tableNames:string[]) {
+    this.subLevels = new Map<string, any>([
+      ...Array.from(this.subLevels.entries()).filter(s=>!tableNames.includes(s[0]))
+    ]);
+  }
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
     this.subLevels = new Map<string, any>([

@@ -10,6 +10,7 @@ export type CUDActionName = keyof typeof CUDActionNamesObject;
 export const CUDActionNamesArray:CRUDActionName[] = Object.keys(CUDActionNamesObject) as CRUDActionName[];
 export const CUDActionNamesArrayString:string[] = CUDActionNamesArray.map(a=>a);
 
+// #############################################################################################
 export const CRUDActionNamesObject = {
   ...CUDActionNamesObject,
   'read': 'read',
@@ -19,6 +20,7 @@ export const CRUDActionNamesArray:CRUDActionName[] = Object.keys(CRUDActionNames
 export const CRUDActionNamesArrayString:string[] = CRUDActionNamesArray.map(a=>a);
 
 
+// #############################################################################################
 export const localCacheOnlyActionNamesObject = {
   'undo': 'undo',
   'redo': 'redo',
@@ -29,6 +31,7 @@ export type LocalCacheOnlyActionName = keyof typeof localCacheOnlyActionNamesObj
 export const localCacheOnlyActionNamesArray:LocalCacheOnlyActionName[] = Object.keys(localCacheOnlyActionNamesObject) as LocalCacheOnlyActionName[];
 
 
+// #############################################################################################
 export const ModelActionNamesObject = {
   // 'resetModel': 'resetModel', // to delete all DB contents. TEMPORARY.
   'updateModel': 'updateModel',
@@ -37,6 +40,7 @@ export type ModelActionName = keyof typeof ModelActionNamesObject;
 export const ModelActionNamesArray:RemoteStoreActionName[] = Object.keys(ModelActionNamesObject) as ModelActionName[];
 export const ModelActionNamesArrayString:string[] = ModelActionNamesArray.map(a=>a);
 
+// #############################################################################################
 export const remoteStoreActionNamesObject = {
   ...CRUDActionNamesObject,
   ...ModelActionNamesObject,
@@ -45,6 +49,7 @@ export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
 export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(remoteStoreActionNamesObject) as RemoteStoreActionName[];
 
 
+// #############################################################################################
 export const domainDataActionNamesObject = {
   ...CRUDActionNamesObject,
   // ...localCacheOnlyActionNamesObject,
@@ -53,21 +58,16 @@ export const domainDataActionNamesObject = {
 export type DomainDataActionName = keyof typeof domainDataActionNamesObject;
 export const domainDataActionNamesArray:DomainDataActionName[] = Object.keys(domainDataActionNamesObject) as DomainDataActionName[];
 
+// #############################################################################################
 export const domainModelActionNamesObject = {
   ...CUDActionNamesObject,
   ...localCacheOnlyActionNamesObject,
-  ...ModelActionNamesObject,
+  // ...ModelActionNamesObject,
 };
 export type DomainModelActionName = keyof typeof domainModelActionNamesObject;
 export const domainModelActionNamesArray:DomainModelActionName[] = Object.keys(domainModelActionNamesObject) as DomainModelActionName[];
 
-// export function domainActionToCRUDAction(domainActionName:DomainDataActionName):CRUDActionName{
-//   if (domainActionName in CRUDActionNamesArray) {
-//     return domainActionName as CRUDActionName
-//   } else {
-//     return undefined;
-//   }
-// }
+// #############################################################################################
 export interface DomainDataAction {
   actionType:'DomainDataAction',
   actionName: DomainDataActionName;
@@ -76,12 +76,19 @@ export interface DomainDataAction {
   objects?:InstanceCollection[];
 }
 
-export interface DomainModelAction {
+export interface DomainModelUpdateAction {
+  actionType:'DomainModelAction',
+  actionName: 'updateModel';
+  updates?:any[];
+}
+export interface DomainModelOtherAction {
   actionType:'DomainModelAction',
   actionName: DomainModelActionName;
   objects?:InstanceCollection[];
-  updates?:any[];
+  // updates?:any[];
 }
+
+export type DomainModelAction = DomainModelUpdateAction | DomainModelOtherAction;
 
 export type DomainAction = DomainDataAction | DomainModelAction;
 
@@ -99,6 +106,7 @@ export type DomainStateReducer=(domainState:DomainState)=>any
 export interface DomainControllerInterface {
   handleDomainDataAction(action:DomainDataAction):Promise<void>;
   handleDomainModelAction(action:DomainModelAction):Promise<void>;
+  handleDomainAction(action:DomainAction):Promise<void>;
   currentTransaction():DomainModelAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

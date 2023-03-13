@@ -16,6 +16,18 @@ export class IndexedDbServer implements DataStoreInterface{
       return this.localIndexedDb.getSubLevels();
   }
 
+  dropEntity(entityName:string) {
+    if (this.localIndexedDb.hasSubLevel(entityName)) {
+      this.localIndexedDb.removeSubLevels([entityName]);
+    } else {
+      console.warn('dropEntity entityName not found:', entityName);
+    } 
+  }
+
+  dropEntities(entityNames:string[]) {
+    entityNames.forEach(e =>this.dropEntity(e));
+  }
+  
   getInstances(entityName:string):Promise<any> {
     return this.localIndexedDb.getAllValue(entityName);
   }

@@ -70,6 +70,7 @@ const getLocalCacheSliceEntityAdapter: (
 );
 
 function getInitializedEntityAdapter(entityName: string, state: LocalCacheSliceState) {
+  // TODO: refactor so as to avoid side effects!
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityName);
   if (!state[entityName]) {
     state[entityName] = sliceEntityAdapter.getInitialState();
@@ -100,8 +101,25 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
     // }
     case 'create': {
       for (let instanceCollection of action.payload.objects) {
+        console.log('create',instanceCollection.entity, instanceCollection.instances, JSON.stringify(state));
+        
+        // if (state[instanceCollection.entity]) {
+        //   const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+        //   sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances);
+        //   console.log('create done',JSON.stringify(state[instanceCollection.entity]));
+        // } else {
+        //   const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
+        //   console.log('create with sliceEntityAdapter',instanceCollection.entity, 'state',JSON.stringify(state));
+        //   action['asyncDispatch'](action);
+        // }
         const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
         sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances);
+        if(instanceCollection.entity == 'Entity') {
+          console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction,'creating entityAdapter for Entities',instanceCollection.instances.map(i=>i['name']));
+          
+          instanceCollection.instances.forEach(i=>getInitializedEntityAdapter(i['name'], state));
+        }
+        console.log('create done',JSON.stringify(state[instanceCollection.entity]));
       }
       break;
     }
@@ -164,7 +182,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
 
 //#########################################################################################
 function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
-  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'called', action);
+  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'actionType',action.payload.actionType, 'called', action);
   switch (action.payload.actionType) {
     case 'DomainDataAction': {
       handleLocalCacheDataAction(state,action as PayloadAction<LocalCacheDataAction>);

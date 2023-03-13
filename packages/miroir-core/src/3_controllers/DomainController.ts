@@ -1,7 +1,13 @@
-import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
-import { CRUDActionName, CRUDActionNamesArray, DomainDataAction, DomainControllerInterface, ModelActionName, DomainModelAction } from "../0_interfaces/2_domain/DomainControllerInterface";
+import {
+  CRUDActionName,
+  CRUDActionNamesArray,
+  DomainAction,
+  DomainControllerInterface,
+  DomainDataAction,
+  DomainModelAction,
+} from "../0_interfaces/2_domain/DomainControllerInterface";
 import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface";
-import { RemoteStoreCRUDAction, RemoteStoreModelAction } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -9,16 +15,12 @@ import { RemoteStoreCRUDAction, RemoteStoreModelAction } from "src/0_interfaces/
  * example: get the list of reports accessible by a given user.
  */
 export class DomainController implements DomainControllerInterface {
-  constructor(
-    private dataController: DataControllerInterface
-  ){
-
-  }
+  constructor(private dataController: DataControllerInterface) {}
 
   // ########################################################################################
-  currentTransaction():DomainModelAction[]{
+  currentTransaction(): DomainModelAction[] {
     return this.dataController.currentLocalCacheTransaction();
-  };
+  }
 
   // ########################################################################################
   currentLocalCacheInfo(): LocalCacheInfo {
@@ -26,39 +28,42 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  async handleDomainModelAction(domainModelAction:DomainModelAction):Promise<void>{
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName',domainModelAction.actionName,'action',domainModelAction);
+  async handleDomainModelAction(domainModelAction: DomainModelAction): Promise<void> {
+    console.log(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName",
+      domainModelAction.actionName,
+      "action",
+      domainModelAction
+    );
     // await this.dataController.handleRemoteStoreModelAction(domainAction);
 
     switch (domainModelAction.actionName) {
-      case 'replace': {
+      case "replace": {
         await this.dataController.loadConfigurationFromRemoteDataStore();
         break;
       }
-      case 'undo':
-      case 'redo': {
-        this.dataController.handleLocalCacheModelAction(
-          domainModelAction
-        );
+      case "undo":
+      case "redo": {
+        this.dataController.handleLocalCacheModelAction(domainModelAction);
         break;
       }
-      case 'commit': {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit',this.dataController.currentLocalCacheTransaction());
+      case "commit": {
+        console.log(
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit",
+          this.dataController.currentLocalCacheTransaction()
+        );
         for (const replayAction of this.dataController.currentLocalCacheTransaction()) {
-          console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit',replayAction);
-          for (const instances of replayAction.objects) { // TODO: replace with parallel implementation Promise.all?
-            await this.dataController.handleRemoteStoreCRUDAction(
-              {
-                actionName: replayAction.actionName.toString() as CRUDActionName,
-                entityName: instances.entity,
-                objects: instances.instances
-              }
-            );
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit", replayAction);
+          for (const instances of replayAction["objects"]) {
+            // TODO: replace with parallel implementation Promise.all?
+            await this.dataController.handleRemoteStoreCRUDAction({
+              actionName: replayAction.actionName.toString() as CRUDActionName,
+              entityName: instances.entity,
+              objects: instances.instances,
+            });
           }
         }
-        this.dataController.handleLocalCacheModelAction(
-          domainModelAction
-        );
+        this.dataController.handleLocalCacheModelAction(domainModelAction);
         break;
       }
       case "create":
@@ -75,7 +80,7 @@ export class DomainController implements DomainControllerInterface {
         );
         break;
       }
-      case 'updateModel': {
+      case "updateModel": {
         await this.dataController.handleRemoteStoreCRUDAction(
           domainModelAction
           // {
@@ -91,8 +96,8 @@ export class DomainController implements DomainControllerInterface {
 
       default: {
         // await this.dataController.handleRemoteStoreModelAction(domainModelAction);
-        console.warn('DomainController handleDomainModelAction cannot handle action name',domainModelAction.actionName,'for',domainModelAction);
-      break;
+        console.warn("DomainController handleDomainModelAction cannot handle action name for", domainModelAction);
+        break;
       }
     }
 
@@ -111,21 +116,17 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  async handleDomainDataAction(domainAction:DomainDataAction):Promise<void>{
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction',domainAction);
-    if (CRUDActionNamesArray.map(a=>a.toString()).includes(domainAction.actionName)) {
-      // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances, 
+  async handleDomainDataAction(domainAction: DomainDataAction): Promise<void> {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction", domainAction.actionName, domainAction.objects);
+    // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
+    if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainAction.actionName)) {
+      // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
       // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
-      // if (["Entity", "Report"].includes(domainAction.objects[0].entity)) { //TODO: detect Data Entities based on their "conceptLevel" property
-      //   // transactional modification: the changes are done only locally, until commit
-      //   this.dataController.handleLocalCacheDataAction(domainAction);
-      // } else {
-      // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction handling instances",
-          instances
+          instances.entity, instances.instances
         );
         await this.dataController.handleRemoteStoreCRUDAction({
           actionName: domainAction.actionName.toString() as CRUDActionName,
@@ -134,13 +135,74 @@ export class DomainController implements DomainControllerInterface {
         });
       }
       this.dataController.handleLocalCacheDataAction(domainAction);
-      // }
-      // }
       console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction end", domainAction);
     } else {
-      // non-CRUD actions, all at Model level (not Data level)
+      console.error(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction could not handle action name",
+        domainAction.actionName,
+        "for action",
+        domainAction
+      );
     }
-    return Promise.resolve()
-  };
+    return Promise.resolve();
+  }
 
+  // ########################################################################################
+  async handleDomainAction(domainAction: DomainAction): Promise<void> {
+    let entityDomainAction:DomainAction = undefined;
+    let otherDomainAction:DomainAction = undefined;
+    
+    if (domainAction.actionName!="updateModel"){
+      const entityObjects = domainAction['objects'].filter(a=>a.entity=='Entity');
+      const otherObjects = domainAction['objects'].filter(a=>a.entity!='Entity');
+
+      if(entityObjects.length > 0){
+        entityDomainAction = {
+          actionType: domainAction.actionType,
+          actionName: domainAction.actionName,
+          objects: entityObjects
+        } as DomainAction
+      }
+      if(otherObjects.length > 0){
+        otherDomainAction = {
+          actionType: domainAction.actionType,
+          actionName: domainAction.actionName,
+          objects: otherObjects
+        } as DomainAction
+      }
+
+    }
+    switch (domainAction.actionType) {
+      case "DomainDataAction": {
+        if (entityDomainAction) {
+          if (otherDomainAction) {
+            await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
+            return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+          } else {
+            return this.handleDomainDataAction(entityDomainAction as DomainDataAction);
+          }
+        } else {
+          return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+        }
+      }
+      case "DomainModelAction": {
+        if (entityDomainAction) {
+          if (otherDomainAction) {
+            await this.handleDomainModelAction(entityDomainAction as DomainModelAction);
+            return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+          } else {
+            return this.handleDomainModelAction(entityDomainAction as DomainModelAction);
+          }
+        } else {
+          return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+        }
+        // return this.handleDomainModelAction(domainAction);
+      }
+      default:
+        console.error(
+          "DomainController handleDomainAction action could not be taken into account, unkown action",
+          domainAction
+        );
+    }
+  }
 }

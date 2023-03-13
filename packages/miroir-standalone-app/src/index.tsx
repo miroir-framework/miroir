@@ -33,8 +33,8 @@ const root = createRoot(container);
 
 // ###################################################################################
 async function uploadConfiguration(domainController:DomainControllerInterface) {
-  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONNALLY
-  const updateEntitiesAction: DomainDataAction = {
+  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
+  await domainController.handleDomainAction({
     actionName: "create",
     actionType:"DomainDataAction",
     objects: [
@@ -55,14 +55,13 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
         ],
       },
     ],
-  };
-  await domainController.handleDomainDataAction(updateEntitiesAction);
-  // await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"});
+  });
 }
 
 // ###################################################################################
 async function uploadBooksAndReports(domainController:DomainControllerInterface) {
-  const updateEntitiesAction: DomainModelAction = {
+  // const updateEntitiesAction: DomainModelAction = ;
+  await domainController.handleDomainModelAction({
     actionName: "create",
     actionType:"DomainModelAction",
     objects: [
@@ -81,8 +80,7 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
         ],
       },
     ],
-  };
-  await domainController.handleDomainModelAction(updateEntitiesAction);
+  });
   await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"});
   const updateInstancesAction: DomainDataAction = {
     actionName: "create",
