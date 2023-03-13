@@ -110,7 +110,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
           },
         })
         .concat(promiseMiddleware)
-        .concat(asyncDispatchMiddleware)
         .concat(this.sagaMiddleware)
       });
     } //end constructor
