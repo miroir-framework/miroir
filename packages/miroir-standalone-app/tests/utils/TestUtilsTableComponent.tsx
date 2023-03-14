@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { EntityDefinition, Instance, MiroirReport } from 'miroir-core';
 import { selectInstancesForEntity } from "miroir-redux";
 
-import { useLocalCacheInstancesForEntity } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
+import { useLocalCacheEntities, useLocalCacheInstancesForEntity, useLocalCacheReports } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
 
 export interface MiroirReportComponentProps {
   entityName: string;
@@ -15,13 +15,21 @@ export interface MiroirReportComponentProps {
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))
-  const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
+  // const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity('Entity'))
+  // const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity('Report'))
+  // const entityInstances = {
+  //   Entity: miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [],
+  //   Report:miroirReportsState?.entities ? Object.values(miroirReportsState.entities) : [],
+  // }
+  const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
+  const miroirReports:MiroirReport[] = useLocalCacheReports();
   const entityInstances = {
-    Entity: miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [],
-    Report:miroirReportsState?.entities ? Object.values(miroirReportsState.entities) : [],
+    Entity: miroirEntities,
+    Report:miroirReports,
   }
-  console.log("TestTableComponent",props.entityName,"miroirEntities",entityInstances['Entity'], "miroirReports", entityInstances['Report']);
+
+  // console.log("TestTableComponent",props.entityName,"miroirEntities",entityInstances['Entity'], "miroirReports", entityInstances['Report']);
+  console.log("TestTableComponent",props.entityName,"miroirEntities",miroirEntities, "miroirReports", miroirReports);
 
 
   const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityName);

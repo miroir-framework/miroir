@@ -3,7 +3,7 @@ import { Level } from 'level';
 export class IndexedDb {
   private databaseName: string;
   private db: Level = undefined;
-  private subLevels: Map<string, Level>;
+  private subLevels: Map<string, Level> = new Map();
 
   constructor(database: string) {
     this.databaseName = database;
@@ -33,6 +33,7 @@ export class IndexedDb {
             tableName,
             <any>db.sublevel(tableName),
           ];
+          result[1].clear();
           return result;
         }
       ),
@@ -57,6 +58,7 @@ export class IndexedDb {
   }
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
+    console.log('indexedDb addSubLevels:',tableNames,this.getSubLevels());
     this.subLevels = new Map<string, any>([
       ...this.subLevels.entries(),
       ...tableNames.filter(n=>!this.hasSubLevel(n)).map(
@@ -65,6 +67,9 @@ export class IndexedDb {
             tableName,
             <any>this.db.sublevel(tableName),
           ];
+          result[1].clear();
+          console.log('indexedDb added sublevel:',result[0]);
+          
           return result;
         }
       ),

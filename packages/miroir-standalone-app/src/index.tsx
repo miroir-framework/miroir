@@ -61,7 +61,7 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
 // ###################################################################################
 async function uploadBooksAndReports(domainController:DomainControllerInterface) {
   // const updateEntitiesAction: DomainModelAction = ;
-  await domainController.handleDomainModelAction({
+  await domainController.handleDomainAction({
     actionName: "create",
     actionType:"DomainModelAction",
     objects: [
@@ -81,8 +81,8 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
       },
     ],
   });
-  await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"});
-  const updateInstancesAction: DomainDataAction = {
+  await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+  await domainController.handleDomainAction({
     actionName: "create",
     actionType:"DomainDataAction",
     objects: [
@@ -104,9 +104,8 @@ async function uploadBooksAndReports(domainController:DomainControllerInterface)
         ],
       },
     ],
-  };
-  await domainController.handleDomainDataAction(updateInstancesAction);
-  // await domainController.handleDomainDataAction({actionName: "commit"});
+  });
+  // await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
 }
 
 // ###################################################################################
@@ -137,6 +136,7 @@ async function start() {
     }
     if (!!mServer) {
       // await mServer.createObjectStore(["Entity", "Report"]);
+      // await mServer.createObjectStore(["Entity", "Report"]);
       // await mServer.clearObjectStore();
       // await mServer.localIndexedDb.putValue("Entity", entityEntity);
       // await mServer.localIndexedDb.putValue("Entity", entityReport);
@@ -145,7 +145,7 @@ async function start() {
     }
 
     // load Miroir Configuration
-    // await domainController.handleDomainDataAction({actionName: "replace"});
+    // await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
 
     root.render(
       <Provider store={mReduxStore.getInnerStore()}>
@@ -161,7 +161,7 @@ async function start() {
               <p/>
               <span><button onClick={async() => {await domainController.handleDomainModelAction({actionName: "updateModel", actionType:"DomainModelAction", updates:[{action:"resetModel"}]})}}>Reset database</button></span>
 
-              <span><button onClick={async() => {await domainController.handleDomainModelAction({actionName: "replace", actionType:"DomainModelAction"})}}>fetch Miroir & App configurations from database</button></span>
+              <span><button onClick={async() => {await domainController.handleDomainAction({actionName: "replace", actionType:"DomainModelAction"})}}>fetch Miroir & App configurations from database</button></span>
               <p/>
               <span><button onClick={async() => {await uploadConfiguration(domainController)}}>upload Miroir configuration to database</button></span>
               {/* <p/> */} 

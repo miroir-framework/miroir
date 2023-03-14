@@ -16,6 +16,7 @@ global.TextDecoder = TextDecoder
 
 
 import {
+  DomainAction,
   DomainDataAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
@@ -94,7 +95,7 @@ describe(
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -148,7 +149,7 @@ describe(
         console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -168,14 +169,15 @@ describe(
 
         // ##########################################################################################################
         console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
-        const createAction: DomainDataAction = {
+        const createAction: DomainAction = {
           actionName:'create',
+          actionType:"DomainModelAction",
           objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction(createAction);
+            await domainController.handleDomainAction(createAction);
           }
         );
 
@@ -201,7 +203,7 @@ describe(
         console.log('add Report definition step 3: rollbacking/refreshing report list from remote store, reportEntityList be absent in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -259,7 +261,7 @@ describe(
         console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -279,14 +281,15 @@ describe(
 
         // ##########################################################################################################
         console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
-        const createAction: DomainDataAction = {
+        const createAction: DomainAction = {
           actionName:'create',
+          actionType: "DomainModelAction",
           objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction(createAction);
+            await domainController.handleDomainAction(createAction);
           }
         );
 
@@ -312,7 +315,7 @@ describe(
         console.log('add Report definition step 3: committing report list to remote store, reportEntityList must be present in the report list afterwards.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "commit"});
+            await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
           }
         );
 
@@ -336,7 +339,7 @@ describe(
         console.log('add Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -393,7 +396,7 @@ describe(
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -413,8 +416,9 @@ describe(
         console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({
+            await domainController.handleDomainAction({
               actionName:'delete',
+              actionType: 'DomainModelAction',
               objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
             });
           }
@@ -438,7 +442,7 @@ describe(
         console.log('remove Report definition step 3: commit to remote store, reportEntityList must still be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "commit"});
+            await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
           }
         );
         await user.click(screen.getByRole('button'))
@@ -458,7 +462,7 @@ describe(
         console.log('remove Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be absent in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -516,7 +520,7 @@ describe(
         console.log('Update Report definition step 1: loading initial configuration, reportEntityList must be present in report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -538,8 +542,9 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-        const updateAction: DomainDataAction = {
+        const updateAction: DomainAction = {
           actionName: "update",
+          actionType: 'DomainModelAction',
           objects: [
             {
               entity: "Report",
@@ -560,7 +565,7 @@ describe(
         };
         await act(
           async () => {
-            await domainController.handleDomainDataAction(updateAction);
+            await domainController.handleDomainAction(updateAction);
           }
         );
 
@@ -585,7 +590,7 @@ describe(
         console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "commit"});
+            await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
           }
         );
 
@@ -605,7 +610,7 @@ describe(
         console.log('update Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, modified reportEntityList must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -626,6 +631,5 @@ describe(
         
       }
     )
-    
-  }  
+  }
 )

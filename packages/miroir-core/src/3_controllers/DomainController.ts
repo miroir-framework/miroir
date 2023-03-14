@@ -31,7 +31,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainModelAction(domainModelAction: DomainModelAction): Promise<void> {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName",
-      domainModelAction.actionName,
+      domainModelAction['actionName'],
       "action",
       domainModelAction
     );
@@ -72,24 +72,12 @@ export class DomainController implements DomainControllerInterface {
         // transactional modification: the changes are done only locally, until commit
         this.dataController.handleLocalCacheAction(
           domainModelAction
-          // {
-          //   actionName: domainModelAction.actionName as CRUDActionName,
-          //   actionType:"DomainDataAction",
-          //   objects: domainModelAction.objects,
-          // }
         );
         break;
       }
       case "updateModel": {
         await this.dataController.handleRemoteStoreCRUDAction(
           domainModelAction
-          // {
-          //   actionName: domainModelAction.actionName.toString() as RemoteStoreOnlyActionName,
-          //   actionType:"DomainModelAction",
-
-          //   // entityName: undefined,
-          //   // objects: [domainAction]
-          // }
         );
         break;
       }
@@ -101,18 +89,6 @@ export class DomainController implements DomainControllerInterface {
       }
     }
 
-    // switch (domainAction.actionName) {
-    //   case 'resetModel': {
-    //     await this.dataController.handleRemoteStoreModelAction(domainAction
-    //       // {
-    //       //   actionName: domainAction.actionName.toString() as ModelActionName,
-    //       //   // entityName: undefined,
-    //       //   actions: [domainAction],
-    //       // }
-    //     );
-    //     break;
-    //   }
-    // }
   }
 
   // ########################################################################################
@@ -151,10 +127,13 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(domainAction: DomainAction): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;
+    const ignoredActionNames:string[] = ['updateModel','commit','replace','undo','redo'];
+    console.log('handleDomainAction',domainAction?.actionName,domainAction?.actionType,domainAction['objects']);
     
-    if (domainAction.actionName!="updateModel"){
-      const entityObjects = domainAction['objects'].filter(a=>a.entity=='Entity');
-      const otherObjects = domainAction['objects'].filter(a=>a.entity!='Entity');
+    // if (domainAction.actionName!="updateModel"){
+    if (!ignoredActionNames.includes(domainAction.actionName)){
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entity=='Entity'):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entity!='Entity'):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {
@@ -170,31 +149,40 @@ export class DomainController implements DomainControllerInterface {
           objects: otherObjects
         } as DomainAction
       }
-
+    } else {
+      otherDomainAction = domainAction;
     }
     switch (domainAction.actionType) {
       case "DomainDataAction": {
-        if (entityDomainAction) {
-          if (otherDomainAction) {
+        if (!!entityDomainAction) {
+          if (!!otherDomainAction) {
             await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
             return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
           } else {
             return this.handleDomainDataAction(entityDomainAction as DomainDataAction);
           }
         } else {
-          return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+          if (!!otherDomainAction) {
+            return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+          } else {
+            return Promise.resolve()
+          }
         }
       }
       case "DomainModelAction": {
-        if (entityDomainAction) {
-          if (otherDomainAction) {
+        if (!!entityDomainAction) {
+          if (!!otherDomainAction) {
             await this.handleDomainModelAction(entityDomainAction as DomainModelAction);
             return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
           } else {
             return this.handleDomainModelAction(entityDomainAction as DomainModelAction);
           }
         } else {
-          return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+          if (!!otherDomainAction) {
+            return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+          } else {
+            return Promise.resolve()
+          }
         }
         // return this.handleDomainModelAction(domainAction);
       }

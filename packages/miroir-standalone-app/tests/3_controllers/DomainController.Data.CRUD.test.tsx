@@ -114,7 +114,7 @@ describe(
 
     //     await act(
     //       async () => {
-    //         await domainController.handleDomainDataAction({actionName: "replace"});
+    //         await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
     //       }
     //     );
 
@@ -178,9 +178,10 @@ describe(
         console.log('add Book step 1: the Book must be absent in the local cache report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
+        console.log('add Book step 1: done replace.')
 
         await user.click(screen.getByRole('button'))
 
@@ -196,18 +197,18 @@ describe(
             expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
           }
         );
-      // }
 
         // ##########################################################################################################
         console.log('add Book step 2: the Book must then be present in the local cache report list.')
         const createAction: DomainDataAction = {
           actionName:'create',
+          actionType:"DomainDataAction",
           objects:[{entity:'Book',instances:[book3 as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction(createAction);
+            await domainController.handleDomainAction(createAction);
           }
         );
 
@@ -235,7 +236,7 @@ describe(
         console.log('add Book definition step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -302,7 +303,7 @@ describe(
         console.log('Remove Book step 1: the Book must be present in the local cache report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -327,12 +328,13 @@ describe(
         console.log('remove Book step 2: the Book must then be absent from the local cache report list.')
         const createAction: DomainDataAction = {
           actionName:'delete',
+          actionType:"DomainDataAction",
           objects:[{entity:'Book',instances:[book3 as Instance]}]
         };
 
         await act(
           async () => {
-            await domainController.handleDomainDataAction(createAction);
+            await domainController.handleDomainAction(createAction);
           }
         );
 
@@ -359,7 +361,7 @@ describe(
         console.log('Remove Book definition step 3: rollbacking/refreshing report list from remote store, removed book must still be absent from the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -425,7 +427,7 @@ describe(
         console.log('Update Bool definition step 1: loading initial configuration, book must be present in report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
           }
         );
 
@@ -449,6 +451,7 @@ describe(
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
         const updateAction: DomainDataAction = {
           actionName: "update",
+          actionType:"DomainDataAction",
           objects: [
             {
               entity: "Book",
@@ -465,7 +468,7 @@ describe(
         };
         await act(
           async () => {
-            await domainController.handleDomainDataAction(updateAction);
+            await domainController.handleDomainAction(updateAction);
           }
         );
 
@@ -488,7 +491,7 @@ describe(
         console.log('Update Book definition step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
         await act(
           async () => {
-            await domainController.handleDomainDataAction({actionName: "replace"});
+            await domainController.handleDomainAction({actionName: "replace", actionType:"DomainModelAction"});
           }
         );
 

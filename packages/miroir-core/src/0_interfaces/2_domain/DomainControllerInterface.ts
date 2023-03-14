@@ -85,7 +85,6 @@ export interface DomainModelOtherAction {
   actionType:'DomainModelAction',
   actionName: DomainModelActionName;
   objects?:InstanceCollection[];
-  // updates?:any[];
 }
 
 export type DomainModelAction = DomainModelUpdateAction | DomainModelOtherAction;

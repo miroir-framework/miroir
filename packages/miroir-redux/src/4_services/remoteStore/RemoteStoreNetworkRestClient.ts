@@ -31,7 +31,13 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethods } = 
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
-  constructor(private rootApiUrl: string, private restClient: RestClientInterface) {}
+  constructor(
+    private rootApiUrl: string, 
+    private restClient: RestClientInterface
+  ) {
+    console.log('RemoteStoreNetworkRestClient rootApiUrl',rootApiUrl);
+    
+  }
 
   // ##################################################################################
   private operationMethod: {
@@ -52,7 +58,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   private networkActionUrlRoot(networkAction: RemoteStoreAction): string {
     // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
     // return ModelActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
-    return CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : "/model" ;
+    return this.rootApiUrl + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : "/model") ;
   }
 
   // ##################################################################################

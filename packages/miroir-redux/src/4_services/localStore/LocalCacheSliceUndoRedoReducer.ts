@@ -213,26 +213,7 @@ function callNextReducer(
       case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction + '/resolved': // TODO: here?
       case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction: // TODO: here?
         console.log('UndoRedoReducer handleRemoteStoreCRUDAction', action)
-        // const newPresentModelSnapshot:InnerStoreStateInterface = produce(
-        //   state.presentModelSnapshot,
-        //   (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),
-        // );
-        // // innerReducer(state.presentModelSnapshot, action);
-        // return {
-        //   previousModelSnapshot,
-        //   pastModelPatches: pastModelPatches,
-        //   presentModelSnapshot: newPresentModelSnapshot,
-        //   futureModelPatches: futureModelPatches,
-        // };
         return callNextReducer(innerReducer, state, action
-          // {
-          // type:action.type,
-          // payload: {
-          //   actionName:action.payload.actionName as CRUDActionName,
-          //   actionType:"DomainDataAction",
-          //   objects: action.payload.objects
-          // }
-          // }
         );
 
       // case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheModelAction: {// TODO: here? 
