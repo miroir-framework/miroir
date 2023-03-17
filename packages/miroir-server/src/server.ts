@@ -10,8 +10,7 @@ import {
   entityReport,
   IndexedDb,
   IndexedDbServer,
-  Instance,
-  RemoteStoreModelAction,
+  ModelStructureUpdate,
   reportEntityList,
   reportReportList,
 } from "miroir-core";
@@ -86,6 +85,7 @@ app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
   return res.json(localData);
 });
 
+// ##############################################################################################
 app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
@@ -120,34 +120,48 @@ app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
 });
 
 // ##############################################################################################
-app.post("/model/", async (req, res, ctx) => {
-  // const entityName: string =
-  //   typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
+app.post("/model/" + ':actionName', async (req, res, ctx) => {
+  const actionName: string =
+    typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
   
-  const updates: RemoteStoreModelAction[] = await req.body;
+  // const updates: RemoteStoreModelAction[] = await req.body;
+  const updates: ModelStructureUpdate[] = await req.body;
   console.log("post model/"," started #####################################");
   console.log("post model/ updates",updates);
 
   // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  if (updates[0]) {
-    switch (updates[0]['action']) {
-      case 'resetModel':
-        console.log('resetModel before drop sequelize.models', Object.keys(sequelize.models));
-        await sequelize.drop();
-        // await sequelize.sync();
-        console.log('resetModel after drop sequelize.models', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
-        sqlDbServer.dropEntities(Object.keys(sequelize.models));
-        console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
-        
-        break;
-      default:
-        break;
-    }
-  } else {
-    console.log('post model/ has no update to execute!')
-  }
+  switch (actionName) {
+    case 'resetModel':{
+      console.log('resetModel before drop sequelize.models', Object.keys(sequelize.models));
+      await sequelize.drop();
+      // await sequelize.sync();
+      console.log('resetModel after drop sequelize.models', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
+      sqlDbServer.dropEntities(Object.keys(sequelize.models));
+      console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
 
+      break;
+    }
+    case 'updateModel': {
+      if (updates[0]) {
+        switch (updates[0]['action']) {
+          // case '':
+          //   break;
+          default:
+            sqlDbServer.applyModelStructureUpdates(updates);
+            console.log('post model ignore updates', updates);
+            break;
+        }
+      } else {
+        console.log('post model/ has no update to execute!')
+      }
+      break;
+    }
+    default:
+      console.log('post model/ could not handle actionName', actionName)
+      break;
+  }
+ 
   //   console.log("server " + entityName + "put object", instance);
   // }
   // console.log("server " + entityName + "put object of", addedObjects);

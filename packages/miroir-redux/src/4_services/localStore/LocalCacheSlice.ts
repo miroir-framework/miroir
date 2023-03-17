@@ -1,5 +1,4 @@
 import {
-  ActionCreatorWithoutPayload,
   ActionCreatorWithPayload, createEntityAdapter,
   createSelector,
   createSlice,
@@ -9,8 +8,18 @@ import {
   Slice
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
-import { DomainState, DomainStateSelector, Instance, InstanceCollection, LocalCacheAction, LocalCacheDataAction, LocalCacheModelAction } from 'miroir-core';
-import { ReduxStateWithUndoRedo } from "../../4_services/localStore/LocalCacheSliceUndoRedoReducer";
+import {
+  DomainState,
+  DomainStateSelector,
+  Instance,
+  InstanceCollection,
+  DomainDataAction,
+  DomainModelAction,
+  ModelStructureUpdateConverter,
+  EntityDefinition,
+  DomainAction,
+} from "miroir-core";
+import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
 export const localCacheSliceName:string = "localCache";
 //#########################################################################################
@@ -46,7 +55,7 @@ export interface LocalCacheSliceState {
 }
 
 
-// export type LocalCacheDataAction = PayloadAction<InstanceCollection>;
+// export type DomainDataAction = PayloadAction<InstanceCollection>;
 
 //#########################################################################################
 //# Entity Adapter
@@ -90,28 +99,13 @@ function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadA
 
 
 //#########################################################################################
-function handleLocalCacheDataAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheDataAction>) {
+function handleLocalCacheDataAction(state: LocalCacheSliceState, action: PayloadAction<DomainDataAction>) {
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction, 'called', action);
   switch (action.payload.actionName) {
-    // case 'replace': {
-    //   for (let instanceCollection of action.payload.objects) {
-    //     ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<InstanceCollection>);
-    //   }
-    //   break;
-    // }
     case 'create': {
       for (let instanceCollection of action.payload.objects) {
         console.log('create',instanceCollection.entity, instanceCollection.instances, JSON.stringify(state));
         
-        // if (state[instanceCollection.entity]) {
-        //   const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
-        //   sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances);
-        //   console.log('create done',JSON.stringify(state[instanceCollection.entity]));
-        // } else {
-        //   const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
-        //   console.log('create with sliceEntityAdapter',instanceCollection.entity, 'state',JSON.stringify(state));
-        //   action['asyncDispatch'](action);
-        // }
         const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entity, state);
         sliceEntityAdapter.addMany(state[instanceCollection.entity], instanceCollection.instances);
         if(instanceCollection.entity == 'Entity') {
@@ -144,7 +138,7 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
 }
 
 //#########################################################################################
-function handleLocalCacheModelAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheModelAction>) {
+function handleLocalCacheModelAction(state: LocalCacheSliceState, action: PayloadAction<DomainModelAction>) {
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action);
   switch (action.payload.actionName) {
     case 'replace': {
@@ -155,6 +149,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
     }
     case 'commit': {
       // reset transation contents
+      // send ModelStructureUpdates to server for execution?
       // for (let instanceCollection of action.payload.objects) {
       //   ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<InstanceCollection>);
       // }
@@ -175,21 +170,46 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       )
       break;
     }
+    case "updateModel": {
+      console.log('localCacheSliceObject updateModel',action.payload);
+      // infer from ModelStructureUpdates the CUD actions to be performed on model Entities, Reports, etc.
+      // send CUD actions to local cache
+      // have undo / redo contain both(?) local cache CUD actions and ModelStructureUpdates
+      const domainDataAction:DomainDataAction = 
+        ModelStructureUpdateConverter.modelUpdateToLocalCacheUpdate(
+          Object.values(state['Entity'].entities) as EntityDefinition[],
+          action.payload.updates[0]
+        );
+        console.log('updateModel domainDataAction',domainDataAction);
+        
+      handleLocalCacheDataAction(
+        state, {
+          type:'rebound',
+          payload: domainDataAction
+          // {
+          //   actionType:"DomainDataAction",
+          //   actionName:action.payload.actionName,
+          //   objects:action.payload.objects,
+          // }
+        }
+      )
+      break;
+    }
     default:
       console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
   }
 }
 
 //#########################################################################################
-function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadAction<DomainAction>) {
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'actionType',action.payload.actionType, 'called', action);
   switch (action.payload.actionType) {
     case 'DomainDataAction': {
-      handleLocalCacheDataAction(state,action as PayloadAction<LocalCacheDataAction>);
+      handleLocalCacheDataAction(state,action as PayloadAction<DomainDataAction>);
       break;
     }
     case 'DomainModelAction': {
-      handleLocalCacheModelAction(state,action  as PayloadAction<LocalCacheModelAction>);
+      handleLocalCacheModelAction(state,action  as PayloadAction<DomainModelAction>);
       break;
     }
     default:
@@ -204,21 +224,9 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: { Entity: getLocalCacheSliceEntityAdapter("Entity").getInitialState() },
   reducers: {
-    // [localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
-    //   handleLocalCacheDataAction(state,action);
-    // },
-    // [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
-    //   handleLocalCacheModelAction(state,action);
-    // },
-    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheAction>) {
+    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<DomainAction>) {
       handleLocalCacheAction(state,action);
     },
-    // [localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheDataAction>) {
-    //   handleLocalCacheDataAction(state,action);
-    // },
-    // [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](state: LocalCacheSliceState, action: PayloadAction<LocalCacheModelAction>) {
-    //   handleLocalCacheModelAction(state,action);
-    // },
   },
 });
 
@@ -229,6 +237,22 @@ export const selectMiroirEntityInstances = createSelector(
   (state: LocalCacheSliceState) => state,
   (items) => items
 );
+
+//#########################################################################################
+// TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
+// TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
+export const selectCurrentTransaction: () => ((state: ReduxStateWithUndoRedo) => ReduxStateChanges[]) = 
+// _memoize(
+  () => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        return state.pastModelPatches;
+      },
+      (items: ReduxStateChanges[]) => items
+    );
+  }
+// )
+;
 
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...

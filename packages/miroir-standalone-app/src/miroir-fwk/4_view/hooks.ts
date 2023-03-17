@@ -1,7 +1,14 @@
 import { EntityState } from "@reduxjs/toolkit";
 import { EntityDefinition, Instance, MiroirReport, selectEntityInstances, selectReportInstances } from "miroir-core";
-import { selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
+import { ReduxStateChanges, selectCurrentTransaction, selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
 import { useSelector } from "react-redux";
+
+//#########################################################################################
+export function useLocalCacheTransactions():ReduxStateChanges[] {
+  // const result:EntityState<ReduxStateChanges[]> = useSelector(selectCurrentTransaction());
+  const result:ReduxStateChanges[] = useSelector(selectCurrentTransaction());
+  return result?result:[];
+}
 
 //#########################################################################################
 export function useLocalCacheEntities():EntityDefinition[] {

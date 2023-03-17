@@ -1,6 +1,7 @@
 {
   "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
   "entity":"Author",
+  "entityUuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
   "conceptLevel":"Data",
   "name":"Cornell Woolrich"
 }

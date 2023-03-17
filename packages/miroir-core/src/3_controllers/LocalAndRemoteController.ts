@@ -1,18 +1,16 @@
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface.js";
+import { DomainAction, DomainDataAction, DomainModelAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
-  LocalCacheAction,
-  LocalCacheDataAction,
   LocalCacheInfo,
-  LocalCacheInterface,
-  LocalCacheModelAction,
+  LocalCacheInterface
 } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import {
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
-  RemoteStoreModelAction,
+  RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
@@ -23,7 +21,7 @@ export default {};
  * when data is fetched / purged from local storage.
  * allow monitoring of local storage resources.
  */
-export class DataController implements DataControllerInterface {
+export class LocalAndRemoteController implements LocalAndRemoteControllerInterface {
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
@@ -31,17 +29,17 @@ export class DataController implements DataControllerInterface {
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(action: LocalCacheModelAction) {
+  public async handleLocalCacheModelAction(action: DomainModelAction) {
     return this.localCache.handleLocalCacheModelAction(action);
   }
 
   //####################################################################################
-  public async handleLocalCacheDataAction(action: LocalCacheDataAction) {
+  public async handleLocalCacheDataAction(action: DomainDataAction) {
     return this.localCache.handleLocalCacheDataAction(action);
   }
 
   //####################################################################################
-  public async handleLocalCacheAction(action: LocalCacheAction) {
+  public async handleLocalCacheAction(action: DomainAction) {
     return this.localCache.handleLocalCacheAction(action);
   }
 
@@ -60,7 +58,7 @@ export class DataController implements DataControllerInterface {
    * .
    * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
    */
-  currentLocalCacheTransaction(): LocalCacheModelAction[] {
+  currentLocalCacheTransaction(): DomainModelAction[] {
     return this.localCache.currentTransaction();
   }
 
@@ -91,12 +89,12 @@ export class DataController implements DataControllerInterface {
           }
         )
       )[0];
-      console.log("DataController loadConfigurationFromRemoteDataStore found entities", entities);
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore found entities", entities);
 
       let instances: InstanceCollection[] = []; //TODO: replace with functional implementation
       for (const e of entities.instances) {
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
-        console.log("DataController loadConfigurationFromRemoteDataStore loading instances for entity", e["name"]);
+        console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore loading instances for entity", e["name"]);
         const entityInstances: InstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDAction,
@@ -107,14 +105,14 @@ export class DataController implements DataControllerInterface {
           }
         );
         console.log(
-          "DataController loadConfigurationFromRemoteDataStore found instances for entity",
+          "LocalAndRemoteController loadConfigurationFromRemoteDataStore found instances for entity",
           e["name"],
           entityInstances
         );
         instances.push(entityInstances[0]);
       }
 
-      console.log("DataController loadConfigurationFromRemoteDataStore instances", instances);
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore instances", instances);
       this.localCache.handleLocalCacheModelAction({
         actionName: "replace",
         actionType: "DomainModelAction",
@@ -122,7 +120,7 @@ export class DataController implements DataControllerInterface {
       });
       return Promise.resolve();
     } catch (error) {
-      console.warn("DataController loadConfigurationFromRemoteDataStore", error);
+      console.warn("LocalAndRemoteController loadConfigurationFromRemoteDataStore", error);
     }
   }
 }

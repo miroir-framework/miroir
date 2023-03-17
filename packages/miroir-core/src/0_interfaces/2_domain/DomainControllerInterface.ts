@@ -1,3 +1,5 @@
+import { MiroirModel } from "../../0_interfaces/1_core/ModelInterface.js";
+import { ModelStructureUpdate, ModelUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
@@ -32,63 +34,62 @@ export const localCacheOnlyActionNamesArray:LocalCacheOnlyActionName[] = Object.
 
 
 // #############################################################################################
-export const ModelActionNamesObject = {
-  // 'resetModel': 'resetModel', // to delete all DB contents. TEMPORARY.
+export const ModelStructureUpdateActionNamesObject = {
+  'resetModel': 'resetModel', // to delete all DB contents. DANGEROUS. TEMPORARY?
   'updateModel': 'updateModel',
 }
-export type ModelActionName = keyof typeof ModelActionNamesObject;
-export const ModelActionNamesArray:RemoteStoreActionName[] = Object.keys(ModelActionNamesObject) as ModelActionName[];
-export const ModelActionNamesArrayString:string[] = ModelActionNamesArray.map(a=>a);
+export type ModelStructureUpdateActionName = keyof typeof ModelStructureUpdateActionNamesObject;
+export const ModelStructureUpdateActionNamesArray:ModelStructureUpdateActionName[] = Object.keys(ModelStructureUpdateActionNamesObject) as ModelStructureUpdateActionName[];
+export const ModelStructureUpdateActionNamesArrayString:string[] = ModelStructureUpdateActionNamesArray.map(a=>a);
+
+// #############################################################################################
+export const domainModelUpdateActionNamesObject = {
+  ...CUDActionNamesObject,
+  ...localCacheOnlyActionNamesObject,
+};
+export type DomainModelUpdateActionName = keyof typeof domainModelUpdateActionNamesObject;
+export const domainModelUpdateActionNamesArray:DomainModelUpdateActionName[] = Object.keys(domainModelUpdateActionNamesObject) as DomainModelUpdateActionName[];
+
+// #############################################################################################
+export interface DomainDataAction {
+  actionType:'DomainDataAction';
+  actionName: CUDActionName;
+  steps?:number; // for undo / redo
+  uuid?:string;
+  objects?:InstanceCollection[];
+}
+
+
+export interface DomainModelStructureUpdateAction {
+  actionType:'DomainModelAction',
+  actionName: ModelStructureUpdateActionName;
+  updates?:ModelStructureUpdate[];
+  // updates?:ModelUpdate[];
+}
+export interface DomainModelCUDAction {
+  actionType:'DomainModelAction',
+  actionName: DomainModelUpdateActionName;
+  objects?:InstanceCollection[];
+}
+
+export interface DomainModelLocalCacheAndTransactionAction {
+  actionType:'DomainModelAction',
+  actionName: LocalCacheOnlyActionName;
+  objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+}
+
+export type DomainModelAction = DomainModelStructureUpdateAction | DomainModelCUDAction | DomainModelLocalCacheAndTransactionAction;
 
 // #############################################################################################
 export const remoteStoreActionNamesObject = {
   ...CRUDActionNamesObject,
-  ...ModelActionNamesObject,
+  ...ModelStructureUpdateActionNamesObject,
 }
 export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
 export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(remoteStoreActionNamesObject) as RemoteStoreActionName[];
 
 
 // #############################################################################################
-export const domainDataActionNamesObject = {
-  ...CRUDActionNamesObject,
-  // ...localCacheOnlyActionNamesObject,
-  // ...ModelActionNamesObject,
-};
-export type DomainDataActionName = keyof typeof domainDataActionNamesObject;
-export const domainDataActionNamesArray:DomainDataActionName[] = Object.keys(domainDataActionNamesObject) as DomainDataActionName[];
-
-// #############################################################################################
-export const domainModelActionNamesObject = {
-  ...CUDActionNamesObject,
-  ...localCacheOnlyActionNamesObject,
-  // ...ModelActionNamesObject,
-};
-export type DomainModelActionName = keyof typeof domainModelActionNamesObject;
-export const domainModelActionNamesArray:DomainModelActionName[] = Object.keys(domainModelActionNamesObject) as DomainModelActionName[];
-
-// #############################################################################################
-export interface DomainDataAction {
-  actionType:'DomainDataAction',
-  actionName: DomainDataActionName;
-  steps?:number; // for undo / redo
-  uuid?:string;
-  objects?:InstanceCollection[];
-}
-
-export interface DomainModelUpdateAction {
-  actionType:'DomainModelAction',
-  actionName: 'updateModel';
-  updates?:any[];
-}
-export interface DomainModelOtherAction {
-  actionType:'DomainModelAction',
-  actionName: DomainModelActionName;
-  objects?:InstanceCollection[];
-}
-
-export type DomainModelAction = DomainModelUpdateAction | DomainModelOtherAction;
-
 export type DomainAction = DomainDataAction | DomainModelAction;
 
 export interface DomainInstancesUuidIndex {
@@ -104,7 +105,7 @@ export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
   handleDomainDataAction(action:DomainDataAction):Promise<void>;
-  handleDomainModelAction(action:DomainModelAction):Promise<void>;
+  handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirModel):Promise<void>;
   handleDomainAction(action:DomainAction):Promise<void>;
   currentTransaction():DomainModelAction[];
   currentLocalCacheInfo(): LocalCacheInfo;

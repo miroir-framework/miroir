@@ -89,7 +89,7 @@ export class IndexedDbRestServer {
         console.log("server " + entityName + "deleted objects of", addedObjects);
         return res(ctx.json(addedObjects.map((o) => o["uuid"])));
       }),
-      // ##############################################################################################
+      // ############################    MODEL      ############################################
       rest.post(this.rootApiUrl + "/model/", async (req, res, ctx) => {
         
         const updates: RemoteStoreModelAction[] = await req.json();

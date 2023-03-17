@@ -1,6 +1,6 @@
 {
   "serverConfig":{
-    "emulateServer": true,
+    "emulateServer": false,
     "rootApiUrl":"http://localhost:3080"
   },
   "deploymentMode":"monoUser",

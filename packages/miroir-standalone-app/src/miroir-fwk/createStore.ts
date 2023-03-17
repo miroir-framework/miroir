@@ -1,6 +1,6 @@
 import {
-  DataControllerInterface,
-  DataController,
+  LocalAndRemoteControllerInterface,
+  LocalAndRemoteController,
   DomainControllerInterface,
   DomainController, MiroirContext, RestClient, MiroirConfig
 } from "miroir-core";
@@ -28,9 +28,8 @@ export function createMswStore(
   reduxStore.run();
   const miroirContext = new MiroirContext();
 
-  const dataController: DataControllerInterface = new DataController(miroirContext, reduxStore, reduxStore);
-  const domainController:DomainControllerInterface = new DomainController(dataController);
-
+  const localAndRemoteController: LocalAndRemoteControllerInterface = new LocalAndRemoteController(miroirContext, reduxStore, reduxStore);
+  const domainController:DomainControllerInterface = new DomainController(localAndRemoteController);
   
-  return {mServer, worker, reduxStore, dataController, domainController, miroirContext}
+  return {mServer, worker, reduxStore, localAndRemoteController, domainController, miroirContext}
 }

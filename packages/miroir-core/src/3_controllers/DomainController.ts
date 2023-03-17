@@ -1,3 +1,6 @@
+import { MiroirModel } from "../0_interfaces/1_core/ModelInterface";
+import { ModelCUDUpdate, ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelStructureUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import {
   CRUDActionName,
   CRUDActionNamesArray,
@@ -6,7 +9,7 @@ import {
   DomainDataAction,
   DomainModelAction,
 } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { DataControllerInterface } from "../0_interfaces/3_controllers/DataControllerInterface";
+import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 
 /**
@@ -15,20 +18,23 @@ import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCache
  * example: get the list of reports accessible by a given user.
  */
 export class DomainController implements DomainControllerInterface {
-  constructor(private dataController: DataControllerInterface) {}
+  constructor(private LocalAndRemoteController: LocalAndRemoteControllerInterface) {}
 
   // ########################################################################################
   currentTransaction(): DomainModelAction[] {
-    return this.dataController.currentLocalCacheTransaction();
+    return this.LocalAndRemoteController.currentLocalCacheTransaction();
   }
 
   // ########################################################################################
   currentLocalCacheInfo(): LocalCacheInfo {
-    return this.dataController.currentLocalCacheInfo();
+    return this.LocalAndRemoteController.currentLocalCacheInfo();
   }
 
   // ########################################################################################
-  async handleDomainModelAction(domainModelAction: DomainModelAction): Promise<void> {
+  async handleDomainModelAction(
+    domainModelAction: DomainModelAction,
+    currentModel?:MiroirModel,
+  ): Promise<void> {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName",
       domainModelAction['actionName'],
@@ -39,45 +45,67 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainModelAction.actionName) {
       case "replace": {
-        await this.dataController.loadConfigurationFromRemoteDataStore();
+        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore();
         break;
       }
       case "undo":
       case "redo": {
-        this.dataController.handleLocalCacheModelAction(domainModelAction);
+        this.LocalAndRemoteController.handleLocalCacheModelAction(domainModelAction);
+        break;
+      }
+      case "resetModel": {
+        this.LocalAndRemoteController.handleRemoteStoreModelAction(domainModelAction);
         break;
       }
       case "commit": {
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit",
-          this.dataController.currentLocalCacheTransaction()
+          this.LocalAndRemoteController.currentLocalCacheTransaction()
         );
-        for (const replayAction of this.dataController.currentLocalCacheTransaction()) {
-          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit", replayAction);
-          for (const instances of replayAction["objects"]) {
-            // TODO: replace with parallel implementation Promise.all?
-            await this.dataController.handleRemoteStoreCRUDAction({
-              actionName: replayAction.actionName.toString() as CRUDActionName,
-              entityName: instances.entity,
-              objects: instances.instances,
-            });
+        for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
+          if (replayAction.actionName == "updateModel") {
+            await this.LocalAndRemoteController.handleRemoteStoreModelAction(
+              replayAction
+              // {
+              // actionName: replayAction.actionName.toString() as CRUDActionName,
+              // entityName: instances.entity,
+              // objects: instances.instances,
+              // }
+            );
+          } else {
+            for (const instances of replayAction["objects"]) {
+              // TODO: replace with parallel implementation Promise.all?
+              await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
+                actionName: replayAction.actionName.toString() as CRUDActionName,
+                entityName: instances.entity,
+                objects: instances.instances,
+              });
+            }
           }
         }
-        this.dataController.handleLocalCacheModelAction(domainModelAction);
+        this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);
         break;
       }
       case "create":
       case "update":
       case "delete": {
         // transactional modification: the changes are done only locally, until commit
-        this.dataController.handleLocalCacheAction(
+        this.LocalAndRemoteController.handleLocalCacheAction(
           domainModelAction
         );
         break;
       }
       case "updateModel": {
-        await this.dataController.handleRemoteStoreCRUDAction(
-          domainModelAction
+        console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
+        // const correspondingCUDUpdate: ModelCUDUpdate = ModelStructureUpdateConverter.modelStructureUpdateToModelCUDUpdate(domainModelAction.updates[0],currentModel);
+        
+        const structureUpdatesWithCUDUpdates: ModelStructureUpdate[] = domainModelAction?.updates.map(u=>({...u,equivalentModelCUDUpdates:[ModelStructureUpdateConverter.modelStructureUpdateToModelCUDUpdate(u as ModelStructureUpdate,currentModel)]}))
+        console.log('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
+        
+        this.LocalAndRemoteController.handleLocalCacheAction(
+          // Object.assign({...domainModelAction},{updates:structureUpdatesWithCUDUpdates})
+          {...domainModelAction,updates:structureUpdatesWithCUDUpdates}
         );
         break;
       }
@@ -104,13 +132,13 @@ export class DomainController implements DomainControllerInterface {
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction handling instances",
           instances.entity, instances.instances
         );
-        await this.dataController.handleRemoteStoreCRUDAction({
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
           actionName: domainAction.actionName.toString() as CRUDActionName,
           entityName: instances.entity,
           objects: instances.instances,
         });
       }
-      this.dataController.handleLocalCacheDataAction(domainAction);
+      this.LocalAndRemoteController.handleLocalCacheDataAction(domainAction);
       console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction end", domainAction);
     } else {
       console.error(
@@ -127,7 +155,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(domainAction: DomainAction): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;
-    const ignoredActionNames:string[] = ['updateModel','commit','replace','undo','redo'];
+    const ignoredActionNames:string[] = ['updateModel','resetModel','commit','replace','undo','redo'];
     console.log('handleDomainAction',domainAction?.actionName,domainAction?.actionType,domainAction['objects']);
     
     // if (domainAction.actionName!="updateModel"){

@@ -21,7 +21,7 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethods } = 
   read: "get",
   update: "put",
   delete: "delete",
-  // resetModel: "post",
+  resetModel: "post",
   updateModel: "post",
 };
 
@@ -57,13 +57,13 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   private networkActionUrlRoot(networkAction: RemoteStoreAction): string {
     // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
-    // return ModelActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
-    return this.rootApiUrl + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : "/model") ;
+    // return ModelStructureUpdateActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
+    return this.rootApiUrl + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : ("/model/" + networkAction.actionName)) ;
   }
 
   // ##################################################################################
   private networkActionUrl(networkAction: RemoteStoreAction): string {
-    return this.networkActionUrlRoot(networkAction) + "/" + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? networkAction['entityName'] +this.networkActionUrlAddition(networkAction):"");
+    return this.networkActionUrlRoot(networkAction) + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? ('/' + networkAction['entityName'] +this.networkActionUrlAddition(networkAction)):"");
   }
 
   // ##################################################################################

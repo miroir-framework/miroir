@@ -1,6 +1,7 @@
 {
   "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entity":"Entity",
+  "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "name":"Entity",
   "conceptLevel":"MetaMetaModel",
   "description": "entities",
@@ -79,11 +80,11 @@
     },
     {
         "id": 2,
-        "name": "name",
-        "defaultLabel": "Name",
+        "name": "entityUuid",
+        "defaultLabel": "Entity",
         "type": "STRING",
         "nullable": false,
-        "editable": true
+        "editable": false
     },
     {
         "id": 3,

@@ -1,4 +1,4 @@
-import { DataStoreInterface, EntityAttributeType, EntityDefinition, entityEntity, Instance } from "miroir-core";
+import { DataStoreInterface, EntityAttributeType, EntityDefinition, entityEntity, Instance, ModelStructureUpdate } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from 'sequelize';
 
 const dataTypesMapping:{[type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor} = {
@@ -138,4 +138,11 @@ export class SqlDbServer implements DataStoreInterface {
     // }
     return Promise.resolve();
   }
+
+  async applyModelStructureUpdates(updates:ModelStructureUpdate[]){
+    console.log('SqlDbServer applyModelStructureUpdates',updates);
+    const currentUpdate = updates[0];
+    this.sequelize.getQueryInterface().renameTable(currentUpdate.entityName,currentUpdate.targetValue);
+  }
+
 }

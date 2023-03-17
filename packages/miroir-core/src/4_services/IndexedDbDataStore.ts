@@ -1,7 +1,8 @@
 
-import { IndexedDb } from "./indexedDb";
+import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { Instance } from "../0_interfaces/1_core/Instance";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { IndexedDb } from "./indexedDb";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
@@ -48,7 +49,11 @@ export class IndexedDbDataStore implements DataStoreInterface{
     }
     return Promise.resolve();
   }
-}
+  async applyModelStructureUpdates(updates:ModelStructureUpdate[]){
+    console.log('IndexedDbDataStore applyModelStructureUpdates');
+  }
+
+}  
 
 // export async function indexedDbGetInstances(localIndexedDb: IndexedDb, entityName:string):Promise<any> {
 //   return localIndexedDb.getAllValue(entityName);

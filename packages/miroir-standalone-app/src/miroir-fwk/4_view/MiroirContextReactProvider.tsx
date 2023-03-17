@@ -1,14 +1,19 @@
-import { MiroirContext, MiroirContextInterface } from "miroir-core";
+import { DomainControllerInterface, MiroirContext, MiroirContextInterface } from "miroir-core";
 import * as React from "react";
   
 
-const miroirReactContext = React.createContext<{miroirContext:MiroirContextInterface}>(undefined);
+
+const miroirReactContext = React.createContext<{
+  miroirContext:MiroirContextInterface,
+  domainController: DomainControllerInterface;
+}>(undefined);
 
 
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(
   props: {
     miroirContext: MiroirContextInterface;
+    domainController:DomainControllerInterface
     children:
       | string
       | number
@@ -20,7 +25,7 @@ export function MiroirContextReactProvider(
 ) {
   const value = {
     miroirContext: props.miroirContext || new MiroirContext(),
-    // miroirContext: props.miroirContext,
+    domainController: props.domainController,
   };
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }
@@ -32,4 +37,9 @@ export function useMiroirContextServiceHook() {
 export const useErrorLogServiceHook = () => {
   // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
   return React.useContext(miroirReactContext).miroirContext.errorLogService.getErrorLog();
+}
+
+export const useDomainControllerServiceHook = () => {
+  // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
+  return React.useContext(miroirReactContext).domainController;
 }

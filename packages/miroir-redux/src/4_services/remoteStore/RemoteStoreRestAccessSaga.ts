@@ -109,6 +109,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             data: any,
             headers: Headers,
             url: string,
+          // } = yield call(() => this.client.handleNetworkAction(action.payload));
           } = yield call(() => this.client.handleNetworkAction(action.payload));
           const result = {
             status:'ok',
@@ -142,6 +143,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             headers: Headers,
             url: string,
           } = yield call(() => this.client.handleNetworkAction(action.payload));
+          // } = yield call(() => this.client.handleNetworkAction(action));
           const result = {
             status:'ok',
             instances:[

@@ -1,6 +1,7 @@
+import { ModelStructureUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { CRUDActionName, DomainModelAction } from '../../2_domain/DomainControllerInterface.js';
+import { CRUDActionName, DomainModelStructureUpdateAction } from '../../2_domain/DomainControllerInterface.js';
 
 export interface RemoteStoreCRUDAction {
   actionName: CRUDActionName;
@@ -9,19 +10,10 @@ export interface RemoteStoreCRUDAction {
   objects?:Instance[];
 }
 
-export type RemoteStoreModelAction = DomainModelAction;
-// export interface RemoteStoreModelAction {
-//   actionName: ModelActionName;
-//   actions: 
-// }
+// export type RemoteStoreModelAction = DomainModelAction;
+export type RemoteStoreModelAction = DomainModelStructureUpdateAction;
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
-// export interface RemoteStoreAction {
-//   actionName: RemoteStoreActionName;
-//   entityName?: string;
-//   uuid?:string;
-//   objects?:Instance[];
-// }
 
 export interface RemoteStoreCRUDActionReturnType {
   status:'ok'|'error',
@@ -77,5 +69,5 @@ export interface DataStoreInterface {
   getInstances(entityName:string):Promise<Instance[]>;
   upsertInstance(entityName:string, instance:Instance):Promise<any>;
   deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
-
+  applyModelStructureUpdates(updates:ModelStructureUpdate[]);
 }

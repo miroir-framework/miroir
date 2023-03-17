@@ -16,6 +16,9 @@ export {
   MiroirReportDefinition
 } from './0_interfaces/1_core/Report.js';
 export {
+  MiroirModel,
+} from './0_interfaces/1_core/ModelInterface.js';
+export {
   MiroirConfig
 } from './0_interfaces/1_core/MiroirConfig';
 export {
@@ -28,15 +31,15 @@ export {
   CUDActionNamesArrayString,
   CUDActionNamesObject,
   DomainAction,
-  DomainDataActionName,
-  domainDataActionNamesArray,
-  domainDataActionNamesObject,
+  // DomainDataActionName,
+  // domainDataActionNamesArray,
+  // domainDataActionNamesObject,
   DomainControllerInterface,
   DomainDataAction,
   DomainModelAction,
-  DomainModelActionName,
-  domainModelActionNamesArray,
-  domainModelActionNamesObject,
+  DomainModelUpdateActionName,
+  domainModelUpdateActionNamesArray,
+  domainModelUpdateActionNamesObject,
   DomainState,
   DomainStateReducer,
   DomainStateSelector,
@@ -45,21 +48,33 @@ export {
   LocalCacheOnlyActionName,
   localCacheOnlyActionNamesArray,
   localCacheOnlyActionNamesObject,
-  ModelActionName,
-  ModelActionNamesArray,
-  ModelActionNamesArrayString,
-  ModelActionNamesObject,
+  ModelStructureUpdateActionName,
+  ModelStructureUpdateActionNamesArray,
+  ModelStructureUpdateActionNamesArrayString,
+  ModelStructureUpdateActionNamesObject,
   RemoteStoreActionName,
   remoteStoreActionNamesArray,
   remoteStoreActionNamesObject,
+  DomainModelCUDAction,
+  DomainModelLocalCacheAndTransactionAction,
+  DomainModelStructureUpdateAction,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
+export {
+  ModelStructureUpdate,
+  ModelUpdateActionName,
+  ModelUpdateActionNamesArray,
+  ModelUpdateActionNamesObject,
+} from './0_interfaces/2_domain/ModelUpdateInterface.js';
 export {
   selectReportInstances,
   selectEntityInstances,
 } from './2_domain/ReportDisplay';
 export {
-  DataControllerInterface
-} from './0_interfaces/3_controllers/DataControllerInterface.js';
+  ModelStructureUpdateConverter
+} from './2_domain/ModelUpdateConverter.js';
+export {
+  LocalAndRemoteControllerInterface
+} from './0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js';
 export {
   ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
@@ -67,11 +82,8 @@ export {
   MiroirContextInterface
 } from './0_interfaces/3_controllers/MiroirContextInterface';
 export {
-  LocalCacheAction,
-  LocalCacheDataAction,
   LocalCacheInterface,
   LocalCacheInfo,
-  LocalCacheModelAction,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
   DataStoreInterface,
@@ -96,7 +108,7 @@ export {
   serverStorageKind,
   undoRedoHistorization,
 } from "./3_controllers/ConfigurationService.js";
-export { DataController } from './3_controllers/DataController.js';
+export { LocalAndRemoteController } from './3_controllers/LocalAndRemoteController.js';
 export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';

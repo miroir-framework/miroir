@@ -10,6 +10,7 @@ export {
   // localCacheSliceInputActionNamesObject,
   // LocalCacheSliceInputActionNamesObjectTuple,
   // localCacheSliceInputFullActionNames,
+  selectCurrentTransaction,
   selectInstancesForEntity,
   selectInstancesFromDomainSelector,
   selectMiroirEntityInstances,
@@ -21,10 +22,11 @@ export {
   ReduxReducerWithUndoRedoInterface as ReduxReducerWithUndoRedo,
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,
+  ReduxStateChanges,
   createUndoRedoReducer,
   // makeActionUpdatesUndoable,
   reduxStoreWithUndoRedoGetInitialState,
-} from "./4_services/localStore/LocalCacheSliceUndoRedoReducer";
+} from "./4_services/localStore/UndoRedoReducer";
 export {
   RemoteStoreRestAccessReduxSaga as RemoteStoreAccessReduxSaga,
   // InstanceSagaAction,
