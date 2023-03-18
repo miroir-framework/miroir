@@ -16,6 +16,7 @@ export interface ModelStructureUpdate {
   updateActionType: 'ModelStructureUpdate';
   updateActionName: ModelUpdateActionName;
   entityName?:string;
+  entityUuid?:string;
   entityAttributeName?:string;
   targetValue?:any;
   equivalentModelCUDUpdates?: ModelCUDUpdate[];

@@ -6,6 +6,7 @@ import { CRUDActionName, DomainModelStructureUpdateAction } from '../../2_domain
 export interface RemoteStoreCRUDAction {
   actionName: CRUDActionName;
   entityName: string;
+  entityUuid?: string;
   uuid?:string;
   objects?:Instance[];
 }
@@ -43,6 +44,8 @@ export interface RestClientInterface {
  */
 export interface RemoteStoreNetworkClientInterface {
   handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
+  handleNetworkRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
 }
 
 export default {}
@@ -66,8 +69,17 @@ export interface DataStoreInterface {
   dropEntity(entityName:string);
   dropEntities(entityNames:string[]);
 
+  getUuidEntities():string[]; //TODO: remove!
+  dropUuidEntity(entityUuid:string);
+  dropUuidEntities(entityUuid:string[]);
+
   getInstances(entityName:string):Promise<Instance[]>;
   upsertInstance(entityName:string, instance:Instance):Promise<any>;
   deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
+
+  getInstancesUuid(entityUuid:string):Promise<Instance[]>;
+  upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
+  deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any>;
+
   applyModelStructureUpdates(updates:ModelStructureUpdate[]);
 }

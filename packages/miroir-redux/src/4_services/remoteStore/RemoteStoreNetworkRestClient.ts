@@ -1,6 +1,9 @@
 import {
+  CRUDActionNamesArray,
   CRUDActionNamesArrayString, RemoteStoreAction,
   RemoteStoreActionName,
+  RemoteStoreCRUDAction,
+  RemoteStoreModelAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface
@@ -51,30 +54,51 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
 
   // ##################################################################################
   private networkActionUrlAddition(networkAction: RemoteStoreAction): string {
-    return networkAction['uuid'] ? "/" + networkAction['uuid'] : networkAction.actionName == "read" ? "/all" : "";
+    return networkAction['uuid'] ? networkAction['uuid'] : (networkAction.actionName == "read" ? networkAction.entityUuid+"/all" : "");
   }
 
   // ##################################################################################
-  private networkActionUrlRoot(networkAction: RemoteStoreAction): string {
+  private networkActionUrlRoot(
+    networkAction: RemoteStoreAction,
+    useUuidForEntity:string = undefined,
+  ): string {
     // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
     // return ModelStructureUpdateActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
-    return this.rootApiUrl + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? "/miroir" : ("/model/" + networkAction.actionName)) ;
+    return (
+      this.rootApiUrl +
+      (CRUDActionNamesArrayString.includes(networkAction.actionName)
+        ? "/miroir/entity"
+        : "/model/" + networkAction.actionName)
+    );
   }
 
   // ##################################################################################
-  private networkActionUrl(networkAction: RemoteStoreAction): string {
-    return this.networkActionUrlRoot(networkAction) + (CRUDActionNamesArrayString.includes(networkAction.actionName) ? ('/' + networkAction['entityName'] +this.networkActionUrlAddition(networkAction)):"");
+  private networkActionUrl(
+    networkAction: RemoteStoreAction,
+    rootApiUrl?:string,
+  ): string {
+    return (
+      (rootApiUrl?rootApiUrl:this.networkActionUrlRoot(networkAction)) +
+      (
+        CRUDActionNamesArrayString.includes(networkAction.actionName)
+          ? ("/" + this.networkActionUrlAddition(networkAction))
+          : ""
+      )
+    );
   }
 
   // ##################################################################################
-  getRestCallParams(networkAction: RemoteStoreAction): {
+  getRestCallParams(
+    networkAction: RemoteStoreAction,
+    rootApiUrl?:string,
+  ): {
     operation: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
     url: string;
     args: any[];
   } {
     return {
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
-      url: this.networkActionUrl(networkAction),
+      url: this.networkActionUrl(networkAction,rootApiUrl),
       args: networkAction['objects'] ? networkAction['objects'] : networkAction['updates'],
     };
   }
@@ -84,6 +108,17 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     //TODO: return type must be independent of actually called client
     const callParams = this.getRestCallParams(networkAction);
     console.log("RemoteStoreNetworkRestClient handleAction", networkAction, 'callParams', callParams);
+    return callParams.operation(callParams.url, callParams.args);
+  }
+  async handleNetworkRemoteStoreCRUDAction(action:RemoteStoreAction):Promise<RestClientCallReturnType>{
+    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroir/entity");
+    console.log("RemoteStoreNetworkRestClient handleRemoteStoreCRUDAction", action, 'callParams', callParams);
+    return callParams.operation(callParams.url, callParams.args);
+
+  }
+  async handleNetworkRemoteStoreModelAction(action:RemoteStoreAction):Promise<RestClientCallReturnType>{
+    const callParams = this.getRestCallParams(action, this.rootApiUrl + '/model/' + action.actionName);
+    console.log("RemoteStoreNetworkRestClient handleRemoteStoreModelAction", action, 'callParams', callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
 }

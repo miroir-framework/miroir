@@ -1,7 +1,7 @@
 import {
   DataStoreInterface,
   IndexedDb,
-  IndexedDbServer,
+  IndexedDbDataStore,
   RemoteStoreModelAction,
 } from "miroir-core";
 import { rest } from "msw";
@@ -38,8 +38,9 @@ export class IndexedDbRestServer {
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    private localIndexedDb: IndexedDb = new IndexedDb("miroir"),
-    private localIndexedDbDataStore: DataStoreInterface = new IndexedDbServer(localIndexedDb)
+    private localIndexedDb: IndexedDb = new IndexedDb("miroir-indexedDb"),
+    private localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb"),
+    private localIndexedDbDataStore: DataStoreInterface = new IndexedDbDataStore(localIndexedDb,localUuidIndexedDb)
   ) {
     console.log('IndexedDbRestServer rootApiUrl', rootApiUrl);
     

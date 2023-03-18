@@ -5,7 +5,8 @@ import * as React from "react";
 import { MTableComponent } from "./MTableComponent";
 
 export interface MiroirReportComponentProps {
-  reportName: string;
+  // reportName: string;
+  reportUuid: string;
 };
 
 
@@ -14,12 +15,14 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
 ) => {
   const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const instancesToDisplay:Instance[] = useLocalCacheInstancesForReport(props.reportName);
+  const instancesToDisplay:Instance[] = useLocalCacheInstancesForReport(props.reportUuid);
   console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
-  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.name === props?.reportName)
-  const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === currentMiroirReport?.definition?.entity)
+  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid)
+  const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.entityUuid)
   console.log("MiroirReportComponent instancesToDisplay",instancesToDisplay);
+  console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
+  console.log("MiroirReportComponent currentMiroirEntity",currentMiroirEntity);
 
   return (
     <div>

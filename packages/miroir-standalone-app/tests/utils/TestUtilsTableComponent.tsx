@@ -8,7 +8,8 @@ import {
 } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
 
 export interface MiroirReportComponentProps {
-  entityName: string;
+  entityName?: string;
+  entityUuid: string;
   DisplayLoadingInfo:JSX.Element;
 };
 
@@ -23,7 +24,7 @@ export const TestUtilsTableComponent = (
   }
 
   console.log("TestTableComponent",props.entityName,"miroirEntities",miroirEntities, "miroirReports", miroirReports);
-  const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityName);
+  const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityUuid);
   console.log("MiroirReportComponent instancesToDisplay",instancesToDisplay);
   const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.name === props.entityName);
 

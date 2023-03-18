@@ -117,7 +117,7 @@ export {
   RestClient
 } from './4_services/RestClient.js';
 export {
-  IndexedDbDataStore as IndexedDbServer,
+  IndexedDbDataStore,
 } from './4_services/IndexedDbDataStore.js';
 export {
   IndexedDb

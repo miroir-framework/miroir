@@ -141,7 +141,7 @@ describe(
       async () => {
         console.log('Add Book definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -167,7 +167,7 @@ describe(
           // container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Book"
+            entityUuid={entityBook.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />
           ,
@@ -266,7 +266,7 @@ describe(
       async () => {
         console.log('Remove Book definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
@@ -292,7 +292,8 @@ describe(
           // container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Book"
+            // entityName="Book"
+            entityUuid={entityBook.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />
           ,
@@ -391,7 +392,7 @@ describe(
       async () => {
         console.log('update Book definition start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Book"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
 
         await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
@@ -416,7 +417,8 @@ describe(
           // container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Book"
+            // entityName="Book"
+            entityUuid={entityBook.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />
           ,

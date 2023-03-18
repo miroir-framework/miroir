@@ -1,3 +1,4 @@
+import { entityEntity } from "src/index.js";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAction, DomainDataAction, DomainModelAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
@@ -85,7 +86,8 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           this.remoteStore,
           {
             actionName: "read",
-            entityName: "Entity",
+            entityName: entityEntity.name,
+            entityUuid: entityEntity.uuid,
           }
         )
       )[0];
@@ -102,6 +104,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           {
             actionName: "read",
             entityName: e["name"],
+            entityUuid: e['uuid'],
           }
         );
         console.log(

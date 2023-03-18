@@ -3,10 +3,12 @@ import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterf
 import { Instance } from "../0_interfaces/1_core/Instance";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { IndexedDb } from "./indexedDb";
+import entityEntity from "../assets/entities/Entity.json";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
     private localIndexedDb: IndexedDb,
+    private localUuidIndexedDb: IndexedDb,
   ){}
 
   async init():Promise<void> {
@@ -50,6 +52,48 @@ export class IndexedDbDataStore implements DataStoreInterface{
     return Promise.resolve();
   }
   async applyModelStructureUpdates(updates:ModelStructureUpdate[]){
+    console.log('IndexedDbDataStore applyModelStructureUpdates');
+  }
+
+  // ###########################################################################
+  getUuidEntities(): string[] {
+      return this.localUuidIndexedDb.getSubLevels();
+  }
+
+  dropUuidEntity(entityUuid:string) {
+    if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
+      this.localUuidIndexedDb.removeSubLevels([entityUuid]);
+    } else {
+      console.warn('dropUuidEntity entityName not found:', entityUuid);
+    } 
+  }
+
+  dropUuidEntities(entityUuids:string[]) {
+    entityUuids.forEach(e =>this.dropEntity(e));
+  }
+  
+  getInstancesUuid(entityUuid:string):Promise<any> {
+    return this.localUuidIndexedDb.getAllValue(entityUuid);
+  }
+  
+  upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any> {
+    console.log('IndexedDbDataStore upsertUuidInstance',entityUuid, instance);
+
+    if (entityUuid == entityEntity.uuid) {
+      this.localUuidIndexedDb.addSubLevels([instance['uuid']]);
+    }
+
+    return this.localUuidIndexedDb.putValue(entityUuid,instance);
+  }
+
+  async deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any> {
+    for (const o of instances) {
+      await this.localUuidIndexedDb.deleteValue(entityUuid, o["uuid"]);
+    }
+    return Promise.resolve();
+  }
+
+  async applyModelStructureUpdatesUuid(updates:ModelStructureUpdate[]){
     console.log('IndexedDbDataStore applyModelStructureUpdates');
   }
 

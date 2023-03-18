@@ -37,6 +37,7 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
     objects: [
       {
         entity: "Entity",
+        entityUuid:entityEntity.uuid,
         instances: [
           entityEntity as Instance,
           entityReport as Instance,
@@ -46,6 +47,7 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
       },
       {
         entity: "Report",
+        entityUuid:entityReport.uuid,
         instances: [
           reportEntityList as Instance,
           reportReportList as Instance,
@@ -113,15 +115,16 @@ export const RootComponent = (props:RootComponentProps) => {
   const transactions:ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController:DomainControllerInterface = useDomainControllerServiceHook();
-  const [displayedReportName, setDisplayedReportName] = React.useState('');
+  // const [displayedReportName, setDisplayedReportName] = React.useState('');
+  const [displayedReportUuid, setDisplayedReportUuid] = React.useState('');
 
 
   const handleChange = (event: SelectChangeEvent) => {
     // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-    setDisplayedReportName(defaultToEntityList(event.target.value,miroirReports));
+    setDisplayedReportUuid(defaultToEntityList(event.target.value,miroirReports));
   };
 
-  console.log("MComponent miroirReports",miroirReports);
+  console.log("RootComponent miroirReports",miroirReports);
 
   // const {store} = props;
   return (
@@ -226,7 +229,7 @@ export const RootComponent = (props:RootComponentProps) => {
               {
                 actionName: "updateModel",
                 actionType: "DomainModelAction",
-                updates: [{updateActionType:"ModelStructureUpdate", updateActionName: "rename", entityName:'Book', targetValue:'Books' }],
+                updates: [{updateActionType:"ModelStructureUpdate", updateActionName: "rename", entityName: entityBook.name, entityUuid: entityBook.uuid,targetValue:'Bookss' }],
               },
               {
                 entities:miroirEntities,
@@ -260,12 +263,12 @@ export const RootComponent = (props:RootComponentProps) => {
             id="demo-simple-select"
             // value={displayedReportName?displayedReportName:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined)}
             // value={defaultToEntityList(displayedReportName,miroirReports)}
-            value={displayedReportName}
-            label="displayedReportName"
+            value={displayedReportUuid}
+            label="displayedReportUuid"
             onChange={handleChange}
           >
             {
-              miroirReports.map(r=>{return <MenuItem key={r.name} value={r.name}>{r.defaultLabel}</MenuItem>})
+              miroirReports.map(r=>{return <MenuItem key={r.name} value={r.uuid}>{r.defaultLabel}</MenuItem>})
             }
             {/* <MenuItem value='EntityList'>List of Entities</MenuItem> */}
             {/* <MenuItem value={20}>Twenty</MenuItem>
@@ -279,7 +282,8 @@ export const RootComponent = (props:RootComponentProps) => {
         </CardHeader>
         <CardContent>
           <ReportComponent
-            reportName={displayedReportName}
+            // reportName={displayedReportUuid}
+            reportUuid={displayedReportUuid}
             // reportName={props.reportName}
             // reportName="ReportList"
             // reportName="EntityList"

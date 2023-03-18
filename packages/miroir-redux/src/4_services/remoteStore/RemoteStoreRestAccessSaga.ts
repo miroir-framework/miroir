@@ -27,7 +27,7 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //# ACTION NAMES
 //#########################################################################################
 export const RemoteStoreRestSagaInputActionNamesObject = {
-  'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
+  // 'fetchInstancesForEntityFromRemoteDatastore':'fetchInstancesForEntityFromRemoteDatastore',
   'handleRemoteStoreCRUDAction':'handleRemoteStoreCRUDAction',
   'handleRemoteStoreModelAction':'handleRemoteStoreModelAction',
 };
@@ -52,15 +52,15 @@ export class RemoteStoreRestAccessReduxSaga {
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
     private rootApiUrl:string,
-    private client: RemoteStoreNetworkClientInterface
+    private remoteStoreNetworkClient: RemoteStoreNetworkClientInterface
   ) // public mInstanceSlice:Slice,
   {}
 
   private entitiesToFetch: string[] = [];
   private entitiesAlreadyFetched: string[] = [];
 
-//#########################################################################################
-public remoteStoreRestAccessSagaInputPromiseActions:{
+  //#########################################################################################
+  public remoteStoreRestAccessSagaInputPromiseActions:{
     [property in RemoteStoreRestSagaInputActionName]
     : {
       name: property,
@@ -73,31 +73,6 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
       generator:(any) => RemoteStoreSagaGenReturnType
     }
   } = {
-    fetchInstancesForEntityFromRemoteDatastore: {
-      name: "fetchInstancesForEntityFromRemoteDatastore",
-      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<string,"fetchInstancesForEntityFromRemoteDatastore">("fetchInstancesForEntityFromRemoteDatastore"),
-      generator: function*(action:PayloadAction<string>):RemoteStoreSagaGenReturnType {
-        console.log("fetchInstancesForEntityFromRemoteDatastore", action);
-        try {
-          const result: {
-            status: number,
-            data: any,
-            headers: Headers,
-            url: string,
-          } = yield call(() => this.client.get(this.rootApiUrl + "/" + action.payload + "/all"));
-          // } = yield call(() => this.client.handleNetworkAction(networkAction:RemoteStoreAction));
-          return {
-            status:'ok', 
-            instances:[
-              {entity:action.payload, instances:result['data']}
-            ]
-          };
-        } catch (e) {
-          console.warn("fetchInstancesForEntityFromRemoteDatastore", e);
-          yield put({ type: "remoteStore/failure/instancesNotReceived" });
-        }
-      }.bind(this)
-    },
     handleRemoteStoreCRUDAction: {
       name: "handleRemoteStoreCRUDAction",
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreCRUDAction,"handleRemoteStoreCRUDAction">("handleRemoteStoreCRUDAction"),
@@ -110,11 +85,15 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             headers: Headers,
             url: string,
           // } = yield call(() => this.client.handleNetworkAction(action.payload));
-          } = yield call(() => this.client.handleNetworkAction(action.payload));
+          } = yield call(() => this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(action.payload));
           const result = {
             status:'ok',
             instances:[
-              {entity:action.payload?.entityName, instances:clientResult['data']}
+              {
+                entity:action.payload?.entityName,
+                entityUuid:action.payload?.entityUuid,
+                instances:clientResult['data']
+              }
             ]
           };
 
@@ -142,7 +121,7 @@ public remoteStoreRestAccessSagaInputPromiseActions:{
             data: any,
             headers: Headers,
             url: string,
-          } = yield call(() => this.client.handleNetworkAction(action.payload));
+          } = yield call(() => this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelAction(action.payload));
           // } = yield call(() => this.client.handleNetworkAction(action));
           const result = {
             status:'ok',

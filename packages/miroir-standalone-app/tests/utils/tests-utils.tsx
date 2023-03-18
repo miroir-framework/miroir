@@ -68,7 +68,7 @@ export class LoadingStateInterface {
 
 // }
 
-const loadingStateContext = React.createContext<{loadingStateService:LoadingStateInterface}>(undefined);
+const loadingStateContext = React.createContext<{loadingStateService:LoadingStateInterface}>({loadingStateService:{loaded:false,step:0}});
 
 // export const LoadingStateServiceReactProvider = (
 //   props: {
@@ -88,12 +88,12 @@ const loadingStateContext = React.createContext<{loadingStateService:LoadingStat
 //   return <loadingStateContext.Provider value={value}>{props.children}</loadingStateContext.Provider>;
 // }
 
-export const DisplayLoadingInfo:React.FC<{reportName?:string}> = (props:{reportName?:string}) => {
+export const DisplayLoadingInfo:React.FC<{reportUuid?:string}> = (props:{reportUuid?:string}) => {
   const [step,setStep] = useState(0);
   const [loaded,setLoaded] = useState(false);
   return (
     <div>
-      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportName} role='button'>{'next step '+props.reportName}</button>
+      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportUuid} role='button'>{'next step '+props.reportUuid}</button>
       <span role={"step:" + step}>loaded step:{step}</span>
       <span>loaded:{loaded ? "finished" : "not"}</span>
     </div>

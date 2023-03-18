@@ -9,7 +9,8 @@ import {
   entityEntity,
   entityReport,
   IndexedDb,
-  IndexedDbServer,
+  IndexedDbDataStore,
+  Instance,
   ModelStructureUpdate,
   reportEntityList,
   reportReportList,
@@ -24,6 +25,7 @@ const app = express(),
 const users = [];
 
 const localIndexedDb: IndexedDb = new IndexedDb("miroir-indexedDb")
+const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
 
 
 await localIndexedDb.createObjectStore(["Entity", "Instance", "Report", "Author", "Book"]);
@@ -69,13 +71,13 @@ try {
 // await sqlDataStore.upsertInstance('Report', reportReportList as Instance);
 
 
-const localIndexedDbDataStore:DataStoreInterface = new IndexedDbServer(localIndexedDb);
+const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localIndexedDb,localUuidIndexedDb);
 
 
 app.use(bodyParser.json());
 
 // ##############################################################################################
-app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
+app.get("/miroir/entityName/" + ":entityName/all", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
   console.log("get", entityName + "/all started #####################################");
@@ -86,7 +88,7 @@ app.get("/miroir/" + ":entityName/all", async (req, res, ctx) => {
 });
 
 // ##############################################################################################
-app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
+app.post("/miroir/entityName/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
   console.log("post /miroir/", entityName + " started #####################################");
@@ -102,7 +104,7 @@ app.post("/miroir/" + ":entityName", async (req, res, ctx) => {
 });
 
 // ##############################################################################################
-app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
+app.put("/miroir/entityName/" + ":entityName", async (req, res, ctx) => {
   const entityName: string =
     typeof req.params["entityName"] == "string" ? req.params["entityName"] : req.params["entityName"][0];
   console.log("put miroir/", entityName + " started #####################################");
@@ -114,6 +116,58 @@ app.put("/miroir/" + ":entityName", async (req, res, ctx) => {
     await sqlDbServer.upsertInstance(entityName, instance);
 
     console.log("server " + entityName + "put object", instance);
+  }
+  // console.log("server " + entityName + "put object of", addedObjects);
+  return res.json(addedObjects);
+});
+
+// ##############################################################################################
+app.get("/miroir/entity/" + ":entityUuid/all", async (req, res, ctx) => {
+  const entityUuid: string =
+    typeof req.params["entityUuid"] == "string" ? req.params["entityUuid"] : req.params["entityUuid"][0];
+  console.log("get", entityUuid + "/all started #####################################");
+  // const localData = await localIndexedDbDataStore.getInstances(entityName);
+  const localData = await sqlDbServer.getInstancesUuid(entityUuid);
+  console.log("##################################### end: /miroir/entity/" + entityUuid + "/all", localData);
+  return res.json(localData);
+});
+
+
+// ##############################################################################################
+app.put("/miroir/entity", async (req, res, ctx) => {
+// app.put("/miroir/entity/" + ":entityUuid", async (req, res, ctx) => {
+  // const entityUuid: string =
+  //   typeof req.params["entityUuid"] == "string" ? req.params["entityUuid"] : req.params["entityUuid"][0];
+  // console.log("put miroir/", entityUuid + " started #####################################");
+  
+  const addedObjects: Instance[] = await req.body;
+  console.log("put miroir/", " started #####################################");
+
+  // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
+  for (const instance of addedObjects) {
+    await sqlDbServer.upsertInstanceUuid(instance.entityUuid, instance);
+
+    console.log("server " + instance.entityUuid + "put object", instance);
+  }
+  // console.log("server " + entityName + "put object of", addedObjects);
+  return res.json(addedObjects);
+});
+
+// ##############################################################################################
+app.post("/miroir/entity", async (req, res, ctx) => {
+// app.put("/miroir/entity/" + ":entityUuid", async (req, res, ctx) => {
+  // const entityUuid: string =
+  //   typeof req.params["entityUuid"] == "string" ? req.params["entityUuid"] : req.params["entityUuid"][0];
+  // console.log("put miroir/", entityUuid + " started #####################################");
+  
+  const addedObjects: Instance[] = await req.body;
+  console.log("POST /miroir/entity/", " started #####################################");
+
+  // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
+  for (const instance of addedObjects) {
+    await sqlDbServer.upsertInstanceUuid(instance.entityUuid, instance);
+
+    console.log("server " + instance.entityUuid + "post object", instance);
   }
   // console.log("server " + entityName + "put object of", addedObjects);
   return res.json(addedObjects);
@@ -137,8 +191,9 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
       await sequelize.drop();
       // await sequelize.sync();
       console.log('resetModel after drop sequelize.models', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
-      sqlDbServer.dropEntities(Object.keys(sequelize.models));
-      console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities());
+      // sqlDbServer.dropEntities(Object.keys(sequelize.models));
+      sqlDbServer.dropUuidEntities(sqlDbServer.getUuidEntities());
+      console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getEntities(), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
 
       break;
     }
@@ -149,7 +204,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
           //   break;
           default:
             sqlDbServer.applyModelStructureUpdates(updates);
-            console.log('post model ignore updates', updates);
+            console.log('post applyModelStructureUpdates', updates);
             break;
         }
       } else {

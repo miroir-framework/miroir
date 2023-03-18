@@ -11,6 +11,7 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
+import { entityEntity } from "src";
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -157,11 +158,11 @@ export class DomainController implements DomainControllerInterface {
     let otherDomainAction:DomainAction = undefined;
     const ignoredActionNames:string[] = ['updateModel','resetModel','commit','replace','undo','redo'];
     console.log('handleDomainAction',domainAction?.actionName,domainAction?.actionType,domainAction['objects']);
-    
+
     // if (domainAction.actionName!="updateModel"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entity=='Entity'):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entity!='Entity'):[];
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid || a.entity=='Entity'):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid || a.entity!='Entity'):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {
@@ -183,37 +184,56 @@ export class DomainController implements DomainControllerInterface {
     switch (domainAction.actionType) {
       case "DomainDataAction": {
         if (!!entityDomainAction) {
-          if (!!otherDomainAction) {
-            await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
-            return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
-          } else {
-            return this.handleDomainDataAction(entityDomainAction as DomainDataAction);
-          }
-        } else {
-          if (!!otherDomainAction) {
-            return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
-          } else {
-            return Promise.resolve()
-          }
+          await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
         }
+        if (!!otherDomainAction) {
+            await this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+        }
+        return Promise.resolve()
       }
       case "DomainModelAction": {
         if (!!entityDomainAction) {
-          if (!!otherDomainAction) {
             await this.handleDomainModelAction(entityDomainAction as DomainModelAction);
-            return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
-          } else {
-            return this.handleDomainModelAction(entityDomainAction as DomainModelAction);
-          }
-        } else {
-          if (!!otherDomainAction) {
-            return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
-          } else {
-            return Promise.resolve()
-          }
         }
-        // return this.handleDomainModelAction(domainAction);
+        if (!!otherDomainAction) {
+          return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+        }
+        return Promise.resolve()
       }
+    // switch (domainAction.actionType) {
+    //   case "DomainDataAction": {
+    //     if (!!entityDomainAction) {
+    //       if (!!otherDomainAction) {
+    //         await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
+    //         return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+    //       } else {
+    //         return this.handleDomainDataAction(entityDomainAction as DomainDataAction);
+    //       }
+    //     } else {
+    //       if (!!otherDomainAction) {
+    //         return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+    //       } else {
+    //         return Promise.resolve()
+    //       }
+    //     }
+    //   }
+    //   case "DomainModelAction": {
+    //     if (!!entityDomainAction) {
+    //       if (!!otherDomainAction) {
+    //         await this.handleDomainModelAction(entityDomainAction as DomainModelAction);
+    //         return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+    //       } else {
+    //         return this.handleDomainModelAction(entityDomainAction as DomainModelAction);
+    //       }
+    //     } else {
+    //       if (!!otherDomainAction) {
+    //         return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
+    //       } else {
+    //         return Promise.resolve()
+    //       }
+    //     }
+        // return this.handleDomainModelAction(domainAction);
+      // }
       default:
         console.error(
           "DomainController handleDomainAction action could not be taken into account, unkown action",
