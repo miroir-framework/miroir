@@ -23,11 +23,11 @@ export const TestUtilsTableComponent = (
     Report:miroirReports,
   }
 
-  console.log("TestTableComponent",props.entityName,"miroirEntities",miroirEntities, "miroirReports", miroirReports);
+  console.log("TestUtilsTableComponent",props.entityName,"miroirEntities",miroirEntities, "miroirReports", miroirReports);
   const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityUuid);
-  console.log("MiroirReportComponent instancesToDisplay",instancesToDisplay);
-  const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.name === props.entityName);
-
+  console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
+  const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.entityUuid);
+  const currentAttributes = currentEntityDefinition?.attributes ? currentEntityDefinition?.attributes?.filter(a=>a.name!=='entityUuid'):[];
   return (
     <div>
       {/* <span>
@@ -36,6 +36,8 @@ export const TestUtilsTableComponent = (
         entityInstances['Report']?.length == 2?'finished':''
         }
       </span> */}
+      {/* currentEntityDefinition:{JSON.stringify(currentEntityDefinition)} */}
+      <p/>
       {props.DisplayLoadingInfo}
       {instancesToDisplay.length > 0 && !!currentEntityDefinition? (
         <div>
@@ -43,7 +45,7 @@ export const TestUtilsTableComponent = (
             <thead>
               <tr>
                 {
-                  currentEntityDefinition?.attributes?.map(
+                  currentAttributes.map(
                     (a, key) => (
                       <th  key={a.name}>{a.name}</th>
                     )
@@ -57,7 +59,7 @@ export const TestUtilsTableComponent = (
                   (e) => (
                     <tr key={e['name']}>
                       {
-                        currentEntityDefinition?.attributes?.map(
+                        currentAttributes.map(
                           (a,k) => (
                             <td key={a['name']} role='gridcell'>{JSON.stringify(e[a['name']])}</td>
                           )

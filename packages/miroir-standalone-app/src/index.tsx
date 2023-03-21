@@ -28,7 +28,7 @@ async function start() {
   if (process.env.NODE_ENV === "development") {
 
     const {
-      mServer,
+      indexedDbRestServer: mServer,
       worker,
       reduxStore: mReduxStore,
       localAndRemoteController,
@@ -44,9 +44,11 @@ async function start() {
       await worker.start();
     }
     if (!!mServer) {
-      await mServer.createObjectStore(["Entity"]);
+      // await mServer.createObjectStore(["Entity"]);
+      // await mServer.createObjectStore([entityEntity.uuid]);
+      await mServer.createObjectStore([]);
+      await mServer.clearObjectStore();
       // await mServer.createObjectStore(["Entity", "Report"]);
-      // await mServer.clearObjectStore();
       // await mServer.localIndexedDb.putValue("Entity", entityEntity);
       // await mServer.localIndexedDb.putValue("Entity", entityReport);
       // await mServer.localIndexedDb.putValue("Report", reportEntityList);

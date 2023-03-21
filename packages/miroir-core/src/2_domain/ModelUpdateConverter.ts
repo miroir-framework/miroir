@@ -3,7 +3,7 @@ import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition.js";
 import { InstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelCUDUpdate, ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { entityEntity } from "src/index.js";
+import entityEntity from "../assets/entities/Entity.json";
 
 export class ModelStructureUpdateConverter{
   static modelUpdateToLocalCacheUpdate(

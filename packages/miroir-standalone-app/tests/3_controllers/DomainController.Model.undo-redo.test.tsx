@@ -36,7 +36,7 @@ import book1 from "miroir-standalone-app/src/assets/instances/Book - The Bride W
 miroirAppStartup();
 miroirCoreStartup();
 
-const {mServer, worker, reduxStore, domainController, miroirContext} = 
+const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext} = 
   createMswStore(
     {
       "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
@@ -54,7 +54,7 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     worker.listen();
-    await mServer.openObjectStore();
+    await indexedDbRestServer.openObjectStore();
     console.log('Done beforeAll');
   }
 )
@@ -62,7 +62,7 @@ beforeAll(
 afterAll(
   async () => {
     worker.close();
-    await mServer.closeObjectStore();
+    await indexedDbRestServer.closeObjectStore();
     console.log('Done afterAll');
   }
 )
@@ -76,15 +76,15 @@ describe(
       async () => {
         console.log('Add 2 entity definitions then undo one then commit start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Entity"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
         const user = userEvent.setup()
 
-        await mServer.createObjectStore(["Entity","Report",]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity", entityReport);
-        await mServer.localIndexedDb.putValue("Entity", entityEntity);
-        await mServer.localIndexedDb.putValue("Report", reportReportList);
-        await mServer.localIndexedDb.putValue("Report", reportEntityList);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
 
 
         const {
@@ -93,7 +93,8 @@ describe(
           container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Entity"
+            entityName={entityEntity.entity}
+            entityUuid={entityEntity.entityUuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />,
           {store:reduxStore.getInnerStore(),}
@@ -126,12 +127,12 @@ describe(
         const createAuthorAction: DomainAction = {
           actionName:'create',
           actionType: 'DomainModelAction',
-          objects:[{entity:'Entity',instances:[entityAuthor as Instance]}]
+          objects:[{entity:entityAuthor.entity,entityUuid:entityAuthor.entityUuid,instances:[entityAuthor as Instance]}]
         };
         const createBookAction: DomainAction = {
           actionName:'create',
           actionType: 'DomainModelAction',
-          objects:[{entity:'Entity',instances:[entityBook as Instance]}]
+          objects:[{entity:entityBook.entity,entityUuid:entityBook.entityUuid,instances:[entityBook as Instance]}]
         };
 
         await act(

@@ -41,7 +41,7 @@ import reportBookList from "miroir-standalone-app/src/assets/reports/BookList.js
 miroirAppStartup();
 miroirCoreStartup();
 
-const {mServer, worker, reduxStore, domainController, miroirContext} = 
+const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext} = 
   createMswStore(
     {
       "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
@@ -59,7 +59,7 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     worker.listen();
-    await mServer.openObjectStore();
+    await indexedDbRestServer.openObjectStore();
     console.log('Done beforeAll');
   }
 )
@@ -67,7 +67,7 @@ beforeAll(
 afterAll(
   async () => {
     worker.close();
-    await mServer.closeObjectStore();
+    await indexedDbRestServer.closeObjectStore();
     console.log('Done afterAll');
   }
 )
@@ -145,21 +145,20 @@ describe(
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
-        await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity",entityReport);
-        await mServer.localIndexedDb.putValue("Entity",entityEntity);
-        await mServer.localIndexedDb.putValue("Report",reportEntityList);
-        await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-        await mServer.localIndexedDb.putValue("Entity", entityBook);
-        await mServer.localIndexedDb.putValue("Report", reportBookList);
-        await mServer.localIndexedDb.putValue("Author", author1);
-        await mServer.localIndexedDb.putValue("Author", author2);
-        await mServer.localIndexedDb.putValue("Author", author3);
-        await mServer.localIndexedDb.putValue("Book", book1);
-        await mServer.localIndexedDb.putValue("Book", book2);
-        // await mServer.localIndexedDb.putValue("Book", book3);
-        await mServer.localIndexedDb.putValue("Book", book4);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
 
         const {
           getByText,
@@ -203,7 +202,7 @@ describe(
         const createAction: DomainDataAction = {
           actionName:'create',
           actionType:"DomainDataAction",
-          objects:[{entity:'Book',instances:[book3 as Instance]}]
+          objects:[{entity:book3.entity,entityUuid:book3.entityUuid,instances:[book3 as Instance]}]
         };
 
         await act(
@@ -270,21 +269,21 @@ describe(
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
-        await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity",entityReport);
-        await mServer.localIndexedDb.putValue("Entity",entityEntity);
-        await mServer.localIndexedDb.putValue("Report",reportEntityList);
-        await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-        await mServer.localIndexedDb.putValue("Entity", entityBook);
-        await mServer.localIndexedDb.putValue("Report", reportBookList);
-        await mServer.localIndexedDb.putValue("Author", author1);
-        await mServer.localIndexedDb.putValue("Author", author2);
-        await mServer.localIndexedDb.putValue("Author", author3);
-        await mServer.localIndexedDb.putValue("Book", book1);
-        await mServer.localIndexedDb.putValue("Book", book2);
-        await mServer.localIndexedDb.putValue("Book", book3);
-        await mServer.localIndexedDb.putValue("Book", book4);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book3.entityUuid, book3);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
 
         const {
           getByText,
@@ -330,7 +329,7 @@ describe(
         const createAction: DomainDataAction = {
           actionName:'delete',
           actionType:"DomainDataAction",
-          objects:[{entity:'Book',instances:[book3 as Instance]}]
+          objects:[{entity:book3.entity,entityUuid:book3.entityUuid,instances:[book3 as Instance]}]
         };
 
         await act(
@@ -395,21 +394,21 @@ describe(
         const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
 
-        await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity",entityReport);
-        await mServer.localIndexedDb.putValue("Entity",entityEntity);
-        await mServer.localIndexedDb.putValue("Report",reportEntityList);
-        await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-        await mServer.localIndexedDb.putValue("Entity", entityBook);
-        await mServer.localIndexedDb.putValue("Report", reportBookList);
-        await mServer.localIndexedDb.putValue("Author", author1);
-        await mServer.localIndexedDb.putValue("Author", author2);
-        await mServer.localIndexedDb.putValue("Author", author3);
-        await mServer.localIndexedDb.putValue("Book", book1);
-        await mServer.localIndexedDb.putValue("Book", book2);
-        await mServer.localIndexedDb.putValue("Book", book3);
-        await mServer.localIndexedDb.putValue("Book", book4);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book3.entityUuid, book3);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
 
         const {
           getByText,
@@ -456,14 +455,16 @@ describe(
           actionType:"DomainDataAction",
           objects: [
             {
-              entity: "Book",
+              entity: book4.entity,
+              entityUuid: book4.entityUuid,
               instances: [
-                {
-                  "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
-                  "entity":"Book",
-                  "name":"RRear WindowW",
-                  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
-                } as Instance,
+                Object.assign({},book4,{"name":"RRear WindowW", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as Instance
+                // {
+                //   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                //   "entity":"Book",
+                //   "name":"RRear WindowW",
+                //   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
+                // } as Instance,
               ],
             },
           ],

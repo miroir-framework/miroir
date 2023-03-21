@@ -31,7 +31,6 @@ export class SqlDbServer implements DataStoreInterface {
   private sqlUuidEntities:SqlUuidEntityDefinition = undefined;
 
   constructor(
-    // private localIndexedDb: IndexedDb,
     private sequelize:Sequelize,
   ){}
 
@@ -86,14 +85,6 @@ export class SqlDbServer implements DataStoreInterface {
     } else {
       console.warn('dropUuidEntity entityUuid',entityUuid,'NOT FOUND.');
     }
-
-    // if (this.sequelize.isDefined(entityUuid)) {
-    //   console.warn('dropEntity entityName',entityUuid,'is defined.');
-    //   if (this.sqlEntities && this.sqlEntities[entityUuid]) {delete this.sqlEntities[entityUuid];}
-    //   this.sequelize.modelManager.removeModel(this.sequelize.model(entityUuid));
-    // } else {
-    //   console.warn('dropEntity entityName',entityUuid,'not found.');
-    // }
   }
 
     // ##############################################################################################
@@ -125,11 +116,6 @@ export class SqlDbServer implements DataStoreInterface {
     } else {
       console.warn('sqlDbServer init initialization started');
       const entities:EntityDefinition[] = await this.getInstancesUuid(entityEntity.uuid,this.sqlUuidEntityDefinition(entityEntity as EntityDefinition));
-      // this.sqlEntities = entities.reduce(
-      //   (prev,curr:EntityDefinition) => {
-      //     console.warn('sqlDbServer init initializing',curr);
-      //     return Object.assign(prev,this.sqlEntityDefinition(curr));
-      //   },{})
       this.sqlUuidEntities = entities.reduce(
         (prev,curr:EntityDefinition) => {
           console.warn('sqlDbServer uuid init initializing',curr);
@@ -202,6 +188,7 @@ export class SqlDbServer implements DataStoreInterface {
     } else {
       if (instance.entity == "Entity") {
         console.log('upsertInstance entity', instance['name'],'already exists this.sqlEntities:',Object.keys(this.sqlEntities));
+
       }
     }
   
@@ -241,10 +228,17 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  // async deleteInstances(entityName:string, instances:Instance[]):Promise<Instance[]> {
   async deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any> {
-    // for (const o of instances) {
-    //   await this.localIndexedDb.deleteValue(entityName, o["uuid"]);
+    // for (const instance of instances) {
+    //   await this.sqlUuidEntities[instance.entityUuid].sequelizeModel.destroy(instance as any);
+    // }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async deleteInstanceUuid(entityUuid:string, instances:Instance):Promise<any> {
+    // for (const instance of instances) {
+    //   await this.sqlUuidEntities[instance.entityUuid].sequelizeModel.destroy(instance as any);
     // }
     return Promise.resolve();
   }

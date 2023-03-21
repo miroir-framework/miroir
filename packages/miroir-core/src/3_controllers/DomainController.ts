@@ -11,7 +11,7 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
-import { entityEntity } from "src";
+import entityEntity from "../assets/entities/Entity.json";
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -200,40 +200,6 @@ export class DomainController implements DomainControllerInterface {
         }
         return Promise.resolve()
       }
-    // switch (domainAction.actionType) {
-    //   case "DomainDataAction": {
-    //     if (!!entityDomainAction) {
-    //       if (!!otherDomainAction) {
-    //         await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
-    //         return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
-    //       } else {
-    //         return this.handleDomainDataAction(entityDomainAction as DomainDataAction);
-    //       }
-    //     } else {
-    //       if (!!otherDomainAction) {
-    //         return this.handleDomainDataAction(otherDomainAction as DomainDataAction);
-    //       } else {
-    //         return Promise.resolve()
-    //       }
-    //     }
-    //   }
-    //   case "DomainModelAction": {
-    //     if (!!entityDomainAction) {
-    //       if (!!otherDomainAction) {
-    //         await this.handleDomainModelAction(entityDomainAction as DomainModelAction);
-    //         return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
-    //       } else {
-    //         return this.handleDomainModelAction(entityDomainAction as DomainModelAction);
-    //       }
-    //     } else {
-    //       if (!!otherDomainAction) {
-    //         return this.handleDomainModelAction(otherDomainAction as DomainModelAction);
-    //       } else {
-    //         return Promise.resolve()
-    //       }
-    //     }
-        // return this.handleDomainModelAction(domainAction);
-      // }
       default:
         console.error(
           "DomainController handleDomainAction action could not be taken into account, unkown action",

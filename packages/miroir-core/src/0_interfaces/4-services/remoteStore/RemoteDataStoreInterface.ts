@@ -65,21 +65,22 @@ export declare interface RemoteDataStoreInterface {
 
 export interface DataStoreInterface {
   init():Promise<void>;
-  getEntities():string[]; //TODO: remove!
-  dropEntity(entityName:string);
-  dropEntities(entityNames:string[]);
+  // getEntities():string[]; //TODO: remove!
+  // dropEntity(entityName:string);
+  // dropEntities(entityNames:string[]);
 
   getUuidEntities():string[]; //TODO: remove!
   dropUuidEntity(entityUuid:string);
   dropUuidEntities(entityUuid:string[]);
 
-  getInstances(entityName:string):Promise<Instance[]>;
-  upsertInstance(entityName:string, instance:Instance):Promise<any>;
-  deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
+  // getInstances(entityName:string):Promise<Instance[]>;
+  // upsertInstance(entityName:string, instance:Instance):Promise<any>;
+  // deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
 
   getInstancesUuid(entityUuid:string):Promise<Instance[]>;
   upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
   deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any>;
+  deleteInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
 
   applyModelStructureUpdates(updates:ModelStructureUpdate[]);
 }

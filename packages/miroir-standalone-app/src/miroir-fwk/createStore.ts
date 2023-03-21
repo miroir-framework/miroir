@@ -17,8 +17,8 @@ export function createMswStore(
   fetch:(input: RequestInfo | URL, init?: RequestInit)=> Promise<Response>,
   createWorkerFromHandlers:(...handlers)=>any
 ) {
-  const mServer: IndexedDbRestServer = miroirConfig.serverConfig.emulateServer?new IndexedDbRestServer(miroirConfig.serverConfig.rootApiUrl):undefined;
-  const worker = miroirConfig.serverConfig.emulateServer?createWorkerFromHandlers(...mServer.handlers):undefined;
+  const indexedDbRestServer: IndexedDbRestServer = miroirConfig.serverConfig.emulateServer?new IndexedDbRestServer(miroirConfig.serverConfig.rootApiUrl):undefined;
+  const worker = miroirConfig.serverConfig.emulateServer?createWorkerFromHandlers(...indexedDbRestServer.handlers):undefined;
 
   const client:RestClient = new RestClient(fetch);
   const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.serverConfig.rootApiUrl, client);
@@ -31,5 +31,5 @@ export function createMswStore(
   const localAndRemoteController: LocalAndRemoteControllerInterface = new LocalAndRemoteController(miroirContext, reduxStore, reduxStore);
   const domainController:DomainControllerInterface = new DomainController(localAndRemoteController);
   
-  return {mServer, worker, reduxStore, localAndRemoteController, domainController, miroirContext}
+  return {indexedDbRestServer, worker, reduxStore, localAndRemoteController, domainController, miroirContext}
 }

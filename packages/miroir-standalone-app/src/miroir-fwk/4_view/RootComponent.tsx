@@ -238,7 +238,53 @@ export const RootComponent = (props:RootComponentProps) => {
             )
           }}
         >
-          Update Report List
+          Modify Book entity name
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainModelAction(
+              {
+                actionName: "update",
+                actionType: 'DomainModelAction',
+                objects: [
+                  {
+                    entity: reportReportList.entity,
+                    entityUuid:reportReportList.entityUuid,
+                    instances: [
+                      Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
+                    ],
+                  },
+                ],
+              },
+              {
+                entities:miroirEntities,
+                reports: miroirReports,
+              }
+            )
+          }}
+        >
+          Modify Report List name
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainModelAction(
+              {
+                actionName: "delete",
+                actionType: "DomainModelAction",
+                objects: [{entity: entityAuthor.entity, entityUuid: entityAuthor.entityUuid,instances:[entityAuthor as Instance] }],
+              },
+              {
+                entities:miroirEntities,
+                reports: miroirReports,
+              }
+            )
+          }}
+        >
+          Remove Author entity
         </button>
       </span>
       <p />

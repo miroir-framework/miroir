@@ -121,8 +121,10 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
     }
     case 'delete': {
       for (let instanceCollection of action.payload.objects) {
+        console.log('localCacheSliceObject handleLocalCacheDataAction delete', instanceCollection);
+        
         const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
-        sliceEntityAdapter.removeMany(state[instanceCollection.entityUuid], action.payload.uuid ? [action.payload.uuid] : instanceCollection.instances.map(i => i.uuid));
+        sliceEntityAdapter.removeMany(state[instanceCollection.entityUuid], instanceCollection.instances.map(i => i.uuid));
       }
       break;
     }

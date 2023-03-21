@@ -12,6 +12,11 @@ export {
   ApplicationConceptLevel,
 } from './0_interfaces/1_core/Instance.js';
 export {
+  HttpMethod,
+  HttpMethodsArray,
+  HttpMethodsObject,
+} from './0_interfaces/1_core/Http.js';
+export {
   MiroirReport,
   MiroirReportDefinition
 } from './0_interfaces/1_core/Report.js';
@@ -122,6 +127,9 @@ export {
 export {
   IndexedDb
 } from './4_services/indexedDb.js';
+export {
+  generateHandlerBody
+} from './4_services/RestTools.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple } from './tools.js';
 export { entityEntity, entityReport, reportEntityList, reportReportList };

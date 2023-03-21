@@ -32,7 +32,7 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 miroirAppStartup();
 miroirCoreStartup();
 
-const {mServer, worker, reduxStore, domainController, miroirContext} = 
+const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext} = 
   createMswStore(
     {
       "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
@@ -50,7 +50,7 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     worker.listen();
-    await mServer.openObjectStore();
+    await indexedDbRestServer.openObjectStore();
     console.log('Done beforeAll');
   }
 )
@@ -58,7 +58,7 @@ beforeAll(
 afterAll(
   async () => {
     worker.close();
-    await mServer.closeObjectStore();
+    await indexedDbRestServer.closeObjectStore();
     console.log('Done afterAll');
   }
 )
@@ -74,11 +74,11 @@ describe(
         const displayLoadingInfo=<DisplayLoadingInfo/>
         const user = userEvent.setup()
 
-        await mServer.createObjectStore(["Entity","Instance","Report"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity",entityReport);
-        await mServer.localIndexedDb.putValue("Entity",entityEntity);
-        await mServer.localIndexedDb.putValue("Report",reportEntityList);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
 
         const {
           getByText,
@@ -86,7 +86,8 @@ describe(
           // container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Entity"
+            entityName={entityEntity.name}
+            entityUuid={entityEntity.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />
           ,
@@ -120,18 +121,15 @@ describe(
       async () => {
         console.log('Add Report definition then rollback start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
-        await mServer.createObjectStore(["Entity","Instance","Report"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity", entityReport);
-        await mServer.localIndexedDb.putValue("Entity", entityEntity);
-        await mServer.localIndexedDb.putValue("Report", reportReportList);
-        // Entity List Report is not added.
-        // await mServer.localIndexedDb.putValue("Report", reportEntityList);
-
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
 
         const {
           getByText,
@@ -139,8 +137,9 @@ describe(
           container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Report"
-            DisplayLoadingInfo={displayLoadingInfo}
+          entityName={entityReport.name}
+          entityUuid={entityReport.uuid}
+          DisplayLoadingInfo={displayLoadingInfo}
           />,
           {store:reduxStore.getInnerStore(),}
         );
@@ -172,7 +171,7 @@ describe(
         const createAction: DomainAction = {
           actionName:'create',
           actionType:"DomainModelAction",
-          objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
+          objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
         };
 
         await act(
@@ -232,17 +231,15 @@ describe(
       async () => {
         console.log('Add Report definition then commit start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
-        await mServer.createObjectStore(["Entity","Instance","Report"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity", entityReport);
-        await mServer.localIndexedDb.putValue("Entity", entityEntity);
-        await mServer.localIndexedDb.putValue("Report", reportReportList);
-        // Entity List Report is not added.
-        // await mServer.localIndexedDb.putValue("Report", reportEntityList);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
 
 
         const {
@@ -251,7 +248,8 @@ describe(
           container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Report"
+            entityName={entityReport.name}
+            entityUuid={entityReport.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />,
           {store:reduxStore.getInnerStore(),}
@@ -284,7 +282,7 @@ describe(
         const createAction: DomainAction = {
           actionName:'create',
           actionType: "DomainModelAction",
-          objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
+          objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
         };
 
         await act(
@@ -368,12 +366,12 @@ describe(
       'Remove Report definition then commit',
       async () => {
         console.log('remove Report definition start');
-        await mServer.createObjectStore(["Entity","Instance","Report"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity", entityReport);
-        await mServer.localIndexedDb.putValue("Entity", entityEntity);
-        await mServer.localIndexedDb.putValue("Report", reportEntityList);
-        await mServer.localIndexedDb.putValue("Report", reportReportList);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
 
         const displayLoadingInfo=<DisplayLoadingInfo/>
         const user = userEvent.setup()
@@ -384,7 +382,8 @@ describe(
           container
         } = renderWithProviders(
             <TestUtilsTableComponent
-              entityName="Report"
+              entityName={entityReport.name}
+              entityUuid={entityReport.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
           {store:reduxStore.getInnerStore()}
@@ -419,7 +418,7 @@ describe(
             await domainController.handleDomainAction({
               actionName:'delete',
               actionType: 'DomainModelAction',
-              objects:[{entity:'Report',instances:[reportEntityList as Instance]}]
+              objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
             });
           }
         );
@@ -492,16 +491,15 @@ describe(
       async () => {
         console.log('update Report definition start');
 
-        const displayLoadingInfo=<DisplayLoadingInfo reportName="Report"/>
+        const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
         const user = userEvent.setup()
 
-        await mServer.createObjectStore(["Entity","Instance","Report"]);
-        await mServer.clearObjectStore();
-        await mServer.localIndexedDb.putValue("Entity", entityReport);
-        await mServer.localIndexedDb.putValue("Entity", entityEntity);
-        await mServer.localIndexedDb.putValue("Report", reportReportList);
-        // Entity List Report is not added.
-        // await mServer.localIndexedDb.putValue("Report", reportEntityList);
+        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
+        await indexedDbRestServer.clearObjectStore();
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
+        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
+        // await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
 
 
         const {
@@ -510,7 +508,8 @@ describe(
           container
         } = renderWithProviders(
           <TestUtilsTableComponent
-            entityName="Report"
+            entityName={entityReport.name}
+            entityUuid={entityReport.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
           />,
           {store:reduxStore.getInnerStore(),}
@@ -542,23 +541,16 @@ describe(
 
         // ##########################################################################################################
         console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+        // const updatedReport = 
         const updateAction: DomainAction = {
           actionName: "update",
           actionType: 'DomainModelAction',
           objects: [
             {
-              entity: "Report",
+              entity: reportReportList.entity,
+              entityUuid:reportReportList.entityUuid,
               instances: [
-                {
-                  "uuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-                  "entity":"Report",
-                  "name":"Report2List",
-                  "defaultLabel": "List of Reports",
-                  "type": "list",
-                  "definition": {
-                    "entity": "Report"
-                  }
-                } as Instance,
+                Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
               ],
             },
           ],
