@@ -41,34 +41,65 @@ import reportBookList from "miroir-standalone-app/src/assets/reports/BookList.js
 miroirAppStartup();
 miroirCoreStartup();
 
-const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext} = 
-  createMswStore(
-    {
-      "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
-      "deploymentMode":"monoUser",
-      "monoUserAutentification": false,
-      "monoUserVersionControl": false,
-      "versionControlForDataConceptLevel": false
-    },
-    fetch,
-    setupServer
-  )
-;
+let localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext;
+// const {localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext} = 
 
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    worker.listen();
-    await indexedDbRestServer.openObjectStore();
+    const wrapped = await createMswStore(
+      {
+        "emulateServer":true, 
+        "rootApiUrl":"http://localhost/fakeApi",
+        "emulatedServerConfig":{
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-uuid-indexedDb"
+        },
+        "deploymentMode":"monoUser",
+        "monoUserAutentification": false,
+        "monoUserVersionControl": false,
+        "versionControlForDataConceptLevel": false
+      },
+      'nodejs',
+      fetch,
+      setupServer
+    );
+  
+    localDataStore = wrapped.localDataStore;
+    localDataStoreWorker = wrapped.localDataStoreWorker;
+    localDataStoreServer = wrapped.localDataStoreServer;
+    reduxStore = wrapped.reduxStore;
+    domainController = wrapped.domainController;
+    miroirContext = wrapped.miroirContext;
+
+    localDataStoreServer?.listen();
     console.log('Done beforeAll');
+  }
+)
+
+beforeEach(
+  async () => {
+    // Establish requests interception layer before all tests.
+    // localDataStoreServer?.listen();
+    await localDataStore?.open();
+    await localDataStore?.init();
+    await localDataStore?.clear();
+    console.log('Done beforeEach');
   }
 )
 
 afterAll(
   async () => {
-    worker.close();
-    await indexedDbRestServer.closeObjectStore();
+    localDataStoreServer?.close();
     console.log('Done afterAll');
+  }
+)
+
+afterEach(
+  async () => {
+    // localDataStoreServer?.close();
+    await localDataStore?.close();
+    console.log('Done afterEach');
   }
 )
 
@@ -76,64 +107,64 @@ describe(
   'DomainController.Data.CRUD',
   () => {
     // ###########################################################################################
-    // it(
-    //   'Refresh all Instances',
-    //   async () => {
-    //     console.log('Refresh all Instances start');
-    //     const displayLoadingInfo=<DisplayLoadingInfo/>
-    //     const user = userEvent.setup()
+    it(
+      'Refresh all Instances',
+      async () => {
+        console.log('Refresh all Instances start');
+        const displayLoadingInfo=<DisplayLoadingInfo/>
+        const user = userEvent.setup()
 
-    //     await mServer.createObjectStore(["Entity","Instance","Report","Author","Book"]);
-    //     await mServer.clearObjectStore();
-    //     await mServer.localIndexedDb.putValue("Entity",entityReport);
-    //     await mServer.localIndexedDb.putValue("Entity",entityEntity);
-    //     await mServer.localIndexedDb.putValue("Report",reportEntityList);
-    //     await mServer.localIndexedDb.putValue("Entity", entityAuthor);
-    //     await mServer.localIndexedDb.putValue("Entity", entityBook);
-    //     await mServer.localIndexedDb.putValue("Report", reportBookList);
-    //     await mServer.localIndexedDb.putValue("Author", author1);
-    //     await mServer.localIndexedDb.putValue("Author", author2);
-    //     await mServer.localIndexedDb.putValue("Author", author3);
-    //     await mServer.localIndexedDb.putValue("Book", book1);
-    //     await mServer.localIndexedDb.putValue("Book", book2);
-    //     // await mServer.localIndexedDb.putValue("Book", book3);
-    //     await mServer.localIndexedDb.putValue("Book", book4);
+        await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+        await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+        // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+        await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
+        await localDataStore?.upsertInstanceUuid(entityAuthor.entityUuid, entityAuthor as Instance);
+        await localDataStore?.upsertInstanceUuid(entityBook.entityUuid, entityBook as Instance);
+        await localDataStore?.upsertInstanceUuid(reportBookList.entityUuid, reportBookList as Instance);
+        await localDataStore?.upsertInstanceUuid(author1.entityUuid, author1 as Instance);
+        await localDataStore?.upsertInstanceUuid(author2.entityUuid, author2 as Instance);
+        await localDataStore?.upsertInstanceUuid(author3.entityUuid, author3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book1.entityUuid, book1 as Instance);
+        await localDataStore?.upsertInstanceUuid(book2.entityUuid, book2 as Instance);
+        // await localDataStore?.upsertInstanceUuid(book3.entityUuid, book3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book4.entityUuid, book4 as Instance);
 
-    //     const {
-    //       getByText,
-    //       getAllByRole,
-    //       // container
-    //     } = renderWithProviders(
-    //       <TestUtilsTableComponent
-    //         entityName="Book"
-    //         DisplayLoadingInfo={displayLoadingInfo}
-    //       />
-    //       ,
-    //       {store:reduxStore.getInnerStore()}
-    //     );
+        const {
+          getByText,
+          getAllByRole,
+          // container
+        } = renderWithProviders(
+          <TestUtilsTableComponent
+            entityName={entityBook.name}
+            entityUuid={entityBook.entityUuid}
+            DisplayLoadingInfo={displayLoadingInfo}
+          />
+          ,
+          {store:reduxStore.getInnerStore()}
+        );
 
-    //     await act(
-    //       async () => {
-    //         await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
-    //       }
-    //     );
+        await act(
+          async () => {
+            await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+          }
+        );
 
-    //     await user.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
-    //     await waitFor(
-    //       () => {
-    //         getAllByRole(/step:1/)
-    //       },
-    //     ).then(
-    //       ()=> {
-    //         expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-    //         expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-    //         expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-    //         expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
-    //       }
-    //     );
-    //   }
-    // )
+        await waitFor(
+          () => {
+            getAllByRole(/step:1/)
+          },
+        ).then(
+          ()=> {
+            expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+          }
+        );
+      }
+    )
 
     // ###########################################################################################
     it(
@@ -143,22 +174,21 @@ describe(
 
         const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
-        // const loadingStateService = new LoadingStateService();
 
-        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
-        await indexedDbRestServer.clearObjectStore();
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
+        await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+        await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+        // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+        await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
+        await localDataStore?.upsertInstanceUuid(entityAuthor.entityUuid, entityAuthor as Instance);
+        await localDataStore?.upsertInstanceUuid(entityBook.entityUuid, entityBook as Instance);
+        await localDataStore?.upsertInstanceUuid(reportBookList.entityUuid, reportBookList as Instance);
+        await localDataStore?.upsertInstanceUuid(author1.entityUuid, author1 as Instance);
+        await localDataStore?.upsertInstanceUuid(author2.entityUuid, author2 as Instance);
+        await localDataStore?.upsertInstanceUuid(author3.entityUuid, author3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book1.entityUuid, book1 as Instance);
+        await localDataStore?.upsertInstanceUuid(book2.entityUuid, book2 as Instance);
+        // await localDataStore?.upsertInstanceUuid(book3.entityUuid, book3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book4.entityUuid, book4 as Instance);
 
         const {
           getByText,
@@ -191,9 +221,9 @@ describe(
         ).then(
           ()=> {
             expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
 
@@ -224,10 +254,10 @@ describe(
           },
         ).then(
           ()=> {
-            expect(getByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
 
@@ -250,10 +280,10 @@ describe(
           },
         ).then(
           ()=> {
-            expect(getByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
       }
@@ -269,21 +299,20 @@ describe(
         const user = userEvent.setup()
         // const loadingStateService = new LoadingStateService();
 
-        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
-        await indexedDbRestServer.clearObjectStore();
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book3.entityUuid, book3);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
+        await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+        await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+        // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+        await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
+        await localDataStore?.upsertInstanceUuid(entityAuthor.entityUuid, entityAuthor as Instance);
+        await localDataStore?.upsertInstanceUuid(entityBook.entityUuid, entityBook as Instance);
+        await localDataStore?.upsertInstanceUuid(reportBookList.entityUuid, reportBookList as Instance);
+        await localDataStore?.upsertInstanceUuid(author1.entityUuid, author1 as Instance);
+        await localDataStore?.upsertInstanceUuid(author2.entityUuid, author2 as Instance);
+        await localDataStore?.upsertInstanceUuid(author3.entityUuid, author3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book1.entityUuid, book1 as Instance);
+        await localDataStore?.upsertInstanceUuid(book2.entityUuid, book2 as Instance);
+        await localDataStore?.upsertInstanceUuid(book3.entityUuid, book3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book4.entityUuid, book4 as Instance);
 
         const {
           getByText,
@@ -315,11 +344,11 @@ describe(
           },
         ).then(
           ()=> {
-            // expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            // expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
           }
         );
       // }
@@ -351,9 +380,9 @@ describe(
         ).then(
           ()=> {
             expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
 
@@ -377,9 +406,9 @@ describe(
         ).then(
           ()=> {
             expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
       }
@@ -394,21 +423,20 @@ describe(
         const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
         const user = userEvent.setup()
 
-        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid,entityAuthor.uuid,entityBook.uuid]);
-        await indexedDbRestServer.clearObjectStore();
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityAuthor.entityUuid, entityAuthor);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityBook.entityUuid, entityBook);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportBookList.entityUuid, reportBookList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author1.entityUuid, author1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author2.entityUuid, author2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(author3.entityUuid, author3);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book1.entityUuid, book1);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book2.entityUuid, book2);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book3.entityUuid, book3);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(book4.entityUuid, book4);
+        await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+        await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+        // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+        await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
+        await localDataStore?.upsertInstanceUuid(entityAuthor.entityUuid, entityAuthor as Instance);
+        await localDataStore?.upsertInstanceUuid(entityBook.entityUuid, entityBook as Instance);
+        await localDataStore?.upsertInstanceUuid(reportBookList.entityUuid, reportBookList as Instance);
+        await localDataStore?.upsertInstanceUuid(author1.entityUuid, author1 as Instance);
+        await localDataStore?.upsertInstanceUuid(author2.entityUuid, author2 as Instance);
+        await localDataStore?.upsertInstanceUuid(author3.entityUuid, author3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book1.entityUuid, book1 as Instance);
+        await localDataStore?.upsertInstanceUuid(book2.entityUuid, book2 as Instance);
+        await localDataStore?.upsertInstanceUuid(book3.entityUuid, book3 as Instance);
+        await localDataStore?.upsertInstanceUuid(book4.entityUuid, book4 as Instance);
 
         const {
           getByText,
@@ -441,10 +469,10 @@ describe(
         ).then(
           ()=> {
             // expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
-            expect(getByText(/6fefa647-7ecf-4f83-b617-69d7d5094c37/i)).toBeTruthy() // The Bride Wore Black
-            expect(getByText(/c97be567-bd70-449f-843e-cd1d64ac1ddd/i)).toBeTruthy() // Rear Window
-            expect(getByText(/e20e276b-619d-4e16-8816-b7ec37b53439/i)).toBeTruthy() // The Design of Everyday Things
+            expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+            expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
+            expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
+            expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
           }
         );
 

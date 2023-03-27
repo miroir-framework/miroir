@@ -10,7 +10,9 @@ export const generateHandlerBody = async (
   method:(entityName:string,instance?:Instance)=>Promise<any>,
   jsonFormater:(a:any)=>any,
 ) => {
-  console.log(HttpMethod, url, "started #####################################");
+  console.log('generateHandlerBody', HttpMethod, url, "started #####################################");
+  console.log('generateHandlerBody',params);
+  
   let localData
   if (paramNames.length > 0) {
     const paramVal: string = typeof params[paramNames[0]] == "string" ? params[paramNames[0]] : params[paramNames[0]][0];
@@ -19,7 +21,7 @@ export const generateHandlerBody = async (
   }
 
   if (instances.length > 0) {
-    console.log("server execute method for instances", instances.map(i=>i['name']));
+    console.log("server execute method for instances named", instances.map(i=>i['name']));
     for (const instance of instances) {
       await method(instance.entityUuid,instance)
     }

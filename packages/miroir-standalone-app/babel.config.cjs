@@ -11,15 +11,3 @@ module.exports = api => {
     }
   };
 }
-// module.exports = {
-//   presets: [['@babel/preset-env', {targets: {node: 'current'}}]],
-// };
-// export default {
-// module.exports = {
-//   // "erreur":"dtc"
-//   "env": {
-//     "test": {
-//       "plugins": ["@babel/plugin-transform-modules-commonjs"]
-//     }
-//   }
-// }

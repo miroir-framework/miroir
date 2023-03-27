@@ -16,13 +16,13 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
   const instancesToDisplay:Instance[] = useLocalCacheInstancesForReport(props.reportUuid);
-  console.log("MiroirReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
+  // console.log("ReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid)
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.entityUuid)
-  console.log("MiroirReportComponent instancesToDisplay",instancesToDisplay);
-  console.log("MiroirReportComponent currentMiroirReport",currentMiroirReport);
-  console.log("MiroirReportComponent currentMiroirEntity",currentMiroirEntity);
+  // console.log("ReportComponent instancesToDisplay",instancesToDisplay);
+  // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
+  // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
 
   return (
     <div>

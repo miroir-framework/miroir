@@ -19,6 +19,7 @@
     "ajv": "^8.11.2",
     "diff": "^5.1.0",
     "miroir-core": "*",
+    "miroir-datastore-postgres": "*",
     "miroir-redux": "*",
     "mock-socket": "^9.1.5",
     "msw": "^0.49.1",
@@ -59,8 +60,11 @@
   "scripts": {
     "watch-dev": "lerna watch --scope='miroir-standalone-app' --include-dependencies -- lerna run start-dev --scope='miroir-standalone-app'",
     "start-dev": "react-scripts start",
-    "build-standalone-app": "react-scripts build --verbose",
+    "build-standalone-app": "lerna run build",
+    "build": "react-scripts build --verbose",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "testOpenHandles": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles",
+    "test2": "cross-env NODE_ENV=test node --no-warnings --experimental-vm-modules ../../node_modules/jest/bin/jest.js tests/",
     "magic": "webpack"
   },
   "author": "Arnaud Bailly",

@@ -24,6 +24,7 @@ export {
   MiroirModel,
 } from './0_interfaces/1_core/ModelInterface.js';
 export {
+  DeploymentMode,
   MiroirConfig
 } from './0_interfaces/1_core/MiroirConfig';
 export {
@@ -131,14 +132,14 @@ export {
   generateHandlerBody
 } from './4_services/RestTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple } from './tools.js';
-export { entityEntity, entityReport, reportEntityList, reportReportList };
+export { stringTuple, circularReplacer } from './tools.js';
 
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';
 import reportEntityList from './assets/reports/entityList.json';
 import reportReportList from './assets/reports/ReportList.json';
 
+export { entityEntity, entityReport, reportEntityList, reportReportList };
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport

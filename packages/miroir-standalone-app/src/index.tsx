@@ -28,31 +28,27 @@ async function start() {
   if (process.env.NODE_ENV === "development") {
 
     const {
-      indexedDbRestServer: mServer,
-      worker,
+      localDataStore,
+      localDataStoreWorker,
+      localDataStoreServer,
       reduxStore: mReduxStore,
       localAndRemoteController,
       domainController,
       miroirContext: myMiroirContext,
-    } = createMswStore(miroirConfig as MiroirConfig, window.fetch.bind(window), setupWorker);
+    } = await createMswStore(miroirConfig as MiroirConfig, 'browser', window.fetch.bind(window), setupWorker);
 
     // const mswWorker = setupWorker(...mServer.handlers);
-    if (!!worker) {
+    if (!!localDataStoreWorker) {
       console.log('##############################################');
-      worker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
+      localDataStoreWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
       console.log('##############################################');
-      await worker.start();
+      await localDataStoreWorker.start();
     }
-    if (!!mServer) {
-      // await mServer.createObjectStore(["Entity"]);
-      // await mServer.createObjectStore([entityEntity.uuid]);
-      await mServer.createObjectStore([]);
-      await mServer.clearObjectStore();
-      // await mServer.createObjectStore(["Entity", "Report"]);
-      // await mServer.localIndexedDb.putValue("Entity", entityEntity);
-      // await mServer.localIndexedDb.putValue("Entity", entityReport);
-      // await mServer.localIndexedDb.putValue("Report", reportEntityList);
-      // await mServer.localIndexedDb.putValue("Report", reportReportList);
+    if (!!localDataStore) { // datastore is emulated
+      await localDataStore.open();
+      await localDataStore.init();
+      await localDataStore?.clear();
+      console.log('localDataStore.db',localDataStore.getdb());
     }
 
     // load Miroir Configuration

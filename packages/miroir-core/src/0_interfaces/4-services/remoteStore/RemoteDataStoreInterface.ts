@@ -56,26 +56,25 @@ export default {}
 export declare interface RemoteDataStoreInterface {
   handleRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
-  // constructor
-  // run(): void;
-  // getInnerStore(): any; // TODO: local store should not expose its implementation!!
 }
 
 
 
 export interface DataStoreInterface {
   init():Promise<void>;
-  // getEntities():string[]; //TODO: remove!
-  // dropEntity(entityName:string);
-  // dropEntities(entityNames:string[]);
 
+  getdb():any;
+  dropModel();
+  open();
+  close();
+
+  clear();
+ 
+  addConcepts(conceptsNames:string[]);
+  
   getUuidEntities():string[]; //TODO: remove!
   dropUuidEntity(entityUuid:string);
   dropUuidEntities(entityUuid:string[]);
-
-  // getInstances(entityName:string):Promise<Instance[]>;
-  // upsertInstance(entityName:string, instance:Instance):Promise<any>;
-  // deleteInstances(entityName:string, instances:Instance[]):Promise<any>;
 
   getInstancesUuid(entityUuid:string):Promise<Instance[]>;
   upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;

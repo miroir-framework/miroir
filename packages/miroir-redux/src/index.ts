@@ -1,4 +1,4 @@
-export { IndexedDbRestServer } from "./4_services/remoteStore/localEmulation/IndexedDbRestServer";
+export { RestServerStub } from "./4_services/remoteStore/localEmulation/RestServerStub.js";
 export {
   // LocalCacheSlice,
   // localCacheSliceObject,

@@ -6,13 +6,43 @@ import { IndexedDb } from "./indexedDb";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
-    // private localIndexedDb: IndexedDb,
     private localUuidIndexedDb: IndexedDb,
   ){}
 
+  public getdb():any{
+    return this.localUuidIndexedDb.db;
+  }
+
+  // #############################################################################################
+  async dropModel(){
+    return this.clear();
+  }
+
   // #############################################################################################
   async init():Promise<void> {
+    await this.localUuidIndexedDb.createObjectStore([]);
     return Promise.resolve();
+  }
+
+  // #############################################################################################
+  addConcepts(conceptsNames:string[]) {
+    this.localUuidIndexedDb.addSubLevels(conceptsNames)
+  }
+
+  // #############################################################################################
+  open():Promise<void> {
+    return this.localUuidIndexedDb.openObjectStore();
+  }
+  
+  // ##############################################################################################
+  close():Promise<void> {
+    return this.localUuidIndexedDb.closeObjectStore();
+  }
+
+  // ##############################################################################################
+  clear():Promise<void> {
+    return this.localUuidIndexedDb.clearObjectStore();
+    // this.dropUuidEntities(this.getUuidEntities());
   }
 
   // #############################################################################################
@@ -78,12 +108,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
     const currentUpdate = updates[0];
     const currentValue = await this.localUuidIndexedDb.getValue(currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].uuid);
     if (this.localUuidIndexedDb.hasSubLevel(currentUpdate.entityUuid) && !!currentValue) {
-      // const model = this.sqlUuidEntities[currentUpdate.entityUuid];
       console.log('IndexedDbDataStore SqlDbServer applyModelStructureUpdates',currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,currentValue);
-      // this.sequelize.getQueryInterface().renameTable(currentUpdate.entityName,currentUpdate.targetValue);
-      // this.sequelize.modelManager.removeModel(this.sequelize.model(model.entityName));
-      // const newModel=
-      // this.sqlUuidEntities[currentUpdate.entityUuid] = {entityName:currentUpdate.targetValue,sequelizeModel:this.sqlUuidEntities[currentUpdate.entityUuid].sequelizeModel}
       await this.localUuidIndexedDb.putValue(
         currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,
         currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0],

@@ -1,5 +1,5 @@
 import { MiroirModel } from "../0_interfaces/1_core/ModelInterface";
-import { ModelCUDUpdate, ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { ModelStructureUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import {
   CRUDActionName,
@@ -161,8 +161,8 @@ export class DomainController implements DomainControllerInterface {
 
     // if (domainAction.actionName!="updateModel"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid || a.entity=='Entity'):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid || a.entity!='Entity'):[];
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid !== entityEntity.uuid):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {
@@ -181,6 +181,9 @@ export class DomainController implements DomainControllerInterface {
     } else {
       otherDomainAction = domainAction;
     }
+    console.log('handleDomainAction entityDomainAction',entityDomainAction);
+    console.log('handleDomainAction otherDomainAction',otherDomainAction);
+     
     switch (domainAction.actionType) {
       case "DomainDataAction": {
         if (!!entityDomainAction) {

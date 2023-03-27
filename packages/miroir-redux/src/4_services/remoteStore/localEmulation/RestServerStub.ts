@@ -1,10 +1,6 @@
 import {
   DataStoreInterface,
-  generateHandlerBody,
-  IndexedDb,
-  IndexedDbDataStore,
-  ModelStructureUpdate,
-  RemoteStoreModelAction,
+  generateHandlerBody, ModelStructureUpdate
 } from "miroir-core";
 import { rest } from "msw";
 
@@ -16,7 +12,7 @@ const serializePost = (post: any) => ({
   user: post.user.id,
 });
 
-export class IndexedDbRestServer {
+export class RestServerStub {
   public handlers: any[];
   // private operationMap: Map<>
 
@@ -40,11 +36,9 @@ export class IndexedDbRestServer {
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    // private localIndexedDb: IndexedDb = new IndexedDb("miroir-indexedDb"),
-    private localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb"),
-    private localIndexedDbDataStore: DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb)
+    private localDataStore: DataStoreInterface
   ) {
-    console.log('IndexedDbRestServer rootApiUrl', rootApiUrl);
+    console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStore', localDataStore);
 
     
     this.handlers = [
@@ -55,40 +49,44 @@ export class IndexedDbRestServer {
           [],
           'get',
           "/miroir/entity/",
-          localIndexedDbDataStore.getInstancesUuid.bind(localIndexedDbDataStore),
+          localDataStore.getInstancesUuid.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
       rest.post(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+        console.log('post /miroir/entity', localDataStore);
+        
         return generateHandlerBody(
           req.params,
           [],
           await req.json(),
           'post',
           "/miroir/entity/",
-          localIndexedDbDataStore.upsertInstanceUuid.bind(localIndexedDbDataStore),
+          localDataStore.upsertInstanceUuid.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
       rest.put(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+        console.log('put /miroir/entity', localDataStore);
         return generateHandlerBody(
           req.params,
           [],
           await req.json(),
           'put',
           "/miroir/entity/",
-          localIndexedDbDataStore.upsertInstanceUuid.bind(localIndexedDbDataStore),
+          localDataStore.upsertInstanceUuid.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
       rest.delete(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+        console.log('delete /miroir/entity', localDataStore);
         return generateHandlerBody(
           req.params,
           [],
           await req.json(),
           'delete',
           "/miroir/entity/",
-          localIndexedDbDataStore.deleteInstanceUuid.bind(localIndexedDbDataStore),
+          localDataStore.deleteInstanceUuid.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -101,9 +99,9 @@ export class IndexedDbRestServer {
 
         switch (actionName) {
           case 'resetModel':{
-            console.log('resetModel before drop getUuidEntities', localIndexedDbDataStore.getUuidEntities());
-            localIndexedDbDataStore.dropUuidEntities(localIndexedDbDataStore.getUuidEntities());
-            console.log('resetModel after drop getUuidEntities', localIndexedDbDataStore.getUuidEntities());
+            console.log('resetModel before drop getUuidEntities', localDataStore.getUuidEntities());
+            localDataStore.dropUuidEntities(localDataStore.getUuidEntities());
+            console.log('resetModel after drop getUuidEntities', localDataStore.getUuidEntities());
             break;
           }
           case 'updateModel': {
@@ -112,7 +110,7 @@ export class IndexedDbRestServer {
             if (updates[0]) {
               switch (updates[0]['action']) {
                 default:
-                  await localIndexedDbDataStore.applyModelStructureUpdates(updates);
+                  await localDataStore.applyModelStructureUpdates(updates);
                   console.log('post applyModelStructureUpdates', updates);
                   break;
               }
@@ -134,32 +132,32 @@ export class IndexedDbRestServer {
 
   
   // ##################################################################################
-  public getLocalUuidIndexedDb():IndexedDb {
-    return this.localUuidIndexedDb;
-  }
+  // public getLocalUuidIndexedDb():IndexedDb {
+  //   return this.localUuidIndexedDb;
+  // }
   
   // ##################################################################################
-  public getLocalIndexedDbDataStore():DataStoreInterface {
-    return this.localIndexedDbDataStore;
-  }
+  // public getLocalIndexedDbDataStore():DataStoreInterface {
+  //   return this.localIndexedDbDataStore;
+  // }
 
-  // ##################################################################################
-  public async createObjectStore(tableNames: string[]) {
-    return this.localUuidIndexedDb.createObjectStore(tableNames);
-  }
+  // // ##################################################################################
+  // public async createObjectStore(tableNames: string[]) {
+  //   return this.localUuidIndexedDb.createObjectStore(tableNames);
+  // }
 
-  // ##################################################################################
-  public async closeObjectStore() {
-    return this.localUuidIndexedDb.closeObjectStore();
-  }
+  // // ##################################################################################
+  // public async closeObjectStore() {
+  //   return this.localUuidIndexedDb.closeObjectStore();
+  // }
 
-  // ##################################################################################
-  public async openObjectStore() {
-    return this.localUuidIndexedDb.openObjectStore();
-  }
+  // // ##################################################################################
+  // public async openObjectStore() {
+  //   return this.localUuidIndexedDb.openObjectStore();
+  // }
 
-  // ##################################################################################
-  public async clearObjectStore() {
-    return this.localUuidIndexedDb.clearObjectStore();
-  }
+  // // ##################################################################################
+  // public async clearObjectStore() {
+  //   return this.localUuidIndexedDb.clearObjectStore();
+  // }
 }

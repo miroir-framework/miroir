@@ -28,7 +28,7 @@
 //   RestClient,
 // } from "miroir-core";
 // import {
-//   IndexedDbRestServer,
+//   RestServerStub,
 //   RemoteStoreAccessReduxSaga,
 //   ReduxStore,
 //   RemoteStoreNetworkRestClient,
@@ -48,7 +48,7 @@
 // miroirAppStartup();
 // miroirCoreStartup();
 
-// const mServer: IndexedDbRestServer = new IndexedDbRestServer(miroirConfig.rootApiUrl);
+// const mServer: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl);
 // const worker = setupServer(...mServer.handlers)
 
 // const client:RestClient = new RestClient(fetch);

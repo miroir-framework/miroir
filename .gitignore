@@ -5,6 +5,8 @@ packages/miroir-core/dist*/
 packages/miroir-core/dist/index.js
 packages/miroir-core/dist/src/0_interfaces/2_domain/instanceDomainInterface.d.ts
 packages/miroir-core/dist/src/index.d.ts
+packages/miroir-datastore-postgres/node_modules*/
+packages/miroir-datastore-postgres/dist*/
 packages/miroir-server/node_modules*/
 packages/miroir-server/dist*/
 packages/miroir-server/miroir*/

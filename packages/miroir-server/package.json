@@ -5,6 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
+    "watch": "lerna watch --scope='miroir-server' --include-dependencies -- lerna run build --scope='miroir-server'",
     "start": "node server.bundle.js",
     "build": "webpack",
     "dev": "nodemon ./server.ts localhost 3080",
@@ -24,9 +25,7 @@
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.4",
     "miroir-core": "*",
-    "pg": "^8.9.0",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.29.0"
+    "miroir-datastore-postgres": "*"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

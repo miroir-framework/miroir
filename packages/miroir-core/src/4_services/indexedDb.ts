@@ -2,17 +2,18 @@ import { Level } from 'level';
 import entityEntity from "../assets/entities/Entity.json";
 
 export class IndexedDb {
-  private databaseName: string;
-  private db: Level = undefined;
+  public db: Level = undefined;
   private subLevels: Map<string, Level> = new Map();
 
   // #############################################################################################
-  constructor(database: string) {
-    this.databaseName = database;
+  constructor(private databaseName: string) {
   }
 
+  public getdb():any{
+    return this.db;
+  }
   // #############################################################################################
-  public async closeObjectStore() {
+  public async closeObjectStore():Promise<void> {
     await this.db?.close();
     this.db = undefined;
     this.subLevels?.clear();
@@ -20,12 +21,14 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async openObjectStore() {
+  public async openObjectStore():Promise<void> {
+    console.log('IndexedDb openObjectStore');
+    
     return this.db?.open();
   }
 
   // #############################################################################################
-  public async clearObjectStore() {
+  public async clearObjectStore():Promise<void> {
     return this.db?.clear();
   }
 
@@ -40,12 +43,13 @@ export class IndexedDb {
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
         this.subLevels = this.createSubLevels(this.db,tableNames);
-        console.log('createObjectStore created db with sublevels',tableNames,this.subLevels,this.db)
+        console.log('createObjectStore created db with sublevels',tableNames,this.subLevels)
+        console.log('createObjectStore db',this.db)
         console.log('createObjectStore hasSublevel',entityEntity.uuid, this.hasSubLevel(entityEntity.uuid))
         return Promise.resolve(undefined);
       }
     } catch (error) {
-      console.error('could not open Level DB', this.databaseName)
+      console.error('could not create Level DB', this.databaseName)
       return Promise.resolve(undefined);
     }
   }
@@ -85,6 +89,7 @@ export class IndexedDb {
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
     console.log('indexedDb addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
+    console.log('indexedDb addSubLevels db:',this.db);
     this.subLevels = new Map<string, any>([
       ...this.subLevels.entries(),
       ...tableNames.filter(n=>!this.hasSubLevel(n)).map(

@@ -100,7 +100,7 @@ export class RemoteStoreRestAccessReduxSaga {
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
+          console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -133,7 +133,7 @@ export class RemoteStoreRestAccessReduxSaga {
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction received result", result.status, result.instances);
           return yield { status: "ok", instances: result.instances };
         } catch (e: any) {
-          console.warn("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction exception", e);
+          console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",

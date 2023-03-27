@@ -5,6 +5,7 @@
 // module.exports = {
 //   // [...]
 // }
+const esModules = ['uuid'].join('|');
 
 export default (path, options) =>({
   "verbose": true,
@@ -16,7 +17,7 @@ export default (path, options) =>({
     // "packages/miroir-core",
 
   ],
-  // transformIgnorePatterns: ['<rootDir>\/(?!(node_modules|packages\/miroir-core))\/'],
+  transformIgnorePatterns: [`<rootDir>\/(?!(/node_modules/(?!${esModules})))\/`],
   // transformIgnorePatterns: ['node_modules','miroir-core'],
   // roots: ["."],
   // modulePaths: ["./packages/miroir-standalone-app/src/"], // <-- This will be set to 'baseUrl' value
@@ -37,23 +38,29 @@ export default (path, options) =>({
   moduleFileExtensions:[
     "ts", "tsx", "js", "mjs", "cjs", "jsx", "json", "node"
   ],
+  // preset:'ts-jest/presets/default-esm',
   "transform": {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        tsconfig: {
+        // useESM:true,
+        // tsconfig: "../../tsconfig.json"
+        tsconfig: 
+        {
           resolveJsonModule: true,
           esModuleInterop: true,
           allowSyntheticDefaultImports:true,
           allowJs: true,
           moduleResolution: "node",
-          // rootDir: "./src/",
+          // module: "ESNext",
+          // target: "ES2017",
+                // rootDir: "./src/",
           traceResolution: true,
           module:"commonjs"
         },
       }
     ],
-    "\\.js$": ["babel-jest"],
+    "^.+\\.js?$": ["babel-jest"],
   },
   // moduleNameMapper: {
   //   "^miroir-fwk\/(.+)$": "<rootDir>/src/$1",

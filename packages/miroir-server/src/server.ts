@@ -1,74 +1,32 @@
 import express from 'express';
 
-
-import { Sequelize } from 'sequelize';
-
 import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
-  entityEntity,
-  entityReport,
   generateHandlerBody,
-  HttpMethod,
-  HttpMethodsObject,
-  IndexedDb,
-  IndexedDbDataStore,
-  Instance,
   ModelStructureUpdate,
-  reportEntityList,
-  reportReportList,
 } from "miroir-core";
-import { SqlDbServer } from './sqlDbServer.js';
-import { url } from 'inspector';
+import { createServer } from 'miroir-datastore-postgres';
 
 // const express = require('express');
 const app = express(),
       port = 3080;
 
-// place holder for the data
+// placeholder for the data
 const users = [];
 
-// const localIndexedDb: IndexedDb = new IndexedDb("miroir-indexedDb")
-const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-
-
-// await localIndexedDb.createObjectStore(["Entity", "Instance", "Report", "Author", "Book"]);
-// await localIndexedDb.clearObjectStore();
-// await localIndexedDb.putValue("Entity", entityEntity);
-// await localIndexedDb.putValue("Entity", entityReport);
-// await localIndexedDb.putValue("Report", reportEntityList);
-// await localIndexedDb.putValue("Report", reportReportList);
-// await localIndexedDb.putValue("Entity", entityAuthor);
-// await localIndexedDb.putValue("Entity", entityBook);
-// await localIndexedDb.putValue("Report", reportBookList);
-// await localIndexedDb.putValue("Author", author1);
-// await localIndexedDb.putValue("Author", author2);
-// await localIndexedDb.putValue("Author", author3);
-// await localIndexedDb.putValue("Book", book1);
-// await localIndexedDb.putValue("Book", book2);
-// await localIndexedDb.putValue("Book", book3);
-// await localIndexedDb.putValue("Book", book4);
+// const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
+// const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
-const sequelize:Sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres',{logging: (...msg) => console.log(msg)}) // Example for postgres
-try {
-  await sequelize.authenticate();
-  console.log('Connection to postgres has been established successfully.');
-} catch (error) {
-  console.error('Unable to connect to the postgres database:', error);
-}
-
-const sqlDbServer:DataStoreInterface = new SqlDbServer(sequelize);
+const sqlDbServer:DataStoreInterface = await createServer('postgres://postgres:postgres@localhost:5432/postgres');
 
 try {
   await sqlDbServer.init();
 } catch(e) {
   console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServer.getUuidEntities());
 }
-
-const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
-
 
 app.use(bodyParser.json());
 
@@ -100,12 +58,17 @@ app.put("/miroir/entity", async (req, res, ctx) => {
   )
 });
 
+let count = 0
 // ##############################################################################################
 app.post("/miroir/entity", async (req, res, ctx) => {
+  const body = await req.body;
+  console.log('post /miroir/entity received, count',count++,'body',body);
+  console.log('post /miroir/entity received req.originalUrl',req.originalUrl)
+
   return generateHandlerBody(
     req.params,
     [],
-    await req.body,
+    body,
     'post',
     "/miroir/entity/",
     sqlDbServer.upsertInstanceUuid.bind(sqlDbServer),
@@ -127,11 +90,11 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
   // for (const instance of addedObjects) {
   switch (actionName) {
     case 'resetModel':{
-      console.log('resetModel before drop sequelize.models', Object.keys(sequelize.models));
-      await sequelize.drop();
-      console.log('resetModel after drop sequelize.models', Object.keys(sequelize.models), 'sqlDbServer entities',sqlDbServer.getUuidEntities());
-      sqlDbServer.dropUuidEntities(sqlDbServer.getUuidEntities());
-      console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
+      console.log('resetModel before drop sequelize.models', Object.keys(sqlDbServer.getUuidEntities()));
+      await sqlDbServer.dropModel();
+      console.log('resetModel after dropped sqlDbServer entities, entities now:',sqlDbServer.getUuidEntities());
+      // sqlDbServer.dropUuidEntities(sqlDbServer.getUuidEntities());
+      // console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
       break;
     }
     case 'updateModel': {

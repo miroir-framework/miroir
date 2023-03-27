@@ -30,21 +30,26 @@ import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/t
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import entityAuthor from "miroir-standalone-app/src/assets/entities/Author.json";
 import entityBook from "miroir-standalone-app/src/assets/entities/Book.json";
-import book1 from "miroir-standalone-app/src/assets/instances/Book - The Bride Wore Black.json";
 
 
 miroirAppStartup();
 miroirCoreStartup();
 
-const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext} = 
-  createMswStore(
+const {localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext} = 
+  await createMswStore(
     {
-      "serverConfig":{emulateServer:true, "rootApiUrl":"http://localhost/fakeApi"},
+      "emulateServer":true,
+      "rootApiUrl":"http://localhost/fakeApi",
+      "emulatedServerConfig":{
+        "emulatedServerType": "indexedDb",
+        "indexedDbName":"miroir-uuid-indexedDb"
+      },
       "deploymentMode":"monoUser",
       "monoUserAutentification": false,
       "monoUserVersionControl": false,
       "versionControlForDataConceptLevel": false
     },
+    'nodejs',
     fetch,
     setupServer
   )
@@ -53,17 +58,34 @@ const {indexedDbRestServer, worker, reduxStore, domainController, miroirContext}
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    worker.listen();
-    await indexedDbRestServer.openObjectStore();
+    localDataStoreServer?.listen();
     console.log('Done beforeAll');
+  }
+)
+
+beforeEach(
+  async () => {
+    // Establish requests interception layer before all tests.
+    // localDataStoreServer?.listen();
+    await localDataStore?.open();
+    await localDataStore?.init();
+    await localDataStore?.clear();
+    console.log('Done beforeEach');
   }
 )
 
 afterAll(
   async () => {
-    worker.close();
-    await indexedDbRestServer.closeObjectStore();
+    localDataStoreServer?.close();
     console.log('Done afterAll');
+  }
+)
+
+afterEach(
+  async () => {
+    // localDataStoreServer?.close();
+    await localDataStore?.close();
+    console.log('Done afterEach');
   }
 )
 
@@ -79,12 +101,10 @@ describe(
         const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
         const user = userEvent.setup()
 
-        await indexedDbRestServer.createObjectStore([entityEntity.uuid,entityReport.uuid]);
-        await indexedDbRestServer.clearObjectStore();
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityReport.entityUuid, entityReport);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(entityEntity.entityUuid, entityEntity);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportReportList.entityUuid, reportReportList);
-        await indexedDbRestServer.getLocalUuidIndexedDb().putValue(reportEntityList.entityUuid, reportEntityList);
+        await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+        await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+        await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+        await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
 
 
         const {
