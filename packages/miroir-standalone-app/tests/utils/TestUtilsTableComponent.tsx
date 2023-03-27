@@ -23,7 +23,8 @@ export const TestUtilsTableComponent = (
     Report:miroirReports,
   }
 
-  console.log("TestUtilsTableComponent",props.entityName,"miroirEntities",miroirEntities, "miroirReports", miroirReports);
+  console.log("TestUtilsTableComponent display instances of entity",props.entityName,props.entityUuid);
+  console.log("TestUtilsTableComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityUuid);
   console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.entityUuid);

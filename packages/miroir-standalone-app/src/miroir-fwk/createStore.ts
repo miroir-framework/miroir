@@ -1,3 +1,7 @@
+import { RequestHandler, SetupWorkerApi } from "msw";
+import { SetupServerApi } from "msw/node";
+import { detect } from "detect-browser";
+
 import {
   LocalAndRemoteControllerInterface,
   LocalAndRemoteController,
@@ -10,15 +14,16 @@ import {
   IndexedDb,
   IndexedDbDataStore,
 } from "miroir-core";
-import { createServer, SqlDbServer } from "miroir-datastore-postgres";
+import { createServer } from "miroir-datastore-postgres";
 import {
   RestServerStub,
   RemoteStoreAccessReduxSaga,
   ReduxStore,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
-import { RequestHandler, SetupWorkerApi } from "msw";
-import { SetupServerApi } from "msw/node";
+
+const browserInfo = detect();
+console.log('browserInfo',browserInfo);
 
 export function createReduxStore(
   // emulateServer:boolean,
@@ -79,10 +84,14 @@ export async function createMswStore(
   
       return { localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, localAndRemoteController, domainController, miroirContext };
     } else {
+      // if (browserInfo.type == 'browser') {
       if (platformType == 'browser') {
         console.error('createMswStore cannot connect browser directly to database, please use indexed DB or access database through a REST server');
         return { localDataStore: undefined, localDataStoreWorker:undefined, localDataStoreServer:undefined, reduxStore, localAndRemoteController, domainController, miroirContext };
       } else {
+        console.warn('createMswStore loading miroir-datastore-postgres!');
+        // const lib = await import("miroir-datastore-postgres");
+        // const createServer = lib.createServer;
         const localDataStore: DataStoreInterface = await createServer(miroirConfig.emulatedServerConfig.connectionString);
         const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl,localDataStore);
   

@@ -18,7 +18,10 @@ module.exports = {
    ],
     extensions: ['.tsx', '.ts', '.js', 'json'],
     fallback: {
-      util: require.resolve("util/")
+      util: require.resolve("util/"),
+      // util: false,
+      // crypto: false,
+      // fs: false,
     },
   },
   mode:'development',

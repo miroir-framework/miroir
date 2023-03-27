@@ -18,7 +18,6 @@ global.TextDecoder = TextDecoder
 import {
   circularReplacer,
   DomainAction,
-  DomainDataAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
   reportEntityList,
@@ -69,7 +68,6 @@ beforeAll(
         fetch,
         setupServer
       );
-    
       localDataStore = wrapped.localDataStore;
       localDataStoreWorker = wrapped.localDataStoreWorker;
       localDataStoreServer = wrapped.localDataStoreServer;
@@ -184,7 +182,7 @@ describe(
           );
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
-          
+          expect(false).toBeTruthy();
         }
       }
     )
@@ -296,6 +294,7 @@ describe(
           );
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
+          expect(false).toBeTruthy();
         }
       }
     )
@@ -432,6 +431,7 @@ describe(
           );
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
+          expect(false).toBeTruthy();
         }
       }
     )
