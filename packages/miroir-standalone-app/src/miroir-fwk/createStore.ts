@@ -1,6 +1,7 @@
 import { RequestHandler, SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
 import { detect } from "detect-browser";
+import process from "process";
 
 import {
   LocalAndRemoteControllerInterface,
@@ -57,6 +58,7 @@ export async function createMswStore(
   // createServerFromHandlers: (...handlers: Array<RequestHandler>) => SetupServerApi
 ) {
   console.log('createMswStore','platformType',platformType,'miroirConfig',miroirConfig);
+  console.log('createMswStore process',process);
   
 
   const client: RestClient = new RestClient(fetch);
@@ -85,11 +87,13 @@ export async function createMswStore(
       return { localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, localAndRemoteController, domainController, miroirContext };
     } else {
       // if (browserInfo.type == 'browser') {
-      if (platformType == 'browser') {
-        console.error('createMswStore cannot connect browser directly to database, please use indexed DB or access database through a REST server');
+      // if (platformType == 'browser') {
+        
+      if (process['browser']) {
+        console.error('createMswStore cannot connect browser directly to database, please use local indexed DB instead, or access database through a REST server');
         return { localDataStore: undefined, localDataStoreWorker:undefined, localDataStoreServer:undefined, reduxStore, localAndRemoteController, domainController, miroirContext };
       } else {
-        console.warn('createMswStore loading miroir-datastore-postgres!');
+        console.warn('createMswStore loading miroir-datastore-postgres!',process['browser']);
         // const lib = await import("miroir-datastore-postgres");
         // const createServer = lib.createServer;
         const localDataStore: DataStoreInterface = await createServer(miroirConfig.emulatedServerConfig.connectionString);
@@ -104,7 +108,7 @@ export async function createMswStore(
       }
     }
   } else {
-    console.log('createMswStore server will be queried on',miroirConfig['serverConfig'].rootApiUrl);
+    console.warn('createMswStore server will be queried on',miroirConfig['serverConfig'].rootApiUrl);
     return { localDataStore: undefined, localDataStoreWorker:undefined, localDataStoreServer:undefined, reduxStore, localAndRemoteController, domainController, miroirContext };
   }
 
