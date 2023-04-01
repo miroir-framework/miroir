@@ -1,9 +1,9 @@
 {
-  "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "uuid": "27046fce-742f-4cc4-bb95-76b271f490a5",
   "entity":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
-  "name":"Report",
+  "name":"ModelVersion",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -52,28 +52,36 @@
       "defaultLabel": "Entity",
       "type": "STRING",
       "nullable": false,
-      "editable": true
+      "editable": false
     },
     {
       "id": 4,
-      "name": "defaultLabel",
-      "defaultLabel": "Default Label",
+      "name": "previousVersionUuid",
+      "defaultLabel": "Previous Version",
       "type": "STRING",
       "nullable": false,
       "editable": false
     },
     {
       "id": 5,
-      "name": "type",
-      "defaultLabel": "Type of Report",
+      "name": "description",
+      "defaultLabel": "Description",
       "type": "STRING",
-      "nullable": false,
+      "nullable": true,
       "editable": true
     },
     {
       "id": 6,
-      "name": "definition",
-      "defaultLabel": "Definition",
+      "name": "modelStructureMigration",
+      "defaultLabel": "Structure Migration from Previous Version",
+      "type": "OBJECT",
+      "nullable": true,
+      "editable": true
+    },
+    {
+      "id": 7,
+      "name": "modelCUDMigration",
+      "defaultLabel": "Create-Update-Delete Migration from Previous Version",
       "type": "OBJECT",
       "nullable": true,
       "editable": true

@@ -82,7 +82,7 @@ export type MentityAction = PayloadAction<EntityDefinition[],string>;
 export type Maction = MinstanceAction | MentityAction;
 
 
-// export const makeActionUpdatesUndoable = (action:string) => {
+//// export const makeActionUpdatesUndoable = (action:string) => {
 //   undoableSliceUpdateActions.push(action.type);
 // }
 

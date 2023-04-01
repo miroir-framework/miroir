@@ -1,17 +1,22 @@
-import { MiroirModel } from "../0_interfaces/1_core/ModelInterface";
-import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
-import { ModelStructureUpdateConverter } from "../2_domain/ModelUpdateConverter";
+import { v4 as uuidv4 } from 'uuid';
+
+import { MiroirModel, MiroirModelVersion } from "../0_interfaces/1_core/ModelInterface";
 import {
   CRUDActionName,
-  CRUDActionNamesArray,
-  DomainAction,
+  CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
   DomainDataAction,
   DomainModelAction,
+  DomainModelStructureUpdateAction
 } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
+import { ModelStructureUpdateConverter } from "../2_domain/ModelUpdateConverter";
+import { RemoteStoreCRUDAction } from 'src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 import entityEntity from "../assets/entities/Entity.json";
+import entityModelVersion from "../assets/entities/ModelVersion.json";
+import instanceConfigurationReference from '../assets/instances/StoreBasedConfiguration - reference.json';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -63,17 +68,35 @@ export class DomainController implements DomainControllerInterface {
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit",
           this.LocalAndRemoteController.currentLocalCacheTransaction()
         );
+
+        if (!currentModel) {
+          throw new Error('commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.')
+        }
+
+        const newModelVersionUuid = uuidv4();
+        // await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
+        const newModelVersion:MiroirModelVersion = {
+          uuid:newModelVersionUuid,
+          previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
+          conceptLevel:'Data',
+          entity:entityModelVersion.name,
+          entityUuid: entityModelVersion.uuid,
+          description: domainModelAction.label,
+          name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
+          modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelStructureUpdateAction)=>t.updates)
+        };
+
+        const newModelVersionAction: RemoteStoreCRUDAction = {
+          actionName: "create",
+          objects: [newModelVersion],
+        };
+
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction(newModelVersionAction);
+
         for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
           if (replayAction.actionName == "updateModel") {
-            await this.LocalAndRemoteController.handleRemoteStoreModelAction(
-              replayAction
-              // {
-              // actionName: replayAction.actionName.toString() as CRUDActionName,
-              // entityName: instances.entity,
-              // objects: instances.instances,
-              // }
-            );
+            await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
           } else {
             for (const instances of replayAction["objects"]) {
               // TODO: replace with parallel implementation Promise.all?
@@ -85,7 +108,29 @@ export class DomainController implements DomainControllerInterface {
             }
           }
         }
-        this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);
+
+        this.LocalAndRemoteController.handleLocalCacheAction(
+          {
+            actionName:'create',
+            actionType: 'DomainDataAction',
+            objects:[{entityUuid:newModelVersion.entityUuid, instances: [newModelVersion]}]
+          }
+        );
+
+        this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);// commit does nothing, locally, but this could change, and does not depend on DomainController, it's up to LocalCacheSlice
+
+        const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
+        const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
+          actionName: "update",
+          objects: [
+            // Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersion.uuid}})
+            updatedConfiguration
+          ],
+        };
+
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction(newStoreBasedConfiguration);
+
         break;
       }
       case "create":
@@ -101,9 +146,15 @@ export class DomainController implements DomainControllerInterface {
         console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
         // const correspondingCUDUpdate: ModelCUDUpdate = ModelStructureUpdateConverter.modelStructureUpdateToModelCUDUpdate(domainModelAction.updates[0],currentModel);
         
-        const structureUpdatesWithCUDUpdates: ModelStructureUpdate[] = domainModelAction?.updates.map(u=>({...u,equivalentModelCUDUpdates:[ModelStructureUpdateConverter.modelStructureUpdateToModelCUDUpdate(u as ModelStructureUpdate,currentModel)]}))
+        const structureUpdatesWithCUDUpdates: ModelStructureUpdate[] = domainModelAction?.updates.map((u) => ({
+          ...u,
+          equivalentModelCUDUpdates: [
+            ModelStructureUpdateConverter.modelStructureUpdateToModelCUDUpdate(u as ModelStructureUpdate, currentModel),
+          ],
+        }));
         console.log('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
         
+
         this.LocalAndRemoteController.handleLocalCacheAction(
           // Object.assign({...domainModelAction},{updates:structureUpdatesWithCUDUpdates})
           {...domainModelAction,updates:structureUpdatesWithCUDUpdates}
@@ -130,7 +181,7 @@ export class DomainController implements DomainControllerInterface {
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction handling instances",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction sending to remote storage instances",
           instances.entity, instances.instances
         );
         await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
@@ -139,6 +190,9 @@ export class DomainController implements DomainControllerInterface {
           objects: instances.instances,
         });
       }
+      console.log(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction calling handleLocalCacheDataAction", domainAction
+      );
       this.LocalAndRemoteController.handleLocalCacheDataAction(domainAction);
       console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction end", domainAction);
     } else {

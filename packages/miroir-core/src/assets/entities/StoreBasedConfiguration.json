@@ -1,9 +1,9 @@
 {
-  "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
   "entity":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
-  "name":"Report",
+  "name":"StoreBasedConfiguration",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -59,19 +59,11 @@
       "name": "defaultLabel",
       "defaultLabel": "Default Label",
       "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 5,
-      "name": "type",
-      "defaultLabel": "Type of Report",
-      "type": "STRING",
-      "nullable": false,
+      "nullable": true,
       "editable": true
     },
     {
-      "id": 6,
+      "id": 5,
       "name": "definition",
       "defaultLabel": "Definition",
       "type": "OBJECT",

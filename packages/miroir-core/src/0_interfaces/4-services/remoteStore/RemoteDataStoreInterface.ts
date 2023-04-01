@@ -5,10 +5,10 @@ import { CRUDActionName, DomainModelStructureUpdateAction } from '../../2_domain
 
 export interface RemoteStoreCRUDAction {
   actionName: CRUDActionName;
-  entityName: string;
-  entityUuid?: string;
-  uuid?:string;
-  objects?:Instance[];
+  entityName?: string; //redundant with object list
+  entityUuid?: string; //redundant with object list
+  uuid?:string; //redundant with object list
+  objects?:Instance[]; 
 }
 
 // export type RemoteStoreModelAction = DomainModelAction;

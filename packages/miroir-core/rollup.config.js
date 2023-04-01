@@ -7,6 +7,7 @@ export default [
     input: ["src/index.ts"],
     external: [
       'level',
+      'uuid',
     ],
     output: [
         {

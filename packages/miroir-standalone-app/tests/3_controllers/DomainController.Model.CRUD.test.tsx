@@ -14,15 +14,28 @@ import { TextDecoder, TextEncoder } from 'util';
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
+import { SetupWorkerApi } from "msw";
+import { SetupServerApi } from "msw/node";
 
 import {
   circularReplacer,
+  DataStoreInterface,
   DomainAction,
+  DomainControllerInterface,
   entityEntity,
-  entityReport, Instance, miroirCoreStartup,
+  entityModelVersion,
+  entityReport, entityStoreBasedConfiguration, Instance,
+  instanceConfigurationReference,
+  instanceModelVersionInitial,
+  LocalAndRemoteControllerInterface,
+  MiroirContext,
+  miroirCoreStartup,
   reportEntityList,
   reportReportList
 } from "miroir-core";
+import {
+  ReduxStore
+} from "miroir-redux";
 
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -32,9 +45,13 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 miroirAppStartup();
 miroirCoreStartup();
 
-let localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext;
-
-// jest.setTimeout(10000);
+let localDataStore: DataStoreInterface;
+let localDataStoreWorker: SetupWorkerApi;
+let localDataStoreServer: SetupServerApi;
+let reduxStore: ReduxStore;
+let localAndRemoteController: LocalAndRemoteControllerInterface;
+let domainController: DomainControllerInterface;
+let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
@@ -68,9 +85,9 @@ beforeAll(
         fetch,
         setupServer
       );
-      localDataStore = wrapped.localDataStore;
-      localDataStoreWorker = wrapped.localDataStoreWorker;
-      localDataStoreServer = wrapped.localDataStoreServer;
+      localDataStore = wrapped.localDataStore as DataStoreInterface;
+      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrapped.reduxStore;
       domainController = wrapped.domainController;
       miroirContext = wrapped.miroirContext;
@@ -312,7 +329,12 @@ describe(
           await localDataStore?.clear();
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
+          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
           await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
   
   
           const {
@@ -384,9 +406,10 @@ describe(
   
           // ##########################################################################################################
           console.log('add Report definition step 3: committing report list to remote store, reportEntityList must be present in the report list afterwards.')
+          console.log('reduxStore.currentModel()',reduxStore.currentModel())
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -443,15 +466,20 @@ describe(
       async () => {
         try {
           console.log('remove Report definition start');
+          const displayLoadingInfo=<DisplayLoadingInfo/>
+          const user = userEvent.setup()
+
           await localDataStore?.clear();
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
-  
-  
-          const displayLoadingInfo=<DisplayLoadingInfo/>
-          const user = userEvent.setup()
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
+
+          
   
           const {
             getByText,
@@ -518,7 +546,7 @@ describe(
           console.log('remove Report definition step 3: commit to remote store, reportEntityList must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
           await user.click(screen.getByRole('button'))
@@ -578,8 +606,12 @@ describe(
           await localDataStore?.clear();
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
   
   
           const {
@@ -662,7 +694,7 @@ describe(
           console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   

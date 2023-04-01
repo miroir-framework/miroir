@@ -1,0 +1,13 @@
+{
+  "uuid": "43f04807-8f96-43f9-876f-9a0210f7b99c",
+  "entity":"Report",
+  "entityUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "conceptLevel":"Model",
+  "name":"StoreBasedConfigurationList",
+  "defaultLabel": "Store-based Configuration",
+  "type": "list",
+  "definition": {
+    "entity": "StoreBasedConfiguration",
+    "entityUuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2"
+  }
+}

@@ -4,7 +4,7 @@
  */
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupServer } from "msw/node";
+import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
 
 const fetch = require('node-fetch');
@@ -17,13 +17,24 @@ global.TextDecoder = TextDecoder
 
 import {
   circularReplacer,
+  DataStoreInterface,
   DomainAction,
   DomainDataAction,
   entityEntity,
   entityReport, Instance, miroirCoreStartup,
   reportEntityList,
-  reportReportList
+  reportReportList,
+  LocalAndRemoteControllerInterface,
+  DomainControllerInterface,
+  MiroirContext,
+  entityStoreBasedConfiguration,
+  entityModelVersion,
+  instanceModelVersionInitial,
+  instanceConfigurationReference
 } from "miroir-core";
+import {
+  ReduxStore
+} from "miroir-redux";
 
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -31,14 +42,19 @@ import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/t
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import entityAuthor from "miroir-standalone-app/src/assets/entities/Author.json";
 import entityBook from "miroir-standalone-app/src/assets/entities/Book.json";
+import { SetupWorkerApi } from "msw";
 
 
 miroirAppStartup();
 miroirCoreStartup();
 
-let localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext;
-
-// jest.setTimeout(10000);
+let localDataStore: DataStoreInterface;
+let localDataStoreWorker: SetupWorkerApi;
+let localDataStoreServer: SetupServerApi;
+let reduxStore: ReduxStore;
+let localAndRemoteController: LocalAndRemoteControllerInterface;
+let domainController: DomainControllerInterface;
+let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
@@ -73,9 +89,9 @@ beforeAll(
         setupServer
       );
 
-      localDataStore = wrapped.localDataStore;
-      localDataStoreWorker = wrapped.localDataStoreWorker;
-      localDataStoreServer = wrapped.localDataStoreServer;
+      localDataStore = wrapped.localDataStore as DataStoreInterface;
+      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrapped.reduxStore;
       domainController = wrapped.domainController;
       miroirContext = wrapped.miroirContext;
@@ -147,9 +163,12 @@ describe(
   
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
-  
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
   
           const {
             getByText,
@@ -360,7 +379,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   

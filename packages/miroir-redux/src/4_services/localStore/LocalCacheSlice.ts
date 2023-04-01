@@ -83,7 +83,9 @@ const getLocalCacheSliceEntityAdapter: (
 function getInitializedEntityAdapter(entityUuid: string, state: LocalCacheSliceState) {
   // TODO: refactor so as to avoid side effects!
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
-  if (!state[entityUuid]) {
+  if (state[entityUuid] == undefined) {
+    console.log('getInitializedEntityAdapter for',entityUuid,'initializing state!');
+    
     state[entityUuid] = sliceEntityAdapter.getInitialState();
   }
   return sliceEntityAdapter;
@@ -106,10 +108,12 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
   switch (action.payload.actionName) {
     case 'create': {
       for (let instanceCollection of action.payload.objects) {
-        console.log('create',instanceCollection.entity, instanceCollection.entityUuid, instanceCollection.instances, JSON.stringify(state));
+        console.log('create for entity',instanceCollection.entity, instanceCollection.entityUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
         
         const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
+        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entity, instanceCollection.entityUuid, 'state before insert',JSON.stringify(state));
         sliceEntityAdapter.addMany(state[instanceCollection.entityUuid], instanceCollection.instances);
+        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entity, instanceCollection.entityUuid, 'state after insert',JSON.stringify(state));
         if(instanceCollection.entityUuid == entityEntity.uuid) {
           console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction,'creating entityAdapter for Entities',instanceCollection.instances.map(i=>i['name']));
           
@@ -180,7 +184,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       // send CUD actions to local cache
       // have undo / redo contain both(?) local cache CUD actions and ModelStructureUpdates
       const domainDataAction:DomainDataAction = 
-        ModelStructureUpdateConverter.modelUpdateToLocalCacheUpdate(
+        ModelStructureUpdateConverter.modelStructureUpdateToLocalCacheUpdate(
           Object.values(state[entityEntity.uuid].entities) as EntityDefinition[],
           action.payload.updates[0]
         );
@@ -226,7 +230,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadActi
 //#########################################################################################
 export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
-  initialState: { Entity: getLocalCacheSliceEntityAdapter(entityEntity.uuid).getInitialState() },
+  initialState: { [entityEntity.uuid]: getLocalCacheSliceEntityAdapter(entityEntity.uuid).getInitialState() },
   reducers: {
     [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<DomainAction>) {
       handleLocalCacheAction(state,action);

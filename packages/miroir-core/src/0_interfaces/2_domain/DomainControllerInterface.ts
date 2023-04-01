@@ -27,7 +27,7 @@ export const localCacheOnlyActionNamesObject = {
   'undo': 'undo',
   'redo': 'redo',
   'replace': 'replace', // to refresh data in local storage
-  'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
+  // 'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
 }
 export type LocalCacheOnlyActionName = keyof typeof localCacheOnlyActionNamesObject;
 export const localCacheOnlyActionNamesArray:LocalCacheOnlyActionName[] = Object.keys(localCacheOnlyActionNamesObject) as LocalCacheOnlyActionName[];
@@ -72,13 +72,25 @@ export interface DomainModelCUDAction {
   objects?:InstanceCollection[];
 }
 
+
+export interface DomainModelCommitAction {
+  actionType:'DomainModelAction',
+  actionName: 'commit';
+  label?: string;
+  // objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+}
+
 export interface DomainModelLocalCacheAndTransactionAction {
   actionType:'DomainModelAction',
   actionName: LocalCacheOnlyActionName;
   objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
 }
 
-export type DomainModelAction = DomainModelStructureUpdateAction | DomainModelCUDAction | DomainModelLocalCacheAndTransactionAction;
+export type DomainModelAction =
+    DomainModelCommitAction
+  | DomainModelStructureUpdateAction
+  | DomainModelCUDAction
+  | DomainModelLocalCacheAndTransactionAction;
 
 // #############################################################################################
 export const remoteStoreActionNamesObject = {

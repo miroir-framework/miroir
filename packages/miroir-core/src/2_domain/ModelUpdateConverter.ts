@@ -6,7 +6,7 @@ import { ModelCUDUpdate, ModelStructureUpdate } from "../0_interfaces/2_domain/M
 import entityEntity from "../assets/entities/Entity.json";
 
 export class ModelStructureUpdateConverter{
-  static modelUpdateToLocalCacheUpdate(
+  static modelStructureUpdateToLocalCacheUpdate(
     entityDefinitions: EntityDefinition[],
     modelUpdate:ModelStructureUpdate,
   ):DomainDataAction{

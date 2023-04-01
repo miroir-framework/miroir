@@ -1,6 +1,35 @@
-import { Box, Card, CardContent, CardHeader, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { ConfigurationService, DomainControllerInterface, EntityDefinition, entityEntity, entityReport, Instance, MiroirReport, reportEntityList, reportReportList } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheReports, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
+import {
+  ConfigurationService,
+  DomainControllerInterface,
+  EntityDefinition,
+  entityEntity,
+  entityModelVersion,
+  entityReport,
+  entityStoreBasedConfiguration,
+  Instance,
+  instanceConfigurationReference,
+  instanceModelVersionInitial,
+  MiroirModel,
+  MiroirModelVersion,
+  MiroirReport,
+  reportConfigurationList,
+  reportEntityList,
+  reportModelVersionList,
+  reportReportList,
+  StoreBasedConfiguration,
+} from "miroir-core";
+import { useLocalCacheEntities, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 
@@ -21,36 +50,52 @@ import reportBookList from "assets/reports/BookList.json";
 
 export interface RootComponentProps {
   // store:any;
-  reportName:string
+  reportName: string;
 }
 
-function defaultToEntityList(value:string, miroirReports:MiroirReport[]):string {
-  return value?value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined)
+function defaultToEntityList(value: string, miroirReports: MiroirReport[]): string {
+  return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
 }
 
 // ###################################################################################
-async function uploadConfiguration(domainController:DomainControllerInterface) {
+async function uploadInitialMiroirConfiguration(domainController: DomainControllerInterface) {
   // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
   await domainController.handleDomainAction({
     actionName: "create",
-    actionType:"DomainDataAction",
+    actionType: "DomainDataAction",
     objects: [
       {
         entity: "Entity",
-        entityUuid:entityEntity.uuid,
+        entityUuid: entityEntity.uuid,
         instances: [
+          entityStoreBasedConfiguration as Instance,
           entityEntity as Instance,
           entityReport as Instance,
-          // entityAuthor as Instance,
-          // entityBook as Instance
+          entityModelVersion as Instance,
         ],
       },
       {
         entity: "Report",
-        entityUuid:entityReport.uuid,
+        entityUuid: entityReport.uuid,
         instances: [
-          reportEntityList as Instance,
+          reportEntityList as Instance, 
+          reportModelVersionList as Instance, 
           reportReportList as Instance,
+          reportConfigurationList as Instance
+        ],
+      },
+      {
+        entity: "Configuration",
+        entityUuid: entityStoreBasedConfiguration.uuid,
+        instances: [
+          instanceConfigurationReference, 
+        ],
+      },
+      {
+        entity: "ModelVersion",
+        entityUuid: entityModelVersion.uuid,
+        instances: [
+          instanceModelVersionInitial, 
         ],
       },
     ],
@@ -58,73 +103,72 @@ async function uploadConfiguration(domainController:DomainControllerInterface) {
 }
 
 // ###################################################################################
-async function uploadBooksAndReports(domainController:DomainControllerInterface) {
+async function uploadBooksAndReports(domainController: DomainControllerInterface,currentModel?:MiroirModel) {
   // const updateEntitiesAction: DomainModelAction = ;
   await domainController.handleDomainAction({
     actionName: "create",
-    actionType:"DomainModelAction",
+    actionType: "DomainModelAction",
     objects: [
       {
-        entity: "Entity",
+        entity: entityEntity.name,
+        entityUuid: entityEntity.uuid,
         instances: [
-          entityAuthor as Instance,
+          entityAuthor as Instance, 
           entityBook as Instance
         ],
       },
       {
-        entity: "Report",
-        instances: [
-          reportAuthorList as Instance,
-          reportBookList as Instance,
-        ],
+        entity: entityReport.name,
+        entityUuid: entityReport.uuid,
+        instances: [reportAuthorList as Instance, reportBookList as Instance],
       },
     ],
   });
-  await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+  await domainController.handleDomainModelAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
   await domainController.handleDomainAction({
     actionName: "create",
-    actionType:"DomainDataAction",
+    actionType: "DomainDataAction",
     objects: [
       {
-        entity: "Author",
-        instances: [
-          author1 as Instance,
-          author2 as Instance,
-          author3 as Instance,
-        ],
+        entity: entityAuthor.name,
+        entityUuid: entityAuthor.uuid,
+        instances: [author1 as Instance, author2 as Instance, author3 as Instance],
       },
       {
-        entity: "Book",
-        instances: [
-          book1 as Instance,
-          book2 as Instance,
-          book3 as Instance,
-          book4 as Instance,
-        ],
+        entity: entityBook.name,
+        entityUuid: entityBook.uuid,
+        instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
       },
     ],
   });
-  // await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"});
+  // await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
 }
 
-
-export const RootComponent = (props:RootComponentProps) => {
+export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
-  const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const miroirEntities:EntityDefinition[] = useLocalCacheEntities();
-  const transactions:ReduxStateChanges[] = useLocalCacheTransactions();
+  const miroirReports: MiroirReport[] = useLocalCacheReports();
+  const miroirEntities: EntityDefinition[] = useLocalCacheEntities();
+  const miroirModelVersions: MiroirModelVersion[] = useLocalCacheModelVersion();
+  const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
+  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
-  const domainController:DomainControllerInterface = useDomainControllerServiceHook();
+  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
   // const [displayedReportName, setDisplayedReportName] = React.useState('');
-  const [displayedReportUuid, setDisplayedReportUuid] = React.useState('');
-
+  const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-    setDisplayedReportUuid(defaultToEntityList(event.target.value,miroirReports));
+    setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
   };
 
-  console.log("RootComponent miroirReports",miroirReports);
+  console.log("RootComponent miroirReports", miroirReports);
+
+  const currentModel =  {
+    entities: miroirEntities,
+    reports: miroirReports,
+    configuration: storeBasedConfigurations,
+    modelVersions: miroirModelVersions,
+  };
 
   // const {store} = props;
   return (
@@ -156,10 +200,13 @@ export const RootComponent = (props:RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainModelAction({
-              actionName: "commit",
-              actionType: "DomainModelAction",
-            });
+            await domainController.handleDomainModelAction(
+              {
+                actionName: "commit",
+                actionType: "DomainModelAction",
+              },
+              currentModel
+            );
           }}
         >
           Commit
@@ -206,7 +253,7 @@ export const RootComponent = (props:RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await uploadConfiguration(domainController);
+            await uploadInitialMiroirConfiguration(domainController);
           }}
         >
           upload Miroir configuration to database
@@ -216,7 +263,7 @@ export const RootComponent = (props:RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await uploadBooksAndReports(domainController);
+            await uploadBooksAndReports(domainController,currentModel);
           }}
         >
           upload App configuration to database
@@ -229,13 +276,18 @@ export const RootComponent = (props:RootComponentProps) => {
               {
                 actionName: "updateModel",
                 actionType: "DomainModelAction",
-                updates: [{updateActionType:"ModelStructureUpdate", updateActionName: "rename", entityName: entityBook.name, entityUuid: entityBook.uuid,targetValue:'Bookss' }],
+                updates: [
+                  {
+                    updateActionType: "ModelStructureUpdate",
+                    updateActionName: "rename",
+                    entityName: entityBook.name,
+                    entityUuid: entityBook.uuid,
+                    targetValue: "Bookss",
+                  },
+                ],
               },
-              {
-                entities:miroirEntities,
-                reports: miroirReports,
-              }
-            )
+              currentModel
+            );
           }}
         >
           Modify Book entity name
@@ -247,22 +299,22 @@ export const RootComponent = (props:RootComponentProps) => {
             await domainController.handleDomainModelAction(
               {
                 actionName: "update",
-                actionType: 'DomainModelAction',
+                actionType: "DomainModelAction",
                 objects: [
                   {
                     entity: reportReportList.entity,
-                    entityUuid:reportReportList.entityUuid,
+                    entityUuid: reportReportList.entityUuid,
                     instances: [
-                      Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
+                      Object.assign({}, reportReportList, {
+                        name: "Report2List",
+                        defaultLabel: "Modified List of Reports",
+                      }) as Instance,
                     ],
                   },
                 ],
               },
-              {
-                entities:miroirEntities,
-                reports: miroirReports,
-              }
-            )
+              currentModel
+            );
           }}
         >
           Modify Report List name
@@ -275,13 +327,16 @@ export const RootComponent = (props:RootComponentProps) => {
               {
                 actionName: "delete",
                 actionType: "DomainModelAction",
-                objects: [{entity: entityAuthor.entity, entityUuid: entityAuthor.entityUuid,instances:[entityAuthor as Instance] }],
+                objects: [
+                  {
+                    entity: entityAuthor.entity,
+                    entityUuid: entityAuthor.entityUuid,
+                    instances: [entityAuthor as Instance],
+                  },
+                ],
               },
-              {
-                entities:miroirEntities,
-                reports: miroirReports,
-              }
-            )
+              currentModel
+            );
           }}
         >
           Remove Author entity
@@ -289,7 +344,7 @@ export const RootComponent = (props:RootComponentProps) => {
       </span>
       <p />
       <p />
-     <span>transactions: {JSON.stringify(transactions)}</span>
+      <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
       {/* <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span> */}
       <p />
@@ -297,46 +352,36 @@ export const RootComponent = (props:RootComponentProps) => {
         {/* props: {JSON.stringify(props)} */}
         erreurs: {JSON.stringify(errorLog)}
       </h3>
-      <span>
-        packages: {JSON.stringify(ConfigurationService.packages)}
-      </span>
-      <p/>
+      <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+      <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Displayed Report</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            // value={displayedReportName?displayedReportName:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined)}
-            // value={defaultToEntityList(displayedReportName,miroirReports)}
             value={displayedReportUuid}
             label="displayedReportUuid"
             onChange={handleChange}
           >
-            {
-              miroirReports.map(r=>{return <MenuItem key={r.name} value={r.uuid}>{r.defaultLabel}</MenuItem>})
-            }
-            {/* <MenuItem value='EntityList'>List of Entities</MenuItem> */}
-            {/* <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem> */}
+            {miroirReports.map((r) => {
+              return (
+                <MenuItem key={r.name} value={r.uuid}>
+                  {r.defaultLabel}
+                </MenuItem>
+              );
+            })}
           </Select>
         </FormControl>
       </Box>
       <Card>
-        <CardHeader>
-          AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        </CardHeader>
+        <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent>
           <ReportComponent
-            // reportName={displayedReportUuid}
             reportUuid={displayedReportUuid}
-            // reportName={props.reportName}
-            // reportName="ReportList"
-            // reportName="EntityList"
-            // store={store}
           />
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};

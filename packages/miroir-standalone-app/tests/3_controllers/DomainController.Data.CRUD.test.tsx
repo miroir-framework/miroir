@@ -94,31 +94,6 @@ beforeAll(
   }
 )
 
-// beforeEach(
-//   async () => {
-//     // Establish requests interception layer before all tests.
-//     // localDataStoreServer?.listen();
-//     await localDataStore?.open();
-//     await localDataStore?.init();
-//     await localDataStore?.clear();
-//     console.log('Done beforeEach');
-//   }
-// )
-
-// afterAll(
-//   async () => {
-//     localDataStoreServer?.close();
-//     console.log('Done afterAll');
-//   }
-// )
-
-// afterEach(
-//   async () => {
-//     // localDataStoreServer?.close();
-//     await localDataStore?.close();
-//     console.log('Done afterEach');
-//   }
-// )
 beforeEach(
   async () => {
     // Establish requests interception layer before all tests.

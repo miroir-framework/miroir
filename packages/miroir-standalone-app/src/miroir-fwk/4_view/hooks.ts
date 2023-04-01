@@ -1,5 +1,5 @@
 import { EntityState } from "@reduxjs/toolkit";
-import { EntityDefinition, entityEntity, entityReport, Instance, MiroirReport, selectEntityInstances, selectReportInstances } from "miroir-core";
+import { EntityDefinition, entityEntity, entityModelVersion, entityReport, entityStoreBasedConfiguration, Instance, MiroirModelVersion, MiroirReport, selectEntityInstances, selectReportInstances, StoreBasedConfiguration } from "miroir-core";
 import { ReduxStateChanges, selectCurrentTransaction, selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
 import { useSelector } from "react-redux";
 
@@ -21,6 +21,20 @@ export function useLocalCacheReports():MiroirReport[] {
   const miroirReportsState:EntityState<MiroirReport> = useSelector(selectInstancesForEntity(entityReport.uuid))
   const miroirReports:MiroirReport[] = miroirReportsState?.entities?Object.values(miroirReportsState.entities):[];
   return miroirReports;
+}
+
+//#########################################################################################
+export function useLocalCacheStoreBasedConfiguration():StoreBasedConfiguration[] {
+  const miroirStoreBasedConfigurationState:EntityState<StoreBasedConfiguration> = useSelector(selectInstancesForEntity(entityStoreBasedConfiguration.uuid))
+  const miroirStoreBasedConfigurations:StoreBasedConfiguration[] = miroirStoreBasedConfigurationState?.entities?Object.values(miroirStoreBasedConfigurationState.entities):[];
+  return miroirStoreBasedConfigurations;
+}
+
+//#########################################################################################
+export function useLocalCacheModelVersion():MiroirModelVersion[] {
+  const miroirModelVersionState:EntityState<MiroirModelVersion> = useSelector(selectInstancesForEntity(entityModelVersion.uuid))
+  const miroirModelVersions:MiroirModelVersion[] = miroirModelVersionState?.entities?Object.values(miroirModelVersionState.entities):[];
+  return miroirModelVersions;
 }
 
 //#########################################################################################

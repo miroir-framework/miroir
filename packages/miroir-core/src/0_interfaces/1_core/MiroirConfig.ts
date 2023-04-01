@@ -1,3 +1,5 @@
+import { Instance } from "../../0_interfaces/1_core/Instance";
+
 export interface ServerConfig {
   rootApiUrl: string;
 }
@@ -33,3 +35,7 @@ export interface MiroirConfigForRest extends MiroirConfigRoot{
 }
 
 export type MiroirConfig = MiroirConfigForMsw | MiroirConfigForRest;
+
+export interface StoreBasedConfiguration extends Instance {
+  definition:{"currentModelVersion":string}
+}

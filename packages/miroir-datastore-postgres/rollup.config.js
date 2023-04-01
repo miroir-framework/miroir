@@ -13,13 +13,13 @@ export default [
       'sequelize',
     ],
     output: [
-        {
-            file: `dist/bundle-browser.esm.js`,
-            entryFileNames: "[name].js",
-            format: "esm",
-            exports: "named",
-            sourcemap: true
-        }
+      {
+          file: `dist/bundle-browser.esm.js`,
+          entryFileNames: "[name].js",
+          format: "esm",
+          exports: "named",
+          sourcemap: true
+      }
     ],
     plugins: [
       typescript(),
@@ -35,12 +35,12 @@ export default [
       'detect-browser'
     ],
     output: [
-        {
-            file: `dist/bundle.esm.js`,
-            entryFileNames: "[name].js",
-            format: "esm",
-            exports: "named"
-        }
+      {
+          file: `dist/bundle.esm.js`,
+          entryFileNames: "[name].js",
+          format: "esm",
+          exports: "named"
+      }
     ],
     plugins: [
       typescript(),
@@ -51,12 +51,10 @@ export default [
   {
     input: ["dist/src/index.d.ts"],
     output: [
-        {
-          file: `dist/bundle.d.ts`,
-          format: 'esm',
-          // exports: "named",
-
-        }
+      {
+        file: `dist/bundle.d.ts`,
+        format: 'esm',
+      }
     ],
     plugins: [
       pluginJson(),

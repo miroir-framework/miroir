@@ -16,6 +16,15 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
   DomainAction,
+  MiroirModel,
+  entityEntity,
+  entityReport,
+  entityStoreBasedConfiguration,
+  entityModelVersion,
+  EntityDefinition,
+  MiroirReport,
+  StoreBasedConfiguration,
+  MiroirModelVersion,
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -130,6 +139,19 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     return {
       localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot)
     }
+  }
+
+
+  // ###############################################################################
+  public currentModel():MiroirModel{
+    console.log('currentModel() from state:',this.innerReduxStore.getState());
+    
+    return {
+      entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityEntity.uuid].entities) as EntityDefinition[],
+      reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityReport.uuid].entities) as MiroirReport[],
+      configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
+      modelVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityModelVersion.uuid].entities) as MiroirModelVersion[],
+    };
   }
 
   // ###############################################################################

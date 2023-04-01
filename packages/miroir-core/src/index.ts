@@ -22,10 +22,16 @@ export {
 } from './0_interfaces/1_core/Report.js';
 export {
   MiroirModel,
+  MiroirCUDModelMigration,
+  MiroirModelHistory,
+  MiroirModelVersion,
+  MiroirStructureModelMigration,
 } from './0_interfaces/1_core/ModelInterface.js';
 export {
   DeploymentMode,
-  MiroirConfig
+  MiroirConfig,
+  ServerConfig,
+  StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {
   CRUDActionName,
@@ -43,6 +49,10 @@ export {
   DomainControllerInterface,
   DomainDataAction,
   DomainModelAction,
+  DomainModelCommitAction,
+  DomainModelCUDAction,
+  DomainModelLocalCacheAndTransactionAction,
+  DomainModelStructureUpdateAction,
   DomainModelUpdateActionName,
   domainModelUpdateActionNamesArray,
   domainModelUpdateActionNamesObject,
@@ -61,9 +71,6 @@ export {
   RemoteStoreActionName,
   remoteStoreActionNamesArray,
   remoteStoreActionNamesObject,
-  DomainModelCUDAction,
-  DomainModelLocalCacheAndTransactionAction,
-  DomainModelStructureUpdateAction,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
   ModelStructureUpdate,
@@ -134,12 +141,29 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 
+import entityStoreBasedConfiguration from './assets/entities/StoreBasedConfiguration.json';
 import entityEntity from './assets/entities/Entity.json';
 import entityReport from './assets/entities/Report.json';
+import entityModelVersion from './assets/entities/ModelVersion.json';
+import reportConfigurationList from './assets/reports/ConfigurationList.json';
 import reportEntityList from './assets/reports/entityList.json';
 import reportReportList from './assets/reports/ReportList.json';
+import reportModelVersionList from './assets/reports/ModelVersionList.json';
+import instanceModelVersionInitial from './assets/instances/ModelVersion - initial.json';
+import instanceConfigurationReference from './assets/instances/StoreBasedConfiguration - reference.json';
 
-export { entityEntity, entityReport, reportEntityList, reportReportList };
+export {
+  entityEntity,
+  entityStoreBasedConfiguration,
+  entityModelVersion,
+  entityReport,
+  instanceConfigurationReference,
+  instanceModelVersionInitial,
+  reportConfigurationList,
+  reportEntityList,
+  reportModelVersionList,
+  reportReportList,
+};
 // const myDefaultExport = "Miroir-core default export"
 export default {
   // myDefaultExport
