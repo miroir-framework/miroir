@@ -107,7 +107,6 @@ async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
   currentModel?:MiroirModel
 ) {
-  // const updateEntitiesAction: DomainModelAction = ;
   await domainController.handleDomainAction({
     actionName: "updateModel",
     actionType: "DomainModelAction",
@@ -118,41 +117,45 @@ async function uploadBooksAndReports(
         entityUuid: entityEntity.uuid,
         instances: [
           entityAuthor as Instance, 
-          // entityBook as Instance
+          entityBook as Instance
         ],
       },
     }
   },currentModel);
-  // await domainController.handleDomainAction({
-  //   actionName: "updateModel",
-  //   actionType: "DomainModelAction",
-  //   update: {
-  //     modelStructureUpdate: {
-  //       updateActionName: "create",
-  //       entityName: entityReport.name,
-  //       entityUuid: entityReport.uuid,
-  //       instances: [reportAuthorList as Instance, reportBookList as Instance],
-  //     },
-  //   }
-  // },currentModel);
-  // await domainController.handleDomainModelAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+  await domainController.handleDomainAction({
+    actionName: "updateModel",
+    actionType: "DomainModelAction",
+    update: {
+      modelStructureUpdate: {
+        updateActionName: "create",
+        entityName: entityReport.name,
+        entityUuid: entityReport.uuid,
+        instances: [reportAuthorList as Instance, reportBookList as Instance],
+      },
+    }
+  },currentModel);
+  await domainController.handleDomainModelAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
 
-  // await domainController.handleDomainAction({
-  //   actionName: "create",
-  //   actionType: "DomainDataAction",
-  //   objects: [
-  //     {
-  //       entity: entityAuthor.name,
-  //       entityUuid: entityAuthor.uuid,
-  //       instances: [author1 as Instance, author2 as Instance, author3 as Instance],
-  //     },
-  //     {
-  //       entity: entityBook.name,
-  //       entityUuid: entityBook.uuid,
-  //       instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
-  //     },
-  //   ],
-  // });
+  await domainController.handleDomainAction({
+    actionName: "create",
+    actionType: "DomainDataAction",
+    objects: [
+      {
+        entity: entityAuthor.name,
+        entityUuid: entityAuthor.uuid,
+        instances: [
+          author1 as Instance, 
+          author2 as Instance,
+          author3 as Instance
+        ],
+      },
+      {
+        entity: entityBook.name,
+        entityUuid: entityBook.uuid,
+        instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
+      },
+    ],
+  });
 }
 
 export const RootComponent = (props: RootComponentProps) => {

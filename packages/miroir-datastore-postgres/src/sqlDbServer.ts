@@ -242,10 +242,9 @@ export class SqlDbServer implements DataStoreInterface {
           );
           break;
         case "create":
-          // this.sequelize.getQueryInterface().upsert(model.entityName,update.modelStructureUpdate.instances[0] as any);
-          // await model.sequelizeModel.create<Instance>(update.modelStructureUpdate.instances[0]);
-          // await model.sequelizeModel.upsert(update.modelStructureUpdate.instances[0] as any);
-          await this.upsertInstanceUuid(modelStructureUpdate.entityUuid, update.modelStructureUpdate.instances[0]);
+          for (const instance of update.modelStructureUpdate.instances) {
+            await this.upsertInstanceUuid(modelStructureUpdate.entityUuid, instance);
+          }
         default:
           break;
       }
