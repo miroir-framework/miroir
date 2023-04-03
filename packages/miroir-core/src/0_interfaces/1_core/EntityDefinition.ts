@@ -15,7 +15,6 @@ export interface EntityAttribute {
   "id": number,
   "name": string,
   "defaultLabel": string,
-  // "type": string,
   "type": EntityAttributeType,
   "nullable": boolean,
   "editable": boolean,

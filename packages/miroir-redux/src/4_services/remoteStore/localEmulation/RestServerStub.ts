@@ -1,6 +1,6 @@
 import {
   DataStoreInterface,
-  generateHandlerBody, ModelStructureUpdate
+  generateHandlerBody, ModelStructureUpdate, ModelUpdateWithCUDUpdate
 } from "miroir-core";
 import { rest } from "msw";
 
@@ -105,13 +105,13 @@ export class RestServerStub {
             break;
           }
           case 'updateModel': {
-            const updates: ModelStructureUpdate[] = await req.json();
-            console.log("post model/ updates",updates);
-            if (updates[0]) {
-              switch (updates[0]['action']) {
+            const update: ModelUpdateWithCUDUpdate = await req.json();
+            console.log("post model/ updates",update);
+            if (update) {
+              switch (update['action']) {
                 default:
-                  await localDataStore.applyModelStructureUpdates(updates);
-                  console.log('post applyModelStructureUpdates', updates);
+                  await localDataStore.applyModelStructureUpdate(update);
+                  console.log('post applyModelStructureUpdates', update);
                   break;
               }
             } else {

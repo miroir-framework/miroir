@@ -16,7 +16,7 @@ export interface MiroirModelVersion extends InstanceWithName {
   description?: string;
   model?: MiroirModel;
   modelStructureMigration?: MiroirStructureModelMigration;
-  modelCUDMigration?: MiroirCUDModelMigration;
+  modelCUDMigration?: ModelCUDUpdate[];
 }
 
 export type MiroirModelHistory = MiroirModelVersion[]; // branches?

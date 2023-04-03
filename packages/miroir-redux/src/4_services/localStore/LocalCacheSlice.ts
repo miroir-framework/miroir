@@ -163,21 +163,21 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       // }
       break;
     }
-    case 'create':
-    case 'update':
-    case 'delete': {
-      handleLocalCacheDataAction(
-        state, {
-          type:'rebound',
-          payload:{
-            actionType:"DomainDataAction",
-            actionName:action.payload.actionName,
-            objects:action.payload.objects,
-          }
-        }
-      )
-      break;
-    }
+    // case 'create':
+    // case 'update':
+    // case 'delete': {
+    //   handleLocalCacheDataAction(
+    //     state, {
+    //       type:'rebound',
+    //       payload:{
+    //         actionType:"DomainDataAction",
+    //         actionName:action.payload.actionName,
+    //         objects:action.payload.objects,
+    //       }
+    //     }
+    //   )
+    //   break;
+    // }
     case "updateModel": {
       console.log('localCacheSliceObject updateModel',action.payload);
       // infer from ModelStructureUpdates the CUD actions to be performed on model Entities, Reports, etc.
@@ -186,7 +186,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       const domainDataAction:DomainDataAction = 
         ModelStructureUpdateConverter.modelStructureUpdateToLocalCacheUpdate(
           Object.values(state[entityEntity.uuid].entities) as EntityDefinition[],
-          action.payload.updates[0]
+          action.payload.update.modelStructureUpdate
         );
         console.log('updateModel domainDataAction',domainDataAction);
 

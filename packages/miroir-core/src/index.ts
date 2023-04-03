@@ -73,7 +73,14 @@ export {
   remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
+  ModelCUDUpdate,
+  ModelStructureCreateUpdate,
+  ModelStructureAlterEntityAttributeUpdate,
+  ModelStructureAlterMetaModelInstanceUpdate,
+  ModelStructureDeleteMetaModelInstanceUpdate,
+  ModelStructureRenameEntityUpdate,
   ModelStructureUpdate,
+  ModelUpdateWithCUDUpdate,
   ModelUpdateActionName,
   ModelUpdateActionNamesArray,
   ModelUpdateActionNamesObject,

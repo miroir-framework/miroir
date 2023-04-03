@@ -1,5 +1,5 @@
 
-import { ModelStructureUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelStructureUpdate, ModelUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { Instance } from "../0_interfaces/1_core/Instance";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { IndexedDb } from "./indexedDb";
@@ -103,21 +103,23 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // ##############################################################################################
-  async applyModelStructureUpdates(updates:ModelStructureUpdate[]){
+  // async applyModelStructureUpdates(updates:ModelStructureUpdate[]){
+  async applyModelStructureUpdate(updates:ModelUpdateWithCUDUpdate){
     console.log('IndexedDbDataStore applyModelStructureUpdates',updates);
     const currentUpdate = updates[0];
-    const currentValue = await this.localUuidIndexedDb.getValue(currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].uuid);
-    if (this.localUuidIndexedDb.hasSubLevel(currentUpdate.entityUuid) && !!currentValue) {
-      console.log('IndexedDbDataStore SqlDbServer applyModelStructureUpdates',currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,currentValue);
+    const cudUpdate = currentUpdate.equivalentModelCUDUpdates[0];
+    const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].entityUuid,cudUpdate.objects[0].instances[0].uuid);
+    if (this.localUuidIndexedDb.hasSubLevel(currentUpdate.modelStructureUpdate.entityUuid) && !!currentValue) {
+      console.log('IndexedDbDataStore SqlDbServer applyModelStructureUpdates',cudUpdate.objects[0].instances[0].entityUuid,currentValue);
       await this.localUuidIndexedDb.putValue(
-        currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,
-        currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0],
+        cudUpdate.objects[0].instances[0].entityUuid,
+        cudUpdate.objects[0].instances[0],
       );
-      const updatedValue = await this.localUuidIndexedDb.getValue(currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].uuid);
-      console.log('IndexedDbDataStore SqlDbServer applyModelStructureUpdates done',currentUpdate.equivalentModelCUDUpdates[0].objects[0].instances[0].entityUuid,updatedValue);
+      const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].entityUuid,cudUpdate.objects[0].instances[0].uuid);
+      console.log('IndexedDbDataStore SqlDbServer applyModelStructureUpdates done',cudUpdate.objects[0].instances[0].entityUuid,updatedValue);
 
     } else {
-      console.warn('IndexedDbDataStore SqlDbServer entity uuid',currentUpdate.entityUuid,'name',currentUpdate.entityName,'not found!');
+      console.warn('IndexedDbDataStore SqlDbServer entity uuid',currentUpdate.modelStructureUpdate.entityUuid,'name',currentUpdate.modelStructureUpdate.entityName,'not found!');
       
     }
   }

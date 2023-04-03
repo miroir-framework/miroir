@@ -5,6 +5,7 @@ import {
   DataStoreInterface,
   generateHandlerBody,
   ModelStructureUpdate,
+  ModelUpdateWithCUDUpdate,
 } from "miroir-core";
 import { createServer } from 'miroir-datastore-postgres';
 
@@ -82,27 +83,27 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
     typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
   
   // const updates: RemoteStoreModelAction[] = await req.body;
-  const updates: ModelStructureUpdate[] = await req.body;
-  console.log("post model/"," started #####################################");
-  console.log("post model/ updates",updates);
+  const update: ModelUpdateWithCUDUpdate = (await req.body)[0];
+  console.log("server post model/"," started #####################################");
+  console.log("server post model/ update",update);
 
   // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
   // for (const instance of addedObjects) {
+  console.log('server post sqlDbServer.getUuidEntities()', sqlDbServer.getUuidEntities());
   switch (actionName) {
     case 'resetModel':{
-      console.log('resetModel before drop sequelize.models', Object.keys(sqlDbServer.getUuidEntities()));
       await sqlDbServer.dropModel();
-      console.log('resetModel after dropped sqlDbServer entities, entities now:',sqlDbServer.getUuidEntities());
+      console.log('server resetModel after dropped sqlDbServer entities, entities now:',sqlDbServer.getUuidEntities());
       // sqlDbServer.dropUuidEntities(sqlDbServer.getUuidEntities());
       // console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
       break;
     }
     case 'updateModel': {
-      if (updates[0]) {
-        switch (updates[0]['action']) {
+      if (update) {
+        switch (update['action']) {
           default:
-            sqlDbServer.applyModelStructureUpdates(updates);
-            console.log('post applyModelStructureUpdates', updates);
+            await sqlDbServer.applyModelStructureUpdate(update);
+            console.log('post applyModelStructureUpdate done', update);
             break;
         }
       } else {

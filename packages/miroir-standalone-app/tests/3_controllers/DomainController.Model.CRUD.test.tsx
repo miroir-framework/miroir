@@ -64,18 +64,18 @@ beforeAll(
           // "serverConfig":{
           //   "rootApiUrl":"http://localhost:3080"
           // },
-          "emulateServer":true, 
-          "rootApiUrl":"http://localhost/fakeApi",
-            "emulatedServerConfig":{
-            "emulatedServerType": "Sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
-          },
           // "emulateServer":true, 
           // "rootApiUrl":"http://localhost/fakeApi",
           //   "emulatedServerConfig":{
-          //   "emulatedServerType": "indexedDb",
-          //   "indexedDbName":"miroir-uuid-indexedDb"
+          //   "emulatedServerType": "Sql",
+          //   "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
           // },
+          "emulateServer":true, 
+          "rootApiUrl":"http://localhost/fakeApi",
+            "emulatedServerConfig":{
+            "emulatedServerType": "indexedDb",
+            "indexedDbName":"miroir-uuid-indexedDb"
+          },
           "deploymentMode":"monoUser",
           "monoUserAutentification": false,
           "monoUserVersionControl": false,

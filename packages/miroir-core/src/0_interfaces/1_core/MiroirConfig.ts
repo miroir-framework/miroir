@@ -7,7 +7,8 @@ export interface ServerConfig {
 export type DeploymentMode = 'monoUser' | 'multiUser';
 
 declare interface MiroirConfigRoot {
-  deploymentMode: DeploymentMode;
+  // deploymentMode: DeploymentMode;
+  deploymentMode: 'monoUser';
   monoUserAutentification: boolean;
   monoUserVersionControl: boolean;
   versionControlForDataConceptLevel: boolean;

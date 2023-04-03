@@ -68,8 +68,8 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
         entity: "Entity",
         entityUuid: entityEntity.uuid,
         instances: [
+          entityEntity as Instance, // has to come 1st!
           entityStoreBasedConfiguration as Instance,
-          entityEntity as Instance,
           entityReport as Instance,
           entityModelVersion as Instance,
         ],
@@ -103,45 +103,56 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
 }
 
 // ###################################################################################
-async function uploadBooksAndReports(domainController: DomainControllerInterface,currentModel?:MiroirModel) {
+async function uploadBooksAndReports(
+  domainController: DomainControllerInterface,
+  currentModel?:MiroirModel
+) {
   // const updateEntitiesAction: DomainModelAction = ;
   await domainController.handleDomainAction({
-    actionName: "create",
+    actionName: "updateModel",
     actionType: "DomainModelAction",
-    objects: [
-      {
-        entity: entityEntity.name,
+    update: {
+      modelStructureUpdate: {
+        updateActionName: "create",
+        entityName: entityEntity.name,
         entityUuid: entityEntity.uuid,
         instances: [
           entityAuthor as Instance, 
-          entityBook as Instance
+          // entityBook as Instance
         ],
       },
-      {
-        entity: entityReport.name,
-        entityUuid: entityReport.uuid,
-        instances: [reportAuthorList as Instance, reportBookList as Instance],
-      },
-    ],
-  });
-  await domainController.handleDomainModelAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
-  await domainController.handleDomainAction({
-    actionName: "create",
-    actionType: "DomainDataAction",
-    objects: [
-      {
-        entity: entityAuthor.name,
-        entityUuid: entityAuthor.uuid,
-        instances: [author1 as Instance, author2 as Instance, author3 as Instance],
-      },
-      {
-        entity: entityBook.name,
-        entityUuid: entityBook.uuid,
-        instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
-      },
-    ],
-  });
-  // await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+    }
+  },currentModel);
+  // await domainController.handleDomainAction({
+  //   actionName: "updateModel",
+  //   actionType: "DomainModelAction",
+  //   update: {
+  //     modelStructureUpdate: {
+  //       updateActionName: "create",
+  //       entityName: entityReport.name,
+  //       entityUuid: entityReport.uuid,
+  //       instances: [reportAuthorList as Instance, reportBookList as Instance],
+  //     },
+  //   }
+  // },currentModel);
+  // await domainController.handleDomainModelAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+
+  // await domainController.handleDomainAction({
+  //   actionName: "create",
+  //   actionType: "DomainDataAction",
+  //   objects: [
+  //     {
+  //       entity: entityAuthor.name,
+  //       entityUuid: entityAuthor.uuid,
+  //       instances: [author1 as Instance, author2 as Instance, author3 as Instance],
+  //     },
+  //     {
+  //       entity: entityBook.name,
+  //       entityUuid: entityBook.uuid,
+  //       instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
+  //     },
+  //   ],
+  // });
 }
 
 export const RootComponent = (props: RootComponentProps) => {
@@ -276,15 +287,15 @@ export const RootComponent = (props: RootComponentProps) => {
               {
                 actionName: "updateModel",
                 actionType: "DomainModelAction",
-                updates: [
-                  {
-                    updateActionType: "ModelStructureUpdate",
-                    updateActionName: "rename",
+                update: {
+                  modelStructureUpdate:{
+                    // updateActionType: "ModelStructureUpdate",
+                    updateActionName: "renameMetaModelInstance",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
                     targetValue: "Bookss",
                   },
-                ],
+                }
               },
               currentModel
             );
@@ -298,20 +309,20 @@ export const RootComponent = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleDomainModelAction(
               {
-                actionName: "update",
+                actionName: "updateModel",
                 actionType: "DomainModelAction",
-                objects: [
-                  {
-                    entity: reportReportList.entity,
+                update: {
+                  modelStructureUpdate: {
+                    updateActionName: "alterMetaModelInstance",
+                    entityName: reportReportList.entity,
                     entityUuid: reportReportList.entityUuid,
-                    instances: [
-                      Object.assign({}, reportReportList, {
-                        name: "Report2List",
-                        defaultLabel: "Modified List of Reports",
-                      }) as Instance,
-                    ],
+                    instanceUuid: reportReportList.uuid,
+                    update: {
+                      name: "Report2List",
+                      defaultLabel: "Modified List of Reports",
+                    },
                   },
-                ],
+                }
               },
               currentModel
             );
@@ -325,15 +336,16 @@ export const RootComponent = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleDomainModelAction(
               {
-                actionName: "delete",
+                actionName: "updateModel",
                 actionType: "DomainModelAction",
-                objects: [
-                  {
-                    entity: entityAuthor.entity,
+                update: {
+                  modelStructureUpdate: {
+                    updateActionName: "DeleteMetaModelInstance",
+                    entityName: entityAuthor.entity,
                     entityUuid: entityAuthor.entityUuid,
-                    instances: [entityAuthor as Instance],
+                    instanceUuid:entityAuthor.uuid,
                   },
-                ],
+                }
               },
               currentModel
             );
@@ -346,7 +358,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
-      {/* <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span> */}
+      <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
       <p />
       <h3>
         {/* props: {JSON.stringify(props)} */}

@@ -1,5 +1,5 @@
 import { MiroirModel } from "../../0_interfaces/1_core/ModelInterface.js";
-import { ModelStructureUpdate, ModelUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { ModelStructureUpdate, ModelUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
@@ -44,7 +44,7 @@ export const ModelStructureUpdateActionNamesArrayString:string[] = ModelStructur
 
 // #############################################################################################
 export const domainModelUpdateActionNamesObject = {
-  ...CUDActionNamesObject,
+  // ...CUDActionNamesObject,
   ...localCacheOnlyActionNamesObject,
 };
 export type DomainModelUpdateActionName = keyof typeof domainModelUpdateActionNamesObject;
@@ -63,9 +63,11 @@ export interface DomainDataAction {
 export interface DomainModelStructureUpdateAction {
   actionType:'DomainModelAction',
   actionName: ModelStructureUpdateActionName;
-  updates?:ModelStructureUpdate[];
+  // updates?:ModelStructureUpdate[];
+  update?:ModelUpdateWithCUDUpdate;
   // updates?:ModelUpdate[];
 }
+
 export interface DomainModelCUDAction {
   actionType:'DomainModelAction',
   actionName: DomainModelUpdateActionName;
@@ -118,7 +120,7 @@ export type DomainStateReducer=(domainState:DomainState)=>any
 export interface DomainControllerInterface {
   handleDomainDataAction(action:DomainDataAction):Promise<void>;
   handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirModel):Promise<void>;
-  handleDomainAction(action:DomainAction):Promise<void>;
+  handleDomainAction(action:DomainAction, currentModel?:MiroirModel):Promise<void>;
   currentTransaction():DomainModelAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

@@ -83,7 +83,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return {
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
       url: this.networkActionUrl(networkAction, rootApiUrl),
-      args: networkAction["objects"] ? networkAction["objects"] : networkAction["updates"],
+      args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?[networkAction["update"]]:[])
     };
   }
 
