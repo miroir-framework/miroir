@@ -17,7 +17,7 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethod } = {
   update: "put",
   delete: "delete",
   resetModel: "post",
-  updateModel: "post",
+  updateEntity: "post",
 };
 
 /**

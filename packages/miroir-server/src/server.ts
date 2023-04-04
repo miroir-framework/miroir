@@ -97,7 +97,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
       // console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
       break;
     }
-    case 'updateModel': {
+    case 'updateEntity': {
       if (update) {
         switch (update['action']) {
           default:

@@ -104,7 +104,7 @@ export class RestServerStub {
             console.log('resetModel after drop getUuidEntities', localDataStore.getUuidEntities());
             break;
           }
-          case 'updateModel': {
+          case 'updateEntity': {
             const update: ModelUpdate = (await req.json())[0];
             console.log("post model/ updates",update);
             if (update) {

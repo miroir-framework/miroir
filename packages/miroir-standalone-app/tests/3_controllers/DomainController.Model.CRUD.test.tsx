@@ -31,6 +31,7 @@ import {
   MiroirConfig,
   MiroirContext,
   miroirCoreStartup,
+  ModelCUDUpdate,
   ModelEntityUpdateWithCUDUpdate,
   reportEntityList,
   reportReportList
@@ -249,10 +250,16 @@ describe(
           // console.log('add Report definition step 2: reduxStore.currentModel()',reduxStore.currentModel())
           const createAction: DomainAction = {
             actionType:"DomainModelAction",
-            actionName:'updateModel',
+            actionName:'UpdateMetaModelInstance',
             update:{
-              updateActionName: "ModelEntityUpdateWithCUDUpdate",
-              modelEntityUpdate:{updateActionName:"create",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}}
+              updateActionName: "create",
+              objects: [
+                {
+                  entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,
+                  instances: [reportEntityList as Instance]
+                }
+              ]
+            }
           };
   
           await act(
@@ -266,7 +273,7 @@ describe(
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           console.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as ModelEntityUpdateWithCUDUpdate)['modelEntityUpdate']).toEqual(createAction.update?.modelEntityUpdate);
+          expect(domainController.currentTransaction()[0].update).toEqual(createAction.update);
   
           await waitFor(
             () => {
@@ -370,11 +377,17 @@ describe(
           // ##########################################################################################################
           console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
-            actionName:'updateModel',
             actionType: "DomainModelAction",
+            actionName:'UpdateMetaModelInstance',
             update:{
-              updateActionName: "ModelEntityUpdateWithCUDUpdate",
-              modelEntityUpdate:{updateActionName:"create",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}}
+              updateActionName: "create",
+              objects: [
+                {
+                  entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,
+                  instances: [reportEntityList as Instance]
+                }
+              ]
+            }
           };
   
           await act(
@@ -387,8 +400,9 @@ describe(
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as ModelEntityUpdateWithCUDUpdate)['modelEntityUpdate']).toEqual(createAction.update?.modelEntityUpdate);
+          expect(domainController.currentTransaction()[0].update).toEqual(createAction.update);
   
+
           await waitFor(
             () => {
               // getAllByText(container,/finished/)
@@ -520,7 +534,7 @@ describe(
               await domainController.handleDomainAction(
                 {
                   actionType: 'DomainModelAction',
-                  actionName:'CUDupdateModel',
+                  actionName:'UpdateMetaModelInstance',
                   update:{
                     updateActionName:"delete",
                     objects:[
@@ -529,13 +543,7 @@ describe(
                       }
                     ]
                   }
-                  // update:{modelEntityUpdate:{updateActionName:"DeleteMetaModelInstance",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instanceUuid:reportEntityList.uuid}}
                 },
-                // {
-                //   actionName:'updateModel',
-                //   actionType: 'DomainModelAction',
-                //   update:{modelEntityUpdate:{updateActionName:"DeleteMetaModelInstance",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instanceUuid:reportEntityList.uuid}}
-                // },
                 reduxStore.currentModel()
               );
             }
@@ -670,7 +678,7 @@ describe(
           const updateAction: DomainAction = 
             {
               actionType: "DomainModelAction",
-              actionName: "CUDupdateModel",
+              actionName: "UpdateMetaModelInstance",
               update: {
                 updateActionName:'update',
                 objects: [
@@ -692,21 +700,6 @@ describe(
               }
             }
           ;
-      // {
-          //   actionType: 'DomainModelAction',
-          //   actionName: "updateModel",
-          //   update: {
-          //     modelEntityUpdate:
-          //       {
-          //         updateActionName:"alterMetaModelInstance",
-          //         entityName: reportReportList.entity,
-          //         entityUuid:reportReportList.entityUuid,
-          //         instanceUuid: [
-          //           Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
-          //         ],
-          //       },
-          //   }
-          // };
           await act(
             async () => {
               await domainController.handleDomainAction(updateAction);

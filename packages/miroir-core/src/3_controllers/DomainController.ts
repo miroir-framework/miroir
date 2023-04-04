@@ -99,7 +99,7 @@ export class DomainController implements DomainControllerInterface {
 
         for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
-          if (replayAction.actionName == "updateModel") {
+          if (replayAction.actionName == "updateEntity") {
             await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
           } else {
             // for (const instances of replayAction["objects"]) {
@@ -149,13 +149,13 @@ export class DomainController implements DomainControllerInterface {
       //   );
       //   break;
       // }
-      case "CUDupdateModel": {
+      case "UpdateMetaModelInstance": {
         this.LocalAndRemoteController.handleLocalCacheAction(
           domainModelAction
         );
         break;
       }
-      case "updateModel": {
+      case "updateEntity": {
         console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
         // const correspondingCUDUpdate: ModelCUDUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction.updates[0],currentModel);
         
@@ -227,10 +227,10 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;
-    const ignoredActionNames:string[] = ['CUDupdateModel','updateModel','resetModel','commit','replace','undo','redo'];
+    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','commit','replace','undo','redo'];
     console.log('handleDomainAction actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
 
-    // if (domainAction.actionName!="updateModel"){
+    // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
       const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid):[];
       const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid !== entityEntity.uuid):[];

@@ -34,7 +34,7 @@ export const undoRedoActionNamesArray:UndoRedoActionName[] = Object.keys(undoRed
 // // #############################################################################################
 export const ModelEntityUpdateActionNamesObject = {
   'resetModel': 'resetModel', // to delete all DB contents. DANGEROUS. TEMPORARY?
-  'updateModel': 'updateModel',
+  'updateEntity': 'updateEntity',
 }
 export type ModelEntityUpdateActionName = keyof typeof ModelEntityUpdateActionNamesObject;
 export const ModelEntityUpdateActionNamesArray:ModelEntityUpdateActionName[] = Object.keys(ModelEntityUpdateActionNamesObject) as ModelEntityUpdateActionName[];
@@ -52,15 +52,13 @@ export interface DomainDataAction {
 
 export interface DomainModelEntityUpdateAction {
   actionType:'DomainModelAction',
-  actionName: 'updateModel'//`${ModelEntityUpdateActionNamesObject.updateModel}`;
-  // actionName: `${ModelEntityUpdateActionNamesObject.updateModel}`;
+  actionName: 'updateEntity'//`${ModelEntityUpdateActionNamesObject.updateModel}`;
   update?:ModelEntityUpdateWithCUDUpdate;
 }
 
 export interface DomainModelCUDAction {
   actionType:'DomainModelAction',
-  actionName: 'CUDupdateModel';
-  // objects?:InstanceCollection[];
+  actionName: 'UpdateMetaModelInstance';
   update?: ModelCUDUpdate;
 }
 

@@ -109,7 +109,7 @@ async function uploadBooksAndReports(
 ) {
   await domainController.handleDomainAction({
     actionType: "DomainModelAction",
-    actionName: "updateModel",
+    actionName: "updateEntity",
     update: {
       updateActionName:"ModelEntityUpdateWithCUDUpdate",
       modelEntityUpdate: {
@@ -125,7 +125,7 @@ async function uploadBooksAndReports(
   },currentModel);
   await domainController.handleDomainAction({
     actionType: "DomainModelAction",
-    actionName: "CUDupdateModel",
+    actionName: "UpdateMetaModelInstance",
     update: {
       updateActionName: "create",
       objects: [{
@@ -292,7 +292,7 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainModelAction(
               {
                 actionType: "DomainModelAction",
-                actionName: "updateModel",
+                actionName: "updateEntity",
                 update: {
                   updateActionName:"ModelEntityUpdateWithCUDUpdate",
                   modelEntityUpdate:{
@@ -316,7 +316,7 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainModelAction(
               {
                 actionType: "DomainModelAction",
-                actionName: "CUDupdateModel",
+                actionName: "UpdateMetaModelInstance",
                 update: {
                   updateActionName:'update',
                   objects: [
@@ -350,7 +350,7 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainModelAction(
               {
                 actionType: "DomainModelAction",
-                actionName: "updateModel",
+                actionName: "updateEntity",
                 update: {
                   updateActionName: "ModelEntityUpdateWithCUDUpdate",
                   modelEntityUpdate: {

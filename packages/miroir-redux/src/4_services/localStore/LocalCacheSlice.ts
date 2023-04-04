@@ -181,7 +181,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
     //   )
     //   break;
     // }
-    case "CUDupdateModel": {
+    case "UpdateMetaModelInstance": {
       console.log('localCacheSliceObject CUDupdateModel',action.payload);
       const domainDataAction:DomainDataAction = {
         actionType:"DomainDataAction",
@@ -199,7 +199,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       )
       break;
     }
-    case "updateModel": {
+    case "updateEntity": {
       console.log('localCacheSliceObject updateModel',action.payload);
       // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
       // send CUD actions to local cache
