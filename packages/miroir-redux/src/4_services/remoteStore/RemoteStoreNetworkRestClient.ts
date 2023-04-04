@@ -52,7 +52,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   private networkActionUrlRoot(networkAction: RemoteStoreAction, useUuidForEntity: string = undefined): string {
     // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
-    // return ModelStructureUpdateActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
+    // return ModelEntityUpdateActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
     return (
       this.rootApiUrl +
       (CRUDActionNamesArrayString.includes(networkAction.actionName)

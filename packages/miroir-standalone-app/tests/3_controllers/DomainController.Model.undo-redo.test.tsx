@@ -208,14 +208,30 @@ describe(
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
-            actionName:'create',
             actionType: 'DomainModelAction',
-            objects:[{entity:entityAuthor.entity,entityUuid:entityAuthor.entityUuid,instances:[entityAuthor as Instance]}]
+            actionName:'CUDupdateModel',
+            update: {
+              updateActionName: 'create',
+              objects: [
+                {
+                  entity:entityAuthor.entity,entityUuid:entityAuthor.entityUuid,
+                  instances:[entityAuthor as Instance]
+                }
+              ]
+            }
           };
           const createBookAction: DomainAction = {
-            actionName:'create',
             actionType: 'DomainModelAction',
-            objects:[{entity:entityBook.entity,entityUuid:entityBook.entityUuid,instances:[entityBook as Instance]}]
+            actionName:'CUDupdateModel',
+            update: {
+              updateActionName: 'create',
+              objects: [
+                {
+                  entity:entityBook.entity,entityUuid:entityBook.entityUuid,
+                  instances:[entityBook as Instance]
+                }
+              ]
+            }
           };
   
           await act(

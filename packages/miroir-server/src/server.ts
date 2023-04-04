@@ -4,8 +4,7 @@ import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
   generateHandlerBody,
-  ModelStructureUpdate,
-  ModelUpdateWithCUDUpdate,
+  ModelUpdate
 } from "miroir-core";
 import { createServer } from 'miroir-datastore-postgres';
 
@@ -83,7 +82,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
     typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
   
   // const updates: RemoteStoreModelAction[] = await req.body;
-  const update: ModelUpdateWithCUDUpdate = (await req.body)[0];
+  const update: ModelUpdate = (await req.body)[0];
   console.log("server post model/"," started #####################################");
   console.log("server post model/ update",update);
 
@@ -102,8 +101,8 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
       if (update) {
         switch (update['action']) {
           default:
-            await sqlDbServer.applyModelStructureUpdate(update);
-            console.log('post applyModelStructureUpdate done', update);
+            await sqlDbServer.applyModelEntityUpdate(update);
+            console.log('post applyModelEntityUpdate done', update);
             break;
         }
       } else {

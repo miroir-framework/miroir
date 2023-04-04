@@ -1,6 +1,6 @@
 import entityEntity from "../assets/entities/Entity.json";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DomainAction, DomainDataAction, DomainModelAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainAction, DomainDataAction, DomainModelAction, DomainModelEntityUpdateAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
@@ -59,7 +59,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
    * .
    * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
    */
-  currentLocalCacheTransaction(): DomainModelAction[] {
+  currentLocalCacheTransaction(): DomainModelReplayableAction[] {
     return this.localCache.currentTransaction();
   }
 

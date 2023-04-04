@@ -30,6 +30,7 @@ import {
   LocalAndRemoteControllerInterface,
   MiroirContext,
   miroirCoreStartup,
+  ModelEntityUpdateWithCUDUpdate,
   reportEntityList,
   reportReportList
 } from "miroir-core";
@@ -214,9 +215,18 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
   
+          // await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
+          // await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
+          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
           await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
   
           const {
             getByText,
@@ -240,7 +250,7 @@ describe(
           );
   
           await user.click(screen.getByRole('button'))
-  
+
           await waitFor(
             () => {
               getAllByRole(/step:1/)
@@ -255,23 +265,27 @@ describe(
   
           // ##########################################################################################################
           console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
+          // console.log('add Report definition step 2: reduxStore.currentModel()',reduxStore.currentModel())
           const createAction: DomainAction = {
-            actionName:'create',
             actionType:"DomainModelAction",
-            objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
+            actionName:'updateModel',
+            update:{
+              updateActionName: "ModelEntityUpdateWithCUDUpdate",
+              modelEntityUpdate:{updateActionName:"create",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}}
           };
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction);
+              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
             }
           );
   
           await user.click(screen.getByRole('button'))
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          console.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(createAction);
+          expect((domainController.currentTransaction()[0].update as ModelEntityUpdateWithCUDUpdate)['modelEntityUpdate']).toEqual(createAction.update?.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -325,7 +339,7 @@ describe(
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
-  
+
           await localDataStore?.clear();
           await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
@@ -375,14 +389,16 @@ describe(
           // ##########################################################################################################
           console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
-            actionName:'create',
+            actionName:'updateModel',
             actionType: "DomainModelAction",
-            objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
+            update:{
+              updateActionName: "ModelEntityUpdateWithCUDUpdate",
+              modelEntityUpdate:{updateActionName:"create",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}}
           };
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction);
+              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
             }
           );
   
@@ -390,7 +406,7 @@ describe(
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(createAction);
+          expect((domainController.currentTransaction()[0].update as ModelEntityUpdateWithCUDUpdate)['modelEntityUpdate']).toEqual(createAction.update?.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -409,7 +425,7 @@ describe(
           console.log('reduxStore.currentModel()',reduxStore.currentModel())
           await act(
             async () => {
-              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -433,7 +449,7 @@ describe(
           console.log('add Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -520,11 +536,27 @@ describe(
           console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({
-                actionName:'delete',
-                actionType: 'DomainModelAction',
-                objects:[{entity:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instances:[reportEntityList as Instance]}]
-              });
+              await domainController.handleDomainAction(
+                {
+                  actionType: 'DomainModelAction',
+                  actionName:'CUDupdateModel',
+                  update:{
+                    updateActionName:"delete",
+                    objects:[
+                      {
+                        entityUuid:reportEntityList.entityUuid, entity:reportEntityList.entity, instances:[reportEntityList as Instance]
+                      }
+                    ]
+                  }
+                  // update:{modelEntityUpdate:{updateActionName:"DeleteMetaModelInstance",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instanceUuid:reportEntityList.uuid}}
+                },
+                // {
+                //   actionName:'updateModel',
+                //   actionType: 'DomainModelAction',
+                //   update:{modelEntityUpdate:{updateActionName:"DeleteMetaModelInstance",entityName:reportEntityList.entity,entityUuid:reportEntityList.entityUuid,instanceUuid:reportEntityList.uuid}}
+                // },
+                reduxStore.currentModel()
+              );
             }
           );
           
@@ -654,19 +686,46 @@ describe(
           // ##########################################################################################################
           console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
           // const updatedReport = 
-          const updateAction: DomainAction = {
-            actionName: "update",
-            actionType: 'DomainModelAction',
-            objects: [
-              {
-                entity: reportReportList.entity,
-                entityUuid:reportReportList.entityUuid,
-                instances: [
-                  Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
-                ],
-              },
-            ],
-          };
+          const updateAction: DomainAction = 
+            {
+              actionType: "DomainModelAction",
+              actionName: "CUDupdateModel",
+              update: {
+                updateActionName:'update',
+                objects: [
+                  {
+                    entity: reportReportList.entity,
+                    entityUuid: reportReportList.entityUuid,
+                    instances:[
+                      Object.assign(
+                        {},
+                        reportReportList, 
+                        {
+                          name: "Report2List",
+                          defaultLabel: "Modified List of Reports",
+                        }
+                      ) as Instance
+                    ]
+                  }
+                ]
+              }
+            }
+          ;
+      // {
+          //   actionType: 'DomainModelAction',
+          //   actionName: "updateModel",
+          //   update: {
+          //     modelEntityUpdate:
+          //       {
+          //         updateActionName:"alterMetaModelInstance",
+          //         entityName: reportReportList.entity,
+          //         entityUuid:reportReportList.entityUuid,
+          //         instanceUuid: [
+          //           Object.assign({},reportReportList,{"name":"Report2List", "defaultLabel": "Modified List of Reports"}) as Instance
+          //         ],
+          //       },
+          //   }
+          // };
           await act(
             async () => {
               await domainController.handleDomainAction(updateAction);

@@ -1,5 +1,5 @@
 import { MiroirModel } from "../../0_interfaces/1_core/ModelInterface.js";
-import { ModelStructureUpdate, ModelUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { ModelCUDUpdate, ModelEntityUpdate, ModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
@@ -23,32 +23,22 @@ export const CRUDActionNamesArrayString:string[] = CRUDActionNamesArray.map(a=>a
 
 
 // #############################################################################################
-export const localCacheOnlyActionNamesObject = {
+export const undoRedoActionNamesObject = {
   'undo': 'undo',
   'redo': 'redo',
-  'replace': 'replace', // to refresh data in local storage
-  // 'commit': 'commit', // to commit currently existing transactions present in local storage. Remote storage is updated upon commit.
 }
-export type LocalCacheOnlyActionName = keyof typeof localCacheOnlyActionNamesObject;
-export const localCacheOnlyActionNamesArray:LocalCacheOnlyActionName[] = Object.keys(localCacheOnlyActionNamesObject) as LocalCacheOnlyActionName[];
+export type UndoRedoActionName = keyof typeof undoRedoActionNamesObject;
+export const undoRedoActionNamesArray:UndoRedoActionName[] = Object.keys(undoRedoActionNamesObject) as UndoRedoActionName[];
 
 
-// #############################################################################################
-export const ModelStructureUpdateActionNamesObject = {
+// // #############################################################################################
+export const ModelEntityUpdateActionNamesObject = {
   'resetModel': 'resetModel', // to delete all DB contents. DANGEROUS. TEMPORARY?
   'updateModel': 'updateModel',
 }
-export type ModelStructureUpdateActionName = keyof typeof ModelStructureUpdateActionNamesObject;
-export const ModelStructureUpdateActionNamesArray:ModelStructureUpdateActionName[] = Object.keys(ModelStructureUpdateActionNamesObject) as ModelStructureUpdateActionName[];
-export const ModelStructureUpdateActionNamesArrayString:string[] = ModelStructureUpdateActionNamesArray.map(a=>a);
-
-// #############################################################################################
-export const domainModelUpdateActionNamesObject = {
-  // ...CUDActionNamesObject,
-  ...localCacheOnlyActionNamesObject,
-};
-export type DomainModelUpdateActionName = keyof typeof domainModelUpdateActionNamesObject;
-export const domainModelUpdateActionNamesArray:DomainModelUpdateActionName[] = Object.keys(domainModelUpdateActionNamesObject) as DomainModelUpdateActionName[];
+export type ModelEntityUpdateActionName = keyof typeof ModelEntityUpdateActionNamesObject;
+export const ModelEntityUpdateActionNamesArray:ModelEntityUpdateActionName[] = Object.keys(ModelEntityUpdateActionNamesObject) as ModelEntityUpdateActionName[];
+export const ModelEntityUpdateActionNamesArrayString:string[] = ModelEntityUpdateActionNamesArray.map(a=>a);
 
 // #############################################################################################
 export interface DomainDataAction {
@@ -60,44 +50,66 @@ export interface DomainDataAction {
 }
 
 
-export interface DomainModelStructureUpdateAction {
+export interface DomainModelEntityUpdateAction {
   actionType:'DomainModelAction',
-  actionName: ModelStructureUpdateActionName;
-  // updates?:ModelStructureUpdate[];
-  update?:ModelUpdateWithCUDUpdate;
-  // updates?:ModelUpdate[];
+  actionName: 'updateModel'//`${ModelEntityUpdateActionNamesObject.updateModel}`;
+  // actionName: `${ModelEntityUpdateActionNamesObject.updateModel}`;
+  update?:ModelEntityUpdateWithCUDUpdate;
 }
 
 export interface DomainModelCUDAction {
   actionType:'DomainModelAction',
-  actionName: DomainModelUpdateActionName;
-  objects?:InstanceCollection[];
+  actionName: 'CUDupdateModel';
+  // objects?:InstanceCollection[];
+  update?: ModelCUDUpdate;
 }
 
+export type DomainModelReplayableAction = 
+  | DomainModelEntityUpdateAction
+  | DomainModelCUDAction
+;
+
+export interface DomainModelUndoRedoAction {
+  actionType:'DomainModelAction',
+  actionName: UndoRedoActionName;
+  objects?:InstanceCollection[];
+}
 
 export interface DomainModelCommitAction {
   actionType:'DomainModelAction',
   actionName: 'commit';
   label?: string;
-  // objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+}
+
+export interface DomainModelRollbackAction {
+  actionType:'DomainModelAction',
+  actionName: 'replace';
+  objects?:InstanceCollection[];
 }
 
 export interface DomainModelLocalCacheAndTransactionAction {
   actionType:'DomainModelAction',
-  actionName: LocalCacheOnlyActionName;
-  objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+  actionName: UndoRedoActionName;
+  // objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+}
+
+export interface DomainModelResetAction {
+  actionType:'DomainModelAction',
+  actionName: 'resetModel';
 }
 
 export type DomainModelAction =
-    DomainModelCommitAction
-  | DomainModelStructureUpdateAction
-  | DomainModelCUDAction
+  | DomainModelReplayableAction
+  | DomainModelCommitAction
+  | DomainModelRollbackAction
+  | DomainModelUndoRedoAction
+  | DomainModelResetAction
   | DomainModelLocalCacheAndTransactionAction;
 
 // #############################################################################################
 export const remoteStoreActionNamesObject = {
   ...CRUDActionNamesObject,
-  ...ModelStructureUpdateActionNamesObject,
+  ...ModelEntityUpdateActionNamesObject,
 }
 export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
 export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(remoteStoreActionNamesObject) as RemoteStoreActionName[];
@@ -121,6 +133,7 @@ export interface DomainControllerInterface {
   handleDomainDataAction(action:DomainDataAction):Promise<void>;
   handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirModel):Promise<void>;
   handleDomainAction(action:DomainAction, currentModel?:MiroirModel):Promise<void>;
-  currentTransaction():DomainModelAction[];
+  // currentTransaction():DomainModelEntityUpdateAction[];
+  currentTransaction():DomainModelReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

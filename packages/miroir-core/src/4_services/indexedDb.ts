@@ -110,7 +110,7 @@ export class IndexedDb {
   // #############################################################################################
   public async getValue(entityUuid: string, instanceUuid: string): Promise<any> {
     const table = this.subLevels.get(entityUuid)
-    console.log('IndexedDb getValue ',entityUuid,instanceUuid,table);
+    console.log('IndexedDb getValue for entity',entityUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
       result = await table.get(instanceUuid, {valueEncoding: 'json'});

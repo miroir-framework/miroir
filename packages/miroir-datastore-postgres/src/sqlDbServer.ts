@@ -4,7 +4,8 @@ import {
   EntityDefinition,
   entityEntity,
   Instance,
-  ModelUpdateWithCUDUpdate,
+  ModelEntityUpdateWithCUDUpdate,
+  ModelUpdate,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
 
@@ -193,7 +194,7 @@ export class SqlDbServer implements DataStoreInterface {
       }
     }
 
-    console.log("upsertInstanceUuid inserting into Entity", instance["entityUuid"], 'named', instance["entityName"], 'existing entities', Object.keys(this.sqlUuidEntities?this.sqlUuidEntities:{}));
+    console.log("upsertInstanceUuid upserting into Entity", instance["entityUuid"], 'named', instance["entityName"], 'existing entities', Object.keys(this.sqlUuidEntities?this.sqlUuidEntities:{}));
     // return this.sqlUuidEntities[instance.entityUuid].sequelizeModel.create(instance as any);
     return this.sqlUuidEntities[instance.entityUuid].sequelizeModel.upsert(instance as any);
   }
@@ -208,53 +209,84 @@ export class SqlDbServer implements DataStoreInterface {
 
   // ##############################################################################################
   async deleteInstanceUuid(entityUuid: string, instance: Instance): Promise<any> {
-    // console.log('deleteInstanceUuid', entityUuid,instance);
-    
-    await this.sqlUuidEntities[instance.entityUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
+    console.log('deleteInstanceUuid', entityUuid,instance);
+    await this.sqlUuidEntities[entityUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
     return Promise.resolve();
   }
 
   // ##############################################################################################
-  async applyModelStructureUpdate(update: ModelUpdateWithCUDUpdate) {
-    console.log("SqlDbServer applyModelStructureUpdates", update);
-    // const currentUpdate = updates[0];
-    // const cudUpdate = update.equivalentModelCUDUpdates[0];
-    const modelStructureUpdate = update.modelStructureUpdate;
-    if (this.sqlUuidEntities && this.sqlUuidEntities[modelStructureUpdate.entityUuid]) {
-      const model = this.sqlUuidEntities[modelStructureUpdate.entityUuid];
-      console.log("dropUuidEntity SqlDbServer applyModelStructureUpdates", update.modelStructureUpdate.updateActionName, modelStructureUpdate.entityUuid, model.entityName);
-      switch (update.modelStructureUpdate.updateActionName) {
-        case "DeleteMetaModelInstance":
-          
-          break;
-        case "alterMetaModelInstance":
-        case "alterEntityAttribute":
-        case "renameMetaModelInstance":
-          this.sequelize.getQueryInterface().renameTable(modelStructureUpdate.entityName, modelStructureUpdate['targetValue']);
-          this.sequelize.modelManager.removeModel(this.sequelize.model(model.entityName));
-          // const newModel=
-          // this.sqlUuidEntities[currentUpdate.entityUuid] = {entityName:currentUpdate.targetValue,sequelizeModel:this.sqlUuidEntities[currentUpdate.entityUuid].sequelizeModel}
-          Object.assign(
-            this.sqlUuidEntities,
-            this.sqlUuidEntityDefinition(
-              update.equivalentModelCUDUpdates[0].objects[0].instances[0] as EntityDefinition
-            )
-          );
-          break;
-        case "create":
-          for (const instance of update.modelStructureUpdate.instances) {
-            await this.upsertInstanceUuid(modelStructureUpdate.entityUuid, instance);
+  async applyModelEntityUpdate(update: ModelUpdate) {
+    console.log("SqlDbServer applyModelEntityUpdates", update);
+    // const modelEntityUpdate = update.modelEntityUpdate;
+    const modelCUDupdate = update.updateActionName == 'ModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid]) {
+      const model = this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid];
+      console.log("dropUuidEntity SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].entity);
+      if (update.updateActionName == 'ModelEntityUpdateWithCUDUpdate') {
+        switch (update.modelEntityUpdate.updateActionName) {
+          case "DeleteMetaModelInstance": {
+            await this.deleteInstanceUuid(update.modelEntityUpdate.entityUuid, {uuid:update.modelEntityUpdate.instanceUuid} as Instance)
+            break;
           }
-        default:
-          break;
+          case "alterMetaModelInstance":
+          case "alterEntityAttribute":
+          case "renameEntity":
+            this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate.entityName, update.modelEntityUpdate['targetValue']);
+            this.sequelize.modelManager.removeModel(this.sequelize.model(model.entityName));
+            // update this.sqlUuidEntities for the renamed entity
+            Object.assign(
+              this.sqlUuidEntities,
+              this.sqlUuidEntityDefinition(
+                update.equivalentModelCUDUpdates[0].objects[0].instances[0] as EntityDefinition
+              )
+            );
+            // update the instance in table Entity corresponding to the renamed entity
+            await this.upsertInstanceUuid(modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].instances[0]);
+            // await this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid].sequelizeModel.upsert(modelCUDupdate.objects[0].instances[0] as any)
+            break;
+          case "create":
+            for (const instance of update.modelEntityUpdate.instances) {
+              await this.upsertInstanceUuid(update.modelEntityUpdate.entityUuid, instance);
+            }
+          default:
+            break;
+        }
+      } else { // modelCUDupdate
+        switch (update.updateActionName) {
+          case "create": {
+            for (const instanceCollection of update.objects) {
+              for (const instance of instanceCollection.instances) {
+                await this.upsertInstanceUuid(instance.entityUuid, instance);
+              }
+            }
+            break;
+          }
+          case "update": {
+            for (const instanceCollection of update.objects) {
+              for (const instance of instanceCollection.instances) {
+                await this.upsertInstanceUuid(instance.entityUuid, instance);
+              }
+            }
+            break;
+          }
+          case "delete": {
+            for (const instanceCollection of update.objects) {
+              for (const instance of instanceCollection.instances) {
+                await this.deleteInstanceUuid(instanceCollection.entityUuid, instance)
+              }
+            }
+            break;
+          }
+          default:
+            break;
+        }
       }
-  
     } else {
       console.warn(
         "dropUuidEntity SqlDbServer entity uuid",
-        update.modelStructureUpdate.entityUuid,
+        modelCUDupdate.objects[0].entityUuid,
         "name",
-        update.modelStructureUpdate.entityName,
+        modelCUDupdate.objects[0].entity,
         "not found!"
       );
     }

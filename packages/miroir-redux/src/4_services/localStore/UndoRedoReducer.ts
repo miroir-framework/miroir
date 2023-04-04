@@ -4,9 +4,9 @@ import produce, { applyPatches, enablePatches, Patch } from "immer";
 import {
   CRUDActionNamesArrayString,
   CUDActionName,
-  CUDActionNamesArray, DomainAction, DomainModelAction, EntityDefinition,
+  CUDActionNamesArray, DomainAction, DomainModelAction, DomainModelEntityUpdateAction, EntityDefinition,
   InstanceCollection,
-  ModelStructureUpdateActionNamesObject
+  ModelEntityUpdateActionNamesObject
 } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
 import { RemoteStoreRestSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
@@ -30,7 +30,8 @@ export interface InnerStoreStateInterface {
 export interface ReduxStateChanges {
   // action:PayloadAction<DomainDataAction|DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
   // action:PayloadAction<DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
-  action:DomainModelAction, changes:Patch[]; inverseChanges:Patch[];
+  // action:DomainModelAction, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainModelEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
 }
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb.
@@ -67,7 +68,7 @@ const forgetHistoryActionsTypes: string[] = [
 ];
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
-    (CUDActionNamesArray as string[]).concat([ModelStructureUpdateActionNamesObject.updateModel]).map(
+    (CUDActionNamesArray as string[]).concat([ModelEntityUpdateActionNamesObject.updateModel,'CUDupdateModel']).map(
     a => ({
       // type: localCacheSliceName + '/' + localCacheSliceInputActionNamesOb#ject.handleLocalCacheModelAction,
       type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
@@ -119,6 +120,7 @@ function callUndoRedoReducer(
     return {newSnapshot:newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges};
   } else {
     console.warn('callUndoRedoReducer not undoable action type', action.type, 'action name',action.payload.actionName, 'action', action.payload,'changes',changes,'inverseChanges',inverseChanges)
+    console.warn('undoableSliceUpdateActions', undoableSliceUpdateActions)
     console.warn('newPresentModelSnapshot', JSON.stringify(newPresentModelSnapshot))
     return {newSnapshot:newPresentModelSnapshot, changes: [], inverseChanges: []};
   }
@@ -128,7 +130,7 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    action: PayloadAction<DomainModelAction>,
+    action: PayloadAction<DomainModelEntityUpdateAction>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
 
@@ -279,9 +281,9 @@ function callNextReducer(
                 }
                 break;
               }
-              default:
+              default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                 console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.actionName, action);
-                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelAction>)
+                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelEntityUpdateAction>)
             }
             break;
           }

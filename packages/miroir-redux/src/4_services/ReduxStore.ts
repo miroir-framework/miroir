@@ -25,6 +25,8 @@ import {
   MiroirReport,
   StoreBasedConfiguration,
   MiroirModelVersion,
+  DomainModelEntityUpdateAction,
+  DomainModelReplayableAction,
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -197,7 +199,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  currentTransaction():DomainModelAction[]{
+  currentTransaction():DomainModelReplayableAction[]{
     console.log("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action);
   }

@@ -1,7 +1,7 @@
-import { ModelStructureUpdate, ModelUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
+import { ModelEntityUpdateWithCUDUpdate, ModelUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { CRUDActionName, DomainModelStructureUpdateAction } from '../../2_domain/DomainControllerInterface.js';
+import { CRUDActionName, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
 
 export interface RemoteStoreCRUDAction {
   actionType:'RemoteStoreCRUDAction';
@@ -13,7 +13,8 @@ export interface RemoteStoreCRUDAction {
 }
 
 // export type RemoteStoreModelAction = DomainModelAction;
-export type RemoteStoreModelAction = DomainModelStructureUpdateAction;
+// export type RemoteStoreModelAction = DomainModelEntityUpdateAction;
+export type RemoteStoreModelAction = DomainModelReplayableAction | DomainModelResetAction;
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 
@@ -82,6 +83,6 @@ export interface DataStoreInterface {
   deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any>;
   deleteInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
 
-  // applyModelStructureUpdates(updates:ModelUpdateWithCUDUpdate[]);
-  applyModelStructureUpdate(update:ModelUpdateWithCUDUpdate);
+  // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
+  applyModelEntityUpdate(update:ModelUpdate);
 }

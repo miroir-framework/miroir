@@ -15,7 +15,7 @@ import {
   InstanceCollection,
   DomainDataAction,
   DomainModelAction,
-  ModelStructureUpdateConverter,
+  ModelEntityUpdateConverter,
   EntityDefinition,
   DomainAction,
   entityEntity,
@@ -128,7 +128,10 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
         console.log('localCacheSliceObject handleLocalCacheDataAction delete', instanceCollection);
         
         const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
+        console.log('localCacheSliceObject handleLocalCacheDataAction delete state before',JSON.stringify(state[instanceCollection.entityUuid]));
+        
         sliceEntityAdapter.removeMany(state[instanceCollection.entityUuid], instanceCollection.instances.map(i => i.uuid));
+        console.log('localCacheSliceObject handleLocalCacheDataAction delete state after',JSON.stringify(state[instanceCollection.entityUuid]));
       }
       break;
     }
@@ -157,7 +160,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
     }
     case 'commit': {
       // reset transation contents
-      // send ModelStructureUpdates to server for execution?
+      // send ModelEntityUpdates to server for execution?
       // for (let instanceCollection of action.payload.objects) {
       //   ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<InstanceCollection>);
       // }
@@ -178,27 +181,41 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
     //   )
     //   break;
     // }
-    case "updateModel": {
-      console.log('localCacheSliceObject updateModel',action.payload);
-      // infer from ModelStructureUpdates the CUD actions to be performed on model Entities, Reports, etc.
-      // send CUD actions to local cache
-      // have undo / redo contain both(?) local cache CUD actions and ModelStructureUpdates
-      const domainDataAction:DomainDataAction = 
-        ModelStructureUpdateConverter.modelStructureUpdateToLocalCacheUpdate(
-          Object.values(state[entityEntity.uuid].entities) as EntityDefinition[],
-          action.payload.update.modelStructureUpdate
-        );
-        console.log('updateModel domainDataAction',domainDataAction);
+    case "CUDupdateModel": {
+      console.log('localCacheSliceObject CUDupdateModel',action.payload);
+      const domainDataAction:DomainDataAction = {
+        actionType:"DomainDataAction",
+        actionName:action.payload.update.updateActionName,
+        objects: action.payload.update.objects
+      }
+      ;
+      console.log('updateModel domainDataAction',domainDataAction);
 
-        handleLocalCacheDataAction(
+      handleLocalCacheDataAction(
         state, {
           type:'rebound',
           payload: domainDataAction
-          // {
-          //   actionType:"DomainDataAction",
-          //   actionName:action.payload.actionName,
-          //   objects:action.payload.objects,
-          // }
+        }
+      )
+      break;
+    }
+    case "updateModel": {
+      console.log('localCacheSliceObject updateModel',action.payload);
+      // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
+      // send CUD actions to local cache
+      // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
+      const domainDataAction:DomainDataAction = 
+        ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
+          Object.values(state[entityEntity.uuid].entities) as EntityDefinition[],
+          action.payload.update.modelEntityUpdate
+        )
+      ;
+      console.log('updateModel domainDataAction',domainDataAction);
+
+      handleLocalCacheDataAction(
+        state, {
+          type:'rebound',
+          payload: domainDataAction
         }
       )
       break;

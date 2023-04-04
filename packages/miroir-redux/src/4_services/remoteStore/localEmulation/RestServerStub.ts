@@ -1,6 +1,7 @@
 import {
   DataStoreInterface,
-  generateHandlerBody, ModelStructureUpdate, ModelUpdateWithCUDUpdate
+  generateHandlerBody,
+  ModelUpdate
 } from "miroir-core";
 import { rest } from "msw";
 
@@ -93,8 +94,7 @@ export class RestServerStub {
       // ############################    MODEL      ############################################
       rest.post(this.rootApiUrl + "/model/:actionName", async (req, res, ctx) => {
         console.log("post model/"," started #####################################");
-        const actionName: string =
-        typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
+        const actionName: string = typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
         console.log("post model/ actionName",actionName);
 
         switch (actionName) {
@@ -105,15 +105,11 @@ export class RestServerStub {
             break;
           }
           case 'updateModel': {
-            const update: ModelUpdateWithCUDUpdate = await req.json();
+            const update: ModelUpdate = (await req.json())[0];
             console.log("post model/ updates",update);
             if (update) {
-              switch (update['action']) {
-                default:
-                  await localDataStore.applyModelStructureUpdate(update);
-                  console.log('post applyModelStructureUpdates', update);
-                  break;
-              }
+              await localDataStore.applyModelEntityUpdate(update);
+              console.log('post applyModelEntityUpdates', update);
             } else {
               console.log('post model/ has no update to execute!')
             }

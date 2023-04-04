@@ -3,30 +3,24 @@ import { Instance, InstanceCollection, InstanceWithName } from "../../0_interfac
 import { CUDActionName } from "../../0_interfaces/2_domain/DomainControllerInterface";
 import { MiroirReport } from "../../0_interfaces/1_core/Report";
 
-export const ModelUpdateActionNamesObject = {
-  // 'create': 'create',
-  // 'rename': 'rename',
-}
-export type ModelUpdateActionName = keyof typeof ModelUpdateActionNamesObject;
-export const ModelUpdateActionNamesArray:ModelUpdateActionName[] = Object.keys(ModelUpdateActionNamesObject) as ModelUpdateActionName[];
-
-export interface ModelCUDUpdate {
-  // updateActionType: 'ModelCUDUpdate';
-  updateActionName: CUDActionName;
-  objects?:InstanceCollection[];
-}
+// export const ModelUpdateActionNamesObject = {
+//   // 'create': 'create',
+//   // 'rename': 'rename',
+// }
+// export type ModelUpdateActionName = keyof typeof ModelUpdateActionNamesObject;
+// export const ModelUpdateActionNamesArray:ModelUpdateActionName[] = Object.keys(ModelUpdateActionNamesObject) as ModelUpdateActionName[];
 
 export interface ModelResetUpdate {
   updateActionType: 'ModelResetUpdate';
   updateActionName: 'resetModel';
 }
 
-export interface ModelStructureAbstractUpdate {
-  entityUuid:string;
-  // equivalentModelCUDUpdates?: ModelCUDUpdate[];
-}
+// export interface ModelStructureAbstractUpdate {
+//   entityUuid:string;
+//   // equivalentModelCUDUpdates?: ModelCUDUpdate[];
+// }
 
-export interface ModelStructureCreateUpdate {
+export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionName: 'create';
   entityName?:string;
   entityUuid:string;
@@ -34,7 +28,7 @@ export interface ModelStructureCreateUpdate {
 }
 
 //alter model instances for instance of the Entity entity
-export interface ModelStructureAlterEntityAttributeUpdate {
+export interface ModelEntityUpdateAlterEntityAttribute {
   updateActionName: 'alterEntityAttribute';
   entityName?:string;
   entityUuid:string;
@@ -42,7 +36,7 @@ export interface ModelStructureAlterEntityAttributeUpdate {
   update:Partial<EntityAttribute>;
 }
 
-export interface ModelStructureAlterMetaModelInstanceUpdate {
+export interface ModelEntityUpdateAlterMetaModelInstance {
   updateActionName: 'alterMetaModelInstance';
   entityName?:string;
   entityUuid:string;
@@ -50,36 +44,42 @@ export interface ModelStructureAlterMetaModelInstanceUpdate {
   update:Partial<InstanceWithName | MiroirReport>;
 }
 
-export interface ModelStructureDeleteMetaModelInstanceUpdate {
+export interface ModelEntityUpdateDeleteMetaModelInstance {
   updateActionName: 'DeleteMetaModelInstance';
   entityName?:string;
   entityUuid:string;
   instanceUuid:string;
 }
 
-
-export interface ModelStructureRenameEntityUpdate {
-  // updateActionType: 'ModelStructureUpdate';
-  updateActionName: 'renameMetaModelInstance';
+export interface ModelEntityUpdateRenameEntity {
+  // updateActionType: 'ModelEntityUpdate';
+  updateActionName: 'renameEntity';
   entityName?:string;
   entityUuid:string;
   entityAttributeName?:string;
   targetValue?:any;
 }
 
-export type ModelStructureUpdate =
-  | ModelStructureDeleteMetaModelInstanceUpdate
-  | ModelStructureAlterMetaModelInstanceUpdate
-  | ModelStructureAlterEntityAttributeUpdate
-  | ModelStructureRenameEntityUpdate
-  | ModelStructureCreateUpdate;
+export type ModelEntityUpdate =
+  | ModelEntityUpdateDeleteMetaModelInstance
+  | ModelEntityUpdateAlterMetaModelInstance
+  | ModelEntityUpdateAlterEntityAttribute
+  | ModelEntityUpdateRenameEntity
+  | ModelEntityUpdateCreateMetaModelInstance;
 
-export interface ModelUpdateWithCUDUpdate {
-  modelStructureUpdate: ModelStructureUpdate;
+export interface ModelCUDUpdate {
+  // updateActionType: 'ModelCUDUpdate';
+  updateActionName: CUDActionName;
+  objects?:InstanceCollection[];
+}
+  
+export interface ModelEntityUpdateWithCUDUpdate {
+  updateActionName:'ModelEntityUpdateWithCUDUpdate',
+  modelEntityUpdate: ModelEntityUpdate;
   equivalentModelCUDUpdates?: ModelCUDUpdate[];
 }
 
-// export type ModelUpdate = ModelStructureUpdate | ModelResetUpdate;
-// export interface ModelStructureUpdateConverterInterface {
-//   static modelUpdateToLocalCacheUpdate(modelUpdate:ModelStructureUpdate):DomainDataAction[];
+export type ModelUpdate = ModelEntityUpdateWithCUDUpdate | ModelCUDUpdate;
+// export interface ModelEntityUpdateConverterInterface {
+//   static modelUpdateToLocalCacheUpdate(modelUpdate:ModelEntityUpdate):DomainDataAction[];
 // }
