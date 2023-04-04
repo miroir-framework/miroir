@@ -4,7 +4,7 @@
  */
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupServer, SetupServerApi } from "msw/node";
+import { SetupServerApi, setupServer } from "msw/node";
 import React from "react";
 
 const fetch = require('node-fetch');
@@ -16,33 +16,36 @@ global.TextDecoder = TextDecoder
 
 
 import {
-  circularReplacer,
   DataStoreInterface,
   DomainAction,
-  DomainDataAction,
-  entityEntity,
-  entityReport, Instance, miroirCoreStartup,
-  reportEntityList,
-  reportReportList,
-  LocalAndRemoteControllerInterface,
   DomainControllerInterface,
+  Instance,
+  LocalAndRemoteControllerInterface,
+  MiroirConfig,
   MiroirContext,
-  entityStoreBasedConfiguration,
+  circularReplacer,
+  entityEntity,
   entityModelVersion,
+  entityReport,
+  entityStoreBasedConfiguration,
+  instanceConfigurationReference,
   instanceModelVersionInitial,
-  instanceConfigurationReference
+  miroirCoreStartup,
+  reportEntityList,
+  reportReportList
 } from "miroir-core";
 import {
   ReduxStore
 } from "miroir-redux";
 
-import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
-import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
-import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import entityAuthor from "miroir-standalone-app/src/assets/entities/Author.json";
 import entityBook from "miroir-standalone-app/src/assets/entities/Book.json";
+import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
+import { miroirAppStartup } from "miroir-standalone-app/src/startup";
+import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
+import config from "miroir-standalone-app/tests/miroirConfig.test.json"
 
 
 miroirAppStartup();
@@ -62,28 +65,7 @@ beforeAll(
 
     try {
       const wrapped = await createMswStore(
-        {
-          // "emulateServer":false, 
-          // "serverConfig":{
-          //   "rootApiUrl":"http://localhost:3080"
-          // },
-          // "emulateServer":true, 
-          // "rootApiUrl":"http://localhost/fakeApi",
-          //   "emulatedServerConfig":{
-          //   "emulatedServerType": "Sql",
-          //   "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
-          // },
-          "emulateServer":true, 
-          "rootApiUrl":"http://localhost/fakeApi",
-            "emulatedServerConfig":{
-            "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
-          },
-          "deploymentMode":"monoUser",
-          "monoUserAutentification": false,
-          "monoUserVersionControl": false,
-          "versionControlForDataConceptLevel": false
-        },
+        config as MiroirConfig,
         'nodejs',
         fetch,
         setupServer

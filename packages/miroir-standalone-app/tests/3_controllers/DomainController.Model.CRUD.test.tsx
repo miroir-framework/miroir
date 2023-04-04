@@ -28,6 +28,7 @@ import {
   instanceConfigurationReference,
   instanceModelVersionInitial,
   LocalAndRemoteControllerInterface,
+  MiroirConfig,
   MiroirContext,
   miroirCoreStartup,
   ModelEntityUpdateWithCUDUpdate,
@@ -42,6 +43,7 @@ import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import config from "miroir-standalone-app/tests/miroirConfig.test.json"
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -60,28 +62,7 @@ beforeAll(
 
     try {
       const wrapped = await createMswStore(
-        {
-          // "emulateServer":false, 
-          // "serverConfig":{
-          //   "rootApiUrl":"http://localhost:3080"
-          // },
-          // "emulateServer":true, 
-          // "rootApiUrl":"http://localhost/fakeApi",
-          //   "emulatedServerConfig":{
-          //   "emulatedServerType": "Sql",
-          //   "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
-          // },
-          "emulateServer":true, 
-          "rootApiUrl":"http://localhost/fakeApi",
-            "emulatedServerConfig":{
-            "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
-          },
-          "deploymentMode":"monoUser",
-          "monoUserAutentification": false,
-          "monoUserVersionControl": false,
-          "versionControlForDataConceptLevel": false
-        },
+        config as MiroirConfig,
         'nodejs',
         fetch,
         setupServer

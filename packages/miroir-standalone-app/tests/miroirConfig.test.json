@@ -1,0 +1,12 @@
+{
+  "emulateServer": true,
+  "rootApiUrl":"http://localhost:3080",
+  "emulatedServerConfig":{
+    "emulatedServerType": "indexedDb",
+    "indexedDbName":"miroir-uuid-indexedDb"
+  },
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false,
+  "versionControlForDataConceptLevel": false
+}

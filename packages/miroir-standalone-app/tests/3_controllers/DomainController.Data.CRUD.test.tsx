@@ -19,7 +19,7 @@ import {
   circularReplacer,
   DomainDataAction,
   entityEntity,
-  entityReport, Instance, miroirCoreStartup,
+  entityReport, Instance, MiroirConfig, miroirCoreStartup,
   reportEntityList
 } from "miroir-core";
 
@@ -38,40 +38,18 @@ import book2 from "miroir-standalone-app/src/assets/instances/Book - The Design 
 import book3 from "miroir-standalone-app/src/assets/instances/Book - Et dans l'éternité.json";
 import book4 from "miroir-standalone-app/src/assets/instances/Book - Rear Window.json";
 import reportBookList from "miroir-standalone-app/src/assets/reports/BookList.json";
+import config from "miroir-standalone-app/tests/miroirConfig.test.json"
 
 miroirAppStartup();
 miroirCoreStartup();
 
 let localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext;
-// const {localDataStore, localDataStoreWorker, localDataStoreServer, reduxStore, domainController, miroirContext} = 
 
 beforeAll(
   async () => {
     try {
-      // Establish requests interception layer before all tests.
       const wrapped = await createMswStore(
-        {
-          // "emulateServer":false, 
-          // "serverConfig":{
-          //   "rootApiUrl":"http://localhost:3080"
-          // },
-          // "emulateServer":true, 
-          // "rootApiUrl":"http://localhost/fakeApi",
-          //   "emulatedServerConfig":{
-          //   "emulatedServerType": "Sql",
-          //   "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
-          // },
-          "emulateServer":true, 
-          "rootApiUrl":"http://localhost/fakeApi",
-          "emulatedServerConfig":{
-            "emulatedServerType": "indexedDb",
-            "indexedDbName":"miroir-uuid-indexedDb"
-          },
-          "deploymentMode":"monoUser",
-          "monoUserAutentification": false,
-          "monoUserVersionControl": false,
-          "versionControlForDataConceptLevel": false
-        },
+        config as MiroirConfig,
         'nodejs',
         fetch,
         setupServer
