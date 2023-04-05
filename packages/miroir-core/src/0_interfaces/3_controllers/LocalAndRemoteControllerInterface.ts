@@ -1,4 +1,4 @@
-import { DomainAction, DomainDataAction, DomainModelAction, DomainModelReplayableAction } from "../2_domain/DomainControllerInterface";
+import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../2_domain/DomainControllerInterface";
 import { LocalCacheInfo } from "../4-services/localCache/LocalCacheInterface";
 import {
   RemoteStoreAction,
@@ -8,9 +8,9 @@ import {
 
 export interface LocalAndRemoteControllerInterface {
   loadConfigurationFromRemoteDataStore(): Promise<void>;
-  handleLocalCacheModelAction(action: DomainModelAction);
+  handleLocalCacheModelAction(action: DomainModelAncillaryOrReplayableAction);
   handleLocalCacheDataAction(action: DomainDataAction);
-  handleLocalCacheAction(action: DomainAction);
+  handleLocalCacheAction(action: DomainAncillaryOrReplayableAction);
   handleRemoteStoreCRUDAction(action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
   currentLocalCacheTransaction(): DomainModelReplayableAction[];

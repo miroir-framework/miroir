@@ -1,6 +1,6 @@
 
 import { Instance } from "../0_interfaces/1_core/Instance";
-import { ModelEntityUpdateDeleteMetaModelInstance, ModelEntityUpdateWithCUDUpdate, ModelUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelEntityUpdateDeleteMetaModelInstance, WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { IndexedDb } from "./indexedDb";
 
@@ -104,21 +104,21 @@ export class IndexedDbDataStore implements DataStoreInterface{
 
   // ##############################################################################################
   // async applyModelEntityUpdates(updates:ModelEntityUpdate[]){
-  async applyModelEntityUpdate(update:ModelUpdate){
+  async applyModelEntityUpdate(update:ModelReplayableUpdate){
     console.log('IndexedDbDataStore applyModelEntityUpdate',update);
-    const modelCUDupdate = update.updateActionName == 'ModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     // if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid]) {
     if (this.localUuidIndexedDb.hasSubLevel(modelCUDupdate.objects[0].entityUuid)) {
       // console.log('IndexedDbDataStore applyModelEntityUpdate',modelEntityUpdate);
-      if (update.updateActionName == "ModelEntityUpdateWithCUDUpdate") {
+      if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {
-          case "DeleteMetaModelInstance":{
+          case "DeleteEntity":{
             const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
             await this.deleteInstanceUuid(deleteStructureUpdate.entityUuid,{uuid:deleteStructureUpdate.instanceUuid} as Instance)
             break;
           }
-          case "alterMetaModelInstance":
+          // case "alterMetaModelInstance":
           case "alterEntityAttribute":
           case "renameEntity": {
             const cudUpdate = update.equivalentModelCUDUpdates[0];
@@ -133,7 +133,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
             console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].entityUuid,updatedValue);
             break;
           }
-          case "create": {
+          case "createEntity": {
             for (const instance of update.modelEntityUpdate.instances) {
               // await this.upsertInstanceUuid(modelEntityUpdate.entityUuid, instance);
               console.log('IndexedDbDataStore applyModelEntityUpdates create inserting instance',instance);
@@ -148,14 +148,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
       } else {
         // same implementation as in sqlDbServer
         switch (update.updateActionName) {
-          case "create": {
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await this.upsertInstanceUuid(instance.entityUuid, instance);
-              }
-            }
-            break;
-          }
+          case "create": 
           case "update":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {

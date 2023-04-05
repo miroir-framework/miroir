@@ -1,6 +1,5 @@
-import entityEntity from "../assets/entities/Entity.json";
 import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DomainAction, DomainDataAction, DomainModelAction, DomainModelEntityUpdateAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
@@ -13,6 +12,7 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import entityEntity from "../assets/entities/Entity.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};
@@ -30,7 +30,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(action: DomainModelAction) {
+  public async handleLocalCacheModelAction(action: DomainModelAncillaryOrReplayableAction) {
     return this.localCache.handleLocalCacheModelAction(action);
   }
 
@@ -40,7 +40,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
   }
 
   //####################################################################################
-  public async handleLocalCacheAction(action: DomainAction) {
+  public async handleLocalCacheAction(action: DomainAncillaryOrReplayableAction) {
     return this.localCache.handleLocalCacheAction(action);
   }
 

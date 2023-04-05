@@ -7,26 +7,27 @@ import { all } from 'redux-saga/effects';
 
 
 import {
+  DomainAction,
+  DomainAncillaryOrReplayableAction,
   DomainDataAction,
+  DomainModelAction,
+  DomainModelAncillaryOrReplayableAction,
+  DomainModelReplayableAction,
+  EntityDefinition,
+  entityEntity,
+  entityModelVersion,
+  entityReport,
+  entityStoreBasedConfiguration,
   LocalCacheInfo,
   LocalCacheInterface,
-  DomainModelAction,
+  MiroirModel,
+  MiroirModelVersion,
+  MiroirReport,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
-  DomainAction,
-  MiroirModel,
-  entityEntity,
-  entityReport,
-  entityStoreBasedConfiguration,
-  entityModelVersion,
-  EntityDefinition,
-  MiroirReport,
-  StoreBasedConfiguration,
-  MiroirModelVersion,
-  DomainModelEntityUpdateAction,
-  DomainModelReplayableAction,
+  StoreBasedConfiguration
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -175,7 +176,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(action:DomainModelAction) {
+  handleLocalCacheModelAction(action:DomainModelAncillaryOrReplayableAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
@@ -191,7 +192,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheAction(action:DomainAction) {
+  handleLocalCacheAction(action:DomainAncillaryOrReplayableAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)

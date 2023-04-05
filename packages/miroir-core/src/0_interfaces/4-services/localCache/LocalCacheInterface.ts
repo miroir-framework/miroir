@@ -1,5 +1,5 @@
 import { MiroirModel } from '../../../0_interfaces/1_core/ModelInterface.js';
-import { DomainAction, DomainDataAction, DomainModelAction, DomainModelReplayableAction } from '../../2_domain/DomainControllerInterface.js';
+import { DomainAction, DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from '../../2_domain/DomainControllerInterface.js';
 
 export default {}
 
@@ -14,9 +14,9 @@ export declare interface LocalCacheInterface
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
-  handleLocalCacheModelAction(action:DomainModelAction);
+  handleLocalCacheModelAction(action:DomainModelAncillaryOrReplayableAction);
   handleLocalCacheDataAction(action:DomainDataAction);
-  handleLocalCacheAction(action:DomainAction);
+  handleLocalCacheAction(action:DomainAncillaryOrReplayableAction);
   currentTransaction():DomainModelReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentInfo(): LocalCacheInfo;
   currentModel(): MiroirModel;

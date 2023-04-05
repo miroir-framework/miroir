@@ -1,5 +1,5 @@
 import { MiroirModel } from "../../0_interfaces/1_core/ModelInterface.js";
-import { ModelCUDUpdate, ModelEntityUpdate, ModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { ModelCUDUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { Instance, InstanceCollection } from "../1_core/Instance.js";
 
@@ -53,25 +53,25 @@ export interface DomainDataAction {
 export interface DomainModelEntityUpdateAction {
   actionType:'DomainModelAction',
   actionName: 'updateEntity'//`${ModelEntityUpdateActionNamesObject.updateModel}`;
-  update?:ModelEntityUpdateWithCUDUpdate;
+  update:WrappedModelEntityUpdate;
+}
+
+export interface DomainModelReplayableEntityUpdateAction {
+  actionType:'DomainModelAction',
+  actionName: 'updateEntity'//`${ModelEntityUpdateActionNamesObject.updateModel}`;
+  update:WrappedModelEntityUpdateWithCUDUpdate;
 }
 
 export interface DomainModelCUDAction {
   actionType:'DomainModelAction',
   actionName: 'UpdateMetaModelInstance';
-  update?: ModelCUDUpdate;
+  update: ModelCUDUpdate;
 }
 
 export type DomainModelReplayableAction = 
-  | DomainModelEntityUpdateAction
+  | DomainModelReplayableEntityUpdateAction
   | DomainModelCUDAction
 ;
-
-export interface DomainModelUndoRedoAction {
-  actionType:'DomainModelAction',
-  actionName: UndoRedoActionName;
-  objects?:InstanceCollection[];
-}
 
 export interface DomainModelCommitAction {
   actionType:'DomainModelAction',
@@ -85,7 +85,7 @@ export interface DomainModelRollbackAction {
   objects?:InstanceCollection[];
 }
 
-export interface DomainModelLocalCacheAndTransactionAction {
+export interface DomainModelUndoRedoAction {
   actionType:'DomainModelAction',
   actionName: UndoRedoActionName;
   // objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
@@ -96,13 +96,24 @@ export interface DomainModelResetAction {
   actionName: 'resetModel';
 }
 
-export type DomainModelAction =
-  | DomainModelReplayableAction
+export type DomainModelAncillaryAction =
   | DomainModelCommitAction
   | DomainModelRollbackAction
   | DomainModelUndoRedoAction
   | DomainModelResetAction
-  | DomainModelLocalCacheAndTransactionAction;
+;
+
+export type DomainModelAction =
+  | DomainModelAncillaryAction
+  | DomainModelCUDAction
+  | DomainModelEntityUpdateAction
+;
+
+export type DomainModelAncillaryOrReplayableAction =
+  | DomainModelAncillaryAction
+  | DomainModelCUDAction
+  | DomainModelReplayableEntityUpdateAction
+;
 
 // #############################################################################################
 export const remoteStoreActionNamesObject = {
@@ -115,6 +126,7 @@ export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(r
 
 // #############################################################################################
 export type DomainAction = DomainDataAction | DomainModelAction;
+export type DomainAncillaryOrReplayableAction = DomainDataAction | DomainModelAncillaryOrReplayableAction;
 
 export interface DomainInstancesUuidIndex {
   [uuid: string]: Instance

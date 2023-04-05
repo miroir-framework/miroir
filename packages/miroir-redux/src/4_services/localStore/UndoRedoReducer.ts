@@ -4,7 +4,7 @@ import produce, { applyPatches, enablePatches, Patch } from "immer";
 import {
   CRUDActionNamesArrayString,
   CUDActionName,
-  CUDActionNamesArray, DomainAction, DomainModelAction, DomainModelEntityUpdateAction, EntityDefinition,
+  CUDActionNamesArray, DomainAction, DomainAncillaryOrReplayableAction, DomainModelAction, DomainModelEntityUpdateAction, DomainModelReplayableAction, EntityDefinition,
   InstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
@@ -31,7 +31,8 @@ export interface ReduxStateChanges {
   // action:PayloadAction<DomainDataAction|DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
   // action:PayloadAction<DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
   // action:DomainModelAction, changes:Patch[]; inverseChanges:Patch[];
-  action:DomainModelEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
+  // action:DomainModelEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainModelReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb.
@@ -54,10 +55,12 @@ export interface ReduxStateWithUndoRedo {
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
-export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAction>) => InnerStoreStateInterface;
+// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAction>) => InnerStoreStateInterface;
+export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableAction>) => InnerStoreStateInterface;
 
 // TODO: make action type explicit!
-export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAction>) => ReduxStateWithUndoRedo
+// export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAction>) => ReduxStateWithUndoRedo
+export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableAction>) => ReduxStateWithUndoRedo
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
@@ -101,7 +104,8 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
   state:InnerStoreStateInterface,
-  action:PayloadAction<DomainModelAction>
+  // action:PayloadAction<DomainModelAction>
+  action:PayloadAction<DomainAncillaryOrReplayableAction>
 ):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} {
   console.log('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
@@ -130,7 +134,7 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    action: PayloadAction<DomainModelEntityUpdateAction>,
+    action: PayloadAction<DomainModelReplayableAction>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
 
@@ -157,7 +161,7 @@ function callUndoRedoReducer(
 function callNextReducer(
   innerReducer:InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<DomainAction>,
+  action: PayloadAction<DomainAncillaryOrReplayableAction>,
 ): ReduxStateWithUndoRedo {
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
@@ -183,7 +187,8 @@ function callNextReducer(
   // Returns a reducer function, that handles undo and redo
   return (
     state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
-    action:PayloadAction<DomainAction>
+    // action:PayloadAction<DomainAction>
+    action:PayloadAction<DomainAncillaryOrReplayableAction>
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
@@ -203,7 +208,7 @@ function callNextReducer(
               return callNextReducer(innerReducer, state, {
                 type:action.type,
                 payload: {
-                  actionName:action.payload.actionName as CUDActionName,
+                  actionName:action.payload.actionName,
                   actionType:"DomainDataAction",
                   objects: action.payload.objects
                 }
@@ -217,7 +222,8 @@ function callNextReducer(
           case "DomainModelAction": {
             switch (action.payload.actionName) {
               case 'replace': {
-                const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
+                // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
+                const next = callNextReducer(innerReducer, state, action)
                 return {
                   // dataCache,
                   previousModelSnapshot, //TODO: effectively set previousModelSnapshot
@@ -283,7 +289,8 @@ function callNextReducer(
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                 console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.actionName, action);
-                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelEntityUpdateAction>)
+                // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelEntityUpdateAction>)
+                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelReplayableAction>)
             }
             break;
           }
@@ -297,7 +304,7 @@ function callNextReducer(
       }
       default: {
         console.warn('UndoRedoReducer default handling action',action)
-        return callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
+        return callNextReducer(innerReducer, state, action)
       }
     }
   }

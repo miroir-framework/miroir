@@ -8,10 +8,9 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   DomainModelAction,
-  DomainModelEntityUpdateAction,
   DomainModelReplayableAction
 } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { ModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
@@ -131,7 +130,6 @@ export class DomainController implements DomainControllerInterface {
           actionType:'RemoteStoreCRUDAction',
           actionName: "update",
           objects: [
-            // Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersion.uuid}})
             updatedConfiguration
           ],
         };
@@ -140,15 +138,6 @@ export class DomainController implements DomainControllerInterface {
 
         break;
       }
-      // case "create":
-      // case "update":
-      // case "delete": {
-      //   // transactional modification: the changes are done only locally, until commit
-      //   this.LocalAndRemoteController.handleLocalCacheAction(
-      //     domainModelAction
-      //   );
-      //   break;
-      // }
       case "UpdateMetaModelInstance": {
         this.LocalAndRemoteController.handleLocalCacheAction(
           domainModelAction
@@ -157,10 +146,9 @@ export class DomainController implements DomainControllerInterface {
       }
       case "updateEntity": {
         console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
-        // const correspondingCUDUpdate: ModelCUDUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction.updates[0],currentModel);
         
-        const structureUpdatesWithCUDUpdates: ModelEntityUpdateWithCUDUpdate = {
-          updateActionName: 'ModelEntityUpdateWithCUDUpdate',
+        const structureUpdatesWithCUDUpdates: WrappedModelEntityUpdateWithCUDUpdate = {
+          updateActionName: 'WrappedModelEntityUpdateWithCUDUpdate',
           modelEntityUpdate:domainModelAction?.update.modelEntityUpdate,
           equivalentModelCUDUpdates: [
             ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel),
@@ -176,7 +164,6 @@ export class DomainController implements DomainControllerInterface {
       }
 
       default: {
-        // await this.dataController.handleRemoteStoreModelAction(domainModelAction);
         console.warn("DomainController handleDomainModelAction cannot handle action name for", domainModelAction);
         break;
       }

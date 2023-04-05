@@ -252,6 +252,7 @@ describe(
             actionType:"DomainModelAction",
             actionName:'UpdateMetaModelInstance',
             update:{
+              updateActionType: "ModelCUDUpdate",
               updateActionName: "create",
               objects: [
                 {
@@ -380,6 +381,7 @@ describe(
             actionType: "DomainModelAction",
             actionName:'UpdateMetaModelInstance',
             update:{
+              updateActionType: "ModelCUDUpdate",
               updateActionName: "create",
               objects: [
                 {
@@ -536,6 +538,7 @@ describe(
                   actionType: 'DomainModelAction',
                   actionName:'UpdateMetaModelInstance',
                   update:{
+                    updateActionType: "ModelCUDUpdate",
                     updateActionName:"delete",
                     objects:[
                       {
@@ -680,6 +683,7 @@ describe(
               actionType: "DomainModelAction",
               actionName: "UpdateMetaModelInstance",
               update: {
+                updateActionType: "ModelCUDUpdate",
                 updateActionName:'update',
                 objects: [
                   {

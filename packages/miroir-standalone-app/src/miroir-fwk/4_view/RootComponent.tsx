@@ -111,9 +111,10 @@ async function uploadBooksAndReports(
     actionType: "DomainModelAction",
     actionName: "updateEntity",
     update: {
-      updateActionName:"ModelEntityUpdateWithCUDUpdate",
+      updateActionName:"WrappedModelEntityUpdate",
       modelEntityUpdate: {
-        updateActionName: "create",
+        updateActionType: "ModelEntityUpdate",
+        updateActionName: "createEntity",
         entityName: entityEntity.name,
         entityUuid: entityEntity.uuid,
         instances: [
@@ -127,6 +128,7 @@ async function uploadBooksAndReports(
     actionType: "DomainModelAction",
     actionName: "UpdateMetaModelInstance",
     update: {
+      updateActionType: "ModelCUDUpdate",
       updateActionName: "create",
       objects: [{
         entity: entityReport.name,
@@ -294,8 +296,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 actionType: "DomainModelAction",
                 actionName: "updateEntity",
                 update: {
-                  updateActionName:"ModelEntityUpdateWithCUDUpdate",
+                  updateActionName:"WrappedModelEntityUpdate",
                   modelEntityUpdate:{
+                    updateActionType:"ModelEntityUpdate",
                     updateActionName: "renameEntity",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
@@ -318,6 +321,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 actionType: "DomainModelAction",
                 actionName: "UpdateMetaModelInstance",
                 update: {
+                  updateActionType: "ModelCUDUpdate",
                   updateActionName:'update',
                   objects: [
                     {
@@ -352,9 +356,10 @@ export const RootComponent = (props: RootComponentProps) => {
                 actionType: "DomainModelAction",
                 actionName: "updateEntity",
                 update: {
-                  updateActionName: "ModelEntityUpdateWithCUDUpdate",
+                  updateActionName: "WrappedModelEntityUpdate",
                   modelEntityUpdate: {
-                    updateActionName: "DeleteMetaModelInstance",
+                    updateActionType: "ModelEntityUpdate",
+                    updateActionName: "DeleteEntity",
                     entityName: entityAuthor.entity,
                     entityUuid: entityAuthor.entityUuid,
                     instanceUuid:entityAuthor.uuid,

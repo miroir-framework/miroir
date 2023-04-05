@@ -1,5 +1,5 @@
 import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { ModelEntityUpdateWithCUDUpdate, ModelUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
+import { WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
 
@@ -84,5 +84,5 @@ export interface DataStoreInterface {
   deleteInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
 
   // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
-  applyModelEntityUpdate(update:ModelUpdate);
+  applyModelEntityUpdate(update:ModelReplayableUpdate);
 }

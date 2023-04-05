@@ -4,8 +4,7 @@ import {
   EntityDefinition,
   entityEntity,
   Instance,
-  ModelEntityUpdateWithCUDUpdate,
-  ModelUpdate,
+  ModelReplayableUpdate,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
 
@@ -215,20 +214,19 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async applyModelEntityUpdate(update: ModelUpdate) {
+  async applyModelEntityUpdate(update: ModelReplayableUpdate) {
     console.log("SqlDbServer applyModelEntityUpdates", update);
     // const modelEntityUpdate = update.modelEntityUpdate;
-    const modelCUDupdate = update.updateActionName == 'ModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid]) {
       const model = this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid];
       console.log("dropUuidEntity SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].entity);
-      if (update.updateActionName == 'ModelEntityUpdateWithCUDUpdate') {
+      if (update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate') {
         switch (update.modelEntityUpdate.updateActionName) {
-          case "DeleteMetaModelInstance": {
+          case "DeleteEntity": {
             await this.deleteInstanceUuid(update.modelEntityUpdate.entityUuid, {uuid:update.modelEntityUpdate.instanceUuid} as Instance)
             break;
           }
-          case "alterMetaModelInstance":
           case "alterEntityAttribute":
           case "renameEntity":
             this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate.entityName, update.modelEntityUpdate['targetValue']);
@@ -244,7 +242,7 @@ export class SqlDbServer implements DataStoreInterface {
             await this.upsertInstanceUuid(modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].instances[0]);
             // await this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid].sequelizeModel.upsert(modelCUDupdate.objects[0].instances[0] as any)
             break;
-          case "create":
+          case "createEntity":
             for (const instance of update.modelEntityUpdate.instances) {
               await this.upsertInstanceUuid(update.modelEntityUpdate.entityUuid, instance);
             }
@@ -253,16 +251,9 @@ export class SqlDbServer implements DataStoreInterface {
         }
       } else { // modelCUDupdate
         switch (update.updateActionName) {
-          case "create": {
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await this.upsertInstanceUuid(instance.entityUuid, instance);
-              }
-            }
-            break;
-          }
+          case "create":
           case "update": {
-            for (const instanceCollection of update.objects) {
+              for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
                 await this.upsertInstanceUuid(instance.entityUuid, instance);
               }
