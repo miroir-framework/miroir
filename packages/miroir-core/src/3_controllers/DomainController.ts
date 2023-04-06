@@ -81,7 +81,7 @@ export class DomainController implements DomainControllerInterface {
           previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
           conceptLevel:'Data',
           entityName:entityDefinitionModelVersion.name,
-          entityUuid: entityDefinitionModelVersion.uuid,
+          entityDefinitionUuid: entityDefinitionModelVersion.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
           // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
@@ -108,7 +108,7 @@ export class DomainController implements DomainControllerInterface {
                 actionType:'RemoteStoreCRUDAction',
                 actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
                 entityName: replayAction.update.objects[0].entityName,
-                entityUuid: replayAction.update.objects[0].entityUuid,
+                entityDefinitionUuid: replayAction.update.objects[0].entityDefinitionUuid,
                 objects: replayAction.update.objects[0].instances,
               });
             // }
@@ -119,7 +119,7 @@ export class DomainController implements DomainControllerInterface {
           {
             actionName:'create',
             actionType: 'DomainDataAction',
-            objects:[{entityUuid:newModelVersion.entityUuid, instances: [newModelVersion]}]
+            objects:[{entityDefinitionUuid:newModelVersion.entityDefinitionUuid, instances: [newModelVersion]}]
           }
         );
 
@@ -220,8 +220,8 @@ export class DomainController implements DomainControllerInterface {
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityDefinitionEntityDefinition.uuid):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid !== entityDefinitionEntityDefinition.uuid):[];
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityDefinitionUuid == entityDefinitionEntityDefinition.uuid):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityDefinitionUuid !== entityDefinitionEntityDefinition.uuid):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {

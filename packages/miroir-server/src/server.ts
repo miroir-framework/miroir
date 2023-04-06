@@ -32,10 +32,10 @@ app.use(bodyParser.json());
 
 
 // ##############################################################################################
-app.get("/miroir/entity/" + ":entityUuid/all", async (req, res, ctx) => {
+app.get("/miroir/entity/" + ":entityDefinitionUuid/all", async (req, res, ctx) => {
   return generateHandlerBody(
     req.params,
-    ['entityUuid'],
+    ['entityDefinitionUuid'],
     [],
     'get',
     "/miroir/entity/",

@@ -52,7 +52,7 @@ export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNa
 //#########################################################################################
 // instance slice state cannot really be defined statically, since it changes at run-time, depending on the set of defined instances
 export interface LocalCacheSliceState {
-  [entityUuid: string]: EntityState<EntityInstance>;
+  [entityDefinitionUuid: string]: EntityState<EntityInstance>;
 }
 
 
@@ -63,9 +63,9 @@ export interface LocalCacheSliceState {
 //#########################################################################################
 const getLocalCacheSliceEntityAdapter: (
   // entityName: string
-  entityUuid: string
+  entityDefinitionUuid: string
 ) => EntityAdapter<EntityInstance> = _memoize(
-  (entityUuid: string) => {
+  (entityDefinitionUuid: string) => {
     // console.log("getEntityAdapter creating EntityAdapter For entity", entityName);
     const result = createEntityAdapter<EntityInstance>({
       // Assume IDs are stored in a field other than `book.id`
@@ -74,19 +74,19 @@ const getLocalCacheSliceEntityAdapter: (
       // sortComparer: (a, b) => a.name.localeCompare(b.name),
     });
 
-    console.log("getEntityAdapter creating EntityAdapter For entity", entityUuid,"result",result);
+    console.log("getEntityAdapter creating EntityAdapter For entity", entityDefinitionUuid,"result",result);
 
     return result;
   }
 );
 
-function getInitializedEntityAdapter(entityUuid: string, state: LocalCacheSliceState) {
+function getInitializedEntityAdapter(entityDefinitionUuid: string, state: LocalCacheSliceState) {
   // TODO: refactor so as to avoid side effects!
-  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
-  if (state[entityUuid] == undefined) {
-    console.log('getInitializedEntityAdapter for',entityUuid,'initializing state!');
+  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityDefinitionUuid);
+  if (state[entityDefinitionUuid] == undefined) {
+    console.log('getInitializedEntityAdapter for',entityDefinitionUuid,'initializing state!');
     
-    state[entityUuid] = sliceEntityAdapter.getInitialState();
+    state[entityDefinitionUuid] = sliceEntityAdapter.getInitialState();
   }
   return sliceEntityAdapter;
 } 
@@ -95,10 +95,10 @@ function getInitializedEntityAdapter(entityUuid: string, state: LocalCacheSliceS
 //# REDUCER FUNCTION
 //#########################################################################################
 function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
-  console.log('ReplaceInstancesForEntity', action.payload.entityName,action.payload.entityUuid,action.payload.instances);
-  const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.entityUuid,state);
+  console.log('ReplaceInstancesForEntity', action.payload.entityName,action.payload.entityDefinitionUuid,action.payload.instances);
+  const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.entityDefinitionUuid,state);
 
-  state[action.payload.entityUuid] = sliceEntityAdapter.setAll(state[action.payload.entityUuid], action.payload.instances);
+  state[action.payload.entityDefinitionUuid] = sliceEntityAdapter.setAll(state[action.payload.entityDefinitionUuid], action.payload.instances);
 }
 
 
@@ -108,18 +108,18 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
   switch (action.payload.actionName) {
     case 'create': {
       for (let instanceCollection of action.payload.objects) {
-        console.log('create for entity',instanceCollection.entityName, instanceCollection.entityUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
+        console.log('create for entity',instanceCollection.entityName, instanceCollection.entityDefinitionUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
         
-        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
-        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityUuid, 'state before insert',JSON.stringify(state));
-        sliceEntityAdapter.addMany(state[instanceCollection.entityUuid], instanceCollection.instances);
-        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityUuid, 'state after insert',JSON.stringify(state));
-        if(instanceCollection.entityUuid == entityDefinitionEntityDefinition.uuid) {
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityDefinitionUuid, state);
+        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityDefinitionUuid, 'state before insert',JSON.stringify(state));
+        sliceEntityAdapter.addMany(state[instanceCollection.entityDefinitionUuid], instanceCollection.instances);
+        console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityDefinitionUuid, 'state after insert',JSON.stringify(state));
+        if(instanceCollection.entityDefinitionUuid == entityDefinitionEntityDefinition.uuid) {
           console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction,'creating entityAdapter for Entities',instanceCollection.instances.map(i=>i['name']));
           
           instanceCollection.instances.forEach(i=>getInitializedEntityAdapter(i['uuid'], state));
         }
-        console.log('create done',JSON.stringify(state[instanceCollection.entityUuid]));
+        console.log('create done',JSON.stringify(state[instanceCollection.entityDefinitionUuid]));
       }
       break;
     }
@@ -127,18 +127,18 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
       for (let instanceCollection of action.payload.objects) {
         console.log('localCacheSliceObject handleLocalCacheDataAction delete', instanceCollection);
         
-        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
-        console.log('localCacheSliceObject handleLocalCacheDataAction delete state before',JSON.stringify(state[instanceCollection.entityUuid]));
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityDefinitionUuid, state);
+        console.log('localCacheSliceObject handleLocalCacheDataAction delete state before',JSON.stringify(state[instanceCollection.entityDefinitionUuid]));
         
-        sliceEntityAdapter.removeMany(state[instanceCollection.entityUuid], instanceCollection.instances.map(i => i.uuid));
-        console.log('localCacheSliceObject handleLocalCacheDataAction delete state after',JSON.stringify(state[instanceCollection.entityUuid]));
+        sliceEntityAdapter.removeMany(state[instanceCollection.entityDefinitionUuid], instanceCollection.instances.map(i => i.uuid));
+        console.log('localCacheSliceObject handleLocalCacheDataAction delete state after',JSON.stringify(state[instanceCollection.entityDefinitionUuid]));
       }
       break;
     }
     case 'update': {
       for (let instanceCollection of action.payload.objects) {
-        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityUuid, state);
-        sliceEntityAdapter.updateMany(state[instanceCollection.entityUuid], instanceCollection.instances.map(i => ({ id: i.uuid, changes: i })));
+        const sliceEntityAdapter = getInitializedEntityAdapter(instanceCollection.entityDefinitionUuid, state);
+        sliceEntityAdapter.updateMany(state[instanceCollection.entityDefinitionUuid], instanceCollection.instances.map(i => ({ id: i.uuid, changes: i })));
         // getSliceEntityAdapter(action.payload.entityName).updateOne(state[action.payload.entityName], entityUpdate);
       }
       break;
@@ -282,11 +282,11 @@ export const selectCurrentTransaction: () => ((state: ReduxStateWithUndoRedo) =>
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 // TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
-export const selectInstancesForEntity: (entityUuid: string) => any = _memoize(
-  (entityUuid: string) => {
+export const selectInstancesForEntity: (entityDefinitionUuid: string) => any = _memoize(
+  (entityDefinitionUuid: string) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
-        return state.presentModelSnapshot.miroirInstances[entityUuid];
+        return state.presentModelSnapshot.miroirInstances[entityDefinitionUuid];
       },
       (items: EntityState<any>) => items
     );

@@ -1,7 +1,7 @@
 {
   "uuid": "695826c2-aefa-4f5f-a131-dee46fe21c13",
   "entityName":"ModelVersion",
-  "entityUuid":"27046fce-742f-4cc4-bb95-76b271f490a5",
+  "entityDefinitionUuid":"27046fce-742f-4cc4-bb95-76b271f490a5",
   "name":"Initial",
   "description": "Initial datastore model version",
   "previousVersionUuid": "695826c2-aefa-4f5f-a131-dee46fe21c13",

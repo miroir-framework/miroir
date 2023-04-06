@@ -13,14 +13,14 @@ export class ModelEntityUpdateConverter{
     modelUpdate:ModelEntityUpdate,
   ):DomainDataAction{
     let domainDataAction: DomainDataAction;
-    const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityUuid);
+    const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityDefinitionUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const modifiedEntity:EntityInstanceWithName = Object.assign(currentEntity,{name:modelUpdate.targetValue});
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "update",
-          objects:[{entityName:currentEntity.name, entityUuid:currentEntity.uuid, instances:[modifiedEntity]}]
+          objects:[{entityName:currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:[modifiedEntity]}]
         }
         break;
       }
@@ -29,7 +29,7 @@ export class ModelEntityUpdateConverter{
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName:"delete",
-          objects:[{entityName: currentEntity.name, entityUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[{entityName: currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
         }
         break;
       }
@@ -39,7 +39,7 @@ export class ModelEntityUpdateConverter{
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "create",
-          objects:[{entityName:currentEntity.name, entityUuid:currentEntity.uuid, instances:castUpdate.instances}]
+          objects:[{entityName:currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:castUpdate.instances}]
         };
         break;
       }
@@ -57,14 +57,14 @@ export class ModelEntityUpdateConverter{
   ):ModelCUDUpdate {
     let modelCUDUpdate: ModelCUDUpdate;
     // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.entityName);
-    const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityUuid);
+    const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityDefinitionUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"update",
-          objects:[{entityName: entityDefinitionEntityDefinition.name, entityUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
+          objects:[{entityName: entityDefinitionEntityDefinition.name, entityDefinitionUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
         }
         break;
       }
@@ -73,7 +73,7 @@ export class ModelEntityUpdateConverter{
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"delete",
-          objects:[{entityName: modelUpdate.entityName, entityUuid:modelUpdate.entityUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[{entityName: modelUpdate.entityName, entityDefinitionUuid:modelUpdate.entityDefinitionUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
         }
         break;
       }
@@ -84,7 +84,7 @@ export class ModelEntityUpdateConverter{
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"create",
-          objects:[{entityName: castUpdate.entityName, entityUuid:castUpdate.entityUuid, instances:castUpdate.instances}]
+          objects:[{entityName: castUpdate.entityName, entityDefinitionUuid:castUpdate.entityDefinitionUuid, instances:castUpdate.instances}]
         }
         break;
       }

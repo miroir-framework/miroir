@@ -10,13 +10,13 @@ export function selectReportInstances(reportUuid:string):DomainStateSelector{
     // console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.entityName])
     // const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState['Report'])?.find(e=>e['name'] === reportName) as MiroirReport;
     const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState[entityDefinitionReport.uuid])?.find(e=>e['uuid'] === reportUuid) as MiroirReport;
-    return currentReport?.definition?.entityName?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.entityUuid]):[];
+    return currentReport?.definition?.entityName?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.entityDefinitionUuid]):[];
   }
 }
 
-export function selectEntityInstances(entityUuid:string):DomainStateSelector{
+export function selectEntityInstances(entityDefinitionUuid:string):DomainStateSelector{
   return (domainState:DomainState):EntityInstance[] => {
     // console.log('selectEntityInstances', entityName, Object.keys(domainState))
-    return DomainInstanceUuidIndexToArray(domainState[entityUuid]);
+    return DomainInstanceUuidIndexToArray(domainState[entityDefinitionUuid]);
   }
 }

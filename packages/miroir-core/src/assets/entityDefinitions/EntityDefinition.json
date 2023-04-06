@@ -1,7 +1,7 @@
 {
   "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityName":"EntityDefinition",
-  "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "name":"EntityDefinition",
   "conceptLevel":"MetaMetaModel",
   "description": "definition of entities",
@@ -9,7 +9,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "if": {"properties": {"entityName": "Entity"}},
+    "if": {"properties": {"entityName": "EntityDefinition"}},
     "then": { "required": ["uuid","entityName","name","instanceValidationJsonSchema"]},
     "else": { "required": ["uuid","entityName","name"]},
     "properties": {
@@ -18,7 +18,7 @@
         "type": "string"
       },
       "entityName": {
-        "title": "Entity",
+        "title": "EntityDefinition",
         "type": "string"
       },
       "name": {
@@ -80,8 +80,8 @@
     },
     {
         "id": 2,
-        "name": "entityUuid",
-        "defaultLabel": "Entity",
+        "name": "entityDefinitionUuid",
+        "defaultLabel": "Entity Definition",
         "type": "STRING",
         "nullable": false,
         "editable": false
@@ -113,7 +113,7 @@
     {
       "id": 6,
       "name": "attributes",
-      "defaultLabel": "Entity Attributes",
+      "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",
       "nullable": false,
       "editable": true

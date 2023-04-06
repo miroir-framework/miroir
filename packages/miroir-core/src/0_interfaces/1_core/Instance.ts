@@ -2,7 +2,7 @@ export type ApplicationConceptLevel = "MetaMetaModel" | "MetaModel" | "Model" | 
 export interface EntityInstance {
   "uuid": string,
   "entityName"?: string,
-  "entityUuid": string,
+  "entityDefinitionUuid": string,
   "conceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
   "instanceOfThisInstanceConceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
 }
@@ -13,7 +13,7 @@ export interface EntityInstanceWithName extends EntityInstance {
 
 export interface EntityInstanceCollection {
   entityName?: string;
-  entityUuid:string;
+  entityDefinitionUuid:string;
   instances: EntityInstance[];
 }
 

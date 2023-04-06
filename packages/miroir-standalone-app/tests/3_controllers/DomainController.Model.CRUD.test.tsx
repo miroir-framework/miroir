@@ -139,11 +139,11 @@ describe(
         // await localDataStore?.clear();
         try {
           console.log('localDataStore.upsertInstanceUuid()',entityDefinitionEntityDefinition);
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
           console.log('localDataStore.upsertInstanceUuid()',entityReport);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
           console.log('localDataStore.upsertInstanceUuid()',reportReportList);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
           console.log('setup done');
   
           const {
@@ -153,7 +153,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               entityName={entityDefinitionEntityDefinition.name}
-              entityUuid={entityDefinitionEntityDefinition.uuid}
+              entityDefinitionUuid={entityDefinitionEntityDefinition.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -195,18 +195,18 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
   
-          // await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as Instance);
-          // await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
-          // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
+          // await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as Instance);
+          // await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as Instance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as Instance);
 
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityDefinitionUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityDefinitionUuid, entityModelVersion as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityDefinitionUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityDefinitionUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -215,7 +215,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
             entityName={entityReport.name}
-            entityUuid={entityReport.uuid}
+            entityDefinitionUuid={entityReport.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
@@ -254,7 +254,7 @@ describe(
               updateActionName: "create",
               objects: [
                 {
-                  entity:reportEntityList.entityName,entityUuid:reportEntityList.entityUuid,
+                  entity:reportEntityList.entityName,entityDefinitionUuid:reportEntityList.entityDefinitionUuid,
                   instances: [reportEntityList as EntityInstance]
                 }
               ]
@@ -328,14 +328,14 @@ describe(
           const user = userEvent.setup()
 
           await localDataStore?.clear();
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityDefinitionUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityDefinitionUuid, entityModelVersion as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityDefinitionUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityDefinitionUuid, instanceConfigurationReference as EntityInstance);
   
   
           const {
@@ -345,7 +345,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               entityName={entityReport.name}
-              entityUuid={entityReport.uuid}
+              entityDefinitionUuid={entityReport.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
@@ -383,7 +383,7 @@ describe(
               updateActionName: "create",
               objects: [
                 {
-                  entity:reportEntityList.entityName,entityUuid:reportEntityList.entityUuid,
+                  entity:reportEntityList.entityName,entityDefinitionUuid:reportEntityList.entityDefinitionUuid,
                   instances: [reportEntityList as EntityInstance]
                 }
               ]
@@ -481,14 +481,14 @@ describe(
           const user = userEvent.setup()
 
           await localDataStore?.clear();
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityDefinitionUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityDefinitionUuid, entityModelVersion as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityDefinitionUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityDefinitionUuid, instanceConfigurationReference as EntityInstance);
 
           
   
@@ -499,7 +499,7 @@ describe(
           } = renderWithProviders(
               <TestUtilsTableComponent
                 entityName={entityReport.name}
-                entityUuid={entityReport.uuid}
+                entityDefinitionUuid={entityReport.uuid}
                 DisplayLoadingInfo={displayLoadingInfo}
               />,
             {store:reduxStore.getInnerStore()}
@@ -540,7 +540,7 @@ describe(
                     updateActionName:"delete",
                     objects:[
                       {
-                        entityUuid:reportEntityList.entityUuid, entity:reportEntityList.entityName, instances:[reportEntityList as EntityInstance]
+                        entityDefinitionUuid:reportEntityList.entityDefinitionUuid, entity:reportEntityList.entityName, instances:[reportEntityList as EntityInstance]
                       }
                     ]
                   }
@@ -626,14 +626,14 @@ describe(
           const user = userEvent.setup()
   
           await localDataStore?.clear();
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityDefinitionUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityDefinitionUuid, entityModelVersion as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityDefinitionUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityDefinitionUuid, instanceConfigurationReference as EntityInstance);
   
   
           const {
@@ -643,7 +643,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               entityName={entityReport.name}
-              entityUuid={entityReport.uuid}
+              entityDefinitionUuid={entityReport.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
@@ -686,7 +686,7 @@ describe(
                 objects: [
                   {
                     entity: reportReportList.entityName,
-                    entityUuid: reportReportList.entityUuid,
+                    entityDefinitionUuid: reportReportList.entityDefinitionUuid,
                     instances:[
                       Object.assign(
                         {},

@@ -1,7 +1,7 @@
 {
   "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
   "entityName":"Entity",
-  "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",

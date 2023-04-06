@@ -143,14 +143,14 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityDefinitionUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityDefinitionUuid, entityModelVersion as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityDefinitionUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityDefinitionUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -159,7 +159,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               entityName={entityDefinitionEntityDefinition.entityName}
-              entityUuid={entityDefinitionEntityDefinition.entityUuid}
+              entityDefinitionUuid={entityDefinitionEntityDefinition.entityDefinitionUuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
@@ -197,7 +197,7 @@ describe(
               updateActionName: 'create',
               objects: [
                 {
-                  entity:entityAuthor.entityName,entityUuid:entityAuthor.entityUuid,
+                  entity:entityAuthor.entityName,entityDefinitionUuid:entityAuthor.entityDefinitionUuid,
                   instances:[entityAuthor as EntityInstance]
                 }
               ]
@@ -211,7 +211,7 @@ describe(
               updateActionName: 'create',
               objects: [
                 {
-                  entity:entityBook.entityName,entityUuid:entityBook.entityUuid,
+                  entity:entityBook.entityName,entityDefinitionUuid:entityBook.entityDefinitionUuid,
                   instances:[entityBook as EntityInstance]
                 }
               ]

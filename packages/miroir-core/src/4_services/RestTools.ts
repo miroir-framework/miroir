@@ -23,7 +23,7 @@ export const generateHandlerBody = async (
   if (instances.length > 0) {
     console.log("server execute method for instances named", instances.map(i=>i['name']));
     for (const instance of instances) {
-      await method(instance.entityUuid,instance)
+      await method(instance.entityDefinitionUuid,instance)
     }
     localData = instances;
   }

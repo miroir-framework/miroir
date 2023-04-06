@@ -1,14 +1,15 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
-import produce, { applyPatches, enablePatches, Patch } from "immer";
+import produce, { Patch, applyPatches, enablePatches } from "immer";
 
 import {
   CRUDActionNamesArrayString,
-  CUDActionName,
-  CUDActionNamesArray, DomainAction, DomainAncillaryOrReplayableAction, DomainModelAction, DomainModelEntityUpdateAction, DomainModelReplayableAction, EntityDefinition,
+  CUDActionNamesArray,
+  DomainAncillaryOrReplayableAction,
+  DomainModelReplayableAction, EntityDefinition,
   EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
-import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
+import { LocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "src/4_services/localStore/LocalCacheSlice";
 import { RemoteStoreRestSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 

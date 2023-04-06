@@ -108,31 +108,31 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async getValue(entityUuid: string, instanceUuid: string): Promise<any> {
-    const table = this.subLevels.get(entityUuid)
-    console.log('IndexedDb getValue for entity',entityUuid,'instance uuid',instanceUuid,table);
+  public async getValue(entityDefinitionUuid: string, instanceUuid: string): Promise<any> {
+    const table = this.subLevels.get(entityDefinitionUuid)
+    console.log('IndexedDb getValue for entity',entityDefinitionUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
       result = await table.get(instanceUuid, {valueEncoding: 'json'});
     } else {
-      console.error('IndexedDb getValue table for entityUuid not found:',entityUuid);
+      console.error('IndexedDb getValue table for entityDefinitionUuid not found:',entityDefinitionUuid);
     }
     // console.log('IndexedDb getValue ', tableName, result);
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  public async getAllValue(entityUuid: string):Promise<any> {
-    console.log('IndexedDb getAllValue', entityUuid);
-    const store = this.subLevels.get(entityUuid);
+  public async getAllValue(entityDefinitionUuid: string):Promise<any> {
+    console.log('IndexedDb getAllValue', entityDefinitionUuid);
+    const store = this.subLevels.get(entityDefinitionUuid);
     const result = store?store.values({valueEncoding: 'json'}).all():[];
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  public async putValue(entityUuid: string, value: any) {
-    const store = this.subLevels.get(entityUuid);
-    // console.log('IndexedDb in store',store,'hasSubLevel(',entityUuid,')', this.hasSubLevel(entityUuid),'PutValue of entity', entityUuid, 'value',value);
+  public async putValue(entityDefinitionUuid: string, value: any) {
+    const store = this.subLevels.get(entityDefinitionUuid);
+    // console.log('IndexedDb in store',store,'hasSubLevel(',entityDefinitionUuid,')', this.hasSubLevel(entityDefinitionUuid),'PutValue of entity', entityDefinitionUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
     // console.log('IndexedDb PutValue written', tableName,);
     return Promise.resolve(result1);

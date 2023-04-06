@@ -12,7 +12,7 @@ export interface MiroirModelDefinition extends EntityInstanceWithName {
  * internal data structure used to manipulate model data
  */
 export interface MiroirModel {
-  [entityUuid: string]: {[uuid:string]:EntityInstance}
+  [entityDefinitionUuid: string]: {[uuid:string]:EntityInstance}
 }
 
 

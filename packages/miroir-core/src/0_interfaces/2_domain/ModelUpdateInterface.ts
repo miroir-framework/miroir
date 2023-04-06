@@ -11,7 +11,7 @@ export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'createEntity';
   entityName?:string;
-  entityUuid:string;
+  entityDefinitionUuid:string;
   instances:EntityInstance[];
 }
 
@@ -19,7 +19,7 @@ export interface ModelEntityUpdateAlterEntityAttribute {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'alterEntityAttribute';
   entityName?:string;
-  entityUuid:string;
+  entityDefinitionUuid:string;
   entityAttributeId: number;
   update:Partial<EntityAttribute>;
 }
@@ -28,7 +28,7 @@ export interface ModelEntityUpdateDeleteMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'DeleteEntity';
   entityName?:string;
-  entityUuid:string;
+  entityDefinitionUuid:string;
   instanceUuid:string;
 }
 
@@ -36,7 +36,7 @@ export interface ModelEntityUpdateRenameEntity {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'renameEntity';
   entityName?:string;
-  entityUuid:string;
+  entityDefinitionUuid:string;
   entityAttributeName?:string;
   targetValue?:any;
 }

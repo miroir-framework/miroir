@@ -1,13 +1,13 @@
 {
   "uuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
   "entityName":"Report",
-  "entityUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "entityDefinitionUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "conceptLevel":"Model",
   "name":"AuthorList",
   "defaultLabel": "List of Authors",
   "type": "list",
   "definition": {
     "entityName": "Author",
-    "entityUuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d"
+    "entityDefinitionUuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d"
   }
 }

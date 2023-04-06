@@ -25,10 +25,10 @@ export class RestServerStub {
 
     
     this.handlers = [
-      rest.get(this.rootApiUrl + "/miroir/entity/:entityUuid/all", async (req, res, ctx) => {
+      rest.get(this.rootApiUrl + "/miroir/entity/:entityDefinitionUuid/all", async (req, res, ctx) => {
         return generateHandlerBody(
           req.params,
-          ['entityUuid'],
+          ['entityDefinitionUuid'],
           [],
           'get',
           "/miroir/entity/",

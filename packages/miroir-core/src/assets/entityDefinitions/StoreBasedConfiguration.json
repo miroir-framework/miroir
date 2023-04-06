@@ -1,7 +1,7 @@
 {
   "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
   "entityName":"Entity",
-  "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
   "name":"StoreBasedConfiguration",
   "icon": "Interests",

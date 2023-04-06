@@ -1,7 +1,7 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "entityName":"Entity",
-  "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
   "name":"Report",
   "icon": "Interests",

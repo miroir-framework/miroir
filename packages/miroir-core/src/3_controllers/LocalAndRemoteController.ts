@@ -87,7 +87,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           {
             actionName: "read",
             entityName: entityDefinitionEntityDefinition.name,
-            entityUuid: entityDefinitionEntityDefinition.uuid,
+            entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
           }
         )
       )[0];
@@ -104,7 +104,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           {
             actionName: "read",
             entityName: e["name"],
-            entityUuid: e['uuid'],
+            entityDefinitionUuid: e['uuid'],
           }
         );
         console.log(

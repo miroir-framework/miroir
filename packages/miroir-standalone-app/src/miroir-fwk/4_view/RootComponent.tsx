@@ -66,7 +66,7 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
     objects: [
       {
         entityName: "Entity",
-        entityUuid: entityDefinitionEntityDefinition.uuid,
+        entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
           entityDefinitionEntityDefinition as EntityInstance, // has to come 1st!
           entityStoreBasedConfiguration as EntityInstance,
@@ -76,7 +76,7 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
       },
       {
         entityName: "Report",
-        entityUuid: entityReport.uuid,
+        entityDefinitionUuid: entityReport.uuid,
         instances: [
           reportEntityList as EntityInstance, 
           reportModelVersionList as EntityInstance, 
@@ -86,14 +86,14 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
       },
       {
         entityName: "Configuration",
-        entityUuid: entityStoreBasedConfiguration.uuid,
+        entityDefinitionUuid: entityStoreBasedConfiguration.uuid,
         instances: [
           instanceConfigurationReference, 
         ],
       },
       {
         entityName: "ModelVersion",
-        entityUuid: entityModelVersion.uuid,
+        entityDefinitionUuid: entityModelVersion.uuid,
         instances: [
           instanceModelVersionInitial, 
         ],
@@ -116,7 +116,7 @@ async function uploadBooksAndReports(
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
         entityName: entityDefinitionEntityDefinition.name,
-        entityUuid: entityDefinitionEntityDefinition.uuid,
+        entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
           entityAuthor as EntityInstance, 
           entityBook as EntityInstance
@@ -132,7 +132,7 @@ async function uploadBooksAndReports(
       updateActionName: "create",
       objects: [{
         entityName: entityReport.name,
-        entityUuid: entityReport.uuid,
+        entityDefinitionUuid: entityReport.uuid,
         instances: [
           reportAuthorList as EntityInstance, reportBookList as EntityInstance
         ]
@@ -147,7 +147,7 @@ async function uploadBooksAndReports(
     objects: [
       {
         entityName: entityAuthor.name,
-        entityUuid: entityAuthor.uuid,
+        entityDefinitionUuid: entityAuthor.uuid,
         instances: [
           author1 as EntityInstance, 
           author2 as EntityInstance,
@@ -156,7 +156,7 @@ async function uploadBooksAndReports(
       },
       {
         entityName: entityBook.name,
-        entityUuid: entityBook.uuid,
+        entityDefinitionUuid: entityBook.uuid,
         instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
       },
     ],
@@ -301,7 +301,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     updateActionType:"ModelEntityUpdate",
                     updateActionName: "renameEntity",
                     entityName: entityBook.name,
-                    entityUuid: entityBook.uuid,
+                    entityDefinitionUuid: entityBook.uuid,
                     targetValue: "Bookss",
                   },
                 }
@@ -326,7 +326,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   objects: [
                     {
                       entityName: reportReportList.entityName,
-                      entityUuid: reportReportList.entityUuid,
+                      entityDefinitionUuid: reportReportList.entityDefinitionUuid,
                       instances:[
                         Object.assign(
                           {},
@@ -361,7 +361,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     updateActionType: "ModelEntityUpdate",
                     updateActionName: "DeleteEntity",
                     entityName: entityAuthor.entityName,
-                    entityUuid: entityAuthor.entityUuid,
+                    entityDefinitionUuid: entityAuthor.entityDefinitionUuid,
                     instanceUuid:entityAuthor.uuid,
                   },
                 }

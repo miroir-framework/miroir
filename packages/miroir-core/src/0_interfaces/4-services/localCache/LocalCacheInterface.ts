@@ -1,5 +1,5 @@
 import { MiroirMetaModel } from '../../1_core/Model.js';
-import { DomainAction, DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from '../../2_domain/DomainControllerInterface.js';
+import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from '../../2_domain/DomainControllerInterface.js';
 
 export default {}
 

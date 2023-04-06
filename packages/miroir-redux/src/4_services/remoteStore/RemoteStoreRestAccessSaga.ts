@@ -91,7 +91,7 @@ export class RemoteStoreRestAccessReduxSaga {
             instances:[
               {
                 entity:action.payload?.entityName,
-                entityUuid:action.payload?.entityUuid,
+                entityDefinitionUuid:action.payload?.entityDefinitionUuid,
                 instances:clientResult['data']
               }
             ]
