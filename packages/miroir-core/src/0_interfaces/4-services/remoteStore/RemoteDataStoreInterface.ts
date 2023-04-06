@@ -6,8 +6,8 @@ import { CRUDActionName, DomainModelReplayableAction, DomainModelResetAction } f
 export interface RemoteStoreCRUDAction {
   actionType:'RemoteStoreCRUDAction';
   actionName: CRUDActionName;
-  entityName?: string; //redundant with object list
-  entityDefinitionUuid?: string; //redundant with object list
+  parentName?: string; //redundant with object list
+  parentUuid?: string; //redundant with object list
   uuid?:string; //redundant with object list
   objects?:EntityInstance[]; 
 }
@@ -75,13 +75,13 @@ export interface DataStoreInterface {
   addConcepts(conceptsNames:string[]);
   
   getUuidEntities():string[]; //TODO: remove!
-  dropUuidEntity(entityDefinitionUuid:string);
-  dropUuidEntities(entityDefinitionUuid:string[]);
+  dropUuidEntity(parentUuid:string);
+  dropUuidEntities(parentUuid:string[]);
 
-  getInstancesUuid(entityDefinitionUuid:string):Promise<EntityInstance[]>;
-  upsertInstanceUuid(entityDefinitionUuid:string, instance:EntityInstance):Promise<any>;
-  deleteInstancesUuid(entityDefinitionUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteInstanceUuid(entityDefinitionUuid:string, instance:EntityInstance):Promise<any>;
+  getInstancesUuid(parentUuid:string):Promise<EntityInstance[]>;
+  upsertInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteInstancesUuid(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any>;
 
   // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
   applyModelEntityUpdate(update:ModelReplayableUpdate);

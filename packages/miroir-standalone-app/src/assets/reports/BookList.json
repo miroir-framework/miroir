@@ -1,13 +1,13 @@
 {
   "uuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-  "entityName":"Report",
-  "entityDefinitionUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "parentName":"Report",
+  "parentUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "conceptLevel":"Model",
   "name":"BookList",
   "defaultLabel": "List of Books",
   "type": "list",
   "definition": {
-    "entityName": "Book",
-    "entityDefinitionUuid": "797dd185-0155-43fd-b23f-f6d0af8cae06"
+    "parentName": "Book",
+    "parentUuid": "797dd185-0155-43fd-b23f-f6d0af8cae06"
   }
 }

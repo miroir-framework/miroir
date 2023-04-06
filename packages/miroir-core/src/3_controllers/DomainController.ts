@@ -80,8 +80,8 @@ export class DomainController implements DomainControllerInterface {
           uuid:newModelVersionUuid,
           previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
           conceptLevel:'Data',
-          entityName:entityDefinitionModelVersion.name,
-          entityDefinitionUuid: entityDefinitionModelVersion.uuid,
+          parentName:entityDefinitionModelVersion.name,
+          parentUuid: entityDefinitionModelVersion.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
           // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
@@ -107,8 +107,8 @@ export class DomainController implements DomainControllerInterface {
               await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
                 actionType:'RemoteStoreCRUDAction',
                 actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-                entityName: replayAction.update.objects[0].entityName,
-                entityDefinitionUuid: replayAction.update.objects[0].entityDefinitionUuid,
+                parentName: replayAction.update.objects[0].parentName,
+                parentUuid: replayAction.update.objects[0].parentUuid,
                 objects: replayAction.update.objects[0].instances,
               });
             // }
@@ -119,7 +119,7 @@ export class DomainController implements DomainControllerInterface {
           {
             actionName:'create',
             actionType: 'DomainDataAction',
-            objects:[{entityDefinitionUuid:newModelVersion.entityDefinitionUuid, instances: [newModelVersion]}]
+            objects:[{parentUuid:newModelVersion.parentUuid, instances: [newModelVersion]}]
           }
         );
 
@@ -183,12 +183,12 @@ export class DomainController implements DomainControllerInterface {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction sending to remote storage instances",
-          instances.entityName, instances.instances
+          instances.parentName, instances.instances
         );
         await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
           actionType: 'RemoteStoreCRUDAction',
           actionName: domainAction.actionName.toString() as CRUDActionName,
-          entityName: instances.entityName,
+          parentName: instances.parentName,
           objects: instances.instances,
         });
       }
@@ -220,8 +220,8 @@ export class DomainController implements DomainControllerInterface {
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityDefinitionUuid == entityDefinitionEntityDefinition.uuid):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityDefinitionUuid !== entityDefinitionEntityDefinition.uuid):[];
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.parentUuid == entityDefinitionEntityDefinition.uuid):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.parentUuid !== entityDefinitionEntityDefinition.uuid):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {

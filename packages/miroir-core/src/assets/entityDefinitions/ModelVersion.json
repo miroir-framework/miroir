@@ -1,20 +1,21 @@
 {
   "uuid": "27046fce-742f-4cc4-bb95-76b271f490a5",
-  "entityName":"Entity",
-  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "xxx",
   "conceptLevel":"MetaModel",
   "name":"ModelVersion",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entityName","name"],
+    "required": ["uuid","entityUuid","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entityName": {
+      "entityUuid": {
         "title": "Entity",
         "type": "string"
       },
@@ -48,24 +49,24 @@
     },
     {
       "id": 3,
-      "name": "entityName",
-      "defaultLabel": "Entity",
+      "name": "parentUuid",
+      "defaultLabel": "Parent Entity Definition",
       "type": "STRING",
       "nullable": false,
       "editable": false
     },
     {
       "id": 4,
-      "name": "previousVersionUuid",
-      "defaultLabel": "Previous Version",
+      "name": "description",
+      "defaultLabel": "Description",
       "type": "STRING",
-      "nullable": false,
-      "editable": false
+      "nullable": true,
+      "editable": true
     },
     {
       "id": 5,
-      "name": "description",
-      "defaultLabel": "Description",
+      "name": "modelUuid",
+      "defaultLabel": "Model",
       "type": "STRING",
       "nullable": true,
       "editable": true

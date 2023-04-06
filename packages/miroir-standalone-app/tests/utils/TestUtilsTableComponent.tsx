@@ -8,8 +8,8 @@ import {
 } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
 
 export interface MiroirReportComponentProps {
-  entityName?: string;
-  entityDefinitionUuid: string;
+  parentName?: string;
+  parentUuid: string;
   DisplayLoadingInfo:JSX.Element;
 };
 
@@ -23,12 +23,12 @@ export const TestUtilsTableComponent = (
     Report:miroirReports,
   }
 
-  console.log("TestUtilsTableComponent display instances of entity",props.entityName,props.entityDefinitionUuid);
+  console.log("TestUtilsTableComponent display instances of entity",props.parentName,props.parentUuid);
   console.log("TestUtilsTableComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
-  const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.entityDefinitionUuid);
+  const instancesToDisplay:Instance[] = useLocalCacheInstancesForEntity(props.parentUuid);
   console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
-  const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.entityDefinitionUuid);
-  const currentAttributes = currentEntityDefinition?.attributes ? currentEntityDefinition?.attributes?.filter(a=>a.name!=='entityDefinitionUuid'):[];
+  const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
+  const currentAttributes = currentEntityDefinition?.attributes ? currentEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
   return (
     <div>
       {/* <span>

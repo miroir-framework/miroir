@@ -1,13 +1,13 @@
 {
   "uuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-  "entityName":"Report",
-  "entityDefinitionUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "parentName":"Report Definition",
+  "parentUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "conceptLevel":"Model",
   "name":"EntityList",
   "defaultLabel": "List of Entities",
   "type": "list",
   "definition": {
-    "entityName": "Entity",
-    "entityDefinitionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"
+    "parentName": "Entity",
+    "parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"
   }
 }

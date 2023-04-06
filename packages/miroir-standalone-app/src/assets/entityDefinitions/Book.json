@@ -1,20 +1,21 @@
 {
   "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
-  "entityName":"Entity",
-  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "xxx",
   "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entityName","name"],
+    "required": ["uuid","parentName","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entityName": {
+      "entityUuid": {
         "title": "Entity",
         "type": "string"
       },
@@ -38,6 +39,14 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
+    },
+    {
+      "id": 2,
+      "name": "parentUuid",
+      "defaultLabel": "Entity",
       "type": "STRING",
       "nullable": false,
       "editable": false

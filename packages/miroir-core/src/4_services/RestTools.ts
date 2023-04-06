@@ -7,7 +7,7 @@ export const generateHandlerBody = async (
   instances:EntityInstance[],
   HttpMethod:HttpMethod,
   url:string,
-  method:(entityName:string,instance?:EntityInstance)=>Promise<any>,
+  method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
   jsonFormater:(a:any)=>any,
 ) => {
   console.log('generateHandlerBody', HttpMethod, url, "started #####################################");
@@ -23,7 +23,7 @@ export const generateHandlerBody = async (
   if (instances.length > 0) {
     console.log("server execute method for instances named", instances.map(i=>i['name']));
     for (const instance of instances) {
-      await method(instance.entityDefinitionUuid,instance)
+      await method(instance.parentUuid,instance)
     }
     localData = instances;
   }

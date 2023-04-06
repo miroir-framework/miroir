@@ -1,0 +1,86 @@
+{
+  "uuid":"381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name":"Entity",
+  "conceptLevel":"MetaMetaModel",
+  "description": "Entities",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "if": {"properties": {"entityUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd"}},
+    "then": { "required": ["uuid","entityUuid","name","instanceValidationJsonSchema"]},
+    "else": { "required": ["uuid","entityUuid","name"]},
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "parentName": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "entityUuid": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "instanceValidationJsonSchema":{"type":"object"}
+    }
+  },
+  "attributes": [
+    {
+        "id": 1,
+        "name": "uuid",
+        "defaultLabel": "Uuid",
+        "type": "STRING",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 2,
+        "name": "parentName",
+        "defaultLabel": "Parent Entity Name",
+        "type": "STRING",
+        "nullable": true,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "parentUuid",
+        "defaultLabel": "Parent Entity",
+        "type": "STRING",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 4,
+        "name": "name",
+        "defaultLabel": "Name",
+        "type": "STRING",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 5,
+        "name": "conceptLevel",
+        "defaultLabel": "Concept Level",
+        "type": "STRING",
+        "nullable": true,
+        "editable": false
+    },
+    {
+        "id": 6,
+        "name": "description",
+        "defaultLabel": "Description",
+        "type": "STRING",
+        "nullable": true,
+        "editable": true
+    }
+  ]
+}

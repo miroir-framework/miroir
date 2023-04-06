@@ -51,11 +51,11 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  dropUuidEntity(entityDefinitionUuid:string) {
-    if (this.localUuidIndexedDb.hasSubLevel(entityDefinitionUuid)) {
-      this.localUuidIndexedDb.removeSubLevels([entityDefinitionUuid]);
+  dropUuidEntity(parentUuid:string) {
+    if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
+      this.localUuidIndexedDb.removeSubLevels([parentUuid]);
     } else {
-      console.warn('dropUuidEntity entityName not found:', entityDefinitionUuid);
+      console.warn('dropUuidEntity parentName not found:', parentUuid);
     } 
   }
 
@@ -65,39 +65,39 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  getInstancesUuid(entityDefinitionUuid:string):Promise<any> {
-    return this.localUuidIndexedDb.getAllValue(entityDefinitionUuid);
+  getInstancesUuid(parentUuid:string):Promise<any> {
+    return this.localUuidIndexedDb.getAllValue(parentUuid);
   }
   
   // #############################################################################################
-  upsertInstanceUuid(entityDefinitionUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbDataStore upsertInstanceUuid',instance.entityDefinitionUuid, instance);
+  upsertInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore upsertInstanceUuid',instance.parentUuid, instance);
 
-    // if (instance.entityDefinitionUuid == entityDefinitionEntityDefinition.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.entityDefinitionUuid)) {
-    if (!this.localUuidIndexedDb.hasSubLevel(entityDefinitionUuid)) {
-      console.log('IndexedDbDataStore upsertInstanceUuid create sublevel',entityDefinitionUuid);
-      this.localUuidIndexedDb.addSubLevels([entityDefinitionUuid]);
+    // if (instance.parentUuid == entityDefinitionEntityDefinition.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
+    if (!this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
+      console.log('IndexedDbDataStore upsertInstanceUuid create sublevel',parentUuid);
+      this.localUuidIndexedDb.addSubLevels([parentUuid]);
     } else {
-      console.log('IndexedDbDataStore upsertInstanceUuid existing sublevel',entityDefinitionUuid,this.localUuidIndexedDb.hasSubLevel(entityDefinitionUuid));
+      console.log('IndexedDbDataStore upsertInstanceUuid existing sublevel',parentUuid,this.localUuidIndexedDb.hasSubLevel(parentUuid));
     }
 
-    return this.localUuidIndexedDb.putValue(entityDefinitionUuid,instance);
+    return this.localUuidIndexedDb.putValue(parentUuid,instance);
   }
 
   // #############################################################################################
-  async deleteInstancesUuid(entityDefinitionUuid:string, instances:EntityInstance[]):Promise<any> {
-    console.log('IndexedDbDataStore deleteInstancesUuid',entityDefinitionUuid, instances);
+  async deleteInstancesUuid(parentUuid:string, instances:EntityInstance[]):Promise<any> {
+    console.log('IndexedDbDataStore deleteInstancesUuid',parentUuid, instances);
     for (const o of instances) {
-      await this.localUuidIndexedDb.deleteValue(entityDefinitionUuid, o.uuid);
+      await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
     }
     return Promise.resolve();
   }
 
   // #############################################################################################
-  async deleteInstanceUuid(entityDefinitionUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbDataStore deleteInstanceUuid',entityDefinitionUuid, instance);
+  async deleteInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore deleteInstanceUuid',parentUuid, instance);
     // for (const o of instances) {
-      await this.localUuidIndexedDb.deleteValue(entityDefinitionUuid, instance.uuid);
+      await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
     // }
     return Promise.resolve();
   }
@@ -107,38 +107,38 @@ export class IndexedDbDataStore implements DataStoreInterface{
   async applyModelEntityUpdate(update:ModelReplayableUpdate){
     console.log('IndexedDbDataStore applyModelEntityUpdate',update);
     const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
-    // if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].entityDefinitionUuid]) {
-    if (this.localUuidIndexedDb.hasSubLevel(modelCUDupdate.objects[0].entityDefinitionUuid)) {
+    // if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid]) {
+    if (this.localUuidIndexedDb.hasSubLevel(modelCUDupdate.objects[0].parentUuid)) {
       // console.log('IndexedDbDataStore applyModelEntityUpdate',modelEntityUpdate);
       if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity":{
             const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-            await this.deleteInstanceUuid(deleteStructureUpdate.entityDefinitionUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
+            await this.deleteInstanceUuid(deleteStructureUpdate.parentUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
             break;
           }
           // case "alterMetaModelInstance":
           case "alterEntityAttribute":
           case "renameEntity": {
             const cudUpdate = update.equivalentModelCUDUpdates[0];
-            const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].entityDefinitionUuid,cudUpdate.objects[0].instances[0].uuid);
-            console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].entityDefinitionUuid,currentValue);
+            const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+            console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
             // update the instance in table Entity corresponding to the renamed entity
             await this.localUuidIndexedDb.putValue(
-              cudUpdate.objects[0].instances[0].entityDefinitionUuid,
+              cudUpdate.objects[0].instances[0].parentUuid,
               cudUpdate.objects[0].instances[0],
             );
-            const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].entityDefinitionUuid,cudUpdate.objects[0].instances[0].uuid);
-            console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].entityDefinitionUuid,updatedValue);
+            const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+            console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
             break;
           }
           case "createEntity": {
             for (const instance of update.modelEntityUpdate.instances) {
-              // await this.upsertInstanceUuid(modelEntityUpdate.entityDefinitionUuid, instance);
+              // await this.upsertInstanceUuid(modelEntityUpdate.parentUuid, instance);
               console.log('IndexedDbDataStore applyModelEntityUpdates create inserting instance',instance);
               
-              await this.localUuidIndexedDb.putValue(modelEntityUpdate.entityDefinitionUuid, instance);
+              await this.localUuidIndexedDb.putValue(modelEntityUpdate.parentUuid, instance);
             }
             break;
           }
@@ -152,7 +152,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
           case "update":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await this.upsertInstanceUuid(instance.entityDefinitionUuid, instance);
+                await this.upsertInstanceUuid(instance.parentUuid, instance);
               }
             }
             break;
@@ -160,7 +160,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
           case "delete":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await this.deleteInstanceUuid(instanceCollection.entityDefinitionUuid, instance)
+                await this.deleteInstanceUuid(instanceCollection.parentUuid, instance)
               }
             }
             break;
@@ -172,9 +172,9 @@ export class IndexedDbDataStore implements DataStoreInterface{
     } else {
       console.warn(
         "IndexedDbDataStore SqlDbServer entity uuid",
-        modelCUDupdate.objects[0].entityDefinitionUuid,
+        modelCUDupdate.objects[0].parentUuid,
         "name",
-        modelCUDupdate.objects[0].entityName,
+        modelCUDupdate.objects[0].parentName,
         "not found!"
       );
     }

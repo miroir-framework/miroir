@@ -1,20 +1,21 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
-  "entityName":"Entity",
-  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel":"MetaModel",
-  "name":"Report",
+  "name":"ReportDefinition",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entityName","name"],
+    "required": ["uuid","entityUuid","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entityName": {
+      "entityUuid": {
         "title": "Entity",
         "type": "string"
       },
@@ -48,11 +49,11 @@
     },
     {
       "id": 3,
-      "name": "entityName",
-      "defaultLabel": "Entity",
+      "name": "parentUuid",
+      "defaultLabel": "Parent",
       "type": "STRING",
       "nullable": false,
-      "editable": true
+      "editable": false
     },
     {
       "id": 4,

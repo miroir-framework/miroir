@@ -86,8 +86,8 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           this.remoteStore,
           {
             actionName: "read",
-            entityName: entityDefinitionEntityDefinition.name,
-            entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
+            parentName: entityDefinitionEntityDefinition.name,
+            parentUuid: entityDefinitionEntityDefinition.uuid,
           }
         )
       )[0];
@@ -103,8 +103,8 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           this.remoteStore,
           {
             actionName: "read",
-            entityName: e["name"],
-            entityDefinitionUuid: e['uuid'],
+            parentName: e["name"],
+            parentUuid: e['uuid'],
           }
         );
         console.log(

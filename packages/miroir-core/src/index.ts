@@ -147,7 +147,7 @@ export { stringTuple, circularReplacer } from './tools.js';
 
 import entityStoreBasedConfiguration from './assets/entityDefinitions/StoreBasedConfiguration.json';
 import entityDefinitionEntityDefinition from './assets/entityDefinitions/EntityDefinition.json';
-import entityReport from './assets/entityDefinitions/Report.json';
+import entityReport from './assets/entityDefinitions/EntityDefinitionReport.json';
 import entityModelVersion from './assets/entityDefinitions/ModelVersion.json';
 import reportConfigurationList from './assets/reports/ConfigurationList.json';
 import reportEntityList from './assets/reports/entityList.json';

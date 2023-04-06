@@ -70,6 +70,6 @@ export function useLocalCacheInstancesForReport(reportName: string): EntityInsta
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForEntity(entityDefinitionUuid: string): EntityInstance[] {
-  return useSelector(selectInstancesFromDomainSelector(selectEntityInstances(entityDefinitionUuid)));
+export function useLocalCacheInstancesForEntity(parentUuid: string): EntityInstance[] {
+  return useSelector(selectInstancesFromDomainSelector(selectEntityInstances(parentUuid)));
 }

@@ -13,14 +13,14 @@ export class ModelEntityUpdateConverter{
     modelUpdate:ModelEntityUpdate,
   ):DomainDataAction{
     let domainDataAction: DomainDataAction;
-    const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityDefinitionUuid);
+    const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const modifiedEntity:EntityInstanceWithName = Object.assign(currentEntity,{name:modelUpdate.targetValue});
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "update",
-          objects:[{entityName:currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:[modifiedEntity]}]
+          objects:[{parentName:currentEntity.name, parentUuid:currentEntity.uuid, instances:[modifiedEntity]}]
         }
         break;
       }
@@ -29,7 +29,7 @@ export class ModelEntityUpdateConverter{
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName:"delete",
-          objects:[{entityName: currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
         }
         break;
       }
@@ -39,7 +39,7 @@ export class ModelEntityUpdateConverter{
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "create",
-          objects:[{entityName:currentEntity.name, entityDefinitionUuid:currentEntity.uuid, instances:castUpdate.instances}]
+          objects:[{parentName:currentEntity.name, parentUuid:currentEntity.uuid, instances:castUpdate.instances}]
         };
         break;
       }
@@ -56,15 +56,15 @@ export class ModelEntityUpdateConverter{
     currentModel: MiroirMetaModel,
   ):ModelCUDUpdate {
     let modelCUDUpdate: ModelCUDUpdate;
-    // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.entityName);
-    const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityDefinitionUuid);
+    // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.parentName);
+    const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"update",
-          objects:[{entityName: entityDefinitionEntityDefinition.name, entityDefinitionUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
+          objects:[{parentName: entityDefinitionEntityDefinition.name, parentUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
         }
         break;
       }
@@ -73,7 +73,7 @@ export class ModelEntityUpdateConverter{
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"delete",
-          objects:[{entityName: modelUpdate.entityName, entityDefinitionUuid:modelUpdate.entityDefinitionUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[{parentName: modelUpdate.parentName, parentUuid:modelUpdate.parentUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
         }
         break;
       }
@@ -84,7 +84,7 @@ export class ModelEntityUpdateConverter{
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"create",
-          objects:[{entityName: castUpdate.entityName, entityDefinitionUuid:castUpdate.entityDefinitionUuid, instances:castUpdate.instances}]
+          objects:[{parentName: castUpdate.parentName, parentUuid:castUpdate.parentUuid, instances:castUpdate.instances}]
         }
         break;
       }

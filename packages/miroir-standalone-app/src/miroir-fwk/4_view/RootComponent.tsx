@@ -36,8 +36,8 @@ import { ReduxStateChanges } from "miroir-redux";
 import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
 
-import entityAuthor from "assets/entities/Author.json";
-import entityBook from "assets/entities/Book.json";
+import entityAuthor from "assets/entityDefinitions/Author.json";
+import entityBook from "assets/entityDefinitions/Book.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";
@@ -65,8 +65,8 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
     actionType: "DomainDataAction",
     objects: [
       {
-        entityName: "Entity",
-        entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
+        parentName: "Entity",
+        parentUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
           entityDefinitionEntityDefinition as EntityInstance, // has to come 1st!
           entityStoreBasedConfiguration as EntityInstance,
@@ -75,8 +75,8 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
         ],
       },
       {
-        entityName: "Report",
-        entityDefinitionUuid: entityReport.uuid,
+        parentName: "Report",
+        parentUuid: entityReport.uuid,
         instances: [
           reportEntityList as EntityInstance, 
           reportModelVersionList as EntityInstance, 
@@ -85,15 +85,15 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
         ],
       },
       {
-        entityName: "Configuration",
-        entityDefinitionUuid: entityStoreBasedConfiguration.uuid,
+        parentName: "Configuration",
+        parentUuid: entityStoreBasedConfiguration.uuid,
         instances: [
           instanceConfigurationReference, 
         ],
       },
       {
-        entityName: "ModelVersion",
-        entityDefinitionUuid: entityModelVersion.uuid,
+        parentName: "ModelVersion",
+        parentUuid: entityModelVersion.uuid,
         instances: [
           instanceModelVersionInitial, 
         ],
@@ -115,8 +115,8 @@ async function uploadBooksAndReports(
       modelEntityUpdate: {
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
-        entityName: entityDefinitionEntityDefinition.name,
-        entityDefinitionUuid: entityDefinitionEntityDefinition.uuid,
+        parentName: entityDefinitionEntityDefinition.name,
+        parentUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
           entityAuthor as EntityInstance, 
           entityBook as EntityInstance
@@ -131,8 +131,8 @@ async function uploadBooksAndReports(
       updateActionType: "ModelCUDUpdate",
       updateActionName: "create",
       objects: [{
-        entityName: entityReport.name,
-        entityDefinitionUuid: entityReport.uuid,
+        parentName: entityReport.name,
+        parentUuid: entityReport.uuid,
         instances: [
           reportAuthorList as EntityInstance, reportBookList as EntityInstance
         ]
@@ -146,8 +146,8 @@ async function uploadBooksAndReports(
     actionName: "create",
     objects: [
       {
-        entityName: entityAuthor.name,
-        entityDefinitionUuid: entityAuthor.uuid,
+        parentName: entityAuthor.name,
+        parentUuid: entityAuthor.uuid,
         instances: [
           author1 as EntityInstance, 
           author2 as EntityInstance,
@@ -155,8 +155,8 @@ async function uploadBooksAndReports(
         ],
       },
       {
-        entityName: entityBook.name,
-        entityDefinitionUuid: entityBook.uuid,
+        parentName: entityBook.name,
+        parentUuid: entityBook.uuid,
         instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
       },
     ],
@@ -300,8 +300,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate:{
                     updateActionType:"ModelEntityUpdate",
                     updateActionName: "renameEntity",
-                    entityName: entityBook.name,
-                    entityDefinitionUuid: entityBook.uuid,
+                    parentName: entityBook.name,
+                    parentUuid: entityBook.uuid,
                     targetValue: "Bookss",
                   },
                 }
@@ -325,8 +325,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   updateActionName:'update',
                   objects: [
                     {
-                      entityName: reportReportList.entityName,
-                      entityDefinitionUuid: reportReportList.entityDefinitionUuid,
+                      parentName: reportReportList.parentName,
+                      parentUuid: reportReportList.parentUuid,
                       instances:[
                         Object.assign(
                           {},
@@ -360,8 +360,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate: {
                     updateActionType: "ModelEntityUpdate",
                     updateActionName: "DeleteEntity",
-                    entityName: entityAuthor.entityName,
-                    entityDefinitionUuid: entityAuthor.entityDefinitionUuid,
+                    parentName: entityAuthor.parentName,
+                    parentUuid: entityAuthor.parentUuid,
                     instanceUuid:entityAuthor.uuid,
                   },
                 }

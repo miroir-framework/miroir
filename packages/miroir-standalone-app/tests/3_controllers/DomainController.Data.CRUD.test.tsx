@@ -125,20 +125,20 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityAuthor.entityDefinitionUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityBook.entityDefinitionUuid, entityBook as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportBookList.entityDefinitionUuid, reportBookList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author1.entityDefinitionUuid, author1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author2.entityDefinitionUuid, author2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author3.entityDefinitionUuid, author3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book1.entityDefinitionUuid, book1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book2.entityDefinitionUuid, book2 as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(book3.entityDefinitionUuid, book3 as Instance);
-          await localDataStore?.upsertInstanceUuid(book4.entityDefinitionUuid, book4 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.parentUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityAuthor.parentUuid, entityAuthor as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportBookList.parentUuid, reportBookList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author1.parentUuid, author1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author2.parentUuid, author2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author3.parentUuid, author3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book1.parentUuid, book1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book2.parentUuid, book2 as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(book3.parentUuid, book3 as Instance);
+          await localDataStore?.upsertInstanceUuid(book4.parentUuid, book4 as EntityInstance);
 
           const {
             getByText,
@@ -146,8 +146,8 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              entityName={entityBook.name}
-              entityDefinitionUuid={entityBook.uuid}
+              parentName={entityBook.name}
+              parentUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -191,20 +191,20 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityAuthor.entityDefinitionUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityBook.entityDefinitionUuid, entityBook as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportBookList.entityDefinitionUuid, reportBookList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author1.entityDefinitionUuid, author1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author2.entityDefinitionUuid, author2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author3.entityDefinitionUuid, author3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book1.entityDefinitionUuid, book1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book2.entityDefinitionUuid, book2 as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(book3.entityDefinitionUuid, book3 as Instance);
-          await localDataStore?.upsertInstanceUuid(book4.entityDefinitionUuid, book4 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.parentUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityAuthor.parentUuid, entityAuthor as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportBookList.parentUuid, reportBookList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author1.parentUuid, author1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author2.parentUuid, author2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author3.parentUuid, author3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book1.parentUuid, book1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book2.parentUuid, book2 as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(book3.parentUuid, book3 as Instance);
+          await localDataStore?.upsertInstanceUuid(book4.parentUuid, book4 as EntityInstance);
   
           const {
             getByText,
@@ -212,7 +212,7 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              entityDefinitionUuid={entityBook.uuid}
+              parentUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -248,7 +248,7 @@ describe(
           const createAction: DomainDataAction = {
             actionName:'create',
             actionType:"DomainDataAction",
-            objects:[{entityName:book3.entityName,entityDefinitionUuid:book3.entityDefinitionUuid,instances:[book3 as EntityInstance]}]
+            objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,instances:[book3 as EntityInstance]}]
           };
   
           await act(
@@ -322,20 +322,20 @@ describe(
           const user = userEvent.setup()
           // const loadingStateService = new LoadingStateService();
   
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityAuthor.entityDefinitionUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityBook.entityDefinitionUuid, entityBook as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportBookList.entityDefinitionUuid, reportBookList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author1.entityDefinitionUuid, author1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author2.entityDefinitionUuid, author2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author3.entityDefinitionUuid, author3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book1.entityDefinitionUuid, book1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book2.entityDefinitionUuid, book2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book3.entityDefinitionUuid, book3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book4.entityDefinitionUuid, book4 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.parentUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityAuthor.parentUuid, entityAuthor as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportBookList.parentUuid, reportBookList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author1.parentUuid, author1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author2.parentUuid, author2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author3.parentUuid, author3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book1.parentUuid, book1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book2.parentUuid, book2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book3.parentUuid, book3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book4.parentUuid, book4 as EntityInstance);
   
           const {
             getByText,
@@ -343,8 +343,8 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              // entityName="Book"
-              entityDefinitionUuid={entityBook.uuid}
+              // parentName="Book"
+              parentUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -381,7 +381,7 @@ describe(
           const createAction: DomainDataAction = {
             actionName:'delete',
             actionType:"DomainDataAction",
-            objects:[{entityName:book3.entityName,entityDefinitionUuid:book3.entityDefinitionUuid,instances:[book3 as EntityInstance]}]
+            objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,instances:[book3 as EntityInstance]}]
           };
   
           await act(
@@ -452,20 +452,20 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityDefinitionUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityDefinitionUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstanceUuid(reportReportList.entityDefinitionUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityDefinitionUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityAuthor.entityDefinitionUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityBook.entityDefinitionUuid, entityBook as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportBookList.entityDefinitionUuid, reportBookList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author1.entityDefinitionUuid, author1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author2.entityDefinitionUuid, author2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(author3.entityDefinitionUuid, author3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book1.entityDefinitionUuid, book1 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book2.entityDefinitionUuid, book2 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book3.entityDefinitionUuid, book3 as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(book4.entityDefinitionUuid, book4 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstanceUuid(reportReportList.parentUuid, reportReportList as Instance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityAuthor.parentUuid, entityAuthor as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportBookList.parentUuid, reportBookList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author1.parentUuid, author1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author2.parentUuid, author2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(author3.parentUuid, author3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book1.parentUuid, book1 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book2.parentUuid, book2 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book3.parentUuid, book3 as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(book4.parentUuid, book4 as EntityInstance);
   
           const {
             getByText,
@@ -473,8 +473,8 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              // entityName="Book"
-              entityDefinitionUuid={entityBook.uuid}
+              // parentName="Book"
+              parentUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -512,13 +512,13 @@ describe(
             actionType:"DomainDataAction",
             objects: [
               {
-                entityName: book4.entityName,
-                entityDefinitionUuid: book4.entityDefinitionUuid,
+                parentName: book4.parentName,
+                parentUuid: book4.parentUuid,
                 instances: [
                   Object.assign({},book4,{"name":"RRear WindowW", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
                   // {
                   //   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
-                  //   "entityName":"Book",
+                  //   "parentName":"Book",
                   //   "name":"RRear WindowW",
                   //   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
                   // } as Instance,

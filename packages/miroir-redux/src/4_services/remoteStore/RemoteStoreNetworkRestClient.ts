@@ -45,7 +45,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return networkAction["uuid"]
       ? networkAction["uuid"]
       : networkAction.actionName == "read"
-      ? networkAction.entityDefinitionUuid + "/all"
+      ? networkAction.parentUuid + "/all"
       : "";
   }
 

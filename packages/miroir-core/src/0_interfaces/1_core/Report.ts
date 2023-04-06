@@ -1,8 +1,8 @@
 import { EntityInstanceWithName } from "./Instance.js";
 
 export interface MiroirReportListDefinition {
-  "entityName"?: string,
-  "entityDefinitionUuid"?: string,
+  "parentName"?: string,
+  "parentUuid"?: string,
 };
 
 export type MiroirReportDefinition = MiroirReportListDefinition;

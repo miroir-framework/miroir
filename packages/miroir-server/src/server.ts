@@ -32,10 +32,10 @@ app.use(bodyParser.json());
 
 
 // ##############################################################################################
-app.get("/miroir/entity/" + ":entityDefinitionUuid/all", async (req, res, ctx) => {
+app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
   return generateHandlerBody(
     req.params,
-    ['entityDefinitionUuid'],
+    ['parentUuid'],
     [],
     'get',
     "/miroir/entity/",
@@ -86,7 +86,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
   console.log("server post model/"," started #####################################");
   console.log("server post model/ update",update);
 
-  // const localData = await localIndexedDbDataStore.upsertInstance(entityName, addedObjects[0]);
+  // const localData = await localIndexedDbDataStore.upsertInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
   console.log('server post sqlDbServer.getUuidEntities()', sqlDbServer.getUuidEntities());
   switch (actionName) {

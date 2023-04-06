@@ -10,16 +10,16 @@ export interface ModelResetUpdate {
 export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'createEntity';
-  entityName?:string;
-  entityDefinitionUuid:string;
+  parentName?:string;
+  parentUuid:string;
   instances:EntityInstance[];
 }
 
 export interface ModelEntityUpdateAlterEntityAttribute {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'alterEntityAttribute';
-  entityName?:string;
-  entityDefinitionUuid:string;
+  parentName?:string;
+  parentUuid:string;
   entityAttributeId: number;
   update:Partial<EntityAttribute>;
 }
@@ -27,16 +27,16 @@ export interface ModelEntityUpdateAlterEntityAttribute {
 export interface ModelEntityUpdateDeleteMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'DeleteEntity';
-  entityName?:string;
-  entityDefinitionUuid:string;
+  parentName?:string;
+  parentUuid:string;
   instanceUuid:string;
 }
 
 export interface ModelEntityUpdateRenameEntity {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'renameEntity';
-  entityName?:string;
-  entityDefinitionUuid:string;
+  parentName?:string;
+  parentUuid:string;
   entityAttributeName?:string;
   targetValue?:any;
 }

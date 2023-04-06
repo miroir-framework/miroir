@@ -90,8 +90,8 @@ export class RemoteStoreRestAccessReduxSaga {
             status:'ok',
             instances:[
               {
-                entity:action.payload?.entityName,
-                entityDefinitionUuid:action.payload?.entityDefinitionUuid,
+                entity:action.payload?.parentName,
+                parentUuid:action.payload?.parentUuid,
                 instances:clientResult['data']
               }
             ]
@@ -126,7 +126,7 @@ export class RemoteStoreRestAccessReduxSaga {
           const result = {
             status:'ok',
             instances:[
-              // {entity:action.payload?.entityName, instances:clientResult['data']}
+              // {entity:action.payload?.parentName, instances:clientResult['data']}
             ]
           };
 

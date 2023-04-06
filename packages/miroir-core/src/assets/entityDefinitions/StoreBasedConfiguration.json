@@ -1,20 +1,21 @@
 {
   "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
-  "entityName":"Entity",
-  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "xxx",
   "conceptLevel":"MetaModel",
   "name":"StoreBasedConfiguration",
   "icon": "Interests",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entityName","name"],
+    "required": ["uuid","parentUuid","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entityName": {
+      "parentUuid": {
         "title": "Entity",
         "type": "string"
       },
@@ -48,7 +49,7 @@
     },
     {
       "id": 3,
-      "name": "entityName",
+      "name": "parentUuid",
       "defaultLabel": "Entity",
       "type": "STRING",
       "nullable": false,

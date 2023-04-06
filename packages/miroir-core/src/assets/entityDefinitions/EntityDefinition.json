@@ -1,24 +1,29 @@
 {
   "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entityName":"EntityDefinition",
-  "entityDefinitionUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName":"EntityDefinition",
+  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "name":"EntityDefinition",
   "conceptLevel":"MetaMetaModel",
-  "description": "definition of entities",
+  "description": "definition of an entity",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "if": {"properties": {"entityName": "EntityDefinition"}},
-    "then": { "required": ["uuid","entityName","name","instanceValidationJsonSchema"]},
-    "else": { "required": ["uuid","entityName","name"]},
+    "if": {"properties": {"parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"}},
+    "then": { "required": ["uuid","parentUuid","name","instanceValidationJsonSchema"]},
+    "else": { "required": ["uuid","parentUuid","name"]},
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entityName": {
-        "title": "EntityDefinition",
+      "parentName": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "parentUuid": {
+        "title": "Entity Definition",
         "type": "string"
       },
       "name": {
@@ -44,8 +49,12 @@
               "title": "Name",
               "type": "string"
             },
-            "entityName": {
-              "title": "Entity",
+            "parentName": {
+              "title": "Entity Name",
+              "type": "string"
+            },
+            "parentUuid": {
+              "title": "Entity Definition Uuid",
               "type": "string"
             },
             "defaultLabel": {
@@ -80,14 +89,30 @@
     },
     {
         "id": 2,
-        "name": "entityDefinitionUuid",
-        "defaultLabel": "Entity Definition",
+        "name": "parentUuid",
+        "defaultLabel": "Parent Class",
         "type": "STRING",
         "nullable": false,
         "editable": false
     },
     {
         "id": 3,
+        "name": "parentName",
+        "defaultLabel": "Parent MetaClass Name",
+        "type": "STRING",
+        "nullable": true,
+        "editable": true
+    },
+    {
+        "id": 4,
+        "name": "entityUuid",
+        "defaultLabel": "Entity of the definition",
+        "type": "STRING",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 5,
         "name": "name",
         "defaultLabel": "Name",
         "type": "STRING",
@@ -95,7 +120,7 @@
         "editable": true
     },
     {
-        "id": 4,
+        "id": 6,
         "name": "conceptLevel",
         "defaultLabel": "Concept Level",
         "type": "STRING",
@@ -103,7 +128,7 @@
         "editable": false
     },
     {
-        "id": 5,
+        "id": 7,
         "name": "description",
         "defaultLabel": "Description",
         "type": "STRING",
@@ -111,7 +136,7 @@
         "editable": true
     },
     {
-      "id": 6,
+      "id": 8,
       "name": "attributes",
       "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",

@@ -21,8 +21,8 @@ export interface EntityAttribute {
 };
 
 export interface EntityDefinition extends EntityInstanceWithName {
-  "entityName"?: string,
-  "entityDefinitionUuid": string,
+  "parentName"?: string,
+  "parentUuid": string,
   "description"?:string,
   "instanceValidationJsonSchema": {},
   "attributes"?: EntityAttribute[],
