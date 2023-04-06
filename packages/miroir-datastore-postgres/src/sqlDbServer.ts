@@ -3,7 +3,7 @@ import {
   EntityAttributeType,
   EntityDefinition,
   entityEntity,
-  Instance,
+  EntityInstance,
   ModelReplayableUpdate,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
@@ -129,7 +129,6 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  // getInstances(entityName:string):Promise<Instance[]> {
   async getInstancesUuid(entityUuid: string, sqlUuidEntities?: SqlUuidEntityDefinition): Promise<any> {
     let result;
     if (!!sqlUuidEntities) {
@@ -165,7 +164,7 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async upsertInstanceUuid(entityUuid: string, instance: Instance): Promise<any> {
+  async upsertInstanceUuid(entityUuid: string, instance: EntityInstance): Promise<any> {
     if (
       instance.entityUuid == entityEntity.uuid &&
       (this.sqlUuidEntities == undefined || !this.sqlUuidEntities[instance.uuid])
@@ -199,7 +198,7 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async deleteInstancesUuid(entityUuid: string, instances: Instance[]): Promise<any> {
+  async deleteInstancesUuid(entityUuid: string, instances: EntityInstance[]): Promise<any> {
     for (const instance of instances) {
       await this.deleteInstanceUuid(entityUuid,instance);
     }
@@ -207,7 +206,7 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async deleteInstanceUuid(entityUuid: string, instance: Instance): Promise<any> {
+  async deleteInstanceUuid(entityUuid: string, instance: EntityInstance): Promise<any> {
     console.log('deleteInstanceUuid', entityUuid,instance);
     await this.sqlUuidEntities[entityUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
     return Promise.resolve();
@@ -220,11 +219,11 @@ export class SqlDbServer implements DataStoreInterface {
     const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid]) {
       const model = this.sqlUuidEntities[modelCUDupdate.objects[0].entityUuid];
-      console.log("dropUuidEntity SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].entity);
+      console.log("dropUuidEntity SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].entityUuid, modelCUDupdate.objects[0].entityName);
       if (update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate') {
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity": {
-            await this.deleteInstanceUuid(update.modelEntityUpdate.entityUuid, {uuid:update.modelEntityUpdate.instanceUuid} as Instance)
+            await this.deleteInstanceUuid(update.modelEntityUpdate.entityUuid, {uuid:update.modelEntityUpdate.instanceUuid} as EntityInstance)
             break;
           }
           case "alterEntityAttribute":
@@ -277,7 +276,7 @@ export class SqlDbServer implements DataStoreInterface {
         "dropUuidEntity SqlDbServer entity uuid",
         modelCUDupdate.objects[0].entityUuid,
         "name",
-        modelCUDupdate.objects[0].entity,
+        modelCUDupdate.objects[0].entityName,
         "not found!"
       );
     }

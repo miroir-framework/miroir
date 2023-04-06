@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { RemoteStoreCRUDAction } from 'src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
-import { MiroirModel, MiroirModelVersion } from "../0_interfaces/1_core/ModelInterface";
+import { RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import {
   CRUDActionName,
   CRUDActionNamesArray, DomainAction,
@@ -17,6 +17,7 @@ import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import entityEntity from "../assets/entities/Entity.json";
 import entityModelVersion from "../assets/entities/ModelVersion.json";
 import instanceConfigurationReference from '../assets/instances/StoreBasedConfiguration - reference.json';
+import { MiroirModelVersion } from '../0_interfaces/1_core/ModelVersion';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -39,7 +40,7 @@ export class DomainController implements DomainControllerInterface {
   // ########################################################################################
   async handleDomainModelAction(
     domainModelAction: DomainModelAction,
-    currentModel?:MiroirModel,
+    currentModel?:MiroirMetaModel,
   ): Promise<void> {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName",
@@ -79,7 +80,7 @@ export class DomainController implements DomainControllerInterface {
           uuid:newModelVersionUuid,
           previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
           conceptLevel:'Data',
-          entity:entityModelVersion.name,
+          entityName:entityModelVersion.name,
           entityUuid: entityModelVersion.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
@@ -106,7 +107,7 @@ export class DomainController implements DomainControllerInterface {
               await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
                 actionType:'RemoteStoreCRUDAction',
                 actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-                entityName: replayAction.update.objects[0].entity,
+                entityName: replayAction.update.objects[0].entityName,
                 entityUuid: replayAction.update.objects[0].entityUuid,
                 objects: replayAction.update.objects[0].instances,
               });
@@ -182,12 +183,12 @@ export class DomainController implements DomainControllerInterface {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction sending to remote storage instances",
-          instances.entity, instances.instances
+          instances.entityName, instances.instances
         );
         await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
           actionType: 'RemoteStoreCRUDAction',
           actionName: domainAction.actionName.toString() as CRUDActionName,
-          entityName: instances.entity,
+          entityName: instances.entityName,
           objects: instances.instances,
         });
       }
@@ -210,7 +211,7 @@ export class DomainController implements DomainControllerInterface {
   // ########################################################################################
   async handleDomainAction(
     domainAction: DomainAction,
-    currentModel?:MiroirModel,
+    currentModel?:MiroirMetaModel,
   ): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;

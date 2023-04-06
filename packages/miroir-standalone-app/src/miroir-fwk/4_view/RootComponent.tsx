@@ -17,10 +17,9 @@ import {
   entityModelVersion,
   entityReport,
   entityStoreBasedConfiguration,
-  Instance,
+  EntityInstance,
   instanceConfigurationReference,
   instanceModelVersionInitial,
-  MiroirModel,
   MiroirModelVersion,
   MiroirReport,
   reportConfigurationList,
@@ -28,6 +27,7 @@ import {
   reportModelVersionList,
   reportReportList,
   StoreBasedConfiguration,
+  MiroirMetaModel,
 } from "miroir-core";
 import { useLocalCacheEntities, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
@@ -65,34 +65,34 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
     actionType: "DomainDataAction",
     objects: [
       {
-        entity: "Entity",
+        entityName: "Entity",
         entityUuid: entityEntity.uuid,
         instances: [
-          entityEntity as Instance, // has to come 1st!
-          entityStoreBasedConfiguration as Instance,
-          entityReport as Instance,
-          entityModelVersion as Instance,
+          entityEntity as EntityInstance, // has to come 1st!
+          entityStoreBasedConfiguration as EntityInstance,
+          entityReport as EntityInstance,
+          entityModelVersion as EntityInstance,
         ],
       },
       {
-        entity: "Report",
+        entityName: "Report",
         entityUuid: entityReport.uuid,
         instances: [
-          reportEntityList as Instance, 
-          reportModelVersionList as Instance, 
-          reportReportList as Instance,
-          reportConfigurationList as Instance
+          reportEntityList as EntityInstance, 
+          reportModelVersionList as EntityInstance, 
+          reportReportList as EntityInstance,
+          reportConfigurationList as EntityInstance
         ],
       },
       {
-        entity: "Configuration",
+        entityName: "Configuration",
         entityUuid: entityStoreBasedConfiguration.uuid,
         instances: [
           instanceConfigurationReference, 
         ],
       },
       {
-        entity: "ModelVersion",
+        entityName: "ModelVersion",
         entityUuid: entityModelVersion.uuid,
         instances: [
           instanceModelVersionInitial, 
@@ -105,7 +105,7 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
 // ###################################################################################
 async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
-  currentModel?:MiroirModel
+  currentModel?:MiroirMetaModel
 ) {
   await domainController.handleDomainAction({
     actionType: "DomainModelAction",
@@ -118,8 +118,8 @@ async function uploadBooksAndReports(
         entityName: entityEntity.name,
         entityUuid: entityEntity.uuid,
         instances: [
-          entityAuthor as Instance, 
-          entityBook as Instance
+          entityAuthor as EntityInstance, 
+          entityBook as EntityInstance
         ],
       },
     }
@@ -131,10 +131,10 @@ async function uploadBooksAndReports(
       updateActionType: "ModelCUDUpdate",
       updateActionName: "create",
       objects: [{
-        entity: entityReport.name,
+        entityName: entityReport.name,
         entityUuid: entityReport.uuid,
         instances: [
-          reportAuthorList as Instance, reportBookList as Instance
+          reportAuthorList as EntityInstance, reportBookList as EntityInstance
         ]
       }],
     }
@@ -146,18 +146,18 @@ async function uploadBooksAndReports(
     actionName: "create",
     objects: [
       {
-        entity: entityAuthor.name,
+        entityName: entityAuthor.name,
         entityUuid: entityAuthor.uuid,
         instances: [
-          author1 as Instance, 
-          author2 as Instance,
-          author3 as Instance
+          author1 as EntityInstance, 
+          author2 as EntityInstance,
+          author3 as EntityInstance
         ],
       },
       {
-        entity: entityBook.name,
+        entityName: entityBook.name,
         entityUuid: entityBook.uuid,
-        instances: [book1 as Instance, book2 as Instance, book3 as Instance, book4 as Instance],
+        instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
       },
     ],
   });
@@ -325,7 +325,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   updateActionName:'update',
                   objects: [
                     {
-                      entity: reportReportList.entity,
+                      entityName: reportReportList.entityName,
                       entityUuid: reportReportList.entityUuid,
                       instances:[
                         Object.assign(
@@ -335,7 +335,7 @@ export const RootComponent = (props: RootComponentProps) => {
                             name: "Report2List",
                             defaultLabel: "Modified List of Reports",
                           }
-                        ) as Instance
+                        ) as EntityInstance
                       ]
                     }
                   ]
@@ -360,7 +360,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate: {
                     updateActionType: "ModelEntityUpdate",
                     updateActionName: "DeleteEntity",
-                    entityName: entityAuthor.entity,
+                    entityName: entityAuthor.entityName,
                     entityUuid: entityAuthor.entityUuid,
                     instanceUuid:entityAuthor.uuid,
                   },

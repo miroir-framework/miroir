@@ -1,15 +1,13 @@
-import { InstanceWithName } from "./Instance.js";
+import { EntityInstanceWithName } from "./Instance.js";
 
 export interface MiroirReportListDefinition {
-  "entity"?: string,
+  "entityName"?: string,
   "entityUuid"?: string,
 };
 
 export type MiroirReportDefinition = MiroirReportListDefinition;
 
-export interface MiroirReport extends InstanceWithName {
-  // "uuid": number,
-  // "name":string,
+export interface MiroirReport extends EntityInstanceWithName {
   "defaultLabel": string,
   "type": 'list' | 'grid',
   "definition"?: MiroirReportDefinition,

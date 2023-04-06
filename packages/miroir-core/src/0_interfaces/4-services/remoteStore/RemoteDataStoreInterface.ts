@@ -1,4 +1,4 @@
-import { Instance, InstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
+import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
@@ -9,7 +9,7 @@ export interface RemoteStoreCRUDAction {
   entityName?: string; //redundant with object list
   entityUuid?: string; //redundant with object list
   uuid?:string; //redundant with object list
-  objects?:Instance[]; 
+  objects?:EntityInstance[]; 
 }
 
 // export type RemoteStoreModelAction = DomainModelAction;
@@ -22,7 +22,7 @@ export interface RemoteStoreCRUDActionReturnType {
   status:'ok'|'error',
   errorMessage?:string, 
   error?:MError,
-  instances?: InstanceCollection[]
+  instances?: EntityInstanceCollection[]
 };
 
 export interface RestClientCallReturnType {
@@ -78,10 +78,10 @@ export interface DataStoreInterface {
   dropUuidEntity(entityUuid:string);
   dropUuidEntities(entityUuid:string[]);
 
-  getInstancesUuid(entityUuid:string):Promise<Instance[]>;
-  upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
-  deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any>;
-  deleteInstanceUuid(entityUuid:string, instance:Instance):Promise<any>;
+  getInstancesUuid(entityUuid:string):Promise<EntityInstance[]>;
+  upsertInstanceUuid(entityUuid:string, instance:EntityInstance):Promise<any>;
+  deleteInstancesUuid(entityUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstanceUuid(entityUuid:string, instance:EntityInstance):Promise<any>;
 
   // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
   applyModelEntityUpdate(update:ModelReplayableUpdate);

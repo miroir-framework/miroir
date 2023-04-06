@@ -1,4 +1,4 @@
-import { MiroirModel } from '../../../0_interfaces/1_core/ModelInterface.js';
+import { MiroirMetaModel } from '../../1_core/Model.js';
 import { DomainAction, DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from '../../2_domain/DomainControllerInterface.js';
 
 export default {}
@@ -19,5 +19,5 @@ export declare interface LocalCacheInterface
   handleLocalCacheAction(action:DomainAncillaryOrReplayableAction);
   currentTransaction():DomainModelReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentInfo(): LocalCacheInfo;
-  currentModel(): MiroirModel;
+  currentModel(): MiroirMetaModel;
 }

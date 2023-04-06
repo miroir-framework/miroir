@@ -1,4 +1,4 @@
-import { InstanceWithName } from "./Instance.js";
+import { EntityInstanceWithName } from "./Instance.js";
 
 // export const EntityAttributeTypeObject:{[id in string]:id} = {
 export const EntityAttributeTypeObject = {
@@ -20,8 +20,8 @@ export interface EntityAttribute {
   "editable": boolean,
 };
 
-export interface EntityDefinition extends InstanceWithName {
-  "entity"?: string,
+export interface EntityDefinition extends EntityInstanceWithName {
+  "entityName"?: string,
   "entityUuid": string,
   "description"?:string,
   "instanceValidationJsonSchema": {},

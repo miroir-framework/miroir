@@ -1,5 +1,5 @@
 
-import { Instance } from "../0_interfaces/1_core/Instance";
+import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { ModelEntityUpdateDeleteMetaModelInstance, WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { IndexedDb } from "./indexedDb";
@@ -70,7 +70,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  upsertInstanceUuid(entityUuid:string, instance:Instance):Promise<any> {
+  upsertInstanceUuid(entityUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore upsertInstanceUuid',instance.entityUuid, instance);
 
     // if (instance.entityUuid == entityEntity.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.entityUuid)) {
@@ -85,7 +85,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  async deleteInstancesUuid(entityUuid:string, instances:Instance[]):Promise<any> {
+  async deleteInstancesUuid(entityUuid:string, instances:EntityInstance[]):Promise<any> {
     console.log('IndexedDbDataStore deleteInstancesUuid',entityUuid, instances);
     for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(entityUuid, o.uuid);
@@ -94,7 +94,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  async deleteInstanceUuid(entityUuid:string, instance:Instance):Promise<any> {
+  async deleteInstanceUuid(entityUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore deleteInstanceUuid',entityUuid, instance);
     // for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(entityUuid, instance.uuid);
@@ -115,7 +115,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity":{
             const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-            await this.deleteInstanceUuid(deleteStructureUpdate.entityUuid,{uuid:deleteStructureUpdate.instanceUuid} as Instance)
+            await this.deleteInstanceUuid(deleteStructureUpdate.entityUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
             break;
           }
           // case "alterMetaModelInstance":
@@ -174,7 +174,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
         "IndexedDbDataStore SqlDbServer entity uuid",
         modelCUDupdate.objects[0].entityUuid,
         "name",
-        modelCUDupdate.objects[0].entity,
+        modelCUDupdate.objects[0].entityName,
         "not found!"
       );
     }

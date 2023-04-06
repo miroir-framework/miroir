@@ -5,7 +5,7 @@ import {
   CRUDActionNamesArrayString,
   CUDActionName,
   CUDActionNamesArray, DomainAction, DomainAncillaryOrReplayableAction, DomainModelAction, DomainModelEntityUpdateAction, DomainModelReplayableAction, EntityDefinition,
-  InstanceCollection,
+  EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
 import { localCacheSliceInputActionNamesObject, localCacheSliceName, LocalCacheSliceState } from "src/4_services/localStore/LocalCacheSlice";
@@ -80,7 +80,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   )
 ;
 
-export type MinstanceAction = PayloadAction<InstanceCollection,string>;
+export type MinstanceAction = PayloadAction<EntityInstanceCollection,string>;
 export type MentityAction = PayloadAction<EntityDefinition[],string>;
 
 export type Maction = MinstanceAction | MentityAction;

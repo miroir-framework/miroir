@@ -1,5 +1,5 @@
 import { EntityAttribute } from "../../0_interfaces/1_core/EntityDefinition";
-import { Instance, InstanceCollection } from "../../0_interfaces/1_core/Instance";
+import { EntityInstance, EntityInstanceCollection } from "../../0_interfaces/1_core/Instance";
 import { CUDActionName } from "../../0_interfaces/2_domain/DomainControllerInterface";
 
 export interface ModelResetUpdate {
@@ -12,7 +12,7 @@ export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionName: 'createEntity';
   entityName?:string;
   entityUuid:string;
-  instances:Instance[];
+  instances:EntityInstance[];
 }
 
 export interface ModelEntityUpdateAlterEntityAttribute {
@@ -50,7 +50,7 @@ export type ModelEntityUpdate =
 export interface ModelCUDUpdate {
   updateActionType: 'ModelCUDUpdate';
   updateActionName: CUDActionName;
-  objects?:InstanceCollection[];
+  objects?:EntityInstanceCollection[];
 }
   
 export interface WrappedModelEntityUpdate {

@@ -9,7 +9,7 @@
 //     miroirBooks:Instance[],
 //   ):any[] {
 //     let result:any[];
-//     const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.entity)
+//     const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.entityName)
 
 //     switch (currentMiroirEntity?.name) {
 //       case "Entity":

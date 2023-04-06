@@ -1,4 +1,4 @@
-import { InstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
@@ -79,7 +79,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
    */
   public async loadConfigurationFromRemoteDataStore(): Promise<void> {
     try {
-      const entities: InstanceCollection = (
+      const entities: EntityInstanceCollection = (
         await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDAction,
@@ -93,11 +93,11 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
       )[0];
       console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore found entities", entities);
 
-      let instances: InstanceCollection[] = [entities]; //TODO: replace with functional implementation
+      let instances: EntityInstanceCollection[] = [entities]; //TODO: replace with functional implementation
       for (const e of entities.instances) {
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
         console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore loading instances for entity", e["name"]);
-        const entityInstances: InstanceCollection[] = await throwExceptionIfError(
+        const entityInstances: EntityInstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDAction,
           this.remoteStore,

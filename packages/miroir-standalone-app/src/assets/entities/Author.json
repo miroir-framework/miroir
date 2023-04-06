@@ -1,6 +1,6 @@
 {
   "uuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-  "entity":"Entity",
+  "entityName":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"Model",
   "name":"Author",
@@ -15,7 +15,7 @@
         "title": "Uuid",
         "type": "string"
       },
-      "entity": {
+      "entityName": {
         "title": "Entity",
         "type": "string"
       },
@@ -44,7 +44,7 @@
     },
     {
         "id": 3,
-        "name": "entity",
+        "name": "entityName",
         "defaultLabel": "Entity",
         "type": "STRING",
         "nullable": false,

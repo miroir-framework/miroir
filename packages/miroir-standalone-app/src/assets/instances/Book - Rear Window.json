@@ -1,6 +1,6 @@
 {
   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
-  "entity":"Book",
+  "entityName":"Book",
   "entityUuid":"797dd185-0155-43fd-b23f-f6d0af8cae06",
   "name":"Rear Window",
   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"

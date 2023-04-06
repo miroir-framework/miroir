@@ -1,6 +1,6 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
-  "entity":"Entity",
+  "entityName":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
   "name":"Report",
@@ -8,13 +8,13 @@
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entity","name"],
+    "required": ["uuid","entityName","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entity": {
+      "entityName": {
         "title": "Entity",
         "type": "string"
       },
@@ -48,7 +48,7 @@
     },
     {
       "id": 3,
-      "name": "entity",
+      "name": "entityName",
       "defaultLabel": "Entity",
       "type": "STRING",
       "nullable": false,

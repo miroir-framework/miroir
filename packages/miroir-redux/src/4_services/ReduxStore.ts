@@ -7,10 +7,8 @@ import { all } from 'redux-saga/effects';
 
 
 import {
-  DomainAction,
   DomainAncillaryOrReplayableAction,
   DomainDataAction,
-  DomainModelAction,
   DomainModelAncillaryOrReplayableAction,
   DomainModelReplayableAction,
   EntityDefinition,
@@ -20,7 +18,7 @@ import {
   entityStoreBasedConfiguration,
   LocalCacheInfo,
   LocalCacheInterface,
-  MiroirModel,
+  MiroirMetaModel,
   MiroirModelVersion,
   MiroirReport,
   RemoteDataStoreInterface,
@@ -146,7 +144,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
 
   // ###############################################################################
-  public currentModel():MiroirModel{
+  public currentModel():MiroirMetaModel{
     console.log('currentModel() from state:',this.innerReduxStore.getState());
     
     return {

@@ -1,5 +1,5 @@
 import { RemoteStoreCRUDActionReturnType } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
-import { InstanceCollection } from "../0_interfaces/1_core/Instance";
+import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ErrorLogServiceInterface, MError } from "../0_interfaces/3_controllers/ErrorLogServiceInterface";
 // import { RemoteStoreCRUDActionReturnType } from "../0_interfaces/4-services/localStore/LocalCacheInterface";
 
@@ -14,7 +14,7 @@ export async function throwExceptionIfError(
   f: (...args) => Promise<RemoteStoreCRUDActionReturnType>,
   _this,
   ...args
-): Promise<InstanceCollection[]> {
+): Promise<EntityInstanceCollection[]> {
   const result: RemoteStoreCRUDActionReturnType = await f.bind(_this)(...args);
   // console.log("unwrap",result);
   if (result && result['status'] == "error") {

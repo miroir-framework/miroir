@@ -1,6 +1,6 @@
 {
   "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
-  "entity":"Book",
+  "entityName":"Book",
   "entityUuid":"797dd185-0155-43fd-b23f-f6d0af8cae06",
   "name":"The Bride Wore Black",
   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"

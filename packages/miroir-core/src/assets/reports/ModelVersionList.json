@@ -1,13 +1,13 @@
 {
   "uuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
-  "entity":"Report",
+  "entityName":"Report",
   "entityUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "conceptLevel":"Model",
   "name":"ModelVersionList",
   "defaultLabel": "List of Model Versions",
   "type": "list",
   "definition": {
-    "entity": "ModelVersion",
+    "entityName": "ModelVersion",
     "entityUuid": "27046fce-742f-4cc4-bb95-76b271f490a5"
   }
 }

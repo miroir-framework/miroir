@@ -1,13 +1,13 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { Instance } from "../0_interfaces/1_core/Instance";
+import { EntityInstance } from "../0_interfaces/1_core/Instance";
 
 export const generateHandlerBody = async (
   params:{[propName: string]: any},
   paramNames:string[],
-  instances:Instance[],
+  instances:EntityInstance[],
   HttpMethod:HttpMethod,
   url:string,
-  method:(entityName:string,instance?:Instance)=>Promise<any>,
+  method:(entityName:string,instance?:EntityInstance)=>Promise<any>,
   jsonFormater:(a:any)=>any,
 ) => {
   console.log('generateHandlerBody', HttpMethod, url, "started #####################################");

@@ -1,6 +1,6 @@
 {
   "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "entity":"Entity",
+  "entityName":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "name":"Entity",
   "conceptLevel":"MetaMetaModel",
@@ -9,15 +9,15 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "additionalProperties": false,
-    "if": {"properties": {"entity": "Entity"}},
-    "then": { "required": ["uuid","entity","name","instanceValidationJsonSchema"]},
-    "else": { "required": ["uuid","entity","name"]},
+    "if": {"properties": {"entityName": "Entity"}},
+    "then": { "required": ["uuid","entityName","name","instanceValidationJsonSchema"]},
+    "else": { "required": ["uuid","entityName","name"]},
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entity": {
+      "entityName": {
         "title": "Entity",
         "type": "string"
       },
@@ -44,7 +44,7 @@
               "title": "Name",
               "type": "string"
             },
-            "entity": {
+            "entityName": {
               "title": "Entity",
               "type": "string"
             },

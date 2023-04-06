@@ -1,6 +1,6 @@
 {
   "uuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "entity":"Configuration",
+  "entityName":"Configuration",
   "entityUuid":"f93af951-ea13-4815-a2e3-ec0cab1fadd2",
   "name":"Reference",
   "defaultLabel": "The reference configuration for the database.",

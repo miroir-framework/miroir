@@ -19,7 +19,7 @@ import {
   DataStoreInterface,
   DomainAction,
   DomainControllerInterface,
-  Instance,
+  EntityInstance,
   LocalAndRemoteControllerInterface,
   MiroirConfig,
   MiroirContext,
@@ -143,14 +143,14 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as Instance);
-          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as Instance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as Instance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as Instance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as Instance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as Instance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as Instance);
+          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.entityUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.entityUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -158,7 +158,7 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              entityName={entityEntity.entity}
+              entityName={entityEntity.entityName}
               entityUuid={entityEntity.entityUuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
@@ -197,8 +197,8 @@ describe(
               updateActionName: 'create',
               objects: [
                 {
-                  entity:entityAuthor.entity,entityUuid:entityAuthor.entityUuid,
-                  instances:[entityAuthor as Instance]
+                  entity:entityAuthor.entityName,entityUuid:entityAuthor.entityUuid,
+                  instances:[entityAuthor as EntityInstance]
                 }
               ]
             }
@@ -211,8 +211,8 @@ describe(
               updateActionName: 'create',
               objects: [
                 {
-                  entity:entityBook.entity,entityUuid:entityBook.entityUuid,
-                  instances:[entityBook as Instance]
+                  entity:entityBook.entityName,entityUuid:entityBook.entityUuid,
+                  instances:[entityBook as EntityInstance]
                 }
               ]
             }

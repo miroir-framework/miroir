@@ -1,6 +1,6 @@
 {
   "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
-  "entity":"Entity",
+  "entityName":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"Model",
   "name":"Book",
@@ -8,13 +8,13 @@
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entity","name"],
+    "required": ["uuid","entityName","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entity": {
+      "entityName": {
         "title": "Entity",
         "type": "string"
       },

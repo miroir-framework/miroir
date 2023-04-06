@@ -6,9 +6,9 @@ export {
   EntityDefinition,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
-  Instance,
-  InstanceCollection,
-  InstanceWithName,
+  EntityInstance,
+  EntityInstanceCollection,
+  EntityInstanceWithName,
   ApplicationConceptLevel,
 } from './0_interfaces/1_core/Instance.js';
 export {
@@ -21,12 +21,12 @@ export {
   MiroirReportDefinition
 } from './0_interfaces/1_core/Report.js';
 export {
-  MiroirModel,
-  MiroirCUDModelMigration,
-  MiroirModelHistory,
+  MiroirMetaModel,
+} from './0_interfaces/1_core/Model.js';
+export {
   MiroirModelVersion,
-  // MiroirStructureModelMigration,
-} from './0_interfaces/1_core/ModelInterface.js';
+  MiroirModelHistory,
+} from './0_interfaces/1_core/ModelVersion.js';
 export {
   DeploymentMode,
   MiroirConfig,

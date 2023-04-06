@@ -1,7 +1,7 @@
-import { MiroirModel } from "../../0_interfaces/1_core/ModelInterface.js";
+import { MiroirMetaModel } from "../1_core/Model.js";
 import { ModelCUDUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
-import { Instance, InstanceCollection } from "../1_core/Instance.js";
+import { EntityInstance, EntityInstanceCollection } from "../1_core/Instance.js";
 
 export const CUDActionNamesObject = {
   'create': 'create',
@@ -46,7 +46,7 @@ export interface DomainDataAction {
   actionName: CUDActionName;
   steps?:number; // for undo / redo
   uuid?:string;
-  objects?:InstanceCollection[];
+  objects?:EntityInstanceCollection[];
 }
 
 
@@ -82,13 +82,13 @@ export interface DomainModelCommitAction {
 export interface DomainModelRollbackAction {
   actionType:'DomainModelAction',
   actionName: 'replace';
-  objects?:InstanceCollection[];
+  objects?:EntityInstanceCollection[];
 }
 
 export interface DomainModelUndoRedoAction {
   actionType:'DomainModelAction',
   actionName: UndoRedoActionName;
-  // objects?:InstanceCollection[]; // for "replace" action only. To separate, for clarification?
+  // objects?:EntityInstanceCollection[]; // for "replace" action only. To separate, for clarification?
 }
 
 export interface DomainModelResetAction {
@@ -129,20 +129,20 @@ export type DomainAction = DomainDataAction | DomainModelAction;
 export type DomainAncillaryOrReplayableAction = DomainDataAction | DomainModelAncillaryOrReplayableAction;
 
 export interface DomainInstancesUuidIndex {
-  [uuid: string]: Instance
+  [uuid: string]: EntityInstance
 }
 export interface DomainState {
   [propName: string]: DomainInstancesUuidIndex;
 }
 
 export type DomainStateTransformer=(domainState:DomainState)=>DomainState
-export type DomainStateSelector=(domainState:DomainState)=>Instance[]
+export type DomainStateSelector=(domainState:DomainState)=>EntityInstance[]
 export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
   handleDomainDataAction(action:DomainDataAction):Promise<void>;
-  handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirModel):Promise<void>;
-  handleDomainAction(action:DomainAction, currentModel?:MiroirModel):Promise<void>;
+  handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirMetaModel):Promise<void>;
+  handleDomainAction(action:DomainAction, currentModel?:MiroirMetaModel):Promise<void>;
   // currentTransaction():DomainModelEntityUpdateAction[];
   currentTransaction():DomainModelReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;

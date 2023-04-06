@@ -1,6 +1,6 @@
 {
   "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
-  "entity":"Entity",
+  "entityName":"Entity",
   "entityUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "conceptLevel":"MetaModel",
   "name":"StoreBasedConfiguration",
@@ -8,13 +8,13 @@
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["uuid","entity","name"],
+    "required": ["uuid","entityName","name"],
     "properties": {
       "uuid": {
         "title": "Uuid",
         "type": "string"
       },
-      "entity": {
+      "entityName": {
         "title": "Entity",
         "type": "string"
       },
@@ -48,7 +48,7 @@
     },
     {
       "id": 3,
-      "name": "entity",
+      "name": "entityName",
       "defaultLabel": "Entity",
       "type": "STRING",
       "nullable": false,

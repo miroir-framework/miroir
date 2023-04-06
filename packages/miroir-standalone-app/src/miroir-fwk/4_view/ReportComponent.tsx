@@ -1,4 +1,4 @@
-import { EntityDefinition, Instance, MiroirReport } from "miroir-core";
+import { EntityDefinition, EntityInstance, MiroirReport } from "miroir-core";
 import { useLocalCacheEntities, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
 import * as React from "react";
 
@@ -15,12 +15,12 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
 ) => {
   const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const instancesToDisplay:Instance[] = useLocalCacheInstancesForReport(props.reportUuid);
+  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(props.reportUuid);
   // console.log("ReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid)
   const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.entityUuid)
-  const instancesStringified:Instance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntity.attributes.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as Instance);
+  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntity.attributes.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
