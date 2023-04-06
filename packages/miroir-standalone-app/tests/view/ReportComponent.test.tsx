@@ -20,7 +20,7 @@
 //   LocalAndRemoteController,
 //   DomainControllerInterface,
 //   DomainController,
-//   entityEntity,
+//   entityDefinitionEntityDefinition,
 //   entityReport,
 //   MiroirContext,
 //   miroirCoreStartup,
@@ -90,7 +90,7 @@
 //   async () => {
 //     await mServer.createObjectStore(["Entity","Instance","Report"]);
 //     await mServer.localIndexedDb.putValue("Entity",entityReport);
-//     await mServer.localIndexedDb.putValue("Entity",entityEntity);
+//     await mServer.localIndexedDb.putValue("Entity",entityDefinitionEntityDefinition);
 //     await mServer.localIndexedDb.putValue("Report",reportEntityList);
 
 //     dataController.loadConfigurationFromRemoteDataStore();

@@ -18,7 +18,7 @@ global.TextDecoder = TextDecoder
 import {
   circularReplacer,
   DomainDataAction,
-  entityEntity,
+  entityDefinitionEntityDefinition,
   entityReport, EntityInstance, MiroirConfig, miroirCoreStartup,
   reportEntityList
 } from "miroir-core";
@@ -125,7 +125,7 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
           // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
@@ -191,7 +191,7 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
           // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
@@ -248,7 +248,7 @@ describe(
           const createAction: DomainDataAction = {
             actionName:'create',
             actionType:"DomainDataAction",
-            objects:[{entity:book3.entityName,entityUuid:book3.entityUuid,instances:[book3 as EntityInstance]}]
+            objects:[{entityName:book3.entityName,entityUuid:book3.entityUuid,instances:[book3 as EntityInstance]}]
           };
   
           await act(
@@ -322,7 +322,7 @@ describe(
           const user = userEvent.setup()
           // const loadingStateService = new LoadingStateService();
   
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
           // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
@@ -381,7 +381,7 @@ describe(
           const createAction: DomainDataAction = {
             actionName:'delete',
             actionType:"DomainDataAction",
-            objects:[{entity:book3.entityName,entityUuid:book3.entityUuid,instances:[book3 as EntityInstance]}]
+            objects:[{entityName:book3.entityName,entityUuid:book3.entityUuid,instances:[book3 as EntityInstance]}]
           };
   
           await act(
@@ -452,7 +452,7 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
           // await localDataStore?.upsertInstanceUuid(reportReportList.entityUuid, reportReportList as Instance);
           await localDataStore?.upsertInstanceUuid(reportEntityList.entityUuid, reportEntityList as EntityInstance);
@@ -512,7 +512,7 @@ describe(
             actionType:"DomainDataAction",
             objects: [
               {
-                entity: book4.entityName,
+                entityName: book4.entityName,
                 entityUuid: book4.entityUuid,
                 instances: [
                   Object.assign({},book4,{"name":"RRear WindowW", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance

@@ -13,7 +13,7 @@ import {
   ConfigurationService,
   DomainControllerInterface,
   EntityDefinition,
-  entityEntity,
+  entityDefinitionEntityDefinition,
   entityModelVersion,
   entityReport,
   entityStoreBasedConfiguration,
@@ -66,9 +66,9 @@ async function uploadInitialMiroirConfiguration(domainController: DomainControll
     objects: [
       {
         entityName: "Entity",
-        entityUuid: entityEntity.uuid,
+        entityUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
-          entityEntity as EntityInstance, // has to come 1st!
+          entityDefinitionEntityDefinition as EntityInstance, // has to come 1st!
           entityStoreBasedConfiguration as EntityInstance,
           entityReport as EntityInstance,
           entityModelVersion as EntityInstance,
@@ -115,8 +115,8 @@ async function uploadBooksAndReports(
       modelEntityUpdate: {
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
-        entityName: entityEntity.name,
-        entityUuid: entityEntity.uuid,
+        entityName: entityDefinitionEntityDefinition.name,
+        entityUuid: entityDefinitionEntityDefinition.uuid,
         instances: [
           entityAuthor as EntityInstance, 
           entityBook as EntityInstance

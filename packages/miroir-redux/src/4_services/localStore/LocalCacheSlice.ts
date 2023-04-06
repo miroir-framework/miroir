@@ -18,7 +18,7 @@ import {
   ModelEntityUpdateConverter,
   EntityDefinition,
   DomainAction,
-  entityEntity,
+  entityDefinitionEntityDefinition,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -114,7 +114,7 @@ function handleLocalCacheDataAction(state: LocalCacheSliceState, action: Payload
         console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityUuid, 'state before insert',JSON.stringify(state));
         sliceEntityAdapter.addMany(state[instanceCollection.entityUuid], instanceCollection.instances);
         console.log('localCacheSliceObject handleLocalCacheDataAction', instanceCollection.entityName, instanceCollection.entityUuid, 'state after insert',JSON.stringify(state));
-        if(instanceCollection.entityUuid == entityEntity.uuid) {
+        if(instanceCollection.entityUuid == entityDefinitionEntityDefinition.uuid) {
           console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction,'creating entityAdapter for Entities',instanceCollection.instances.map(i=>i['name']));
           
           instanceCollection.instances.forEach(i=>getInitializedEntityAdapter(i['uuid'], state));
@@ -206,7 +206,7 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
       const domainDataAction:DomainDataAction = 
         ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
-          Object.values(state[entityEntity.uuid].entities) as EntityDefinition[],
+          Object.values(state[entityDefinitionEntityDefinition.uuid].entities) as EntityDefinition[],
           action.payload.update.modelEntityUpdate
         )
       ;
@@ -247,7 +247,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, action: PayloadActi
 //#########################################################################################
 export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
-  initialState: { [entityEntity.uuid]: getLocalCacheSliceEntityAdapter(entityEntity.uuid).getInitialState() },
+  initialState: { [entityDefinitionEntityDefinition.uuid]: getLocalCacheSliceEntityAdapter(entityDefinitionEntityDefinition.uuid).getInitialState() },
   reducers: {
     [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: LocalCacheSliceState, action: PayloadAction<DomainAction>) {
       handleLocalCacheAction(state,action);

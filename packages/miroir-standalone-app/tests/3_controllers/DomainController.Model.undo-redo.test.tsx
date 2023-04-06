@@ -24,7 +24,7 @@ import {
   MiroirConfig,
   MiroirContext,
   circularReplacer,
-  entityEntity,
+  entityDefinitionEntityDefinition,
   entityModelVersion,
   entityReport,
   entityStoreBasedConfiguration,
@@ -143,7 +143,7 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityEntity.entityUuid, entityEntity as EntityInstance);
+          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.entityUuid, entityDefinitionEntityDefinition as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityReport.entityUuid, entityReport as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.entityUuid, entityStoreBasedConfiguration as EntityInstance);
           await localDataStore?.upsertInstanceUuid(entityModelVersion.entityUuid, entityModelVersion as EntityInstance);
@@ -158,8 +158,8 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              entityName={entityEntity.entityName}
-              entityUuid={entityEntity.entityUuid}
+              entityName={entityDefinitionEntityDefinition.entityName}
+              entityUuid={entityDefinitionEntityDefinition.entityUuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}

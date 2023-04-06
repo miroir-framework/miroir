@@ -12,7 +12,7 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-import entityEntity from "../assets/entities/Entity.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};
@@ -86,8 +86,8 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           this.remoteStore,
           {
             actionName: "read",
-            entityName: entityEntity.name,
-            entityUuid: entityEntity.uuid,
+            entityName: entityDefinitionEntityDefinition.name,
+            entityUuid: entityDefinitionEntityDefinition.uuid,
           }
         )
       )[0];

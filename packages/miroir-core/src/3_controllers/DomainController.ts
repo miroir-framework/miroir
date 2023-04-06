@@ -14,8 +14,8 @@ import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
-import entityEntity from "../assets/entities/Entity.json";
-import entityModelVersion from "../assets/entities/ModelVersion.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
+import entityDefinitionModelVersion from "../assets/entityDefinitions/ModelVersion.json";
 import instanceConfigurationReference from '../assets/instances/StoreBasedConfiguration - reference.json';
 import { MiroirModelVersion } from '../0_interfaces/1_core/ModelVersion';
 
@@ -80,8 +80,8 @@ export class DomainController implements DomainControllerInterface {
           uuid:newModelVersionUuid,
           previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
           conceptLevel:'Data',
-          entityName:entityModelVersion.name,
-          entityUuid: entityModelVersion.uuid,
+          entityName:entityDefinitionModelVersion.name,
+          entityUuid: entityDefinitionModelVersion.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
           // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
@@ -220,8 +220,8 @@ export class DomainController implements DomainControllerInterface {
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityEntity.uuid):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid !== entityEntity.uuid):[];
+      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid == entityDefinitionEntityDefinition.uuid):[];
+      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.entityUuid !== entityDefinitionEntityDefinition.uuid):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {

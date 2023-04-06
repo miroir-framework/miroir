@@ -1,5 +1,5 @@
 import { EntityState } from "@reduxjs/toolkit";
-import { EntityDefinition, entityEntity, entityModelVersion, entityReport, entityStoreBasedConfiguration, EntityInstance, MiroirModelVersion, MiroirReport, selectEntityInstances, selectReportInstances, StoreBasedConfiguration } from "miroir-core";
+import { EntityDefinition, entityDefinitionEntityDefinition, entityModelVersion, entityReport, entityStoreBasedConfiguration, EntityInstance, MiroirModelVersion, MiroirReport, selectEntityInstances, selectReportInstances, StoreBasedConfiguration } from "miroir-core";
 import { ReduxStateChanges, selectCurrentTransaction, selectInstancesForEntity, selectInstancesFromDomainSelector } from "miroir-redux";
 import { useSelector } from "react-redux";
 
@@ -12,7 +12,7 @@ export function useLocalCacheTransactions():ReduxStateChanges[] {
 
 //#########################################################################################
 export function useLocalCacheEntities():EntityDefinition[] {
-  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity(entityEntity.uuid));
+  const miroirEntitiesState:EntityState<EntityDefinition> = useSelector(selectInstancesForEntity(entityDefinitionEntityDefinition.uuid));
   return miroirEntitiesState?.entities?Object.values(miroirEntitiesState.entities):[];
 }
 

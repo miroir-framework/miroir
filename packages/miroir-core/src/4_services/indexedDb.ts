@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import entityEntity from "../assets/entities/Entity.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
 
 export class IndexedDb {
   public db: Level = undefined;
@@ -45,7 +45,7 @@ export class IndexedDb {
         this.subLevels = this.createSubLevels(this.db,tableNames);
         console.log('createObjectStore created db with sublevels',tableNames,this.subLevels)
         console.log('createObjectStore db',this.db)
-        console.log('createObjectStore hasSublevel',entityEntity.uuid, this.hasSubLevel(entityEntity.uuid))
+        console.log('createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
         return Promise.resolve(undefined);
       }
     } catch (error) {

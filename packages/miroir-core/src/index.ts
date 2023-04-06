@@ -145,10 +145,10 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 
-import entityStoreBasedConfiguration from './assets/entities/StoreBasedConfiguration.json';
-import entityEntity from './assets/entities/Entity.json';
-import entityReport from './assets/entities/Report.json';
-import entityModelVersion from './assets/entities/ModelVersion.json';
+import entityStoreBasedConfiguration from './assets/entityDefinitions/StoreBasedConfiguration.json';
+import entityDefinitionEntityDefinition from './assets/entityDefinitions/EntityDefinition.json';
+import entityReport from './assets/entityDefinitions/Report.json';
+import entityModelVersion from './assets/entityDefinitions/ModelVersion.json';
 import reportConfigurationList from './assets/reports/ConfigurationList.json';
 import reportEntityList from './assets/reports/entityList.json';
 import reportReportList from './assets/reports/ReportList.json';
@@ -157,7 +157,7 @@ import instanceModelVersionInitial from './assets/instances/ModelVersion - initi
 import instanceConfigurationReference from './assets/instances/StoreBasedConfiguration - reference.json';
 
 export {
-  entityEntity,
+  entityDefinitionEntityDefinition,
   entityStoreBasedConfiguration,
   entityModelVersion,
   entityReport,

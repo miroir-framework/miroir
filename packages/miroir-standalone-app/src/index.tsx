@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { entityEntity, MiroirConfig, miroirCoreStartup } from "miroir-core";
+import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
 import miroirConfig from "assets/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
@@ -12,7 +12,7 @@ import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createMswStore } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
 
-console.log("entityEntity", JSON.stringify(entityEntity));
+console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
 const root = createRoot(container);
 

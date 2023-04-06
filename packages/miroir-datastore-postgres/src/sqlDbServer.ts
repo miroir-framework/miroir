@@ -2,7 +2,7 @@ import {
   DataStoreInterface,
   EntityAttributeType,
   EntityDefinition,
-  entityEntity,
+  entityDefinitionEntityDefinition,
   EntityInstance,
   ModelReplayableUpdate,
 } from "miroir-core";
@@ -44,8 +44,8 @@ export class SqlDbServer implements DataStoreInterface {
     } else {
       console.warn("sqlDbServer init initialization started");
       const entities: EntityDefinition[] = await this.getInstancesUuid(
-        entityEntity.uuid,
-        this.sqlUuidEntityDefinition(entityEntity as EntityDefinition)
+        entityDefinitionEntityDefinition.uuid,
+        this.sqlUuidEntityDefinition(entityDefinitionEntityDefinition as EntityDefinition)
       );
       console.log("sqlDbServer uuid init found entities", entities);
 
@@ -166,7 +166,7 @@ export class SqlDbServer implements DataStoreInterface {
   // ##############################################################################################
   async upsertInstanceUuid(entityUuid: string, instance: EntityInstance): Promise<any> {
     if (
-      instance.entityUuid == entityEntity.uuid &&
+      instance.entityUuid == entityDefinitionEntityDefinition.uuid &&
       (this.sqlUuidEntities == undefined || !this.sqlUuidEntities[instance.uuid])
     ) {
       console.log("upsertInstanceUuid create Entity", instance["uuid"], 'named', instance["name"], 'instances', Object.keys(this.sqlUuidEntities?this.sqlUuidEntities:{}));
@@ -179,7 +179,7 @@ export class SqlDbServer implements DataStoreInterface {
       await this.sqlUuidEntities[entityDefinition.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
       console.log("upsertInstanceUuid created entity", entityDefinition.uuid, 'named',entityDefinition.name,'instances',Object.keys(this.sqlUuidEntities));
     } else {
-      if (instance.uuid == entityEntity.uuid) {
+      if (instance.uuid == entityDefinitionEntityDefinition.uuid) {
         console.log(
           "upsertInstanceUuid instance",
           instance["name"],

@@ -3,7 +3,7 @@ import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelCUDUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import entityEntity from "../assets/entities/Entity.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
 
 export class ModelEntityUpdateConverter{
 
@@ -64,7 +64,7 @@ export class ModelEntityUpdateConverter{
         modelCUDUpdate = {
           updateActionType:"ModelCUDUpdate",
           updateActionName:"update",
-          objects:[{entityName: entityEntity.name, entityUuid:entityEntity.uuid, instances:[modifiedEntity]}]
+          objects:[{entityName: entityDefinitionEntityDefinition.name, entityUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
         }
         break;
       }

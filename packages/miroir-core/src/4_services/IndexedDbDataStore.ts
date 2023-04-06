@@ -73,7 +73,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   upsertInstanceUuid(entityUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore upsertInstanceUuid',instance.entityUuid, instance);
 
-    // if (instance.entityUuid == entityEntity.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.entityUuid)) {
+    // if (instance.entityUuid == entityDefinitionEntityDefinition.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.entityUuid)) {
     if (!this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       console.log('IndexedDbDataStore upsertInstanceUuid create sublevel',entityUuid);
       this.localUuidIndexedDb.addSubLevels([entityUuid]);
