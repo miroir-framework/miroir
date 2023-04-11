@@ -4,6 +4,7 @@ export {
   EntityAttributeTypeNameArray,
   EntityAttributeTypeObject,
   EntityDefinition,
+  MetaEntity,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
   EntityInstance,
@@ -74,7 +75,7 @@ export {
   remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  ModelCUDUpdate,
+  ModelCUDInstanceUpdate,
   ModelEntityUpdate,
   WrappedModelEntityUpdateWithCUDUpdate,
   WrappedModelEntityUpdate,
@@ -145,10 +146,16 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 
-import entityStoreBasedConfiguration from './assets/entityDefinitions/StoreBasedConfiguration.json';
-import entityDefinitionEntityDefinition from './assets/entityDefinitions/EntityDefinition.json';
-import entityReport from './assets/entityDefinitions/EntityDefinitionReport.json';
-import entityModelVersion from './assets/entityDefinitions/ModelVersion.json';
+import entityModelVersion from './assets/entities/EntityModelVersion.json';
+import entityReport from './assets/entities/EntityReport.json';
+import entityEntity from './assets/entities/EntityEntity.json';
+import entityEntityDefinition from './assets/entities/EntityEntityDefinition.json';
+import entityStoreBasedConfiguration from './assets/entities/EntityStoreBasedConfiguration.json';
+import entityDefinitionEntityDefinition from './assets/entityDefinitions/EntityDefinitionEntityDefinition.json';
+import entityDefinitionEntity from './assets/entityDefinitions/EntityDefinitionEntity.json';
+import EntityDefinitionReport from './assets/entityDefinitions/EntityDefinitionReport.json';
+import entityDefinitionModelVersion from './assets/entityDefinitions/EntityDefinitionModelVersion.json';
+import entityDefinitionStoreBasedConfiguration from './assets/entityDefinitions/StoreBasedConfiguration.json';
 import reportConfigurationList from './assets/reports/ConfigurationList.json';
 import reportEntityList from './assets/reports/entityList.json';
 import reportReportList from './assets/reports/ReportList.json';
@@ -157,10 +164,16 @@ import instanceModelVersionInitial from './assets/instances/ModelVersion - initi
 import instanceConfigurationReference from './assets/instances/StoreBasedConfiguration - reference.json';
 
 export {
+  entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  entityStoreBasedConfiguration,
+  entityDefinitionStoreBasedConfiguration,
+  entityDefinitionModelVersion,
+  EntityDefinitionReport,
   entityModelVersion,
   entityReport,
+  entityEntity,
+  entityEntityDefinition,
+  entityStoreBasedConfiguration,
   instanceConfigurationReference,
   instanceModelVersionInitial,
   reportConfigurationList,

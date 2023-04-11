@@ -1,9 +1,10 @@
+import { entityEntity, entityEntityDefinition } from "src/index.js";
 import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { ModelCUDUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
+import { ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
 
 export class ModelEntityUpdateConverter{
 
@@ -13,9 +14,9 @@ export class ModelEntityUpdateConverter{
     modelUpdate:ModelEntityUpdate,
   ):DomainDataAction{
     let domainDataAction: DomainDataAction;
-    const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
+        const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
         const modifiedEntity:EntityInstanceWithName = Object.assign(currentEntity,{name:modelUpdate.targetValue});
         domainDataAction = {
           actionType:"DomainDataAction",
@@ -25,6 +26,7 @@ export class ModelEntityUpdateConverter{
         break;
       }
       case "DeleteEntity": {
+        const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         domainDataAction = {
           actionType:"DomainDataAction",
@@ -39,7 +41,18 @@ export class ModelEntityUpdateConverter{
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "create",
-          objects:[{parentName:currentEntity.name, parentUuid:currentEntity.uuid, instances:castUpdate.instances}]
+          objects:[
+            {
+              parentName:entityEntity.name, 
+              parentUuid:entityEntity.uuid, 
+              instances:castUpdate.entities.map(e=>e.entity)
+            },
+            {
+              parentName:entityEntityDefinition.name, 
+              parentUuid:entityEntityDefinition.uuid, 
+              instances:castUpdate.entities.map(e=>e.entityDefinition)
+            },
+          ]
         };
         break;
       }
@@ -54,24 +67,25 @@ export class ModelEntityUpdateConverter{
   static modelEntityUpdateToModelCUDUpdate(
     modelUpdate:ModelEntityUpdate,
     currentModel: MiroirMetaModel,
-  ):ModelCUDUpdate {
-    let modelCUDUpdate: ModelCUDUpdate;
+  ):ModelCUDInstanceUpdate {
+    let modelCUDUpdate: ModelCUDInstanceUpdate;
     // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.parentName);
-    const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
         const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         modelCUDUpdate = {
-          updateActionType:"ModelCUDUpdate",
+          updateActionType:"ModelCUDInstanceUpdate",
           updateActionName:"update",
           objects:[{parentName: entityDefinitionEntityDefinition.name, parentUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
         }
         break;
       }
       case "DeleteEntity": {
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         modelCUDUpdate = {
-          updateActionType:"ModelCUDUpdate",
+          updateActionType:"ModelCUDInstanceUpdate",
           updateActionName:"delete",
           objects:[{parentName: modelUpdate.parentName, parentUuid:modelUpdate.parentUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
         }
@@ -79,12 +93,22 @@ export class ModelEntityUpdateConverter{
       }
       case "alterEntityAttribute":
       case "createEntity":{
-        // const modifiedEntity:InstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         const castUpdate = modelUpdate as ModelEntityUpdateCreateMetaModelInstance;
         modelCUDUpdate = {
-          updateActionType:"ModelCUDUpdate",
+          updateActionType:"ModelCUDInstanceUpdate",
           updateActionName:"create",
-          objects:[{parentName: castUpdate.parentName, parentUuid:castUpdate.parentUuid, instances:castUpdate.instances}]
+          objects:[
+            {
+              parentName:entityEntity.name, 
+              parentUuid:entityEntity.uuid, 
+              instances:castUpdate.entities.map(e=>e.entity)
+            },
+            {
+              parentName:entityEntityDefinition.name, 
+              parentUuid:entityEntityDefinition.uuid, 
+              instances:castUpdate.entities.map(e=>e.entityDefinition)
+            },
+          ]
         }
         break;
       }

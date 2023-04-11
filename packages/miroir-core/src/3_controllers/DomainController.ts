@@ -14,10 +14,11 @@ import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
-import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
-import entityDefinitionModelVersion from "../assets/entityDefinitions/ModelVersion.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
+import entityDefinitionModelVersion from "../assets/entityDefinitions/EntityDefinitionModelVersion.json";
 import instanceConfigurationReference from '../assets/instances/StoreBasedConfiguration - reference.json';
 import { MiroirModelVersion } from '../0_interfaces/1_core/ModelVersion';
+import { entityModelVersion } from 'src/index.js';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -60,6 +61,7 @@ export class DomainController implements DomainControllerInterface {
         this.LocalAndRemoteController.handleLocalCacheModelAction(domainModelAction);
         break;
       }
+      case "initModel": 
       case "resetModel": {
         this.LocalAndRemoteController.handleRemoteStoreModelAction(domainModelAction);
         break;
@@ -78,10 +80,10 @@ export class DomainController implements DomainControllerInterface {
         // await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
         const newModelVersion:MiroirModelVersion = {
           uuid:newModelVersionUuid,
-          previousVersionUuid: currentModel.configuration[0].definition.currentModelVersion,
+          previousVersionUuid: currentModel?.configuration[0]?.definition?.currentModelVersion,
           conceptLevel:'Data',
-          parentName:entityDefinitionModelVersion.name,
-          parentUuid: entityDefinitionModelVersion.uuid,
+          parentName:entityModelVersion?.name,
+          parentUuid: entityModelVersion?.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
           // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
@@ -96,6 +98,8 @@ export class DomainController implements DomainControllerInterface {
         };
 
         await this.LocalAndRemoteController.handleRemoteStoreCRUDAction(newModelVersionAction);
+
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
 
         for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
@@ -114,6 +118,8 @@ export class DomainController implements DomainControllerInterface {
             // }
           }
         }
+
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
 
         this.LocalAndRemoteController.handleLocalCacheAction(
           {
@@ -215,7 +221,7 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;
-    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','commit','replace','undo','redo'];
+    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','replace','undo','redo'];
     console.log('handleDomainAction actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
 
     // if (domainAction.actionName!="updateEntity"){

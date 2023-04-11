@@ -1,5 +1,5 @@
-import { EntityAttribute } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstance, EntityInstanceCollection } from "../../0_interfaces/1_core/Instance";
+import { EntityAttribute, EntityDefinition, MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
+import { EntityInstanceCollection } from "../../0_interfaces/1_core/Instance";
 import { CUDActionName } from "../../0_interfaces/2_domain/DomainControllerInterface";
 
 export interface ModelResetUpdate {
@@ -10,9 +10,12 @@ export interface ModelResetUpdate {
 export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'createEntity';
-  parentName?:string;
-  parentUuid:string;
-  instances:EntityInstance[];
+  // parentName?:string;
+  // parentUuid:string;
+  entities: {
+    entity: MetaEntity;
+    entityDefinition: EntityDefinition
+  }[];
 }
 
 export interface ModelEntityUpdateAlterEntityAttribute {
@@ -47,8 +50,8 @@ export type ModelEntityUpdate =
   | ModelEntityUpdateDeleteMetaModelInstance
   | ModelEntityUpdateRenameEntity
 ;
-export interface ModelCUDUpdate {
-  updateActionType: 'ModelCUDUpdate';
+export interface ModelCUDInstanceUpdate {
+  updateActionType: 'ModelCUDInstanceUpdate';
   updateActionName: CUDActionName;
   objects?:EntityInstanceCollection[];
 }
@@ -61,8 +64,8 @@ export interface WrappedModelEntityUpdate {
 export interface WrappedModelEntityUpdateWithCUDUpdate {
   updateActionName:'WrappedModelEntityUpdateWithCUDUpdate',
   modelEntityUpdate: ModelEntityUpdate;
-  equivalentModelCUDUpdates: ModelCUDUpdate[];
+  equivalentModelCUDUpdates: ModelCUDInstanceUpdate[];
 }
 
-export type ModelUpdate = WrappedModelEntityUpdate | ModelCUDUpdate;
-export type ModelReplayableUpdate = WrappedModelEntityUpdateWithCUDUpdate | ModelCUDUpdate;
+export type ModelUpdate = WrappedModelEntityUpdate | ModelCUDInstanceUpdate;
+export type ModelReplayableUpdate = WrappedModelEntityUpdateWithCUDUpdate | ModelCUDInstanceUpdate;

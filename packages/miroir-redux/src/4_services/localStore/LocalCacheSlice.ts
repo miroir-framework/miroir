@@ -19,6 +19,7 @@ import {
   EntityDefinition,
   DomainAction,
   entityDefinitionEntityDefinition,
+  entityEntity,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -95,7 +96,7 @@ function getInitializedEntityAdapter(parentUuid: string, state: LocalCacheSliceS
 //# REDUCER FUNCTION
 //#########################################################################################
 function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
-  console.log('ReplaceInstancesForEntity', action.payload.parentName,action.payload.parentUuid,action.payload.instances);
+  console.log('ReplaceInstancesForEntity', state[entityEntity.uuid]?.entities[action.payload.parentUuid]['name'],action.payload.parentUuid,action.payload.instances);
   const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.parentUuid,state);
 
   state[action.payload.parentUuid] = sliceEntityAdapter.setAll(state[action.payload.parentUuid], action.payload.instances);

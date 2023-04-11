@@ -32,7 +32,7 @@ export class RestServerStub {
           [],
           'get',
           "/miroir/entity/",
-          localDataStore.getInstancesUuid.bind(localDataStore),
+          localDataStore.getInstances.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -45,7 +45,7 @@ export class RestServerStub {
           await req.json(),
           'post',
           "/miroir/entity/",
-          localDataStore.upsertInstanceUuid.bind(localDataStore),
+          localDataStore.upsertInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -57,7 +57,7 @@ export class RestServerStub {
           await req.json(),
           'put',
           "/miroir/entity/",
-          localDataStore.upsertInstanceUuid.bind(localDataStore),
+          localDataStore.upsertInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -69,7 +69,7 @@ export class RestServerStub {
           await req.json(),
           'delete',
           "/miroir/entity/",
-          localDataStore.deleteInstanceUuid.bind(localDataStore),
+          localDataStore.deleteInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -81,9 +81,9 @@ export class RestServerStub {
 
         switch (actionName) {
           case 'resetModel':{
-            console.log('resetModel before drop getUuidEntities', localDataStore.getUuidEntities());
-            localDataStore.dropUuidEntities(localDataStore.getUuidEntities());
-            console.log('resetModel after drop getUuidEntities', localDataStore.getUuidEntities());
+            console.log('resetModel before drop getEntityDefinitions', localDataStore.getEntityDefinitions());
+            localDataStore.dropEntities(localDataStore.getEntityDefinitions());
+            console.log('resetModel after drop getEntityDefinitions', localDataStore.getEntityDefinitions());
             break;
           }
           case 'updateEntity': {

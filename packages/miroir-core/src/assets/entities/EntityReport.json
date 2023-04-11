@@ -1,7 +1,7 @@
 {
   "uuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "parentName":"Entity",
-  "parentUuid":"381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name":"Report",
   "conceptLevel":"MetaModel",
   "description": "Report, allowing to display model instances"

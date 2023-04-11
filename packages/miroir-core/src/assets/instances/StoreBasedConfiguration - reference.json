@@ -1,7 +1,7 @@
 {
   "uuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "parentName":"Configuration",
-  "parentUuid":"f93af951-ea13-4815-a2e3-ec0cab1fadd2",
+  "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
   "name":"Reference",
   "defaultLabel": "The reference configuration for the database.",
   "definition": {"currentModelVersion":"695826c2-aefa-4f5f-a131-dee46fe21c13"}

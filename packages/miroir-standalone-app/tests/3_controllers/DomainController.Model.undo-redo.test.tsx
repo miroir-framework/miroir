@@ -143,14 +143,14 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstanceUuid(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstanceUuid(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -193,7 +193,7 @@ describe(
             actionType: 'DomainModelAction',
             actionName:'UpdateMetaModelInstance',
             update: {
-              updateActionType:"ModelCUDUpdate",
+              updateActionType:"ModelCUDInstanceUpdate",
               updateActionName: 'create',
               objects: [
                 {
@@ -207,7 +207,7 @@ describe(
             actionType: 'DomainModelAction',
             actionName:'UpdateMetaModelInstance',
             update: {
-              updateActionType:"ModelCUDUpdate",
+              updateActionType:"ModelCUDInstanceUpdate",
               updateActionName: 'create',
               objects: [
                 {

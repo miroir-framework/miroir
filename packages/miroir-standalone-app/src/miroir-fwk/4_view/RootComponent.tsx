@@ -12,10 +12,15 @@ import {
 import {
   ConfigurationService,
   DomainControllerInterface,
+  entityDefinitionEntity,
+  entityDefinitionModelVersion,
+  entityDefinitionStoreBasedConfiguration,
   EntityDefinition,
   entityDefinitionEntityDefinition,
   entityModelVersion,
   entityReport,
+  entityEntity,
+  entityEntityDefinition,
   entityStoreBasedConfiguration,
   EntityInstance,
   instanceConfigurationReference,
@@ -28,8 +33,10 @@ import {
   reportReportList,
   StoreBasedConfiguration,
   MiroirMetaModel,
+  EntityDefinitionReport,
+  MetaEntity,
 } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
+import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 
@@ -58,55 +65,11 @@ function defaultToEntityList(value: string, miroirReports: MiroirReport[]): stri
 }
 
 // ###################################################################################
-async function uploadInitialMiroirConfiguration(domainController: DomainControllerInterface) {
-  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
-  await domainController.handleDomainAction({
-    actionName: "create",
-    actionType: "DomainDataAction",
-    objects: [
-      {
-        parentName: "Entity",
-        parentUuid: entityDefinitionEntityDefinition.uuid,
-        instances: [
-          entityDefinitionEntityDefinition as EntityInstance, // has to come 1st!
-          entityStoreBasedConfiguration as EntityInstance,
-          entityReport as EntityInstance,
-          entityModelVersion as EntityInstance,
-        ],
-      },
-      {
-        parentName: "Report",
-        parentUuid: entityReport.uuid,
-        instances: [
-          reportEntityList as EntityInstance, 
-          reportModelVersionList as EntityInstance, 
-          reportReportList as EntityInstance,
-          reportConfigurationList as EntityInstance
-        ],
-      },
-      {
-        parentName: "Configuration",
-        parentUuid: entityStoreBasedConfiguration.uuid,
-        instances: [
-          instanceConfigurationReference, 
-        ],
-      },
-      {
-        parentName: "ModelVersion",
-        parentUuid: entityModelVersion.uuid,
-        instances: [
-          instanceModelVersionInitial, 
-        ],
-      },
-    ],
-  });
-}
-
-// ###################################################################################
-async function uploadBooksAndReports(
+async function uploadInitialMiroirConfiguration(
   domainController: DomainControllerInterface,
   currentModel?:MiroirMetaModel
 ) {
+  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
   await domainController.handleDomainAction({
     actionType: "DomainModelAction",
     actionName: "updateEntity",
@@ -115,58 +78,143 @@ async function uploadBooksAndReports(
       modelEntityUpdate: {
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
-        parentName: entityDefinitionEntityDefinition.name,
-        parentUuid: entityDefinitionEntityDefinition.uuid,
-        instances: [
-          entityAuthor as EntityInstance, 
-          entityBook as EntityInstance
+        entities: [
+          {entity:entityReport as MetaEntity, entityDefinition:EntityDefinitionReport as EntityDefinition}
         ],
       },
     }
-  },currentModel);
+  });
+
   await domainController.handleDomainAction({
     actionType: "DomainModelAction",
     actionName: "UpdateMetaModelInstance",
     update: {
-      updateActionType: "ModelCUDUpdate",
+      updateActionType: "ModelCUDInstanceUpdate",
       updateActionName: "create",
       objects: [{
         parentName: entityReport.name,
         parentUuid: entityReport.uuid,
         instances: [
-          reportAuthorList as EntityInstance, reportBookList as EntityInstance
+          reportEntityList as EntityInstance, 
+          reportModelVersionList as EntityInstance, 
+          reportReportList as EntityInstance,
+          reportConfigurationList as EntityInstance
         ]
       }],
     }
   },currentModel);
-  await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+  // await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
 
-  await domainController.handleDomainAction({
-    actionType: "DomainDataAction",
-    actionName: "create",
-    objects: [
-      {
-        parentName: entityAuthor.name,
-        parentUuid: entityAuthor.uuid,
-        instances: [
-          author1 as EntityInstance, 
-          author2 as EntityInstance,
-          author3 as EntityInstance
-        ],
-      },
-      {
-        parentName: entityBook.name,
-        parentUuid: entityBook.uuid,
-        instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
-      },
-    ],
-  });
+
+  // await domainController.handleDomainAction({
+  //   actionName: "create",
+  //   actionType: "DomainDataAction",
+  //   objects: [
+  //     {
+  //       parentName: "Entity",
+  //       parentUuid: entityDefinitionEntity.uuid,
+  //       instances: [
+  //         entityEntity as EntityInstance, // has to come 1st!
+  //         entityEntityDefinition as EntityInstance, // has to come 1st!
+  //         entityReport as EntityInstance, // has to come 1st!
+  //         entityModelVersion as EntityInstance,
+  //         entityStoreBasedConfiguration as EntityInstance,
+  //       ],
+  //     },
+  //     {
+  //       parentName: "Report",
+  //       parentUuid: entityReport.uuid,
+  //       instances: [
+  //         reportEntityList as EntityInstance, 
+  //         reportModelVersionList as EntityInstance, 
+  //         reportReportList as EntityInstance,
+  //         reportConfigurationList as EntityInstance
+  //       ],
+  //     },
+  //     {
+  //       parentName: "Configuration",
+  //       parentUuid: entityStoreBasedConfiguration.uuid,
+  //       instances: [
+  //         instanceConfigurationReference, 
+  //       ],
+  //     },
+  //     {
+  //       parentName: "ModelVersion",
+  //       parentUuid: entityModelVersion.uuid,
+  //       instances: [
+  //         instanceModelVersionInitial, 
+  //       ],
+  //     },
+  //   ],
+  // });
+}
+
+// ###################################################################################
+async function uploadBooksAndReports(
+  domainController: DomainControllerInterface,
+  currentModel?:MiroirMetaModel
+) {
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainModelAction",
+  //   actionName: "updateEntity",
+  //   update: {
+  //     updateActionName:"WrappedModelEntityUpdate",
+  //     modelEntityUpdate: {
+  //       updateActionType: "ModelEntityUpdate",
+  //       updateActionName: "createEntity",
+  //       parentName: entityDefinitionEntityDefinition.name,
+  //       parentUuid: entityDefinitionEntityDefinition.uuid,
+  //       entities: [
+  //         {entityAuthor}
+  //         entityBook as EntityInstance
+  //       ],
+  //     },
+  //   }
+  // },currentModel);
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainModelAction",
+  //   actionName: "UpdateMetaModelInstance",
+  //   update: {
+  //     updateActionType: "ModelCUDInstanceUpdate",
+  //     updateActionName: "create",
+  //     objects: [{
+  //       parentName: entityReport.name,
+  //       parentUuid: entityReport.uuid,
+  //       instances: [
+  //         reportAuthorList as EntityInstance, reportBookList as EntityInstance
+  //       ]
+  //     }],
+  //   }
+  // },currentModel);
+  // await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainDataAction",
+  //   actionName: "create",
+  //   objects: [
+  //     {
+  //       parentName: entityAuthor.name,
+  //       parentUuid: entityAuthor.uuid,
+  //       instances: [
+  //         author1 as EntityInstance, 
+  //         author2 as EntityInstance,
+  //         author3 as EntityInstance
+  //       ],
+  //     },
+  //     {
+  //       parentName: entityBook.name,
+  //       parentUuid: entityBook.uuid,
+  //       instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
+  //     },
+  //   ],
+  // });
 }
 
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
   const miroirReports: MiroirReport[] = useLocalCacheReports();
-  const miroirEntities: EntityDefinition[] = useLocalCacheEntities();
+  const miroirEntities: MetaEntity[] = useLocalCacheEntities();
+  const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirModelVersions: MiroirModelVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -182,8 +230,9 @@ export const RootComponent = (props: RootComponentProps) => {
 
   console.log("RootComponent miroirReports", miroirReports);
 
-  const currentModel =  {
+  const currentModel: MiroirMetaModel =  {
     entities: miroirEntities,
+    entityDefinitions: miroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,
     modelVersions: miroirModelVersions,
@@ -250,10 +299,51 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainAction({
               actionName: "resetModel",
               actionType: "DomainModelAction",
+              // entityDefinitions: [
+              //   entityDefinitionEntityDefinition as EntityDefinition, // has to come 1st!
+              //   entityDefinitionEntity as EntityDefinition, // has to come second!
+              //   entityDefinitionStoreBasedConfiguration as EntityDefinition,
+              //   entityDefinitionModelVersion as EntityDefinition,
+              //   EntityDefinitionReport as EntityDefinition,
+              // ],
+              // entities:[
+              //   entityEntity as MetaEntity, // has to come 1st!
+              //   entityEntityDefinition as MetaEntity, // has to come 1st!
+              //   entityReport as MetaEntity, // has to come 1st!
+              //   entityModelVersion as MetaEntity,
+              //   entityStoreBasedConfiguration as MetaEntity,
+              // ]
             });
           }}
         >
           Reset database
+        </button>
+      </span>
+      <p />
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainAction({
+              actionType: "DomainModelAction",
+              actionName: "initModel",
+              entityDefinitions: [
+                entityDefinitionEntityDefinition as EntityDefinition, // has to come 1st!
+                entityDefinitionEntity as EntityDefinition, // has to come second!
+                entityDefinitionStoreBasedConfiguration as EntityDefinition,
+                entityDefinitionModelVersion as EntityDefinition,
+                EntityDefinitionReport as EntityDefinition,
+              ],
+              entities:[
+                entityEntity as MetaEntity, // has to come 1st!
+                entityEntityDefinition as MetaEntity, // has to come 1st!
+                entityReport as MetaEntity, // has to come 1st!
+                entityModelVersion as MetaEntity,
+                entityStoreBasedConfiguration as MetaEntity,
+              ]
+            });
+          }}
+        >
+          Init database
         </button>
       </span>
       <span>
@@ -321,7 +411,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 actionType: "DomainModelAction",
                 actionName: "UpdateMetaModelInstance",
                 update: {
-                  updateActionType: "ModelCUDUpdate",
+                  updateActionType: "ModelCUDInstanceUpdate",
                   updateActionName:'update',
                   objects: [
                     {

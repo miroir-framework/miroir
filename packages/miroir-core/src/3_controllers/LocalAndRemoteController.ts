@@ -1,3 +1,4 @@
+import { entityEntity } from "src/index.js";
 import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
@@ -12,7 +13,7 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};
@@ -86,8 +87,8 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           this.remoteStore,
           {
             actionName: "read",
-            parentName: entityDefinitionEntityDefinition.name,
-            parentUuid: entityDefinitionEntityDefinition.uuid,
+            parentName: entityEntity.name,
+            parentUuid: entityEntity.uuid,
           }
         )
       )[0];

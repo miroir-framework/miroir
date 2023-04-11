@@ -1,13 +1,13 @@
 {
   "uuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
-  "parentName":"Report Definition",
-  "parentUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel":"Model",
   "name":"ModelVersionList",
   "defaultLabel": "List of Model Versions",
   "type": "list",
   "definition": {
     "parentName": "ModelVersion",
-    "parentUuid": "27046fce-742f-4cc4-bb95-76b271f490a5"
+    "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
   }
 }

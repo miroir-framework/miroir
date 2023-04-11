@@ -1,13 +1,13 @@
 {
   "uuid": "43f04807-8f96-43f9-876f-9a0210f7b99c",
-  "parentName":"Report Definition",
-  "parentUuid":"952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel":"Model",
   "name":"StoreBasedConfigurationList",
   "defaultLabel": "Store-based Configuration",
   "type": "list",
   "definition": {
     "parentName": "StoreBasedConfiguration",
-    "parentUuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2"
+    "parentUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7"
   }
 }

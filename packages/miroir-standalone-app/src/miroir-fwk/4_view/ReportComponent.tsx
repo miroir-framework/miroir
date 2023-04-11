@@ -1,5 +1,5 @@
-import { EntityDefinition, EntityInstance, MiroirReport } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
+import { EntityDefinition, EntityInstance, MetaEntity, MiroirReport } from "miroir-core";
+import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
 import * as React from "react";
 
 import { MTableComponent } from "./MTableComponent";
@@ -13,14 +13,19 @@ export interface MiroirReportComponentProps {
 export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   props: MiroirReportComponentProps
 ) => {
-  const miroirEntities:EntityDefinition [] = useLocalCacheEntities();
+  console.log("ReportComponent props",props);
+  const miroirEntities:MetaEntity [] = useLocalCacheEntities();
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
   const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(props.reportUuid);
   // console.log("ReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
-  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid)
-  const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid)
-  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntity.attributes.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
+  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid);
+  const currentMiroirEntity: MetaEntity = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+  const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
+  console.log("ReportComponent currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
+
+  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntityDefinition.attributes.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
@@ -40,7 +45,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
               <div>
                 <MTableComponent
                   columnDefs={
-                    currentMiroirEntity?.attributes?.map(
+                    currentMiroirEntityDefinition?.attributes?.map(
                       (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
                     )
                   }

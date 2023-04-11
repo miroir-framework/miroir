@@ -1,5 +1,5 @@
 import { MiroirModelVersion } from "../../0_interfaces/1_core/ModelVersion";
-import { EntityDefinition } from "./EntityDefinition";
+import { EntityDefinition, MetaEntity } from "./EntityDefinition";
 import { StoreBasedConfiguration } from "./MiroirConfig";
 import { MiroirReport } from "./Report";
 import { EntityInstance, EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
@@ -17,7 +17,8 @@ export interface MiroirModel {
 
 
 export interface MiroirMetaModel {// the name of meta-model entities cannot change
-  entities: EntityDefinition[];
+  entities: MetaEntity[];
+  entityDefinitions: EntityDefinition[];
   reports: MiroirReport[];
   modelVersions: MiroirModelVersion[];
   configuration: StoreBasedConfiguration[];

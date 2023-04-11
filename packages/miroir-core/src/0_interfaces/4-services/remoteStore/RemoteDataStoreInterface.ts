@@ -1,7 +1,7 @@
 import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
+import { ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
-import { CRUDActionName, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
+import { CRUDActionName, DomainModelInitAction, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
 
 export interface RemoteStoreCRUDAction {
   actionType:'RemoteStoreCRUDAction';
@@ -14,7 +14,7 @@ export interface RemoteStoreCRUDAction {
 
 // export type RemoteStoreModelAction = DomainModelAction;
 // export type RemoteStoreModelAction = DomainModelEntityUpdateAction;
-export type RemoteStoreModelAction = DomainModelReplayableAction | DomainModelResetAction;
+export type RemoteStoreModelAction = DomainModelReplayableAction | DomainModelResetAction | DomainModelInitAction;
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 
@@ -63,10 +63,11 @@ export declare interface RemoteDataStoreInterface {
 
 
 export interface DataStoreInterface {
-  init():Promise<void>;
+  start():Promise<void>;
 
   getdb():any;
-  dropModel();
+  dropModel():Promise<void>;
+  initModel():Promise<void>;
   open();
   close();
 
@@ -74,14 +75,15 @@ export interface DataStoreInterface {
  
   addConcepts(conceptsNames:string[]);
   
-  getUuidEntities():string[]; //TODO: remove!
-  dropUuidEntity(parentUuid:string);
-  dropUuidEntities(parentUuid:string[]);
+  getEntityDefinitions():string[]; //TODO: remove!
+  getEntities():string[]; //TODO: remove!
+  dropEntity(parentUuid:string);
+  dropEntities(parentUuid:string[]);
 
-  getInstancesUuid(parentUuid:string):Promise<EntityInstance[]>;
-  upsertInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any>;
-  deleteInstancesUuid(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteInstanceUuid(parentUuid:string, instance:EntityInstance):Promise<any>;
+  getInstances(parentUuid:string):Promise<EntityInstance[]>;
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
   // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
   applyModelEntityUpdate(update:ModelReplayableUpdate);

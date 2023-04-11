@@ -11,6 +11,9 @@ import {
   selectEntityInstances,
   selectReportInstances,
   StoreBasedConfiguration,
+  entityEntity,
+  MetaEntity,
+  entityEntityDefinition,
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -28,9 +31,18 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
 }
 
 //#########################################################################################
-export function useLocalCacheEntities(): EntityDefinition[] {
+// export function useLocalCacheEntities(): EntityDefinition[] {
+export function useLocalCacheEntities(): MetaEntity[] {
+  const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
+    selectInstancesForEntity(entityEntity.uuid)
+  );
+  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
+}
+
+//#########################################################################################
+export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
   const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
-    selectInstancesForEntity(entityDefinitionEntityDefinition.uuid)
+    selectInstancesForEntity(entityEntityDefinition.uuid)
   );
   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
 }

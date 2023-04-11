@@ -23,9 +23,9 @@ console.log(`Server being set-up, going to execute on the port::${port}`);
 const sqlDbServer:DataStoreInterface = await createServer('postgres://postgres:postgres@localhost:5432/postgres');
 
 try {
-  await sqlDbServer.init();
+  await sqlDbServer.start();
 } catch(e) {
-  console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServer.getUuidEntities());
+  console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServer.getEntityDefinitions(),'error',e);
 }
 
 app.use(bodyParser.json());
@@ -39,7 +39,7 @@ app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
     [],
     'get',
     "/miroir/entity/",
-    sqlDbServer.getInstancesUuid.bind(sqlDbServer),
+    sqlDbServer.getInstances.bind(sqlDbServer),
     res.json.bind(res)
   )
 });
@@ -53,7 +53,7 @@ app.put("/miroir/entity", async (req, res, ctx) => {
     await req.body,
     'put',
     "/miroir/entity/",
-    sqlDbServer.upsertInstanceUuid.bind(sqlDbServer),
+    sqlDbServer.upsertInstance.bind(sqlDbServer),
     res.json.bind(res)
   )
 });
@@ -71,7 +71,7 @@ app.post("/miroir/entity", async (req, res, ctx) => {
     body,
     'post',
     "/miroir/entity/",
-    sqlDbServer.upsertInstanceUuid.bind(sqlDbServer),
+    sqlDbServer.upsertInstance.bind(sqlDbServer),
     res.json.bind(res)
   )
 });
@@ -82,22 +82,31 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
     typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
   
   // const updates: RemoteStoreModelAction[] = await req.body;
-  const update: ModelReplayableUpdate = (await req.body)[0];
   console.log("server post model/"," started #####################################");
-  console.log("server post model/ update",update);
 
   // const localData = await localIndexedDbDataStore.upsertInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  console.log('server post sqlDbServer.getUuidEntities()', sqlDbServer.getUuidEntities());
+  console.log('server post sqlDbServer.getEntities()', sqlDbServer.getEntityDefinitions());
   switch (actionName) {
     case 'resetModel':{
+      const update = (await req.body)[0];
+      console.log("server post model/resetModel update",update);
       await sqlDbServer.dropModel();
-      console.log('server resetModel after dropped sqlDbServer entities, entities now:',sqlDbServer.getUuidEntities());
-      // sqlDbServer.dropUuidEntities(sqlDbServer.getUuidEntities());
-      // console.log('resetModel after dropEntity', Object.keys(sequelize.models), 'sqlDbServer uuid entities',sqlDbServer.getUuidEntities());
+      console.log('server post resetModel after dropped sqlDbServer entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
+      // await sqlDbServer.initModel();
+      // console.log('server post resetModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
+      break;
+    }
+    case 'initModel':{
+      const update = (await req.body)[0];
+      console.log("server post model/initModel update",update);
+      await sqlDbServer.initModel();
+      console.log('server post resetModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
       break;
     }
     case 'updateEntity': {
+      const update: ModelReplayableUpdate = (await req.body)[0];
+      console.log("server post model/updateEntity update",update);
       if (update) {
         switch (update['action']) {
           default:

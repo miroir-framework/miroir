@@ -46,7 +46,7 @@ async function start() {
     }
     if (!!localDataStore) { // datastore is emulated
       await localDataStore.open();
-      await localDataStore.init();
+      await localDataStore.start();
       await localDataStore?.clear();
       console.log('localDataStore.db',localDataStore.getdb());
     }

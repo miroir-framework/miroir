@@ -20,9 +20,16 @@ export interface EntityAttribute {
   "editable": boolean,
 };
 
+export interface MetaEntity extends EntityInstanceWithName {
+  "parentName"?: string,
+  "parentUuid": string,
+  "description"?:string,
+};
+
 export interface EntityDefinition extends EntityInstanceWithName {
   "parentName"?: string,
   "parentUuid": string,
+  "entityUuid": string,
   "description"?:string,
   "instanceValidationJsonSchema": {},
   "attributes"?: EntityAttribute[],

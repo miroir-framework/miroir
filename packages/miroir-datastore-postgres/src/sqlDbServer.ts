@@ -2,8 +2,20 @@ import {
   DataStoreInterface,
   EntityAttributeType,
   EntityDefinition,
+  entityDefinitionEntity,
   entityDefinitionEntityDefinition,
+  entityDefinitionModelVersion,
+  EntityDefinitionReport,
+  entityDefinitionStoreBasedConfiguration,
+  entityEntity,
+  entityEntityDefinition,
   EntityInstance,
+  entityModelVersion,
+  entityReport,
+  entityStoreBasedConfiguration,
+  instanceConfigurationReference,
+  instanceModelVersionInitial,
+  MetaEntity,
   ModelReplayableUpdate,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
@@ -14,6 +26,7 @@ const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataT
   OBJECT: DataTypes.JSONB,
 };
 
+// ##############################################################################################
 function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   entityDefinition: EntityDefinition
 ): ModelAttributes<Model, Attributes<Model>> {
@@ -24,7 +37,8 @@ function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
   );
 }
 
-export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
+// ##############################################################################################
+// export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type SqlUuidEntityDefinition = {
   [parentUuid in string]: { parentName: string; sequelizeModel: ModelStatic<Model<any, any>> };
 };
@@ -33,30 +47,203 @@ export type SqlUuidEntityDefinition = {
 // ##############################################################################################
 export class SqlDbServer implements DataStoreInterface {
   // private sqlEntities: SqlEntityDefinition = undefined;
-  private sqlUuidEntities: SqlUuidEntityDefinition = undefined;
+  private sqlEntityDefinitions: SqlUuidEntityDefinition = undefined;
+  private sqlEntities: SqlUuidEntityDefinition = undefined;
 
   constructor(private sequelize: Sequelize) {}
 
   // ##############################################################################################
-  async init(): Promise<void> {
-    if (this.sqlUuidEntities) {
-      console.warn("sqlDbServer init initialization can not be done a second time", this.sqlUuidEntities);
-    } else {
-      console.warn("sqlDbServer init initialization started");
-      const entities: EntityDefinition[] = await this.getInstancesUuid(
-        entityDefinitionEntityDefinition.uuid,
-        this.sqlUuidEntityDefinition(entityDefinitionEntityDefinition as EntityDefinition)
-      );
-      console.log("sqlDbServer uuid init found entities", entities);
+  sqlEntityDefinition(entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
+    return {
+      [entityDefinition.uuid]: {
+        parentName: entityDefinition.name,
+        sequelizeModel: this.sequelize.define(
+          entityDefinition.name,
+          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
+          {
+            freezeTableName: true,
+          }
+        ),
+      },
+    };
+  }
 
-      this.sqlUuidEntities = entities.reduce((prev, curr: EntityDefinition) => {
-        // console.warn("sqlDbServer uuid init initializing", curr);
-        return Object.assign(prev, this.sqlUuidEntityDefinition(curr));
-      }, {});
+  // ##############################################################################################
+  sqlEntity(entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
+    return {
+      [entity.uuid]: {
+        parentName: entity.parentName,
+        sequelizeModel: this.sequelize.define(
+          entity.name,
+          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
+          {
+            freezeTableName: true,
+          }
+        ),
+      },
+    };
+  }
+  
+  // ##############################################################################################
+  async start(): Promise<void> {
+    if (this.sqlEntities) {
+      console.warn("sqlDbServer start initialization can not be done a second time", this.sqlEntities);
+    } else {
+      console.warn("sqlDbServer start initialization started");
+      const entityAccessObject = this.sqlEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);
+
+      const entities: MetaEntity[] = await this.getInstances(
+        entityEntity.uuid,
+        entityAccessObject
+      );
+      console.log("################### sqlDbServer start found entities", entities);
+
+      const entityDefinitionAccessObject = this.sqlEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
+      const entityDefinitions: EntityDefinition[] = await this.getInstances(
+        entityEntityDefinition.uuid,
+        entityDefinitionAccessObject
+      );
+      console.log("################### sqlDbServer start found entityDefinitions", entityDefinitions);
+
+      this.sqlEntities = entities
+        .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
+        .reduce(
+          (prev, curr: EntityDefinition) => {
+            const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
+            console.warn("sqlDbServer start sqlEntities init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
+            return Object.assign(prev, this.sqlEntity(curr,entityDefinition));
+          },
+          Object.assign({},entityAccessObject,entityDefinitionAccessObject)
+        )
+      ;
     }
+    console.log("################### sqlDbServer init found sqlEntities", this.sqlEntities);
     return Promise.resolve();
   }
   
+
+  // ##############################################################################################
+  async createEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
+    console.log('createEntity input: entity',entity,'entityDefinition',entityDefinition);
+    if (entity.uuid != entityDefinition.entityUuid) {
+      // inconsistent input, raise exception
+      console.error('createEntity inconsistent input: given entityDefinition is not related to given entity.');
+    } else {
+      this.sqlEntities = Object.assign(
+        {},
+        this.sqlEntities,
+        this.sqlEntity(entity, entityDefinition)
+      );
+      console.log('createEntity creating table',entity.name);
+      await this.sqlEntities[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
+      console.log('createEntity table',entity.name,'created.');
+      if (!!this.sqlEntities && this.sqlEntities[entityEntity.uuid]) {
+        await this.sqlEntities[entityEntity.uuid].sequelizeModel.upsert(entity as any);
+      } else {
+        console.error('createEntity could not insert entity',entity);
+      }
+      if (!!this.sqlEntities && this.sqlEntities[entityEntityDefinition.uuid]) {
+        await this.sqlEntities[entityEntityDefinition.uuid].sequelizeModel.upsert(entityDefinition as any);
+      } else {
+        console.warn('createEntity could not insert entityDefinition',entityDefinition);
+      }
+    }
+  }
+
+  // ##############################################################################################
+  dropEntity(parentUuid: string) {
+    if (this.sqlEntities && this.sqlEntities[parentUuid]) {
+      const model = this.sqlEntities[parentUuid];
+      console.log("dropEntity parentUuid", parentUuid, model.parentName);
+      this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
+      delete this.sqlEntities[parentUuid];
+    } else {
+      console.warn("dropEntity parentUuid", parentUuid, "NOT FOUND.");
+    }
+  }
+
+
+  // ##############################################################################################
+  async initModel(
+  ):Promise<void> {
+
+    // TODO: test this.sqlEntities for emptiness, abort if not empty
+    // bootstrap MetaClass entity
+    console.log('################################### initModel');
+    
+    await this.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);
+    console.log('created entity entity',this.sqlEntities);
+
+    // bootstrap MetaClass EntityDefinition
+    await this.createEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
+    console.log('created entity EntityDefinition',this.sqlEntities);
+
+    await this.sqlEntities[entityEntityDefinition.uuid].sequelizeModel.upsert(entityDefinitionEntity as any);
+
+    // bootstrap ModelVersion
+    await this.createEntity(entityModelVersion as MetaEntity, entityDefinitionModelVersion as EntityDefinition);
+    console.log('created entity EntityModelVersion',this.sqlEntities);
+    await this.sqlEntities[entityModelVersion.uuid].sequelizeModel.upsert(instanceModelVersionInitial as any);
+
+    // bootstrap EntityStoreBasedConfiguration
+    await this.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
+    console.log('created entity EntityStoreBasedConfiguration',this.sqlEntities);
+    await this.sqlEntities[entityStoreBasedConfiguration.uuid].sequelizeModel.upsert(instanceConfigurationReference as any);
+  }
+
+  // ##############################################################################################
+  async getInstances(parentUuid: string, sqlEntities?: SqlUuidEntityDefinition): Promise<any> {
+    let result;
+    if (!!sqlEntities) {
+      if (sqlEntities[parentUuid]) {
+        console.log('getEntityInstances calling param sqlEntities findall', parentUuid, JSON.stringify(sqlEntities[parentUuid]));
+        result = sqlEntities[parentUuid]?.sequelizeModel?.findAll()
+      } else {
+        result = []
+      }
+    } else {
+      if (!!this.sqlEntities) {
+        if (this.sqlEntities[parentUuid]) {
+          console.log('getEntityInstances calling this.sqlEntities findall', parentUuid);
+
+          result = this.sqlEntities[parentUuid]?.sequelizeModel?.findAll()
+        } else {
+          result = []
+        }
+      } else {
+        result = []
+      }
+    }
+    return Promise.resolve(result);
+  }
+
+  // ##############################################################################################
+  // async getInstances(parentUuid: string, sqlEntityDefinitions?: SqlUuidEntityDefinition): Promise<any> {
+  //   let result;
+  //   if (!!sqlEntityDefinitions) {
+  //     if (sqlEntityDefinitions[parentUuid]) {
+  //       console.log('calling param sqlUuidEntities findall', parentUuid, JSON.stringify(sqlEntityDefinitions[parentUuid]));
+  //       result = sqlEntityDefinitions[parentUuid]?.sequelizeModel?.findAll()
+  //     } else {
+  //       result = []
+  //     }
+  //   } else {
+  //     if (!!this.sqlEntityDefinitions) {
+  //       if (this.sqlEntityDefinitions[parentUuid]) {
+  //         console.log('calling this.sqlUuidEntities findall', parentUuid);
+          
+  //         result = this.sqlEntityDefinitions[parentUuid]?.sequelizeModel?.findAll()
+  //       } else {
+  //         result = []
+  //       }
+  //     } else {
+  //       result = []
+  //     }
+  //   }
+  //   return Promise.resolve(result);
+  // }
+
+  // ##############################################################################################
   public getdb():any{
     return undefined;
   }
@@ -73,11 +260,13 @@ export class SqlDbServer implements DataStoreInterface {
 
   // ##############################################################################################
   async dropModel(
-  ) {
-    this.sqlUuidEntities = {};
-    return this.sequelize.drop();
+  ):Promise<void> {
+    this.sqlEntityDefinitions = {};
+    this.sqlEntities = {};
+    await this.sequelize.drop();
   }
-
+  
+  
   // ##############################################################################################
   close() {
     this.sequelize.close();
@@ -86,129 +275,46 @@ export class SqlDbServer implements DataStoreInterface {
 
   // ##############################################################################################
   clear() {
-    this.dropUuidEntities(this.getUuidEntities());
+    this.dropEntities(this.getEntityDefinitions());
   }
 
   // ##############################################################################################
-  getUuidEntities(): string[] {
-    return this.sqlUuidEntities ? Object.keys(this.sqlUuidEntities) : [];
+  getEntityDefinitions(): string[] {
+    return this.sqlEntityDefinitions ? Object.keys(this.sqlEntityDefinitions) : [];
   }
 
   // ##############################################################################################
-  dropUuidEntity(parentUuid: string) {
-    if (this.sqlUuidEntities && this.sqlUuidEntities[parentUuid]) {
-      const model = this.sqlUuidEntities[parentUuid];
-      console.log("dropUuidEntity parentUuid", parentUuid, model.parentName);
-      this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
-      delete this.sqlUuidEntities[parentUuid];
-    } else {
-      console.warn("dropUuidEntity parentUuid", parentUuid, "NOT FOUND.");
-    }
+  getEntities(): string[] {
+    return this.sqlEntities ? Object.keys(this.sqlEntities) : [];
   }
 
   // ##############################################################################################
-  dropUuidEntities(entityUuids: string[]) {
-    console.log("dropUuidEntities parentUuid", entityUuids);
-    entityUuids.forEach((e) => this.dropUuidEntity(e));
+  dropEntities(entityUuids: string[]) {
+    console.log("dropEntities parentUuid", entityUuids);
+    entityUuids.forEach((e) => this.dropEntity(e));
   }
 
-  // ##############################################################################################
-  sqlUuidEntityDefinition(entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
-    return {
-      [entityDefinition.uuid]: {
-        parentName: entityDefinition.name,
-        sequelizeModel: this.sequelize.define(
-          entityDefinition.name,
-          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
-          {
-            freezeTableName: true,
-          }
-        ),
-      },
-    };
-  }
 
   // ##############################################################################################
-  async getInstancesUuid(parentUuid: string, sqlUuidEntities?: SqlUuidEntityDefinition): Promise<any> {
-    let result;
-    if (!!sqlUuidEntities) {
-      if (sqlUuidEntities[parentUuid]) {
-        console.log('calling param sqlUuidEntities findall', parentUuid, JSON.stringify(sqlUuidEntities[parentUuid]));
-        result = sqlUuidEntities[parentUuid]?.sequelizeModel?.findAll()
-      } else {
-        result = []
-      }
-    } else {
-      if (!!this.sqlUuidEntities) {
-        if (this.sqlUuidEntities[parentUuid]) {
-          console.log('calling this.sqlUuidEntities findall', parentUuid);
-          
-          result = this.sqlUuidEntities[parentUuid]?.sequelizeModel?.findAll()
-        } else {
-          result = []
-        }
-      } else {
-        result = []
-      }        
-    }
-    return Promise.resolve(result);
-    // return sqlUuidEntities
-    //   ? sqlUuidEntities[parentUuid]
-    //     ? sqlUuidEntities[parentUuid].sequelizeModel.findAll()
-    //     : Promise.resolve([])
-    //   : this.sqlUuidEntities
-    //   ? this.sqlUuidEntities[parentUuid]
-    //     ? await this.sqlUuidEntities[parentUuid].sequelizeModel.findAll()
-    //     : Promise.resolve([])
-    //   : Promise.resolve([]);
-  }
-
-  // ##############################################################################################
-  async upsertInstanceUuid(parentUuid: string, instance: EntityInstance): Promise<any> {
-    if (
-      instance.parentUuid == entityDefinitionEntityDefinition.uuid &&
-      (this.sqlUuidEntities == undefined || !this.sqlUuidEntities[instance.uuid])
-    ) {
-      console.log("upsertInstanceUuid create Entity", instance["uuid"], 'named', instance["name"], 'instances', Object.keys(this.sqlUuidEntities?this.sqlUuidEntities:{}));
-      const entityDefinition: EntityDefinition = instance as EntityDefinition;
-      // this.localIndexedDb.addSubLevels([parentName]);
-      this.sqlUuidEntities = Object.assign(
-        !!this.sqlUuidEntities ? this.sqlUuidEntities : {},
-        this.sqlUuidEntityDefinition(instance as EntityDefinition)
-      );
-      await this.sqlUuidEntities[entityDefinition.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
-      console.log("upsertInstanceUuid created entity", entityDefinition.uuid, 'named',entityDefinition.name,'instances',Object.keys(this.sqlUuidEntities));
-    } else {
-      if (instance.uuid == entityDefinitionEntityDefinition.uuid) {
-        console.log(
-          "upsertInstanceUuid instance",
-          instance["name"],
-          'uuid', instance.uuid,
-          "already exists this.sqlEntities:",
-          Object.keys(this.sqlUuidEntities)
-        );
-      } else {
-        console.log("upsertInstanceUuid instance not found",instance);
-      }
-    }
-
-    console.log("upsertInstanceUuid upserting into Entity", instance["parentUuid"], 'named', instance["parentName"], 'existing entities', Object.keys(this.sqlUuidEntities?this.sqlUuidEntities:{}));
+  async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    console.log("upsertInstance upserting into Parent", instance["parentUuid"], 'named', instance["parentName"], 'existing entities', Object.keys(this.sqlEntities?this.sqlEntities:{}),'instance',instance);
     // return this.sqlUuidEntities[instance.parentUuid].sequelizeModel.create(instance as any);
-    return this.sqlUuidEntities[instance.parentUuid].sequelizeModel.upsert(instance as any);
+    return this.sqlEntities[instance.parentUuid].sequelizeModel.upsert(instance as any);
   }
 
   // ##############################################################################################
-  async deleteInstancesUuid(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
     for (const instance of instances) {
-      await this.deleteInstanceUuid(parentUuid,instance);
+      await this.deleteInstance(parentUuid,instance);
     }
     return Promise.resolve();
   }
 
+
   // ##############################################################################################
-  async deleteInstanceUuid(parentUuid: string, instance: EntityInstance): Promise<any> {
-    console.log('deleteInstanceUuid', parentUuid,instance);
-    await this.sqlUuidEntities[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
+  async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    console.log('deleteInstance', parentUuid,instance);
+    await this.sqlEntities[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
     return Promise.resolve();
   }
 
@@ -217,13 +323,13 @@ export class SqlDbServer implements DataStoreInterface {
     console.log("SqlDbServer applyModelEntityUpdates", update);
     // const modelEntityUpdate = update.modelEntityUpdate;
     const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
-    if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid]) {
-      const model = this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid];
-      console.log("dropUuidEntity SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].parentName);
+    if (this.sqlEntities && this.sqlEntities[modelCUDupdate.objects[0].parentUuid]) {
+      const model = this.sqlEntities[modelCUDupdate.objects[0].parentUuid];
+      console.log("SqlDbServer applyModelEntityUpdates", modelCUDupdate.updateActionName, modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].parentName);
       if (update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate') {
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity": {
-            await this.deleteInstanceUuid(update.modelEntityUpdate.parentUuid, {uuid:update.modelEntityUpdate.instanceUuid} as EntityInstance)
+            await this.deleteInstance(update.modelEntityUpdate.parentUuid, {uuid:update.modelEntityUpdate.instanceUuid} as EntityInstance)
             break;
           }
           case "alterEntityAttribute":
@@ -232,19 +338,21 @@ export class SqlDbServer implements DataStoreInterface {
             this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
             // update this.sqlUuidEntities for the renamed entity
             Object.assign(
-              this.sqlUuidEntities,
-              this.sqlUuidEntityDefinition(
+              this.sqlEntityDefinitions,
+              this.sqlEntityDefinition(
                 update.equivalentModelCUDUpdates[0].objects[0].instances[0] as EntityDefinition
               )
             );
             // update the instance in table Entity corresponding to the renamed entity
-            await this.upsertInstanceUuid(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
+            await this.upsertInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
             // await this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid].sequelizeModel.upsert(modelCUDupdate.objects[0].instances[0] as any)
             break;
-          case "createEntity":
-            for (const instance of update.modelEntityUpdate.instances) {
-              await this.upsertInstanceUuid(update.modelEntityUpdate.parentUuid, instance);
+          case "createEntity":{
+            for (const entity of update.modelEntityUpdate.entities) {
+              await this.createEntity(entity.entity, entity.entityDefinition);
             }
+            break;
+          }
           default:
             break;
         }
@@ -254,7 +362,7 @@ export class SqlDbServer implements DataStoreInterface {
           case "update": {
               for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await this.upsertInstanceUuid(instance.parentUuid, instance);
+                await this.upsertInstance(instance.parentUuid, instance);
               }
             }
             break;
@@ -262,7 +370,7 @@ export class SqlDbServer implements DataStoreInterface {
           case "delete": {
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await this.deleteInstanceUuid(instanceCollection.parentUuid, instance)
+                await this.deleteInstance(instanceCollection.parentUuid, instance)
               }
             }
             break;
@@ -273,7 +381,7 @@ export class SqlDbServer implements DataStoreInterface {
       }
     } else {
       console.warn(
-        "dropUuidEntity SqlDbServer entity uuid",
+        "SqlDbServer entity uuid",
         modelCUDupdate.objects[0].parentUuid,
         "name",
         modelCUDupdate.objects[0].parentName,

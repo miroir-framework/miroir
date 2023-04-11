@@ -17,6 +17,7 @@ export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethod } = {
   update: "put",
   delete: "delete",
   resetModel: "post",
+  initModel: "post",
   updateEntity: "post",
 };
 
@@ -51,8 +52,6 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
 
   // ##################################################################################
   private networkActionUrlRoot(networkAction: RemoteStoreAction, useUuidForEntity: string = undefined): string {
-    // return networkAction.actionName == 'resetModel' ? "/model" : "/miroir";
-    // return ModelEntityUpdateActionNamesArrayString.includes(networkAction.actionName) ? "/model" : "/miroir";
     return (
       this.rootApiUrl +
       (CRUDActionNamesArrayString.includes(networkAction.actionName)
@@ -83,7 +82,9 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return {
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
       url: this.networkActionUrl(networkAction, rootApiUrl),
-      args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?[networkAction["update"]]:[])
+      // args: []
+      args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])
+      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[]:[networkAction["update"]]):[])
     };
   }
 

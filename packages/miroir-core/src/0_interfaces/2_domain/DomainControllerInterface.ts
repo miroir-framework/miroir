@@ -1,7 +1,8 @@
 import { MiroirMetaModel } from "../1_core/Model.js";
-import { ModelCUDUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { ModelCUDInstanceUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { EntityInstance, EntityInstanceCollection } from "../1_core/Instance.js";
+import { EntityDefinition, MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
 
 export const CUDActionNamesObject = {
   'create': 'create',
@@ -34,6 +35,7 @@ export const undoRedoActionNamesArray:UndoRedoActionName[] = Object.keys(undoRed
 // // #############################################################################################
 export const ModelEntityUpdateActionNamesObject = {
   'resetModel': 'resetModel', // to delete all DB contents. DANGEROUS. TEMPORARY?
+  'initModel': 'initModel', // to delete all DB contents. DANGEROUS. TEMPORARY?
   'updateEntity': 'updateEntity',
 }
 export type ModelEntityUpdateActionName = keyof typeof ModelEntityUpdateActionNamesObject;
@@ -65,7 +67,7 @@ export interface DomainModelReplayableEntityUpdateAction {
 export interface DomainModelCUDAction {
   actionType:'DomainModelAction',
   actionName: 'UpdateMetaModelInstance';
-  update: ModelCUDUpdate;
+  update: ModelCUDInstanceUpdate;
 }
 
 export type DomainModelReplayableAction = 
@@ -94,6 +96,15 @@ export interface DomainModelUndoRedoAction {
 export interface DomainModelResetAction {
   actionType:'DomainModelAction',
   actionName: 'resetModel';
+  // entityDefinitions: EntityDefinition[];
+  // entities: MetaEntity[];
+}
+
+export interface DomainModelInitAction {
+  actionType:'DomainModelAction',
+  actionName: 'initModel';
+  entityDefinitions: EntityDefinition[];
+  entities: MetaEntity[];
 }
 
 export type DomainModelAncillaryAction =
@@ -101,6 +112,7 @@ export type DomainModelAncillaryAction =
   | DomainModelRollbackAction
   | DomainModelUndoRedoAction
   | DomainModelResetAction
+  | DomainModelInitAction
 ;
 
 export type DomainModelAction =
@@ -132,7 +144,7 @@ export interface DomainInstancesUuidIndex {
   [uuid: string]: EntityInstance
 }
 export interface DomainState {
-  [propName: string]: DomainInstancesUuidIndex;
+  [entityUuid: string]: DomainInstancesUuidIndex;
 }
 
 export type DomainStateTransformer=(domainState:DomainState)=>DomainState

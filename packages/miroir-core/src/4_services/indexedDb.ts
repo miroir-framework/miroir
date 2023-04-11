@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinition.json";
+import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
 
 export class IndexedDb {
   public db: Level = undefined;
