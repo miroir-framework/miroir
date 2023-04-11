@@ -1,10 +1,11 @@
-import { entityEntity, entityEntityDefinition } from "src/index.js";
 import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
+import entityEntity from "../assets/entities/EntityEntity.json"
+import entityEntityDefinition  from "../assets/entities/EntityEntityDefinition.json";
 
 export class ModelEntityUpdateConverter{
 

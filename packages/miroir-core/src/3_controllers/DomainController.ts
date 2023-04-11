@@ -15,10 +15,10 @@ import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
-import entityDefinitionModelVersion from "../assets/entityDefinitions/EntityDefinitionModelVersion.json";
 import instanceConfigurationReference from '../assets/instances/StoreBasedConfiguration - reference.json';
 import { MiroirModelVersion } from '../0_interfaces/1_core/ModelVersion';
-import { entityModelVersion } from 'src/index.js';
+import entityModelVersion from '../assets/entities/EntityModelVersion.json';
+import entityDefinitionModelVersion from "../assets/entityDefinitions/EntityDefinitionModelVersion.json";
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the

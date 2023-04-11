@@ -1,0 +1,8 @@
+{
+  "uuid":"e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name":"Book",
+  "conceptLevel":"Model",
+  "description": "A book."
+}

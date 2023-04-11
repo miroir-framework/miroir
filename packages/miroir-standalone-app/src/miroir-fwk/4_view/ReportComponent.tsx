@@ -25,7 +25,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
   console.log("ReportComponent currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
 
-  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntityDefinition.attributes.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
+  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntityDefinition?.attributes?.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);

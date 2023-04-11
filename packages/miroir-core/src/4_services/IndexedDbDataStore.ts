@@ -1,8 +1,9 @@
 
-import { entityEntity, entityEntityDefinition } from "src";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
-import { ModelEntityUpdateDeleteMetaModelInstance, WrappedModelEntityUpdateWithCUDUpdate, ModelUpdate, ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelEntityUpdateDeleteMetaModelInstance, ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import entityEntity from "../assets/entities/EntityEntity.json";
+import entityEntityDefinition from "../assets/entities/EntityEntityDefinition.json";
 import { IndexedDb } from "./indexedDb";
 
 export class IndexedDbDataStore implements DataStoreInterface{

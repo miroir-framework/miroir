@@ -1,0 +1,8 @@
+{
+  "uuid":"d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name":"Author",
+  "conceptLevel":"Model",
+  "description": "The Author of a book."
+}

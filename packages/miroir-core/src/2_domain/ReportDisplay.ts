@@ -1,9 +1,8 @@
-import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { MiroirReport } from "../0_interfaces/1_core/Report";
 import { DomainState, DomainStateSelector } from "../0_interfaces/2_domain/DomainControllerInterface";
-import entityDefinitionReport from "../assets/entityDefinitions/EntityDefinitionReport.json";
-import { entityReport } from "src";
+import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
+import entityReport  from "../assets/entities/EntityReport.json";
 
 // export function selectReportInstances(reportName:string):DomainStateSelector{
 export function selectReportInstances(reportUuid:string):DomainStateSelector{

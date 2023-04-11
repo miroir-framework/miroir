@@ -43,8 +43,10 @@ import { ReduxStateChanges } from "miroir-redux";
 import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
 
-import entityAuthor from "assets/entityDefinitions/Author.json";
-import entityBook from "assets/entityDefinitions/Book.json";
+import entityAuthor from "assets/entities/EntityAuthor.json";
+import entityBook from "assets/entities/EntityBook.json";
+import entityDefinitionAuthor from "assets/entityDefinitions/Author.json";
+import entityDefinitionBook from "assets/entityDefinitions/Book.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";
@@ -103,50 +105,10 @@ async function uploadInitialMiroirConfiguration(
       }],
     }
   },currentModel);
-  // await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
-
-
-  // await domainController.handleDomainAction({
-  //   actionName: "create",
-  //   actionType: "DomainDataAction",
-  //   objects: [
-  //     {
-  //       parentName: "Entity",
-  //       parentUuid: entityDefinitionEntity.uuid,
-  //       instances: [
-  //         entityEntity as EntityInstance, // has to come 1st!
-  //         entityEntityDefinition as EntityInstance, // has to come 1st!
-  //         entityReport as EntityInstance, // has to come 1st!
-  //         entityModelVersion as EntityInstance,
-  //         entityStoreBasedConfiguration as EntityInstance,
-  //       ],
-  //     },
-  //     {
-  //       parentName: "Report",
-  //       parentUuid: entityReport.uuid,
-  //       instances: [
-  //         reportEntityList as EntityInstance, 
-  //         reportModelVersionList as EntityInstance, 
-  //         reportReportList as EntityInstance,
-  //         reportConfigurationList as EntityInstance
-  //       ],
-  //     },
-  //     {
-  //       parentName: "Configuration",
-  //       parentUuid: entityStoreBasedConfiguration.uuid,
-  //       instances: [
-  //         instanceConfigurationReference, 
-  //       ],
-  //     },
-  //     {
-  //       parentName: "ModelVersion",
-  //       parentUuid: entityModelVersion.uuid,
-  //       instances: [
-  //         instanceModelVersionInitial, 
-  //       ],
-  //     },
-  //   ],
-  // });
+  await domainController.handleDomainAction(
+    { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
+    currentModel
+  );
 }
 
 // ###################################################################################
@@ -154,60 +116,60 @@ async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
   currentModel?:MiroirMetaModel
 ) {
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainModelAction",
-  //   actionName: "updateEntity",
-  //   update: {
-  //     updateActionName:"WrappedModelEntityUpdate",
-  //     modelEntityUpdate: {
-  //       updateActionType: "ModelEntityUpdate",
-  //       updateActionName: "createEntity",
-  //       parentName: entityDefinitionEntityDefinition.name,
-  //       parentUuid: entityDefinitionEntityDefinition.uuid,
-  //       entities: [
-  //         {entityAuthor}
-  //         entityBook as EntityInstance
-  //       ],
-  //     },
-  //   }
-  // },currentModel);
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainModelAction",
-  //   actionName: "UpdateMetaModelInstance",
-  //   update: {
-  //     updateActionType: "ModelCUDInstanceUpdate",
-  //     updateActionName: "create",
-  //     objects: [{
-  //       parentName: entityReport.name,
-  //       parentUuid: entityReport.uuid,
-  //       instances: [
-  //         reportAuthorList as EntityInstance, reportBookList as EntityInstance
-  //       ]
-  //     }],
-  //   }
-  // },currentModel);
-  // await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+  await domainController.handleDomainAction({
+    actionType: "DomainModelAction",
+    actionName: "updateEntity",
+    update: {
+      updateActionName:"WrappedModelEntityUpdate",
+      modelEntityUpdate: {
+        updateActionType: "ModelEntityUpdate",
+        updateActionName: "createEntity",
+        // parentName: entityDefinitionEntityDefinition.name,
+        // parentUuid: entityDefinitionEntityDefinition.uuid,
+        entities: [
+          {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+          {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+        ],
+      },
+    }
+  },currentModel);
+  await domainController.handleDomainAction({
+    actionType: "DomainModelAction",
+    actionName: "UpdateMetaModelInstance",
+    update: {
+      updateActionType: "ModelCUDInstanceUpdate",
+      updateActionName: "create",
+      objects: [{
+        parentName: entityReport.name,
+        parentUuid: entityReport.uuid,
+        instances: [
+          reportAuthorList as EntityInstance, reportBookList as EntityInstance
+        ]
+      }],
+    }
+  },currentModel);
+  await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
 
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainDataAction",
-  //   actionName: "create",
-  //   objects: [
-  //     {
-  //       parentName: entityAuthor.name,
-  //       parentUuid: entityAuthor.uuid,
-  //       instances: [
-  //         author1 as EntityInstance, 
-  //         author2 as EntityInstance,
-  //         author3 as EntityInstance
-  //       ],
-  //     },
-  //     {
-  //       parentName: entityBook.name,
-  //       parentUuid: entityBook.uuid,
-  //       instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
-  //     },
-  //   ],
-  // });
+  await domainController.handleDomainAction({
+    actionType: "DomainDataAction",
+    actionName: "create",
+    objects: [
+      {
+        parentName: entityAuthor.name,
+        parentUuid: entityAuthor.uuid,
+        instances: [
+          author1 as EntityInstance, 
+          author2 as EntityInstance,
+          author3 as EntityInstance
+        ],
+      },
+      {
+        parentName: entityBook.name,
+        parentUuid: entityBook.uuid,
+        instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
+      },
+    ],
+  });
 }
 
 export const RootComponent = (props: RootComponentProps) => {
@@ -362,7 +324,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await uploadInitialMiroirConfiguration(domainController);
+            await uploadInitialMiroirConfiguration(domainController,currentModel);
           }}
         >
           upload Miroir configuration to database
@@ -390,8 +352,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate:{
                     updateActionType:"ModelEntityUpdate",
                     updateActionName: "renameEntity",
-                    parentName: entityBook.name,
-                    parentUuid: entityBook.uuid,
+                    parentName: entityDefinitionBook.name,
+                    parentUuid: entityDefinitionBook.uuid,
                     targetValue: "Bookss",
                   },
                 }
@@ -450,9 +412,9 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate: {
                     updateActionType: "ModelEntityUpdate",
                     updateActionName: "DeleteEntity",
-                    parentName: entityAuthor.parentName,
-                    parentUuid: entityAuthor.parentUuid,
-                    instanceUuid:entityAuthor.uuid,
+                    parentName: entityDefinitionAuthor.parentName,
+                    parentUuid: entityDefinitionAuthor.parentUuid,
+                    instanceUuid:entityDefinitionAuthor.uuid,
                   },
                 }
               },
