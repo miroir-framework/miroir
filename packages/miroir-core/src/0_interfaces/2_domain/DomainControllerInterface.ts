@@ -103,8 +103,8 @@ export interface DomainModelResetAction {
 export interface DomainModelInitAction {
   actionType:'DomainModelAction',
   actionName: 'initModel';
-  entityDefinitions: EntityDefinition[];
-  entities: MetaEntity[];
+  // entityDefinitions: EntityDefinition[];
+  // entities: MetaEntity[];
 }
 
 export type DomainModelAncillaryAction =

@@ -1,4 +1,4 @@
-import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition.js";
+import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -11,18 +11,24 @@ export class ModelEntityUpdateConverter{
 
   // ###################################################################################################
   static modelEntityUpdateToLocalCacheUpdate(
+    entities: MetaEntity[],
     entityDefinitions: EntityDefinition[],
     modelUpdate:ModelEntityUpdate,
   ):DomainDataAction{
     let domainDataAction: DomainDataAction;
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
-        const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
+        const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
+        const currentEntityDefinition = entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
         const modifiedEntity:EntityInstanceWithName = Object.assign(currentEntity,{name:modelUpdate.targetValue});
+        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign(currentEntityDefinition,{name:modelUpdate.targetValue});
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "update",
-          objects:[{parentName:currentEntity.name, parentUuid:currentEntity.uuid, instances:[modifiedEntity]}]
+          objects:[
+            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, instances:[modifiedEntity]},
+            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, instances:[modifiedEntityDefinition]},
+          ]
         }
         break;
       }
@@ -73,7 +79,7 @@ export class ModelEntityUpdateConverter{
     // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.parentName);
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityUuid);
         const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         modelCUDUpdate = {
           updateActionType:"ModelCUDInstanceUpdate",

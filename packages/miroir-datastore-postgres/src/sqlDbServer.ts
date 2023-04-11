@@ -334,7 +334,7 @@ export class SqlDbServer implements DataStoreInterface {
           }
           case "alterEntityAttribute":
           case "renameEntity":
-            this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate.parentName, update.modelEntityUpdate['targetValue']);
+            this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityUuid'], update.modelEntityUpdate['targetValue']);
             this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
             // update this.sqlUuidEntities for the renamed entity
             Object.assign(

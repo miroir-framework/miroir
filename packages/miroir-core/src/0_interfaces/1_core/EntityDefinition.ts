@@ -35,4 +35,20 @@ export interface EntityDefinition extends EntityInstanceWithName {
   "attributes"?: EntityAttribute[],
 };
 
+/**
+* duplicated from Redux
+* @public
+*/
+export interface InstanceDictionaryNum<T> {
+  [id: number]: T | undefined;
+}
+
+/**
+* duplicated from Redux
+* @public
+*/
+export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
+  [id: string]: T | undefined;
+}
+
 export default {}

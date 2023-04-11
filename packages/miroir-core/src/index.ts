@@ -5,6 +5,7 @@ export {
   EntityAttributeTypeObject,
   EntityDefinition,
   MetaEntity,
+  InstanceDictionary,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
   EntityInstance,

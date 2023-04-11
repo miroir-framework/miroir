@@ -261,20 +261,6 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainAction({
               actionName: "resetModel",
               actionType: "DomainModelAction",
-              // entityDefinitions: [
-              //   entityDefinitionEntityDefinition as EntityDefinition, // has to come 1st!
-              //   entityDefinitionEntity as EntityDefinition, // has to come second!
-              //   entityDefinitionStoreBasedConfiguration as EntityDefinition,
-              //   entityDefinitionModelVersion as EntityDefinition,
-              //   EntityDefinitionReport as EntityDefinition,
-              // ],
-              // entities:[
-              //   entityEntity as MetaEntity, // has to come 1st!
-              //   entityEntityDefinition as MetaEntity, // has to come 1st!
-              //   entityReport as MetaEntity, // has to come 1st!
-              //   entityModelVersion as MetaEntity,
-              //   entityStoreBasedConfiguration as MetaEntity,
-              // ]
             });
           }}
         >
@@ -288,20 +274,6 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainAction({
               actionType: "DomainModelAction",
               actionName: "initModel",
-              entityDefinitions: [
-                entityDefinitionEntityDefinition as EntityDefinition, // has to come 1st!
-                entityDefinitionEntity as EntityDefinition, // has to come second!
-                entityDefinitionStoreBasedConfiguration as EntityDefinition,
-                entityDefinitionModelVersion as EntityDefinition,
-                EntityDefinitionReport as EntityDefinition,
-              ],
-              entities:[
-                entityEntity as MetaEntity, // has to come 1st!
-                entityEntityDefinition as MetaEntity, // has to come 1st!
-                entityReport as MetaEntity, // has to come 1st!
-                entityModelVersion as MetaEntity,
-                entityStoreBasedConfiguration as MetaEntity,
-              ]
             });
           }}
         >
@@ -352,8 +324,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate:{
                     updateActionType:"ModelEntityUpdate",
                     updateActionName: "renameEntity",
-                    parentName: entityDefinitionBook.name,
-                    parentUuid: entityDefinitionBook.uuid,
+                    entityName: entityBook.name,
+                    entityUuid: entityBook.uuid,
                     targetValue: "Bookss",
                   },
                 }

@@ -38,8 +38,8 @@ export interface ModelEntityUpdateDeleteMetaModelInstance {
 export interface ModelEntityUpdateRenameEntity {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'renameEntity';
-  parentName?:string;
-  parentUuid:string;
+  entityName?:string;
+  entityUuid:string;
   entityAttributeName?:string;
   targetValue?:any;
 }

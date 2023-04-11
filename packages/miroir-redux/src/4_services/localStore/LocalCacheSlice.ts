@@ -20,6 +20,8 @@ import {
   DomainAction,
   entityDefinitionEntityDefinition,
   entityEntity,
+  entityEntityDefinition,
+  MetaEntity,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -207,7 +209,8 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
       // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
       const domainDataAction:DomainDataAction = 
         ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
-          Object.values(state[entityDefinitionEntityDefinition.uuid].entities) as EntityDefinition[],
+          Object.values(state[entityEntity.uuid].entities) as MetaEntity[],
+          Object.values(state[entityEntityDefinition.uuid].entities) as EntityDefinition[],
           action.payload.update.modelEntityUpdate
         )
       ;

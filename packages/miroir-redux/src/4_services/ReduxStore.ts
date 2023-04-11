@@ -13,11 +13,14 @@ import {
   DomainModelReplayableAction,
   EntityDefinition,
   entityDefinitionEntityDefinition,
+  entityEntity,
+  entityEntityDefinition,
   entityModelVersion,
   entityReport,
   entityStoreBasedConfiguration,
   LocalCacheInfo,
   LocalCacheInterface,
+  MetaEntity,
   MiroirMetaModel,
   MiroirModelVersion,
   MiroirReport,
@@ -148,7 +151,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     console.log('currentModel() from state:',this.innerReduxStore.getState());
     
     return {
-      entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityDefinitionEntityDefinition.uuid].entities) as EntityDefinition[],
+      entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityEntity.uuid].entities) as MetaEntity[],
+      entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityEntityDefinition.uuid].entities) as EntityDefinition[],
       reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityReport.uuid].entities) as MiroirReport[],
       configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
       modelVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityModelVersion.uuid].entities) as MiroirModelVersion[],
