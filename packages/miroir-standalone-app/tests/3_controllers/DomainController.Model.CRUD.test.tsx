@@ -332,15 +332,6 @@ describe(
 
           await localDataStore.dropModel();
           await localDataStore.initModel();
-          // await localDataStore?.clear();
-          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as Instance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
   
   
           const {

@@ -19,12 +19,16 @@ import {
   DataStoreInterface,
   DomainAction,
   DomainControllerInterface,
+  EntityDefinition,
   EntityInstance,
   LocalAndRemoteControllerInterface,
+  MetaEntity,
   MiroirConfig,
   MiroirContext,
+  WrappedModelEntityUpdateWithCUDUpdate,
   circularReplacer,
   entityDefinitionEntityDefinition,
+  entityEntity,
   entityModelVersion,
   entityReport,
   entityStoreBasedConfiguration,
@@ -38,8 +42,10 @@ import {
   ReduxStore
 } from "miroir-redux";
 
-import entityAuthor from "miroir-standalone-app/src/assets/entities/Author.json";
-import entityBook from "miroir-standalone-app/src/assets/entities/Book.json";
+import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
+import entityBook from "miroir-standalone-app/src/assets/entities/EntityBook.json";
+import entityDefinitionBook from "miroir-standalone-app/src/assets/entityDefinitions/Book.json";
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
@@ -94,7 +100,7 @@ beforeEach(
     // localDataStoreServer?.listen();
     try {
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
-      await localDataStore.init();
+      await localDataStore.start();
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
       await localDataStore.clear();
     } catch (error) {
@@ -142,15 +148,18 @@ describe(
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
-  
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+
+          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -158,31 +167,31 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentName={entityDefinitionEntityDefinition.parentName}
-              parentUuid={entityDefinitionEntityDefinition.parentUuid}
+              entityName={entityEntity.name}
+              entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from report list.')
+          console.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
             }
           );
-  
+
           await user.click(screen.getByRole('button'))
-  
+ 
           await waitFor(
             () => {
               getAllByRole(/step:1/)
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeNull() // Book entity
-              expect(screen.queryByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeNull() // Author entity
+              expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() // Author entity
               // expect(screen.queryByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Report List
             }
           );
@@ -190,38 +199,38 @@ describe(
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
-            actionType: 'DomainModelAction',
-            actionName:'UpdateMetaModelInstance',
+            actionType:"DomainModelAction",
+            actionName: "updateEntity",
             update: {
-              updateActionType:"ModelCUDInstanceUpdate",
-              updateActionName: 'create',
-              objects: [
-                {
-                  entity:entityAuthor.parentName,parentUuid:entityAuthor.parentUuid,
-                  instances:[entityAuthor as EntityInstance]
-                }
-              ]
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                entities: [
+                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                ],
+              },
             }
           };
           const createBookAction: DomainAction = {
-            actionType: 'DomainModelAction',
-            actionName:'UpdateMetaModelInstance',
+            actionType:"DomainModelAction",
+            actionName: "updateEntity",
             update: {
-              updateActionType:"ModelCUDInstanceUpdate",
-              updateActionName: 'create',
-              objects: [
-                {
-                  entity:entityBook.parentName,parentUuid:entityBook.parentUuid,
-                  instances:[entityBook as EntityInstance]
-                }
-              ]
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                entities: [
+                  {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+                ],
+              },
             }
           };
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAuthorAction);
-              await domainController.handleDomainAction(createBookAction);
+              await domainController.handleDomainAction(createAuthorAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(createBookAction,reduxStore.currentModel());
             }
           );
   
@@ -229,8 +238,10 @@ describe(
   
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -239,8 +250,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(getByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeTruthy() // Book Entity
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+              expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -256,7 +267,8 @@ describe(
   
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -264,11 +276,11 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(screen.queryByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeNull() // Book entity
+              expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
+              expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
             }
           );
-  
+
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
@@ -281,8 +293,10 @@ describe(
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -290,8 +304,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(getByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeTruthy() // Book Entity
+              expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
+              expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Book Entity
             }
           );
   
@@ -309,7 +323,8 @@ describe(
       
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
       
           await waitFor(
             () => {
@@ -317,8 +332,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(screen.queryByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeNull() // Book entity
+              expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
+              expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
             }
           );
           // putting state back to where it was when test section started
@@ -343,7 +358,8 @@ describe(
       
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
       
           await waitFor(
             () => {
@@ -351,8 +367,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(screen.queryByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeNull() // Book entity
+              expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
+              expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
             }
           );
           // putting state back to where it was when test section started
@@ -374,8 +390,10 @@ describe(
       
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
-          expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
+          // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await act(
             async () => {
@@ -391,8 +409,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/b30b7180-f7dc-4cca-b4e8-e476b77fe61d/i)).toBeTruthy() // Author Entity
-              expect(getByText(/797dd185-0155-43fd-b23f-f6d0af8cae06/i)).toBeTruthy() // Book Entity
+              expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
+              expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Book Entity
             }
           );
         } catch (error) {

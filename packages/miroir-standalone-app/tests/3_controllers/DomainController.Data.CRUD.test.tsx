@@ -20,7 +20,9 @@ import {
   DomainDataAction,
   entityDefinitionEntityDefinition,
   entityReport, EntityInstance, MiroirConfig, miroirCoreStartup,
-  reportEntityList
+  reportEntityList,
+  MetaEntity,
+  EntityDefinition
 } from "miroir-core";
 
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
@@ -28,8 +30,10 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
-import entityAuthor from "miroir-standalone-app/src/assets/entities/Author.json";
-import entityBook from "miroir-standalone-app/src/assets/entities/Book.json";
+import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
+import entityBook from "miroir-standalone-app/src/assets/entities/EntityBook.json";
+import entityDefinitionBook from "miroir-standalone-app/src/assets/entityDefinitions/Book.json";
 import author1 from "miroir-standalone-app/src/assets/instances/Author - Cornell Woolrich.json";
 import author2 from "miroir-standalone-app/src/assets/instances/Author - Don Norman.json";
 import author3 from "miroir-standalone-app/src/assets/instances/Author - Paul Veyne.json";
@@ -125,12 +129,11 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(entityAuthor.parentUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstance(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+
+          await localDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+          await localDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
           await localDataStore?.upsertInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
           await localDataStore?.upsertInstance(author1.parentUuid, author1 as EntityInstance);
           await localDataStore?.upsertInstance(author2.parentUuid, author2 as EntityInstance);
@@ -146,8 +149,8 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentName={entityBook.name}
-              parentUuid={entityBook.uuid}
+              entityName={entityBook.name}
+              entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -168,7 +171,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
@@ -191,12 +194,11 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(entityAuthor.parentUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstance(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+
+          await localDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+          await localDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
           await localDataStore?.upsertInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
           await localDataStore?.upsertInstance(author1.parentUuid, author1 as EntityInstance);
           await localDataStore?.upsertInstance(author2.parentUuid, author2 as EntityInstance);
@@ -212,7 +214,7 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentUuid={entityBook.uuid}
+              entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -236,7 +238,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
@@ -322,12 +324,11 @@ describe(
           const user = userEvent.setup()
           // const loadingStateService = new LoadingStateService();
   
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(entityAuthor.parentUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstance(entityBook.parentUuid, entityBook as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+
+          await localDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+          await localDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
           await localDataStore?.upsertInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
           await localDataStore?.upsertInstance(author1.parentUuid, author1 as EntityInstance);
           await localDataStore?.upsertInstance(author2.parentUuid, author2 as EntityInstance);
@@ -336,7 +337,7 @@ describe(
           await localDataStore?.upsertInstance(book2.parentUuid, book2 as EntityInstance);
           await localDataStore?.upsertInstance(book3.parentUuid, book3 as EntityInstance);
           await localDataStore?.upsertInstance(book4.parentUuid, book4 as EntityInstance);
-  
+
           const {
             getByText,
             getAllByRole,
@@ -344,7 +345,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               // parentName="Book"
-              parentUuid={entityBook.uuid}
+              entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -402,7 +403,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
@@ -428,7 +429,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
@@ -451,13 +452,12 @@ describe(
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
-  
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as Instance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(entityAuthor.parentUuid, entityAuthor as EntityInstance);
-          await localDataStore?.upsertInstance(entityBook.parentUuid, entityBook as EntityInstance);
+
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+
+          await localDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+          await localDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
           await localDataStore?.upsertInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
           await localDataStore?.upsertInstance(author1.parentUuid, author1 as EntityInstance);
           await localDataStore?.upsertInstance(author2.parentUuid, author2 as EntityInstance);
@@ -466,7 +466,7 @@ describe(
           await localDataStore?.upsertInstance(book2.parentUuid, book2 as EntityInstance);
           await localDataStore?.upsertInstance(book3.parentUuid, book3 as EntityInstance);
           await localDataStore?.upsertInstance(book4.parentUuid, book4 as EntityInstance);
-  
+
           const {
             getByText,
             getAllByRole,
@@ -474,7 +474,7 @@ describe(
           } = renderWithProviders(
             <TestUtilsTableComponent
               // parentName="Book"
-              parentUuid={entityBook.uuid}
+              entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,

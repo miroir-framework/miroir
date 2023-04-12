@@ -129,7 +129,7 @@ export class SqlDbServer implements DataStoreInterface {
 
   // ##############################################################################################
   async createEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
-    console.log('createEntity input: entity',entity,'entityDefinition',entityDefinition);
+    console.log('createEntity input: entity',entity,'entityDefinition',entityDefinition, 'sqlEntities',this.sqlEntities);
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
       console.error('createEntity inconsistent input: given entityDefinition is not related to given entity.');
