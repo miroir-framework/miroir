@@ -58,7 +58,7 @@ export async function createMswStore(
   // createServerFromHandlers: (...handlers: Array<RequestHandler>) => SetupServerApi
 ) {
   console.log('createMswStore','platformType',platformType,'miroirConfig',miroirConfig);
-  console.log('createMswStore process',process);
+  console.log('createMswStore process.browser',process['browser']);
   
 
   const client: RestClient = new RestClient(fetch);

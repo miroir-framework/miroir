@@ -37,12 +37,13 @@ export class RestServerStub {
         )
       }),
       rest.post(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
-        console.log('post /miroir/entity', localDataStore);
+        const body = await req.json();
+        console.log('post /miroir/entity', body);
         
         return generateHandlerBody(
           req.params,
           [],
-          await req.json(),
+          body,
           'post',
           "/miroir/entity/",
           localDataStore.upsertInstance.bind(localDataStore),
@@ -50,11 +51,12 @@ export class RestServerStub {
         )
       }),
       rest.put(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
-        console.log('put /miroir/entity', localDataStore);
+        const body = await req.json();
+        console.log('put /miroir/entity', body);
         return generateHandlerBody(
           req.params,
           [],
-          await req.json(),
+          body,
           'put',
           "/miroir/entity/",
           localDataStore.upsertInstance.bind(localDataStore),
@@ -62,11 +64,12 @@ export class RestServerStub {
         )
       }),
       rest.delete(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+        const body = await req.json();
         console.log('delete /miroir/entity', localDataStore);
         return generateHandlerBody(
           req.params,
           [],
-          await req.json(),
+          body,
           'delete',
           "/miroir/entity/",
           localDataStore.deleteInstance.bind(localDataStore),

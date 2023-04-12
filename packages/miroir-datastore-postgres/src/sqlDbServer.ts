@@ -17,6 +17,11 @@ import {
   instanceModelVersionInitial,
   MetaEntity,
   ModelReplayableUpdate,
+  reportConfigurationList,
+  reportEntityDefinitionList,
+  reportEntityList,
+  reportModelVersionList,
+  reportReportList,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
 
@@ -156,7 +161,7 @@ export class SqlDbServer implements DataStoreInterface {
       const model = this.sqlEntities[entityUuid];
       console.log("dropEntity entityUuid", entityUuid, 'parentName',model.parentName);
       // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
-      model.sequelizeModel.drop();
+      await model.sequelizeModel.drop();
       delete this.sqlEntities[entityUuid];
       await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
 
@@ -198,6 +203,15 @@ export class SqlDbServer implements DataStoreInterface {
     await this.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
     console.log('created entity EntityStoreBasedConfiguration',this.sqlEntities);
     await this.sqlEntities[entityStoreBasedConfiguration.uuid].sequelizeModel.upsert(instanceConfigurationReference as any);
+
+    // bootstrap EntityStoreBasedConfiguration
+    await this.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
+    console.log('created entity EntityReport',this.sqlEntities);
+    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityList as any);
+    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityDefinitionList as any);
+    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportModelVersionList as any);
+    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportConfigurationList as any);
+    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportReportList as any);
   }
 
   // ##############################################################################################
@@ -257,7 +271,7 @@ export class SqlDbServer implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  clear() {
+  clear() { // redundant with dropmodel?
     this.dropEntities(this.getEntityDefinitions());
   }
 
@@ -303,12 +317,12 @@ export class SqlDbServer implements DataStoreInterface {
 
   // ##############################################################################################
   async applyModelEntityUpdate(update: ModelReplayableUpdate) {
-    console.log("SqlDbServer applyModelEntityUpdates", update);
+    console.log("SqlDbServer applyModelEntityUpdates", JSON.stringify(update));
     // const modelEntityUpdate = update.modelEntityUpdate;
     const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    console.log("SqlDbServer applyModelEntityUpdates actionName", modelCUDupdate.updateActionName, 'parentUuid',modelCUDupdate.objects[0].parentUuid, 'parentName',modelCUDupdate.objects[0].parentName);
     if (this.sqlEntities && this.sqlEntities[modelCUDupdate.objects[0].parentUuid]) {
       const model = this.sqlEntities[modelCUDupdate.objects[0].parentUuid];
-      console.log("SqlDbServer applyModelEntityUpdates actionName", modelCUDupdate.updateActionName, 'parentUuid',modelCUDupdate.objects[0].parentUuid, 'parentName',modelCUDupdate.objects[0].parentName);
       if (update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate') {
         console.log('apply WrappedModelEntityUpdateWithCUDUpdate');
         switch (update.modelEntityUpdate.updateActionName) {
@@ -320,13 +334,14 @@ export class SqlDbServer implements DataStoreInterface {
           }
           case "alterEntityAttribute":
           case "renameEntity":
-            this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityUuid'], update.modelEntityUpdate['targetValue']);
+            await this.sequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityName'], update.modelEntityUpdate['targetValue']);
             this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
             // update this.sqlUuidEntities for the renamed entity
             Object.assign(
-              this.sqlEntityDefinitions,
-              this.sqlEntityDefinition(
-                update.equivalentModelCUDUpdates[0].objects[0].instances[0] as EntityDefinition
+              this.sqlEntities,
+              this.sqlEntity( // TODO: decouple from ModelUpdateConverter implementation
+                update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
+                update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
               )
             );
             // update the instance in table Entity corresponding to the renamed entity
@@ -367,7 +382,7 @@ export class SqlDbServer implements DataStoreInterface {
       }
     } else {
       console.warn(
-        "SqlDbServer entity uuid",
+        "SqlDbServer applyModelEntityUpdate entity uuid",
         modelCUDupdate.objects[0].parentUuid,
         "name",
         modelCUDupdate.objects[0].parentName,

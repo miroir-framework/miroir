@@ -2,8 +2,8 @@
   "emulateServer": true,
   "rootApiUrl":"http://localhost:3080",
   "emulatedServerConfig":{
-    "emulatedServerType": "Sql",
-    "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
+    "emulatedServerType": "indexedDb",
+    "indexedDbName":"miroir-uuid-indexedDb"
   },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,

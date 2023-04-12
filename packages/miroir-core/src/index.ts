@@ -159,6 +159,7 @@ import entityDefinitionModelVersion from './assets/entityDefinitions/EntityDefin
 import entityDefinitionStoreBasedConfiguration from './assets/entityDefinitions/StoreBasedConfiguration.json';
 import reportConfigurationList from './assets/reports/ConfigurationList.json';
 import reportEntityList from './assets/reports/entityList.json';
+import reportEntityDefinitionList from './assets/reports/entityDefinitionList.json';
 import reportReportList from './assets/reports/ReportList.json';
 import reportModelVersionList from './assets/reports/ModelVersionList.json';
 import instanceModelVersionInitial from './assets/instances/ModelVersion - initial.json';
@@ -179,6 +180,7 @@ export {
   instanceModelVersionInitial,
   reportConfigurationList,
   reportEntityList,
+  reportEntityDefinitionList,
   reportModelVersionList,
   reportReportList,
 };

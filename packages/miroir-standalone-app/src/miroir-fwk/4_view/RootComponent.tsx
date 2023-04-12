@@ -72,43 +72,43 @@ async function uploadInitialMiroirConfiguration(
   currentModel?:MiroirMetaModel
 ) {
   // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
-  await domainController.handleDomainAction({
-    actionType: "DomainModelAction",
-    actionName: "updateEntity",
-    update: {
-      updateActionName:"WrappedModelEntityUpdate",
-      modelEntityUpdate: {
-        updateActionType: "ModelEntityUpdate",
-        updateActionName: "createEntity",
-        entities: [
-          {entity:entityReport as MetaEntity, entityDefinition:EntityDefinitionReport as EntityDefinition}
-        ],
-      },
-    }
-  });
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainModelAction",
+  //   actionName: "updateEntity",
+  //   update: {
+  //     updateActionName:"WrappedModelEntityUpdate",
+  //     modelEntityUpdate: {
+  //       updateActionType: "ModelEntityUpdate",
+  //       updateActionName: "createEntity",
+  //       entities: [
+  //         {entity:entityReport as MetaEntity, entityDefinition:EntityDefinitionReport as EntityDefinition}
+  //       ],
+  //     },
+  //   }
+  // });
 
-  await domainController.handleDomainAction({
-    actionType: "DomainModelAction",
-    actionName: "UpdateMetaModelInstance",
-    update: {
-      updateActionType: "ModelCUDInstanceUpdate",
-      updateActionName: "create",
-      objects: [{
-        parentName: entityReport.name,
-        parentUuid: entityReport.uuid,
-        instances: [
-          reportEntityList as EntityInstance, 
-          reportModelVersionList as EntityInstance, 
-          reportReportList as EntityInstance,
-          reportConfigurationList as EntityInstance
-        ]
-      }],
-    }
-  },currentModel);
-  await domainController.handleDomainAction(
-    { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
-    currentModel
-  );
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainModelAction",
+  //   actionName: "UpdateMetaModelInstance",
+  //   update: {
+  //     updateActionType: "ModelCUDInstanceUpdate",
+  //     updateActionName: "create",
+  //     objects: [{
+  //       parentName: entityReport.name,
+  //       parentUuid: entityReport.uuid,
+  //       instances: [
+  //         reportEntityList as EntityInstance, 
+  //         reportModelVersionList as EntityInstance, 
+  //         reportReportList as EntityInstance,
+  //         reportConfigurationList as EntityInstance
+  //       ]
+  //     }],
+  //   }
+  // },currentModel);
+  // await domainController.handleDomainAction(
+  //   { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
+  //   currentModel
+  // );
 }
 
 // ###################################################################################

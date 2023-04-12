@@ -18,20 +18,21 @@ import { SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
 
 import {
-  circularReplacer,
   DataStoreInterface,
   DomainAction,
   DomainControllerInterface,
-  entityDefinitionEntityDefinition,
-  entityModelVersion,
-  entityReport, entityStoreBasedConfiguration, EntityInstance,
-  instanceConfigurationReference,
-  instanceModelVersionInitial,
+  EntityDefinition,
+  EntityInstance,
   LocalAndRemoteControllerInterface,
+  MetaEntity,
   MiroirConfig,
   MiroirContext,
+  WrappedModelEntityUpdateWithCUDUpdate,
+  circularReplacer,
+  entityDefinitionEntityDefinition,
+  entityEntity,
+  entityReport,
   miroirCoreStartup,
-  reportEntityList,
   reportReportList
 } from "miroir-core";
 import {
@@ -40,9 +41,11 @@ import {
 
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import config from "miroir-standalone-app/tests/miroirConfig.test.json"
+import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -89,7 +92,7 @@ beforeEach(
     // localDataStoreServer?.listen();
     try {
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
-      await localDataStore.init();
+      await localDataStore.start();
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
       await localDataStore.clear();
     } catch (error) {
@@ -138,13 +141,8 @@ describe(
         // console.log('localDataStore?.clear()');
         // await localDataStore?.clear();
         try {
-          console.log('localDataStore.upsertInstance()',entityDefinitionEntityDefinition);
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          console.log('localDataStore.upsertInstance()',entityReport);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          console.log('localDataStore.upsertInstance()',reportReportList);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          console.log('setup done');
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
   
           const {
             getByText,
@@ -152,8 +150,8 @@ describe(
             // container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentName={entityDefinitionEntityDefinition.name}
-              parentUuid={entityDefinitionEntityDefinition.uuid}
+              entityName={entityEntity.name}
+              entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />
             ,
@@ -174,8 +172,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/952d2c65-4da2-45c2-9394-a0920ceedfb6/i)).toBeTruthy() // Report
-              expect(getByText(/bdd7ad43-f0fc-4716-90c1-87454c40dd95/i)).toBeTruthy() // Entity
+              expect(getByText(new RegExp(`${entityReport.uuid}`,'i'))).toBeTruthy() // Report
+              expect(getByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy() // Entity
             }
           );
         } catch (error) {
@@ -195,18 +193,20 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
   
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
           // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as Instance);
           // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as Instance);
           // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as Instance);
 
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as Instance);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          // // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as Instance);
+          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
   
           const {
             getByText,
@@ -214,15 +214,15 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-            parentName={entityReport.name}
-            parentUuid={entityReport.uuid}
+            entityName={entityEntity.name}
+            entityUuid={entityEntity.uuid}
             DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
+          console.log('add Report definition step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -237,9 +237,8 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              expect(absentReport).toBeNull() 
-              expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -248,16 +247,18 @@ describe(
           // console.log('add Report definition step 2: reduxStore.currentModel()',reduxStore.currentModel())
           const createAction: DomainAction = {
             actionType:"DomainModelAction",
-            actionName:'UpdateMetaModelInstance',
-            update:{
-              updateActionType: "ModelCUDInstanceUpdate",
-              updateActionName: "create",
-              objects: [
-                {
-                  entity:reportEntityList.parentName,parentUuid:reportEntityList.parentUuid,
-                  instances: [reportEntityList as EntityInstance]
-                }
-              ]
+            actionName: "updateEntity",
+            update: {
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                // parentName: entityDefinitionEntityDefinition.name,
+                // parentUuid: entityDefinitionEntityDefinition.uuid,
+                entities: [
+                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                ],
+              },
             }
           };
   
@@ -272,7 +273,7 @@ describe(
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           console.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0].update).toEqual(createAction.update);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -281,8 +282,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -305,9 +306,11 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              expect(absentReport).toBeNull() 
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+              // expect(absentReport).toBeNull() 
+              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
         } catch (error) {
@@ -327,15 +330,17 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
 
-          await localDataStore?.clear();
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as Instance);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+          // await localDataStore?.clear();
+          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          // // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as Instance);
+          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
   
   
           const {
@@ -344,15 +349,15 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentName={entityReport.name}
-              parentUuid={entityReport.uuid}
+              entityName={entityEntity.name}
+              entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 1: loading initial configuration, reportEntityList must be absent from report list.')
+          console.log('add Report definition step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -367,26 +372,28 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              expect(absentReport).toBeNull() 
-              expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+              // expect(absentReport).toBeNull() 
+              // expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
+          console.log('add Report definition step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
-            actionType: "DomainModelAction",
-            actionName:'UpdateMetaModelInstance',
-            update:{
-              updateActionType: "ModelCUDInstanceUpdate",
-              updateActionName: "create",
-              objects: [
-                {
-                  entity:reportEntityList.parentName,parentUuid:reportEntityList.parentUuid,
-                  instances: [reportEntityList as EntityInstance]
-                }
-              ]
+            actionType:"DomainModelAction",
+            actionName: "updateEntity",
+            update: {
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                entities: [
+                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                ],
+              },
             }
           };
   
@@ -400,7 +407,7 @@ describe(
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0].update).toEqual(createAction.update);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
 
           await waitFor(
@@ -410,8 +417,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -435,8 +442,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -459,8 +466,8 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
         } catch (error) {
@@ -473,41 +480,77 @@ describe(
 
     // ###########################################################################################
     it(
-      'Remove Report definition then commit',
+      'Remove Author entity then commit',
       async () => {
         try {
-          console.log('remove Report definition start');
+          console.log('remove Author entity start');
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          await localDataStore?.clear();
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+          // await localDataStore?.clear();
+          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await act(
+            async () => {
+              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+            }
+          );
 
-          
-  
+          const createAction: DomainAction = {
+            actionType:"DomainModelAction",
+            actionName: "updateEntity",
+            update: {
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                entities: [
+                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                ],
+              },
+            }
+          };
+
+          console.log('remove Author entity setup: adding Author entity locally.')
+          await act(
+            async () => {
+              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+            }
+          );
+
+          console.log('remove Author entity setup: adding Author entity remotely by commit.')
+          await act(
+            async () => {
+              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+            }
+          );
+
           const {
             getByText,
             getAllByRole,
             container
           } = renderWithProviders(
               <TestUtilsTableComponent
-                parentName={entityReport.name}
-                parentUuid={entityReport.uuid}
+                entityName={entityEntity.name}
+                entityUuid={entityEntity.uuid}
                 DisplayLoadingInfo={displayLoadingInfo}
               />,
             {store:reduxStore.getInnerStore()}
             // {store:reduxStore.getInnerStore(),loadingStateService:loadingStateService}
           );
+          
+  
   
           // ##########################################################################################################
-          console.log('remove Report definition step  1: refreshing report list from remote store, reportEntityList must still be present in the report list.')
+          console.log('remove Author entity step  1: refreshing entity list from remote store, Author entity must be present in the entity list.')
   
           await act(
             async () => {
@@ -522,29 +565,29 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i)).toBeTruthy() // Entity List
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 2: removing reportEntityList from local store, it must be absent from the report list.')
+          console.log('remove Report definition step 2: removing Author entity from local store, it must be absent from the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(
                 {
-                  actionType: 'DomainModelAction',
-                  actionName:'UpdateMetaModelInstance',
-                  update:{
-                    updateActionType: "ModelCUDInstanceUpdate",
-                    updateActionName:"delete",
-                    objects:[
-                      {
-                        parentUuid:reportEntityList.parentUuid, entity:reportEntityList.parentName, instances:[reportEntityList as EntityInstance]
-                      }
-                    ]
+                  actionType: "DomainModelAction",
+                  actionName: "updateEntity",
+                  update: {
+                    updateActionName: "WrappedModelEntityUpdate",
+                    modelEntityUpdate: {
+                      updateActionType: "ModelEntityUpdate",
+                      updateActionName: "DeleteEntity",
+                      entityName: entityAuthor.name,
+                      entityUuid: entityAuthor.uuid,
+                    },
                   }
-                },
+                  },
                 reduxStore.currentModel()
               );
             }
@@ -557,15 +600,17 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // console.log("absentReport", absentReport);
-              expect(absentReport).toBeNull()
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+              // // console.log("absentReport", absentReport);
+              // expect(absentReport).toBeNull()
+              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 3: commit to remote store, reportEntityList must still be absent from the report list.')
+          console.log('remove Report definition step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
               await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
@@ -578,14 +623,16 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              expect(absentReport).toBeNull()
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+              // expect(absentReport).toBeNull()
+              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be absent in the report list.')
+          console.log('remove Report definition step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -603,9 +650,11 @@ describe(
             },
           ).then(
             ()=> {
-              const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              expect(absentReport).toBeNull()
-              expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+              // expect(absentReport).toBeNull()
+              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
         } catch (error) {
@@ -617,23 +666,59 @@ describe(
 
     // ###########################################################################################
     it(
-      'Update Report definition then commit',
+      'Update Author definition then commit',
       async () => {
         try {
-          console.log('update Report definition start');
+          console.log('update Author definition start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore?.clear();
-          await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore.dropModel();
+          await localDataStore.initModel();
+          // await localDataStore?.clear();
+          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
+          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
+          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
+          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
+          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
+          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
+          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await act(
+            async () => {
+              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+            }
+          );
+
+          const createAction: DomainAction = {
+            actionType:"DomainModelAction",
+            actionName: "updateEntity",
+            update: {
+              updateActionName:"WrappedModelEntityUpdate",
+              modelEntityUpdate: {
+                updateActionType: "ModelEntityUpdate",
+                updateActionName: "createEntity",
+                entities: [
+                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                ],
+              },
+            }
+          };
+
+          console.log('update Author entity setup: adding Author entity locally.')
+          await act(
+            async () => {
+              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+            }
+          );
+
+          console.log('update Author entity setup: adding Author entity remotely by commit.')
+          await act(
+            async () => {
+              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+            }
+          );
   
   
           const {
@@ -642,15 +727,15 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-              parentName={entityReport.name}
-              parentUuid={entityReport.uuid}
+              entityName={entityEntity.name}
+              entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
             />,
             {store:reduxStore.getInnerStore(),}
           );
   
           // ##########################################################################################################
-          console.log('Update Report definition step 1: loading initial configuration, reportEntityList must be present in report list.')
+          console.log('Update Autor definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -665,11 +750,8 @@ describe(
             },
           ).then(
             ()=> {
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // // console.log("absentReport", absentReport);
-              // expect(absentReport).toBeNull() 
-              // const presentReport = screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i); // Report List
-              expect(screen.queryByText(/ReportList/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
+              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -679,39 +761,29 @@ describe(
           const updateAction: DomainAction = 
             {
               actionType: "DomainModelAction",
-              actionName: "UpdateMetaModelInstance",
+              actionName: "updateEntity",
               update: {
-                updateActionType: "ModelCUDInstanceUpdate",
-                updateActionName:'update',
-                objects: [
-                  {
-                    entity: reportReportList.parentName,
-                    parentUuid: reportReportList.parentUuid,
-                    instances:[
-                      Object.assign(
-                        {},
-                        reportReportList, 
-                        {
-                          name: "Report2List",
-                          defaultLabel: "Modified List of Reports",
-                        }
-                      ) as EntityInstance
-                    ]
-                  }
-                ]
+                updateActionName:"WrappedModelEntityUpdate",
+                modelEntityUpdate:{
+                  updateActionType:"ModelEntityUpdate",
+                  updateActionName: "renameEntity",
+                  entityName: entityAuthor.name,
+                  entityUuid: entityAuthor.uuid,
+                  targetValue: "Authorsss",
+                },
               }
             }
           ;
           await act(
             async () => {
-              await domainController.handleDomainAction(updateAction);
+              await domainController.handleDomainAction(updateAction, reduxStore.currentModel());
             }
           );
   
           console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
   
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect(domainController.currentTransaction()[0]).toEqual(updateAction);
+          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
   
           await user.click(screen.getByRole('button'))
   
@@ -721,12 +793,12 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
             }
           );
- 
+
           // ##########################################################################################################
-          console.log('Update Report definition step 3: refreshing report list from remote store, modified reportReportList must still be present in the report list.')
+          console.log('Update Author entity definition step 3: committin entity list from remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
@@ -741,12 +813,12 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('update Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, modified reportEntityList must still be present in the report list.')
+          console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -764,7 +836,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/Report2List/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
             }
           );
         } catch (error) {

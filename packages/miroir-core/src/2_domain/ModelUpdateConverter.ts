@@ -20,8 +20,8 @@ export class ModelEntityUpdateConverter{
       case "renameEntity":{
         const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
         const currentEntityDefinition = entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
-        const modifiedEntity:EntityInstanceWithName = Object.assign(currentEntity,{name:modelUpdate.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign(currentEntityDefinition,{name:modelUpdate.targetValue});
+        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelUpdate.targetValue});
+        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelUpdate.targetValue});
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName: "update",
@@ -86,13 +86,20 @@ export class ModelEntityUpdateConverter{
     let modelCUDUpdate: ModelCUDInstanceUpdate;
     // const currentEntity = currentModel.entities.find(e=>e.name==modelUpdate.parentName);
     switch (modelUpdate.updateActionName) {
-      case "renameEntity":{
+      case "renameEntity":{ // TODO: duplicated code with modelEntityUpdateToLocalCacheUpdate
+        // const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityUuid);
+        // const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityUuid);
-        const modifiedEntity:EntityInstanceWithName = Object.assign({...currentEntity},{name:modelUpdate.targetValue});
+        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
+        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelUpdate.targetValue});
+        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelUpdate.targetValue});
         modelCUDUpdate = {
           updateActionType:"ModelCUDInstanceUpdate",
           updateActionName:"update",
-          objects:[{parentName: entityDefinitionEntityDefinition.name, parentUuid:entityDefinitionEntityDefinition.uuid, instances:[modifiedEntity]}]
+          objects:[
+            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, instances:[modifiedEntity]},
+            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, instances:[modifiedEntityDefinition]},
+          ]
         }
         break;
       }
