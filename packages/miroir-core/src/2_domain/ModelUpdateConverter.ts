@@ -33,12 +33,20 @@ export class ModelEntityUpdateConverter{
         break;
       }
       case "DeleteEntity": {
-        const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.parentUuid);
+        const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityUuid);
+        const currentEntityDefinitions = entityDefinitions.filter(e=>e.entityUuid==modelUpdate.entityUuid);
+        const definitionsToRemove = currentEntityDefinitions.map(ed => ({
+          parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, instances:[{uuid: ed.uuid} as EntityInstanceWithName]
+        }));
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         domainDataAction = {
           actionType:"DomainDataAction",
           actionName:"delete",
-          objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          // objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[
+            {parentName: entityEntity.name, parentUuid:entityEntity.uuid, instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
+            ...definitionsToRemove
+          ]
         }
         break;
       }
@@ -89,12 +97,20 @@ export class ModelEntityUpdateConverter{
         break;
       }
       case "DeleteEntity": {
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.parentUuid);
+        const currentEntity = currentModel.entities.find(e=>e.uuid==modelUpdate.entityUuid);
+        const currentEntityDefinitions = currentModel.entityDefinitions.filter(e=>e.entityUuid==modelUpdate.entityUuid);
+        const definitionsToRemove = currentEntityDefinitions.map(ed => ({
+          parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, instances:[{uuid: ed.uuid} as EntityInstanceWithName]
+        }));
+
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         modelCUDUpdate = {
           updateActionType:"ModelCUDInstanceUpdate",
           updateActionName:"delete",
-          objects:[{parentName: modelUpdate.parentName, parentUuid:modelUpdate.parentUuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
+          objects:[
+            {parentName: entityEntity.name, parentUuid:entityEntity.uuid, instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
+            ...definitionsToRemove
+          ]
         }
         break;
       }

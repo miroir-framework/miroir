@@ -384,9 +384,9 @@ export const RootComponent = (props: RootComponentProps) => {
                   modelEntityUpdate: {
                     updateActionType: "ModelEntityUpdate",
                     updateActionName: "DeleteEntity",
-                    parentName: entityDefinitionAuthor.parentName,
-                    parentUuid: entityDefinitionAuthor.parentUuid,
-                    instanceUuid:entityDefinitionAuthor.uuid,
+                    entityName: entityAuthor.name,
+                    entityUuid: entityAuthor.uuid,
+                    // instanceUuid:entityAuthor.uuid,
                   },
                 }
               },

@@ -30,9 +30,9 @@ export interface ModelEntityUpdateAlterEntityAttribute {
 export interface ModelEntityUpdateDeleteMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'DeleteEntity';
-  parentName?:string;
-  parentUuid:string;
-  instanceUuid:string;
+  entityName?:string;
+  entityUuid:string;
+  // instanceUuid:string;
 }
 
 export interface ModelEntityUpdateRenameEntity {

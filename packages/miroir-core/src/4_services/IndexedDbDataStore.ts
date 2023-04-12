@@ -127,8 +127,9 @@ export class IndexedDbDataStore implements DataStoreInterface{
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity":{
-            const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-            await this.deleteInstance(deleteStructureUpdate.parentUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
+            // const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
+            // await this.deleteInstance(deleteStructureUpdate.entityUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
+            await this.dropEntity(update.modelEntityUpdate.entityUuid)
             break;
           }
           // case "alterMetaModelInstance":
