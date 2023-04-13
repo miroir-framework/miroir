@@ -1,7 +1,7 @@
 import { ModelReplayableUpdate } from "src/0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "src/0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 
-export async function ModelUpdateRunner(
+export async function modelUpdateRunner(
   actionName:string,
   localDataStore:DataStoreInterface,
   body:any[]

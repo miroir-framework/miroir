@@ -4,7 +4,8 @@ import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
   generateHandlerBody,
-  ModelReplayableUpdate
+  ModelReplayableUpdate,
+  modelUpdateRunner
 } from "miroir-core";
 import { createServer } from 'miroir-datastore-postgres';
 
@@ -80,49 +81,18 @@ app.post("/miroir/entity", async (req, res, ctx) => {
 app.post("/model/" + ':actionName', async (req, res, ctx) => {
   const actionName: string =
     typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
-  
+  let update = [];
+  try {
+    update = await req.body;
+  } catch(e){}
+
   // const updates: RemoteStoreModelAction[] = await req.body;
   console.log("server post model/"," started #####################################");
-
-  // const localData = await localIndexedDbDataStore.upsertInstance(parentName, addedObjects[0]);
-  // for (const instance of addedObjects) {
-  console.log('server post sqlDbServer.getEntities()', sqlDbServer.getEntityDefinitions());
-  switch (actionName) {
-    case 'resetModel':{
-      // const update = (await req.body)[0];
-      console.log("server post model/resetModel update");
-      await sqlDbServer.dropModel();
-      console.log('server post resetModel after dropped sqlDbServer entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
-      // await sqlDbServer.initModel();
-      // console.log('server post resetModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
-      break;
-    }
-    case 'initModel':{
-      const update = (await req.body)[0];
-      console.log("server post model/initModel update",update);
-      await sqlDbServer.initModel();
-      console.log('server post initModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
-      break;
-    }
-    case 'updateEntity': {
-      const update: ModelReplayableUpdate = (await req.body)[0];
-      console.log("server post model/updateEntity update",update);
-      if (update) {
-        switch (update['action']) {
-          default:
-            await sqlDbServer.applyModelEntityUpdate(update);
-            console.log('post applyModelEntityUpdate done', update);
-            break;
-        }
-      } else {
-        console.log('post model/ has no update to execute!')
-      }
-      break;
-    }
-    default:
-      console.log('post model/ could not handle actionName', actionName)
-      break;
-  }
+  await modelUpdateRunner(
+    actionName,
+    sqlDbServer,
+    update
+  );
  
   return res.json([]);
 });

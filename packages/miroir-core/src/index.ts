@@ -122,6 +122,9 @@ export {
   modelInitialize,
 } from './3_controllers/ModelInitializer.js';
 export {
+  modelUpdateRunner,
+} from './3_controllers/ModelUpdateRunner.js';
+export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,

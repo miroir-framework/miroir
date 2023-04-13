@@ -257,12 +257,19 @@ export const RootComponent = (props: RootComponentProps) => {
       <p />
       <span>
         <button
-          onClick={async () => {
-            await domainController.handleDomainAction({
-              actionType: "DomainModelAction",
-              actionName: "resetModel",
-            });
-          }}
+          onClick={
+            async () => {
+              await domainController.handleDomainAction({
+                actionType: "DomainModelAction",
+                actionName: "resetModel",
+              });
+              console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+              await domainController.handleDomainAction({
+                actionType: "DomainModelAction",
+                actionName: "replace",
+              });
+            }
+          }
         >
           Reset database
         </button>
@@ -274,15 +281,16 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainAction({
               actionType: "DomainModelAction",
               actionName: "initModel",
-            }).then(
-              async () => {
-                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-                await domainController.handleDomainAction({
-                  actionType: "DomainModelAction",
-                  actionName: "replace",
-                });
-              }
-            );
+            })
+            // .then(
+              // async () => {
+            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+            await domainController.handleDomainAction({
+              actionType: "DomainModelAction",
+              actionName: "replace",
+            });
+              // }
+            // );
             
           }}
         >
