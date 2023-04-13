@@ -58,12 +58,12 @@ export class DomainController implements DomainControllerInterface {
       }
       case "undo":
       case "redo": {
-        this.LocalAndRemoteController.handleLocalCacheModelAction(domainModelAction);
+        await this.LocalAndRemoteController.handleLocalCacheModelAction(domainModelAction);
         break;
       }
       case "initModel": 
       case "resetModel": {
-        this.LocalAndRemoteController.handleRemoteStoreModelAction(domainModelAction);
+        await this.LocalAndRemoteController.handleRemoteStoreModelAction(domainModelAction);
         break;
       }
       case "commit": {
@@ -121,7 +121,7 @@ export class DomainController implements DomainControllerInterface {
 
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
 
-        this.LocalAndRemoteController.handleLocalCacheAction(
+        await this.LocalAndRemoteController.handleLocalCacheAction(
           {
             actionName:'create',
             actionType: 'DomainDataAction',
@@ -129,7 +129,7 @@ export class DomainController implements DomainControllerInterface {
           }
         );
 
-        this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);// commit clears transaction information, locally.
+        await this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);// commit clears transaction information, locally.
 
         const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -146,7 +146,7 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "UpdateMetaModelInstance": {
-        this.LocalAndRemoteController.handleLocalCacheAction(
+        await this.LocalAndRemoteController.handleLocalCacheAction(
           domainModelAction
         );
         break;
@@ -164,7 +164,7 @@ export class DomainController implements DomainControllerInterface {
         console.log('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
         
 
-        this.LocalAndRemoteController.handleLocalCacheAction(
+        await this.LocalAndRemoteController.handleLocalCacheAction(
           {...domainModelAction,update:structureUpdatesWithCUDUpdates}
         );
         break;
@@ -201,7 +201,7 @@ export class DomainController implements DomainControllerInterface {
       console.log(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction calling handleLocalCacheDataAction", domainAction
       );
-      this.LocalAndRemoteController.handleLocalCacheDataAction(domainAction);
+      await this.LocalAndRemoteController.handleLocalCacheDataAction(domainAction);
       console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction end", domainAction);
     } else {
       console.error(
@@ -264,7 +264,7 @@ export class DomainController implements DomainControllerInterface {
             await this.handleDomainModelAction(entityDomainAction as DomainModelAction, currentModel);
         }
         if (!!otherDomainAction) {
-          return this.handleDomainModelAction(otherDomainAction as DomainModelAction, currentModel);
+          await this.handleDomainModelAction(otherDomainAction as DomainModelAction, currentModel);
         }
         return Promise.resolve()
       }

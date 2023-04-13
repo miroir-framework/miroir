@@ -1,7 +1,7 @@
 {
   "uuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
   "parentName":"EntityDefinition",
-  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
   "conceptLevel":"Model",
   "name":"Author",

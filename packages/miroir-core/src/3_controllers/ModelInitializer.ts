@@ -19,7 +19,7 @@ import instanceConfigurationReference from '../assets/instances/StoreBasedConfig
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 
-export async function modelInitialize(datastore:DataStoreInterface) {
+export async function modelInitialize(datastore:DataStoreInterface): Promise<void> {
       // TODO: test this.sqlEntities for emptiness, abort if not empty
     // bootstrap MetaClass entity
     console.log('################################### initModel');
@@ -61,4 +61,5 @@ export async function modelInitialize(datastore:DataStoreInterface) {
     await datastore.upsertInstance(entityReport.uuid, reportModelVersionList as EntityInstance);
     await datastore.upsertInstance(entityReport.uuid, reportReportList as EntityInstance);
     console.log('modelInitialize done',await datastore.getState());
+    return Promise.resolve(undefined);
 }

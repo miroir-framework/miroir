@@ -45,5 +45,5 @@ export async function ModelUpdateRunner(
       console.log('ModelUpdateRunner could not handle actionName', actionName)
       break;
   }
-
+  return Promise.resolve(undefined);
 }

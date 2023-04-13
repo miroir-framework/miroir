@@ -1,7 +1,7 @@
 {
   "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "parentName":"EntityDefinition",
-  "parentUuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "name":"EntityDefinition",
   "conceptLevel":"MetaMetaModel",

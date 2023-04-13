@@ -101,7 +101,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
       const update = (await req.body)[0];
       console.log("server post model/initModel update",update);
       await sqlDbServer.initModel();
-      console.log('server post resetModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
+      console.log('server post initModel after initModel, entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
       break;
     }
     case 'updateEntity': {

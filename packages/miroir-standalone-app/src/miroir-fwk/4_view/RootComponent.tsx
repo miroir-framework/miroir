@@ -207,8 +207,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction({
-              actionName: "undo",
               actionType: "DomainModelAction",
+              actionName: "undo",
             });
           }}
         >
@@ -219,8 +219,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction({
-              actionName: "redo",
               actionType: "DomainModelAction",
+              actionName: "redo",
             });
           }}
         >
@@ -232,8 +232,8 @@ export const RootComponent = (props: RootComponentProps) => {
           onClick={async () => {
             await domainController.handleDomainModelAction(
               {
-                actionName: "commit",
                 actionType: "DomainModelAction",
+                actionName: "commit",
               },
               currentModel
             );
@@ -246,8 +246,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction({
-              actionName: "replace",
               actionType: "DomainModelAction",
+              actionName: "replace",
             });
           }}
         >
@@ -259,8 +259,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainAction({
-              actionName: "resetModel",
               actionType: "DomainModelAction",
+              actionName: "resetModel",
             });
           }}
         >
@@ -274,7 +274,16 @@ export const RootComponent = (props: RootComponentProps) => {
             await domainController.handleDomainAction({
               actionType: "DomainModelAction",
               actionName: "initModel",
-            });
+            }).then(
+              async () => {
+                console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+                await domainController.handleDomainAction({
+                  actionType: "DomainModelAction",
+                  actionName: "replace",
+                });
+              }
+            );
+            
           }}
         >
           Init database
@@ -284,8 +293,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainAction({
-              actionName: "replace",
               actionType: "DomainModelAction",
+              actionName: "replace",
             });
           }}
         >

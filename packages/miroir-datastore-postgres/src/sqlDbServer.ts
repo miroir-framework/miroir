@@ -169,14 +169,20 @@ export class SqlDbServer implements DataStoreInterface {
   async initModel(
   ):Promise<void> {
     await modelInitialize(this);
+    return Promise.resolve(undefined);
   }
 
   // ##############################################################################################
-  async getState():Promise<{[uuid:string]:EntityInstance[]}>{
-    let result;
+  async getState():Promise<{[uuid:string]:EntityInstance[]}>{ // TODO: same implementation as in IndexedDbDataStore
+    let result = {};
+    console.log('getState this.getEntities()',this.getEntities());
+    
     for (const parentUuid of this.getEntities()) {
+      console.log('getState getting instances for',parentUuid);
       const instances = await this.getInstances(parentUuid);
-      Object.assign(result,{parentUuiq:instances});
+      console.log('getState found instances',parentUuid,instances);
+      
+      Object.assign(result,{[parentUuid]:instances});
     }
     return Promise.resolve(result);
   }
@@ -225,9 +231,23 @@ export class SqlDbServer implements DataStoreInterface {
   // ##############################################################################################
   async dropModel(
   ):Promise<void> {
+    // await this.clear();
+    await this.sequelize.drop();
+    if (this.sqlEntities && this.sqlEntities[entityEntityDefinition.uuid]) {
+      const model = this.sqlEntities[entityEntityDefinition.uuid];
+      console.log("dropModel entityUuid", entityEntityDefinition.uuid, 'name',entityEntityDefinition.name);
+      await model.sequelizeModel.drop();
+      delete this.sqlEntities[entityEntityDefinition.uuid];
+    }
+    if (this.sqlEntities && this.sqlEntities[entityEntity.uuid]) {
+      const model = this.sqlEntities[entityEntity.uuid];
+      console.log("dropModel entityUuid", entityEntity.uuid, 'parentName',entityEntity.name);
+      await model.sequelizeModel.drop();
+      delete this.sqlEntities[entityEntity.uuid];
+    }
+
     this.sqlEntityDefinitions = {};
     this.sqlEntities = {};
-    await this.sequelize.drop();
   }
   
   

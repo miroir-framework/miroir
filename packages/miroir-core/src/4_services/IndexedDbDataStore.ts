@@ -26,6 +26,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   // #############################################################################################
   async initModel():Promise<void>{
     await modelInitialize(this);
+    return Promise.resolve(undefined);
     // return this.clear();
   }
 
