@@ -89,8 +89,8 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
   console.log('server post sqlDbServer.getEntities()', sqlDbServer.getEntityDefinitions());
   switch (actionName) {
     case 'resetModel':{
-      const update = (await req.body)[0];
-      console.log("server post model/resetModel update",update);
+      // const update = (await req.body)[0];
+      console.log("server post model/resetModel update");
       await sqlDbServer.dropModel();
       console.log('server post resetModel after dropped sqlDbServer entities:',sqlDbServer.getEntities(),'entityDefinitions:',sqlDbServer.getEntityDefinitions());
       // await sqlDbServer.initModel();

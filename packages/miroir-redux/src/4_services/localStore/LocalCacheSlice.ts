@@ -98,7 +98,8 @@ function getInitializedEntityAdapter(parentUuid: string, state: LocalCacheSliceS
 //# REDUCER FUNCTION
 //#########################################################################################
 function ReplaceInstancesForEntity(state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
-  console.log('ReplaceInstancesForEntity', state[entityEntity.uuid]?.entities[action.payload.parentUuid]['name'],action.payload.parentUuid,action.payload.instances);
+  const entity = state[entityEntity.uuid]?.entities[action.payload.parentUuid]
+  console.log('ReplaceInstancesForEntity named', entity?entity['name']:'entity not found',action.payload.parentUuid,action.payload.instances);
   const sliceEntityAdapter = getInitializedEntityAdapter(action.payload.parentUuid,state);
 
   state[action.payload.parentUuid] = sliceEntityAdapter.setAll(state[action.payload.parentUuid], action.payload.instances);

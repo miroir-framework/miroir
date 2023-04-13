@@ -89,7 +89,7 @@ export class IndexedDb {
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
     console.log('indexedDb addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
-    console.log('indexedDb addSubLevels db:',this.db);
+    // console.log('indexedDb addSubLevels db:',this.db);
     this.subLevels = new Map<string, any>([
       ...this.subLevels.entries(),
       ...tableNames.filter(n=>!this.hasSubLevel(n)).map(

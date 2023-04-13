@@ -1,3 +1,4 @@
+import { EntityDefinition, MetaEntity } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
@@ -77,9 +78,11 @@ export interface DataStoreInterface {
   
   getEntityDefinitions():string[]; //TODO: remove!
   getEntities():string[]; //TODO: remove!
+  createEntity(entity:MetaEntity, entityDefinition: EntityDefinition);
   dropEntity(parentUuid:string);
   dropEntities(parentUuid:string[]);
 
+  getState():Promise<{[uuid:string]:EntityInstance[]}>;
   getInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;

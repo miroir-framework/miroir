@@ -89,6 +89,13 @@ export class RestServerStub {
             console.log('resetModel after drop getEntityDefinitions', localDataStore.getEntityDefinitions());
             break;
           }
+          case 'initModel':{
+            const update = (await req.body)[0];
+            console.log("server post model/initModel update",update);
+            await localDataStore.initModel();
+            console.log('server post resetModel after initModel, entities:',localDataStore.getEntities(),'entityDefinitions:',localDataStore.getEntityDefinitions());
+            break;
+          }
           case 'updateEntity': {
             const update: ModelReplayableUpdate = (await req.json())[0];
             console.log("post model/ updates",update);

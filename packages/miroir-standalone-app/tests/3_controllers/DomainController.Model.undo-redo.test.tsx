@@ -49,7 +49,7 @@ import entityDefinitionBook from "miroir-standalone-app/src/assets/entityDefinit
 import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json"
 
@@ -68,72 +68,111 @@ let miroirContext: MiroirContext;
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-
-    try {
-      const wrapped = await createMswStore(
-        config as MiroirConfig,
-        'nodejs',
-        fetch,
-        setupServer
-      );
-
+    const wrapped = await miroirBeforeAll(
+      config as MiroirConfig,
+      'nodejs',
+      fetch,
+      setupServer
+    );
+    if (wrapped) {
       localDataStore = wrapped.localDataStore as DataStoreInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrapped.reduxStore;
       domainController = wrapped.domainController;
       miroirContext = wrapped.miroirContext;
-  
-      localDataStoreServer?.listen();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localDataStore, circularReplacer()));
-      await localDataStore.open();
-    } catch (error) {
-      console.error('Error beforeAll',error);
     }
-    console.log('Done beforeAll');
   }
 )
 
 beforeEach(
   async () => {
-    // Establish requests interception layer before all tests.
-    // localDataStoreServer?.listen();
-    try {
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
-      await localDataStore.start();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
-      await localDataStore.clear();
-    } catch (error) {
-      console.error('beforeEach',error);
-    }
-    console.log('Done beforeEach');
+    await miroirBeforeEach(localDataStore);
   }
 )
 
 afterAll(
   async () => {
-    try {
-      localDataStoreServer?.close();
-      localDataStore.close();
-    } catch (error) {
-      console.error('Error afterAll',error);
-    }
-    console.log('Done afterAll');
+    await miroirAfterAll(localDataStore,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    try {
-      // await localDataStore?.close();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
-      await localDataStore.clear();
-    } catch (error) {
-      console.error('Error afterEach',error);
-    }
-    console.log('Done afterEach');
+    await miroirAfterEach(localDataStore);
   }
 )
+
+// beforeAll(
+//   async () => {
+//     // Establish requests interception layer before all tests.
+
+//     try {
+//       const wrapped = await createMswStore(
+//         config as MiroirConfig,
+//         'nodejs',
+//         fetch,
+//         setupServer
+//       );
+
+//       localDataStore = wrapped.localDataStore as DataStoreInterface;
+//       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+//       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+//       reduxStore = wrapped.reduxStore;
+//       domainController = wrapped.domainController;
+//       miroirContext = wrapped.miroirContext;
+  
+//       localDataStoreServer?.listen();
+//       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localDataStore, circularReplacer()));
+//       await localDataStore.open();
+//     } catch (error) {
+//       console.error('Error beforeAll',error);
+//     }
+//     console.log('Done beforeAll');
+//   }
+// )
+
+// beforeEach(
+//   async () => {
+//     // Establish requests interception layer before all tests.
+//     // localDataStoreServer?.listen();
+//     try {
+//       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
+//       await localDataStore.start();
+//       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
+//       await localDataStore.clear();
+//     } catch (error) {
+//       console.error('beforeEach',error);
+//     }
+//     console.log('Done beforeEach');
+//   }
+// )
+
+// afterAll(
+//   async () => {
+//     try {
+//       await localDataStore.dropModel();
+//       localDataStoreServer?.close();
+//       localDataStore.close();
+//     } catch (error) {
+//       console.error('Error afterAll',error);
+//     }
+//     console.log('Done afterAll');
+//   }
+// )
+
+// afterEach(
+//   async () => {
+//     try {
+//       // await localDataStore?.close();
+//       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
+//       await localDataStore.clear();
+//     } catch (error) {
+//       console.error('Error afterEach',error);
+//     }
+//     console.log('Done afterEach');
+//   }
+// )
 
 describe(
   'DomainController.Model.undo-redo',

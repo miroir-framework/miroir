@@ -43,7 +43,7 @@ import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
 
@@ -61,69 +61,38 @@ let miroirContext: MiroirContext;
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-
-    try {
-      const wrapped = await createMswStore(
-        config as MiroirConfig,
-        'nodejs',
-        fetch,
-        setupServer
-      );
+    const wrapped = await miroirBeforeAll(
+      config as MiroirConfig,
+      'nodejs',
+      fetch,
+      setupServer
+    );
+    if (wrapped) {
       localDataStore = wrapped.localDataStore as DataStoreInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrapped.reduxStore;
       domainController = wrapped.domainController;
       miroirContext = wrapped.miroirContext;
-  
-      localDataStoreServer?.listen();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localDataStore, circularReplacer()));
-      await localDataStore.open();
-    } catch (error) {
-      console.error('Error beforeAll',error);
     }
-    console.log('Done beforeAll');
   }
 )
 
 beforeEach(
   async () => {
-    // Establish requests interception layer before all tests.
-    // localDataStoreServer?.listen();
-    try {
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
-      await localDataStore.start();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
-      await localDataStore.clear();
-    } catch (error) {
-      console.error('beforeEach',error);
-    }
-    console.log('Done beforeEach');
+    await miroirBeforeEach(localDataStore);
   }
 )
 
 afterAll(
   async () => {
-    try {
-      localDataStoreServer?.close();
-      localDataStore.close();
-    } catch (error) {
-      console.error('Error afterAll',error);
-    }
-    console.log('Done afterAll');
+    await miroirAfterAll(localDataStore,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    try {
-      // await localDataStore?.close();
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
-      await localDataStore.clear();
-    } catch (error) {
-      console.error('Error afterEach',error);
-    }
-    console.log('Done afterEach');
+    await miroirAfterEach(localDataStore);
   }
 )
 
@@ -667,15 +636,7 @@ describe(
   
           await localDataStore.dropModel();
           await localDataStore.initModel();
-          // await localDataStore?.clear();
-          // await localDataStore?.upsertInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          // await localDataStore?.upsertInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          // await localDataStore?.upsertInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          // await localDataStore?.upsertInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          // await localDataStore?.upsertInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          // await localDataStore?.upsertInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
@@ -697,7 +658,9 @@ describe(
             }
           };
 
-          console.log('update Author entity setup: adding Author entity locally.')
+          console.log('update Author entity setup: adding Author entity locally.');
+          console.log('reduxStore',reduxStore);
+          console.log('reduxStore.currentModel().',reduxStore.currentModel());
           await act(
             async () => {
               await domainController.handleDomainAction(createAction,reduxStore.currentModel());

@@ -4,24 +4,12 @@ import {
   EntityDefinition,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  entityDefinitionModelVersion,
-  EntityDefinitionReport,
-  entityDefinitionStoreBasedConfiguration,
   entityEntity,
   entityEntityDefinition,
   EntityInstance,
-  entityModelVersion,
-  entityReport,
-  entityStoreBasedConfiguration,
-  instanceConfigurationReference,
-  instanceModelVersionInitial,
   MetaEntity,
-  ModelReplayableUpdate,
-  reportConfigurationList,
-  reportEntityDefinitionList,
-  reportEntityList,
-  reportModelVersionList,
-  reportReportList,
+  modelInitialize,
+  ModelReplayableUpdate
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
 
@@ -180,38 +168,17 @@ export class SqlDbServer implements DataStoreInterface {
   // ##############################################################################################
   async initModel(
   ):Promise<void> {
+    await modelInitialize(this);
+  }
 
-    // TODO: test this.sqlEntities for emptiness, abort if not empty
-    // bootstrap MetaClass entity
-    console.log('################################### initModel');
-    
-    await this.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);
-    console.log('created entity entity',this.sqlEntities);
-
-    // bootstrap MetaClass EntityDefinition
-    await this.createEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
-    console.log('created entity EntityDefinition',this.sqlEntities);
-
-    await this.sqlEntities[entityEntityDefinition.uuid].sequelizeModel.upsert(entityDefinitionEntity as any);
-
-    // bootstrap ModelVersion
-    await this.createEntity(entityModelVersion as MetaEntity, entityDefinitionModelVersion as EntityDefinition);
-    console.log('created entity EntityModelVersion',this.sqlEntities);
-    await this.sqlEntities[entityModelVersion.uuid].sequelizeModel.upsert(instanceModelVersionInitial as any);
-
-    // bootstrap EntityStoreBasedConfiguration
-    await this.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
-    console.log('created entity EntityStoreBasedConfiguration',this.sqlEntities);
-    await this.sqlEntities[entityStoreBasedConfiguration.uuid].sequelizeModel.upsert(instanceConfigurationReference as any);
-
-    // bootstrap EntityStoreBasedConfiguration
-    await this.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
-    console.log('created entity EntityReport',this.sqlEntities);
-    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityList as any);
-    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityDefinitionList as any);
-    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportModelVersionList as any);
-    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportConfigurationList as any);
-    await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportReportList as any);
+  // ##############################################################################################
+  async getState():Promise<{[uuid:string]:EntityInstance[]}>{
+    let result;
+    for (const parentUuid of this.getEntities()) {
+      const instances = await this.getInstances(parentUuid);
+      Object.assign(result,{parentUuiq:instances});
+    }
+    return Promise.resolve(result);
   }
 
   // ##############################################################################################

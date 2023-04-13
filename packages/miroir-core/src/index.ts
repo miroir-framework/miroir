@@ -119,6 +119,9 @@ export { } from './1_core/Report.js';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export { DomainController } from './3_controllers/DomainController';
 export {
+  modelInitialize,
+} from './3_controllers/ModelInitializer.js';
+export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,

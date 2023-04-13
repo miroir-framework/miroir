@@ -1,10 +1,13 @@
 
+import { modelInitialize } from "src/3_controllers/ModelInitializer";
+import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
-import { ModelEntityUpdateDeleteMetaModelInstance, ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityEntity from "../assets/entities/EntityEntity.json";
 import entityEntityDefinition from "../assets/entities/EntityEntityDefinition.json";
 import { IndexedDb } from "./indexedDb";
+import { entityDefinitionEntityDefinition } from "src";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
@@ -22,6 +25,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
 
   // #############################################################################################
   async initModel():Promise<void>{
+    await modelInitialize(this);
     // return this.clear();
   }
 
@@ -64,37 +68,91 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  dropEntity(parentUuid:string) {
-    if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
-      this.localUuidIndexedDb.removeSubLevels([parentUuid]);
+  async createEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
+    if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
+      console.log('IndexedDbDataStore upsertInstance create sublevel',entity.uuid, 'for', entity.name);
+      this.localUuidIndexedDb.addSubLevels([entity.uuid]);
+      this.upsertInstance(entityEntity.uuid, entity);
+      if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
+        this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
+      } else {
+        console.warn('IndexedDbDataStore createEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
+      }
     } else {
-      console.warn('dropEntity parentName not found:', parentUuid);
-    } 
+      console.warn('IndexedDbDataStore createEntity already existing sublevel',entity.uuid,this.localUuidIndexedDb.hasSubLevel(entity.uuid));
+    }
+  }
+
+  // #############################################################################################
+  async dropEntity(entityUuid:string):Promise<void> {
+    if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
+      this.localUuidIndexedDb.removeSubLevels([entityUuid]);
+    } else {
+      console.warn('dropEntity entity not found:', entityUuid);
+    }
+    if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
+      await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
+    } else {
+      console.warn('IndexedDbDataStore dropEntity sublevel for entityEntity does not exist',entityEntity.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid));
+    }
+
+    if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
+      await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
+
+      const entityDefinitions = (await this.getInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
+      for (
+        const entityDefinition of entityDefinitions
+      ) {
+        await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition)
+      }
+    } else {
+      console.warn('IndexedDbDataStore createEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
+    }
+
   }
 
   // #############################################################################################
   dropEntities(entityUuids:string[]) {
     entityUuids.forEach(e =>this.dropEntity(e));
   }
+
+  // ##############################################################################################
+  async getState():Promise<{[uuid:string]:EntityInstance[]}>{
+    let result = {};
+    console.log('getState this.getEntities()',this.getEntities());
+    
+    for (const parentUuid of this.getEntities()) {
+      console.log('getState getting instances for',parentUuid);
+      const instances = await this.getInstances(parentUuid);
+      console.log('getState found instances',parentUuid,instances);
+      
+      Object.assign(result,{[parentUuid]:instances});
+    }
+    return Promise.resolve(result);
+  }
   
   // #############################################################################################
-  getInstances(parentUuid:string):Promise<any> {
+  async getInstances(parentUuid:string):Promise<any> {
     return this.localUuidIndexedDb.getAllValue(parentUuid);
   }
   
   // #############################################################################################
-  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore upsertInstance',instance.parentUuid, instance);
 
     // if (instance.parentUuid == entityDefinitionEntityDefinition.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
-    if (!this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
-      console.log('IndexedDbDataStore upsertInstance create sublevel',parentUuid);
-      this.localUuidIndexedDb.addSubLevels([parentUuid]);
+    // if (!this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
+    //   console.log('IndexedDbDataStore upsertInstance create sublevel',parentUuid);
+    //   this.localUuidIndexedDb.addSubLevels([parentUuid]);
+    // } else {
+    //   console.log('IndexedDbDataStore upsertInstance existing sublevel',parentUuid,this.localUuidIndexedDb.hasSubLevel(parentUuid));
+    // }
+    if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
+      return this.localUuidIndexedDb.putValue(parentUuid,instance);
     } else {
-      console.log('IndexedDbDataStore upsertInstance existing sublevel',parentUuid,this.localUuidIndexedDb.hasSubLevel(parentUuid));
+      console.error('IndexedDbDataStore upsertInstance',instance.parentUuid,'does not exists.');
+      return undefined;
     }
-
-    return this.localUuidIndexedDb.putValue(parentUuid,instance);
   }
 
   // #############################################################################################
