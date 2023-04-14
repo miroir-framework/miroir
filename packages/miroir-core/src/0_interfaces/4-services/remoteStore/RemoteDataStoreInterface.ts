@@ -1,6 +1,6 @@
 import { EntityDefinition, MetaEntity } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
-import { ModelReplayableUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
+import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelInitAction, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
 
@@ -78,11 +78,14 @@ export interface DataStoreInterface {
   
   getEntityDefinitions():string[]; //TODO: remove!
   getEntities():string[]; //TODO: remove!
+  existsEntity(entityUuid:string):boolean;
   createEntity(entity:MetaEntity, entityDefinition: EntityDefinition);
   dropEntity(parentUuid:string);
   dropEntities(parentUuid:string[]);
+  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate);
 
   getState():Promise<{[uuid:string]:EntityInstance[]}>;
+  getInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
   getInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;

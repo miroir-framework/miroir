@@ -22,30 +22,25 @@ import {
   DomainAction,
   DomainControllerInterface,
   EntityDefinition,
-  EntityInstance,
   LocalAndRemoteControllerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
   WrappedModelEntityUpdateWithCUDUpdate,
-  circularReplacer,
-  entityDefinitionEntityDefinition,
   entityEntity,
   entityReport,
-  miroirCoreStartup,
-  reportReportList
+  miroirCoreStartup
 } from "miroir-core";
 import {
   ReduxStore
 } from "miroir-redux";
 
-import { createMswStore } from "miroir-standalone-app/src/miroir-fwk/createStore";
+import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
-import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
-import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
 
 miroirAppStartup();
 miroirCoreStartup();

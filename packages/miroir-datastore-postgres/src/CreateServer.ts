@@ -1,5 +1,5 @@
 import { DataStoreInterface } from "miroir-core";
-import { SqlDbServer } from "src/sqlDbServer";
+import { SqlDbDatastore } from "src/sqlDbDatastore";
 import { detect } from "detect-browser";
 
 const browserInfo = detect();
@@ -20,6 +20,6 @@ export async function createServer (
       console.error('Unable to connect to the postgres database:', error);
     }
   
-    const sqlDbServer:DataStoreInterface = new SqlDbServer(sequelize);
+    const sqlDbServer:DataStoreInterface = new SqlDbDatastore(sequelize);
     return Promise.resolve(sqlDbServer);
   }

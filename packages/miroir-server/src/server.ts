@@ -4,8 +4,7 @@ import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
   generateHandlerBody,
-  ModelReplayableUpdate,
-  modelUpdateRunner
+  modelActionRunner
 } from "miroir-core";
 import { createServer } from 'miroir-datastore-postgres';
 
@@ -88,7 +87,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
 
   // const updates: RemoteStoreModelAction[] = await req.body;
   console.log("server post model/"," started #####################################");
-  await modelUpdateRunner(
+  await modelActionRunner(
     actionName,
     sqlDbServer,
     update

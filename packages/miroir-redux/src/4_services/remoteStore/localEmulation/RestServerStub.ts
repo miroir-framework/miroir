@@ -1,8 +1,7 @@
 import {
   DataStoreInterface,
   generateHandlerBody,
-  ModelReplayableUpdate,
-  modelUpdateRunner
+  modelActionRunner
 } from "miroir-core";
 import { rest } from "msw";
 
@@ -87,41 +86,11 @@ export class RestServerStub {
           update = await req.json();
         } catch(e){}
 
-        await modelUpdateRunner(
+        await modelActionRunner(
           actionName,
           localDataStore,
           update
         );
-      
-        // switch (actionName) {
-        //   case 'resetModel':{
-        //     console.log('resetModel before drop getEntityDefinitions', localDataStore.getEntityDefinitions());
-        //     localDataStore.dropEntities(localDataStore.getEntityDefinitions());
-        //     console.log('resetModel after drop getEntityDefinitions', localDataStore.getEntityDefinitions());
-        //     break;
-        //   }
-        //   case 'initModel':{
-        //     const update = (await req.body)[0];
-        //     console.log("server post model/initModel update",update);
-        //     await localDataStore.initModel();
-        //     console.log('server post resetModel after initModel, entities:',localDataStore.getEntities(),'entityDefinitions:',localDataStore.getEntityDefinitions());
-        //     break;
-        //   }
-        //   case 'updateEntity': {
-        //     const update: ModelReplayableUpdate = (await req.json())[0];
-        //     console.log("post model/ updates",update);
-        //     if (update) {
-        //       await localDataStore.applyModelEntityUpdate(update);
-        //       console.log('post applyModelEntityUpdates', update);
-        //     } else {
-        //       console.log('post model/ has no update to execute!')
-        //     }
-        //     break;
-        //   }
-        //   default:
-        //     console.log('post model/ could not handle actionName', actionName)
-        //     break;
-        // }
       
         return res(ctx.json([]));
       })

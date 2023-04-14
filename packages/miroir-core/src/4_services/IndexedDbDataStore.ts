@@ -2,12 +2,12 @@
 import { modelInitialize } from "src/3_controllers/ModelInitializer";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
-import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityEntity from "../assets/entities/EntityEntity.json";
 import entityEntityDefinition from "../assets/entities/EntityEntityDefinition.json";
 import { IndexedDb } from "./indexedDb";
-import { entityDefinitionEntityDefinition } from "src";
+import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
@@ -85,6 +85,21 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
+  async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
+    const cudUpdate = update.equivalentModelCUDUpdates[0];
+    // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+    const currentValue = await this.getInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+    console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
+    // update the instance in table Entity corresponding to the renamed entity
+    // await this.localUuidIndexedDb.putValue(
+    //   cudUpdate.objects[0].instances[0].parentUuid,
+    //   cudUpdate.objects[0].instances[0],
+    // );
+    await this.upsertInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
+    const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+    console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
+  }
+  // #############################################################################################
   async dropEntity(entityUuid:string):Promise<void> {
     if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       this.localUuidIndexedDb.removeSubLevels([entityUuid]);
@@ -138,16 +153,14 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
+  async getInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
+    return this.localUuidIndexedDb.getValue(parentUuid,uuid);
+  }
+  
+  // #############################################################################################
   async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore upsertInstance',instance.parentUuid, instance);
 
-    // if (instance.parentUuid == entityDefinitionEntityDefinition.uuid && !this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
-    // if (!this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
-    //   console.log('IndexedDbDataStore upsertInstance create sublevel',parentUuid);
-    //   this.localUuidIndexedDb.addSubLevels([parentUuid]);
-    // } else {
-    //   console.log('IndexedDbDataStore upsertInstance existing sublevel',parentUuid,this.localUuidIndexedDb.hasSubLevel(parentUuid));
-    // }
     if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
       return this.localUuidIndexedDb.putValue(parentUuid,instance);
     } else {
@@ -175,81 +188,82 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // ##############################################################################################
-  // async applyModelEntityUpdates(updates:ModelEntityUpdate[]){
+  existsEntity(entityUuid:string):boolean {
+    return this.localUuidIndexedDb.hasSubLevel(entityUuid);
+  }
+  
+  // ##############################################################################################
   async applyModelEntityUpdate(update:ModelReplayableUpdate){
     console.log('IndexedDbDataStore applyModelEntityUpdate',update);
-    const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
-    // if (this.sqlUuidEntities && this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid]) {
-    if (this.localUuidIndexedDb.hasSubLevel(modelCUDupdate.objects[0].parentUuid)) {
-      // console.log('IndexedDbDataStore applyModelEntityUpdate',modelEntityUpdate);
-      if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
-        const modelEntityUpdate = update.modelEntityUpdate;
-        switch (update.modelEntityUpdate.updateActionName) {
-          case "DeleteEntity":{
-            // const deleteStructureUpdate = modelEntityUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-            // await this.deleteInstance(deleteStructureUpdate.entityUuid,{uuid:deleteStructureUpdate.instanceUuid} as EntityInstance)
-            await this.dropEntity(update.modelEntityUpdate.entityUuid)
-            break;
-          }
-          // case "alterMetaModelInstance":
-          case "alterEntityAttribute":
-          case "renameEntity": {
-            const cudUpdate = update.equivalentModelCUDUpdates[0];
-            const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-            console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
-            // update the instance in table Entity corresponding to the renamed entity
-            await this.localUuidIndexedDb.putValue(
-              cudUpdate.objects[0].instances[0].parentUuid,
-              cudUpdate.objects[0].instances[0],
-            );
-            const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-            console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
-            break;
-          }
-          case "createEntity": {
-            for (const instance of update.modelEntityUpdate.entities) {
-              // await this.upsertInstance(modelEntityUpdate.parentUuid, instance);
-              console.log('IndexedDbDataStore applyModelEntityUpdates createEntity inserting',instance);
-              await this.localUuidIndexedDb.putValue(entityEntity.uuid, instance.entity);
-              await this.localUuidIndexedDb.putValue(entityEntityDefinition.uuid, instance.entityDefinition);
-            }
-            break;
-          }
-          default:
-            break;
-        }
-      } else {
-        // same implementation as in sqlDbServer
-        switch (update.updateActionName) {
-          case "create": 
-          case "update":{
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await this.upsertInstance(instance.parentUuid, instance);
-              }
-            }
-            break;
-          }
-          case "delete":{
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await this.deleteInstance(instanceCollection.parentUuid, instance)
-              }
-            }
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    } else {
-      console.warn(
-        "IndexedDbDataStore SqlDbServer entity uuid",
-        modelCUDupdate.objects[0].parentUuid,
-        "name",
-        modelCUDupdate.objects[0].parentName,
-        "not found!"
-      );
-    }
+    await applyModelEntityUpdate(this,update);
+    // const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    // // if (this.localUuidIndexedDb.hasSubLevel(modelCUDupdate.objects[0].parentUuid)) {
+    // if (this.existsEntity(modelCUDupdate.objects[0].parentUuid)) {
+    //     // console.log('IndexedDbDataStore applyModelEntityUpdate',modelEntityUpdate);
+    //   if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
+    //     const modelEntityUpdate = update.modelEntityUpdate;
+    //     switch (update.modelEntityUpdate.updateActionName) {
+    //       case "DeleteEntity":{
+    //         await this.dropEntity(update.modelEntityUpdate.entityUuid)
+    //         break;
+    //       }
+    //       case "alterEntityAttribute": { 
+    //         break;
+    //       }
+    //       case "renameEntity":{
+    //         await this.renameEntity(update);
+    //         break;
+    //       }
+    //       // case "renameEntity": {
+    //       //   break;
+    //       // }
+    //       case "createEntity": {
+    //         for (const entity of update.modelEntityUpdate.entities) {
+    //           console.log('IndexedDbDataStore applyModelEntityUpdates createEntity inserting',entity);
+    //           await this.createEntity(entity.entity, entity.entityDefinition);
+
+    //           // await this.upsertInstance(entityEntity.uuid, instance.entity);
+    //           // await this.upsertInstance(entityEntityDefinition.uuid, instance.entityDefinition);
+    //           // await this.localUuidIndexedDb.putValue(entityEntity.uuid, instance.entity);
+    //           // await this.localUuidIndexedDb.putValue(entityEntityDefinition.uuid, instance.entityDefinition);
+    //         }
+    //         break;
+    //       }
+    //       default:
+    //         break;
+    //     }
+    //   } else {
+    //     // same implementation as in sqlDbServer
+    //     switch (update.updateActionName) {
+    //       case "create": 
+    //       case "update":{
+    //         for (const instanceCollection of update.objects) {
+    //           for (const instance of instanceCollection.instances) {
+    //             await this.upsertInstance(instance.parentUuid, instance);
+    //           }
+    //         }
+    //         break;
+    //       }
+    //       case "delete":{
+    //         for (const instanceCollection of update.objects) {
+    //           for (const instance of instanceCollection.instances) {
+    //             await this.deleteInstance(instanceCollection.parentUuid, instance)
+    //           }
+    //         }
+    //         break;
+    //       }
+    //       default:
+    //         break;
+    //     }
+    //   }
+    // } else {
+    //   console.warn(
+    //     "IndexedDbDataStore SqlDbServer entity uuid",
+    //     modelCUDupdate.objects[0].parentUuid,
+    //     "name",
+    //     modelCUDupdate.objects[0].parentName,
+    //     "not found!"
+    //   );
+    // }
   }
 }

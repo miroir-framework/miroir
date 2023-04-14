@@ -76,6 +76,10 @@ export {
   remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
+  ModelEntityUpdateAlterEntityAttribute,
+  ModelEntityUpdateCreateMetaModelInstance,
+  ModelEntityUpdateDeleteMetaModelInstance,
+  ModelEntityUpdateRenameEntity,
   ModelCUDInstanceUpdate,
   ModelEntityUpdate,
   WrappedModelEntityUpdateWithCUDUpdate,
@@ -122,8 +126,9 @@ export {
   modelInitialize,
 } from './3_controllers/ModelInitializer.js';
 export {
-  modelUpdateRunner,
-} from './3_controllers/ModelUpdateRunner.js';
+  modelActionRunner,
+  applyModelEntityUpdate,
+} from './3_controllers/ModelActionRunner.js';
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
