@@ -1,4 +1,3 @@
-import * as React from "react";
 import { 
   CellClickedEvent, 
   CellDoubleClickedEvent, 
@@ -20,7 +19,6 @@ export interface MTableComponentProps {
   children:any;
 };
 
-// function toto(e:CellClickedEvent) {
 function onCellClicked(e:CellClickedEvent) {
   console.warn("onCellClicked",e)
 }

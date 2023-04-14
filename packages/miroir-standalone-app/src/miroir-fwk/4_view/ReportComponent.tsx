@@ -3,6 +3,7 @@ import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheIns
 import * as React from "react";
 
 import { MTableComponent } from "./MTableComponent";
+import { getColumnDefinitions } from "miroir-react";
 
 export interface MiroirReportComponentProps {
   // reportName: string;
@@ -45,9 +46,10 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
               <div>
                 <MTableComponent
                   columnDefs={
-                    currentMiroirEntityDefinition?.attributes?.map(
-                      (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
-                    )
+                    getColumnDefinitions(currentMiroirEntityDefinition?.attributes)
+                    // currentMiroirEntityDefinition?.attributes?.map(
+                    //   (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
+                    // )
                   }
                   rowData={instancesStringified}
                 >

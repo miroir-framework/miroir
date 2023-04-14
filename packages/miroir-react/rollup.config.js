@@ -1,17 +1,43 @@
 import typescript from 'rollup-plugin-typescript2';
+import pluginJson from '@rollup/plugin-json';
+import dts from 'rollup-plugin-dts';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
-export default {
-    input: ["index.tsx"],
+// import pkg from './package.json'
+
+export default [
+  {
+    input: ["src/index.tsx"],
+    external: [
+      'miroir-core',
+      'sequelize',
+      'detect-browser'
+    ],
     output: [
-        {
-            dir: "dist",
-            entryFileNames: "[name].js",
-            format: "cjs",
-            exports: "named"
-        }
+      {
+          file: `dist/bundle.esm.js`,
+          entryFileNames: "[name].js",
+          format: "esm",
+          exports: "named"
+      }
     ],
     plugins: [
-        typescript(),
+      typescript(),
+      pluginJson(),
+      nodeResolve({browser:false})
     ],
-    external: ["react"]
-};
+  },
+  {
+    input: ["dist/src/index.d.ts"],
+    output: [
+      {
+        file: `dist/bundle.d.ts`,
+        format: 'esm',
+      }
+    ],
+    plugins: [
+      pluginJson(),
+      dts(),
+    ],
+  }
+];

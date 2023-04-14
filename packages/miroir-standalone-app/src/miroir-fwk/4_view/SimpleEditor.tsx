@@ -1,5 +1,5 @@
 import { ICellEditorParams } from "ag-grid-community";
-import React, { useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 
 export default forwardRef((props:ICellEditorParams, ref) => {
     const inputRef = useRef<any>();
