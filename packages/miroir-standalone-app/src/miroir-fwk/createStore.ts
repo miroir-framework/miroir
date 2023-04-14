@@ -4,20 +4,20 @@ import { detect } from "detect-browser";
 import process from "process";
 
 import {
-  LocalAndRemoteControllerInterface,
-  LocalAndRemoteController,
   DomainControllerInterface,
   DomainController,
-  MiroirContext,
-  RestClient,
-  MiroirConfig,
   DataStoreInterface,
   IndexedDb,
   IndexedDbDataStore,
+  LocalAndRemoteControllerInterface,
+  LocalAndRemoteController,
+  MiroirContext,
+  MiroirConfig,
+  RestClient,
+  RestServerStub,
 } from "miroir-core";
 import { createServer } from "miroir-datastore-postgres";
 import {
-  RestServerStub,
   RemoteStoreAccessReduxSaga,
   ReduxStore,
   RemoteStoreNetworkRestClient,

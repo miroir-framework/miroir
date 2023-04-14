@@ -1,8 +1,6 @@
-import {
-  DataStoreInterface,
-  generateHandlerBody,
-  modelActionRunner
-} from "miroir-core";
+import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { modelActionRunner } from "../3_controllers/ModelActionRunner";
+import { generateHandlerBody } from "../4_services/RestTools";
 import { rest } from "msw";
 
 // Add an extra delay to all endpoints, so loading spinners show up.

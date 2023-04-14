@@ -10,7 +10,6 @@ export default [
       'immer',
       'lodash',
       'miroir-core',
-      'msw',
       'redux-saga',
       'redux-saga/effects'
     ],

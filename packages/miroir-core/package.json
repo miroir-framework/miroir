@@ -15,7 +15,8 @@
   "author": "Arnaud Bailly",
   "license": "MIT",
   "dependencies": {
-    "level": "^8.0.0"
+    "level": "^8.0.0",
+    "msw": "^0.49.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",

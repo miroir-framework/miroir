@@ -155,6 +155,9 @@ export {
 export {
   generateHandlerBody
 } from './4_services/RestTools.js';
+export {
+  RestServerStub,
+} from './4_services/RestServerStub.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 

@@ -5,8 +5,6 @@ import { detect } from "detect-browser";
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
 
-let createServerInt;
-
 export async function createServer (
     connectionString:string,
   ):Promise<DataStoreInterface> {
