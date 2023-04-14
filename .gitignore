@@ -7,9 +7,13 @@ packages/miroir-core/dist/src/0_interfaces/2_domain/instanceDomainInterface.d.ts
 packages/miroir-core/dist/src/index.d.ts
 packages/miroir-datastore-postgres/node_modules*/
 packages/miroir-datastore-postgres/dist*/
+packages/miroir-react/node_modules*/
+packages/miroir-react/dist*/
 packages/miroir-server/node_modules*/
 packages/miroir-server/dist*/
 packages/miroir-server/miroir*/
+packages/miroir-server/miroir-db*/
+packages/miroir-server/miroir-indexedDb*/
 packages/miroir-redux/node_modules*/
 packages/miroir-redux/dist*/
 packages/miroir-standalone-app/node_modules*/
