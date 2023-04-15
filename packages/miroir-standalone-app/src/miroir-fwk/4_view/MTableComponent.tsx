@@ -12,6 +12,12 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import SimpleEditor from './SimpleEditor';
+import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
+import { useCallback, useState } from 'react';
+import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirModelVersion, MiroirReport, StoreBasedConfiguration } from 'miroir-core';
+import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
+import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import entityBook from "assets/entities/EntityBook.json";
 
 export interface MTableComponentProps {
   columnDefs:{"headerName": string, "field": string}[];
@@ -23,9 +29,6 @@ function onCellClicked(e:CellClickedEvent) {
   console.warn("onCellClicked",e)
 }
 
-function onCellValueChanged(e:CellValueChangedEvent) {
-  console.warn("onCellValueChanged",e)
-}
 
 function onCellDoubleClicked(e:CellDoubleClickedEvent) {
   console.warn("onCellDoubleClicked",e)
@@ -40,11 +43,61 @@ function onCellEditingStopped(e:CellEditingStoppedEvent) {
 }
 
 function onRowDataUpdated(e:RowDataUpdatedEvent) {
-  // console.warn("onRowDataUpdated",e)
+  console.warn("onRowDataUpdated",e)
 }
 
 
 export const MTableComponent = (props: MTableComponentProps) => {
+  const miroirReports: MiroirReport[] = useLocalCacheReports();
+  const miroirEntities: MetaEntity[] = useLocalCacheEntities();
+  const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const miroirModelVersions: MiroirModelVersion[] = useLocalCacheModelVersion();
+  const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
+  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
+  const errorLog = useErrorLogServiceHook();
+  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  // const [displayedReportName, setDisplayedReportName] = React.useState('');
+  const [displayedReportUuid, setDisplayedReportUuid] = useState("");
+
+  // const handleChange = (event: SelectChangeEvent) => {
+  //   // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
+  //   setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
+  // };
+
+
+  const currentModel: MiroirMetaModel =  {
+    entities: miroirEntities,
+    entityDefinitions: miroirEntityDefinitions,
+    reports: miroirReports,
+    configuration: storeBasedConfigurations,
+    modelVersions: miroirModelVersions,
+  };
+
+  console.log("MTableComponent miroirReports", currentModel);
+
+  const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
+    console.warn("onCellValueChanged",e)
+    await domainController.handleDomainModelAction(
+      {
+        actionType: "DomainModelAction",
+        actionName: "updateEntity",
+        update: {
+          updateActionName:"WrappedModelEntityUpdate",
+          modelEntityUpdate:{
+            updateActionType:"ModelEntityUpdate",
+            updateActionName: "renameEntity",
+            entityName: entityBook.name,
+            entityUuid: entityBook.uuid,
+            // targetValue: "Bookss",
+            targetValue: e.newValue,
+          },
+        }
+      },
+      currentModel
+    );
+
+  },[currentModel])
+
   return (
     <div
       id="tata"
@@ -73,7 +126,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
             sortable: true,
             filter: true,
             resizable: true,
-            cellEditor: SimpleEditor,
+            cellEditor: EntityEditor,
           }
         }
       >

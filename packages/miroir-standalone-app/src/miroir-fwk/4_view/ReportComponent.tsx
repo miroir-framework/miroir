@@ -47,9 +47,6 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
                 <MTableComponent
                   columnDefs={
                     getColumnDefinitions(currentMiroirEntityDefinition?.attributes)
-                    // currentMiroirEntityDefinition?.attributes?.map(
-                    //   (a)=>{return {"headerName": a?.defaultLabel, "field": a?.name}}
-                    // )
                   }
                   rowData={instancesStringified}
                 >

@@ -67,51 +67,6 @@ function defaultToEntityList(value: string, miroirReports: MiroirReport[]): stri
 }
 
 // ###################################################################################
-async function uploadInitialMiroirConfiguration(
-  domainController: DomainControllerInterface,
-  currentModel?:MiroirMetaModel
-) {
-  // USING DATA ACTIONS BECAUSE INITIAL, BOOTSTRAP ENTITIES CANNOT BE INSERTED TRANSACTIONALLY
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainModelAction",
-  //   actionName: "updateEntity",
-  //   update: {
-  //     updateActionName:"WrappedModelEntityUpdate",
-  //     modelEntityUpdate: {
-  //       updateActionType: "ModelEntityUpdate",
-  //       updateActionName: "createEntity",
-  //       entities: [
-  //         {entity:entityReport as MetaEntity, entityDefinition:EntityDefinitionReport as EntityDefinition}
-  //       ],
-  //     },
-  //   }
-  // });
-
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainModelAction",
-  //   actionName: "UpdateMetaModelInstance",
-  //   update: {
-  //     updateActionType: "ModelCUDInstanceUpdate",
-  //     updateActionName: "create",
-  //     objects: [{
-  //       parentName: entityReport.name,
-  //       parentUuid: entityReport.uuid,
-  //       instances: [
-  //         reportEntityList as EntityInstance, 
-  //         reportModelVersionList as EntityInstance, 
-  //         reportReportList as EntityInstance,
-  //         reportConfigurationList as EntityInstance
-  //       ]
-  //     }],
-  //   }
-  // },currentModel);
-  // await domainController.handleDomainAction(
-  //   { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
-  //   currentModel
-  // );
-}
-
-// ###################################################################################
 async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
   currentModel?:MiroirMetaModel
@@ -124,8 +79,6 @@ async function uploadBooksAndReports(
       modelEntityUpdate: {
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
-        // parentName: entityDefinitionEntityDefinition.name,
-        // parentUuid: entityDefinitionEntityDefinition.uuid,
         entities: [
           {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
           {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
@@ -309,7 +262,7 @@ export const RootComponent = (props: RootComponentProps) => {
           fetch Miroir & App configurations from database
         </button>
       </span>
-      <p />
+      {/* <p />
       <span>
         <button
           onClick={async () => {
@@ -318,8 +271,8 @@ export const RootComponent = (props: RootComponentProps) => {
         >
           upload Miroir configuration to database
         </button>
-      </span>
-      {/* <p/> */}
+      </span> */}
+      <p/>
       <span>
         <button
           onClick={async () => {
