@@ -14,7 +14,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import SimpleEditor from './SimpleEditor';
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useCallback, useState } from 'react';
-import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirModelVersion, MiroirReport, StoreBasedConfiguration } from 'miroir-core';
+import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirModelVersion, MiroirReport, StoreBasedConfiguration, entityEntity } from 'miroir-core';
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import entityBook from "assets/entities/EntityBook.json";
@@ -22,6 +22,7 @@ import entityBook from "assets/entities/EntityBook.json";
 export interface MTableComponentProps {
   columnDefs:{"headerName": string, "field": string}[];
   rowData:any[];
+  reportDefinition: MiroirReport,
   children:any;
 };
 
@@ -57,7 +58,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
   // const [displayedReportName, setDisplayedReportName] = React.useState('');
-  const [displayedReportUuid, setDisplayedReportUuid] = useState("");
+  // const [displayedReportUuid, setDisplayedReportUuid] = useState("");
 
   // const handleChange = (event: SelectChangeEvent) => {
   //   // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
@@ -77,26 +78,60 @@ export const MTableComponent = (props: MTableComponentProps) => {
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
     console.warn("onCellValueChanged",e)
-    await domainController.handleDomainModelAction(
-      {
-        actionType: "DomainModelAction",
-        actionName: "updateEntity",
-        update: {
-          updateActionName:"WrappedModelEntityUpdate",
-          modelEntityUpdate:{
-            updateActionType:"ModelEntityUpdate",
-            updateActionName: "renameEntity",
-            entityName: entityBook.name,
-            entityUuid: entityBook.uuid,
-            // targetValue: "Bookss",
-            targetValue: e.newValue,
-          },
-        }
-      },
-      currentModel
-    );
+    if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
+      const entity = e.data as MetaEntity;
+      // sending ModelUpdates
+      await domainController.handleDomainModelAction(
+        {
+          actionType: "DomainModelAction",
+          actionName: "updateEntity",
+          update: {
+            updateActionName:"WrappedModelEntityUpdate",
+            modelEntityUpdate:{
+              updateActionType:"ModelEntityUpdate",
+              updateActionName: "renameEntity",
+              entityName: e.oldValue,
+              entityUuid: entity.uuid,
+              targetValue: e.newValue,
+            },
+          }
+        },
+        currentModel
+      );
+        
+    } else {
+      console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
+      // sending DataUpdates
+      await domainController.handleDomainAction(
+        {
+          actionType: "DomainDataAction",
+          actionName: "update",
+          objects: [
+            {
+              parentUuid: props.reportDefinition.parentUuid,
+              instances:[
+                // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})
+                e.data
+              ]
+            }
+          ]
+          // update: {
+          //   updateActionName:"WrappedModelEntityUpdate",
+          //   modelEntityUpdate:{
+          //     updateActionType:"ModelEntityUpdate",
+          //     updateActionName: "renameEntity",
+          //     entityName: entityBook.name,
+          //     entityUuid: entityBook.uuid,
+          //     targetValue: "Bookss",
+          //   },
+          // }
+        },
+        currentModel
+      );
 
-  },[currentModel])
+    }
+
+  },[props,currentModel,])
 
   return (
     <div

@@ -45,6 +45,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
             miroirReports?.length > 0?
               <div>
                 <MTableComponent
+                  reportDefinition={currentMiroirReport}
                   columnDefs={
                     getColumnDefinitions(currentMiroirEntityDefinition?.attributes)
                   }
