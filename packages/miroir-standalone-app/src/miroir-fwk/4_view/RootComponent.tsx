@@ -12,29 +12,15 @@ import {
 import {
   ConfigurationService,
   DomainControllerInterface,
-  entityDefinitionEntity,
-  entityDefinitionModelVersion,
-  entityDefinitionStoreBasedConfiguration,
   EntityDefinition,
-  entityDefinitionEntityDefinition,
-  entityModelVersion,
-  entityReport,
-  entityEntity,
-  entityEntityDefinition,
-  entityStoreBasedConfiguration,
   EntityInstance,
-  instanceConfigurationReference,
-  instanceModelVersionInitial,
+  entityReport,
+  MetaEntity,
+  MiroirMetaModel,
   MiroirModelVersion,
   MiroirReport,
-  reportConfigurationList,
-  reportEntityList,
-  reportModelVersionList,
   reportReportList,
-  StoreBasedConfiguration,
-  MiroirMetaModel,
-  EntityDefinitionReport,
-  MetaEntity,
+  StoreBasedConfiguration
 } from "miroir-core";
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
@@ -45,8 +31,10 @@ import { ReportComponent } from "./ReportComponent";
 
 import entityAuthor from "assets/entities/EntityAuthor.json";
 import entityBook from "assets/entities/EntityBook.json";
+import entityPublisher from "assets/entities/EntityPublisher.json";
 import entityDefinitionAuthor from "assets/entityDefinitions/Author.json";
 import entityDefinitionBook from "assets/entityDefinitions/Book.json";
+import entityDefinitionPubliser from "assets/entityDefinitions/Publisher.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";
@@ -54,8 +42,12 @@ import book3 from "assets/instances/Book - Et dans l'éternité.json";
 import book4 from "assets/instances/Book - Rear Window.json";
 import book1 from "assets/instances/Book - The Bride Wore Black.json";
 import book2 from "assets/instances/Book - The Design of Everyday Things.json";
+import folio from "assets/instances/Publisher - Folio.json";
+import penguin from "assets/instances/Publisher - Penguin.json";
+import springer from "assets/instances/Publisher - Springer.json";
 import reportAuthorList from "assets/reports/AuthorList.json";
 import reportBookList from "assets/reports/BookList.json";
+import reportPublisherList from "assets/reports/PublisherList.json";
 
 export interface RootComponentProps {
   // store:any;
@@ -82,6 +74,7 @@ async function uploadBooksAndReports(
         entities: [
           {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
           {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+          {entity:entityPublisher as MetaEntity, entityDefinition:entityDefinitionPubliser as EntityDefinition},
         ],
       },
     }
@@ -96,7 +89,7 @@ async function uploadBooksAndReports(
         parentName: entityReport.name,
         parentUuid: entityReport.uuid,
         instances: [
-          reportAuthorList as EntityInstance, reportBookList as EntityInstance
+          reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance
         ]
       }],
     }
@@ -107,6 +100,11 @@ async function uploadBooksAndReports(
     actionType: "DomainDataAction",
     actionName: "create",
     objects: [
+      {
+        parentName: entityPublisher.name,
+        parentUuid: entityPublisher.uuid,
+        instances: [folio as EntityInstance, penguin as EntityInstance, springer as EntityInstance],
+      },
       {
         parentName: entityAuthor.name,
         parentUuid: entityAuthor.uuid,

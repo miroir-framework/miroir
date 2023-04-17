@@ -53,8 +53,8 @@
               "title": "Entity Name",
               "type": "string"
             },
-            "parentUuid": {
-              "title": "Entity Definition Uuid",
+            "objectEntityUuid": {
+              "title": "In the case of an OBJECT, Entity Definition Uuid for this object",
               "type": "string"
             },
             "defaultLabel": {

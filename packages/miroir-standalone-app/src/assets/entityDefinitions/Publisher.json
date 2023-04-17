@@ -1,0 +1,55 @@
+{
+  "uuid":"7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+  "parentName":"EntityDefinition",
+  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+  "conceptLevel":"Model",
+  "name":"Publisher",
+  "description": "Publisher",
+  "icon": "building",
+  "instanceValidationJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "uuid": {
+        "title": "Uuid",
+        "type": "string"
+      },
+      "entityUuid": {
+        "title": "Entity",
+        "type": "string"
+      },
+      "name": {
+        "title": "Name",
+        "type": "string"
+      }
+    }
+  },
+  "attributes": [
+    {
+        "id": 1,
+        "name": "uuid",
+        "defaultLabel": "Uuid",
+        "type": "STRING",
+        "nullable": false,
+        "editable": false
+    },
+    {
+        "id": 2,
+        "name": "name",
+        "defaultLabel": "Name",
+        "type": "STRING",
+        "nullable": false,
+        "editable": true
+    },
+    {
+        "id": 3,
+        "name": "parentUuid",
+        "defaultLabel": "Entity",
+        "type": "STRING",
+        "nullable": false,
+        "editable": true
+    }
+  ]
+}

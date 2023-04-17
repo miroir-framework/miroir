@@ -52,7 +52,7 @@
       "editable": false
     },
     {
-      "id": 2,
+      "id": 3,
       "name": "conceptLevel",
       "defaultLabel": "Concept Level",
       "type": "STRING",
@@ -60,20 +60,28 @@
       "editable": false
     },
     {
-        "id": 3,
-        "name": "name",
-        "defaultLabel": "title",
-        "type": "STRING",
-        "nullable": false,
-        "editable": true
+      "id": 4,
+      "name": "name",
+      "defaultLabel": "title",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
     },
     {
-        "id": 4,
-        "name": "author",
-        "defaultLabel": "Author",
-        "type": "OBJECT",
-        "nullable": true,
-        "editable": true
+      "id": 5,
+      "name": "author",
+      "defaultLabel": "Author",
+      "type": "OBJECT",
+      "nullable": true,
+      "editable": true
+    },
+    {
+      "id": 6,
+      "name": "publisher",
+      "defaultLabel": "Publisher",
+      "type": "OBJECT",
+      "nullable": true,
+      "editable": true
     }
   ]
 }
