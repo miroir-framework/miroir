@@ -1,5 +1,5 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { useState, useRef, forwardRef, useImperativeHandle, useEffect } from "react";
+import { useCallback, useState, useRef, forwardRef, useImperativeHandle, useEffect } from "react";
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -9,30 +9,31 @@ const KEY_TAB = 'Tab';
 export default forwardRef((props:ICellEditorParams, ref) => {
   console.log('EntityEditor forwardRef props',props,'ref',ref);
 
-  const createInitialState = () => {
+  const createInitialState = useCallback(() => {
+    // console.log('EntityEditor forwardRef createInitialState props',props,'ref',ref);
     let startValue;
 
     if (props.eventKey === KEY_BACKSPACE) {
       // if backspace or delete pressed, we clear the cell
       startValue = '';
-    } else if (props.charPress) {
+    } else if (props?.charPress) {
       // if a letter was pressed, we start with the letter
-      startValue = props.charPress;
+      startValue = props?.charPress;
     } else {
       // otherwise we start with the current value
-      startValue = props.value;
+      startValue = props?.value;
     }
 
     return {
       value: startValue,
     };
-  };
+  },[props]);
 
   const initialState = createInitialState();
 
   // const inputRef = useRef<any>();
     // const [value, setValue] = useState(ref['value']);
-  const [value, setValue] = useState(initialState.value);
+  const [value, setValue] = useState(initialState.value?initialState.value:'');
   const refInput = useRef(null);
 
   // focus on the input

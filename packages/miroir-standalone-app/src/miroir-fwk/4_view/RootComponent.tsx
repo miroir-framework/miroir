@@ -38,10 +38,12 @@ import entityDefinitionPubliser from "assets/entityDefinitions/Publisher.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";
+import author4 from "assets/instances/Author - Catherine Guérard.json";
 import book3 from "assets/instances/Book - Et dans l'éternité.json";
 import book4 from "assets/instances/Book - Rear Window.json";
 import book1 from "assets/instances/Book - The Bride Wore Black.json";
 import book2 from "assets/instances/Book - The Design of Everyday Things.json";
+import book5 from "assets/instances/Book - Renata n'importe quoi.json";
 import folio from "assets/instances/Publisher - Folio.json";
 import penguin from "assets/instances/Publisher - Penguin.json";
 import springer from "assets/instances/Publisher - Springer.json";
@@ -111,13 +113,20 @@ async function uploadBooksAndReports(
         instances: [
           author1 as EntityInstance, 
           author2 as EntityInstance,
-          author3 as EntityInstance
+          author3 as EntityInstance,
+          author4 as EntityInstance,
         ],
       },
       {
         parentName: entityBook.name,
         parentUuid: entityBook.uuid,
-        instances: [book1 as EntityInstance, book2 as EntityInstance, book3 as EntityInstance, book4 as EntityInstance],
+        instances: [
+          book1 as EntityInstance, 
+          book2 as EntityInstance, 
+          book3 as EntityInstance, 
+          book4 as EntityInstance,
+          book5 as EntityInstance,
+        ],
       },
     ],
   });

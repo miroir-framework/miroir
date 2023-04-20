@@ -80,63 +80,71 @@
   },
   "attributes": [
     {
-        "id": 1,
-        "name": "uuid",
-        "defaultLabel": "Uuid",
-        "type": "STRING",
-        "nullable": false,
-        "editable": false
+      "id": 1,
+      "name": "uuid",
+      "defaultLabel": "Uuid",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
     },
     {
-        "id": 2,
-        "name": "parentUuid",
-        "defaultLabel": "Parent Class",
-        "type": "STRING",
-        "nullable": false,
-        "editable": false
+      "id": 2,
+      "name": "parentUuid",
+      "defaultLabel": "Parent Class",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
     },
     {
-        "id": 3,
-        "name": "parentName",
-        "defaultLabel": "Parent MetaClass Name",
-        "type": "STRING",
-        "nullable": true,
-        "editable": true
+      "id": 3,
+      "name": "parentName",
+      "defaultLabel": "Parent MetaClass Name",
+      "type": "STRING",
+      "nullable": true,
+      "editable": true
     },
     {
-        "id": 4,
-        "name": "entityUuid",
-        "defaultLabel": "Entity of the definition",
-        "type": "STRING",
-        "nullable": false,
-        "editable": false
+      "id": 4,
+      "name": "entityUuid",
+      "defaultLabel": "Entity of the definition",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
     },
     {
-        "id": 5,
-        "name": "name",
-        "defaultLabel": "Name",
-        "type": "STRING",
-        "nullable": false,
-        "editable": true
+      "id": 5,
+      "name": "name",
+      "defaultLabel": "Name",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
     },
     {
-        "id": 6,
-        "name": "conceptLevel",
-        "defaultLabel": "Concept Level",
-        "type": "STRING",
-        "nullable": true,
-        "editable": false
+      "id": 6,
+      "name": "conceptLevel",
+      "defaultLabel": "Concept Level",
+      "type": "STRING",
+      "nullable": true,
+      "editable": false
     },
     {
-        "id": 7,
-        "name": "description",
-        "defaultLabel": "Description",
-        "type": "STRING",
-        "nullable": true,
-        "editable": true
+      "id": 7,
+      "name": "instanceConceptLevel",
+      "defaultLabel": "Concept Level of an instance of this Entity",
+      "type": "STRING",
+      "nullable": true,
+      "editable": false
     },
     {
       "id": 8,
+      "name": "description",
+      "defaultLabel": "Description",
+      "type": "STRING",
+      "nullable": true,
+      "editable": true
+    },
+    {
+      "id": 9,
       "name": "attributes",
       "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",

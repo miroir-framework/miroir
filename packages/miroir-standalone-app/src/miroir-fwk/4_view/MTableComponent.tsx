@@ -4,6 +4,8 @@ import {
   CellEditingStartedEvent, 
   CellEditingStoppedEvent, 
   CellValueChangedEvent, 
+  ColDef, 
+  ColGroupDef, 
   RowDataUpdatedEvent 
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -20,7 +22,8 @@ import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-f
 import entityBook from "assets/entities/EntityBook.json";
 
 export interface MTableComponentProps {
-  columnDefs:{"headerName": string, "field": string}[];
+  // columnDefs:{"headerName": string, "field": string}[];
+  columnDefs:(ColDef<any> | ColGroupDef<any>)[];
   rowData:any[];
   reportDefinition: MiroirReport,
   children:any;
@@ -108,7 +111,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
           actionName: "update",
           objects: [
             {
-              parentUuid: props.reportDefinition.parentUuid,
+              parentUuid: props.reportDefinition.definition.parentUuid,
               instances:[
                 // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})
                 e.data
@@ -128,9 +131,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
         },
         currentModel
       );
-
     }
-
   },[props,currentModel,])
 
   return (

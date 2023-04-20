@@ -50,6 +50,14 @@
         "type": "STRING",
         "nullable": false,
         "editable": true
+    },
+    {
+        "id": 4,
+        "name": "icon",
+        "defaultLabel": "Icon",
+        "type": "STRING",
+        "nullable": true,
+        "editable": true
     }
   ]
 }

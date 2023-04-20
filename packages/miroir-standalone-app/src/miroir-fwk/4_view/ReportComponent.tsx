@@ -3,7 +3,8 @@ import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheIns
 import * as React from "react";
 
 import { MTableComponent } from "./MTableComponent";
-import { getColumnDefinitions } from "miroir-react";
+import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
+// import { getColumnDefinitions } from "miroir-react";
 
 export interface MiroirReportComponentProps {
   // reportName: string;
