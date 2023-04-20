@@ -31,9 +31,13 @@ const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
 
-export const EntityInstanceCellRenderer = memo((props: ICellRendererParams) => {
-  const instancesToDisplay = useLocalCacheInstancesForEntity(entityPublisher.uuid) as EntityInstanceWithName[];
-  console.log('EntityInstanceCellRenderer',props.value);
+export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
+  console.log('EntityInstanceCellRenderer',props);
+  const miroirEntities:MetaEntity [] = useLocalCacheEntities();
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+
+  const instancesToDisplay = useLocalCacheInstancesForEntity(props['entityUuid']) as EntityInstanceWithName[];
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
   // const imageForMood = (mood: string) =>
   //   'https://www.ag-grid.com/example-assets/genders/' +
@@ -45,7 +49,7 @@ export const EntityInstanceCellRenderer = memo((props: ICellRendererParams) => {
   return (
     <span>
       {/* <img width="20px" src={mood} /> */}
-      {instanceToDisplay?instanceToDisplay.name:entityPublisher.name + ' ' + props.value + ' not known.'}
+      {instanceToDisplay?instanceToDisplay.name:currentMiroirEntityDefinition.name + ' ' + props.value + ' not known.'}
     </span>
   )
 })
@@ -54,13 +58,13 @@ export const EntityInstanceCellRenderer = memo((props: ICellRendererParams) => {
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
-    // const isFemale = (value: string) => value === 'Female';
-
-    // const miroirEntities:MetaEntity[] = useLocalCacheEntities();
-    // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
-
-    const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(entityPublisher.uuid);
-    
+    const miroirEntities:MetaEntity [] = useLocalCacheEntities();
+    const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+    const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+  
+    const instancesToDisplay = useLocalCacheInstancesForEntity(props['entityUuid']) as EntityInstanceWithName[];
+    const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
+      
     const [ready, setReady] = useState(false);
     // const [interimValue, setInterimValue] = useState(isFemale(props.value));
     const [interimValue, setInterimValue] = useState(props.value);

@@ -3,6 +3,8 @@ import GenderCellRenderer from "./GenderCellRenderer";
 import { ColDef } from "ag-grid-community";
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
 import { EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
+import entityPublisher from "assets/entities/EntityPublisher.json";
+import entityAuthor from "assets/entities/EntityAuthor.json";
 
 export function getColumnDefinitions(attributes:EntityAttribute[]):ColDef<any>[] {
   return attributes?.map(
@@ -31,14 +33,35 @@ export function getColumnDefinitions(attributes:EntityAttribute[]):ColDef<any>[]
               cellRenderer: EntityInstanceCellRenderer,
               cellEditor: SelectEntityInstanceEditor,
               cellEditorPopup: true,
-              editable:true
+              editable:true,
               // sort:'asc',
-              // cellEditorParams: {
-              //   values: ['Male', 'Female'],
-              //   cellRenderer: GenderCellRenderer,
-              //   // sort:(a,b)=>a >= b,
-              //   cellEditorPopup: true,
-              // },
+              cellEditorParams: {
+                entityUuid: entityPublisher.uuid
+              },
+              cellRendererParams: {
+                entityUuid: entityPublisher.uuid
+              },
+            }
+          );
+          break;
+        }
+        case 'author':{
+          console.log('getColumnDefinitions column author', a);
+        
+          return (
+            {
+              field: 'author',
+              cellRenderer: EntityInstanceCellRenderer,
+              cellEditor: SelectEntityInstanceEditor,
+              cellEditorPopup: true,
+              editable:true,
+              // sort:'asc',
+              cellEditorParams: {
+                entityUuid: entityAuthor.uuid
+              },
+              cellRendererParams: {
+                entityUuid: entityAuthor.uuid
+              },
             }
           );
           break;
