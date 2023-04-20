@@ -20,6 +20,7 @@ const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataT
   STRING: DataTypes.STRING,
   ARRAY: DataTypes.JSONB,
   OBJECT: DataTypes.JSONB,
+  ENTITY_INSTANCE_UUID: DataTypes.STRING,
 };
 
 // ##############################################################################################

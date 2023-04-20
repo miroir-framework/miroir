@@ -16,6 +16,7 @@ import {
   ICellEditorParams,
   ICellRendererParams,
 } from 'ag-grid-community';
+import { Autocomplete, Box, TextField } from '@mui/material';
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -23,25 +24,10 @@ const KEY_F2 = 'F2';
 const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
-export const MoodRenderer = memo((props: ICellRendererParams) => {
-  const imageForMood = (mood: string) =>
-    'https://www.ag-grid.com/example-assets/genders/' +
-    (mood === 'Female' ? 'female.png' : 'male.png');
-
-  const mood = useMemo(() => imageForMood(props.value), [props.value]);
-
-  // return <img width="20px" src={mood} />;
-  return (
-    <span>
-      <img width="20px" src={mood} />
-      {props.value}
-    </span>
-  )
-});
 
 export const GenderCellEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    console.log('GenderCellEditor',props,ref);
+    console.log('GenderCellEditor2',props,ref);
     const isFemale = (value: string) => value === 'Female';
 
     const [ready, setReady] = useState(false);
@@ -64,16 +50,18 @@ export const GenderCellEditor = memo(
 
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
+      console.log('GenderCellEditor2 ready for edit',props,ref);
+
       setReady(true);
     }, []);
 
-    useEffect(() => {
-      window.addEventListener('keydown', checkAndToggleMoodIfLeftRight);
+    // useEffect(() => {
+    //   window.addEventListener('keydown', checkAndToggleMoodIfLeftRight);
 
-      return () => {
-        window.removeEventListener('keydown', checkAndToggleMoodIfLeftRight);
-      };
-    }, [checkAndToggleMoodIfLeftRight, ready]);
+    //   return () => {
+    //     window.removeEventListener('keydown', checkAndToggleMoodIfLeftRight);
+    //   };
+    // }, [checkAndToggleMoodIfLeftRight, ready]);
 
     useEffect(() => {
       if (female !== null) {
@@ -115,26 +103,56 @@ export const GenderCellEditor = memo(
     const femaleStyle = interimValue ? selected : unselected;
     const maleStyle = !interimValue ? selected : unselected;
 
+    const selectData = [
+      {
+        key:'female',
+        label:'female',
+        src:"https://www.ag-grid.com/example-assets/genders/female.png",
+        onClick:() => {
+          setFemale(true);
+        },
+        style:femaleStyle
+      },
+      {
+        key:'male',
+        label:'male',
+        src:"https://www.ag-grid.com/example-assets/genders/male.png",
+        onClick:() => {
+          setFemale(false);
+        },
+        style:maleStyle
+      },
+    ]
     return (
       <div
         ref={refContainer}
         style={mood}
         tabIndex={1} // important - without this the key presses wont be caught
       >
-        <img
-          src="https://www.ag-grid.com/example-assets/genders/female.png"
-          onClick={() => {
-            setFemale(true);
+        <Autocomplete
+          id="combo-box-demo"
+          options={selectData}
+          sx={{ width: 300 }}
+          autoHighlight
+          getOptionLabel={(option) => option.label}
+          onChange={(event,value,reason,details) => value.onClick()}
+          isOptionEqualToValue={(o,v)=>o.key == v.key}
+          renderOption={(props, option) => {
+            console.log('GenderCellEditor2 renderOption props',props,'option',option);
+            return (
+              <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                <img
+                  loading="lazy"
+                  width="20"
+                  src={option.src}
+                  alt=""
+                />
+                {option.label} 
+              </Box>
+            )
           }}
-          style={femaleStyle}
-        />
-        <img
-          src="https://www.ag-grid.com/example-assets/genders/male.png"
-          onClick={() => {
-            setFemale(false);
-          }}
-          style={maleStyle}
-        />
+          renderInput={(params) => <TextField {...params} label="Gender" />}
+        ></Autocomplete>
       </div>
     );
   })

@@ -118,16 +118,6 @@ export const MTableComponent = (props: MTableComponentProps) => {
               ]
             }
           ]
-          // update: {
-          //   updateActionName:"WrappedModelEntityUpdate",
-          //   modelEntityUpdate:{
-          //     updateActionType:"ModelEntityUpdate",
-          //     updateActionName: "renameEntity",
-          //     entityName: entityBook.name,
-          //     entityUuid: entityBook.uuid,
-          //     targetValue: "Bookss",
-          //   },
-          // }
         },
         currentModel
       );

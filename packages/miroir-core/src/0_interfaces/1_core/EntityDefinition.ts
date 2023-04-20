@@ -5,6 +5,7 @@ export const EntityAttributeTypeObject = {
   'STRING': 'STRING', 
   'ARRAY': 'ARRAY', 
   'OBJECT': 'OBJECT',
+  'ENTITY_INSTANCE_UUID': 'STRING',
 }
 export type EntityAttributeType = keyof typeof EntityAttributeTypeObject;
 export const EntityAttributeTypeNameArray: EntityAttributeType[] = Object.keys(EntityAttributeTypeObject) as EntityAttributeType[];

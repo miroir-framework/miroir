@@ -71,7 +71,7 @@
       "id": 5,
       "name": "author",
       "defaultLabel": "Author",
-      "type": "OBJECT",
+      "type": "ENTITY_INSTANCE_UUID",
       "nullable": true,
       "editable": true
     },
@@ -79,7 +79,7 @@
       "id": 6,
       "name": "publisher",
       "defaultLabel": "Publisher",
-      "type": "OBJECT",
+      "type": "ENTITY_INSTANCE_UUID",
       "nullable": true,
       "editable": true
     }
