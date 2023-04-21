@@ -19,7 +19,7 @@ import { useCallback, useState } from 'react';
 import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirModelVersion, MiroirReport, StoreBasedConfiguration, entityEntity } from 'miroir-core';
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
-import entityBook from "assets/entities/EntityBook.json";
+import entityBook from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityBook.json";
 
 export interface MTableComponentProps {
   // columnDefs:{"headerName": string, "field": string}[];

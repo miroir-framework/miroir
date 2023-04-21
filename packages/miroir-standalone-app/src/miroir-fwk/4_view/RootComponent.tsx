@@ -29,12 +29,12 @@ import { ReduxStateChanges } from "miroir-redux";
 import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
 
-import entityAuthor from "assets/entities/EntityAuthor.json";
-import entityBook from "assets/entities/EntityBook.json";
-import entityPublisher from "assets/entities/EntityPublisher.json";
-import entityDefinitionAuthor from "assets/entityDefinitions/Author.json";
-import entityDefinitionBook from "assets/entityDefinitions/Book.json";
-import entityDefinitionPubliser from "assets/entityDefinitions/Publisher.json";
+import entityAuthor from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityAuthor.json";
+import entityBook from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityBook.json";
+import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityPublisher.json";
+import entityDefinitionAuthor from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Author.json";
+import entityDefinitionBook from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Book.json";
+import entityDefinitionPubliser from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Publisher.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";

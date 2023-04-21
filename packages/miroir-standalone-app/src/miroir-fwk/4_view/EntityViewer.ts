@@ -3,8 +3,8 @@ import GenderCellRenderer from "./GenderCellRenderer";
 import { ColDef } from "ag-grid-community";
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
 import { EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
-import entityPublisher from "assets/entities/EntityPublisher.json";
-import entityAuthor from "assets/entities/EntityAuthor.json";
+import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityPublisher.json";
+import entityAuthor from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityAuthor.json";
 
 export function getColumnDefinitions(attributes:EntityAttribute[]):ColDef<any>[] {
   return attributes?.map(

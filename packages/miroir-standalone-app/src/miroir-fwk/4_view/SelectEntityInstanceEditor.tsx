@@ -21,7 +21,7 @@ import { Autocomplete, Box, TextField } from '@mui/material';
 import { EntityDefinition, EntityInstance, EntityInstanceWithName, MetaEntity } from 'miroir-core';
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForEntity, useLocalCacheInstancesForReport } from 'miroir-fwk/4_view/hooks';
 
-import entityPublisher from "assets/entities/EntityPublisher.json";
+import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityPublisher.json";
 
 
 // backspace starts the editor on Windows
