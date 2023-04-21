@@ -12,8 +12,8 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
-import entityEntity from "../assets/entities/EntityEntity.json";
-import entityDefinitionEntityDefinition from "../assets/entityDefinitions/EntityDefinitionEntityDefinition.json";
+import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
+import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};

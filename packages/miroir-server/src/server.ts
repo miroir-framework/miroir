@@ -1,8 +1,10 @@
 import express from 'express';
+import { z } from "zod";
 
 import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
+  Deployment,
   generateHandlerBody,
   modelActionRunner
 } from "miroir-core";
@@ -19,6 +21,17 @@ const users = [];
 // const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
+
+const deploymentConfig: z.infer<typeof Deployment> = {
+  type:'singleNode',
+  metaModel: {
+    location: {
+      side:'server',
+      type: 'filesystem',
+      location:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    }
+  }
+}
 
 const sqlDbServer:DataStoreInterface = await createServer('postgres://postgres:postgres@localhost:5432/postgres');
 

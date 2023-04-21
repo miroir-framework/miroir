@@ -4,8 +4,8 @@ import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefin
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
-import entityEntity from "../assets/entities/EntityEntity.json";
-import entityEntityDefinition from "../assets/entities/EntityEntityDefinition.json";
+import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
+import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 import { IndexedDb } from "./indexedDb";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
 

@@ -1,7 +1,6 @@
 
 // TODO: put in ConfigurationServiceInterface
-export type serverStorageKind = 'browser-IndexedDb' | 'sqlite' | 'postgres' | 'mongodb';
-export type DeploymentModes = 'local' | 'remote';
+// export type DeploymentModes = 'local' | 'remote';
 export type cacheInvalidationPolicy = 'routing' | 'periodic' | 'never';
 export type cacheFetchPolicy = 'onDemand' |'routing' | 'periodic' | 'never';
 export type undoRedoHistorization = 'actions' |'snapshot' | 'periodic' | 'never'; // what does it make sense for? An Entity?

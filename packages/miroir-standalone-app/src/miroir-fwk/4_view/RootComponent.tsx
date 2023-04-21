@@ -47,9 +47,9 @@ import book5 from "assets/instances/Book - Renata n'importe quoi.json";
 import folio from "assets/instances/Publisher - Folio.json";
 import penguin from "assets/instances/Publisher - Penguin.json";
 import springer from "assets/instances/Publisher - Springer.json";
-import reportAuthorList from "assets/reports/AuthorList.json";
-import reportBookList from "assets/reports/BookList.json";
-import reportPublisherList from "assets/reports/PublisherList.json";
+import reportAuthorList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/AuthorList.json";
+import reportBookList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/BookList.json";
+import reportPublisherList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/PublisherList.json";
 
 export interface RootComponentProps {
   // store:any;

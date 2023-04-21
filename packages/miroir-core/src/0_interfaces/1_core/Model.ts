@@ -16,10 +16,12 @@ export interface MiroirModel {
 }
 
 
-export interface MiroirMetaModel {// the name of meta-model entities cannot change
+export interface MiroirMetaModel {// TODO: the name of meta-model entities cannot change in the current implementation
   entities: MetaEntity[];
   entityDefinitions: EntityDefinition[];
   reports: MiroirReport[];
   modelVersions: MiroirModelVersion[];
   configuration: StoreBasedConfiguration[];
 }
+
+

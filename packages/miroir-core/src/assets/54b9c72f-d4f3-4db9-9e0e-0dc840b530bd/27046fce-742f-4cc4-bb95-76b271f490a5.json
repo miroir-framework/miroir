@@ -68,8 +68,8 @@
       "name": "modelUuid",
       "defaultLabel": "Model",
       "type": "STRING",
-      "nullable": true,
-      "editable": true
+      "nullable": false,
+      "editable": false
     },
     {
       "id": 6,

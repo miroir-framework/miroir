@@ -35,8 +35,8 @@ import {
   ReduxStore
 } from "miroir-redux";
 
-import entityAuthor from "miroir-standalone-app/src/assets/entities/EntityAuthor.json";
-import entityDefinitionAuthor from "miroir-standalone-app/src/assets/entityDefinitions/Author.json";
+import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityAuthor.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Author.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
