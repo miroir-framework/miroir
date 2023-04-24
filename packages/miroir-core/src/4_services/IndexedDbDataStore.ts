@@ -14,10 +14,6 @@ export class IndexedDbDataStore implements DataStoreInterface{
     private localUuidIndexedDb: IndexedDb,
   ){}
 
-  public getdb():any{
-    return this.localUuidIndexedDb.db;
-  }
-
   // #############################################################################################
   async dropModel():Promise<void>{
     return this.clear();
@@ -37,11 +33,6 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  addConcepts(conceptsNames:string[]) {
-    this.localUuidIndexedDb.addSubLevels(conceptsNames)
-  }
-
-  // #############################################################################################
   open():Promise<void> {
     return this.localUuidIndexedDb.openObjectStore();
   }
@@ -55,11 +46,6 @@ export class IndexedDbDataStore implements DataStoreInterface{
   clear():Promise<void> {
     return this.localUuidIndexedDb.clearObjectStore();
     // this.dropEntities(this.getEntities());
-  }
-
-  // #############################################################################################
-  getEntityDefinitions(): string[] {
-      return this.localUuidIndexedDb.getSubLevels();
   }
 
   // #############################################################################################

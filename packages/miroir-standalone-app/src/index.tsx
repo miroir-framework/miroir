@@ -48,7 +48,7 @@ async function start() {
       await localDataStore.open();
       await localDataStore.start();
       await localDataStore?.clear();
-      console.log('localDataStore.db',localDataStore.getdb());
+      // console.log('localDataStore.db',localDataStore.getdb());
     }
 
     // load Miroir Configuration

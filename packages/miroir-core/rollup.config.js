@@ -9,6 +9,7 @@ export default [
       'level',
       'uuid',
       'msw',
+      'zod',
     ],
     output: [
         {

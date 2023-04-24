@@ -10,20 +10,20 @@ export async function modelActionRunner(
 
   // const localData = await localIndexedDbDataStore.upsertInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  console.log('ModelUpdateRunner getEntityDefinitions()', localDataStore.getEntityDefinitions());
+  console.log('ModelUpdateRunner getEntities()', localDataStore.getEntities());
   switch (actionName) {
     case 'resetModel':{
       // const update = (await req.body)[0];
       console.log("ModelUpdateRunner resetModel update");
       await localDataStore.dropModel();
-      console.log('ModelUpdateRunner resetModel after dropped entities:',localDataStore.getEntities(),'entityDefinitions:',localDataStore.getEntityDefinitions());
+      console.log('ModelUpdateRunner resetModel after dropped entities:',localDataStore.getEntities());
       break;
     }
     case 'initModel':{
       const update = body[0];
       console.log("ModelUpdateRunner model/initModel update",update);
       await localDataStore.initModel();
-      console.log('server post resetModel after initModel, entities:',localDataStore.getEntities(),'entityDefinitions:',localDataStore.getEntityDefinitions());
+      console.log('server post resetModel after initModel, entities:',localDataStore.getEntities());
       break;
     }
     case 'updateEntity': {

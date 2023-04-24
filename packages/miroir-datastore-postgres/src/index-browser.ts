@@ -6,7 +6,7 @@ import { DataStoreInterface } from "miroir-core";
  * @param connectionString 
  * @returns 
  */
-export async function createServer (
+export async function createSqlServerProxy (
   connectionString:string,
 ):Promise<DataStoreInterface> {
   return Promise.resolve(undefined);

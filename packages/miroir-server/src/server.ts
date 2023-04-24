@@ -4,11 +4,12 @@ import { z } from "zod";
 import bodyParser from 'body-parser';
 import {
   DataStoreInterface,
-  Deployment,
+  DataflowConfiguration,
   generateHandlerBody,
   modelActionRunner
 } from "miroir-core";
-import { createServer } from 'miroir-datastore-postgres';
+import { createSqlServerProxy } from 'miroir-datastore-postgres';
+import { FileSystemEntityDataStore } from './FileSystemEntityDataStore.js';
 
 // const express = require('express');
 const app = express(),
@@ -22,23 +23,31 @@ const users = [];
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
-const deploymentConfig: z.infer<typeof Deployment> = {
+const deploymentConfig: z.infer<typeof DataflowConfiguration> = {
   type:'singleNode',
-  metaModel: {
+  model: {
     location: {
-      side:'server',
       type: 'filesystem',
-      location:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+      side:'server',
+      directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    }
+  },
+  data: {
+    location: {
+      type: 'filesystem',
+      side:'server',
+      directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets'
     }
   }
 }
 
-const sqlDbServer:DataStoreInterface = await createServer('postgres://postgres:postgres@localhost:5432/postgres');
+const sqlDbServerProxy:DataStoreInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
+const fileSystemServerProxy:DataStoreInterface = new FileSystemEntityDataStore(deploymentConfig.model.location['directory'],deploymentConfig.data.location['directory']);
 
 try {
-  await sqlDbServer.start();
+  await sqlDbServerProxy.start();
 } catch(e) {
-  console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServer.getEntityDefinitions(),'error',e);
+  console.error("failed to initialize server, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",sqlDbServerProxy.getEntities(),'error',e);
 }
 
 app.use(bodyParser.json());
@@ -52,7 +61,7 @@ app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
     [],
     'get',
     "/miroir/entity/",
-    sqlDbServer.getInstances.bind(sqlDbServer),
+    sqlDbServerProxy.getInstances.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });
@@ -66,7 +75,7 @@ app.put("/miroir/entity", async (req, res, ctx) => {
     await req.body,
     'put',
     "/miroir/entity/",
-    sqlDbServer.upsertInstance.bind(sqlDbServer),
+    sqlDbServerProxy.upsertInstance.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });
@@ -84,7 +93,7 @@ app.post("/miroir/entity", async (req, res, ctx) => {
     body,
     'post',
     "/miroir/entity/",
-    sqlDbServer.upsertInstance.bind(sqlDbServer),
+    sqlDbServerProxy.upsertInstance.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });
@@ -102,7 +111,7 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
   console.log("server post model/"," started #####################################");
   await modelActionRunner(
     actionName,
-    sqlDbServer,
+    sqlDbServerProxy,
     update
   );
  

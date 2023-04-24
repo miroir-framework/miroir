@@ -1,7 +1,17 @@
 {
   "emulateServer": false,
   "serverConfig":{
-    "rootApiUrl":"http://localhost:3080"
+    "rootApiUrl":"http://localhost:3080",
+    "dataflowConfiguration": {
+      "type":"singleNode",
+      "metaModel": {
+        "location": {
+          "side":"server",
+          "type": "filesystem",
+          "location":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets"
+        }
+      }
+    }
   },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,

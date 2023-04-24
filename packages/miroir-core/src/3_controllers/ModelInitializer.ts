@@ -38,23 +38,16 @@ export async function modelInitialize(datastore:DataStoreInterface): Promise<voi
     // bootstrap ModelVersion
     await datastore.createEntity(entityModelVersion as MetaEntity, entityDefinitionModelVersion as EntityDefinition);
     console.log('created entity EntityModelVersion',datastore.getEntities());
-    // await datastore.sqlEntities[entityModelVersion.uuid].sequelizeModel.upsert(instanceModelVersionInitial as any);
     await datastore.upsertInstance(entityModelVersion.uuid, instanceModelVersionInitial as EntityInstance);
 
     // bootstrap EntityStoreBasedConfiguration
     await datastore.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
     console.log('created entity EntityStoreBasedConfiguration',datastore.getEntities());
-    // await this.sqlEntities[entityStoreBasedConfiguration.uuid].sequelizeModel.upsert(instanceConfigurationReference as any);
     await datastore.upsertInstance(entityStoreBasedConfiguration.uuid, instanceConfigurationReference as EntityInstance);
 
     // bootstrap EntityStoreBasedConfiguration
     await datastore.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
     console.log('created entity EntityReport',datastore.getEntities());
-    // await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityList as any);
-    // await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportEntityDefinitionList as any);
-    // await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportModelVersionList as any);
-    // await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportConfigurationList as any);
-    // await this.sqlEntities[entityReport.uuid].sequelizeModel.upsert(reportReportList as any);
     await datastore.upsertInstance(entityReport.uuid, reportConfigurationList as EntityInstance);
     await datastore.upsertInstance(entityReport.uuid, reportEntityDefinitionList as EntityInstance);
     await datastore.upsertInstance(entityReport.uuid, reportEntityList as EntityInstance);

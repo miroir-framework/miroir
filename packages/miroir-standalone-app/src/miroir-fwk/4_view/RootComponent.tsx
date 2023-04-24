@@ -29,12 +29,12 @@ import { ReduxStateChanges } from "miroir-redux";
 import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
 
-import entityAuthor from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityAuthor.json";
-import entityBook from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityBook.json";
-import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityPublisher.json";
-import entityDefinitionAuthor from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Author.json";
-import entityDefinitionBook from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Book.json";
-import entityDefinitionPubliser from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Publisher.json";
+import entityAuthor from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
+import entityBook from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
+import entityDefinitionAuthor from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
+import entityDefinitionBook from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
+import entityDefinitionPubliser from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
 import author3 from "assets/instances/Author - Paul Veyne.json";
@@ -47,9 +47,9 @@ import book5 from "assets/instances/Book - Renata n'importe quoi.json";
 import folio from "assets/instances/Publisher - Folio.json";
 import penguin from "assets/instances/Publisher - Penguin.json";
 import springer from "assets/instances/Publisher - Springer.json";
-import reportAuthorList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/AuthorList.json";
-import reportBookList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/BookList.json";
-import reportPublisherList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/PublisherList.json";
+import reportAuthorList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/66a09068-52c3-48bc-b8dd-76575bbc8e72.json";
+import reportBookList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
+import reportPublisherList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json";
 
 export interface RootComponentProps {
   // store:any;

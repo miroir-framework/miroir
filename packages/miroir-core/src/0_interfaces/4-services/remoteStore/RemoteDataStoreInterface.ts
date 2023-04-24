@@ -66,7 +66,6 @@ export declare interface RemoteDataStoreInterface {
 export interface DataStoreInterface {
   start():Promise<void>;
 
-  getdb():any;
   dropModel():Promise<void>;
   initModel():Promise<void>;
   open();
@@ -74,9 +73,7 @@ export interface DataStoreInterface {
 
   clear();
  
-  addConcepts(conceptsNames:string[]);
   
-  getEntityDefinitions():string[]; //TODO: remove!
   getEntities():string[]; //TODO: remove!
   existsEntity(entityUuid:string):boolean;
   createEntity(entity:MetaEntity, entityDefinition: EntityDefinition);

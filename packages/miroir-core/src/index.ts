@@ -9,10 +9,10 @@ export {
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
   ClientFileStorage,
-  Deployment,
+  DataflowConfiguration,
   DeploymentSide,
   FileStorage,
-  ModelDeployment,
+  ModelStorageLocation,
   ServerFileStorage,
   ServerSqlStorage,
   ServerStorageLocation,
@@ -22,8 +22,8 @@ export {
   Zinstance,
   ZinstanceWithName,
   Zmodel,
-  ZdeploymentMode,
-} from './0_interfaces/1_core/Deployment.js';
+  ClientServerDistributionMode,
+} from './0_interfaces/1_core/StorageConfiguration.js';
 export {
   HttpMethod,
   HttpMethodsArray,
@@ -161,14 +161,14 @@ export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
-  RestClient
-} from './4_services/RestClient.js';
-export {
   IndexedDbDataStore,
 } from './4_services/IndexedDbDataStore.js';
 export {
   IndexedDb
 } from './4_services/indexedDb.js';
+export {
+  RestClient
+} from './4_services/RestClient.js';
 export {
   generateHandlerBody
 } from './4_services/RestTools.js';

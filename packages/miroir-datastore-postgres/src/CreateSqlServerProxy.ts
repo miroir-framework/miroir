@@ -5,7 +5,7 @@ import { detect } from "detect-browser";
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
 
-export async function createServer (
+export async function createSqlServerProxy (
     connectionString:string,
   ):Promise<DataStoreInterface> {
     const seq = await import("sequelize");

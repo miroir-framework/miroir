@@ -19,7 +19,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   const miroirEntities:MetaEntity [] = useLocalCacheEntities();
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(props.reportUuid);
+  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(  props.reportUuid);
   // console.log("ReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid);

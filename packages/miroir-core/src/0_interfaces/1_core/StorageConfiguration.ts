@@ -25,7 +25,7 @@ export const StorageType = z.enum([
   "indexedDb",
 ]);
 
-export const ZdeploymentMode = z.enum([
+export const ClientServerDistributionMode = z.enum([
   "singleNode",
   "MultiNode",
 ]);
@@ -44,7 +44,7 @@ export const ClientFileStorage = z.object({
 export const ServerFileStorage = z.object({
   type: z.literal(StorageType.enum.filesystem),
   side: z.literal(DeploymentSide.enum.server),
-  location: z.string(),
+  directory: z.string(),
 });
 
 export const FileStorage = z.union([
@@ -59,30 +59,28 @@ export const ServerSqlStorage = z.object({
 });
 
 
-export const StorageLocation = 
-z.union([
+export const StorageLocation = z.union([
   ClientFileStorage,
   ServerFileStorage,
   ServerSqlStorage,
 ])
 
-export const ServerStorageLocation = 
-z.union([
+export const ServerStorageLocation = z.discriminatedUnion('type',[
   ServerFileStorage,
   ServerSqlStorage,
 ])
 
 
-export const ModelDeployment = z.object({
-  modelUuid: z.string().uuid(),
+export const ModelStorageLocation = z.object({
+  // modelUuid: z.string().uuid(),
   location: ServerStorageLocation,
 })
 
 
 
-export const Deployment = z.object({
-  type: ZdeploymentMode,
-  metaModel: ModelDeployment,
-  model: ModelDeployment,
-  data: ModelDeployment,
+export const DataflowConfiguration = z.object({
+  type: ClientServerDistributionMode,
+  // metaModel: ModelStorageLocation,
+  model: ModelStorageLocation.optional(),
+  data: ModelStorageLocation.optional(),
 });

@@ -31,10 +31,10 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
-import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityAuthor.json";
-import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Author.json";
-import entityBook from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/EntityBook.json";
-import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/Book.json";
+import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
+import entityBook from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
+import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import author1 from "miroir-standalone-app/src/assets/instances/Author - Cornell Woolrich.json";
 import author2 from "miroir-standalone-app/src/assets/instances/Author - Don Norman.json";
 import author3 from "miroir-standalone-app/src/assets/instances/Author - Paul Veyne.json";
@@ -42,7 +42,7 @@ import book1 from "miroir-standalone-app/src/assets/instances/Book - The Bride W
 import book2 from "miroir-standalone-app/src/assets/instances/Book - The Design of Everyday Things.json";
 import book3 from "miroir-standalone-app/src/assets/instances/Book - Et dans l'éternité.json";
 import book4 from "miroir-standalone-app/src/assets/instances/Book - Rear Window.json";
-import reportBookList from "miroir-standalone-app/src/assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/BookList.json";
+import reportBookList from "miroir-standalone-app/src/assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json"
 import { SetupWorkerApi } from "msw";
 

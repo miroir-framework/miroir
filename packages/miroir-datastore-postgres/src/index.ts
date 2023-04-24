@@ -2,5 +2,5 @@
 //   SqlDbServer,
 // } from './sqlDbServer'
 export {
-  createServer,
-} from './CreateServer'
+  createSqlServerProxy,
+} from './CreateSqlServerProxy'

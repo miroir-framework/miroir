@@ -217,15 +217,6 @@ export class SqlDbDatastore implements DataStoreInterface {
     return Promise.resolve(result);
   }
 
-  // ##############################################################################################
-  public getdb():any{
-    return undefined;
-  }
-
-  // ##############################################################################################
-  addConcepts(conceptsNames:string[]) {
-    
-  }
 
   // ##############################################################################################
   open() {
@@ -263,12 +254,7 @@ export class SqlDbDatastore implements DataStoreInterface {
 
   // ##############################################################################################
   clear() { // redundant with dropmodel?
-    this.dropEntities(this.getEntityDefinitions());
-  }
-
-  // ##############################################################################################
-  getEntityDefinitions(): string[] {
-    return this.sqlEntityDefinitions ? Object.keys(this.sqlEntityDefinitions) : [];
+    this.dropEntities(this.getEntities());
   }
 
   // ##############################################################################################

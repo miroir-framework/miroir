@@ -5,7 +5,8 @@ import { ModelReplayableUpdate } from "../../0_interfaces/2_domain/ModelUpdateIn
 export interface MiroirModelVersion extends EntityInstanceWithName {
   previousVersionUuid:string;
   description?: string;
-  model?: MiroirMetaModel;
+  // model?: MiroirMetaModel;
+  modelUuid: string;
   modelUpdates?: ModelReplayableUpdate[];
 }
 

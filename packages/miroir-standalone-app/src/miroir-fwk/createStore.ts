@@ -16,7 +16,7 @@ import {
   RestClient,
   RestServerStub,
 } from "miroir-core";
-import { createServer } from "miroir-datastore-postgres";
+import { createSqlServerProxy } from "miroir-datastore-postgres";
 import {
   RemoteStoreAccessReduxSaga,
   ReduxStore,
@@ -131,7 +131,7 @@ export async function createMswStore(
         console.warn("createMswStore loading miroir-datastore-postgres!", process["browser"]);
         // const lib = await import("miroir-datastore-postgres");
         // const createServer = lib.createServer;
-        const localDataStore: DataStoreInterface = await createServer(
+        const localDataStore: DataStoreInterface = await createSqlServerProxy(
           miroirConfig.emulatedServerConfig.connectionString
         );
         const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localDataStore);

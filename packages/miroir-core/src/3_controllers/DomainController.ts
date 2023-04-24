@@ -85,7 +85,8 @@ export class DomainController implements DomainControllerInterface {
           parentName:entityModelVersion?.name,
           parentUuid: entityModelVersion?.uuid,
           description: domainModelAction.label,
-          name: domainModelAction.label?domainModelAction.label:'No label was given to this commit.',
+          name: domainModelAction.label?domainModelAction.label:'No label was given to this version.',
+          modelUuid:"xxxxxxx",
           // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
           modelUpdates: this.LocalAndRemoteController.currentLocalCacheTransaction().map((t)=>t.update)
         };

@@ -9,9 +9,6 @@ export class IndexedDb {
   constructor(private databaseName: string) {
   }
 
-  public getdb():any{
-    return this.db;
-  }
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     await this.db?.close();
