@@ -1,4 +1,4 @@
-import { MiroirModelVersion } from "../../0_interfaces/1_core/ModelVersion";
+import { MiroirApplicationVersion } from "../../0_interfaces/1_core/ModelVersion";
 import { EntityDefinition, MetaEntity } from "./EntityDefinition";
 import { StoreBasedConfiguration } from "./MiroirConfig";
 import { MiroirReport } from "./Report";
@@ -20,7 +20,7 @@ export interface MiroirMetaModel {// TODO: the name of meta-model entities canno
   entities: MetaEntity[];
   entityDefinitions: EntityDefinition[];
   reports: MiroirReport[];
-  modelVersions: MiroirModelVersion[];
+  modelVersions: MiroirApplicationVersion[];
   configuration: StoreBasedConfiguration[];
 }
 

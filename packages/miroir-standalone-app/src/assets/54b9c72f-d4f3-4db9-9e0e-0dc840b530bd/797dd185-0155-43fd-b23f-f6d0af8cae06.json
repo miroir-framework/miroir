@@ -39,7 +39,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "STRING",
+      "type": "ENTITY_INSTANCE_UUID",
       "nullable": false,
       "editable": false
     },
@@ -47,7 +47,7 @@
       "id": 2,
       "name": "parentUuid",
       "defaultLabel": "Entity",
-      "type": "STRING",
+      "type": "ENTITY_INSTANCE_UUID",
       "nullable": false,
       "editable": false
     },

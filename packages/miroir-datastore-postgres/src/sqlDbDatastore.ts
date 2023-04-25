@@ -18,8 +18,9 @@ import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize }
 
 const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
   STRING: DataTypes.STRING,
-  ARRAY: DataTypes.JSONB,
-  OBJECT: DataTypes.JSONB,
+  ARRAY: DataTypes.JSONB, // OK?
+  OBJECT: DataTypes.JSONB, 
+  // OBJECT: DataTypes.STRING, // TODO: use JSONB for OBJECTs on postgres!
   ENTITY_INSTANCE_UUID: DataTypes.STRING,
 };
 

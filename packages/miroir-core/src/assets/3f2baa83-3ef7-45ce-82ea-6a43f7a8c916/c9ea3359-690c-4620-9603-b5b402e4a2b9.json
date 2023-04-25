@@ -2,7 +2,6 @@
   "uuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
   "parentName":"Report",
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "conceptLevel":"Model",
   "name":"EntityList",
   "defaultLabel": "List of Entities",
   "type": "list",

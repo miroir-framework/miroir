@@ -4,7 +4,7 @@
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "name":"EntityDefinition",
-  "conceptLevel":"MetaMetaModel",
+  "conceptLevel":"MetaModel",
   "description": "definition of an entity",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -129,14 +129,6 @@
     },
     {
       "id": 7,
-      "name": "instanceConceptLevel",
-      "defaultLabel": "Concept Level of an instance of this Entity",
-      "type": "STRING",
-      "nullable": true,
-      "editable": false
-    },
-    {
-      "id": 8,
       "name": "description",
       "defaultLabel": "Description",
       "type": "STRING",
@@ -144,7 +136,7 @@
       "editable": true
     },
     {
-      "id": 9,
+      "id": 8,
       "name": "attributes",
       "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",

@@ -1,0 +1,8 @@
+{
+  "uuid":"a659d350-dd97-4da9-91de-524fa01745dc",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name":"Application",
+  "conceptLevel":"Model",
+  "description": "An Application"
+}

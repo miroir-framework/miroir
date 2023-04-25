@@ -5,7 +5,7 @@ export const EntityAttributeTypeObject = {
   'STRING': 'STRING', 
   'ARRAY': 'ARRAY', 
   'OBJECT': 'OBJECT',
-  'ENTITY_INSTANCE_UUID': 'STRING',
+  'ENTITY_INSTANCE_UUID': 'ENTITY_INSTANCE_UUID',
 }
 export type EntityAttributeType = keyof typeof EntityAttributeTypeObject;
 export const EntityAttributeTypeNameArray: EntityAttributeType[] = Object.keys(EntityAttributeTypeObject) as EntityAttributeType[];
@@ -17,6 +17,7 @@ export interface EntityAttribute {
   "name": string,
   "defaultLabel": string,
   "type": EntityAttributeType,
+  "description"?: string,
   "nullable": boolean,
   "editable": boolean,
 };

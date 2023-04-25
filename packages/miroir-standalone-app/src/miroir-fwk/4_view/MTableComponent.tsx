@@ -16,7 +16,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import SimpleEditor from './SimpleEditor';
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useCallback, useState } from 'react';
-import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirModelVersion, MiroirReport, StoreBasedConfiguration, entityEntity } from 'miroir-core';
+import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirApplicationVersion, MiroirReport, StoreBasedConfiguration, entityEntity } from 'miroir-core';
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
@@ -54,7 +54,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
   const miroirReports: MiroirReport[] = useLocalCacheReports();
   const miroirEntities: MetaEntity[] = useLocalCacheEntities();
   const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const miroirModelVersions: MiroirModelVersion[] = useLocalCacheModelVersion();
+  const miroirModelVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();

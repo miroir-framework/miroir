@@ -22,7 +22,7 @@ import {
   LocalCacheInterface,
   MetaEntity,
   MiroirMetaModel,
-  MiroirModelVersion,
+  MiroirApplicationVersion,
   MiroirReport,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
@@ -155,7 +155,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
       entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityEntityDefinition.uuid].entities) as EntityDefinition[],
       reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityReport.uuid].entities) as MiroirReport[],
       configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-      modelVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityModelVersion.uuid].entities) as MiroirModelVersion[],
+      modelVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[entityModelVersion.uuid].entities) as MiroirApplicationVersion[],
     };
   }
 

@@ -4,7 +4,7 @@
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name":"Entity",
-  "conceptLevel":"MetaMetaModel",
+  "conceptLevel":"MetaModel",
   "description": "Entities",
   "instanceValidationJsonSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -76,6 +76,14 @@
     },
     {
         "id": 6,
+        "name": "application",
+        "defaultLabel": "Application",
+        "type": "STRING",
+        "nullable": true,
+        "editable": false
+    },
+    {
+        "id": 7,
         "name": "description",
         "defaultLabel": "Description",
         "type": "STRING",

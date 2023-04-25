@@ -6,7 +6,7 @@ import {
   entityReport,
   entityStoreBasedConfiguration,
   EntityInstance,
-  MiroirModelVersion,
+  MiroirApplicationVersion,
   MiroirReport,
   selectEntityInstances,
   selectReportInstances,
@@ -66,11 +66,11 @@ export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[
 }
 
 //#########################################################################################
-export function useLocalCacheModelVersion(): MiroirModelVersion[] {
-  const miroirModelVersionState: EntityState<MiroirModelVersion> = useSelector(
+export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
+  const miroirModelVersionState: EntityState<MiroirApplicationVersion> = useSelector(
     selectInstancesForEntity(entityModelVersion.uuid)
   );
-  const miroirModelVersions: MiroirModelVersion[] = miroirModelVersionState?.entities
+  const miroirModelVersions: MiroirApplicationVersion[] = miroirModelVersionState?.entities
     ? Object.values(miroirModelVersionState.entities)
     : [];
   return miroirModelVersions;

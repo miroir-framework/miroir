@@ -1,11 +1,12 @@
 {
   "uuid": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-  "parentName":"ModelVersion",
+  "parentName":"ApplicationVersion",
   "parentUuid":"c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
   "name":"Initial",
-  "modelUuid":"xxxxxxx",
-  "description": "Initial datastore model version",
-  "previousVersionUuid": "695826c2-aefa-4f5f-a131-dee46fe21c13",
+  "application":"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch":"ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Initial datastore Miroir application version",
+  "previousVersion": "",
   "modelStructureMigration":[],
   "modelCUDMigration":[]
 }

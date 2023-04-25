@@ -1,0 +1,9 @@
+{
+  "uuid":"9034141b-0d0d-4beb-82af-dfc02be15c2d",
+  "parentName":"ApplicationModelBranch",
+  "parentUuid":"cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "headVersion":"419773b4-a73c-46ca-8913-0ee27fb2ce0a",
+  "name":"master",
+  "description": "The master Branch of the Library Application"
+}
