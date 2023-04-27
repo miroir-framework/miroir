@@ -30,7 +30,7 @@ export class RestServerStub {
           [],
           'get',
           "/miroir/entity/",
-          localDataStore.getInstances.bind(localDataStore),
+          localDataStore.getDataInstances.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -44,7 +44,7 @@ export class RestServerStub {
           body,
           'post',
           "/miroir/entity/",
-          localDataStore.upsertInstance.bind(localDataStore),
+          localDataStore.upsertDataInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -57,7 +57,7 @@ export class RestServerStub {
           body,
           'put',
           "/miroir/entity/",
-          localDataStore.upsertInstance.bind(localDataStore),
+          localDataStore.upsertDataInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
@@ -70,7 +70,7 @@ export class RestServerStub {
           body,
           'delete',
           "/miroir/entity/",
-          localDataStore.deleteInstance.bind(localDataStore),
+          localDataStore.deleteDataInstance.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),

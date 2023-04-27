@@ -2,7 +2,7 @@
 // import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
 // import { MiroirReport } from '../0_interfaces/1_core/Report.js';
 
-// function ReportGetInstancesToDispay (
+// function ReportgetDataInstancesToDispay (
 //     report:MiroirReport,
 //     miroirEntities:EntityDefinition[],
 //     miroirReports:MiroirReport[],
@@ -32,5 +32,5 @@
 //   }
 // ;
 
-// export {ReportGetInstancesToDispay}
+// export {ReportgetDataInstancesToDispay}
 

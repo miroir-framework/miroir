@@ -3,7 +3,8 @@
   "rootApiUrl":"http://localhost:3080",
   "emulatedServerConfig":{
     "emulatedServerType": "Sql",
-    "connectionString":"postgres://postgres:postgres@localhost:5432/postgres"
+    "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+    "schema": "miroir"
   },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 
-export const ZapplicationConceptLevel = z.union([z.literal("MetaMetaModel"), z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
+export const ZapplicationConceptLevel = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
 
 export const Zinstance = z.object({
   uuid: z.string().uuid(),
@@ -56,6 +56,7 @@ export const ServerSqlStorage = z.object({
   type: z.literal(StorageType.enum.sql),
   side: z.literal(DeploymentSide.enum.server),
   connectionString: z.string(),
+  schema: z.string(),
 });
 
 

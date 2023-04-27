@@ -20,6 +20,7 @@ export interface EmulatedServerConfigIndexedDb {
 export interface EmulatedServerConfigSql {
   emulatedServerType: 'Sql';
   connectionString: string;
+  schema: string;
 }
 
 export type EmulatedServerConfig = EmulatedServerConfigIndexedDb | EmulatedServerConfigSql;

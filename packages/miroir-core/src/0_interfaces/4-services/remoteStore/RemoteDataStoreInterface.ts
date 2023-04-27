@@ -62,11 +62,10 @@ export declare interface RemoteDataStoreInterface {
 }
 
 
-
 export interface DataStoreInterface {
   start():Promise<void>;
 
-  dropModel():Promise<void>;
+  dropModelAndData():Promise<void>;
   initModel():Promise<void>;
   open();
   close();
@@ -81,12 +80,20 @@ export interface DataStoreInterface {
   dropEntities(parentUuid:string[]);
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate);
 
-  getState():Promise<{[uuid:string]:EntityInstance[]}>;
-  getInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
   getInstances(parentUuid:string):Promise<EntityInstance[]>;
-  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+
+  getState():Promise<{[uuid:string]:EntityInstance[]}>;
+  getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
+  getDataInstances(parentUuid:string):Promise<EntityInstance[]>;
+  upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+
+  getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
+  getModelInstances(parentUuid:string):Promise<EntityInstance[]>;
+  upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
   // applyModelEntityUpdates(updates:ModelEntityUpdateWithCUDUpdate[]);
   applyModelEntityUpdate(update:ModelReplayableUpdate);

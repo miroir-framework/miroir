@@ -15,7 +15,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   ){}
 
   // #############################################################################################
-  async dropModel():Promise<void>{
+  async dropModelAndData():Promise<void>{
     return this.clear();
   }
 
@@ -57,11 +57,11 @@ export class IndexedDbDataStore implements DataStoreInterface{
   // #############################################################################################
   async createEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
     if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
-      console.log('IndexedDbDataStore upsertInstance create sublevel',entity.uuid, 'for', entity.name);
+      console.log('IndexedDbDataStore upsertDataInstance create sublevel',entity.uuid, 'for', entity.name);
       this.localUuidIndexedDb.addSubLevels([entity.uuid]);
-      this.upsertInstance(entityEntity.uuid, entity);
+      this.upsertDataInstance(entityEntity.uuid, entity);
       if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
+        this.upsertDataInstance(entityEntityDefinition.uuid, entityDefinition);
       } else {
         console.warn('IndexedDbDataStore createEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
       }
@@ -74,14 +74,14 @@ export class IndexedDbDataStore implements DataStoreInterface{
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
     const cudUpdate = update.equivalentModelCUDUpdates[0];
     // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-    const currentValue = await this.getInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+    const currentValue = await this.getDataInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
     console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
     // update the instance in table Entity corresponding to the renamed entity
     // await this.localUuidIndexedDb.putValue(
     //   cudUpdate.objects[0].instances[0].parentUuid,
     //   cudUpdate.objects[0].instances[0],
     // );
-    await this.upsertInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
+    await this.upsertDataInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
     const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
     console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
   }
@@ -93,19 +93,19 @@ export class IndexedDbDataStore implements DataStoreInterface{
       console.warn('dropEntity entity not found:', entityUuid);
     }
     if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-      await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
+      await this.deleteDataInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
     } else {
       console.warn('IndexedDbDataStore dropEntity sublevel for entityEntity does not exist',entityEntity.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid));
     }
 
     if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-      await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
+      await this.deleteDataInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
 
-      const entityDefinitions = (await this.getInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
+      const entityDefinitions = (await this.getDataInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
       for (
         const entityDefinition of entityDefinitions
       ) {
-        await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition)
+        await this.deleteDataInstance(entityEntityDefinition.uuid, entityDefinition)
       }
     } else {
       console.warn('IndexedDbDataStore createEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
@@ -125,7 +125,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
     
     for (const parentUuid of this.getEntities()) {
       console.log('getState getting instances for',parentUuid);
-      const instances = await this.getInstances(parentUuid);
+      const instances = await this.getDataInstances(parentUuid);
       console.log('getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});
@@ -139,25 +139,30 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  async getInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
+  async getModelInstances(parentUuid:string):Promise<any> {
+    return this.localUuidIndexedDb.getAllValue(parentUuid);
+  }
+  
+  // #############################################################################################
+  async getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
     return this.localUuidIndexedDb.getValue(parentUuid,uuid);
   }
   
   // #############################################################################################
-  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbDataStore upsertInstance',instance.parentUuid, instance);
+  async upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore upsertDataInstance',instance.parentUuid, instance);
 
     if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
       return this.localUuidIndexedDb.putValue(parentUuid,instance);
     } else {
-      console.error('IndexedDbDataStore upsertInstance',instance.parentUuid,'does not exists.');
+      console.error('IndexedDbDataStore upsertDataInstance',instance.parentUuid,'does not exists.');
       return undefined;
     }
   }
 
   // #############################################################################################
-  async deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
-    console.log('IndexedDbDataStore deleteInstances',parentUuid, instances);
+  async deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
+    console.log('IndexedDbDataStore deleteDataInstances',parentUuid, instances);
     for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
     }
@@ -165,8 +170,48 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  async deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbDataStore deleteInstance',parentUuid, instance);
+  async deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore deleteDataInstance',parentUuid, instance);
+    // for (const o of instances) {
+      await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
+    // }
+    return Promise.resolve();
+  }
+
+  // #############################################################################################
+  async getDataInstances(parentUuid:string):Promise<any> {
+    return this.localUuidIndexedDb.getAllValue(parentUuid);
+  }
+  
+  // #############################################################################################
+  async getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
+    return this.localUuidIndexedDb.getValue(parentUuid,uuid);
+  }
+  
+  // #############################################################################################
+  async upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore upsertDataInstance',instance.parentUuid, instance);
+
+    if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
+      return this.localUuidIndexedDb.putValue(parentUuid,instance);
+    } else {
+      console.error('IndexedDbDataStore upsertDataInstance',instance.parentUuid,'does not exists.');
+      return undefined;
+    }
+  }
+
+  // #############################################################################################
+  async deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
+    console.log('IndexedDbDataStore deleteDataInstances',parentUuid, instances);
+    for (const o of instances) {
+      await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
+    }
+    return Promise.resolve();
+  }
+
+  // #############################################################################################
+  async deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log('IndexedDbDataStore deleteDataInstance',parentUuid, instance);
     // for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
     // }

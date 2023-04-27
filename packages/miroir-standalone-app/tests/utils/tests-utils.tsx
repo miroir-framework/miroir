@@ -124,7 +124,7 @@ export async function miroirAfterAll(
   localDataStoreServer: SetupServerApi,
 ) {
   try {
-    await localDataStore.dropModel();
+    await localDataStore.dropModelAndData();
     localDataStoreServer?.close();
     localDataStore.close();
   } catch (error) {

@@ -32,8 +32,8 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   }
 
   // #########################################################################################
-  dropModel(): Promise<void> {
-    console.log('FileSystemEntityDataStore dropModel');
+  dropModelAndData(): Promise<void> {
+    console.log('FileSystemEntityDataStore dropModelAndData');
     this.clear();
     return Promise.resolve();
   }
@@ -113,22 +113,37 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {}
 
   // #########################################################################################
-  getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
-    return Promise.resolve(undefined);
-  }
-
-  // #########################################################################################
-  getInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    return Promise.resolve(undefined);
-  }
-
-  // #########################################################################################
   getInstances(parentUuid: string): Promise<EntityInstance[]> {
     return Promise.resolve(undefined);
   }
 
   // #########################################################################################
-  upsertInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
+  getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  upsertDataInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
     const filePath = path.join(this.modelDirectory,entityUuid,instance.uuid);
     // if (fs.existsSync(filePath)) {
       
@@ -141,12 +156,35 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   }
 
   // #########################################################################################
-  deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
     return Promise.resolve(undefined);
   }
 
   // #########################################################################################
-  deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  upsertModelInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
+    const filePath = path.join(this.modelDirectory,entityUuid,instance.uuid);
+    // if (fs.existsSync(filePath)) {
+      
+    // } else {
+      
+    // }
+    fs.writeFileSync(filePath,JSON.stringify(instance))
+
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  // #########################################################################################
+  deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
     return Promise.resolve(undefined);
   }
 

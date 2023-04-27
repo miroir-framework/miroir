@@ -8,14 +8,14 @@ export async function modelActionRunner(
 ):Promise<void> {
   console.log("server post model/"," started #####################################");
 
-  // const localData = await localIndexedDbDataStore.upsertInstance(parentName, addedObjects[0]);
+  // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
   console.log('ModelUpdateRunner getEntities()', localDataStore.getEntities());
   switch (actionName) {
     case 'resetModel':{
       // const update = (await req.body)[0];
       console.log("ModelUpdateRunner resetModel update");
-      await localDataStore.dropModel();
+      await localDataStore.dropModelAndData();
       console.log('ModelUpdateRunner resetModel after dropped entities:',localDataStore.getEntities());
       break;
     }
@@ -79,8 +79,8 @@ export async function modelActionRunner(
               console.log('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
               await dataStore.createEntity(entity.entity, entity.entityDefinition);
 
-              // await dataStore.upsertInstance(entityEntity.uuid, instance.entity);
-              // await dataStore.upsertInstance(entityEntityDefinition.uuid, instance.entityDefinition);
+              // await dataStore.upsertDataInstance(entityEntity.uuid, instance.entity);
+              // await dataStore.upsertDataInstance(entityEntityDefinition.uuid, instance.entityDefinition);
               // await dataStore.localUuidIndexedDb.putValue(entityEntity.uuid, instance.entity);
               // await dataStore.localUuidIndexedDb.putValue(entityEntityDefinition.uuid, instance.entityDefinition);
             }
@@ -96,7 +96,7 @@ export async function modelActionRunner(
           case "update":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await dataStore.upsertInstance(instance.parentUuid, instance);
+                await dataStore.upsertDataInstance(instance.parentUuid, instance);
               }
             }
             break;
@@ -104,7 +104,7 @@ export async function modelActionRunner(
           case "delete":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await dataStore.deleteInstance(instanceCollection.parentUuid, instance)
+                await dataStore.deleteDataInstance(instanceCollection.parentUuid, instance)
               }
             }
             break;

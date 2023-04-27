@@ -23,26 +23,73 @@ const users = [];
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
-const deploymentConfig: z.infer<typeof DataflowConfiguration> = {
+const applicationDeploymentConfigMiroir: z.infer<typeof DataflowConfiguration> = {
   type:'singleNode',
   model: {
     location: {
-      type: 'filesystem',
+      type: 'sql',
       side:'server',
-      directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'miroir',
     }
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    // }
   },
   data: {
     location: {
-      type: 'filesystem',
+      type: 'sql',
       side:'server',
-      directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets'
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'miroir',
     }
-  }
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    // }
+  },
+}
+const applicationDeploymentConfigLibrary: z.infer<typeof DataflowConfiguration> = {
+  type:'singleNode',
+  model: {
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets',
+    // }
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'library',
+    }
+  },
+  data: {
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets'
+    // }
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'library',
+    }
+  },
 }
 
-const sqlDbServerProxy:DataStoreInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
-const fileSystemServerProxy:DataStoreInterface = new FileSystemEntityDataStore(deploymentConfig.model.location['directory'],deploymentConfig.data.location['directory']);
+// const sqlDbServerProxy:DataStoreInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
+const sqlDbServerProxy:DataStoreInterface = await createSqlServerProxy(
+  applicationDeploymentConfigMiroir.model.location['connectionString'],
+  applicationDeploymentConfigMiroir.model.location['schema'],
+  applicationDeploymentConfigMiroir.data.location['connectionString'],
+  applicationDeploymentConfigMiroir.data.location['schema'],
+);
+// const fileSystemServerProxy:DataStoreInterface = new FileSystemEntityDataStore(applicationDeploymentConfigMiroir.model.location['directory'],applicationDeploymentConfigMiroir.data.location['directory']);
 
 try {
   await sqlDbServerProxy.start();
@@ -61,7 +108,7 @@ app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
     [],
     'get',
     "/miroir/entity/",
-    sqlDbServerProxy.getInstances.bind(sqlDbServerProxy),
+    sqlDbServerProxy.getDataInstances.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });
@@ -75,7 +122,7 @@ app.put("/miroir/entity", async (req, res, ctx) => {
     await req.body,
     'put',
     "/miroir/entity/",
-    sqlDbServerProxy.upsertInstance.bind(sqlDbServerProxy),
+    sqlDbServerProxy.upsertDataInstance.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });
@@ -93,7 +140,7 @@ app.post("/miroir/entity", async (req, res, ctx) => {
     body,
     'post',
     "/miroir/entity/",
-    sqlDbServerProxy.upsertInstance.bind(sqlDbServerProxy),
+    sqlDbServerProxy.upsertDataInstance.bind(sqlDbServerProxy),
     res.json.bind(res)
   )
 });

@@ -1,4 +1,5 @@
-export type ApplicationConceptLevel = "MetaMetaModel" | "MetaModel" | "Model" | "Data";
+// export type ApplicationConceptLevel = "MetaMetaModel" | "MetaModel" | "Model" | "Data";
+export type ApplicationConceptLevel = "MetaModel" | "Model" | "Data";
 export interface EntityInstance {
   "uuid": string,
   "parentName"?: string,
