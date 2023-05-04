@@ -3,6 +3,7 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
+  MiroirMetaModel,
   ModelReplayableUpdate,
   WrappedModelEntityUpdateWithCUDUpdate,
   entityEntity,
@@ -27,7 +28,9 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
     
   }
 
-  start(): Promise<void> {
+  createProxy(
+    metaModel:MiroirMetaModel,
+  ): Promise<void> {
     return Promise.resolve();
   }
 
@@ -75,6 +78,11 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   existsEntity(entityUuid: string): boolean {
     const files = fs.readdirSync(this.modelDirectory);
     return files.includes(entityUuid);
+  }
+
+  // #########################################################################################
+  initializeEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+    this.createEntity(entity,entityDefinition);
   }
 
   // #########################################################################################
@@ -163,6 +171,11 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   // #########################################################################################
   deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
     return Promise.resolve(undefined);
+  }
+
+  // #############################################################################################
+  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    return this.upsertDataInstance(parentUuid,instance);
   }
 
   // #########################################################################################

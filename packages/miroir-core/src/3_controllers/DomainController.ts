@@ -17,12 +17,13 @@ import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import instanceConfigurationReference from '../assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
-import entityModelVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-import entityDefinitionModelVersion from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json";
+import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+// import entityDefinitionModelVersion from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json";
 import applicationMiroir from '../assets/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
 import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
+import { applicationDeploymentLibrary } from '../0_interfaces/1_core/StorageConfiguration.js';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -48,7 +49,7 @@ export class DomainController implements DomainControllerInterface {
     currentModel?:MiroirMetaModel,
   ): Promise<void> {
     console.log(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction start actionName",
       domainModelAction['actionName'],
       "action",
       domainModelAction
@@ -85,8 +86,8 @@ export class DomainController implements DomainControllerInterface {
         const newModelVersion:MiroirApplicationVersion = {
           uuid:newModelVersionUuid,
           conceptLevel:'Data',
-          parentName:entityModelVersion?.name,
-          parentUuid: entityModelVersion?.uuid,
+          parentName:entityApplicationVersion?.name,
+          parentUuid: entityApplicationVersion?.uuid,
           description: domainModelAction.label,
           name: domainModelAction.label?domainModelAction.label:'No label was given to this version.',
           previousVersion: currentModel?.configuration[0]?.definition?.currentModelVersion,
@@ -103,18 +104,21 @@ export class DomainController implements DomainControllerInterface {
           objects: [newModelVersion],
         };
 
-        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction(newModelVersionAction);
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(applicationDeploymentLibrary.uuid,newModelVersionAction);
 
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
 
         for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
           if (replayAction.actionName == "updateEntity") {
-            await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
+            // await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
+            await this.LocalAndRemoteController.handleRemoteStoreModelActionWithDeployment(applicationDeploymentLibrary.uuid,replayAction);
           } else {
             // for (const instances of replayAction["objects"]) {
               // TODO: replace with parallel implementation Promise.all?
-              await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
+              await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
+                applicationDeploymentLibrary.uuid,
+                {
                 actionType:'RemoteStoreCRUDAction',
                 actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
                 parentName: replayAction.update.objects[0].parentName,
@@ -147,14 +151,12 @@ export class DomainController implements DomainControllerInterface {
           ],
         };
 
-        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction(newStoreBasedConfiguration);
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(applicationDeploymentLibrary.uuid,newStoreBasedConfiguration);
 
         break;
       }
       case "UpdateMetaModelInstance": {
-        await this.LocalAndRemoteController.handleLocalCacheAction(
-          domainModelAction
-        );
+        await this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);
         break;
       }
       case "updateEntity": {
@@ -197,12 +199,14 @@ export class DomainController implements DomainControllerInterface {
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction sending to remote storage instances",
           instances.parentName, instances.instances
         );
-        await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
-          actionType: 'RemoteStoreCRUDAction',
-          actionName: domainAction.actionName.toString() as CRUDActionName,
-          parentName: instances.parentName,
-          objects: instances.instances,
-        });
+        await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
+          applicationDeploymentLibrary.uuid,
+          {
+            actionType: 'RemoteStoreCRUDAction',
+            actionName: domainAction.actionName.toString() as CRUDActionName,
+            parentName: instances.parentName,
+            objects: instances.instances,
+          });
       }
       console.log(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction calling handleLocalCacheDataAction", domainAction

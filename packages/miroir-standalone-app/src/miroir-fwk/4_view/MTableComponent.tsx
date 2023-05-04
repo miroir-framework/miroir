@@ -54,7 +54,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
   const miroirReports: MiroirReport[] = useLocalCacheReports();
   const miroirEntities: MetaEntity[] = useLocalCacheEntities();
   const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const miroirModelVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
+  const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
@@ -73,7 +73,8 @@ export const MTableComponent = (props: MTableComponentProps) => {
     entityDefinitions: miroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,
-    modelVersions: miroirModelVersions,
+    applicationVersions: miroirApplicationVersions,
+    applicationVersionCrossEntityDefinition: [],
   };
 
   console.log("MTableComponent miroirReports", currentModel);

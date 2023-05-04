@@ -84,11 +84,11 @@ export class RestServerStub {
           update = await req.json();
         } catch(e){}
 
-        await modelActionRunner(
-          actionName,
-          localDataStore,
-          update
-        );
+        // await modelActionRunner(
+        //   actionName,
+        //   localDataStore,
+        //   update
+        // );
       
         return res(ctx.json([]));
       })

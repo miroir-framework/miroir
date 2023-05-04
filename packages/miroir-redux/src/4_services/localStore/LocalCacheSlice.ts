@@ -186,7 +186,8 @@ function handleLocalCacheModelAction(state: LocalCacheSliceState, action: Payloa
     //   break;
     // }
     case "UpdateMetaModelInstance": {
-      console.log('localCacheSliceObject CUDupdateModel',action.payload);
+      // not transactional??
+      console.log('localCacheSliceObject UpdateMetaModelInstance',action.payload);
       const domainDataAction:DomainDataAction = {
         actionType:"DomainDataAction",
         actionName:action.payload.update.updateActionName,

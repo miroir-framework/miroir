@@ -8,6 +8,7 @@ import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe2
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 import { IndexedDb } from "./indexedDb";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
@@ -21,13 +22,15 @@ export class IndexedDbDataStore implements DataStoreInterface{
 
   // #############################################################################################
   async initModel():Promise<void>{
-    await modelInitialize(this);
+    // await modelInitialize(this);
     return Promise.resolve(undefined);
     // return this.clear();
   }
 
   // #############################################################################################
-  async start():Promise<void> {
+  async createProxy(
+    metaModel:MiroirMetaModel,
+  ):Promise<void> {
     await this.localUuidIndexedDb.createObjectStore([]);
     return Promise.resolve();
   }
@@ -52,6 +55,11 @@ export class IndexedDbDataStore implements DataStoreInterface{
   getEntities(): string[] {
     //TODO: implement!!
       return this.localUuidIndexedDb.getSubLevels();
+  }
+
+  // #############################################################################################
+  async initializeEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
+    this.createEntity(entity,entityDefinition)
   }
 
   // #############################################################################################
@@ -187,7 +195,12 @@ export class IndexedDbDataStore implements DataStoreInterface{
   async getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
     return this.localUuidIndexedDb.getValue(parentUuid,uuid);
   }
-  
+
+  // #############################################################################################
+  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    return this.upsertDataInstance(parentUuid,instance);
+  }
+
   // #############################################################################################
   async upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
     console.log('IndexedDbDataStore upsertDataInstance',instance.parentUuid, instance);

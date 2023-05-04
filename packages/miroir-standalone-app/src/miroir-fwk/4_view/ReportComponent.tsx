@@ -20,7 +20,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
   const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(  props.reportUuid);
-  // console.log("ReportComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
+  console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid);
   const currentMiroirEntity: MetaEntity = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
@@ -31,35 +31,41 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
+  const columnDefs=getColumnDefinitions(currentMiroirEntityDefinition?.attributes);
+  console.log("ReportComponent columnDefs",columnDefs);
 
   return (
     <div>
-      <h3>
-        {/* props: {JSON.stringify(props)} */}
-        {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
-        {currentMiroirReport?.defaultLabel}
-      </h3>
+      <div>
+        <h3>
+          {/* props: {JSON.stringify(props)} */}
+          {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
+          colonnes: {JSON.stringify(columnDefs)}
+          {currentMiroirReport?.defaultLabel}
+        </h3>
+
+      </div>
      
-      {
-        currentMiroirReport?
-          (
-            miroirReports?.length > 0?
-              <div>
-                <MTableComponent
-                  reportDefinition={currentMiroirReport}
-                  columnDefs={
-                    getColumnDefinitions(currentMiroirEntityDefinition?.attributes)
-                  }
-                  rowData={instancesStringified}
-                >
-                </MTableComponent>
-              </div>
-            :
-              <span>No elements in the report</span>
-          )
-        :
-          <span>no report to display</span>
-      }
-   </div>
+      <div>
+        {
+          currentMiroirReport?
+            (
+              miroirReports?.length > 0?
+                <div>
+                  <MTableComponent
+                    reportDefinition={currentMiroirReport}
+                    columnDefs={columnDefs}
+                    rowData={instancesStringified}
+                  >
+                  </MTableComponent>
+                </div>
+              :
+                <span>No elements in the report</span>
+            )
+          :
+            <span>no report to display</span>
+        }
+      </div>
+    </div>
   );
 }

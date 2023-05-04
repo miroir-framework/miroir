@@ -30,55 +30,75 @@ import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5
 import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import instanceConfigurationReference from '../assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
+
+import applicationDeploymentLibraryDeployment from "../assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/ab4c13c3-f476-407c-a30c-7cb62275a352.json";
+import applicationLibrary from "../assets/app_library/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import applicationModelBranchLibraryMasterBranch from "../assets/app_library/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+import applicationVersionLibraryInitialVersion from "../assets/app_library/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
+
+
+
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+
+export type DataStoreApplicationType = 'miroir' | 'app';
 
 export async function modelInitialize(
-  datastore:DataStoreInterface
+  metaModel:MiroirMetaModel,
+  datastore:DataStoreInterface,
+  dataStoreType: DataStoreApplicationType,
+  // appDatastore:DataStoreInterface,
 ): Promise<void> {
-      // TODO: test this.sqlEntities for emptiness, abort if not empty
-    // bootstrap MetaClass entity
-    console.log('################################### initModel');
-    
-    await datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition); //entityDefinition for entityEntity has not been inserted!
+  // TODO: test this.sqlEntities for emptiness, abort if not empty
+  // bootstrap MetaClass entity
+  console.log('################################### initModel');
+  
+  const insertReferenceInMetaModel = dataStoreType == 'miroir';
 
-    console.log('created entity entity',datastore.getEntities());
-
+  if (dataStoreType == 'miroir') {
+    await datastore.initializeEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition); //entityDefinition for entityEntity has not been inserted!
+  
     // bootstrap MetaClass EntityDefinition
-    await datastore.createEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
+    await datastore.initializeEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
     console.log('created entity EntityDefinition',datastore.getEntities());
-
-    // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);!
+  
+    // // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);!
+    await datastore.upsertModelInstance(entityEntity.uuid, entityEntity as EntityInstance);
+    await datastore.upsertModelInstance(entityEntity.uuid, entityEntityDefinition as EntityInstance);
     await datastore.upsertModelInstance(entityEntityDefinition.uuid, entityDefinitionEntity as EntityInstance);
-
+    await datastore.upsertModelInstance(entityEntityDefinition.uuid, entityDefinitionEntityDefinition as EntityInstance);
+    console.log('created entity entity',datastore.getEntities());
+  
     // bootstrap Application
     await datastore.createEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
     console.log('created entity EntityApplication',datastore.getEntities());
-    await datastore.upsertDataInstance(entityApplication.uuid, applicationMiroir as EntityInstance);
-
+    
     // bootstrap ApplicationModelBranch
     await datastore.createEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
     console.log('created entity EntityApplicationModelBranch',datastore.getEntities());
-    await datastore.upsertDataInstance(entityApplicationModelBranch.uuid, applicationModelBranchMiroirMasterBranch as EntityInstance);
-
+    
     // bootstrap ApplicationVersion
     await datastore.createEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
     console.log('created entity EntityApplicationVersion',datastore.getEntities());
-    await datastore.upsertDataInstance(entityApplication.uuid, applicationVersionInitialMiroirVersion as EntityInstance);
-
+    
     // bootstrap Application
     await datastore.createEntity(entityApplicationDeployment as MetaEntity, entityDefinitionApplicationDeployment as EntityDefinition);
     console.log('created entity EntityApplicationDeployment',datastore.getEntities());
-    await datastore.upsertDataInstance(entityApplicationDeployment.uuid, applicationDeploymentMiroir as EntityInstance);
     
     // bootstrap EntityStoreBasedConfiguration
     await datastore.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
     console.log('created entity EntityStoreBasedConfiguration',datastore.getEntities());
-    await datastore.upsertDataInstance(entityStoreBasedConfiguration.uuid, instanceConfigurationReference as EntityInstance);
-
+    
     // bootstrap EntityStoreBasedConfiguration
     await datastore.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
     console.log('created entity EntityReport',datastore.getEntities());
+    
+    await datastore.upsertDataInstance(entityApplication.uuid, applicationMiroir as EntityInstance);
+    await datastore.upsertDataInstance(entityApplicationDeployment.uuid, applicationDeploymentMiroir as EntityInstance);
+    await datastore.upsertDataInstance(entityApplicationModelBranch.uuid, applicationModelBranchMiroirMasterBranch as EntityInstance);
+    await datastore.upsertDataInstance(entityApplicationVersion.uuid, applicationVersionInitialMiroirVersion as EntityInstance);
+    await datastore.upsertDataInstance(entityStoreBasedConfiguration.uuid, instanceConfigurationReference as EntityInstance);
     await datastore.upsertDataInstance(entityReport.uuid, reportConfigurationList as EntityInstance);
     await datastore.upsertDataInstance(entityReport.uuid, reportEntityDefinitionList as EntityInstance);
     await datastore.upsertDataInstance(entityReport.uuid, reportEntityList as EntityInstance);
@@ -87,6 +107,54 @@ export async function modelInitialize(
     await datastore.upsertDataInstance(entityReport.uuid, reportApplicationModelBranchList as EntityInstance);
     await datastore.upsertDataInstance(entityReport.uuid, reportApplicationVersionList as EntityInstance);
     await datastore.upsertDataInstance(entityReport.uuid, reportReportList as EntityInstance);
-    console.log('modelInitialize done',await datastore.getState());
-    return Promise.resolve(undefined);
+  }
+
+  if (dataStoreType == 'app') {
+    await datastore.initializeEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition); //entityDefinition for entityEntity has not been inserted!
+  
+    console.log('app initialized entity entity',datastore.getEntities());
+  
+    // bootstrap MetaClass EntityDefinition
+    await datastore.initializeEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
+    console.log('app initialized entity EntityDefinition',datastore.getEntities());
+  
+    // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);!
+    // await datastore.upsertModelInstance(entityEntityDefinition.uuid, entityDefinitionEntity as EntityInstance);
+  
+    // bootstrap Application
+    await datastore.initializeEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
+    console.log('app initialized entity EntityApplication',datastore.getEntities());
+    
+    // bootstrap ApplicationModelBranch
+    await datastore.initializeEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
+    console.log('app initialized entity EntityApplicationModelBranch',datastore.getEntities());
+    
+    // bootstrap ApplicationVersion
+    await datastore.initializeEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
+    console.log('app initialized entity EntityApplicationVersion',datastore.getEntities());
+    
+    // bootstrap Application
+    await datastore.initializeEntity(entityApplicationDeployment as MetaEntity, entityDefinitionApplicationDeployment as EntityDefinition);
+    console.log('app initialized entity EntityApplicationDeployment',datastore.getEntities());
+    
+    // bootstrap EntityStoreBasedConfiguration
+    await datastore.initializeEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
+    console.log('app initialized entity EntityStoreBasedConfiguration',datastore.getEntities());
+    
+    // bootstrap EntityStoreBasedConfiguration
+    await datastore.initializeEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
+    console.log('app initialized entity EntityReport',datastore.getEntities());
+    
+    await datastore.upsertModelInstance(entityApplication.uuid, applicationLibrary as EntityInstance);
+    await datastore.upsertModelInstance(entityApplicationDeployment.uuid, applicationDeploymentLibraryDeployment as EntityInstance);
+    await datastore.upsertModelInstance(entityApplicationModelBranch.uuid, applicationModelBranchLibraryMasterBranch as EntityInstance);
+    await datastore.upsertModelInstance(entityApplicationVersion.uuid, applicationVersionLibraryInitialVersion as EntityInstance);
+
+    // TODO: create reference configuration.
+    await datastore.upsertModelInstance(entityStoreBasedConfiguration.uuid, instanceConfigurationReference as EntityInstance);
+    // await datastore.upsertDataInstance(entityReport.uuid, reportConfigurationList as EntityInstance);
+  }
+
+  console.log('modelInitialize done',await datastore.getState());
+  return Promise.resolve(undefined);
 }

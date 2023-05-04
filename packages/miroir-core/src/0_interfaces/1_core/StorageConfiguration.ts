@@ -8,7 +8,7 @@ export const Zinstance = z.object({
   parentUuid: z.string().uuid(),
   parentName: z.string().optional(),
   conceptLevel: ZapplicationConceptLevel.optional(),
-  instanceOfThisInstanceConceptLevel: ZapplicationConceptLevel.optional(),
+  // instanceOfThisInstanceConceptLevel: ZapplicationConceptLevel.optional(),
 });
 
 export const ZinstanceWithName = Zinstance.extend({
@@ -79,9 +79,73 @@ export const ModelStorageLocation = z.object({
 
 
 
-export const DataflowConfiguration = z.object({
+export const ApplicationDeployment = z.object({
+  uuid: z.string().uuid(),
   type: ClientServerDistributionMode,
   // metaModel: ModelStorageLocation,
   model: ModelStorageLocation.optional(),
   data: ModelStorageLocation.optional(),
 });
+
+
+export const applicationDeploymentMiroirBootstrap: z.infer<typeof ApplicationDeployment> = {
+  uuid: 'f0d67153-0e37-4b5c-91cf-415dc7780043',
+  type:'singleNode',
+  model: {
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'miroir',
+    }
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    // }
+  },
+  data: {
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'miroir',
+    }
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets'
+    // }
+  },
+};
+
+export const applicationDeploymentLibrary: z.infer<typeof ApplicationDeployment> = {
+  uuid: 'f714bb2f-a12d-4e71-a03b-74dcedea6eb4',
+  type:'singleNode',
+  model: {
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets',
+    // }
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'library',
+    }
+  },
+  data: {
+    // location: {
+    //   type: 'filesystem',
+    //   side:'server',
+    //   directory:'C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets'
+    // }
+    location: {
+      type: 'sql',
+      side:'server',
+      connectionString: 'postgres://postgres:postgres@localhost:5432/postgres',
+      schema: 'library',
+    }
+  },
+};

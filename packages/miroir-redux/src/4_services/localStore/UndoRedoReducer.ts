@@ -122,6 +122,7 @@ function callUndoRedoReducer(
   );
   if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.actionName)) {
     // TODO: test can probably be removed, sorting of undoable actions is done before reaching this point
+    console.log('callUndoRedoReducer undoable action type', action.type, 'action name',action.payload.actionName, 'action', action.payload)
     return {newSnapshot:newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges};
   } else {
     console.warn('callUndoRedoReducer not undoable action type', action.type, 'action name',action.payload.actionName, 'action', action.payload,'changes',changes,'inverseChanges',inverseChanges)
@@ -138,9 +139,11 @@ function callUndoRedoReducer(
     action: PayloadAction<DomainModelReplayableAction>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
+    console.log('callNextReducerWithUndoRedo called for', action.type, action.payload.actionType, action.payload.actionName,'adding Patch to transaction');
 
     const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
     if (presentModelSnapshot === newSnapshot) {
+      console.log('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
       return state;
     } else { // presentModelSnapshot !== newSnapshot
       const newPatch:ReduxStateChanges = { action:action.payload, changes, inverseChanges };

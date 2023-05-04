@@ -2,7 +2,7 @@ import { EntityState } from "@reduxjs/toolkit";
 import {
   EntityDefinition,
   entityDefinitionEntityDefinition,
-  entityModelVersion,
+  entityApplicationVersion,
   entityReport,
   entityStoreBasedConfiguration,
   EntityInstance,
@@ -68,7 +68,7 @@ export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[
 //#########################################################################################
 export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
   const miroirModelVersionState: EntityState<MiroirApplicationVersion> = useSelector(
-    selectInstancesForEntity(entityModelVersion.uuid)
+    selectInstancesForEntity(entityApplicationVersion.uuid)
   );
   const miroirModelVersions: MiroirApplicationVersion[] = miroirModelVersionState?.entities
     ? Object.values(miroirModelVersionState.entities)

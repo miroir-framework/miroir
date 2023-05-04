@@ -10,7 +10,7 @@ export const EntityAttributeTypeObject = {
 export type EntityAttributeType = keyof typeof EntityAttributeTypeObject;
 export const EntityAttributeTypeNameArray: EntityAttributeType[] = Object.keys(EntityAttributeTypeObject) as EntityAttributeType[];
 
-
+export type Uuid = string;
 
 export interface EntityAttribute {
   "id": number,
@@ -26,12 +26,13 @@ export interface MetaEntity extends EntityInstanceWithName {
   "parentName"?: string,
   "parentUuid": string,
   "description"?:string,
+  "application": Uuid, // TODO: make it mandatory!
 };
 
 export interface EntityDefinition extends EntityInstanceWithName {
   "parentName"?: string,
-  "parentUuid": string,
-  "entityUuid": string,
+  "parentUuid": Uuid,
+  "entityUuid": Uuid,
   "description"?:string,
   "instanceValidationJsonSchema": {},
   "attributes"?: EntityAttribute[],

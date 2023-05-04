@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EntityInstance } from "../../0_interfaces/1_core/Instance";
-import { DataflowConfiguration } from "../../0_interfaces/1_core/StorageConfiguration.js";
+import { ApplicationDeployment } from "../../0_interfaces/1_core/StorageConfiguration.js";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
 
@@ -32,7 +32,7 @@ export interface MiroirConfigForMsw extends MiroirConfigRoot{
 
 export interface ServerConfig {
   rootApiUrl: string;
-  dataflowConfiguration:z.infer<typeof DataflowConfiguration>;
+  dataflowConfiguration:z.infer<typeof ApplicationDeployment>;
 }
 
 export interface MiroirConfigForRest extends MiroirConfigRoot{

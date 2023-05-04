@@ -49,16 +49,16 @@ import { ReportComponent } from "./ReportComponent";
 import entityPublisher from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
 import entityAuthor from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
 import entityBook from "assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import applicationDeploymentLibraryDeployment from "assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/ab4c13c3-f476-407c-a30c-7cb62275a352.json";
+// import applicationDeploymentLibraryDeployment from "assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/ab4c13c3-f476-407c-a30c-7cb62275a352.json";
 import reportAuthorList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/66a09068-52c3-48bc-b8dd-76575bbc8e72.json";
 import reportBookList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
 import reportPublisherList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json";
 import entityDefinitionBook from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import entityDefinitionPubliser from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import entityDefinitionAuthor from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
-import applicationLibrary from "assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-import applicationVersionLibraryInitialVersion from "assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json";
-import applicationModelBranchLibraryMasterBranch from "assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+// import applicationLibrary from "assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+// import applicationVersionLibraryInitialVersion from "assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json";
+// import applicationModelBranchLibraryMasterBranch from "assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import author4 from "assets/instances/Author - Catherine Guérard.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
@@ -87,51 +87,44 @@ async function uploadBooksAndReports(
   currentModel?:MiroirMetaModel
 ) {
 
-  await domainController.handleDomainAction({
-    actionType: "DomainModelAction",
-    actionName: "UpdateMetaModelInstance",
-    update: {
-      updateActionType: "ModelCUDInstanceUpdate",
-      updateActionName: "create",
-      objects: [
-        {
-          parentName: entityApplication.name,
-          parentUuid: entityApplication.uuid,
-          instances: [
-            applicationLibrary as EntityInstance
-          ]
-        },
-        {
-          parentName: entityApplicationDeployment.name,
-          parentUuid: entityApplicationDeployment.uuid,
-          instances: [
-            applicationDeploymentLibraryDeployment as EntityInstance
-          ]
-        },
-        {
-          parentName: entityApplicationVersion.name,
-          parentUuid: entityApplicationVersion.uuid,
-          instances: [
-            applicationVersionLibraryInitialVersion as EntityInstance
-          ]
-        },
-        {
-          parentName: entityApplicationModelBranch.name,
-          parentUuid: entityApplicationModelBranch.uuid,
-          instances: [
-            applicationModelBranchLibraryMasterBranch as EntityInstance
-          ]
-        },
-        // {
-        //   parentName: entityReport.name,
-        //   parentUuid: entityReport.uuid,
-        //   instances: [
-        //     reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance
-        //   ]
-        // },
-      ],
-    }
-  },currentModel);
+  // await domainController.handleDomainAction({
+  //   actionType: "DomainModelAction",
+  //   actionName: "UpdateMetaModelInstance",
+  //   update: {
+  //     updateActionType: "ModelCUDInstanceUpdate",
+  //     updateActionName: "create",
+  //     objects: [
+  //       {
+  //         parentName: entityApplication.name,
+  //         parentUuid: entityApplication.uuid,
+  //         instances: [
+  //           applicationLibrary as EntityInstance
+  //         ]
+  //       },
+  //       // {
+  //       //   parentName: entityApplicationDeployment.name,
+  //       //   parentUuid: entityApplicationDeployment.uuid,
+  //       //   instances: [
+  //       //     applicationDeploymentLibraryDeployment as EntityInstance
+  //       //   ]
+  //       // },
+  //       // {
+  //       //   parentName: entityApplicationVersion.name,
+  //       //   parentUuid: entityApplicationVersion.uuid,
+  //       //   instances: [
+  //       //     applicationVersionLibraryInitialVersion as EntityInstance
+  //       //   ]
+  //       // },
+  //       // {
+  //       //   parentName: entityApplicationModelBranch.name,
+  //       //   parentUuid: entityApplicationModelBranch.uuid,
+  //       //   instances: [
+  //       //     applicationModelBranchLibraryMasterBranch as EntityInstance
+  //       //   ]
+  //       // },
+  //     ],
+  //   }
+  // },currentModel);
 
 
   await domainController.handleDomainAction({
@@ -165,6 +158,7 @@ async function uploadBooksAndReports(
       }],
     }
   },currentModel);
+
   await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
 
   await domainController.handleDomainAction({
@@ -206,7 +200,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const miroirReports: MiroirReport[] = useLocalCacheReports();
   const miroirEntities: MetaEntity[] = useLocalCacheEntities();
   const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const miroirModelVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
+  const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
@@ -226,7 +220,8 @@ export const RootComponent = (props: RootComponentProps) => {
     entityDefinitions: miroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,
-    modelVersions: miroirModelVersions,
+    applicationVersions: miroirApplicationVersions,
+    applicationVersionCrossEntityDefinition: [],
   };
 
   // const {store} = props;

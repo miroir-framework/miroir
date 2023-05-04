@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
+import { defaultMiroirMetaModel, entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
 import miroirConfig from "assets/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
@@ -46,7 +46,7 @@ async function start() {
     }
     if (!!localDataStore) { // datastore is emulated
       await localDataStore.open();
-      await localDataStore.start();
+      await localDataStore.createProxy(defaultMiroirMetaModel,'miroir');
       await localDataStore?.clear();
       // console.log('localDataStore.db',localDataStore.getdb());
     }

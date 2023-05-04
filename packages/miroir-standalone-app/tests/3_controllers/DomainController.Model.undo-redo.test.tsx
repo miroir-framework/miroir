@@ -181,15 +181,6 @@ describe(
           await localDataStore.dropModelAndData();
           await localDataStore.initModel();
 
-          // await localDataStore?.upsertDataInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertDataInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          // await localDataStore?.upsertDataInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
-  
           const {
             getByText,
             getAllByRole,

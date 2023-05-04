@@ -27,9 +27,10 @@ import {
   MiroirConfig,
   MiroirContext,
   WrappedModelEntityUpdateWithCUDUpdate,
+  defaultMiroirMetaModel,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
 } from "miroir-core";
 import {
   ReduxStore
@@ -106,7 +107,7 @@ describe(
         // await localDataStore?.clear();
         try {
           await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
+          await localDataStore.initModel(defaultMiroirMetaModel);
   
           const {
             getByText,
@@ -158,19 +159,7 @@ describe(
           const user = userEvent.setup()
   
           await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
-          // await localDataStore?.upsertDataInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as Instance);
-          // await localDataStore?.upsertDataInstance(entityReport.parentUuid, entityReport as Instance);
-          // await localDataStore?.upsertDataInstance(reportReportList.parentUuid, reportReportList as Instance);
-
-          // await localDataStore?.upsertDataInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // // await localDataStore?.upsertDataInstance(reportEntityList.parentUuid, reportEntityList as Instance);
-          // await localDataStore?.upsertDataInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
+          await localDataStore.initModel(defaultMiroirMetaModel);
   
           const {
             getByText,
@@ -295,7 +284,7 @@ describe(
           const user = userEvent.setup()
 
           await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
+          await localDataStore.initModel(defaultMiroirMetaModel);
   
   
           const {
@@ -444,15 +433,6 @@ describe(
 
           await localDataStore.dropModelAndData();
           await localDataStore.initModel();
-          // await localDataStore?.clear();
-          // await localDataStore?.upsertDataInstance(entityDefinitionEntityDefinition.parentUuid, entityDefinitionEntityDefinition as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityReport.parentUuid, entityReport as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityStoreBasedConfiguration.parentUuid, entityStoreBasedConfiguration as EntityInstance);
-          // await localDataStore?.upsertDataInstance(entityModelVersion.parentUuid, entityModelVersion as EntityInstance);
-          // await localDataStore?.upsertDataInstance(reportEntityList.parentUuid, reportEntityList as EntityInstance);
-          // await localDataStore?.upsertDataInstance(reportReportList.parentUuid, reportReportList as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceModelVersionInitial.parentUuid, instanceModelVersionInitial as EntityInstance);
-          // await localDataStore?.upsertDataInstance(instanceConfigurationReference.parentUuid, instanceConfigurationReference as EntityInstance);
           await act(
             async () => {
               await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});

@@ -1,8 +1,10 @@
+import { MiroirMetaModel } from '../../../0_interfaces/1_core/Model.js';
 import { EntityDefinition, MetaEntity } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelInitAction, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
+import { DataStoreApplicationType } from '../../../3_controllers/ModelInitializer.js';
 
 export interface RemoteStoreCRUDAction {
   actionType:'RemoteStoreCRUDAction';
@@ -49,6 +51,8 @@ export interface RemoteStoreNetworkClientInterface {
   handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
   handleNetworkRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid:string, action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
 }
 
 export default {}
@@ -59,14 +63,19 @@ export default {}
 export declare interface RemoteDataStoreInterface {
   handleRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreModelActionWithDeployment(deploymentUuid:string, action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
 }
 
 
 export interface DataStoreInterface {
-  start():Promise<void>;
+  createProxy(
+    metaModel:MiroirMetaModel,
+    dataStoreType: DataStoreApplicationType,
+  ):Promise<void>;
 
-  dropModelAndData():Promise<void>;
-  initModel():Promise<void>;
+  dropModelAndData(metaModel:MiroirMetaModel):Promise<void>;
+  initModel(metaModel:MiroirMetaModel, dataStoreType: DataStoreApplicationType,):Promise<void>;
   open();
   close();
 
@@ -75,7 +84,18 @@ export interface DataStoreInterface {
   
   getEntities():string[]; //TODO: remove!
   existsEntity(entityUuid:string):boolean;
-  createEntity(entity:MetaEntity, entityDefinition: EntityDefinition);
+  initializeEntity(
+    entity:MetaEntity,
+    entityDefinition: EntityDefinition,
+    // dataStoreType?: DataStoreApplicationType,
+    // insertReferenceInMetaModel?: boolean
+  );
+  createEntity(
+    entity:MetaEntity,
+    entityDefinition: EntityDefinition,
+    // dataStoreType?: DataStoreApplicationType,
+    // insertReferenceInMetaModel?: boolean
+  );
   dropEntity(parentUuid:string);
   dropEntities(parentUuid:string[]);
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate);
@@ -83,6 +103,8 @@ export interface DataStoreInterface {
   getInstances(parentUuid:string):Promise<EntityInstance[]>;
 
   getState():Promise<{[uuid:string]:EntityInstance[]}>;
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+
   getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
   getDataInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
