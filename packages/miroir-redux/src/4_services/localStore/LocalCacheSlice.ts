@@ -28,6 +28,7 @@ import {
   ZinstanceSchema,
   applicationDeploymentMiroir,
   Zinstance,
+  DomainActionWithDeployment,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -195,12 +196,12 @@ function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: NewL
 
 
 //#########################################################################################
-function handleLocalCacheDataAction(state: NewLocalCacheSliceState, action: PayloadAction<DomainDataAction>) {
-  const deploymentUuid = applicationDeploymentMiroir.uuid
+function handleLocalCacheDataAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainDataAction) {
+  // const deploymentUuid = applicationDeploymentMiroir.uuid
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheDataAction, 'called', action);
-  switch (action.payload.actionName) {
+  switch (action.actionName) {
     case 'create': {
-      for (let instanceCollection of action.payload.objects) {
+      for (let instanceCollection of action.objects) {
         console.log('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
         
         const sliceEntityAdapter = getInitializedDeploymentEntityAdapter(deploymentUuid, instanceCollection.parentUuid, state);
@@ -217,7 +218,7 @@ function handleLocalCacheDataAction(state: NewLocalCacheSliceState, action: Payl
       break;
     }
     case 'delete': {
-      for (let instanceCollection of action.payload.objects) {
+      for (let instanceCollection of action.objects) {
         console.log('localCacheSliceObject handleLocalCacheDataAction delete', instanceCollection);
         
         const sliceEntityAdapter = getInitializedDeploymentEntityAdapter(deploymentUuid,instanceCollection.parentUuid, state);
@@ -229,7 +230,7 @@ function handleLocalCacheDataAction(state: NewLocalCacheSliceState, action: Payl
       break;
     }
     case 'update': {
-      for (let instanceCollection of action.payload.objects) {
+      for (let instanceCollection of action.objects) {
         const sliceEntityAdapter = getInitializedDeploymentEntityAdapter(deploymentUuid,instanceCollection.parentUuid, state);
         sliceEntityAdapter.updateMany(state[deploymentUuid][instanceCollection.parentUuid], instanceCollection.instances.map(i => ({ id: i.uuid, changes: i })));
         // getSliceEntityAdapter(action.payload.parentName).updateOne(state[action.payload.parentName], entityUpdate);
@@ -237,17 +238,17 @@ function handleLocalCacheDataAction(state: NewLocalCacheSliceState, action: Payl
       break;
     }
     default:
-      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
+      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.actionName);
   }
 }
 
 //#########################################################################################
-function handleLocalCacheModelAction(state: NewLocalCacheSliceState, action: PayloadAction<DomainModelAction>) {
-  const deploymentUuid = applicationDeploymentMiroir.uuid;
-  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action.payload.actionName, action);
-  switch (action.payload.actionName) {
+function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainModelAction) {
+  // const deploymentUuid = applicationDeploymentMiroir.uuid;
+  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action.actionName, action);
+  switch (action.actionName) {
     case 'replace': {
-      for (let instanceCollection of action.payload.objects) {
+      for (let instanceCollection of action.objects) {
         ReplaceInstancesForDeploymentEntity(deploymentUuid, state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<EntityInstanceCollection>);
       }
       break;
@@ -262,25 +263,20 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, action: Pay
     }
     case "UpdateMetaModelInstance": {
       // not transactional??
-      console.log('localCacheSliceObject UpdateMetaModelInstance',action.payload);
+      console.log('localCacheSliceObject UpdateMetaModelInstance',action);
       const domainDataAction:DomainDataAction = {
         actionType:"DomainDataAction",
-        actionName:action.payload.update.updateActionName,
-        objects: action.payload.update.objects
+        actionName:action.update.updateActionName,
+        objects: action.update.objects
       }
       ;
       console.log('updateModel domainDataAction',domainDataAction);
 
-      handleLocalCacheDataAction(
-        state, {
-          type:'rebound',
-          payload: domainDataAction
-        }
-      )
+      handleLocalCacheDataAction(state, deploymentUuid, domainDataAction);
       break;
     }
     case "updateEntity": {
-      console.log('localCacheSliceObject updateModel',action.payload);
+      console.log('localCacheSliceObject updateModel',action);
       // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
       // send CUD actions to local cache
       // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
@@ -288,38 +284,33 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, action: Pay
         ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
           Object.values(state[entityEntity.uuid].entities) as MetaEntity[],
           Object.values(state[entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          action.payload.update.modelEntityUpdate
+          action.update.modelEntityUpdate
         )
       ;
       console.log('updateModel domainDataAction',domainDataAction);
 
-      handleLocalCacheDataAction(
-        state, {
-          type:'rebound',
-          payload: domainDataAction
-        }
-      )
+      handleLocalCacheDataAction(state, deploymentUuid, domainDataAction);
       break;
     }
     default:
-      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.payload.actionName);
+      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.actionName);
   }
 }
 
 //#########################################################################################
-function handleLocalCacheAction(state: NewLocalCacheSliceState, action: PayloadAction<DomainAction>) {
-  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'actionType',action.payload.actionType, 'called', action);
-  switch (action.payload.actionType) {
+function handleLocalCacheAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
+  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'actionType',action.actionType, 'called', action);
+  switch (action.actionType) {
     case 'DomainDataAction': {
-      handleLocalCacheDataAction(state,action as PayloadAction<DomainDataAction>);
+      handleLocalCacheDataAction(state, deploymentUuid, action);
       break;
     }
     case 'DomainModelAction': {
-      handleLocalCacheModelAction(state,action  as PayloadAction<DomainModelAction>);
+      handleLocalCacheModelAction(state, deploymentUuid, action);
       break;
     }
     default:
-      console.warn('localCacheSliceObject handleLocalCacheAction action could not be taken into account, unkown action', action.payload);
+      console.warn('localCacheSliceObject handleLocalCacheAction action could not be taken into account, unkown action', action);
   }
 }
 
@@ -331,11 +322,40 @@ export const localCacheSliceObject: Slice<NewLocalCacheSliceState> = createSlice
   // initialState: { [entityDefinitionEntityDefinition.uuid]: getLocalCacheSliceEntityAdapter(entityDefinitionEntityDefinition.uuid).getInitialState() },
   initialState: {} as NewLocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: NewLocalCacheSliceState, action: PayloadAction<DomainAction>) {
-      handleLocalCacheAction(state,action);
+    // [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: NewLocalCacheSliceState, action: PayloadAction<DomainAction>) {
+    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](state: NewLocalCacheSliceState, action: PayloadAction<DomainActionWithDeployment>) {
+      // handleLocalCacheAction(state,applicationDeploymentMiroir.uuid,action.payload);
+      handleLocalCacheAction(state,action.payload.deploymentUuid,action.payload.domainAction);
     },
   },
 });
+
+
+
+//#########################################################################################
+//# ACTION CREATORS
+//#########################################################################################
+// export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
+type LocalCacheSliceActionCreator<P> =
+  | ActionCreatorWithPayload<P, `${string}/${string}`>
+  // | ActionCreatorWithoutPayload<`${string}/${string}`>
+;
+
+const actionsCreators: {
+  [actionCreatorName: string]: LocalCacheSliceActionCreator<any>;
+} = {
+  ...localCacheSliceObject.actions,
+};
+
+//#########################################################################################
+//# SLICE OBJECT
+//#########################################################################################
+export const LocalCacheSlice = {
+  reducer: localCacheSliceObject.reducer,
+  actionCreators: actionsCreators,
+  inputActionNames: localCacheSliceInputActionNamesObject,
+};
+
 
 //#########################################################################################
 //# SELECTORS
@@ -408,27 +428,5 @@ export const selectInstancesFromDomainSelector: (
   };
 // }
 // )
-
-
-//#########################################################################################
-//# ACTION CREATORS
-//#########################################################################################
-// export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-type LocalCacheSliceActionCreator<P> =
-  | ActionCreatorWithPayload<P, `${string}/${string}`>
-  // | ActionCreatorWithoutPayload<`${string}/${string}`>
-;
-
-const actionsCreators: {
-  [actionCreatorName: string]: LocalCacheSliceActionCreator<any>;
-} = {
-  ...localCacheSliceObject.actions,
-};
-
-export const LocalCacheSlice = {
-  reducer: localCacheSliceObject.reducer,
-  actionCreators: actionsCreators,
-  inputActionNames: localCacheSliceInputActionNamesObject,
-};
 
 export default {};

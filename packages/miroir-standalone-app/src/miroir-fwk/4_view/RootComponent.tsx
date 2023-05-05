@@ -24,7 +24,8 @@ import {
   MiroirApplicationVersion,
   MiroirReport,
   reportReportList,
-  StoreBasedConfiguration
+  StoreBasedConfiguration,
+  applicationDeploymentMiroir
 } from "miroir-core";
 import {
   useLocalCacheEntities,
@@ -86,48 +87,9 @@ async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
   currentModel?:MiroirMetaModel
 ) {
-
-  // await domainController.handleDomainAction({
-  //   actionType: "DomainModelAction",
-  //   actionName: "UpdateMetaModelInstance",
-  //   update: {
-  //     updateActionType: "ModelCUDInstanceUpdate",
-  //     updateActionName: "create",
-  //     objects: [
-  //       {
-  //         parentName: entityApplication.name,
-  //         parentUuid: entityApplication.uuid,
-  //         instances: [
-  //           applicationLibrary as EntityInstance
-  //         ]
-  //       },
-  //       // {
-  //       //   parentName: entityApplicationDeployment.name,
-  //       //   parentUuid: entityApplicationDeployment.uuid,
-  //       //   instances: [
-  //       //     applicationDeploymentLibraryDeployment as EntityInstance
-  //       //   ]
-  //       // },
-  //       // {
-  //       //   parentName: entityApplicationVersion.name,
-  //       //   parentUuid: entityApplicationVersion.uuid,
-  //       //   instances: [
-  //       //     applicationVersionLibraryInitialVersion as EntityInstance
-  //       //   ]
-  //       // },
-  //       // {
-  //       //   parentName: entityApplicationModelBranch.name,
-  //       //   parentUuid: entityApplicationModelBranch.uuid,
-  //       //   instances: [
-  //       //     applicationModelBranchLibraryMasterBranch as EntityInstance
-  //       //   ]
-  //       // },
-  //     ],
-  //   }
-  // },currentModel);
-
-
-  await domainController.handleDomainAction({
+  await domainController.handleDomainAction(
+    applicationDeploymentMiroir.uuid,
+    {
     actionType: "DomainModelAction",
     actionName: "updateEntity",
     update: {
@@ -143,7 +105,9 @@ async function uploadBooksAndReports(
       },
     }
   },currentModel);
-  await domainController.handleDomainAction({
+  await domainController.handleDomainAction(
+    applicationDeploymentMiroir.uuid,
+    {
     actionType: "DomainModelAction",
     actionName: "UpdateMetaModelInstance",
     update: {
@@ -159,9 +123,15 @@ async function uploadBooksAndReports(
     }
   },currentModel);
 
-  await domainController.handleDomainAction({ actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },  currentModel);
+  await domainController.handleDomainAction(
+    applicationDeploymentMiroir.uuid,
+    { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
+    currentModel
+  );
 
-  await domainController.handleDomainAction({
+  await domainController.handleDomainAction(
+    applicationDeploymentMiroir.uuid,
+    {
     actionType: "DomainDataAction",
     actionName: "create",
     objects: [
@@ -230,7 +200,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainModelAction({
+            await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
               actionType: "DomainModelAction",
               actionName: "undo",
             });
@@ -242,7 +212,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainModelAction({
+            await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
               actionType: "DomainModelAction",
               actionName: "redo",
             });
@@ -255,6 +225,7 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction(
+              applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
                 actionName: "commit",
@@ -269,10 +240,13 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainModelAction({
-              actionType: "DomainModelAction",
-              actionName: "replace",
-            });
+            await domainController.handleDomainModelAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "replace",
+              }
+            );
           }}
         >
           Rollback
@@ -281,19 +255,25 @@ export const RootComponent = (props: RootComponentProps) => {
       <p />
       <span>
         <button
-          onClick={
-            async () => {
-              await domainController.handleDomainAction({
+          onClick={async () => {
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
                 actionType: "DomainModelAction",
                 actionName: "resetModel",
-              });
-              console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-              await domainController.handleDomainAction({
+              }
+            );
+            console.log(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
                 actionType: "DomainModelAction",
                 actionName: "replace",
-              });
-            }
-          }
+              }
+            );
+          }}
         >
           Reset database
         </button>
@@ -302,20 +282,27 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainAction({
-              actionType: "DomainModelAction",
-              actionName: "initModel",
-            })
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "initModel",
+              }
+            );
             // .then(
-              // async () => {
-            console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-            await domainController.handleDomainAction({
-              actionType: "DomainModelAction",
-              actionName: "replace",
-            });
-              // }
+            // async () => {
+            console.log(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "replace",
+              }
+            );
+            // }
             // );
-            
           }}
         >
           Init database
@@ -324,10 +311,13 @@ export const RootComponent = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainAction({
-              actionType: "DomainModelAction",
-              actionName: "replace",
-            });
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "replace",
+              }
+            );
           }}
         >
           fetch Miroir & App configurations from database
@@ -343,11 +333,11 @@ export const RootComponent = (props: RootComponentProps) => {
           upload Miroir configuration to database
         </button>
       </span> */}
-      <p/>
+      <p />
       <span>
         <button
           onClick={async () => {
-            await uploadBooksAndReports(domainController,currentModel);
+            await uploadBooksAndReports(domainController, currentModel);
           }}
         >
           upload App configuration to database
@@ -357,19 +347,20 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction(
+              applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
                 actionName: "updateEntity",
                 update: {
-                  updateActionName:"WrappedModelEntityUpdate",
-                  modelEntityUpdate:{
-                    updateActionType:"ModelEntityUpdate",
+                  updateActionName: "WrappedModelEntityUpdate",
+                  modelEntityUpdate: {
+                    updateActionType: "ModelEntityUpdate",
                     updateActionName: "renameEntity",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
                     targetValue: "Bookss",
                   },
-                }
+                },
               },
               currentModel
             );
@@ -382,29 +373,26 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction(
+              applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
                 actionName: "UpdateMetaModelInstance",
                 update: {
                   updateActionType: "ModelCUDInstanceUpdate",
-                  updateActionName:'update',
+                  updateActionName: "update",
                   objects: [
                     {
                       parentName: reportReportList.parentName,
                       parentUuid: reportReportList.parentUuid,
-                      instances:[
-                        Object.assign(
-                          {},
-                          reportReportList, 
-                          {
-                            name: "Report2List",
-                            defaultLabel: "Modified List of Reports",
-                          }
-                        ) as EntityInstance
-                      ]
-                    }
-                  ]
-                }
+                      instances: [
+                        Object.assign({}, reportReportList, {
+                          name: "Report2List",
+                          defaultLabel: "Modified List of Reports",
+                        }) as EntityInstance,
+                      ],
+                    },
+                  ],
+                },
               },
               currentModel
             );
@@ -417,6 +405,7 @@ export const RootComponent = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainModelAction(
+              applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
                 actionName: "updateEntity",
@@ -429,7 +418,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     entityUuid: entityAuthor.uuid,
                     // instanceUuid:entityAuthor.uuid,
                   },
-                }
+                },
               },
               currentModel
             );
@@ -473,9 +462,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <Card>
         <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent>
-          <ReportComponent
-            reportUuid={displayedReportUuid}
-          />
+          <ReportComponent reportUuid={displayedReportUuid} />
         </CardContent>
       </Card>
     </div>

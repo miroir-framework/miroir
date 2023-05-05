@@ -24,6 +24,7 @@ import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5
 import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import { applicationDeploymentLibrary } from '../0_interfaces/1_core/StorageConfiguration.js';
+import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -45,6 +46,7 @@ export class DomainController implements DomainControllerInterface {
 
   // ########################################################################################
   async handleDomainModelAction(
+    deploymentUuid:Uuid,
     domainModelAction: DomainModelAction,
     currentModel?:MiroirMetaModel,
   ): Promise<void> {
@@ -64,7 +66,7 @@ export class DomainController implements DomainControllerInterface {
       }
       case "undo":
       case "redo": {
-        await this.LocalAndRemoteController.handleLocalCacheModelAction(domainModelAction);
+        await this.LocalAndRemoteController.handleLocalCacheModelAction(deploymentUuid, domainModelAction);
         break;
       }
       case "initModel": 
@@ -133,6 +135,7 @@ export class DomainController implements DomainControllerInterface {
         console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
 
         await this.LocalAndRemoteController.handleLocalCacheAction(
+          deploymentUuid,
           {
             actionName:'create',
             actionType: 'DomainDataAction',
@@ -140,7 +143,7 @@ export class DomainController implements DomainControllerInterface {
           }
         );
 
-        await this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);// commit clears transaction information, locally.
+        await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
 
         const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -157,7 +160,7 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "UpdateMetaModelInstance": {
-        await this.LocalAndRemoteController.handleLocalCacheAction(domainModelAction);
+        await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);
         break;
       }
       case "updateEntity": {
@@ -174,6 +177,7 @@ export class DomainController implements DomainControllerInterface {
         
 
         await this.LocalAndRemoteController.handleLocalCacheAction(
+          deploymentUuid,
           {...domainModelAction,update:structureUpdatesWithCUDUpdates}
         );
         break;
@@ -188,8 +192,8 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  async handleDomainDataAction(domainAction: DomainDataAction): Promise<void> {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction", domainAction.actionName, domainAction.objects);
+  async handleDomainDataAction(deploymentUuid:Uuid, domainAction: DomainDataAction): Promise<void> {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction", domainAction.actionName, domainAction.objects);
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
     if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainAction.actionName)) {
       // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
@@ -197,11 +201,11 @@ export class DomainController implements DomainControllerInterface {
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction sending to remote storage instances",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction sending to remote storage instances",
           instances.parentName, instances.instances
         );
         await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
-          applicationDeploymentLibrary.uuid,
+          deploymentUuid,
           {
             actionType: 'RemoteStoreCRUDAction',
             actionName: domainAction.actionName.toString() as CRUDActionName,
@@ -210,13 +214,13 @@ export class DomainController implements DomainControllerInterface {
           });
       }
       console.log(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction calling handleLocalCacheDataAction", domainAction
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction calling handleLocalCacheDataAction", domainAction
       );
-      await this.LocalAndRemoteController.handleLocalCacheDataAction(domainAction);
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction end", domainAction);
+      await this.LocalAndRemoteController.handleLocalCacheDataAction(deploymentUuid, domainAction);
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction end", domainAction);
     } else {
       console.error(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainDataAction could not handle action name",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction could not handle action name",
         domainAction.actionName,
         "for action",
         domainAction
@@ -227,13 +231,14 @@ export class DomainController implements DomainControllerInterface {
 
   // ########################################################################################
   async handleDomainAction(
+    deploymentUuid:Uuid,
     domainAction: DomainAction,
     currentModel?:MiroirMetaModel,
   ): Promise<void> {
     let entityDomainAction:DomainAction = undefined;
     let otherDomainAction:DomainAction = undefined;
     const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','replace','undo','redo'];
-    console.log('handleDomainAction actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
+    console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
@@ -263,19 +268,19 @@ export class DomainController implements DomainControllerInterface {
     switch (domainAction.actionType) {
       case "DomainDataAction": {
         if (!!entityDomainAction) {
-          await this.handleDomainDataAction(entityDomainAction as DomainDataAction);
+          await this.handleDomainDataAction(deploymentUuid, entityDomainAction as DomainDataAction);
         }
         if (!!otherDomainAction) {
-          await this.handleDomainDataAction(otherDomainAction as DomainDataAction);
+          await this.handleDomainDataAction(deploymentUuid, otherDomainAction as DomainDataAction);
         }
         return Promise.resolve()
       }
       case "DomainModelAction": {
         if (!!entityDomainAction) {
-            await this.handleDomainModelAction(entityDomainAction as DomainModelAction, currentModel);
+            await this.handleDomainModelAction(deploymentUuid, entityDomainAction as DomainModelAction, currentModel);
         }
         if (!!otherDomainAction) {
-          await this.handleDomainModelAction(otherDomainAction as DomainModelAction, currentModel);
+          await this.handleDomainModelAction(deploymentUuid, otherDomainAction as DomainModelAction, currentModel);
         }
         return Promise.resolve()
       }

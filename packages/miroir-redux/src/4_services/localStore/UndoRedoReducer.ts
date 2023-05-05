@@ -5,6 +5,7 @@ import {
   CRUDActionNamesArrayString,
   CUDActionNamesArray,
   DomainAncillaryOrReplayableAction,
+  DomainAncillaryOrReplayableActionWithDeployment,
   DomainModelReplayableAction, EntityDefinition,
   EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
@@ -57,11 +58,13 @@ export interface ReduxStateWithUndoRedo {
 }
 
 // export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAction>) => InnerStoreStateInterface;
-export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableAction>) => InnerStoreStateInterface;
+// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableAction>) => InnerStoreStateInterface;
+export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => InnerStoreStateInterface;
 
 // TODO: make action type explicit!
 // export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAction>) => ReduxStateWithUndoRedo
-export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableAction>) => ReduxStateWithUndoRedo
+// export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableAction>) => ReduxStateWithUndoRedo
+export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => ReduxStateWithUndoRedo
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
@@ -106,7 +109,8 @@ function callUndoRedoReducer(
   reducer:InnerReducerInterface,
   state:InnerStoreStateInterface,
   // action:PayloadAction<DomainModelAction>
-  action:PayloadAction<DomainAncillaryOrReplayableAction>
+  // action:PayloadAction<DomainAncillaryOrReplayableAction>
+  action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
 ):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} {
   console.log('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
@@ -120,12 +124,12 @@ function callUndoRedoReducer(
       inverseChanges.push(...inversePatches)
     }
   );
-  if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.actionName)) {
+  if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.domainAction.actionName)) {
     // TODO: test can probably be removed, sorting of undoable actions is done before reaching this point
-    console.log('callUndoRedoReducer undoable action type', action.type, 'action name',action.payload.actionName, 'action', action.payload)
+    console.log('callUndoRedoReducer undoable action type', action.type, 'action name',action.payload.domainAction.actionName, 'action', action.payload)
     return {newSnapshot:newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges};
   } else {
-    console.warn('callUndoRedoReducer not undoable action type', action.type, 'action name',action.payload.actionName, 'action', action.payload,'changes',changes,'inverseChanges',inverseChanges)
+    console.warn('callUndoRedoReducer not undoable action type', action.type, 'action name',action.payload.domainAction.actionName, 'action', action.payload,'changes',changes,'inverseChanges',inverseChanges)
     console.warn('undoableSliceUpdateActions', undoableSliceUpdateActions)
     console.warn('newPresentModelSnapshot', JSON.stringify(newPresentModelSnapshot))
     return {newSnapshot:newPresentModelSnapshot, changes: [], inverseChanges: []};
@@ -136,20 +140,21 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    action: PayloadAction<DomainModelReplayableAction>,
+    // action: PayloadAction<DomainModelReplayableAction>,
+    action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
-    console.log('callNextReducerWithUndoRedo called for', action.type, action.payload.actionType, action.payload.actionName,'adding Patch to transaction');
+    console.log('callNextReducerWithUndoRedo called for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction');
 
     const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
     if (presentModelSnapshot === newSnapshot) {
       console.log('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
       return state;
     } else { // presentModelSnapshot !== newSnapshot
-      const newPatch:ReduxStateChanges = { action:action.payload, changes, inverseChanges };
+      const newPatch:ReduxStateChanges = { action:action.payload.domainAction as DomainModelReplayableAction, changes, inverseChanges };
 
 
-      console.log('callNextReducerWithUndoRedo for', action.type, action.payload.actionType, action.payload.actionName,'adding Patch to transaction', newPatch);
+      console.log('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
       
       return {
         previousModelSnapshot,
@@ -165,7 +170,8 @@ function callUndoRedoReducer(
 function callNextReducer(
   innerReducer:InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<DomainAncillaryOrReplayableAction>,
+  // action: PayloadAction<DomainAncillaryOrReplayableAction>,
+  action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
 ): ReduxStateWithUndoRedo {
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
@@ -192,7 +198,8 @@ function callNextReducer(
   return (
     state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
     // action:PayloadAction<DomainAction>
-    action:PayloadAction<DomainAncillaryOrReplayableAction>
+    // action:PayloadAction<DomainAncillaryOrReplayableAction>
+    action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
@@ -204,18 +211,20 @@ function callNextReducer(
         return callNextReducer(innerReducer, state, action);
       }
       case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
-        console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction with actionType',action.payload.actionType,'for action', action);
-        switch (action.payload.actionType) {
-          case "DomainDataAction":{
+        console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction with actionType',action.payload.domainAction.actionType,'for action', action);
+        switch (action.payload.domainAction.actionType) {
+          case "DomainDataAction": {
             // return callNextLocalCacheDataReducer(innerReducer, state, action as PayloadAction<DomainDataAction>)
-            if (CRUDActionNamesArrayString.includes(action.payload.actionName)) {
+            if (CRUDActionNamesArrayString.includes(action.payload.domainAction.actionName)) {
               return callNextReducer(innerReducer, state, {
                 type:action.type,
                 payload: {
-                  actionName:action.payload.actionName,
+                  deploymentUuid: action.payload.deploymentUuid,
+                  domainAction:{
+                  actionName:action.payload.domainAction.actionName,
                   actionType:"DomainDataAction",
-                  objects: action.payload.objects
-                }
+                  objects: action.payload.domainAction.objects
+                }}
               });
             } else {
               // TODO: raise exception?
@@ -224,7 +233,7 @@ function callNextReducer(
             break;
           }
           case "DomainModelAction": {
-            switch (action.payload.actionName) {
+            switch (action.payload.domainAction.actionName) {
               case 'replace': {
                 // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
                 const next = callNextReducer(innerReducer, state, action)
@@ -292,9 +301,10 @@ function callNextReducer(
                 break;
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-                console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.actionName, action);
+                console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.domainAction.actionName, action);
                 // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelEntityUpdateAction>)
-                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelReplayableAction>)
+                // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelReplayableAction>)
+                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>)
             }
             break;
           }

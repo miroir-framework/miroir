@@ -1,3 +1,4 @@
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
@@ -13,7 +14,7 @@ import {
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
+// import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};
@@ -31,18 +32,18 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(action: DomainModelAncillaryOrReplayableAction) {
-    return this.localCache.handleLocalCacheModelAction(action);
+  public async handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainModelAncillaryOrReplayableAction) {
+    return this.localCache.handleLocalCacheModelAction(deploymentUuid, action);
   }
 
   //####################################################################################
-  public async handleLocalCacheDataAction(action: DomainDataAction) {
-    return this.localCache.handleLocalCacheDataAction(action);
+  public async handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction) {
+    return this.localCache.handleLocalCacheDataAction(deploymentUuid, action);
   }
 
   //####################################################################################
-  public async handleLocalCacheAction(action: DomainAncillaryOrReplayableAction) {
-    return this.localCache.handleLocalCacheAction(action);
+  public async handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction) {
+    return this.localCache.handleLocalCacheAction(deploymentUuid, action);
   }
 
   //####################################################################################
@@ -131,11 +132,14 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
       }
 
       console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore all instances fetched from server", instances);
-      this.localCache.handleLocalCacheModelAction({
-        actionName: "replace",
-        actionType: "DomainModelAction",
-        objects: instances,
-      });
+      this.localCache.handleLocalCacheModelAction(
+        deploymentUuid,
+        {
+          actionName: "replace",
+          actionType: "DomainModelAction",
+          objects: instances,
+        }
+      );
       return Promise.resolve();
     } catch (error) {
       console.warn("LocalAndRemoteController loadConfigurationFromRemoteDataStore", error);

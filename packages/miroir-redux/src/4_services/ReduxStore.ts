@@ -28,7 +28,10 @@ import {
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
-  StoreBasedConfiguration
+  StoreBasedConfiguration,
+  applicationDeploymentMiroir,
+  Uuid,
+  DomainAncillaryOrReplayableActionWithDeployment
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -94,7 +97,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     public RemoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga
   ) {
     this.staticReducers = createUndoRedoReducer(
-      combineReducers<InnerStoreStateInterface,PayloadAction<DomainDataAction>>(
+      // combineReducers<InnerStoreStateInterface,PayloadAction<DomainDataAction>>(
+      combineReducers<InnerStoreStateInterface,PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>>(
         {
           miroirInstances: LocalCacheSlice.reducer,
         }
@@ -196,27 +200,33 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     return Promise.resolve(result);
   }
 
-  // ###############################################################################
-  handleLocalCacheModelAction(action:DomainModelAncillaryOrReplayableAction) {
+  // // ###############################################################################
+  // handleLocalCacheModelAction(domainAction:DomainModelAncillaryOrReplayableAction) {
+  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainModelAncillaryOrReplayableAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }
 
-  // ###############################################################################
-  handleLocalCacheDataAction(action:DomainDataAction) {
+  // // ###############################################################################
+  // handleLocalCacheDataAction(domainAction:DomainDataAction) {
+  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction:DomainDataAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }
 
-  // ###############################################################################
-  handleLocalCacheAction(action:DomainAncillaryOrReplayableAction) {
+  // // ###############################################################################
+  // handleLocalCacheAction(domainAction:DomainAncillaryOrReplayableAction) {
+  handleLocalCacheAction(deploymentUuid: Uuid, domainAction:DomainAncillaryOrReplayableAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](action)
+      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }
 

@@ -16,7 +16,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import SimpleEditor from './SimpleEditor';
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useCallback, useState } from 'react';
-import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirApplicationVersion, MiroirReport, StoreBasedConfiguration, entityEntity } from 'miroir-core';
+import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirApplicationVersion, MiroirReport, StoreBasedConfiguration, entityEntity, applicationDeploymentMiroir } from 'miroir-core';
 import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
@@ -85,6 +85,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
       const entity = e.data as MetaEntity;
       // sending ModelUpdates
       await domainController.handleDomainModelAction(
+        applicationDeploymentMiroir.uuid,
         {
           actionType: "DomainModelAction",
           actionName: "updateEntity",
@@ -106,6 +107,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
       console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
       // sending DataUpdates
       await domainController.handleDomainAction(
+        applicationDeploymentMiroir.uuid,
         {
           actionType: "DomainDataAction",
           actionName: "update",

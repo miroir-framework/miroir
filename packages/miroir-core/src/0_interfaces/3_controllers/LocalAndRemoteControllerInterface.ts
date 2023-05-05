@@ -1,3 +1,4 @@
+import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../2_domain/DomainControllerInterface";
 import { LocalCacheInfo } from "../4-services/localCache/LocalCacheInterface";
 import {
@@ -8,9 +9,9 @@ import {
 
 export interface LocalAndRemoteControllerInterface {
   loadConfigurationFromRemoteDataStore(deploymentUuid: string,): Promise<void>;
-  handleLocalCacheModelAction(action: DomainModelAncillaryOrReplayableAction);
-  handleLocalCacheDataAction(action: DomainDataAction);
-  handleLocalCacheAction(action: DomainAncillaryOrReplayableAction);
+  handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainModelAncillaryOrReplayableAction);
+  handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction);
+  handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction);
   handleRemoteStoreCRUDAction(action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;

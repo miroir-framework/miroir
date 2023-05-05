@@ -2,7 +2,7 @@ import { MiroirMetaModel } from "../1_core/Model.js";
 import { ModelCUDInstanceUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { EntityInstance, EntityInstanceCollection } from "../1_core/Instance.js";
-import { EntityDefinition, MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { EntityDefinition, MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
 
 export const CUDActionNamesObject = {
   'create': 'create',
@@ -138,7 +138,18 @@ export const remoteStoreActionNamesArray:RemoteStoreActionName[] = Object.keys(r
 
 // #############################################################################################
 export type DomainAction = DomainDataAction | DomainModelAction;
+export interface DomainActionWithDeployment {
+  deploymentUuid: Uuid;
+  domainAction: DomainAction;
+};
+
 export type DomainAncillaryOrReplayableAction = DomainDataAction | DomainModelAncillaryOrReplayableAction;
+
+export interface DomainAncillaryOrReplayableActionWithDeployment {
+  deploymentUuid: Uuid;
+  domainAction: DomainAncillaryOrReplayableAction;
+};
+
 
 export interface DomainInstancesUuidIndex {
   [uuid: string]: EntityInstance
@@ -152,10 +163,9 @@ export type DomainStateSelector=(domainState:DomainState)=>EntityInstance[]
 export type DomainStateReducer=(domainState:DomainState)=>any
 
 export interface DomainControllerInterface {
-  handleDomainDataAction(action:DomainDataAction):Promise<void>;
-  handleDomainModelAction(action:DomainModelAction, currentModel?:MiroirMetaModel):Promise<void>;
-  handleDomainAction(action:DomainAction, currentModel?:MiroirMetaModel):Promise<void>;
-  // currentTransaction():DomainModelEntityUpdateAction[];
+  handleDomainDataAction(deploymentUuid: Uuid, action:DomainDataAction):Promise<void>;
+  handleDomainModelAction(deploymentUuid: Uuid, action:DomainModelAction, currentModel?:MiroirMetaModel):Promise<void>;
+  handleDomainAction(deploymentUuid: Uuid, action:DomainAction, currentModel?:MiroirMetaModel):Promise<void>;
   currentTransaction():DomainModelReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }
