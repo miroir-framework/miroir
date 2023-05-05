@@ -74,6 +74,33 @@ app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
   )
 });
 
+// ##############################################################################################
+app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (req, res, ctx) => {
+  // TODO: remove, it is identical to post!!
+  const body = await req.body;
+  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received, count',count++,'body',body);
+  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
+  
+  const deploymentUuid: string =
+    typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+  
+  const parentUuid: string =
+    typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
+  
+  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
+  console.log("server get miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
+
+  return generateHandlerBody(
+    {parentUuid},
+    ['parentUuid'],
+    body,
+    'get',
+    "/miroirWithDeployment/entity/",
+    targetProxy.getInstances.bind(targetProxy),
+    res.json.bind(res)
+  )
+});
+
 
 // ##############################################################################################
 app.put("/miroir/entity", async (req, res, ctx) => {
@@ -106,7 +133,7 @@ app.put("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) =>
     [],
     body,
     'put',
-    "/miroir/entity/",
+    "/miroirWithDeployment/entity/",
     targetProxy.upsertInstance.bind(targetProxy),
     res.json.bind(res)
   )
@@ -147,7 +174,7 @@ app.post("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) =
     [],
     body,
     'post',
-    "/miroir/entity/",
+    "/miroirWithDeployment/entity/",
     targetProxy.upsertInstance.bind(targetProxy),
     res.json.bind(res)
   )

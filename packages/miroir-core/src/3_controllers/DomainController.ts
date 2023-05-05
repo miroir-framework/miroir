@@ -58,7 +58,8 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainModelAction.actionName) {
       case "replace": {
-        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore();
+        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentMiroir.uuid);
+        // await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
         break;
       }
       case "undo":

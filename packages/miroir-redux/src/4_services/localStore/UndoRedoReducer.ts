@@ -9,7 +9,7 @@ import {
   EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
-import { LocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "src/4_services/localStore/LocalCacheSlice";
+import { LocalCacheSliceState, NewLocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "src/4_services/localStore/LocalCacheSlice";
 import { RemoteStoreRestSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
@@ -24,8 +24,8 @@ enablePatches(); // to gather undo/redo operation history
  */
 
 export interface InnerStoreStateInterface {
-  // miroirEntities: EntityState<EntityDefinition>;
-  miroirInstances: LocalCacheSliceState;
+  // miroirInstances: LocalCacheSliceState;
+  miroirInstances: NewLocalCacheSliceState;
 }
 
 export interface ReduxStateChanges {

@@ -88,13 +88,16 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
    * performs remote update before local update, so that whenever remote update fails, local value is not modified (going into the "catch").
    * @returns undefined when loading is finished
    */
-  public async loadConfigurationFromRemoteDataStore(): Promise<void> {
+  public async loadConfigurationFromRemoteDataStore(
+    deploymentUuid: string,
+  ): Promise<void> {
     try {
       const entities: EntityInstanceCollection = (
         await throwExceptionIfError(
           this.miroirContext.errorLogService,
-          this.remoteStore.handleRemoteStoreCRUDAction,
-          this.remoteStore,
+          this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
+          this.remoteStore, //this
+          deploymentUuid,
           {
             actionName: "read",
             parentName: entityEntity.name,
@@ -107,11 +110,12 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
       let instances: EntityInstanceCollection[] = [entities]; //TODO: replace with functional implementation
       for (const e of entities.instances) {
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
-        console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore loading instances for entity", e["name"]);
+        console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore fecthing instances from server for entity", e["name"]);
         const entityInstances: EntityInstanceCollection[] = await throwExceptionIfError(
           this.miroirContext.errorLogService,
-          this.remoteStore.handleRemoteStoreCRUDAction,
-          this.remoteStore,
+          this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
+          this.remoteStore, // this
+          deploymentUuid,
           {
             actionName: "read",
             parentName: e["name"],
@@ -126,7 +130,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         instances.push(entityInstances[0]);
       }
 
-      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore instances", instances);
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore all instances fetched from server", instances);
       this.localCache.handleLocalCacheModelAction({
         actionName: "replace",
         actionType: "DomainModelAction",

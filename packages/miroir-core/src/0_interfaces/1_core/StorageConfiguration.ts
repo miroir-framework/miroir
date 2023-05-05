@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const ZapplicationConceptLevel = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
 
-export const Zinstance = z.object({
+export const ZinstanceSchema = z.object({
   uuid: z.string().uuid(),
   parentUuid: z.string().uuid(),
   parentName: z.string().optional(),
@@ -11,7 +11,9 @@ export const Zinstance = z.object({
   // instanceOfThisInstanceConceptLevel: ZapplicationConceptLevel.optional(),
 });
 
-export const ZinstanceWithName = Zinstance.extend({
+export type Zinstance = z.infer<typeof ZinstanceSchema>;
+
+export const ZinstanceWithName = ZinstanceSchema.extend({
   name: z.string(),
 });
 

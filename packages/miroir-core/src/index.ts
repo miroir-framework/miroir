@@ -20,6 +20,7 @@ export {
   StorageLocation,
   StorageType,
   ZapplicationConceptLevel,
+  ZinstanceSchema,
   Zinstance,
   ZinstanceWithName,
   Zmodel,

@@ -15,24 +15,24 @@ export interface MiroirReportComponentProps {
 export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   props: MiroirReportComponentProps
 ) => {
-  console.log("ReportComponent props",props);
+  // console.log("ReportComponent props",props);
   const miroirEntities:MetaEntity [] = useLocalCacheEntities();
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirReports:MiroirReport[] = useLocalCacheReports();
   const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(  props.reportUuid);
-  console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
+  // console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
   
   const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid);
   const currentMiroirEntity: MetaEntity = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
   const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
-  console.log("ReportComponent currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
+  // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
 
   const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntityDefinition?.attributes?.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
   const columnDefs=getColumnDefinitions(currentMiroirEntityDefinition?.attributes);
-  console.log("ReportComponent columnDefs",columnDefs);
+  // console.log("ReportComponent columnDefs",columnDefs);
 
   return (
     <div>

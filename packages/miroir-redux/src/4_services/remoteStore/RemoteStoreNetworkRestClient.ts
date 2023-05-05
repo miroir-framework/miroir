@@ -109,12 +109,12 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   async handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
-    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroirWithDeployment/" + applicationDeploymentLibrary.uuid + "/entity");
+    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/entity");
     console.log("RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDActionWithDeployment", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
   async handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid:string, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
-    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/modelWithDeployment/" + applicationDeploymentLibrary.uuid + "/" + action.actionName);
+    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName);
     console.log("RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelActionWithDeployment", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }

@@ -11,7 +11,8 @@ export default [
       'lodash',
       'miroir-core',
       'redux-saga',
-      'redux-saga/effects'
+      'redux-saga/effects',
+      'zod'
     ],
     output: [
         {

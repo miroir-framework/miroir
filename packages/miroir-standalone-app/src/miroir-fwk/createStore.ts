@@ -132,6 +132,8 @@ export async function createMswStore(
         // const lib = await import("miroir-datastore-postgres");
         // const createServer = lib.createServer;
         const localDataStore: DataStoreInterface = await createSqlServerProxy(
+          'miroir',
+          'miroir',
           miroirConfig.emulatedServerConfig.connectionString,
           miroirConfig.emulatedServerConfig.schema,
           miroirConfig.emulatedServerConfig.connectionString,

@@ -5,7 +5,7 @@ export interface EntityInstance {
   "parentName"?: string,
   "parentUuid": string,
   "conceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
-  "instanceOfThisInstanceConceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
+  // "instanceOfThisInstanceConceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
 }
 
 export interface EntityInstanceWithName extends EntityInstance {

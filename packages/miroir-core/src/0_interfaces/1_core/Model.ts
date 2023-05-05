@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { EntityInstance, EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 import { MiroirApplicationVersion } from "../../0_interfaces/1_core/ModelVersion";
-import { Zinstance } from "../../0_interfaces/1_core/StorageConfiguration";
+import { ZinstanceSchema } from "../../0_interfaces/1_core/StorageConfiguration";
 
 import { EntityDefinition, MetaEntity } from "./EntityDefinition";
 import { StoreBasedConfiguration } from "./MiroirConfig";
@@ -19,7 +19,7 @@ export interface MiroirModel {
   [parentUuid: string]: {[uuid:string]:EntityInstance}
 }
 
-export const ZapplicationVersionCrossEntityDefinition = Zinstance.extend({
+export const ZapplicationVersionCrossEntityDefinition = ZinstanceSchema.extend({
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });

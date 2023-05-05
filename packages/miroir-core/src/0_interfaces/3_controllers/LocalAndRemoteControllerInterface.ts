@@ -7,7 +7,7 @@ import {
 } from "../4-services/remoteStore/RemoteDataStoreInterface";
 
 export interface LocalAndRemoteControllerInterface {
-  loadConfigurationFromRemoteDataStore(): Promise<void>;
+  loadConfigurationFromRemoteDataStore(deploymentUuid: string,): Promise<void>;
   handleLocalCacheModelAction(action: DomainModelAncillaryOrReplayableAction);
   handleLocalCacheDataAction(action: DomainDataAction);
   handleLocalCacheAction(action: DomainAncillaryOrReplayableAction);
