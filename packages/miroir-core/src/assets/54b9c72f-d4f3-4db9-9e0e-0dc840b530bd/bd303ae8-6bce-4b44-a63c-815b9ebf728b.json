@@ -74,9 +74,18 @@
     },
     {
       "id": 6,
-      "name": "configuration",
-      "defaultLabel": "Application Deployment Configuration",
-      "description": "The Configuration for this Application Deployment.",
+      "name": "model",
+      "defaultLabel": "Application Deployment Model",
+      "description": "The location where the model used for this Application Deployment can be found.",
+      "type": "OBJECT",
+      "nullable": false,
+      "editable": true
+    },
+    {
+      "id": 7,
+      "name": "data",
+      "defaultLabel": "Application Deployment Data",
+      "description": "The location where the data used for this Application Deployment can be found.",
       "type": "OBJECT",
       "nullable": false,
       "editable": true

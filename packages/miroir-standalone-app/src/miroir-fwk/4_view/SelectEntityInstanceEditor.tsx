@@ -19,7 +19,8 @@ import {
 import { Autocomplete, Box, TextField } from '@mui/material';
 
 import { EntityDefinition, EntityInstance, EntityInstanceWithName, MetaEntity } from 'miroir-core';
-import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForEntity, useLocalCacheInstancesForReport } from 'miroir-fwk/4_view/hooks';
+import { useLocalCacheDeploymentEntities, useLocalCacheDeploymentEntityDefinitions, useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForEntity, useLocalCacheInstancesForReport } from 'miroir-fwk/4_view/hooks';
+import { useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
 
 // backspace starts the editor on Windows
@@ -31,11 +32,13 @@ const KEY_TAB = 'Tab';
 
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
   console.log('EntityInstanceCellRenderer',props);
-  const miroirEntities:MetaEntity [] = useLocalCacheEntities();
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const deploymentUuid = useMiroirContextDeploymentUuid();
+  const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
+  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
   const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
 
-  const instancesToDisplay = useLocalCacheInstancesForEntity(props['entityUuid']) as EntityInstanceWithName[];
+  const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,props['entityUuid']) as EntityInstanceWithName[];
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
   // const imageForMood = (mood: string) =>
   //   'https://www.ag-grid.com/example-assets/genders/' +
@@ -47,7 +50,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   return (
     <span>
       {/* <img width="20px" src={mood} /> */}
-      {instanceToDisplay?instanceToDisplay.name:currentMiroirEntityDefinition.name + ' ' + props.value + ' not known.'}
+      {instanceToDisplay?instanceToDisplay['name']:currentMiroirEntityDefinition['name'] + ' ' + props.value + ' not known.'}
     </span>
   )
 })
@@ -56,11 +59,14 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
-    const miroirEntities:MetaEntity [] = useLocalCacheEntities();
-    const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+    const deploymentUuid = useMiroirContextDeploymentUuid();
+    // const miroirEntities:MetaEntity [] = useLocalCacheEntities();
+    const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
+    // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+    const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
     const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
   
-    const instancesToDisplay = useLocalCacheInstancesForEntity(props['entityUuid']) as EntityInstanceWithName[];
+    const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,props['entityUuid']) as EntityInstanceWithName[];
     const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);

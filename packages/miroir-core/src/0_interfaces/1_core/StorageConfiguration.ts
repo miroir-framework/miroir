@@ -74,23 +74,26 @@ export const ServerStorageLocation = z.discriminatedUnion('type',[
 ])
 
 
-export const ModelStorageLocation = z.object({
+export const ModelStorageLocationSchema = z.object({
   // modelUuid: z.string().uuid(),
   location: ServerStorageLocation,
 })
 
+export type ModelStorageLocation = z.infer<typeof ModelStorageLocationSchema>;
 
 
-export const ApplicationDeployment = z.object({
-  uuid: z.string().uuid(),
+export const ApplicationDeploymentSchema = ZinstanceWithName.extend({
+  // uuid: z.string().uuid(),
   type: ClientServerDistributionMode,
+  description: z.string(),
   // metaModel: ModelStorageLocation,
-  model: ModelStorageLocation.optional(),
-  data: ModelStorageLocation.optional(),
+  model: ModelStorageLocationSchema.optional(),
+  data: ModelStorageLocationSchema.optional(),
 });
 
+export type ApplicationDeployment = z.infer<typeof ApplicationDeploymentSchema>;
 
-export const applicationDeploymentMiroirBootstrap: z.infer<typeof ApplicationDeployment> = {
+export const applicationDeploymentMiroirBootstrap: ApplicationDeployment = {
   uuid: 'f0d67153-0e37-4b5c-91cf-415dc7780043',
   type:'singleNode',
   model: {
@@ -121,7 +124,7 @@ export const applicationDeploymentMiroirBootstrap: z.infer<typeof ApplicationDep
   },
 };
 
-export const applicationDeploymentLibrary: z.infer<typeof ApplicationDeployment> = {
+export const applicationDeploymentLibraryNew: ApplicationDeployment = {
   uuid: 'f714bb2f-a12d-4e71-a03b-74dcedea6eb4',
   type:'singleNode',
   model: {

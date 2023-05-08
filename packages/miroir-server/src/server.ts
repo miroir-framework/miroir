@@ -7,7 +7,7 @@ import {
   ApplicationDeployment,
   generateHandlerBody,
   modelActionRunner,
-  applicationDeploymentMiroirBootstrap,
+  applicationDeploymentMiroir,
   applicationDeploymentLibrary,
   defaultMiroirMetaModel
 } from "miroir-core";
@@ -31,10 +31,10 @@ console.log(`Server being set-up, going to execute on the port::${port}`);
 const miroirAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
   'miroir',
   'miroir',
-  applicationDeploymentMiroirBootstrap.model.location['connectionString'],
-  applicationDeploymentMiroirBootstrap.model.location['schema'],
-  applicationDeploymentMiroirBootstrap.data.location['connectionString'],
-  applicationDeploymentMiroirBootstrap.data.location['schema'],
+  applicationDeploymentMiroir.model.location['connectionString'],
+  applicationDeploymentMiroir.model.location['schema'],
+  applicationDeploymentMiroir.data.location['connectionString'],
+  applicationDeploymentMiroir.data.location['schema'],
 );
 const libraryAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
   'library',

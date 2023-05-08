@@ -2,7 +2,9 @@ export {
   getPromiseActionStoreActionNames,
   selectCurrentTransaction,
   selectInstancesForEntity,
+  selectInstancesForDeploymentEntity,
   selectInstancesFromDomainSelector,
+  selectInstancesFromDeploymentDomainSelector,
   selectMiroirEntityInstances,
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";

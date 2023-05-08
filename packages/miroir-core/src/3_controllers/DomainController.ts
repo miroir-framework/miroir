@@ -21,9 +21,9 @@ import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a98732
 // import entityDefinitionModelVersion from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json";
 import applicationMiroir from '../assets/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
 import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
+import applicationDeploymentLibrary from '../assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
-import { applicationDeploymentLibrary } from '../0_interfaces/1_core/StorageConfiguration.js';
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 
 /**
@@ -61,7 +61,7 @@ export class DomainController implements DomainControllerInterface {
     switch (domainModelAction.actionName) {
       case "replace": {
         await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentMiroir.uuid);
-        // await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
+        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
         break;
       }
       case "undo":

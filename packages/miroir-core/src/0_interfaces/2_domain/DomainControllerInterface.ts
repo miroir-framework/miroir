@@ -154,13 +154,16 @@ export interface DomainAncillaryOrReplayableActionWithDeployment {
 export interface DomainInstancesUuidIndex {
   [uuid: string]: EntityInstance
 }
-export interface DomainState {
+export interface EntitiesDomainState { // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
   [entityUuid: string]: DomainInstancesUuidIndex;
 }
+// export interface DeploymentDomainState { // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+//   [deploymentUuid: string]:{[entityUuid: string]: DomainInstancesUuidIndex};
+// }
 
-export type DomainStateTransformer=(domainState:DomainState)=>DomainState
-export type DomainStateSelector=(domainState:DomainState)=>EntityInstance[]
-export type DomainStateReducer=(domainState:DomainState)=>any
+export type DomainStateTransformer=(domainState:EntitiesDomainState)=>EntitiesDomainState
+export type DomainStateSelector=(domainState:EntitiesDomainState)=>EntityInstance[]
+export type DomainStateReducer=(domainState:EntitiesDomainState)=>any
 
 export interface DomainControllerInterface {
   handleDomainDataAction(deploymentUuid: Uuid, action:DomainDataAction):Promise<void>;

@@ -1,3 +1,4 @@
+import { metamodelEntities } from "src/3_controllers/ModelInitializer.js";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -14,6 +15,8 @@ import {
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
+import entityReport from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
+
 // import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
 
@@ -93,7 +96,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
     deploymentUuid: string,
   ): Promise<void> {
     try {
-      const entities: EntityInstanceCollection = (
+      const dataEntities: EntityInstanceCollection = (
         await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
@@ -106,10 +109,15 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           }
         )
       )[0];
-      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore found entities", entities);
 
-      let instances: EntityInstanceCollection[] = [entities]; //TODO: replace with functional implementation
-      for (const e of entities.instances) {
+      const modelEntities = metamodelEntities.filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
+      // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
+      const toFetchEntities = [...modelEntities, ...dataEntities.instances];
+
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",deploymentUuid,"found dataentities", dataEntities,"toFetchEntities",toFetchEntities);
+
+      let instances: EntityInstanceCollection[] = [dataEntities]; //TODO: replace with functional implementation
+      for (const e of toFetchEntities) {
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
         console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore fecthing instances from server for entity", e["name"]);
         const entityInstances: EntityInstanceCollection[] = await throwExceptionIfError(

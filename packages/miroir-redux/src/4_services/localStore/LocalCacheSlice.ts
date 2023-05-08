@@ -11,7 +11,7 @@ import {
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
 import {
-  DomainState,
+  EntitiesDomainState,
   DomainStateSelector,
   EntityInstance,
   EntityInstanceCollection,
@@ -276,14 +276,14 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
       break;
     }
     case "updateEntity": {
-      console.log('localCacheSliceObject updateModel',action);
+      console.log('localCacheSliceObject updateModel',action, state[deploymentUuid][entityEntity.uuid],state[deploymentUuid][entityEntityDefinition.uuid]);
       // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
       // send CUD actions to local cache
       // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
       const domainDataAction:DomainDataAction = 
         ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
-          Object.values(state[entityEntity.uuid].entities) as MetaEntity[],
-          Object.values(state[entityEntityDefinition.uuid].entities) as EntityDefinition[],
+          Object.values(state[deploymentUuid][entityEntity.uuid].entities) as MetaEntity[],
+          Object.values(state[deploymentUuid][entityEntityDefinition.uuid].entities) as EntityDefinition[],
           action.update.modelEntityUpdate
         )
       ;
@@ -400,6 +400,55 @@ export const selectInstancesForEntity: (entityUuid: string) => any = _memoize(
 );
 
 //#########################################################################################
+// TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
+// TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
+export const selectInstancesForDeploymentEntity: (deploymentUuid:string, entityUuid: string) => any = 
+// _memoize(
+  (deploymentUuid:string, entityUuid: string) => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        
+        const innerState = state.presentModelSnapshot.miroirInstances;
+        const deployment = innerState?innerState[deploymentUuid]:undefined;
+        const instances = deployment?deployment[entityUuid]:[];
+        // console.log('selectInstancesForDeploymentEntity deploymentUuid',deploymentUuid,'entityUuid', entityUuid,'state',state,'instances',instances);
+        return instances;
+      },
+      (items: any) => items
+    );
+  }
+// )
+;
+
+//#########################################################################################
+export const selectInstancesFromDeploymentDomainSelector: 
+  (deploymentUuid:string) => (selector: DomainStateSelector) => (state: ReduxStateWithUndoRedo) => EntityInstance[] =
+  (deploymentUuid:string) => {
+    return (selector: DomainStateSelector) => {
+      return createSelector(
+        (state: ReduxStateWithUndoRedo) => {
+          const deployments = state?.presentModelSnapshot?.miroirInstances;
+          // const deploymentInstances = deployments?deployments[applicationDeploymentMiroir.uuid]:undefined
+          const deploymentInstances = deployments?deployments[deploymentUuid]:undefined
+          if (deploymentInstances) {
+            const domainState: EntitiesDomainState = Object.fromEntries(
+              Object.entries(deploymentInstances).map((e) => {
+                // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+                return [e[0], e[1].entities];
+              })
+            ) as EntitiesDomainState;
+            // console.log("selectInstancesFromDomainSelector domainState",domainState)
+            return selector(domainState);
+          } else {
+            return selector({} as EntitiesDomainState);
+          }
+        },
+        (items: EntityInstance[]) => items
+      );
+    };
+  }
+
+//#########################################################################################
 export const selectInstancesFromDomainSelector: (
   selector: DomainStateSelector
 ) => (state: ReduxStateWithUndoRedo) => EntityInstance[] =
@@ -411,16 +460,16 @@ export const selectInstancesFromDomainSelector: (
         const deployments = state?.presentModelSnapshot?.miroirInstances;
         const deploymentInstances = deployments?deployments[applicationDeploymentMiroir.uuid]:undefined
         if (deploymentInstances) {
-          const domainState: DomainState = Object.fromEntries(
+          const domainState: EntitiesDomainState = Object.fromEntries(
             Object.entries(deploymentInstances).map((e) => {
               // console.log("selectInstancesFromDomainSelector miroirInstances", e);
               return [e[0], e[1].entities];
             })
-          ) as DomainState;
+          ) as EntitiesDomainState;
           // console.log("selectInstancesFromDomainSelector domainState",domainState)
           return selector(domainState);
         } else {
-          return selector({} as DomainState);
+          return selector({} as EntitiesDomainState);
         }
       },
       (items: EntityInstance[]) => items

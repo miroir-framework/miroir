@@ -10,6 +10,7 @@ import {
   entityEntityDefinition,
   EntityInstance,
   MetaEntity,
+  metamodelEntities,
   MiroirMetaModel,
   ModelEntityUpdateRenameEntity,
   modelInitialize,
@@ -158,9 +159,9 @@ export class SqlDbDatastore implements DataStoreInterface {
   ): Promise<void> {
     if (this.sqlDataSchemaTableAccess) {
       // TODO: allow refresh
-      console.warn("sqlDbServer createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
+      console.warn("sqlDbServer",dataStoreType,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
     } else {
-      console.warn("sqlDbServer createProxy",dataStoreType,"initialization started");
+      console.warn("sqlDbServer",dataStoreType,"createProxy",dataStoreType,"initialization started");
       // const metaModelEntityEntity = metaModel.entities.find(e=>e.uuid = entityEntity.uuid);
       // const metaModelEntityDefinitionEntity = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntity.uuid);
       // const metaModelEntityEntityDefinition = metaModel.entities.find(e=>e.uuid = entityEntityDefinition.uuid);
@@ -407,7 +408,8 @@ export class SqlDbDatastore implements DataStoreInterface {
 
   // ##############################################################################################
   async getInstances(parentUuid: string): Promise<EntityInstance[]> {
-    if ([entityEntity.uuid,entityEntityDefinition.uuid].includes(parentUuid)) { // TODO: Wrong, only true for Miroir meta-model!
+    const modelEntitiesUuid = this.dataStoreType == "app"?metamodelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+    if (modelEntitiesUuid.includes(parentUuid)) {
       return this.getModelInstances(parentUuid);
     } else {
       return this.getDataInstances(parentUuid)

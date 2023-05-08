@@ -25,9 +25,12 @@ import {
   MiroirReport,
   reportReportList,
   StoreBasedConfiguration,
-  applicationDeploymentMiroir
+  applicationDeploymentMiroir,
+  applicationDeploymentLibrary,
+  ApplicationDeployment
 } from "miroir-core";
 import {
+  useLocalCacheDeploymentReports,
   useLocalCacheEntities,
   useLocalCacheEntityDefinitions,
   useLocalCacheModelVersion,
@@ -35,7 +38,7 @@ import {
   useLocalCacheStoreBasedConfiguration,
   useLocalCacheTransactions,
 } from "miroir-fwk/4_view/hooks";
-import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 
 import * as React from "react";
@@ -88,7 +91,7 @@ async function uploadBooksAndReports(
   currentModel?:MiroirMetaModel
 ) {
   await domainController.handleDomainAction(
-    applicationDeploymentMiroir.uuid,
+    applicationDeploymentLibrary.uuid,
     {
     actionType: "DomainModelAction",
     actionName: "updateEntity",
@@ -106,7 +109,7 @@ async function uploadBooksAndReports(
     }
   },currentModel);
   await domainController.handleDomainAction(
-    applicationDeploymentMiroir.uuid,
+    applicationDeploymentLibrary.uuid,
     {
     actionType: "DomainModelAction",
     actionName: "UpdateMetaModelInstance",
@@ -130,7 +133,7 @@ async function uploadBooksAndReports(
   );
 
   await domainController.handleDomainAction(
-    applicationDeploymentMiroir.uuid,
+    applicationDeploymentLibrary.uuid,
     {
     actionType: "DomainDataAction",
     actionName: "create",
@@ -167,6 +170,8 @@ async function uploadBooksAndReports(
 
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+
   const miroirReports: MiroirReport[] = useLocalCacheReports();
   const miroirEntities: MetaEntity[] = useLocalCacheEntities();
   const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
@@ -177,10 +182,22 @@ export const RootComponent = (props: RootComponentProps) => {
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
   // const [displayedReportName, setDisplayedReportName] = React.useState('');
   const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
+  // const [displayedDeploymentUuid, setDisplayedDeploymentUuid] = React.useState("");
+  const displayedDeploymentUuid = useMiroirContextDeploymentUuid();
+  const setDisplayedDeploymentUuid = useMiroirContextSetDeploymentUuid();
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentReports(displayedDeploymentUuid);
+
+  const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-    setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
+    // setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
+    setDisplayedReportUuid(defaultToEntityList(event.target.value, deploymentReports));
+  };
+
+  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+    // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
+    setDisplayedDeploymentUuid(event.target.value);
+    setDisplayedReportUuid("");
   };
 
   console.log("RootComponent miroirReports", miroirReports);
@@ -433,11 +450,35 @@ export const RootComponent = (props: RootComponentProps) => {
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
       <p />
+      <p />
+      <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+      <p />
       <h3>
         {/* props: {JSON.stringify(props)} */}
         erreurs: {JSON.stringify(errorLog)}
       </h3>
       <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+      <p />
+      <Box sx={{ minWidth: 50 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={displayedDeploymentUuid}
+            label="displayedDeploymentUuid"
+            onChange={handleChangeDisplayedDeployment}
+          >
+            {deployments.map((deployment) => {
+              return (
+                <MenuItem key={deployment.name} value={deployment.uuid}>
+                  {deployment.description}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box>
       <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>
@@ -447,9 +488,9 @@ export const RootComponent = (props: RootComponentProps) => {
             id="demo-simple-select"
             value={displayedReportUuid}
             label="displayedReportUuid"
-            onChange={handleChange}
+            onChange={handleChangeDisplayedReport}
           >
-            {miroirReports.map((r) => {
+            {deploymentReports.map((r) => {
               return (
                 <MenuItem key={r.name} value={r.uuid}>
                   {r.defaultLabel}
@@ -462,7 +503,7 @@ export const RootComponent = (props: RootComponentProps) => {
       <Card>
         <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent>
-          <ReportComponent reportUuid={displayedReportUuid} />
+          <ReportComponent deploymentUuid={displayedDeploymentUuid} reportUuid={displayedReportUuid} />
         </CardContent>
       </Card>
     </div>

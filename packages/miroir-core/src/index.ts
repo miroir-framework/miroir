@@ -10,9 +10,11 @@ export {
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
   ClientFileStorage,
+  ApplicationDeploymentSchema,
   ApplicationDeployment,
   DeploymentSide,
   FileStorage,
+  ModelStorageLocationSchema,
   ModelStorageLocation,
   ServerFileStorage,
   ServerSqlStorage,
@@ -25,7 +27,7 @@ export {
   ZinstanceWithName,
   Zmodel,
   ClientServerDistributionMode,
-  applicationDeploymentLibrary,
+  applicationDeploymentLibraryNew,
   applicationDeploymentMiroirBootstrap,
 } from './0_interfaces/1_core/StorageConfiguration.js';
 export {
@@ -81,7 +83,7 @@ export {
   DomainModelUndoRedoAction,
   DomainModelReplayableAction,
   DomainModelRollbackAction,
-  DomainState,
+  EntitiesDomainState,
   DomainStateReducer,
   DomainStateSelector,
   DomainStateTransformer,
@@ -149,8 +151,9 @@ export {
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
 export {
-  modelInitialize,
   DataStoreApplicationType,
+  modelInitialize,
+  metamodelEntities,
 } from './3_controllers/ModelInitializer.js';
 export {
   modelActionRunner,
@@ -222,9 +225,12 @@ import reportReportList from './assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7
 // import applicationVersionInitialMiroirVersion from './assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import instanceConfigurationReference from './assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
+import applicationDeploymentLibrary from './assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
+
 export {
   applicationMiroir,
   applicationDeploymentMiroir,
+  applicationDeploymentLibrary,
   applicationModelBranchMiroirMasterBranch,
   applicationVersionInitialMiroirVersion,
   entityApplication,

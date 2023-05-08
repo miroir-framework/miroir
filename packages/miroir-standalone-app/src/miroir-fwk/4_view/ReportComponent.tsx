@@ -1,5 +1,5 @@
 import { EntityDefinition, EntityInstance, MetaEntity, MiroirReport } from "miroir-core";
-import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
+import { useLocalCacheDeploymentEntities, useLocalCacheDeploymentEntityDefinitions, useLocalCacheDeploymentReports, useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheInstancesForReport, useLocalCacheReports } from "miroir-fwk/4_view/hooks";
 import * as React from "react";
 
 import { MTableComponent } from "./MTableComponent";
@@ -8,6 +8,7 @@ import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
 
 export interface MiroirReportComponentProps {
   // reportName: string;
+  deploymentUuid: string;
   reportUuid: string;
 };
 
@@ -16,41 +17,50 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   props: MiroirReportComponentProps
 ) => {
   // console.log("ReportComponent props",props);
-  const miroirEntities:MetaEntity [] = useLocalCacheEntities();
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const miroirReports:MiroirReport[] = useLocalCacheReports();
-  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(  props.reportUuid);
-  // console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
+  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  // const miroirReports:MiroirReport[] = useLocalCacheReports();
   
-  const currentMiroirReport: MiroirReport = miroirReports?.find(r=>r.uuid === props?.reportUuid);
+  
+  const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(props.deploymentUuid);
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(props.deploymentUuid);
+  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentReports(props.deploymentUuid);
+  console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
+  
+  const currentMiroirReport: MiroirReport = deploymentReports?.find(r=>r.uuid === props?.reportUuid);
   const currentMiroirEntity: MetaEntity = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
   const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
-  // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
+  console.log("ReportComponent currentMiroirReport",currentMiroirReport,"currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
+
+  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(props.deploymentUuid,props.reportUuid);
+  
 
   const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],currentMiroirEntityDefinition?.attributes?.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
   const columnDefs=getColumnDefinitions(currentMiroirEntityDefinition?.attributes);
-  // console.log("ReportComponent columnDefs",columnDefs);
+  console.log("ReportComponent columnDefs",columnDefs);
 
   return (
     <div>
       <div>
-        <h3>
           {/* props: {JSON.stringify(props)} */}
           {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
           colonnes: {JSON.stringify(columnDefs)}
+          <p/>
+          deployment: {JSON.stringify(props.deploymentUuid)}
+          <p/>
+        <h3>
           {currentMiroirReport?.defaultLabel}
         </h3>
 
       </div>
-     
+      <p></p>
       <div>
         {
           currentMiroirReport?
             (
-              miroirReports?.length > 0?
+              deploymentReports?.length > 0?
                 <div>
                   <MTableComponent
                     reportDefinition={currentMiroirReport}

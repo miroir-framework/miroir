@@ -6,6 +6,8 @@ import * as React from "react";
 const miroirReactContext = React.createContext<{
   miroirContext:MiroirContextInterface,
   domainController: DomainControllerInterface;
+  deploymentUuid: string;
+  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
 }>(undefined);
 
 
@@ -23,11 +25,23 @@ export function MiroirContextReactProvider(
       | React.ReactPortal;
   }
 ) {
+  const [deploymentUuid, setDeploymentUuid] = React.useState("");
+
   const value = {
     miroirContext: props.miroirContext || new MiroirContext(),
     domainController: props.domainController,
+    deploymentUuid,
+    setDeploymentUuid
   };
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
+}
+
+export function useMiroirContextDeploymentUuid() {
+  return React.useContext(miroirReactContext).deploymentUuid;
+}
+
+export function useMiroirContextSetDeploymentUuid() {
+  return React.useContext(miroirReactContext).setDeploymentUuid;
 }
 
 export function useMiroirContextServiceHook() {
