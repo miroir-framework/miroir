@@ -26,9 +26,9 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   const deploymentReports: MiroirReport[] = useLocalCacheDeploymentReports(props.deploymentUuid);
   console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
   
-  const currentMiroirReport: MiroirReport = deploymentReports?.find(r=>r.uuid === props?.reportUuid);
-  const currentMiroirEntity: MetaEntity = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
-  const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
+  const currentMiroirReport: MiroirReport | undefined = deploymentReports?.find(r=>r.uuid === props?.reportUuid);
+  const currentMiroirEntity: MetaEntity | undefined = miroirEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
   console.log("ReportComponent currentMiroirReport",currentMiroirReport,"currentMiroirEntity",currentMiroirEntity,"currentMiroirEntityDefinition",currentMiroirEntityDefinition);
 
   const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForReport(props.deploymentUuid,props.reportUuid);
@@ -38,7 +38,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
-  const columnDefs=getColumnDefinitions(currentMiroirEntityDefinition?.attributes);
+  const columnDefs=currentMiroirEntityDefinition?getColumnDefinitions(currentMiroirEntityDefinition?.attributes):[];
   console.log("ReportComponent columnDefs",columnDefs);
 
   return (

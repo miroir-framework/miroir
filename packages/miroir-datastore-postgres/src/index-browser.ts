@@ -8,6 +8,6 @@ import { DataStoreInterface } from "miroir-core";
  */
 export async function createSqlServerProxy (
   connectionString:string,
-):Promise<DataStoreInterface> {
+):Promise<DataStoreInterface | undefined> {
   return Promise.resolve(undefined);
 }

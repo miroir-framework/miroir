@@ -6,7 +6,6 @@ import {
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
-  applicationDeploymentLibrary,
 } from "miroir-core";
 
 
@@ -52,7 +51,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  private networkActionUrlRoot(networkAction: RemoteStoreAction, useUuidForEntity: string = undefined): string {
+  private networkActionUrlRoot(networkAction: RemoteStoreAction, useUuidForEntity: string | undefined = undefined): string {
     return (
       this.rootApiUrl +
       (CRUDActionNamesArrayString.includes(networkAction.actionName)
@@ -84,7 +83,12 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
       url: this.networkActionUrl(networkAction, rootApiUrl),
       // args: []
-      args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainModelAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
+      args: ["RemoteStoreCRUDAction", "RemoteStoreCRUDActionWithDeployment"].includes(networkAction.actionType)
+        ? networkAction["objects"]
+        : ["DomainModelAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
+        ? networkAction["update"]?[networkAction["update"]]:networkAction["params"]
+        : [],
+      // args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainModelAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
       // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])
       // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[]:[networkAction["update"]]):[])
     };

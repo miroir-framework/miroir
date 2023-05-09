@@ -1,5 +1,5 @@
 
-import { modelInitialize } from "src/3_controllers/ModelInitializer";
+import { DataStoreApplicationType, modelInitialize } from "../3_controllers/ModelInitializer";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
@@ -21,7 +21,15 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  async initModel():Promise<void>{
+  async initApplication(
+    metaModel:MiroirMetaModel,
+    dataStoreType: DataStoreApplicationType,
+    application: EntityInstance,
+    applicationDeployment: EntityInstance,
+    applicationModelBranch: EntityInstance,
+    applicationVersion: EntityInstance,
+    applicationStoreBasedConfiguration: EntityInstance,
+  ):Promise<void>{
     // await modelInitialize(this);
     return Promise.resolve(undefined);
     // return this.clear();
@@ -82,16 +90,20 @@ export class IndexedDbDataStore implements DataStoreInterface{
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
     const cudUpdate = update.equivalentModelCUDUpdates[0];
     // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-    const currentValue = await this.getDataInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-    console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
-    // update the instance in table Entity corresponding to the renamed entity
-    // await this.localUuidIndexedDb.putValue(
-    //   cudUpdate.objects[0].instances[0].parentUuid,
-    //   cudUpdate.objects[0].instances[0],
-    // );
-    await this.upsertDataInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
-    const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-    console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
+    if (cudUpdate && cudUpdate.objects[0].instances[0].parentUuid && cudUpdate.objects[0].instances[0].uuid) {
+      const currentValue = await this.getDataInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+      console.log('IndexedDbDataStore applyModelEntityUpdates',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
+      // update the instance in table Entity corresponding to the renamed entity
+      // await this.localUuidIndexedDb.putValue(
+      //   cudUpdate.objects[0].instances[0].parentUuid,
+      //   cudUpdate.objects[0].instances[0],
+      // );
+      await this.upsertDataInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
+      const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+      console.log('IndexedDbDataStore applyModelEntityUpdates done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
+    } else {
+      console.error('IndexedDbDataStore applyModelEntityUpdates incorrect parameter',cudUpdate);
+    }
   }
   // #############################################################################################
   async dropEntity(entityUuid:string):Promise<void> {
@@ -152,7 +164,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  async getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
+  async getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
     return this.localUuidIndexedDb.getValue(parentUuid,uuid);
   }
   
@@ -192,7 +204,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  async getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance> {
+  async getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
     return this.localUuidIndexedDb.getValue(parentUuid,uuid);
   }
 

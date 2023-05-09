@@ -8,12 +8,20 @@ import {
   generateHandlerBody,
   modelActionRunner,
   applicationDeploymentMiroir,
-  applicationDeploymentLibrary,
+  // applicationDeploymentLibrary,
   defaultMiroirMetaModel
 } from "miroir-core";
 import { createSqlServerProxy } from 'miroir-datastore-postgres';
 import { FileSystemEntityDataStore } from './FileSystemEntityDataStore.js';
+import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 
+// import applicationDeploymentLibrary from './assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4';
+// import applicationDeploymentLibrary from './assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json' assert { type: 'json' };
+// const applicationDeploymentLibrary =await import("./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json", {assert: { type: "json" }});
+// TODO: find a better solution!
+const applicationDeploymentLibrary = JSON.parse(readFileSync(new URL('./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json', import.meta.url)).toString());
+console.log('applicationDeploymentLibrary',applicationDeploymentLibrary)
 // const express = require('express');
 const app = express(),
       port = 3080;
@@ -39,21 +47,24 @@ const miroirAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
 const libraryAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
   'library',
   'app',
+  // applicationDeploymentMiroir.model.location['connectionString'],
+  // applicationDeploymentMiroir.model.location['schema'],
+  // applicationDeploymentMiroir.data.location['connectionString'],
+  // applicationDeploymentMiroir.data.location['schema'],
   applicationDeploymentLibrary.model.location['connectionString'],
   applicationDeploymentLibrary.model.location['schema'],
   applicationDeploymentLibrary.data.location['connectionString'],
   applicationDeploymentLibrary.data.location['schema'],
 );
-// const fileSystemServerProxy:DataStoreInterface = new FileSystemEntityDataStore(applicationDeploymentConfigMiroir.model.location['directory'],applicationDeploymentConfigMiroir.data.location['directory']);
 
 try {
-  await miroirAppSqlServerProxy.createProxy(defaultMiroirMetaModel,'miroir');
+  await miroirAppSqlServerProxy.createProxy(defaultMiroirMetaModel);
 } catch(e) {
   console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
 }
 
 try {
-  await libraryAppSqlServerProxy.createProxy(defaultMiroirMetaModel,'app');
+  await libraryAppSqlServerProxy.createProxy(defaultMiroirMetaModel);
 } catch(e) {
   console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
 }
@@ -190,9 +201,9 @@ app.post("/model/" + ':actionName', async (req, res, ctx) => {
   } catch(e){}
 
   // const updates: RemoteStoreModelAction[] = await req.body;
-  console.log("server post model/"," started #####################################");
+  console.error("server post model/"," started #####################################");
   await modelActionRunner(
-    undefined,
+    '',
     actionName,
     miroirAppSqlServerProxy,
     libraryAppSqlServerProxy,

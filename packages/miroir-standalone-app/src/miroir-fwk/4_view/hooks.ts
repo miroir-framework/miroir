@@ -36,7 +36,7 @@ export function useLocalCacheEntities(): MetaEntity[] {
   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
     selectInstancesForEntity(entityEntity.uuid)
   );
-  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
+  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
 }
 
 //#########################################################################################
@@ -44,7 +44,7 @@ export function useLocalCacheDeploymentEntities(deploymentUuid:string): MetaEnti
   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
     selectInstancesForDeploymentEntity(deploymentUuid, entityEntity.uuid)
   );
-  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
+  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
 }
 
 //#########################################################################################
@@ -52,7 +52,7 @@ export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
   const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
     selectInstancesForEntity(entityEntityDefinition.uuid)
   );
-  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
+  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as EntityDefinition[] : [];
 }
 
 //#########################################################################################
@@ -60,20 +60,20 @@ export function useLocalCacheDeploymentEntityDefinitions(deploymentUuid:string):
   const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
     selectInstancesForDeploymentEntity(deploymentUuid, entityEntityDefinition.uuid)
   );
-  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) : [];
+  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as EntityDefinition[]: [];
 }
 
 //#########################################################################################
 export function useLocalCacheReports(): MiroirReport[] {
   const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForEntity(entityReport.uuid));
-  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) : [];
+  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[]: [];
   return miroirReports;
 }
 
 //#########################################################################################
 export function useLocalCacheDeploymentReports(deploymentUuid:string): MiroirReport[] {
   const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForDeploymentEntity(deploymentUuid,entityReport.uuid));
-  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) : [];
+  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[] : [];
   return miroirReports;
 }
 
@@ -83,7 +83,7 @@ export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[
     selectInstancesForEntity(entityStoreBasedConfiguration.uuid)
   );
   const miroirStoreBasedConfigurations: StoreBasedConfiguration[] = miroirStoreBasedConfigurationState?.entities
-    ? Object.values(miroirStoreBasedConfigurationState.entities)
+    ? Object.values(miroirStoreBasedConfigurationState.entities) as StoreBasedConfiguration[]
     : [];
   return miroirStoreBasedConfigurations;
 }
@@ -94,7 +94,7 @@ export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
     selectInstancesForEntity(entityApplicationVersion.uuid)
   );
   const miroirModelVersions: MiroirApplicationVersion[] = miroirModelVersionState?.entities
-    ? Object.values(miroirModelVersionState.entities)
+    ? Object.values(miroirModelVersionState.entities) as MiroirApplicationVersion[]
     : [];
   return miroirModelVersions;
 }

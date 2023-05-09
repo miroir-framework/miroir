@@ -1,15 +1,14 @@
 import { DomainControllerInterface, MiroirContext, MiroirContextInterface } from "miroir-core";
 import * as React from "react";
   
-
-
-const miroirReactContext = React.createContext<{
+export interface MiroirReactContext {
   miroirContext:MiroirContextInterface,
   domainController: DomainControllerInterface;
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
-}>(undefined);
+}
 
+const miroirReactContext = React.createContext<MiroirReactContext>({} as MiroirReactContext);
 
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(
@@ -37,11 +36,11 @@ export function MiroirContextReactProvider(
 }
 
 export function useMiroirContextDeploymentUuid() {
-  return React.useContext(miroirReactContext).deploymentUuid;
+  return React.useContext(miroirReactContext)?.deploymentUuid;
 }
 
 export function useMiroirContextSetDeploymentUuid() {
-  return React.useContext(miroirReactContext).setDeploymentUuid;
+  return React.useContext(miroirReactContext)?.setDeploymentUuid;
 }
 
 export function useMiroirContextServiceHook() {
@@ -50,10 +49,10 @@ export function useMiroirContextServiceHook() {
 
 export const useErrorLogServiceHook = () => {
   // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
-  return React.useContext(miroirReactContext).miroirContext.errorLogService.getErrorLog();
+  return React.useContext(miroirReactContext)?.miroirContext.errorLogService.getErrorLog();
 }
 
 export const useDomainControllerServiceHook = () => {
   // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
-  return React.useContext(miroirReactContext).domainController;
+  return React.useContext(miroirReactContext)?.domainController;
 }

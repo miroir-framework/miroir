@@ -13,21 +13,25 @@ export class ModelEntityUpdateConverter{
     modelUpdate:ModelEntityUpdate,
     entities: MetaEntity[],
     entityDefinitions: EntityDefinition[],
-  ):{actionName:CUDActionName,objects:EntityInstanceCollection[]}{
-    let domainAction: {actionName:CUDActionName,objects:EntityInstanceCollection[]};
+  ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
+    let domainAction: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
         const currentEntityDefinition = entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelUpdate.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelUpdate.targetValue});
-        const objects = [
-          {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, instances:[modifiedEntity]},
-          {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, instances:[modifiedEntityDefinition]},
-        ];
-        domainAction = {
-          actionName: "update",
-          objects
+        if (currentEntity && currentEntityDefinition) {
+          const objects = [
+            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, instances:[modifiedEntity]},
+            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, instances:[modifiedEntityDefinition]},
+          ];
+          domainAction = {
+            actionName: "update",
+            objects
+          }
+        } else {
+          console.error('modelEntityUpdateToCUDUpdate renameEntity could not rename',modelUpdate);
         }
         break;
       }
@@ -95,16 +99,20 @@ export class ModelEntityUpdateConverter{
   static modelEntityUpdateToModelCUDUpdate(
     modelUpdate:ModelEntityUpdate,
     currentModel: MiroirMetaModel,
-  ):ModelCUDInstanceUpdate {
+  ):ModelCUDInstanceUpdate | undefined {
     const o = ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(
       modelUpdate,
       currentModel.entities,
       currentModel.entityDefinitions,
     );
-    return {
-      updateActionType:"ModelCUDInstanceUpdate",
-      updateActionName:o.actionName,
-      objects: o.objects
-    } as ModelCUDInstanceUpdate;
+    if (o) {
+      return {
+        updateActionType:"ModelCUDInstanceUpdate",
+        updateActionName:o.actionName,
+        objects: o.objects
+      } as ModelCUDInstanceUpdate;
+    } else {
+      return undefined
+    }
   }
 }

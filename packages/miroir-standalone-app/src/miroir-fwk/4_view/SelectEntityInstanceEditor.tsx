@@ -36,7 +36,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
   // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
-  const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
 
   const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,props['entityUuid']) as EntityInstanceWithName[];
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
@@ -50,7 +50,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   return (
     <span>
       {/* <img width="20px" src={mood} /> */}
-      {instanceToDisplay?instanceToDisplay['name']:currentMiroirEntityDefinition['name'] + ' ' + props.value + ' not known.'}
+      {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'}
     </span>
   )
 })
@@ -64,7 +64,7 @@ export const SelectEntityInstanceEditor = memo(
     const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
     // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
-    const currentMiroirEntityDefinition: EntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+    const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
   
     const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,props['entityUuid']) as EntityInstanceWithName[];
     const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
@@ -189,7 +189,7 @@ export const SelectEntityInstanceEditor = memo(
           sx={{ width: 300 }}
           autoHighlight
           getOptionLabel={(option) => option.label}
-          onChange={(event,value,reason,details) => value.onClick()}
+          onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
             console.log('SelectEntityInstanceEditor renderOption props',props,'option',option);

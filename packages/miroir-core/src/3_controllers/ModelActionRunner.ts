@@ -3,20 +3,22 @@ import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInter
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import applicationDeploymentLibrary from '../assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
-// import { applicationDeploymentLibrary } from "../0_interfaces/1_core/StorageConfiguration.js";
+import { DomainModelInitAction, DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import applicationDeploymentMiroir from "../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 export async function modelActionRunner(
   deploymentUuid: string,
   actionName:string,
   miroirDataStoreProxy:DataStoreInterface,
   appDataStoreProxy:DataStoreInterface,
-  body:any[]
+  body:any
 ):Promise<void> {
-  console.log("server post model/"," started #####################################");
+  // console.log("server post model/"," started #####################################");
+  // console.log("server post model/"," started #####################################");
 
   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
+  console.log('###################################### ModelUpdateRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
   console.log('ModelUpdateRunner getEntities()', miroirDataStoreProxy.getEntities());
   switch (actionName) {
     case 'resetModel':{
@@ -28,10 +30,31 @@ export async function modelActionRunner(
       break;
     }
     case 'initModel':{
-      const update = body[0];
-      console.log("ModelUpdateRunner model/initModel update",update);
-      await miroirDataStoreProxy.initModel(defaultMiroirMetaModel,'miroir');
-      await appDataStoreProxy.initModel(defaultMiroirMetaModel,'app');
+      // const update:DomainModelInitAction = JSON.parse(body[0]);
+      const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      console.log("ModelUpdateRunner model/initModel typeof body",typeof body,"params",params);
+      if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
+        await miroirDataStoreProxy.initApplication(
+          // defaultMiroirMetaModel,
+          params.metaModel,
+          params.dataStoreType,
+          params.application,
+          params.applicationDeployment,
+          params.applicationModelBranch,
+          params.applicationVersion,
+          params.applicationStoreBasedConfiguration,
+        );
+      } else { // different Proxy object!!!!!!
+        await appDataStoreProxy.initApplication(
+          params.metaModel,
+          'app',
+          params.application,
+          params.applicationDeployment,
+          params.applicationModelBranch,
+          params.applicationVersion,
+          params.applicationStoreBasedConfiguration,
+        );
+      }
       console.log('server post resetModel after initModel, entities:',miroirDataStoreProxy.getEntities());
       break;
     }
@@ -41,8 +64,8 @@ export async function modelActionRunner(
       if (update) {
         switch (update['action']) {
           default: {
-            const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?appDataStoreProxy:miroirDataStoreProxy;
-            console.log('ModelUpdateRunner updateEntity update',update['action'],'used targetProxy',targetProxy['applicationName'],deploymentUuid,applicationDeploymentLibrary.uuid);
+            const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
+            console.log('ModelUpdateRunner updateEntity update',update['action'],'used targetProxy',targetProxy['applicationName'],deploymentUuid,applicationDeploymentMiroir.uuid);
             
             await targetProxy.applyModelEntityUpdate(update);
             console.log('ModelUpdateRunner applyModelEntityUpdate done', update);

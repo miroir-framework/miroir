@@ -5,6 +5,7 @@ import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from '..
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelInitAction, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
 import { DataStoreApplicationType } from '../../../3_controllers/ModelInitializer.js';
+import { Application } from '../../1_core/Application.js';
 
 export interface RemoteStoreCRUDAction {
   actionType:'RemoteStoreCRUDAction';
@@ -25,7 +26,7 @@ export interface RemoteStoreCRUDActionReturnType {
   status:'ok'|'error',
   errorMessage?:string, 
   error?:MError,
-  instances?: EntityInstanceCollection[]
+  instances: EntityInstanceCollection[]
 };
 
 export interface RestClientCallReturnType {
@@ -71,11 +72,21 @@ export declare interface RemoteDataStoreInterface {
 export interface DataStoreInterface {
   createProxy(
     metaModel:MiroirMetaModel,
-    dataStoreType: DataStoreApplicationType,
+    // dataStoreType: DataStoreApplicationType,
   ):Promise<void>;
 
   dropModelAndData(metaModel:MiroirMetaModel):Promise<void>;
-  initModel(metaModel:MiroirMetaModel, dataStoreType: DataStoreApplicationType,):Promise<void>;
+
+  initApplication(
+    metaModel:MiroirMetaModel, 
+    dataStoreType: DataStoreApplicationType,
+    application: Application,
+    applicationDeployment: EntityInstance,
+    applicationModelBranch: EntityInstance,
+    applicationVersion: EntityInstance,
+    applicationStoreBasedConfiguration: EntityInstance,
+  ):Promise<void>;
+
   open();
   close();
 
@@ -105,13 +116,13 @@ export interface DataStoreInterface {
   getState():Promise<{[uuid:string]:EntityInstance[]}>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
-  getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
+  getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
   getDataInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
-  getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance>;
+  getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
   getModelInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;

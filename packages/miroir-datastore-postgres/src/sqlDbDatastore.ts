@@ -1,4 +1,5 @@
 import {
+  Application,
   applyModelEntityUpdate,
   DataStoreApplicationType,
   DataStoreInterface,
@@ -41,7 +42,7 @@ function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
 // ##############################################################################################
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type SqlUuidEntityDefinition = {
-  [parentUuid in string]: { parentName: string; sequelizeModel: ModelStatic<Model<any, any>> };
+  [parentUuid in string]: { parentName?: string; sequelizeModel: ModelStatic<Model<any, any>> };
 };
 
 // ##############################################################################################
@@ -49,8 +50,8 @@ export type SqlUuidEntityDefinition = {
 // ##############################################################################################
 // ##############################################################################################
 export class SqlDbDatastore implements DataStoreInterface {
-  private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = undefined;
-  private sqlModelSchemaTableAccess: SqlUuidEntityDefinition = undefined;
+  private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = {};
+  private sqlModelSchemaTableAccess: SqlUuidEntityDefinition= {};
 
   constructor(
     public applicationName: string,
@@ -66,7 +67,7 @@ export class SqlDbDatastore implements DataStoreInterface {
   getAccessToEntity(sequelize:Sequelize, entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
     return {
       [entity.uuid]: {
-        parentName: entity.parentName,
+        parentName: entity.parentName, 
         sequelizeModel: sequelize.define(
           entity.name,
           fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
@@ -116,11 +117,25 @@ export class SqlDbDatastore implements DataStoreInterface {
   }
   
   // // ##############################################################################################
-  async initModel(
+  async initApplication(
     metaModel:MiroirMetaModel,
     dataStoreType: DataStoreApplicationType,
-  ):Promise<void> {
-    await modelInitialize(metaModel,this,dataStoreType);
+    application: Application,
+    applicationDeployment: EntityInstance,
+    applicationModelBranch: EntityInstance,
+    applicationVersion: EntityInstance,
+    applicationStoreBasedConfiguration: EntityInstance,
+    ):Promise<void> {
+    await modelInitialize(
+      metaModel,
+      this,
+      dataStoreType,
+      application,
+      applicationDeployment,
+      applicationModelBranch,
+      applicationVersion,
+      applicationStoreBasedConfiguration,
+    );
     return Promise.resolve(undefined);
   }
 
@@ -155,19 +170,19 @@ export class SqlDbDatastore implements DataStoreInterface {
   // ##############################################################################################
   async createProxy(
     metaModel:MiroirMetaModel,
-    dataStoreType: DataStoreApplicationType,
+    dataStoreType?: DataStoreApplicationType,
   ): Promise<void> {
-    if (this.sqlDataSchemaTableAccess) {
+    if (Object.keys(this.sqlDataSchemaTableAccess).length > 0) {
       // TODO: allow refresh
-      console.warn("sqlDbServer",dataStoreType,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
+      console.warn("sqlDbServer",'Application',this.applicationName,'dataStoreType',this.dataStoreType,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
     } else {
-      console.warn("sqlDbServer",dataStoreType,"createProxy",dataStoreType,"initialization started");
+      console.warn("sqlDbServer",'Application',this.applicationName,'dataStoreType',this.dataStoreType,"createProxy","initialization started");
       // const metaModelEntityEntity = metaModel.entities.find(e=>e.uuid = entityEntity.uuid);
       // const metaModelEntityDefinitionEntity = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntity.uuid);
       // const metaModelEntityEntityDefinition = metaModel.entities.find(e=>e.uuid = entityEntityDefinition.uuid);
       // const metaModelEntityDefinitionEntityDefinition = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntityDefinition.uuid);
 
-      if (dataStoreType == 'miroir') {
+      if (this.dataStoreType == 'miroir') {
         // TODO: read metamodel version in configuration first, and open table with the corresponding definition
         this.sqlModelSchemaTableAccess = metaModel.entities
           .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)>=0) // the meta-model only has Entity and EntityDefinition entities
@@ -175,7 +190,11 @@ export class SqlDbDatastore implements DataStoreInterface {
             (prev, curr: MetaEntity) => { // TODO: take into account Application Version to determine applicable Entity Definition
               const entityDefinition = metaModel.entityDefinitions.find(e=>e.entityUuid==curr.uuid);
               // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
-              return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+              if (entityDefinition) {
+                return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+              } else {
+                return prev;
+              }
             }, {}
           )
         ;
@@ -186,7 +205,11 @@ export class SqlDbDatastore implements DataStoreInterface {
             (prev, curr: MetaEntity) => { // TODO: take into account Application Version to determine applicable Entity Definition
               const entityDefinition = metaModel.entityDefinitions.find(e=>e.entityUuid==curr.uuid);
               // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
-              return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+              if (entityDefinition) {
+                return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+              } else {
+                return prev;
+              }
             }, {}
           )
         ;
@@ -201,7 +224,11 @@ export class SqlDbDatastore implements DataStoreInterface {
           (prev, curr: MetaEntity) => {
             const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
             // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
-            return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+            if (entityDefinition) {
+              return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+            } else {
+              return prev;
+            }
           }, {}
         )
       ;
@@ -236,8 +263,8 @@ export class SqlDbDatastore implements DataStoreInterface {
     //     )
     //   ;
     // }
-    console.log("################### sqlDbServer",dataStoreType,"createProxy model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess);
-    console.log("################### sqlDbServer",dataStoreType,"createProxy data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess);
+    console.log("################### sqlDbServer",this.applicationName,this.dataStoreType,"createProxy model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess);
+    console.log("################### sqlDbServer",this.applicationName,this.dataStoreType,"createProxy data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess);
     return Promise.resolve();
   }
   
@@ -249,10 +276,10 @@ export class SqlDbDatastore implements DataStoreInterface {
     // dataStoreType: DataStoreApplicationType = 'app',
     // insertReferenceInMetaModel: boolean = true,
   ) {
-    console.log('createEntity input: entity',entity,'entityDefinition',entityDefinition, 'sqlEntities',this.sqlDataSchemaTableAccess);
+    console.log('initializeEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'input: entity',entity,'entityDefinition',entityDefinition, 'sqlEntities',this.sqlDataSchemaTableAccess);
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
-      console.error('createEntity inconsistent input: given entityDefinition is not related to given entity.');
+      console.error('initializeEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'inconsistent input: given entityDefinition is not related to given entity.');
     } else {
       // if ([entityEntity.uuid,entityEntityDefinition.uuid].includes(entity.uuid)) { // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
       // if (dataStoreType == 'miroir' && entity.conceptLevel == 'MetaModel') { // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -261,7 +288,7 @@ export class SqlDbDatastore implements DataStoreInterface {
         this.sqlModelSchemaTableAccess,
         this.getAccessToDataSectionEntity(entity, entityDefinition)
       );
-      console.log('createEntity creating model schema table',entity.name);
+      console.log('initializeEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'creating model schema table',entity.name);
       await this.sqlModelSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
       // } else {
       //   this.sqlDataSchemaTableAccess = Object.assign(
@@ -295,10 +322,10 @@ export class SqlDbDatastore implements DataStoreInterface {
     // dataStoreType: DataStoreApplicationType = 'app',
     // insertReferenceInMetaModel: boolean = true,
   ) {
-    console.log('createEntity input: entity',entity,'entityDefinition',entityDefinition, 'sqlEntities',this.sqlDataSchemaTableAccess);
+    console.log('createEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'input: entity',entity,'entityDefinition',entityDefinition, 'sqlEntities',this.sqlDataSchemaTableAccess);
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
-      console.error('createEntity inconsistent input: given entityDefinition is not related to given entity.');
+      console.error('createEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'inconsistent input: given entityDefinition is not related to given entity.');
     } else {
       // if ([entityEntity.uuid,entityEntityDefinition.uuid].includes(entity.uuid)) { // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
       // if (dataStoreType == 'miroir' && entity.conceptLevel == 'MetaModel') { // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -315,20 +342,20 @@ export class SqlDbDatastore implements DataStoreInterface {
         this.sqlDataSchemaTableAccess,
         this.getAccessToDataSectionEntity(entity, entityDefinition)
       );
-      console.log('createEntity creating data schema table',entity.name);
+      console.log('createEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'creating data schema table',entity.name);
       await this.sqlDataSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
       // }
       // if (insertReferenceInMetaModel) {
-      console.log('createEntity table',entity.name,'created.');
+      // console.log('createEntity table',entity.name,'created.');
       if (!!this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[entityEntity.uuid]) {
         await this.sqlModelSchemaTableAccess[entityEntity.uuid].sequelizeModel.upsert(entity as any);
       } else {
-        console.error('createEntity could not insert in model schema for entity',entity);
+        console.error('createEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'could not insert in model schema for entity',entity);
       }
       if (!!this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[entityEntityDefinition.uuid]) {
         await this.sqlModelSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel.upsert(entityDefinition as any);
       } else {
-        console.error('createEntity could not insert in model schema for entityDefinition',entityDefinition);
+        console.error('createEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'could not insert in model schema for entityDefinition',entityDefinition);
       }
       // }
     }
@@ -384,9 +411,14 @@ export class SqlDbDatastore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    const result:EntityInstance = (await this.sqlModelSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid)).dataValues;
-    return Promise.resolve(result);
+  async getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    if (this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[parentUuid]) {
+      const result:EntityInstance  = (await this.sqlModelSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
+      return Promise.resolve(result);
+    } else {
+      console.warn('getModelInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+      return Promise.resolve(undefined);
+    }
   }
 
   // ##############################################################################################
@@ -433,9 +465,14 @@ export class SqlDbDatastore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    const result:EntityInstance = (await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid)).dataValues;
-    return Promise.resolve(result);
+  async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    if (this.sqlDataSchemaTableAccess && this.sqlDataSchemaTableAccess[parentUuid]) {
+      const result:EntityInstance = (await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
+      return Promise.resolve(result);
+    } else {
+      console.warn('getDataInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+      return Promise.resolve(undefined);
+    }
   }
 
   // ##############################################################################################
@@ -488,21 +525,36 @@ export class SqlDbDatastore implements DataStoreInterface {
 
   // ##############################################################################################
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
-    const modelCUDupdate = update.equivalentModelCUDUpdates[0];
-    const model = this.sqlDataSchemaTableAccess[modelCUDupdate.objects[0].parentUuid];
-    await this.modelSequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityName'], update.modelEntityUpdate['targetValue']);
-    this.modelSequelize.modelManager.removeModel(this.modelSequelize.model(model.parentName));
-    // update this.sqlUuidEntities for the renamed entity
-    Object.assign(
-      this.sqlDataSchemaTableAccess,
-      this.getAccessToDataSectionEntity( // TODO: decouple from ModelUpdateConverter implementation
-        update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
-        update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
-      )
-    );
-    // update the instance in table Entity corresponding to the renamed entity
-    await this.upsertDataInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
-    // await this.sqlUuidEntities[modelCUDupdate.objects[0].parentUuid].sequelizeModel.upsert(modelCUDupdate.objects[0].instances[0] as any)
+    if (
+      update.equivalentModelCUDUpdates.length 
+      && update.equivalentModelCUDUpdates[0]
+      && update.equivalentModelCUDUpdates[0].objects?.length
+      && update.equivalentModelCUDUpdates[0].objects[0]
+      && update.equivalentModelCUDUpdates[0].objects[1]
+      && update.equivalentModelCUDUpdates[0].objects[0].instances[0]
+      && update.equivalentModelCUDUpdates[0].objects[1].instances[0]
+    ) {
+      const modelCUDupdate = update.equivalentModelCUDUpdates[0];
+      const model = (modelCUDupdate && modelCUDupdate.objects?.length && modelCUDupdate.objects[0])?this.sqlDataSchemaTableAccess[modelCUDupdate.objects[0].parentUuid]:undefined;
+      await this.modelSequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityName'], update.modelEntityUpdate['targetValue']);
+      if (modelCUDupdate.objects && model?.parentName) {
+        this.modelSequelize.modelManager.removeModel(this.modelSequelize.model(model.parentName));
+        // update this.sqlUuidEntities for the renamed entity
+        Object.assign(
+          this.sqlDataSchemaTableAccess,
+          this.getAccessToDataSectionEntity( // TODO: decouple from ModelUpdateConverter implementation
+            update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
+            update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
+          )
+        );
+        // update the instance in table Entity corresponding to the renamed entity
+        await this.upsertDataInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
+      } else {
+        console.error('renameEntity could not execute update',update);
+      }
+    } else {
+      console.error('renameEntity could not execute update',update);
+    }
   }
 
   // #############################################################################################

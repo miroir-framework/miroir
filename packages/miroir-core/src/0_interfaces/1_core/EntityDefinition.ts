@@ -35,7 +35,7 @@ export interface EntityDefinition extends EntityInstanceWithName {
   "entityUuid": Uuid,
   "description"?:string,
   "instanceValidationJsonSchema": {},
-  "attributes"?: EntityAttribute[],
+  "attributes": EntityAttribute[],
 };
 
 /**

@@ -197,8 +197,6 @@ function callNextReducer(
   // Returns a reducer function, that handles undo and redo
   return (
     state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
-    // action:PayloadAction<DomainAction>
-    // action:PayloadAction<DomainAncillaryOrReplayableAction>
     action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
@@ -234,7 +232,8 @@ function callNextReducer(
           }
           case "DomainModelAction": {
             switch (action.payload.domainAction.actionName) {
-              case 'replace': {
+              case 'rollback':
+              case 'replaceLocalCache': {
                 // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
                 const next = callNextReducer(innerReducer, state, action)
                 return {
@@ -321,5 +320,7 @@ function callNextReducer(
         return callNextReducer(innerReducer, state, action)
       }
     }
+    console.error('UndoRedoReducer out of switch handling action', action);
+    return callNextReducer(innerReducer, state, action);
   }
 }

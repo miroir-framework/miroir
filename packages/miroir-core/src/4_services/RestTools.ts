@@ -10,7 +10,7 @@ export const generateHandlerBody = async (
   method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
   jsonFormater:(a:any)=>any,
 ) => {
-  console.log('generateHandlerBody called', HttpMethod, url, "started #####################################");
+  console.log('##################################### generateHandlerBody called', HttpMethod, url, "started");
   console.log('generateHandlerBody called with params',params);
   
   let localData

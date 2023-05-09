@@ -10,6 +10,7 @@
     "allowJs": true,
     "allowSyntheticDefaultImports":true,
     "resolveJsonModule": true,
+    "strictNullChecks": true,
     "plugins": [
       { "name": "typescript-plugin-css-modules" }
     ]

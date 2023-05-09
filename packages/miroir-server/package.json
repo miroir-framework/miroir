@@ -8,8 +8,8 @@
     "watch": "lerna watch --scope='miroir-server' --include-dependencies -- lerna run build --scope='miroir-server'",
     "start": "node server.bundle.js",
     "build": "webpack",
-    "dev": "nodemon ./server.ts localhost 3080",
-    "dev2": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js localhost 3080\""
+    "dev": "nodemon ./server.ts --experimental-json-modules localhost 3080",
+    "dev2": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\""
   },
   "repository": {
     "type": "git",

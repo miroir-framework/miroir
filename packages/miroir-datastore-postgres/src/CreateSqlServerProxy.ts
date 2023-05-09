@@ -15,18 +15,20 @@ export async function createSqlServerProxy (
 ):Promise<DataStoreInterface> {
   const seq = await import("sequelize");
 
-  const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
+  // const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
+  const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   try {
     await modelSequelize.authenticate();
-    console.log('model Connection to postgres model schema', modelSchema, 'has been established successfully.');
+    console.log('Application',applicationName,'dataStoreType',dataStoreType,'model Connection to postgres model schema', modelSchema, 'has been established successfully.');
   } catch (error) {
     console.error('Unable to connect model to the postgres database:', error);
   }
 
-  const dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
+  // const dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
+  const dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
   try {
     await dataSequelize.authenticate();
-    console.log('data Connection to postgres has been established successfully.');
+    console.log('Application',applicationName,'dataStoreType',dataStoreType,'data Connection to postgres data schema', dataSchema, 'has been established successfully.');
   } catch (error) {
     console.error('Unable to connect data', dataSchema, ' to the postgres database:', error);
   }

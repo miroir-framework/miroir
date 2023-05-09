@@ -10,7 +10,11 @@ export function selectReportInstances(reportUuid:string):DomainStateSelector{
     // console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.parentName])
     // const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState[entityDefinitionReport.uuid])?.find(e=>e['uuid'] === reportUuid) as MiroirReport;
     const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState[entityReport.uuid])?.find(e=>e['uuid'] === reportUuid) as MiroirReport;
-    return currentReport?.definition?.parentName?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.parentUuid]):[];
+    if (currentReport && currentReport.definition) {
+      return currentReport?.definition?.parentName?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.parentUuid]):[];
+    } else {
+      return []
+    }
   }
 }
 

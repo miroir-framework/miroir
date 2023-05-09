@@ -51,7 +51,7 @@ import RemoteStoreRestAccessReduxSaga, {
 
 function roughSizeOfObject( object ) {
 
-  var objectList = [];
+  var objectList:any[] = [];
   var stack = [ object ];
   var bytes = 0;
 

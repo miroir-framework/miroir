@@ -29,6 +29,8 @@ import {
   applicationDeploymentMiroir,
   Zinstance,
   DomainActionWithDeployment,
+  DomainModelRollbackAction,
+  DomainModelReplaceLocalCacheAction,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -141,22 +143,22 @@ function getInitializedDeploymentEntityAdapter(deploymentUuid: string, entityUui
   // TODO: refactor so as to avoid side effects!
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   if (!state) {
-    console.log('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
+    // console.log('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
     state = {[deploymentUuid]:{[entityUuid]: sliceEntityAdapter.getInitialState()}};
   } else {
     if (!state[deploymentUuid]) {
-      console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'is undefined, initializing state!',JSON.stringify(state),state == undefined);
+      // console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'is undefined, initializing state!',JSON.stringify(state),state == undefined);
       
       state[deploymentUuid] = {[entityUuid]: sliceEntityAdapter.getInitialState()};
     } else {
       if (!state[deploymentUuid][entityUuid]) {
-        console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'and entityUuid',entityUuid,'is undefined, initializing state!');
+        // console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'and entityUuid',entityUuid,'is undefined, initializing state!');
         
         state[deploymentUuid][entityUuid] = sliceEntityAdapter.getInitialState();
       }
     }
   }
-  console.log('getInitializedDeploymentEntityAdapter state',JSON.stringify(state));
+  // console.log('getInitializedDeploymentEntityAdapter state',JSON.stringify(state));
   return sliceEntityAdapter;
 } 
 
@@ -176,13 +178,14 @@ function getInitializedDeploymentEntityAdapter(deploymentUuid: string, entityUui
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: NewLocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
-  const entity = state[deploymentUuid]?(state[deploymentUuid][entityEntity.uuid]?.entities[action.payload.parentUuid]):undefined;
-  console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid,'entity',(entity?entity['name']:'entity not found for deployment'),action.payload.parentUuid,action.payload.parentName,action.payload.instances);
-  const sliceEntityAdapter = getInitializedDeploymentEntityAdapter(deploymentUuid,action.payload.parentUuid,state);
+// function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: NewLocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
+function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: NewLocalCacheSliceState, instanceCollection:EntityInstanceCollection) {
+  const entity = state[deploymentUuid]?(state[deploymentUuid][entityEntity.uuid]?.entities[instanceCollection.parentUuid]):undefined;
+  // console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid,'entity',(entity?entity['name']:'entity not found for deployment'),action.payload.parentUuid,action.payload.parentName,action.payload.instances);
+  const sliceEntityAdapter = getInitializedDeploymentEntityAdapter(deploymentUuid,instanceCollection.parentUuid,state);
 
-  state[deploymentUuid][action.payload.parentUuid] = sliceEntityAdapter.setAll(state[deploymentUuid][action.payload.parentUuid], action.payload.instances);
-  console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
+  state[deploymentUuid][instanceCollection.parentUuid] = sliceEntityAdapter.setAll(state[deploymentUuid][instanceCollection.parentUuid], instanceCollection.instances);
+  // console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
   
 }
 
@@ -247,9 +250,12 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
   // const deploymentUuid = applicationDeploymentMiroir.uuid;
   console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheModelAction, 'called', action.actionName, action);
   switch (action.actionName) {
-    case 'replace': {
+    case 'replaceLocalCache': {
+      const castAction:DomainModelReplaceLocalCacheAction = action;
+      console.log('localCacheSliceObject replaceLocalCache',deploymentUuid, action);
+      
       for (let instanceCollection of action.objects) {
-        ReplaceInstancesForDeploymentEntity(deploymentUuid, state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<EntityInstanceCollection>);
+        ReplaceInstancesForDeploymentEntity(deploymentUuid, state, instanceCollection);
       }
       break;
     }
@@ -263,7 +269,7 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
     }
     case "UpdateMetaModelInstance": {
       // not transactional??
-      console.log('localCacheSliceObject UpdateMetaModelInstance',action);
+      console.log('localCacheSliceObject deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
       const domainDataAction:DomainDataAction = {
         actionType:"DomainDataAction",
         actionName:action.update.updateActionName,
@@ -276,7 +282,8 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
       break;
     }
     case "updateEntity": {
-      console.log('localCacheSliceObject updateModel',action, state[deploymentUuid][entityEntity.uuid],state[deploymentUuid][entityEntityDefinition.uuid]);
+      // console.log('localCacheSliceObject deploymentUuid',deploymentUuid,'updateModel',action, state[deploymentUuid],state[deploymentUuid]);
+      console.log('localCacheSliceObject deploymentUuid',deploymentUuid,'updateModel',action, state);
       // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
       // send CUD actions to local cache
       // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
@@ -287,19 +294,19 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
           action.update.modelEntityUpdate
         )
       ;
-      console.log('updateModel domainDataAction',domainDataAction);
+      console.log('updateModel deploymentUuid',deploymentUuid,'domainDataAction',domainDataAction);
 
       handleLocalCacheDataAction(state, deploymentUuid, domainDataAction);
       break;
     }
     default:
-      console.warn('localCacheSliceObject handleLocalCacheModelAction action could not be taken into account, unkown action', action.actionName);
+      console.warn('localCacheSliceObject handleLocalCacheModelAction deploymentUuid',deploymentUuid,'action could not be taken into account, unkown action', action.actionName);
   }
 }
 
 //#########################################################################################
 function handleLocalCacheAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
-  console.log('localCacheSliceObject', localCacheSliceInputActionNamesObject.handleLocalCacheAction, 'actionType',action.actionType, 'called', action);
+  console.log('localCacheSliceObject handleLocalCacheAction deploymentUuid',deploymentUuid, 'actionType',action.actionType, 'called', action);
   switch (action.actionType) {
     case 'DomainDataAction': {
       handleLocalCacheDataAction(state, deploymentUuid, action);

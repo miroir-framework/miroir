@@ -53,7 +53,7 @@ export type ModelEntityUpdate =
 export interface ModelCUDInstanceUpdate {
   updateActionType: 'ModelCUDInstanceUpdate';
   updateActionName: CUDActionName;
-  objects?:EntityInstanceCollection[];
+  objects:EntityInstanceCollection[];
 }
   
 export interface WrappedModelEntityUpdate {

@@ -19,11 +19,10 @@ import instanceConfigurationReference from '../assets/7990c0c9-86c3-40a1-a121-03
 import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
 import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 // import entityDefinitionModelVersion from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json";
-import applicationMiroir from '../assets/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
-import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
-import applicationDeploymentLibrary from '../assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
+// import applicationMiroir from '../assets/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
+// import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
-import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
+// import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 
 /**
@@ -48,7 +47,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainModelAction(
     deploymentUuid:Uuid,
     domainModelAction: DomainModelAction,
-    currentModel?:MiroirMetaModel,
+    currentModel:MiroirMetaModel,
   ): Promise<void> {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction start actionName",
@@ -59,9 +58,9 @@ export class DomainController implements DomainControllerInterface {
     // await this.dataController.handleRemoteStoreModelAction(domainAction);
 
     switch (domainModelAction.actionName) {
-      case "replace": {
-        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentMiroir.uuid);
-        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
+      case "rollback": {
+        await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(deploymentUuid);
+        // await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
         break;
       }
       case "undo":
@@ -81,82 +80,83 @@ export class DomainController implements DomainControllerInterface {
         );
 
         if (!currentModel) {
-          throw new Error('commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.')
-        }
-
-        const newModelVersionUuid = uuidv4();
-        // await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
-        const newModelVersion:MiroirApplicationVersion = {
-          uuid:newModelVersionUuid,
-          conceptLevel:'Data',
-          parentName:entityApplicationVersion?.name,
-          parentUuid: entityApplicationVersion?.uuid,
-          description: domainModelAction.label,
-          name: domainModelAction.label?domainModelAction.label:'No label was given to this version.',
-          previousVersion: currentModel?.configuration[0]?.definition?.currentModelVersion,
-          branch: applicationModelBranchMiroirMasterBranch.uuid,
-          application:applicationMiroir.uuid,
-          // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
-          modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().map((t)=>t.update)
-        };
-
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
-        const newModelVersionAction: RemoteStoreCRUDAction = {
-          actionType: 'RemoteStoreCRUDAction',
-          actionName: "create",
-          objects: [newModelVersion],
-        };
-
-        await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(applicationDeploymentLibrary.uuid,newModelVersionAction);
-
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
-
-        for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
-          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
-          if (replayAction.actionName == "updateEntity") {
-            // await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
-            await this.LocalAndRemoteController.handleRemoteStoreModelActionWithDeployment(applicationDeploymentLibrary.uuid,replayAction);
-          } else {
-            // for (const instances of replayAction["objects"]) {
-              // TODO: replace with parallel implementation Promise.all?
-              await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
-                applicationDeploymentLibrary.uuid,
-                {
-                actionType:'RemoteStoreCRUDAction',
-                actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-                parentName: replayAction.update.objects[0].parentName,
-                parentUuid: replayAction.update.objects[0].parentUuid,
-                objects: replayAction.update.objects[0].instances,
-              });
-            // }
+          throw new Error('commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.');
+        } else {
+          const newModelVersionUuid = uuidv4();
+          // await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
+          const newModelVersion:MiroirApplicationVersion = {
+            uuid:newModelVersionUuid,
+            conceptLevel:'Data',
+            parentName:entityApplicationVersion?.name,
+            parentUuid: entityApplicationVersion?.uuid,
+            description: domainModelAction.label,
+            name: domainModelAction.label?domainModelAction.label:'No label was given to this version.',
+            previousVersion: currentModel?.configuration[0]?.definition?.currentModelVersion,
+            // branch: applicationModelBranchMiroirMasterBranch.uuid,
+            branch: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            application:'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
+            // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
+            modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().map((t)=>t.update)
+          };
+  
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
+          const newModelVersionAction: RemoteStoreCRUDAction = {
+            actionType: 'RemoteStoreCRUDAction',
+            actionName: "create",
+            objects: [newModelVersion],
+          };
+  
+          await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(deploymentUuid,newModelVersionAction);
+  
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
+  
+          for (const replayAction of this.LocalAndRemoteController.currentLocalCacheTransaction()) {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
+            if (replayAction.actionName == "updateEntity") {
+              // await this.LocalAndRemoteController.handleRemoteStoreModelAction(replayAction);
+              await this.LocalAndRemoteController.handleRemoteStoreModelActionWithDeployment(deploymentUuid,replayAction);
+            } else {
+              // for (const instances of replayAction["objects"]) {
+                // TODO: replace with parallel implementation Promise.all?
+                await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
+                  deploymentUuid,
+                  {
+                  actionType:'RemoteStoreCRUDAction',
+                  actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
+                  parentName: replayAction.update.objects[0].parentName,
+                  parentUuid: replayAction.update.objects[0].parentUuid,
+                  objects: replayAction.update.objects[0].instances,
+                });
+              // }
+            }
           }
+  
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
+  
+          await this.LocalAndRemoteController.handleLocalCacheAction(
+            deploymentUuid,
+            {
+              actionName:'create',
+              actionType: 'DomainDataAction',
+              objects:[{parentUuid:newModelVersion.parentUuid, instances: [newModelVersion]}]
+            }
+          );
+  
+          await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
+  
+          const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
+          console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
+          const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
+            actionType:'RemoteStoreCRUDAction',
+            actionName: "update",
+            objects: [
+              updatedConfiguration
+            ],
+          };
+  
+          await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(deploymentUuid,newStoreBasedConfiguration);
         }
-
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
-
-        await this.LocalAndRemoteController.handleLocalCacheAction(
-          deploymentUuid,
-          {
-            actionName:'create',
-            actionType: 'DomainDataAction',
-            objects:[{parentUuid:newModelVersion.parentUuid, instances: [newModelVersion]}]
-          }
-        );
-
-        await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
-
-        const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
-        const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
-          actionType:'RemoteStoreCRUDAction',
-          actionName: "update",
-          objects: [
-            updatedConfiguration
-          ],
-        };
-
-        await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(applicationDeploymentLibrary.uuid,newStoreBasedConfiguration);
-
         break;
       }
       case "UpdateMetaModelInstance": {
@@ -166,12 +166,11 @@ export class DomainController implements DomainControllerInterface {
       case "updateEntity": {
         console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
         
+        const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel);
         const structureUpdatesWithCUDUpdates: WrappedModelEntityUpdateWithCUDUpdate = {
           updateActionName: 'WrappedModelEntityUpdateWithCUDUpdate',
           modelEntityUpdate:domainModelAction?.update.modelEntityUpdate,
-          equivalentModelCUDUpdates: [
-            ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel),
-          ],
+          equivalentModelCUDUpdates: cudUpdate?[cudUpdate]:[],
         };
         console.log('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
         
@@ -233,11 +232,11 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(
     deploymentUuid:Uuid,
     domainAction: DomainAction,
-    currentModel?:MiroirMetaModel,
+    currentModel:MiroirMetaModel,
   ): Promise<void> {
-    let entityDomainAction:DomainAction = undefined;
-    let otherDomainAction:DomainAction = undefined;
-    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','replace','undo','redo'];
+    let entityDomainAction:DomainAction | undefined = undefined;
+    let otherDomainAction:DomainAction | undefined = undefined;
+    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','rollback','replace','undo','redo'];
     console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
 
     // if (domainAction.actionName!="updateEntity"){

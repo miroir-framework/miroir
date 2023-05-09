@@ -1,4 +1,4 @@
-import { metamodelEntities } from "src/3_controllers/ModelInitializer.js";
+import { metamodelEntities } from "../3_controllers/ModelInitializer.js";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -143,7 +143,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
       this.localCache.handleLocalCacheModelAction(
         deploymentUuid,
         {
-          actionName: "replace",
+          actionName: "replaceLocalCache",
           actionType: "DomainModelAction",
           objects: instances,
         }

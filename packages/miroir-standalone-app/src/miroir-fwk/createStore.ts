@@ -52,9 +52,9 @@ export function createReduxStore(
 }
 
 export interface createMwsStoreReturnType {
-  localDataStore: DataStoreInterface,
-  localDataStoreWorker: SetupWorkerApi,
-  localDataStoreServer: SetupServerApi,
+  localDataStore: DataStoreInterface | undefined,
+  localDataStoreWorker: SetupWorkerApi | undefined,
+  localDataStoreServer: SetupServerApi | undefined,
   reduxStore: ReduxStore,
   localAndRemoteController:LocalAndRemoteControllerInterface,
   domainController: DomainControllerInterface,
@@ -92,8 +92,8 @@ export async function createMswStore(
       // const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl,miroirConfig.emulatedServerConfig.indexedDbName,localUuidIndexedDb,localDataStore);
       const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localDataStore);
 
-      let localDataStoreWorker: SetupWorkerApi = undefined;
-      let localDataStoreServer: SetupServerApi = undefined;
+      let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
+      let localDataStoreServer: SetupServerApi | undefined = undefined;
       if (platformType == "browser") {
         localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
       }
@@ -141,8 +141,8 @@ export async function createMswStore(
         );
         const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localDataStore);
 
-        let localDataStoreWorker: SetupWorkerApi = undefined;
-        let localDataStoreServer: SetupServerApi = undefined;
+        let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
+        let localDataStoreServer: SetupServerApi | undefined = undefined;
         localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
 
         return Promise.resolve({

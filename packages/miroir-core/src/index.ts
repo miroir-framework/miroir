@@ -1,4 +1,8 @@
 export {
+  Application,
+  ApplicationSchema,
+} from './0_interfaces/1_core/Application.js';
+export {
   EntityAttribute,
   EntityAttributeType,
   EntityAttributeTypeNameArray,
@@ -27,8 +31,8 @@ export {
   ZinstanceWithName,
   Zmodel,
   ClientServerDistributionMode,
-  applicationDeploymentLibraryNew,
-  applicationDeploymentMiroirBootstrap,
+  // applicationDeploymentLibraryNew,
+  // applicationDeploymentMiroirBootstrap,
 } from './0_interfaces/1_core/StorageConfiguration.js';
 export {
   HttpMethod,
@@ -83,6 +87,7 @@ export {
   DomainModelUndoRedoAction,
   DomainModelReplayableAction,
   DomainModelRollbackAction,
+  DomainModelReplaceLocalCacheAction,
   EntitiesDomainState,
   DomainStateReducer,
   DomainStateSelector,
@@ -207,6 +212,7 @@ import applicationMiroir from './assets/a659d350-dd97-4da9-91de-524fa01745dc/218
 import applicationDeploymentMiroir from './assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import applicationModelBranchMiroirMasterBranch from './assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
 import applicationVersionInitialMiroirVersion from './assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
+import applicationStoreBasedConfigurationMiroir from './assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
 // import entityModelVersion from './assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityReport from './assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
@@ -223,15 +229,15 @@ import reportEntityList from './assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea
 import reportEntityDefinitionList from './assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import reportReportList from './assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
 // import applicationVersionInitialMiroirVersion from './assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
-import instanceConfigurationReference from './assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
+// import instanceConfigurationReference from './assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
-import applicationDeploymentLibrary from './assets/app_library/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 
 export {
   applicationMiroir,
   applicationDeploymentMiroir,
-  applicationDeploymentLibrary,
+  // applicationDeploymentLibrary,
   applicationModelBranchMiroirMasterBranch,
+  applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
   entityApplication,
   entityApplicationDeployment,
@@ -255,7 +261,7 @@ export {
   entityEntity,
   entityEntityDefinition,
   entityStoreBasedConfiguration,
-  instanceConfigurationReference,
+  // instanceConfigurationReference,
   // applicationVersionInitialMiroirVersion,
   reportConfigurationList,
   reportEntityList,

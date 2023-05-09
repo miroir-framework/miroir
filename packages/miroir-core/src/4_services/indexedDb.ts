@@ -2,7 +2,7 @@ import { Level } from 'level';
 import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 
 export class IndexedDb {
-  public db: Level = undefined;
+  public db: Level | undefined = undefined;
   private subLevels: Map<string, Level> = new Map();
 
   // #############################################################################################
@@ -30,7 +30,7 @@ export class IndexedDb {
   }
 
   // #############################################################################
-  public async createObjectStore(tableNames: string[]):Promise<Level> {
+  public async createObjectStore(tableNames: string[]):Promise<void> {
     try {
       if(this.db !== undefined) {
         await this.db.open();
@@ -93,7 +93,7 @@ export class IndexedDb {
           (tableName: string) => {
           const result: [string, any] = [
             tableName,
-            <any>this.db.sublevel(tableName),
+            <any>this.db?.sublevel(tableName),
           ];
           result[1].clear();
           console.log('indexedDb added sublevel:',result[0]);
@@ -140,7 +140,7 @@ export class IndexedDb {
     // const tx = this.db.transaction(tableName, 'readwrite');
     const store = this.subLevels.get(tableName);
     for (const value of values) {
-      const result = await store.put(value.uuid,value, {valueEncoding: 'json'});
+      const result = await store?.put(value.uuid,value, {valueEncoding: 'json'});
       console.log('IndexedDb PutBulkValue ', JSON.stringify(result));
     }
     return this.getAllValue(tableName); // TODO: do not return the full table!
@@ -150,12 +150,12 @@ export class IndexedDb {
   public async deleteValue(tableUuid: string, uuid: string):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     const store = this.subLevels.get(tableUuid);
-    const result = await store.get(uuid);
+    const result = await store?.get(uuid);
     if (!result) {
       console.warn('IndexedDb deleteValue Id not found', uuid);
       return Promise.resolve(result);
     }
-    await store.del(uuid);
+    await store?.del(uuid);
     console.log('IndexedDb DeleteValue', uuid);
     return uuid;
   }

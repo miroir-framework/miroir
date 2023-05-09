@@ -17,8 +17,8 @@ import SimpleEditor from './SimpleEditor';
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useCallback, useState } from 'react';
 import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirApplicationVersion, MiroirReport, StoreBasedConfiguration, entityEntity, applicationDeploymentMiroir } from 'miroir-core';
-import { useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
-import { useDomainControllerServiceHook, useErrorLogServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import { useLocalCacheDeploymentEntities, useLocalCacheDeploymentEntityDefinitions, useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
 export interface MTableComponentProps {
   // columnDefs:{"headerName": string, "field": string}[];
@@ -51,9 +51,10 @@ function onRowDataUpdated(e:RowDataUpdatedEvent) {
 
 
 export const MTableComponent = (props: MTableComponentProps) => {
+  const deploymentUuid = useMiroirContextDeploymentUuid();
   const miroirReports: MiroirReport[] = useLocalCacheReports();
-  const miroirEntities: MetaEntity[] = useLocalCacheEntities();
-  const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
   const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -85,7 +86,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
       const entity = e.data as MetaEntity;
       // sending ModelUpdates
       await domainController.handleDomainModelAction(
-        applicationDeploymentMiroir.uuid,
+        deploymentUuid,
         {
           actionType: "DomainModelAction",
           actionName: "updateEntity",
@@ -107,7 +108,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
       console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
       // sending DataUpdates
       await domainController.handleDomainAction(
-        applicationDeploymentMiroir.uuid,
+        deploymentUuid,
         {
           actionType: "DomainDataAction",
           actionName: "update",

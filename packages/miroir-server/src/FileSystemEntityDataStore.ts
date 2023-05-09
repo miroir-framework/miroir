@@ -1,4 +1,5 @@
 import {
+  DataStoreApplicationType,
   DataStoreInterface,
   EntityDefinition,
   EntityInstance,
@@ -41,7 +42,15 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
     return Promise.resolve();
   }
   // #########################################################################################
-  initModel(): Promise<void> {
+  initApplication(
+    metaModel:MiroirMetaModel,
+    dataStoreType: DataStoreApplicationType,
+    application: EntityInstance,
+    applicationDeployment: EntityInstance,
+    applicationModelBranch: EntityInstance,
+    applicationVersion: EntityInstance,
+    applicationStoreBasedConfiguration: EntityInstance,
+  ): Promise<void> {
     const files = fs.readdirSync(this.modelDirectory);
     console.log('FileSystemEntityDataStore initModel does nothing! existing entities',files);
     return Promise.resolve();
@@ -122,32 +131,32 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
 
   // #########################################################################################
   getInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve(undefined);
+    return Promise.resolve([]);
   }
 
   // #########################################################################################
   getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
-    return Promise.resolve(undefined);
+    return Promise.resolve({});
   }
 
   // #########################################################################################
   getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    return Promise.resolve(undefined);
+    return Promise.resolve({} as EntityInstance);
   }
 
   // #########################################################################################
   getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve(undefined);
+    return Promise.resolve([]);
   }
 
   // #########################################################################################
   getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    return Promise.resolve(undefined);
+    return Promise.resolve({} as EntityInstance);
   }
 
   // #########################################################################################
   getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve(undefined);
+    return Promise.resolve([]);
   }
 
   // #########################################################################################

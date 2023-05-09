@@ -3,6 +3,8 @@ import { ModelCUDInstanceUpdate, WrappedModelEntityUpdate, WrappedModelEntityUpd
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { EntityInstance, EntityInstanceCollection } from "../1_core/Instance.js";
 import { EntityDefinition, MetaEntity, Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { DataStoreApplicationType } from "../../3_controllers/ModelInitializer.js";
+import { Application } from "../1_core/Application.js";
 
 export const CUDActionNamesObject = {
   'create': 'create',
@@ -48,7 +50,7 @@ export interface DomainDataAction {
   actionName: CUDActionName;
   steps?:number; // for undo / redo
   uuid?:string;
-  objects?:EntityInstanceCollection[];
+  objects:EntityInstanceCollection[];
 }
 
 
@@ -83,8 +85,13 @@ export interface DomainModelCommitAction {
 
 export interface DomainModelRollbackAction {
   actionType:'DomainModelAction',
-  actionName: 'replace';
-  objects?:EntityInstanceCollection[];
+  actionName: 'rollback';
+}
+
+export interface DomainModelReplaceLocalCacheAction {
+  actionType:'DomainModelAction',
+  actionName: 'replaceLocalCache';
+  objects:EntityInstanceCollection[];
 }
 
 export interface DomainModelUndoRedoAction {
@@ -100,16 +107,27 @@ export interface DomainModelResetAction {
   // entities: MetaEntity[];
 }
 
+export interface DomainModelInitActionParams {
+  metaModel:MiroirMetaModel,
+  dataStoreType: DataStoreApplicationType,
+  application: Application,
+  applicationDeployment: EntityInstance,
+  applicationModelBranch: EntityInstance,
+  applicationVersion: EntityInstance,
+  applicationStoreBasedConfiguration: EntityInstance,
+}
 export interface DomainModelInitAction {
   actionType:'DomainModelAction',
   actionName: 'initModel';
-  // entityDefinitions: EntityDefinition[];
+  params: DomainModelInitActionParams;
+// entityDefinitions: EntityDefinition[];
   // entities: MetaEntity[];
 }
 
 export type DomainModelAncillaryAction =
   | DomainModelCommitAction
   | DomainModelRollbackAction
+  | DomainModelReplaceLocalCacheAction
   | DomainModelUndoRedoAction
   | DomainModelResetAction
   | DomainModelInitAction

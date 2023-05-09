@@ -26,8 +26,12 @@ import {
   reportReportList,
   StoreBasedConfiguration,
   applicationDeploymentMiroir,
-  applicationDeploymentLibrary,
-  ApplicationDeployment
+  // applicationDeploymentLibrary,
+  ApplicationDeployment,
+  defaultMiroirMetaModel,
+  applicationMiroir,
+  applicationModelBranchMiroirMasterBranch,
+  applicationStoreBasedConfigurationMiroir
 } from "miroir-core";
 import {
   useLocalCacheDeploymentReports,
@@ -60,9 +64,13 @@ import reportPublisherList from "assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77
 import entityDefinitionBook from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import entityDefinitionPubliser from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import entityDefinitionAuthor from "assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
-// import applicationLibrary from "assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-// import applicationVersionLibraryInitialVersion from "assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json";
-// import applicationModelBranchLibraryMasterBranch from "assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+
+import applicationLibrary from "assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+// import applicationDeploymentLibrary from 'assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
+import applicationVersionLibraryInitialVersion from "assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
+import applicationModelBranchLibraryMasterBranch from "assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+import applicationStoreBasedConfigurationLibrary from "assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
+
 import author4 from "assets/instances/Author - Catherine Guérard.json";
 import author1 from "assets/instances/Author - Cornell Woolrich.json";
 import author2 from "assets/instances/Author - Don Norman.json";
@@ -76,12 +84,38 @@ import folio from "assets/instances/Publisher - Folio.json";
 import penguin from "assets/instances/Publisher - Penguin.json";
 import springer from "assets/instances/Publisher - Springer.json";
 
+// duplicated from server!!!!!!!!
+const applicationDeploymentLibrary: ApplicationDeployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"ApplicationDeployment",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationPostgresDeployment",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for Application Library",
+  "model": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "data": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  }
+}
 export interface RootComponentProps {
   // store:any;
   reportName: string;
 }
 
-function defaultToEntityList(value: string, miroirReports: MiroirReport[]): string {
+function defaultToEntityList(value: string | undefined, miroirReports: MiroirReport[]): string | undefined {
   return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
 }
 
@@ -127,7 +161,7 @@ async function uploadBooksAndReports(
   },currentModel);
 
   await domainController.handleDomainAction(
-    applicationDeploymentMiroir.uuid,
+    applicationDeploymentLibrary.uuid,
     { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
     currentModel
   );
@@ -191,7 +225,8 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
     // setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
-    setDisplayedReportUuid(defaultToEntityList(event.target.value, deploymentReports));
+    const reportUuid = defaultToEntityList(event.target.value, deploymentReports);
+    setDisplayedReportUuid(reportUuid?reportUuid:'');
   };
 
   const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
@@ -261,7 +296,7 @@ export const RootComponent = (props: RootComponentProps) => {
               applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
-                actionName: "replace",
+                actionName: "rollback",
               }
             );
           }}
@@ -287,7 +322,7 @@ export const RootComponent = (props: RootComponentProps) => {
               applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
-                actionName: "replace",
+                actionName: "rollback",
               }
             );
           }}
@@ -304,6 +339,31 @@ export const RootComponent = (props: RootComponentProps) => {
               {
                 actionType: "DomainModelAction",
                 actionName: "initModel",
+                params: {
+                  dataStoreType:'miroir',
+                  metaModel: defaultMiroirMetaModel,
+                  application: applicationMiroir,
+                  applicationDeployment: applicationDeploymentMiroir,
+                  applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+                  applicationVersion:applicationVersionLibraryInitialVersion,
+                }
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "initModel",
+                params: {
+                  dataStoreType:'app',
+                  metaModel: defaultMiroirMetaModel,
+                  application: applicationLibrary,
+                  applicationDeployment: applicationDeploymentLibrary,
+                  applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+                  applicationVersion:applicationVersionLibraryInitialVersion,
+                }
               }
             );
             // .then(
@@ -315,7 +375,14 @@ export const RootComponent = (props: RootComponentProps) => {
               applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
-                actionName: "replace",
+                actionName: "rollback",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "rollback",
               }
             );
             // }
@@ -332,10 +399,18 @@ export const RootComponent = (props: RootComponentProps) => {
               applicationDeploymentMiroir.uuid,
               {
                 actionType: "DomainModelAction",
-                actionName: "replace",
+                actionName: "rollback",
               }
             );
-          }}
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "rollback",
+              }
+            );
+          }
+        }
         >
           fetch Miroir & App configurations from database
         </button>

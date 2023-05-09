@@ -135,7 +135,7 @@ export const GenderCellEditor = memo(
           sx={{ width: 300 }}
           autoHighlight
           getOptionLabel={(option) => option.label}
-          onChange={(event,value,reason,details) => value.onClick()}
+          onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
             console.log('GenderCellEditor2 renderOption props',props,'option',option);

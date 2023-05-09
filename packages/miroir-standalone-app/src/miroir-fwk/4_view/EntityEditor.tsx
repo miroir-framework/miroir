@@ -34,7 +34,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   // const inputRef = useRef<any>();
     // const [value, setValue] = useState(ref['value']);
   const [value, setValue] = useState(initialState.value?initialState.value:'');
-  const refInput = useRef(null);
+  const refInput = useRef<any>(null);
 
   // focus on the input
   useEffect(() => {

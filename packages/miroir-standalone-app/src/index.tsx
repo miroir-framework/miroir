@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import { setupWorker } from "msw";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,11 +14,9 @@ import { miroirAppStartup } from "startup";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
-const root = createRoot(container);
-
 
 // ###################################################################################
-async function start() {
+async function start(root:Root) {
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
@@ -46,7 +44,7 @@ async function start() {
     }
     if (!!localDataStore) { // datastore is emulated
       await localDataStore.open();
-      await localDataStore.createProxy(defaultMiroirMetaModel,'miroir');
+      await localDataStore.createProxy(defaultMiroirMetaModel);
       await localDataStore?.clear();
       // console.log('localDataStore.db',localDataStore.getdb());
     }
@@ -80,4 +78,7 @@ async function start() {
 
 }
 
-start();
+if (container) {
+  const root = createRoot(container);
+  start(root);
+}
