@@ -32,6 +32,14 @@ const users = [];
 // const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
 // const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
 
+const libraryAppFileSystemDataStore:DataStoreInterface = new FileSystemEntityDataStore(
+  'library',
+  'app',
+  applicationDeploymentLibrary.data.location['directory'],
+  applicationDeploymentLibrary.data.location['directory'],
+);
+
+
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
 
@@ -47,14 +55,12 @@ const miroirAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
 const libraryAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
   'library',
   'app',
-  // applicationDeploymentMiroir.model.location['connectionString'],
-  // applicationDeploymentMiroir.model.location['schema'],
-  // applicationDeploymentMiroir.data.location['connectionString'],
-  // applicationDeploymentMiroir.data.location['schema'],
   applicationDeploymentLibrary.model.location['connectionString'],
   applicationDeploymentLibrary.model.location['schema'],
-  applicationDeploymentLibrary.data.location['connectionString'],
-  applicationDeploymentLibrary.data.location['schema'],
+  // applicationDeploymentLibrary.data.location['connectionString'],
+  // applicationDeploymentLibrary.data.location['schema'],
+  applicationDeploymentLibrary.model.location['connectionString'],
+  applicationDeploymentLibrary.model.location['schema'],
 );
 
 try {
@@ -68,6 +74,8 @@ try {
 } catch(e) {
   console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
 }
+
+
 
 app.use(bodyParser.json());
 
@@ -89,8 +97,8 @@ app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
 app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (req, res, ctx) => {
   // TODO: remove, it is identical to post!!
   const body = await req.body;
-  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received, count',count++,'body',body);
-  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
+  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all called, count',count++,'body',body);
+  // console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
   
   const deploymentUuid: string =
     typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
@@ -98,7 +106,8 @@ app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (r
   const parentUuid: string =
     typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
   
-  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
+  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
+  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   console.log("server get miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
   return generateHandlerBody(

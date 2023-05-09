@@ -71,18 +71,18 @@ import applicationVersionLibraryInitialVersion from "assets/c3f0facf-57d1-4fa8-b
 import applicationModelBranchLibraryMasterBranch from "assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import applicationStoreBasedConfigurationLibrary from "assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 
-import author4 from "assets/instances/Author - Catherine Guérard.json";
-import author1 from "assets/instances/Author - Cornell Woolrich.json";
-import author2 from "assets/instances/Author - Don Norman.json";
-import author3 from "assets/instances/Author - Paul Veyne.json";
-import book3 from "assets/instances/Book - Et dans l'éternité.json";
-import book4 from "assets/instances/Book - Rear Window.json";
-import book5 from "assets/instances/Book - Renata n'importe quoi.json";
-import book1 from "assets/instances/Book - The Bride Wore Black.json";
-import book2 from "assets/instances/Book - The Design of Everyday Things.json";
-import folio from "assets/instances/Publisher - Folio.json";
-import penguin from "assets/instances/Publisher - Penguin.json";
-import springer from "assets/instances/Publisher - Springer.json";
+import author1 from "assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json";
+import author2 from "assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json";
+import author3 from "assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json";
+import author4 from "assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/e4376314-d197-457c-aa5e-d2da5f8d5977.json";
+import book3 from "assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b3-3c53-4f9b-b000-b0e4c07a81f7.json";
+import book4 from "assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
+import book5 from "assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
+import book1 from "assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
+import book2 from "assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
+import folio from "assets/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json";
+import penguin from "assets/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json";
+import springer from "assets/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -286,7 +286,23 @@ export const RootComponent = (props: RootComponentProps) => {
             );
           }}
         >
-          Commit
+          Commit Miroir
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainModelAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainModelAction",
+                actionName: "commit",
+              },
+              currentModel
+            );
+          }}
+        >
+          Commit Library app
         </button>
       </span>
       <span>

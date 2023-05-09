@@ -19,6 +19,8 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
 
   // #############################################################################################
   constructor(
+    public applicationName: string,
+    public dataStoreType: DataStoreApplicationType,
     private modelDirectory: string,
     private dataDirectory: string,
   ) {
@@ -130,8 +132,20 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {}
 
   // #########################################################################################
-  getInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve([]);
+  getInstances(entityUuid: string): Promise<EntityInstance[]> {
+    console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory);
+    
+    const entityInstancesPath = path.join(this.dataDirectory,entityUuid)
+    if (fs.existsSync(entityInstancesPath)) {
+      const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
+      console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory,'found entity instances',entityInstancesUuid);
+      const entityInstances = entityInstancesUuid.map(e=>JSON.parse(fs.readFileSync(path.join(entityInstancesPath,e)).toString())) as EntityInstance[];
+      console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory,'found entity instances',entityInstances);
+      return Promise.resolve(entityInstances);
+    } else {
+      console.warn('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'could not find path',entityInstancesPath);
+      return Promise.resolve([]);
+    }
   }
 
   // #########################################################################################
