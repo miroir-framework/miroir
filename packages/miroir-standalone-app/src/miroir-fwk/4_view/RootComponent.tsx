@@ -229,6 +229,18 @@ export const RootComponent = (props: RootComponentProps) => {
   const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
   const [displayedApplicationSection, setDisplayedApplicationSection] = React.useState<ApplicationSection | undefined>('' as ApplicationSection);
 
+  const libraryAppEntities:MetaEntity [] = useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model');
+  const libraryAppEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model');
+
+  const libraryAppModel: MiroirMetaModel =  {
+    entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
+    entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model'),
+    reports: useLocalCacheDeploymentSectionReports(applicationDeploymentLibrary.uuid,'model'),
+    configuration: [],
+    applicationVersions: [],
+    applicationVersionCrossEntityDefinition: [],
+  };
+
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
   console.log("RootComponent displayedDeploymentDefinition",displayedDeploymentDefinition);
@@ -373,6 +385,13 @@ export const RootComponent = (props: RootComponentProps) => {
           <button
             onClick={async () => {
               await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "resetModel",
+                }
+              );
+              await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
                   actionType: "DomainModelAction",
@@ -504,7 +523,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <button
             onClick={async () => {
               await domainController.handleDomainModelAction(
-                applicationDeploymentMiroir.uuid,
+                applicationDeploymentLibrary.uuid,
                 {
                   actionType: "DomainModelAction",
                   actionName: "updateEntity",
@@ -519,7 +538,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     },
                   },
                 },
-                defaultMiroirMetaModel
+                libraryAppModel
               );
             }}
           >
@@ -552,7 +571,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     ],
                   },
                 },
-                defaultMiroirMetaModel
+                defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
               );
             }}
           >
@@ -563,7 +582,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <button
             onClick={async () => {
               await domainController.handleDomainModelAction(
-                applicationDeploymentMiroir.uuid,
+                applicationDeploymentLibrary.uuid,
                 {
                   actionType: "DomainModelAction",
                   actionName: "updateEntity",
@@ -578,7 +597,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     },
                   },
                 },
-                defaultMiroirMetaModel
+                libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
               );
             }}
           >

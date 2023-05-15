@@ -19,7 +19,7 @@ import {
   ModelReplayableUpdate,
   WrappedModelEntityUpdateWithCUDUpdate
 } from "miroir-core";
-import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
+import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, QueryInterfaceOptions, QueryTypes, Sequelize } from "sequelize";
 
 const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
   STRING: DataTypes.STRING,
@@ -53,6 +53,7 @@ export type SqlUuidEntityDefinition = {
 export class SqlDbDatastore implements DataStoreInterface {
   private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = {};
   private sqlModelSchemaTableAccess: SqlUuidEntityDefinition= {};
+  private logHeader: string;
 
   constructor(
     public applicationName: string,
@@ -61,7 +62,9 @@ export class SqlDbDatastore implements DataStoreInterface {
     private modelSchema: string,
     private dataSequelize: Sequelize,
     private dataSchema: string,
-  ) {}
+  ) {
+    this.logHeader = 'SqlDbDatastore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+  }
 
   // ##############################################################################################
   // TODO: does side effect on sequelize object => refactor!
@@ -175,9 +178,9 @@ export class SqlDbDatastore implements DataStoreInterface {
   ): Promise<void> {
     if (Object.keys(this.sqlDataSchemaTableAccess).length > 0) {
       // TODO: allow refresh
-      console.warn("sqlDbServer",'Application',this.applicationName,'dataStoreType',this.dataStoreType,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
+      console.warn(this.logHeader,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
     } else {
-      console.warn("sqlDbServer",'Application',this.applicationName,'dataStoreType',this.dataStoreType,"createProxy","initialization started");
+      console.warn(this.logHeader,"createProxy started");
       // const metaModelEntityEntity = metaModel.entities.find(e=>e.uuid = entityEntity.uuid);
       // const metaModelEntityDefinitionEntity = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntity.uuid);
       // const metaModelEntityEntityDefinition = metaModel.entities.find(e=>e.uuid = entityEntityDefinition.uuid);
@@ -192,7 +195,7 @@ export class SqlDbDatastore implements DataStoreInterface {
               const entityDefinition = metaModel.entityDefinitions.find(e=>e.entityUuid==curr.uuid);
               // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
               if (entityDefinition) {
-                return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+                return Object.assign(prev, this.getAccessToModelSectionEntity(curr,entityDefinition));
               } else {
                 return prev;
               }
@@ -207,7 +210,7 @@ export class SqlDbDatastore implements DataStoreInterface {
               const entityDefinition = metaModel.entityDefinitions.find(e=>e.entityUuid==curr.uuid);
               // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
               if (entityDefinition) {
-                return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+                return Object.assign(prev, this.getAccessToModelSectionEntity(curr,entityDefinition));
               } else {
                 return prev;
               }
@@ -234,8 +237,8 @@ export class SqlDbDatastore implements DataStoreInterface {
         )
       ;
     }
-    console.log("################### sqlDbServer",this.applicationName,this.dataStoreType,"createProxy model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess);
-    console.log("################### sqlDbServer",this.applicationName,this.dataStoreType,"createProxy data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess);
+    console.log("###################",this.logHeader,"createProxy model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess,'this.modelSequelize',Object.keys(this.modelSequelize.models),'config',this.dataSequelize.config);
+    console.log("###################",this.logHeader,"createProxy data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess,'this.dataSequelize',Object.keys(this.dataSequelize.models),'config',this.modelSequelize.config);
     return Promise.resolve();
   }
   
@@ -315,13 +318,14 @@ export class SqlDbDatastore implements DataStoreInterface {
         // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
         await model.sequelizeModel.drop();
         delete this.sqlDataSchemaTableAccess[entityUuid];
-        await this.deleteDataInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
+        await this.deleteModelInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
   
-        const entityDefinitions = (await this.getDataInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
+        //remove all entity definitions for the dropped entity
+        const entityDefinitions = (await this.getModelInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
         for (
           const entityDefinition of entityDefinitions
         ) {
-          await this.deleteDataInstance(entityEntityDefinition.uuid, entityDefinition)
+          await this.deleteModelInstance(entityEntityDefinition.uuid, entityDefinition)
         }
       } else {
         console.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
@@ -472,11 +476,20 @@ export class SqlDbDatastore implements DataStoreInterface {
       && update.equivalentModelCUDUpdates[0].objects[1].instances[0]
     ) {
       const modelCUDupdate = update.equivalentModelCUDUpdates[0];
-      const model = (modelCUDupdate && modelCUDupdate.objects?.length && modelCUDupdate.objects[0])?this.sqlDataSchemaTableAccess[modelCUDupdate.objects[0].parentUuid]:undefined;
-      await this.modelSequelize.getQueryInterface().renameTable(update.modelEntityUpdate['entityName'], update.modelEntityUpdate['targetValue']);
-      if (modelCUDupdate.objects && model?.parentName) {
-        this.modelSequelize.modelManager.removeModel(this.modelSequelize.model(model.parentName));
-        // update this.sqlUuidEntities for the renamed entity
+      const model = (modelCUDupdate && modelCUDupdate.objects?.length && modelCUDupdate.objects[0])?this.sqlModelSchemaTableAccess[modelCUDupdate.objects[0].parentUuid]:undefined;
+      console.log(this.logHeader,'renameEntity update',update);
+      console.log(this.logHeader,'renameEntity model',model);
+      
+      // console.log(this.logHeader,'renameEntity modelSequelize tables',Object.keys(this.modelSequelize.models), 'this.sqlModelSchemaTableAccess',this.sqlModelSchemaTableAccess);
+      // console.log(this.logHeader,'renameEntity dataSequelize ',this.dataSequelize.config,'tables',Object.keys(this.dataSequelize.models),'this.sqlDataSchemaTableAccess',this.sqlDataSchemaTableAccess);
+      
+      await this.dataSequelize.getQueryInterface().renameTable({tableName:update.modelEntityUpdate['entityName'],schema:this.dataSchema}, update.modelEntityUpdate['targetValue']);
+      // console.log(this.logHeader, 'renameEntity renameTable done.');
+
+      if (modelCUDupdate.objects && model?.parentName) { // this.modelSequelize indexes tables by name, it has to be updated to stay consistent
+        // removing dataSequelize model with old name
+        this.dataSequelize.modelManager.removeModel(this.dataSequelize.model(update.modelEntityUpdate['entityName']));
+        // creating dataSequelize model for the renamed entity
         Object.assign(
           this.sqlDataSchemaTableAccess,
           this.getAccessToDataSectionEntity( // TODO: decouple from ModelUpdateConverter implementation
@@ -484,14 +497,17 @@ export class SqlDbDatastore implements DataStoreInterface {
             update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
           )
         );
-        // update the instance in table Entity corresponding to the renamed entity
-        await this.upsertDataInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
+        // update the instance in table Entity and EntityDefinition corresponding to the renamed entity
+        await this.upsertModelInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
+        await this.upsertModelInstance(entityEntityDefinition.uuid, modelCUDupdate.objects[1].instances[0]);
+        
       } else {
         console.error('renameEntity could not execute update',update);
       }
     } else {
       console.error('renameEntity could not execute update',update);
     }
+    console.log(this.logHeader, 'renameEntity done.');
   }
 
   // ##############################################################################################

@@ -103,12 +103,12 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
   async handleNetworkRemoteStoreCRUDAction(action: RemoteStoreAction): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroir/entity");
-    console.log("RemoteStoreNetworkRestClient handleRemoteStoreCRUDAction", action, "callParams", callParams);
+    console.error("RemoteStoreNetworkRestClient handleRemoteStoreCRUDAction", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
   async handleNetworkRemoteStoreModelAction(action: RemoteStoreAction): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(action, this.rootApiUrl + "/model/" + action.actionName);
-    console.log("RemoteStoreNetworkRestClient handleRemoteStoreModelAction", action, "callParams", callParams);
+    console.error("RemoteStoreNetworkRestClient handleRemoteStoreModelAction", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
 

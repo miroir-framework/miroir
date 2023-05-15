@@ -68,10 +68,10 @@ function onRowDataUpdated(e:RowDataUpdatedEvent) {
 
 
 export const MTableComponent = (props: MTableComponentProps) => {
-  const deploymentUuid = useMiroirContextDeploymentUuid();
+  const contextDeploymentUuid = useMiroirContextDeploymentUuid();
   const miroirReports: MiroirReport[] = useLocalCacheReports();
-  const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
+  const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
+  const currentMiroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(contextDeploymentUuid,'model');
   const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -87,8 +87,8 @@ export const MTableComponent = (props: MTableComponentProps) => {
 
 
   const currentModel: MiroirMetaModel =  {
-    entities: miroirEntities,
-    entityDefinitions: miroirEntityDefinitions,
+    entities: currentMiroirEntities,
+    entityDefinitions: currentMiroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,
     applicationVersions: miroirApplicationVersions,
@@ -98,12 +98,12 @@ export const MTableComponent = (props: MTableComponentProps) => {
   console.log("MTableComponent miroirReports", currentModel);
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
-    console.warn("onCellValueChanged",e)
+    console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
     if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
       const entity = e.data as MetaEntity;
       // sending ModelUpdates
       await domainController.handleDomainModelAction(
-        deploymentUuid,
+        contextDeploymentUuid,
         {
           actionType: "DomainModelAction",
           actionName: "updateEntity",
@@ -125,7 +125,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
       console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
       // sending DataUpdates
       await domainController.handleDomainAction(
-        deploymentUuid,
+        contextDeploymentUuid,
         {
           actionType: "DomainDataAction",
           actionName: "update",

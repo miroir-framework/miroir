@@ -67,7 +67,7 @@ export class DomainController implements DomainControllerInterface {
       }
       case "initModel": 
       case "resetModel": {
-        await this.LocalAndRemoteController.handleRemoteStoreModelAction(domainModelAction);
+        await this.LocalAndRemoteController.handleRemoteStoreModelActionWithDeployment(deploymentUuid,domainModelAction);
         break;
       }
       case "commit": {
