@@ -3,6 +3,7 @@ import {
   DataStoreInterface,
   EntityDefinition,
   EntityInstance,
+  EntityInstanceCollection,
   MetaEntity,
   MiroirMetaModel,
   ModelReplayableUpdate,
@@ -132,56 +133,54 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {}
 
   // #########################################################################################
-  getInstances(entityUuid: string): Promise<EntityInstance[]> {
+  // getInstances(entityUuid: string): Promise<EntityInstance[]> {
+  async getInstances(entityUuid: string): Promise<EntityInstanceCollection|undefined> {
     console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory);
     
     const entityInstancesPath = path.join(this.dataDirectory,entityUuid)
     if (fs.existsSync(entityInstancesPath)) {
       const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
       console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory,'found entity instances',entityInstancesUuid);
-      const entityInstances = entityInstancesUuid.map(e=>JSON.parse(fs.readFileSync(path.join(entityInstancesPath,e)).toString())) as EntityInstance[];
+      const entityInstances = {parentUuid:entityUuid, instances:entityInstancesUuid.map(e=>JSON.parse(fs.readFileSync(path.join(entityInstancesPath,e)).toString()))} as EntityInstanceCollection;
       console.log('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'directory',this.dataDirectory,'found entity instances',entityInstances);
       return Promise.resolve(entityInstances);
     } else {
       console.warn('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'could not find path',entityInstancesPath);
-      return Promise.resolve([]);
+      return Promise.resolve(undefined);
     }
   }
 
   // #########################################################################################
-  getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
+  // used only for testing purposes!
+  // getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     return Promise.resolve({});
   }
 
-  // #########################################################################################
-  getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    return Promise.resolve({} as EntityInstance);
-  }
+  // // #########################################################################################
+  // getModelInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
+  //   return Promise.resolve({} as EntityInstance);
+  // }
 
-  // #########################################################################################
-  getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve([]);
-  }
+  // // #########################################################################################
+  // getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
+  //   return Promise.resolve([]);
+  // }
 
-  // #########################################################################################
-  getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
-    return Promise.resolve({} as EntityInstance);
-  }
+  // // #########################################################################################
+  // getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance> {
+  //   return Promise.resolve({} as EntityInstance);
+  // }
 
-  // #########################################################################################
-  getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return Promise.resolve([]);
-  }
+  // // #########################################################################################
+  // getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
+  //   return Promise.resolve([]);
+  // }
 
   // #########################################################################################
   upsertDataInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
     const filePath = path.join(this.modelDirectory,entityUuid,instance.uuid);
-    // if (fs.existsSync(filePath)) {
-      
-    // } else {
-      
-    // }
-    fs.writeFileSync(filePath,JSON.stringify(instance))
+    fs.writeFileSync(filePath,JSON.stringify(instance, undefined, 2))
 
     return Promise.resolve(undefined);
   }

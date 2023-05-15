@@ -1,7 +1,7 @@
 
 import { DataStoreApplicationType, modelInitialize } from "../3_controllers/ModelInitializer";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
-import { EntityInstance } from "../0_interfaces/1_core/Instance";
+import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
@@ -139,7 +139,9 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // ##############################################################################################
-  async getState():Promise<{[uuid:string]:EntityInstance[]}>{
+  // used only for testing purposes!
+  // async getState():Promise<{[uuid:string]:EntityInstance[]}>{
+  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{
     let result = {};
     console.log('getState this.getEntities()',this.getEntities());
     
@@ -154,8 +156,10 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
   
   // #############################################################################################
-  async getInstances(parentUuid:string):Promise<any> {
-    return this.localUuidIndexedDb.getAllValue(parentUuid);
+  // async getInstances(parentUuid:string):Promise<any> {
+  async getInstances(entityUuid: string): Promise<EntityInstanceCollection> {
+    // TODO: fix applicationSection!!!
+    return {parentUuid:entityUuid,applicationSection:'model',instances:await this.localUuidIndexedDb.getAllValue(entityUuid) as EntityInstance[]};
   }
   
   // #############################################################################################

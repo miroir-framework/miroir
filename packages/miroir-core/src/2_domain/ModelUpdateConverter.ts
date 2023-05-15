@@ -22,9 +22,9 @@ export class ModelEntityUpdateConverter{
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelUpdate.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelUpdate.targetValue});
         if (currentEntity && currentEntityDefinition) {
-          const objects = [
-            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, instances:[modifiedEntityDefinition]},
+          const objects:EntityInstanceCollection[] = [
+            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
+            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
           domainAction = {
             actionName: "update",
@@ -38,8 +38,8 @@ export class ModelEntityUpdateConverter{
       case "DeleteEntity": {
         const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityUuid);
         const currentEntityDefinitions = entityDefinitions.filter(e=>e.entityUuid==modelUpdate.entityUuid);
-        const definitionsToRemove = currentEntityDefinitions.map(ed => ({
-          parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, instances:[{uuid: ed.uuid} as EntityInstanceWithName]
+        const definitionsToRemove:EntityInstanceCollection[] = currentEntityDefinitions.map(ed => ({
+          parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, applicationSection:'model', instances:[{uuid: ed.uuid} as EntityInstanceWithName]
         }));
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         domainAction = {
@@ -47,7 +47,7 @@ export class ModelEntityUpdateConverter{
           actionName:"delete",
           // objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
           objects:[
-            {parentName: entityEntity.name, parentUuid:entityEntity.uuid, instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
+            {parentName: entityEntity.name, parentUuid:entityEntity.uuid, applicationSection:'model', instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
             ...definitionsToRemove
           ]
         }
@@ -61,13 +61,15 @@ export class ModelEntityUpdateConverter{
           actionName: "create",
           objects:[
             {
-              parentName:entityEntity.name, 
-              parentUuid:entityEntity.uuid, 
+              parentName:entityEntity.name,
+              parentUuid:entityEntity.uuid,
+              applicationSection:'model',
               instances:castUpdate.entities.map(e=>e.entity)
             },
             {
-              parentName:entityEntityDefinition.name, 
-              parentUuid:entityEntityDefinition.uuid, 
+              parentName:entityEntityDefinition.name,
+              parentUuid:entityEntityDefinition.uuid,
+              applicationSection:'model', 
               instances:castUpdate.entities.map(e=>e.entityDefinition)
             },
           ]

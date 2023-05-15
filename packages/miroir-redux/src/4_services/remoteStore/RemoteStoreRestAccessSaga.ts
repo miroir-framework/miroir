@@ -80,7 +80,7 @@ export class RemoteStoreRestAccessReduxSaga {
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreCRUDAction,"handleRemoteStoreCRUDAction">("handleRemoteStoreCRUDAction"),
       generator: function*(action:PayloadAction<RemoteStoreCRUDAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction",action);
+          console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -90,13 +90,14 @@ export class RemoteStoreRestAccessReduxSaga {
           } = yield call(() => this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(action.payload));
           const result = {
             status:'ok',
-            instances:[
-              {
-                entity:action.payload?.parentName,
-                parentUuid:action.payload?.parentUuid,
-                instances:clientResult['data']
-              }
-            ]
+            instances:clientResult['data']
+            // instances:[
+            //   {
+            //     entity:action.payload?.parentName,
+            //     parentUuid:action.payload?.parentUuid,
+            //     instances:clientResult['data']
+            //   }
+            // ]
           };
 
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDAction received result", result.status, result.instances);
@@ -117,7 +118,7 @@ export class RemoteStoreRestAccessReduxSaga {
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<RemoteStoreModelAction,"handleRemoteStoreModelAction">("handleRemoteStoreModelAction"),
       generator: function*(action:PayloadAction<RemoteStoreModelAction>):RemoteStoreSagaGenReturnType {
         try {
-          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction",action);
+          console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction",action);
           const clientResult: {
             status: number,
             data: any,
@@ -161,17 +162,18 @@ export class RemoteStoreRestAccessReduxSaga {
           } = yield call(() => this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid, action));
           const result = {
             status:'ok',
-            instances:[
-              {
-                entity:action.parentName,
-                parentUuid:action.parentUuid,
-                instances:clientResult['data']
-              }
-            ]
+            instanceCollection:clientResult['data']
+            // instances:[
+            //   {
+            //     entity:action.parentName,
+            //     parentUuid:action.parentUuid,
+            //     instances:clientResult['data']
+            //   }
+            // ]
           };
 
-          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received result", result.status, result.instances);
-          return yield { status: "ok", instances: result.instances };
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received result", result);
+          return yield result;
         } catch (e: any) {
           console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });
@@ -199,13 +201,12 @@ export class RemoteStoreRestAccessReduxSaga {
           // } = yield call(() => this.client.handleNetworkAction(action));
           const result = {
             status:'ok',
-            instances:[
-              // {entity:action.payload?.parentName, instances:clientResult['data']}
-            ]
+            instanceCollection:
+              {entity:action?.parentUuid, instanceCollection:clientResult['data']}
           };
 
-          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status, result.instances);
-          return yield { status: "ok", instances: result.instances };
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
+          return yield result;
         } catch (e: any) {
           console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment exception", e);
           yield put({ type: "instances/failure/instancesNotReceived" });

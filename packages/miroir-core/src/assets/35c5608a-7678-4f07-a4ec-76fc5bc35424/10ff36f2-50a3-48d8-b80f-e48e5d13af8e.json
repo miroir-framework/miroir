@@ -4,6 +4,7 @@
   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "name":"DefaultMiroirApplicationDeployment",
   "application":"360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "applicationModelLevel": "metamodel",
   "description": "The default Deployment for Application Miroir",
   "model": {
     "location": {

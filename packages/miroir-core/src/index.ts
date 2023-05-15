@@ -16,6 +16,8 @@ export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
   ApplicationDeployment,
+  ApplicationModelLevelSchema,
+  ApplicationModelLevel,
   DeploymentSide,
   FileStorage,
   ModelStorageLocationSchema,
@@ -30,7 +32,7 @@ export {
   Zinstance,
   ZinstanceWithName,
   Zmodel,
-  ClientServerDistributionMode,
+  ClientServerDistributionModeSchema as ClientServerDistributionMode,
   // applicationDeploymentLibraryNew,
   // applicationDeploymentMiroirBootstrap,
 } from './0_interfaces/1_core/StorageConfiguration.js';
@@ -44,6 +46,8 @@ export {
   EntityInstanceCollection,
   EntityInstanceWithName,
   ApplicationConceptLevel,
+  ApplicationSection,
+  ApplicationSectionOpposite,
 } from './0_interfaces/1_core/Instance.js';
 export {
   MiroirMetaModel,

@@ -30,7 +30,7 @@ export class RestServerStub {
           [],
           'get',
           "/miroir/entity/",
-          localDataStore.getDataInstances.bind(localDataStore),
+          localDataStore.getInstances.bind(localDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),

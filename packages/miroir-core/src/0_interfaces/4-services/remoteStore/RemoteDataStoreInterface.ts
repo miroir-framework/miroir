@@ -26,7 +26,8 @@ export interface RemoteStoreCRUDActionReturnType {
   status:'ok'|'error',
   errorMessage?:string, 
   error?:MError,
-  instances: EntityInstanceCollection[]
+  // instances: EntityInstanceCollection[]
+  instanceCollection: EntityInstanceCollection
 };
 
 export interface RestClientCallReturnType {
@@ -111,19 +112,21 @@ export interface DataStoreInterface {
   dropEntities(parentUuid:string[]);
   renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate);
 
-  getInstances(parentUuid:string):Promise<EntityInstance[]>;
+  // getInstances(parentUuid:string):Promise<EntityInstance[]>;
+  getInstances(parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  // getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
+  // getDataInstances(parentUuid:string):Promise<EntityInstance[]>;
+  // getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
+  // getModelInstances(parentUuid:string):Promise<EntityInstance[]>;
 
-  getState():Promise<{[uuid:string]:EntityInstance[]}>;
+  // getState():Promise<{[uuid:string]:EntityInstance[]}>;
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
-  getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
-  getDataInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
-  getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined>;
-  getModelInstances(parentUuid:string):Promise<EntityInstance[]>;
   upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;

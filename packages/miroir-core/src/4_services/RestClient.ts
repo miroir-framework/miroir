@@ -51,7 +51,7 @@ export class RestClient implements RestClientInterface {
   }
 
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
-    const result:Promise<RestClientCallReturnType> = this.call('GET', endpoint, { ...customConfig, method: 'GET' })
+    const result:RestClientCallReturnType = await this.call('GET', endpoint, { ...customConfig, method: 'GET' })
     console.log('RestClient get', endpoint, result)
     return result
   }

@@ -7,7 +7,7 @@ import entityReport  from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa
 export function selectReportInstances(reportUuid:string):DomainStateSelector{
 // export function selectReportInstances(deploymentUuid:string, reportUuid:string):DomainStateSelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
-    // console.log('selectReportInstances', reportName, currentReport, domainState[currentReport.definition.parentName])
+    console.log('selectReportInstances', reportUuid, domainState)
     // const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState[entityDefinitionReport.uuid])?.find(e=>e['uuid'] === reportUuid) as MiroirReport;
     const currentReport: MiroirReport = DomainInstanceUuidIndexToArray(domainState[entityReport.uuid])?.find(e=>e['uuid'] === reportUuid) as MiroirReport;
     if (currentReport && currentReport.definition) {
@@ -28,9 +28,13 @@ export function selectReportInstances(reportUuid:string):DomainStateSelector{
 // }
 
 // export function selectEntityInstances(deploymentUuid:string,parentUuid:string):DomainStateSelector{
-export function selectEntityInstances(parentUuid:string):DomainStateSelector{
+export function selectEntityInstances(parentUuid:string | undefined):DomainStateSelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectEntityInstances', parentName, Object.keys(domainState))
-    return DomainInstanceUuidIndexToArray(domainState[parentUuid]);
+    if (parentUuid && domainState[parentUuid]) {
+      return DomainInstanceUuidIndexToArray(domainState[parentUuid]);
+    } else {
+      return [];
+    }
   }
 }

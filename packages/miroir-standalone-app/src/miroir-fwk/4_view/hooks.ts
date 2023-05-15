@@ -1,5 +1,6 @@
 import { EntityState } from "@reduxjs/toolkit";
 import {
+  applicationDeploymentMiroir,
   EntityDefinition,
   entityDefinitionEntityDefinition,
   entityApplicationVersion,
@@ -14,13 +15,15 @@ import {
   entityEntity,
   MetaEntity,
   entityEntityDefinition,
+  ApplicationSection,
 } from "miroir-core";
 import {
   ReduxStateChanges,
   selectCurrentTransaction,
-  selectInstancesForEntity,
-  selectInstancesForDeploymentEntity,
-  selectInstancesFromDeploymentDomainSelector,
+  // selectInstancesForEntity,
+  selectInstancesForSectionEntity,
+  // selectInstancesFromDeploymentDomainSelector,
+  selectInstancesFromSectionDomainSelector
 } from "miroir-redux";
 import { useSelector } from "react-redux";
 
@@ -31,18 +34,26 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
   return result ? result : [];
 }
 
-//#########################################################################################
-export function useLocalCacheEntities(): MetaEntity[] {
-  const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
-    selectInstancesForEntity(entityEntity.uuid)
-  );
-  return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
-}
+// //#########################################################################################
+// export function useLocalCacheEntities(): MetaEntity[] {
+//   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
+//     selectInstancesForEntity(entityEntity.uuid)
+//   );
+//   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
+// }
+
+// //#########################################################################################
+// export function useLocalCacheDeploymentEntities(deploymentUuid:string): MetaEntity[] {
+//   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
+//     selectInstancesForDeploymentEntity(deploymentUuid, entityEntity.uuid)
+//   );
+//   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
+// }
 
 //#########################################################################################
-export function useLocalCacheDeploymentEntities(deploymentUuid:string): MetaEntity[] {
+export function useLocalCacheSectionEntities(deploymentUuid:string|undefined, section:ApplicationSection|undefined): MetaEntity[] {
   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
-    selectInstancesForDeploymentEntity(deploymentUuid, entityEntity.uuid)
+    selectInstancesForSectionEntity(deploymentUuid, section, entityEntity.uuid)
   );
   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
 }
@@ -50,37 +61,43 @@ export function useLocalCacheDeploymentEntities(deploymentUuid:string): MetaEnti
 //#########################################################################################
 export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
   const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
-    selectInstancesForEntity(entityEntityDefinition.uuid)
+    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'model',entityEntityDefinition.uuid)
   );
   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as EntityDefinition[] : [];
 }
 
 //#########################################################################################
-export function useLocalCacheDeploymentEntityDefinitions(deploymentUuid:string): EntityDefinition[] {
+export function useLocalCacheSectionEntityDefinitions(deploymentUuid:string|undefined,section:ApplicationSection|undefined): EntityDefinition[] {
   const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
-    selectInstancesForDeploymentEntity(deploymentUuid, entityEntityDefinition.uuid)
+    selectInstancesForSectionEntity(deploymentUuid, section, entityEntityDefinition.uuid)
   );
   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as EntityDefinition[]: [];
 }
 
 //#########################################################################################
 export function useLocalCacheReports(): MiroirReport[] {
-  const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForEntity(entityReport.uuid));
+  const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'model',entityReport.uuid));
   const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[]: [];
   return miroirReports;
 }
 
 //#########################################################################################
-export function useLocalCacheDeploymentReports(deploymentUuid:string): MiroirReport[] {
-  const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForDeploymentEntity(deploymentUuid,entityReport.uuid));
-  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[] : [];
-  return miroirReports;
+export function useLocalCacheDeploymentSectionReports(deploymentUuid:string|undefined,section:ApplicationSection|undefined): MiroirReport[] {
+  // if (deploymentUuid && section) {
+    const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForSectionEntity(deploymentUuid,section,entityReport.uuid));
+    console.log('useLocalCacheDeploymentSectionReports',deploymentUuid,section,'state',miroirReportsState);
+    
+    const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[] : [];
+    return miroirReports;
+  // } else {
+  //   return []
+  // }
 }
 
 //#########################################################################################
 export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[] {
   const miroirStoreBasedConfigurationState: EntityState<StoreBasedConfiguration> = useSelector(
-    selectInstancesForEntity(entityStoreBasedConfiguration.uuid)
+    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'data',entityStoreBasedConfiguration.uuid)
   );
   const miroirStoreBasedConfigurations: StoreBasedConfiguration[] = miroirStoreBasedConfigurationState?.entities
     ? Object.values(miroirStoreBasedConfigurationState.entities) as StoreBasedConfiguration[]
@@ -91,7 +108,7 @@ export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[
 //#########################################################################################
 export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
   const miroirModelVersionState: EntityState<MiroirApplicationVersion> = useSelector(
-    selectInstancesForEntity(entityApplicationVersion.uuid)
+    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'model',entityApplicationVersion.uuid)
   );
   const miroirModelVersions: MiroirApplicationVersion[] = miroirModelVersionState?.entities
     ? Object.values(miroirModelVersionState.entities) as MiroirApplicationVersion[]
@@ -100,8 +117,8 @@ export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForReport(deploymentUuid:string, reportName: string): EntityInstance[] {
-  return useSelector(selectInstancesFromDeploymentDomainSelector(deploymentUuid)(selectReportInstances(reportName)));
+export function useLocalCacheInstancesForReport(deploymentUuid:string, section: ApplicationSection, reportName: string): EntityInstance[] {
+  return useSelector(selectInstancesFromSectionDomainSelector(deploymentUuid,section)(selectReportInstances(reportName)));
 }
 
 // //#########################################################################################
@@ -110,6 +127,6 @@ export function useLocalCacheInstancesForReport(deploymentUuid:string, reportNam
 // }
 
 //#########################################################################################
-export function useLocalCacheInstancesForEntity(deploymentUuid:string, entityUuid: string): EntityInstance[] {
-  return useSelector(selectInstancesFromDeploymentDomainSelector(deploymentUuid)(selectEntityInstances(entityUuid)));
+export function useLocalCacheInstancesForEntity(deploymentUuid:string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined): EntityInstance[] {
+  return useSelector(selectInstancesFromSectionDomainSelector(deploymentUuid,section)(selectEntityInstances(entityUuid)));
 }

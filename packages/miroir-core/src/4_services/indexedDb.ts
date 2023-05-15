@@ -119,7 +119,7 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async getAllValue(parentUuid: string):Promise<any> {
+  public async getAllValue(parentUuid: string):Promise<any[]> {
     console.log('IndexedDb getAllValue', parentUuid);
     const store = this.subLevels.get(parentUuid);
     const result = store?store.values({valueEncoding: 'json'}).all():[];

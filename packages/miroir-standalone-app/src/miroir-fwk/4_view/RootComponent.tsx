@@ -31,16 +31,21 @@ import {
   defaultMiroirMetaModel,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationMiroir
+  applicationStoreBasedConfigurationMiroir,
+  ApplicationSection,
+  Uuid,
+  reportEntityList,
+  reportEntityDefinitionList
 } from "miroir-core";
 import {
-  useLocalCacheDeploymentReports,
-  useLocalCacheEntities,
+  useLocalCacheDeploymentSectionReports,
+  useLocalCacheSectionEntities,
   useLocalCacheEntityDefinitions,
   useLocalCacheModelVersion,
   useLocalCacheReports,
   useLocalCacheStoreBasedConfiguration,
   useLocalCacheTransactions,
+  useLocalCacheSectionEntityDefinitions,
 } from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
@@ -93,6 +98,7 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
   "name":"LibraryApplicationPostgresDeployment",
   "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
   "description": "The default Postgres Deployment for Application Library",
+  "applicationModelLevel": "model",
   "model": {
     "location": {
       "type": "sql",
@@ -153,6 +159,7 @@ async function uploadBooksAndReports(
       objects: [{
         parentName: entityReport.name,
         parentUuid: entityReport.uuid,
+        applicationSection:'model',
         instances: [
           reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance
         ]
@@ -175,11 +182,13 @@ async function uploadBooksAndReports(
       {
         parentName: entityPublisher.name,
         parentUuid: entityPublisher.uuid,
+        applicationSection:'data',
         instances: [folio as EntityInstance, penguin as EntityInstance, springer as EntityInstance],
       },
       {
         parentName: entityAuthor.name,
         parentUuid: entityAuthor.uuid,
+        applicationSection:'data',
         instances: [
           author1 as EntityInstance, 
           author2 as EntityInstance,
@@ -190,6 +199,7 @@ async function uploadBooksAndReports(
       {
         parentName: entityBook.name,
         parentUuid: entityBook.uuid,
+        applicationSection:'data',
         instances: [
           book1 as EntityInstance, 
           book2 as EntityInstance, 
@@ -204,337 +214,378 @@ async function uploadBooksAndReports(
 
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-
-  const miroirReports: MiroirReport[] = useLocalCacheReports();
-  const miroirEntities: MetaEntity[] = useLocalCacheEntities();
-  const miroirEntityDefinitions: EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
-  const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
-  // const [displayedReportName, setDisplayedReportName] = React.useState('');
-  const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
-  // const [displayedDeploymentUuid, setDisplayedDeploymentUuid] = React.useState("");
+  
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  // console.log("RootComponent deployments",deployments);
+
+  // context utility functions
   const displayedDeploymentUuid = useMiroirContextDeploymentUuid();
   const setDisplayedDeploymentUuid = useMiroirContextSetDeploymentUuid();
 
-  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentReports(displayedDeploymentUuid);
+  // component state
+  const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
+  const [displayedApplicationSection, setDisplayedApplicationSection] = React.useState<ApplicationSection | undefined>('' as ApplicationSection);
 
+  // computing current state #####################################################################
+  const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
+  console.log("RootComponent displayedDeploymentDefinition",displayedDeploymentDefinition);
+  const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
+    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
+      applicationDeploymentMiroir as ApplicationDeployment
+      :
+      displayedDeploymentDefinition
+  ;
+
+  const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
+    currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
+  ;
+  console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
+
+  // const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(displayedDeploymentUuid,displayedApplicationSection?displayedApplicationSection:'data');
+  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
+  const availableReports: MiroirReport[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
+    deploymentReports.filter(r=>(
+        ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
+        ||
+        (!([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid)) && displayedApplicationSection == 'data')
+      )
+    )
+  ):deploymentReports;
+  const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
+
+  console.log("RootComponent deploymentReports",deploymentReports);
+
+  // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
+  
+  const currentMiroirReport: MiroirReport | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
+  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+  const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
+  
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
-    // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-    // setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
     const reportUuid = defaultToEntityList(event.target.value, deploymentReports);
     setDisplayedReportUuid(reportUuid?reportUuid:'');
   };
 
-  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
-    // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-    setDisplayedDeploymentUuid(event.target.value);
+  const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
+    setDisplayedApplicationSection(event.target.value as ApplicationSection|undefined);
     setDisplayedReportUuid("");
   };
 
-  console.log("RootComponent miroirReports", miroirReports);
-
-  const currentModel: MiroirMetaModel =  {
-    entities: miroirEntities,
-    entityDefinitions: miroirEntityDefinitions,
-    reports: miroirReports,
-    configuration: storeBasedConfigurations,
-    applicationVersions: miroirApplicationVersions,
-    applicationVersionCrossEntityDefinition: [],
+  const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+    setDisplayedDeploymentUuid(event.target.value);
+    setDisplayedApplicationSection('data');
+    setDisplayedReportUuid("");
   };
+
+  // console.log("RootComponent miroirMetaModelReports", miroirMetaModelReports);
+
+  // const currentMiroirModel: MiroirMetaModel =  {
+  //   entities: miroirEntities,
+  //   entityDefinitions: miroirEntityDefinitions,
+  //   reports: miroirMetaModelReports,
+  //   configuration: storeBasedConfigurations,
+  //   applicationVersions: miroirApplicationVersions,
+  //   applicationVersionCrossEntityDefinition: [],
+  // };
+  // console.log("RootComponent currentModel", currentMiroirModel);
 
   // const {store} = props;
   return (
     <div>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainModelAction",
-              actionName: "undo",
-            });
-          }}
-        >
-          undo
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainModelAction",
-              actionName: "redo",
-            });
-          }}
-        >
-          Redo
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentMiroir.uuid,
-              {
+      <div id="buttons">
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
                 actionType: "DomainModelAction",
-                actionName: "commit",
-              },
-              currentModel
-            );
-          }}
-        >
-          Commit Miroir
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentLibrary.uuid,
-              {
+                actionName: "undo",
+              });
+            }}
+          >
+            undo
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
                 actionType: "DomainModelAction",
-                actionName: "commit",
-              },
-              currentModel
-            );
-          }}
-        >
-          Commit Library app
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
-          }}
-        >
-          Rollback
-        </button>
-      </span>
-      <p />
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "resetModel",
-              }
-            );
-            console.log(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
-          }}
-        >
-          Reset database
-        </button>
-      </span>
-      <p />
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "initModel",
-                params: {
-                  dataStoreType:'miroir',
-                  metaModel: defaultMiroirMetaModel,
-                  application: applicationMiroir,
-                  applicationDeployment: applicationDeploymentMiroir,
-                  applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                  applicationVersion:applicationVersionLibraryInitialVersion,
+                actionName: "redo",
+              });
+            }}
+          >
+            Redo
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "commit",
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Commit Miroir
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "commit",
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Commit Library app
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
                 }
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "initModel",
-                params: {
-                  dataStoreType:'app',
-                  metaModel: defaultMiroirMetaModel,
-                  application: applicationLibrary,
-                  applicationDeployment: applicationDeploymentLibrary,
-                  applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-                  applicationVersion:applicationVersionLibraryInitialVersion,
+              );
+            }}
+          >
+            Rollback
+          </button>
+        </span>
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "resetModel",
                 }
-              }
-            );
-            // .then(
-            // async () => {
-            console.log(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
-            // }
-            // );
-          }}
-        >
-          Init database
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "rollback",
-              }
-            );
+              );
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
+                }
+              );
+            }}
+          >
+            Reset database
+          </button>
+        </span>
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "initModel",
+                  params: {
+                    dataStoreType:'miroir',
+                    metaModel: defaultMiroirMetaModel,
+                    application: applicationMiroir,
+                    applicationDeployment: applicationDeploymentMiroir,
+                    applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+                    applicationVersion:applicationVersionLibraryInitialVersion,
+                  }
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "initModel",
+                  params: {
+                    dataStoreType:'app',
+                    metaModel: defaultMiroirMetaModel,
+                    application: applicationLibrary,
+                    applicationDeployment: applicationDeploymentLibrary,
+                    applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+                    applicationVersion:applicationVersionLibraryInitialVersion,
+                  }
+                }
+              );
+              // .then(
+              // async () => {
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
+                }
+              );
+              // }
+              // );
+            }}
+          >
+            Init database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "rollback",
+                }
+              );
+            }
           }
-        }
-        >
-          fetch Miroir & App configurations from database
-        </button>
-      </span>
-      {/* <p />
-      <span>
-        <button
-          onClick={async () => {
-            await uploadInitialMiroirConfiguration(domainController,currentModel);
-          }}
-        >
-          upload Miroir configuration to database
-        </button>
-      </span> */}
-      <p />
-      <span>
-        <button
-          onClick={async () => {
-            await uploadBooksAndReports(domainController, currentModel);
-          }}
-        >
-          upload App configuration to database
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "updateEntity",
-                update: {
-                  updateActionName: "WrappedModelEntityUpdate",
-                  modelEntityUpdate: {
-                    updateActionType: "ModelEntityUpdate",
-                    updateActionName: "renameEntity",
-                    entityName: entityBook.name,
-                    entityUuid: entityBook.uuid,
-                    targetValue: "Bookss",
-                  },
-                },
-              },
-              currentModel
-            );
-          }}
-        >
-          Modify Book entity name
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "UpdateMetaModelInstance",
-                update: {
-                  updateActionType: "ModelCUDInstanceUpdate",
-                  updateActionName: "update",
-                  objects: [
-                    {
-                      parentName: reportReportList.parentName,
-                      parentUuid: reportReportList.parentUuid,
-                      instances: [
-                        Object.assign({}, reportReportList, {
-                          name: "Report2List",
-                          defaultLabel: "Modified List of Reports",
-                        }) as EntityInstance,
-                      ],
+          >
+            fetch Miroir & App configurations from database
+          </button>
+        </span>
+        {/* <p />
+        <span>
+          <button
+            onClick={async () => {
+              await uploadInitialMiroirConfiguration(domainController,currentModel);
+            }}
+          >
+            upload Miroir configuration to database
+          </button>
+        </span> */}
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+            }}
+          >
+            upload App configuration to database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "updateEntity",
+                  update: {
+                    updateActionName: "WrappedModelEntityUpdate",
+                    modelEntityUpdate: {
+                      updateActionType: "ModelEntityUpdate",
+                      updateActionName: "renameEntity",
+                      entityName: entityBook.name,
+                      entityUuid: entityBook.uuid,
+                      targetValue: "Bookss",
                     },
-                  ],
-                },
-              },
-              currentModel
-            );
-          }}
-        >
-          Modify Report List name
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainModelAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainModelAction",
-                actionName: "updateEntity",
-                update: {
-                  updateActionName: "WrappedModelEntityUpdate",
-                  modelEntityUpdate: {
-                    updateActionType: "ModelEntityUpdate",
-                    updateActionName: "DeleteEntity",
-                    entityName: entityAuthor.name,
-                    entityUuid: entityAuthor.uuid,
-                    // instanceUuid:entityAuthor.uuid,
                   },
                 },
-              },
-              currentModel
-            );
-          }}
-        >
-          Remove Author entity
-        </button>
-      </span>
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Modify Book entity name
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "UpdateMetaModelInstance",
+                  update: {
+                    updateActionType: "ModelCUDInstanceUpdate",
+                    updateActionName: "update",
+                    objects: [
+                      {
+                        parentName: reportReportList.parentName,
+                        parentUuid: reportReportList.parentUuid,
+                        applicationSection:'model',
+                        instances: [
+                          Object.assign({}, reportReportList, {
+                            name: "Report2List",
+                            defaultLabel: "Modified List of Reports",
+                          }) as EntityInstance,
+                        ],
+                      },
+                    ],
+                  },
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Modify Report List name
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainModelAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainModelAction",
+                  actionName: "updateEntity",
+                  update: {
+                    updateActionName: "WrappedModelEntityUpdate",
+                    modelEntityUpdate: {
+                      updateActionType: "ModelEntityUpdate",
+                      updateActionName: "DeleteEntity",
+                      entityName: entityAuthor.name,
+                      entityUuid: entityAuthor.uuid,
+                      // instanceUuid:entityAuthor.uuid,
+                    },
+                  },
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Remove Author entity
+          </button>
+        </span>
+      </div>
       <p />
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
@@ -571,6 +622,28 @@ export const RootComponent = (props: RootComponentProps) => {
         </FormControl>
       </Box>
       <p />
+      <p />
+      <Box sx={{ minWidth: 50 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Chosen Application Section</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={displayedApplicationSection}
+            label="displayedApplicationSection"
+            onChange={handleChangeDisplayedApplicationSection}
+          >
+            {['model','data'].map((applicationSection) => {
+              return (
+                <MenuItem key={applicationSection} value={applicationSection}>
+                  {applicationSection}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box>
+      <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">Displayed Report</InputLabel>
@@ -581,7 +654,7 @@ export const RootComponent = (props: RootComponentProps) => {
             label="displayedReportUuid"
             onChange={handleChangeDisplayedReport}
           >
-            {deploymentReports.map((r) => {
+            {availableReports.map((r) => {
               return (
                 <MenuItem key={r.name} value={r.uuid}>
                   {r.defaultLabel}
@@ -594,7 +667,13 @@ export const RootComponent = (props: RootComponentProps) => {
       <Card>
         <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent>
-          <ReportComponent deploymentUuid={displayedDeploymentUuid} reportUuid={displayedReportUuid} />
+          <ReportComponent 
+            chosenDeploymentUuid={displayedDeploymentUuid} 
+            chosenApplicationSection={displayedApplicationSection}
+            reportUuid={displayedReportUuid} 
+            currentMiroirReport={currentMiroirReport}
+            currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+          />
         </CardContent>
       </Card>
     </div>

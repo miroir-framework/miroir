@@ -27,7 +27,7 @@ export const StorageType = z.enum([
   "indexedDb",
 ]);
 
-export const ClientServerDistributionMode = z.enum([
+export const ClientServerDistributionModeSchema = z.enum([
   "singleNode",
   "MultiNode",
 ]);
@@ -81,13 +81,20 @@ export const ModelStorageLocationSchema = z.object({
 
 export type ModelStorageLocation = z.infer<typeof ModelStorageLocationSchema>;
 
+export const ApplicationModelLevelSchema = z.enum([
+  "model",
+  "metamodel",
+]);
+export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
+
 
 export const ApplicationDeploymentSchema = ZinstanceWithName.extend({
   // uuid: z.string().uuid(),
-  type: ClientServerDistributionMode,
+  type: ClientServerDistributionModeSchema,
   description: z.string(),
   // metaModel: ModelStorageLocation,
   application:z.string().uuid(),
+  applicationModelLevel: ApplicationModelLevelSchema,
   model: ModelStorageLocationSchema.optional(),
   data: ModelStorageLocationSchema.optional(),
 });

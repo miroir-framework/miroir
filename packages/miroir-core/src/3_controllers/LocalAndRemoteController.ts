@@ -108,19 +108,21 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
             parentUuid: entityEntity.uuid,
           }
         )
-      )[0];
+      );
 
-      const modelEntities = metamodelEntities.filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",deploymentUuid,"found data entities", dataEntities);
+
+      const modelEntities = metamodelEntities.filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0) // hack, hack, hack
       // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
       const toFetchEntities = [...modelEntities, ...dataEntities.instances];
 
-      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",deploymentUuid,"found dataentities", dataEntities,"toFetchEntities",toFetchEntities);
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",deploymentUuid,"found data entities", dataEntities,"toFetchEntities",toFetchEntities);
 
       let instances: EntityInstanceCollection[] = [dataEntities]; //TODO: replace with functional implementation
       for (const e of toFetchEntities) {
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
         console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore fecthing instances from server for entity", e["name"]);
-        const entityInstances: EntityInstanceCollection[] = await throwExceptionIfError(
+        const entityInstanceCollection: EntityInstanceCollection = await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
           this.remoteStore, // this
@@ -134,9 +136,9 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         console.log(
           "LocalAndRemoteController loadConfigurationFromRemoteDataStore found instances for entity",
           e["name"],
-          entityInstances
+          entityInstanceCollection
         );
-        instances.push(entityInstances[0]);
+        instances.push(entityInstanceCollection);
       }
 
       console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore all instances fetched from server", instances);

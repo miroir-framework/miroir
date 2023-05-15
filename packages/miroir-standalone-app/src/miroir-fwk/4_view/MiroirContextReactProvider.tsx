@@ -40,7 +40,7 @@ export function useMiroirContextDeploymentUuid() {
 }
 
 export function useMiroirContextSetDeploymentUuid() {
-  return React.useContext(miroirReactContext)?.setDeploymentUuid;
+  return React.useContext(miroirReactContext).setDeploymentUuid;
 }
 
 export function useMiroirContextServiceHook() {

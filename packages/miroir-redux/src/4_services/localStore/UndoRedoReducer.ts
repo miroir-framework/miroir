@@ -10,8 +10,8 @@ import {
   EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
-import { LocalCacheSliceState, NewLocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "src/4_services/localStore/LocalCacheSlice";
-import { RemoteStoreRestSagaInputActionNamesObject } from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { LocalCacheSliceState, NewLocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "../../4_services/localStore/LocalCacheSlice";
+import { RemoteStoreRestSagaInputActionNamesObject } from "../../4_services/remoteStore/RemoteStoreRestAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
 /**

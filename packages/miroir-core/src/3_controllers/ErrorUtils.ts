@@ -14,7 +14,7 @@ export async function throwExceptionIfError(
   f: (...args) => Promise<RemoteStoreCRUDActionReturnType>,
   _this,
   ...args
-): Promise<EntityInstanceCollection[]> {
+): Promise<EntityInstanceCollection> {
   const result: RemoteStoreCRUDActionReturnType = await f.bind(_this)(...args);
   // console.log("unwrap",result);
   if (result && result['status'] == "error") {
@@ -24,7 +24,7 @@ export async function throwExceptionIfError(
     errorLogService.pushError(error);
     throw error;
   } else {
-    console.log("throwExceptionIfError", result);
-    return result.instances;
+    console.log("throwExceptionIfError ok", result);
+    return result.instanceCollection;
   }
 }

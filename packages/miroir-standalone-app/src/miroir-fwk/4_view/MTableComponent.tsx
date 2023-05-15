@@ -16,8 +16,25 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import SimpleEditor from './SimpleEditor';
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useCallback, useState } from 'react';
-import { DomainControllerInterface, EntityDefinition, MetaEntity, MiroirMetaModel, MiroirApplicationVersion, MiroirReport, StoreBasedConfiguration, entityEntity, applicationDeploymentMiroir } from 'miroir-core';
-import { useLocalCacheDeploymentEntities, useLocalCacheDeploymentEntityDefinitions, useLocalCacheEntities, useLocalCacheEntityDefinitions, useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheStoreBasedConfiguration, useLocalCacheTransactions } from 'miroir-fwk/4_view/hooks';
+import {
+  DomainControllerInterface,
+  EntityDefinition,
+  MetaEntity,
+  MiroirMetaModel,
+  MiroirApplicationVersion,
+  MiroirReport,
+  StoreBasedConfiguration,
+  entityEntity,
+  applicationDeploymentMiroir,
+} from "miroir-core";
+import {
+  useLocalCacheSectionEntities,
+  useLocalCacheSectionEntityDefinitions,
+  useLocalCacheModelVersion,
+  useLocalCacheReports,
+  useLocalCacheStoreBasedConfiguration,
+  useLocalCacheTransactions,
+} from "miroir-fwk/4_view/hooks";
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
 export interface MTableComponentProps {
@@ -53,8 +70,8 @@ function onRowDataUpdated(e:RowDataUpdatedEvent) {
 export const MTableComponent = (props: MTableComponentProps) => {
   const deploymentUuid = useMiroirContextDeploymentUuid();
   const miroirReports: MiroirReport[] = useLocalCacheReports();
-  const miroirEntities:MetaEntity [] = useLocalCacheDeploymentEntities(deploymentUuid);
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheDeploymentEntityDefinitions(deploymentUuid);
+  const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
+  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
   const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -115,6 +132,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
           objects: [
             {
               parentUuid: props.reportDefinition.definition.parentUuid,
+              applicationSection:'data',
               instances:[
                 // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})
                 e.data

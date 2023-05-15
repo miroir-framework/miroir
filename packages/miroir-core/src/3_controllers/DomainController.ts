@@ -10,20 +10,16 @@ import {
   DomainModelAction,
   DomainModelReplayableAction
 } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
+import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
 import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
-import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
+import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
+
+import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import instanceConfigurationReference from '../assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
-import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
-import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-// import entityDefinitionModelVersion from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json";
-// import applicationMiroir from '../assets/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
-// import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
-import applicationModelBranchMiroirMasterBranch from '../assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json';
-// import applicationVersionInitialMiroirVersion from '../assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
-import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -52,6 +48,7 @@ export class DomainController implements DomainControllerInterface {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction start actionName",
       domainModelAction['actionName'],
+      "deployment", deploymentUuid,
       "action",
       domainModelAction
     );
@@ -83,7 +80,6 @@ export class DomainController implements DomainControllerInterface {
           throw new Error('commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.');
         } else {
           const newModelVersionUuid = uuidv4();
-          // await this.LocalAndRemoteController.handleRemoteStoreCRUDAction({
           const newModelVersion:MiroirApplicationVersion = {
             uuid:newModelVersionUuid,
             conceptLevel:'Data',
@@ -139,7 +135,7 @@ export class DomainController implements DomainControllerInterface {
             {
               actionName:'create',
               actionType: 'DomainDataAction',
-              objects:[{parentUuid:newModelVersion.parentUuid, instances: [newModelVersion]}]
+              objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:'data', instances: [newModelVersion]}]
             }
           );
   

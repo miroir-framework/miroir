@@ -80,19 +80,7 @@ try {
 app.use(bodyParser.json());
 
 
-// ##############################################################################################
-app.get("/miroir/entity/" + ":parentUuid/all", async (req, res, ctx) => {
-  return generateHandlerBody(
-    req.params,
-    ['parentUuid'],
-    [],
-    'get',
-    "/miroir/entity/",
-    miroirAppSqlServerProxy.getInstances.bind(miroirAppSqlServerProxy),
-    res.json.bind(res)
-  )
-});
-
+let count: number = 0;
 // ##############################################################################################
 app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (req, res, ctx) => {
   // TODO: remove, it is identical to post!!
@@ -106,8 +94,8 @@ app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (r
   const parentUuid: string =
     typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
   
-  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
-  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
+  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
+  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   console.log("server get miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
   return generateHandlerBody(
@@ -123,29 +111,17 @@ app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (r
 
 
 // ##############################################################################################
-app.put("/miroir/entity", async (req, res, ctx) => {
-  return generateHandlerBody(
-    req.params,
-    [],
-    await req.body,
-    'put',
-    "/miroir/entity/",
-    miroirAppSqlServerProxy.upsertDataInstance.bind(miroirAppSqlServerProxy),
-    res.json.bind(res)
-  )
-});
-
-// ##############################################################################################
 app.put("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
   // TODO: remove, it is identical to post!!
   const body = await req.body;
-  console.log('put /miroirWithDeployment/entity received, count',count++,'body',body);
+  console.log('put /miroirWithDeployment/entity received count',count++,'body',body);
   console.log('put /miroirWithDeployment/entity received req.originalUrl',req.originalUrl)
   
   const deploymentUuid: string =
     typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
   
   const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
+  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   console.log("server put miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
   return generateHandlerBody(
@@ -155,24 +131,6 @@ app.put("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) =>
     'put',
     "/miroirWithDeployment/entity/",
     targetProxy.upsertInstance.bind(targetProxy),
-    res.json.bind(res)
-  )
-});
-
-let count = 0
-// ##############################################################################################
-app.post("/miroir/entity", async (req, res, ctx) => {
-  const body = await req.body;
-  console.log('post /miroir/entity received, count',count++,'body',body);
-  console.log('post /miroir/entity received req.originalUrl',req.originalUrl)
-
-  return generateHandlerBody(
-    req.params,
-    [],
-    body,
-    'post',
-    "/miroir/entity/",
-    miroirAppSqlServerProxy.upsertDataInstance.bind(miroirAppSqlServerProxy),
     res.json.bind(res)
   )
 });
@@ -198,28 +156,6 @@ app.post("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) =
     targetProxy.upsertInstance.bind(targetProxy),
     res.json.bind(res)
   )
-});
-
-// ##############################################################################################
-app.post("/model/" + ':actionName', async (req, res, ctx) => {
-  const actionName: string =
-    typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
-  let update = [];
-  try {
-    update = await req.body;
-  } catch(e){}
-
-  // const updates: RemoteStoreModelAction[] = await req.body;
-  console.error("server post model/"," started #####################################");
-  await modelActionRunner(
-    '',
-    actionName,
-    miroirAppSqlServerProxy,
-    libraryAppSqlServerProxy,
-    update
-  );
- 
-  return res.json([]);
 });
 
 // ##############################################################################################
@@ -249,20 +185,6 @@ app.post("/modelWithDeployment" + '/:deploymentUuid' + '/:actionName', async (re
  
   return res.json([]);
 });
-
-// // ##############################################################################################
-// app.get('/api/users', (req, res) => {
-//   console.log('api/users called!!!!')
-//   res.json(users);
-// });
-
-// // ##############################################################################################
-// app.post('/api/user', (req, res) => {
-//   const user = req.body.user;
-//   console.log('Adding user::::::::', user);
-//   users.push(user);
-//   res.json("user addedd");
-// });
 
 // ##############################################################################################
 app.get('/', (req,res) => {

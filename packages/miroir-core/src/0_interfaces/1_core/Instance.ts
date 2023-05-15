@@ -12,9 +12,15 @@ export interface EntityInstanceWithName extends EntityInstance {
   "name":string,
 }
 
+export type ApplicationSection = 'model' | 'data';
+
+export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSection {
+  return s == 'model'?'data':'model';
+}
 export interface EntityInstanceCollection {
   parentName?: string;
   parentUuid:string;
+  applicationSection:ApplicationSection;
   instances: EntityInstance[];
 }
 
