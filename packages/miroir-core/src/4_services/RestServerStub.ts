@@ -1,3 +1,4 @@
+import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 import { generateHandlerBody } from "../4_services/RestTools";
@@ -11,84 +12,145 @@ const serializePost = (post: any) => ({
   user: post.user.id,
 });
 
+// duplicated from server!!!!!!!!
+const applicationDeploymentLibrary: ApplicationDeployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"ApplicationDeployment",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationPostgresDeployment",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for Application Library",
+  "applicationModelLevel": "model",
+  "model": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "data": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  }
+}
+
 export class RestServerStub {
   public handlers: any[];
 
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    private localDataStore: DataStoreInterface
+    private localMiroirDataStore: DataStoreInterface,
+    private localAppDataStore: DataStoreInterface,
   ) {
-    console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStore', localDataStore);
+    console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStores', localMiroirDataStore, localAppDataStore);
 
     
     this.handlers = [
-      rest.get(this.rootApiUrl + "/miroir/entity/:parentUuid/all", async (req, res, ctx) => {
+      rest.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (req, res, ctx) => {
+
+        const deploymentUuid: string =
+        typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+      
+        const parentUuid: string =
+        typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
+      
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
+        console.log("RestServerStub get miroirWithDeployment/ using application",targetDataStore['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
+      
         return generateHandlerBody(
-          req.params,
+          {parentUuid},
           ['parentUuid'],
           [],
           'get',
           "/miroir/entity/",
-          localDataStore.getInstances.bind(localDataStore),
+          targetDataStore.getInstances.bind(targetDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
-      rest.post(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+      rest.post(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
         const body = await req.json();
-        console.log('post /miroir/entity', body);
+        console.log('post /miroirWithDeployment/entity', body);
+        const deploymentUuid: string =
+          typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+      
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
         
         return generateHandlerBody(
-          req.params,
+          {},
           [],
           body,
           'post',
-          "/miroir/entity/",
-          localDataStore.upsertDataInstance.bind(localDataStore),
+          "/miroirWithDeployment/entity/",
+          targetDataStore.upsertDataInstance.bind(targetDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
-      rest.put(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+      rest.put(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
         const body = await req.json();
         console.log('put /miroir/entity', body);
+        const deploymentUuid: string =
+          typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+      
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+
         return generateHandlerBody(
-          req.params,
+          {},
           [],
           body,
           'put',
-          "/miroir/entity/",
-          localDataStore.upsertDataInstance.bind(localDataStore),
+          "/miroirWithDeployment/entity/",
+          targetDataStore.upsertDataInstance.bind(targetDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
-      rest.delete(this.rootApiUrl + "/miroir/entity", async (req, res, ctx) => {
+      rest.delete(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
         const body = await req.json();
-        console.log('delete /miroir/entity', localDataStore);
+        console.log('delete /miroir/entity', localMiroirDataStore);
+        const deploymentUuid: string =
+          typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+      
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+
         return generateHandlerBody(
-          req.params,
+          {},
           [],
           body,
           'delete',
-          "/miroir/entity/",
-          localDataStore.deleteDataInstance.bind(localDataStore),
+          "/miroirWithDeployment/entity/",
+          targetDataStore.deleteDataInstance.bind(targetDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),
       // ############################    MODEL      ############################################
-      rest.post(this.rootApiUrl + "/model/:actionName", async (req, res, ctx) => {
+      rest.post(this.rootApiUrl + "/modelWithDeployment/:deploymentUuid/:actionName", async (req, res, ctx) => {
         console.log("post model/"," started #####################################");
         const actionName: string = typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
+
+        const deploymentUuid: string =
+          typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
+      
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
         console.log("post model/ actionName",actionName);
         let update = [];
         try {
           update = await req.json();
         } catch(e){}
 
-        // await modelActionRunner(
-        //   actionName,
-        //   localDataStore,
-        //   update
-        // );
+        await modelActionRunner(
+          deploymentUuid,
+          actionName,
+          localMiroirDataStore,
+          localAppDataStore,
+          update
+        );
       
         return res(ctx.json([]));
       })

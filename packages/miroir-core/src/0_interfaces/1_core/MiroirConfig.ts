@@ -27,7 +27,8 @@ export type EmulatedServerConfig = EmulatedServerConfigIndexedDb | EmulatedServe
 export interface MiroirConfigForMsw extends MiroirConfigRoot{
   emulateServer: true;
   rootApiUrl: string;
-  emulatedServerConfig:EmulatedServerConfig;
+  miroirServerConfig:EmulatedServerConfig;
+  appServerConfig:EmulatedServerConfig;
 }
 
 export interface ServerConfig {

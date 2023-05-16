@@ -15,6 +15,7 @@ export declare interface LocalCacheInterface
   // constructor
   run(): void;
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
+  getState(): any; // TODO: local store should not directly expose its internal state!!
   handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainModelAncillaryOrReplayableAction);
   handleLocalCacheDataAction(deploymentUuid: Uuid, action:DomainDataAction);
   handleLocalCacheAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction);

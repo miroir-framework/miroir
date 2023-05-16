@@ -137,6 +137,11 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
+  getState() {
+    return this.innerReduxStore.getState();
+  }
+
+  // ###############################################################################
   public run(): void {
     this.sagaMiddleware.run(this.rootSaga.bind(this));
   }

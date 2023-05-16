@@ -6,6 +6,39 @@ import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202
 import { DomainModelInitAction, DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import applicationDeploymentMiroir from "../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
+
+export async function initApplicationDeployment(
+  deploymentUuid: string,
+  actionName:string,
+  miroirDataStoreProxy:DataStoreInterface,
+  appDataStoreProxy:DataStoreInterface,
+  params:DomainModelInitActionParams
+) {
+  console.log("ModelUpdateRunner model/initModel params",params);
+  if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
+    await miroirDataStoreProxy.initApplication(
+      // defaultMiroirMetaModel,
+      params.metaModel,
+      params.dataStoreType,
+      params.application,
+      params.applicationDeployment,
+      params.applicationModelBranch,
+      params.applicationVersion,
+      params.applicationStoreBasedConfiguration,
+    );
+  } else { // different Proxy object!!!!!!
+    await appDataStoreProxy.initApplication(
+      params.metaModel,
+      'app',
+      params.application,
+      params.applicationDeployment,
+      params.applicationModelBranch,
+      params.applicationVersion,
+      params.applicationStoreBasedConfiguration,
+    );
+  }
+  console.log('server post resetModel after initModel, entities:',miroirDataStoreProxy.getEntities());
+}
 export async function modelActionRunner(
   deploymentUuid: string,
   actionName:string,
@@ -32,30 +65,13 @@ export async function modelActionRunner(
     case 'initModel':{
       // const update:DomainModelInitAction = JSON.parse(body[0]);
       const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
-      console.log("ModelUpdateRunner model/initModel typeof body",typeof body,"params",params);
-      if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
-        await miroirDataStoreProxy.initApplication(
-          // defaultMiroirMetaModel,
-          params.metaModel,
-          params.dataStoreType,
-          params.application,
-          params.applicationDeployment,
-          params.applicationModelBranch,
-          params.applicationVersion,
-          params.applicationStoreBasedConfiguration,
-        );
-      } else { // different Proxy object!!!!!!
-        await appDataStoreProxy.initApplication(
-          params.metaModel,
-          'app',
-          params.application,
-          params.applicationDeployment,
-          params.applicationModelBranch,
-          params.applicationVersion,
-          params.applicationStoreBasedConfiguration,
-        );
-      }
-      console.log('server post resetModel after initModel, entities:',miroirDataStoreProxy.getEntities());
+      await initApplicationDeployment(
+        deploymentUuid,
+        actionName,
+        miroirDataStoreProxy,
+        appDataStoreProxy,
+        params
+      );
       break;
     }
     case 'updateEntity': {

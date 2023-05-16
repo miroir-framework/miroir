@@ -2,11 +2,12 @@ import * as React from "react";
 
 import { EntityDefinition, EntityInstance, MetaEntity, MiroirReport } from 'miroir-core';
 import {
-  useLocalCacheEntities,
-  useLocalCacheEntityDefinitions,
+  useLocalCacheDeploymentSectionReports,
   useLocalCacheInstancesForEntity,
-  useLocalCacheReports,
+  useLocalCacheSectionEntities,
+  useLocalCacheSectionEntityDefinitions
 } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
+import { applicationDeploymentLibrary } from "./tests-utils";
 
 export interface MiroirReportComponentProps {
   entityName?: string;
@@ -17,22 +18,30 @@ export interface MiroirReportComponentProps {
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const miroirEntities:MetaEntity [] = useLocalCacheEntities();
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  // const miroirEntities:MetaEntity [] = useLocalCacheEntities();
+  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const libraryAppEntities:MetaEntity [] = useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model');
+  const libraryAppEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model');
 
-  const miroirReports:MiroirReport[] = useLocalCacheReports();
+  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(applicationDeploymentLibrary.uuid,'model');
+
+  // const miroirReports:MiroirReport[] = useLocalCacheReports();
   const entityInstances = {
-    Entity: miroirEntities,
-    Report:miroirReports,
+    Entity: libraryAppEntities,
+    Report:deploymentReports,
   }
 
   console.log("TestUtilsTableComponent display instances of entity",props.entityName,props.entityUuid);
-  console.log("TestUtilsTableComponent miroirEntities",miroirEntities, "miroirReports", miroirReports);
-  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(props.entityUuid);
-  console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
+  console.log("TestUtilsTableComponent libraryAppEntities",libraryAppEntities, "deploymentReports", deploymentReports);
+
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
-  const currentMiroirEntity = miroirEntities?.find(e=>e?.uuid === props.entityUuid);
-  const currentMiroirEntityDefinition = miroirEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
+  const currentMiroirEntity = libraryAppEntities?.find(e=>e?.uuid === props.entityUuid);
+  const currentMiroirEntityDefinition = libraryAppEntityDefinitions?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
+  
+  // const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(props.entityUuid);
+  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(applicationDeploymentLibrary.uuid,'data',currentMiroirEntity?.uuid);
+  console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
+
   const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
   return (
     <div>

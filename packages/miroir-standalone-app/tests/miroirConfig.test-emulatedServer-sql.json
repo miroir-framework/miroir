@@ -1,10 +1,15 @@
 {
   "emulateServer": true,
   "rootApiUrl":"http://localhost:3080",
-  "emulatedServerConfig":{
+  "miroirServerConfig":{
     "emulatedServerType": "Sql",
     "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
     "schema": "miroir"
+  },
+  "appServerConfig":{
+    "emulatedServerType": "Sql",
+    "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+    "schema": "library"
   },
   "deploymentMode":"monoUser",
   "monoUserAutentification": false,

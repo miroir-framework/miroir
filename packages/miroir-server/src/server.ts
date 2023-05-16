@@ -64,13 +64,13 @@ const libraryAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
 );
 
 try {
-  await miroirAppSqlServerProxy.createProxy(defaultMiroirMetaModel);
+  await miroirAppSqlServerProxy.bootFromPersistedState(defaultMiroirMetaModel);
 } catch(e) {
   console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
 }
 
 try {
-  await libraryAppSqlServerProxy.createProxy(defaultMiroirMetaModel);
+  await libraryAppSqlServerProxy.bootFromPersistedState(defaultMiroirMetaModel);
 } catch(e) {
   console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
 }

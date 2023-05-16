@@ -57,7 +57,6 @@ export class DomainController implements DomainControllerInterface {
     switch (domainModelAction.actionName) {
       case "rollback": {
         await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(deploymentUuid);
-        // await this.LocalAndRemoteController.loadConfigurationFromRemoteDataStore(applicationDeploymentLibrary.uuid);
         break;
       }
       case "undo":

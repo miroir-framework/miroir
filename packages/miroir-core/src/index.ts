@@ -33,8 +33,6 @@ export {
   ZinstanceWithName,
   Zmodel,
   ClientServerDistributionModeSchema as ClientServerDistributionMode,
-  // applicationDeploymentLibraryNew,
-  // applicationDeploymentMiroirBootstrap,
 } from './0_interfaces/1_core/StorageConfiguration.js';
 export {
   HttpMethod,
@@ -165,6 +163,7 @@ export {
   metamodelEntities,
 } from './3_controllers/ModelInitializer.js';
 export {
+  initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,
 } from './3_controllers/ModelActionRunner.js';
@@ -239,7 +238,6 @@ import reportReportList from './assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7
 export {
   applicationMiroir,
   applicationDeploymentMiroir,
-  // applicationDeploymentLibrary,
   applicationModelBranchMiroirMasterBranch,
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,

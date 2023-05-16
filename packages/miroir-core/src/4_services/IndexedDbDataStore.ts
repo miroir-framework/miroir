@@ -9,6 +9,7 @@ import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202
 import { IndexedDb } from "./indexedDb";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+import { Application } from "../0_interfaces/1_core/Application.js";
 
 export class IndexedDbDataStore implements DataStoreInterface{
   constructor(
@@ -17,26 +18,33 @@ export class IndexedDbDataStore implements DataStoreInterface{
 
   // #############################################################################################
   async dropModelAndData():Promise<void>{
-    return this.clear();
+    // return this.clear();
   }
 
   // #############################################################################################
   async initApplication(
     metaModel:MiroirMetaModel,
     dataStoreType: DataStoreApplicationType,
-    application: EntityInstance,
+    application: Application,
     applicationDeployment: EntityInstance,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
   ):Promise<void>{
-    // await modelInitialize(this);
-    return Promise.resolve(undefined);
-    // return this.clear();
+    return modelInitialize(
+      metaModel,
+      this,
+      dataStoreType,
+      application,
+      applicationDeployment,
+      applicationModelBranch,
+      applicationVersion,
+      applicationStoreBasedConfiguration,
+    );
   }
 
   // #############################################################################################
-  async createProxy(
+  async bootFromPersistedState(
     metaModel:MiroirMetaModel,
   ):Promise<void> {
     await this.localUuidIndexedDb.createObjectStore([]);
@@ -54,7 +62,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // ##############################################################################################
-  clear():Promise<void> {
+  clear(metaModel: MiroirMetaModel):Promise<void> {
     return this.localUuidIndexedDb.clearObjectStore();
     // this.dropEntities(this.getEntities());
   }
@@ -67,7 +75,7 @@ export class IndexedDbDataStore implements DataStoreInterface{
 
   // #############################################################################################
   async initializeEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
-    this.createEntity(entity,entityDefinition)
+    console.warn('IndexedDbDataStore initializeEntity does nothing: IndexedDbDataStore is not persistent.');
   }
 
   // #############################################################################################

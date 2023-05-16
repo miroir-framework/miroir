@@ -147,44 +147,25 @@ export class SqlDbDatastore implements DataStoreInterface {
   async dropModelAndData(
     metaModel:MiroirMetaModel,
   ):Promise<void> {
-    // drop model schema Entities
-    // if (this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[entityEntityDefinition.uuid]) {
-    //   const model = this.sqlModelSchemaTableAccess[entityEntityDefinition.uuid];
-    //   console.log("dropModelAndData entityUuid", entityEntityDefinition.uuid, 'name',entityEntityDefinition.name);
-    //   await model.sequelizeModel.drop();
-    //   delete this.sqlModelSchemaTableAccess[entityEntityDefinition.uuid];
-    // }
-    // if (this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[entityEntity.uuid]) {
-    //   const model = this.sqlModelSchemaTableAccess[entityEntity.uuid];
-    //   console.log("dropModelAndData entityUuid", entityEntity.uuid, 'parentName',entityEntity.name);
-    //   await model.sequelizeModel.drop();
-    //   delete this.sqlDataSchemaTableAccess[entityEntity.uuid];
-    // }
+    // drop data anq model Entities
     await this.modelSequelize.drop();
-
-
-    // drop data schema Entities
     await this.dataSequelize.drop();
 
-    // this.sqlEntityDefinitions = {};
     this.sqlModelSchemaTableAccess = {};
     this.sqlDataSchemaTableAccess = {};
+    return Promise.resolve();
   }
     
   // ##############################################################################################
-  async createProxy(
+  // does side effects! ugly!
+  async bootFromPersistedState(
     metaModel:MiroirMetaModel,
-    dataStoreType?: DataStoreApplicationType,
   ): Promise<void> {
     if (Object.keys(this.sqlDataSchemaTableAccess).length > 0) {
       // TODO: allow refresh
-      console.warn(this.logHeader,"createProxy initialization can not be done a second time", this.sqlDataSchemaTableAccess);
+      console.warn(this.logHeader,"bootFromPersistedState initialization can not be done a second time", this.sqlDataSchemaTableAccess);
     } else {
-      console.warn(this.logHeader,"createProxy started");
-      // const metaModelEntityEntity = metaModel.entities.find(e=>e.uuid = entityEntity.uuid);
-      // const metaModelEntityDefinitionEntity = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntity.uuid);
-      // const metaModelEntityEntityDefinition = metaModel.entities.find(e=>e.uuid = entityEntityDefinition.uuid);
-      // const metaModelEntityDefinitionEntityDefinition = metaModel.entityDefinitions.find(e=>e.uuid = entityDefinitionEntityDefinition.uuid);
+      console.warn(this.logHeader,"bootFromPersistedState started");
 
       if (this.dataStoreType == 'miroir') {
         // TODO: read metamodel version in configuration first, and open table with the corresponding definition
@@ -237,8 +218,8 @@ export class SqlDbDatastore implements DataStoreInterface {
         )
       ;
     }
-    console.log("###################",this.logHeader,"createProxy model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess,'this.modelSequelize',Object.keys(this.modelSequelize.models),'config',this.dataSequelize.config);
-    console.log("###################",this.logHeader,"createProxy data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess,'this.dataSequelize',Object.keys(this.dataSequelize.models),'config',this.modelSequelize.config);
+    console.log("###################",this.logHeader,"bootFromPersistedState model found sqlModelSchemaTableAccess", this.sqlModelSchemaTableAccess,'this.modelSequelize',Object.keys(this.modelSequelize.models),'config',this.dataSequelize.config);
+    console.log("###################",this.logHeader,"bootFromPersistedState data found sqlDataSchemaTableAccess", this.sqlDataSchemaTableAccess,'this.dataSequelize',Object.keys(this.dataSequelize.models),'config',this.modelSequelize.config);
     return Promise.resolve();
   }
   
@@ -438,22 +419,27 @@ export class SqlDbDatastore implements DataStoreInterface {
   // ##############################################################################################
   open() {
       // connect to DB?
+      console.warn('sqlDbDataStore does nothing!');
+      
   }
 
   // ##############################################################################################
-  close() {
-    this.modelSequelize.close();
-    this.dataSequelize.close();
+  async close() {
+    await this.modelSequelize.close();
+    await this.dataSequelize.close();
+    return Promise.resolve();
     // disconnect from DB?
   }
 
   // ##############################################################################################
-  clear() { // redundant with dropModelAndData?
-    this.dropEntities(this.getEntities());
+  async clear(metaModel: MiroirMetaModel):Promise<void> { // redundant with dropModelAndData?
+    // this.dropEntities(this.getEntities());
+    return this.dropModelAndData(metaModel)
   }
 
   // ##############################################################################################
   getEntities(): string[] {
+    // TODO: returns only data section entities? Shall it return the model entities (metamodel entities) too?
     return this.sqlDataSchemaTableAccess ? Object.keys(this.sqlDataSchemaTableAccess) : [];
   }
 

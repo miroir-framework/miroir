@@ -26,12 +26,25 @@ import {
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
 
-export function createReduxStore(
-  // emulateServer:boolean,
-  rootApiUrl: string,
-  remoteStoreNetworkRestClient: RemoteStoreNetworkRestClient,
+export function createReduxStoreAndRestClient(
+  miroirConfig: MiroirConfig,
+  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
+):{
   miroirContext:MiroirContext,
-) {
+  reduxStore: ReduxStore,
+  localAndRemoteController:LocalAndRemoteControllerInterface,
+  domainController: DomainControllerInterface,
+} {
+  const miroirContext = new MiroirContext();
+
+  const rootApiUrl: string = miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl;
+    
+  const client: RestClient = new RestClient(fetch);
+  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
+    miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
+    client
+  );
+
   const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(
     rootApiUrl,
     remoteStoreNetworkRestClient
@@ -47,50 +60,33 @@ export function createReduxStore(
   );
   const domainController: DomainControllerInterface = new DomainController(localAndRemoteController);
 
-  return {reduxStore,localAndRemoteController,domainController}
+  return {miroirContext, reduxStore, localAndRemoteController,domainController}
   
 }
 
-export interface createMwsStoreReturnType {
-  localDataStore: DataStoreInterface | undefined,
+export interface CreateMswRestServerReturnType {
+  localMiroirDataStore: DataStoreInterface | undefined,
+  localAppDataStore: DataStoreInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,
-  reduxStore: ReduxStore,
-  localAndRemoteController:LocalAndRemoteControllerInterface,
-  domainController: DomainControllerInterface,
-  miroirContext:MiroirContext
 }
-export async function createMswStore(
+export async function createMswRestServer(
   miroirConfig: MiroirConfig,
   platformType: "browser" | "nodejs",
-  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
-  // createServerFromHandlers: (...handlers: Array<RequestHandler>) => SetupServerApi
-):Promise<createMwsStoreReturnType>  {
-  console.log("createMswStore", "platformType", platformType, "miroirConfig", miroirConfig);
-  console.log("createMswStore process.browser", process["browser"]);
-
-  const client: RestClient = new RestClient(fetch);
-  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
-    miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
-    client
-  );
-
-  const miroirContext = new MiroirContext();
-  const { reduxStore, localAndRemoteController, domainController } = createReduxStore(
-    miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
-    remoteStoreNetworkRestClient,
-    miroirContext
-  );
+):Promise<CreateMswRestServerReturnType>  {
+  console.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
+  console.log("createMswRestServer process.browser", process["browser"]);
 
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
-    console.warn("createMswStore emulating server on", miroirConfig.rootApiUrl);
-    if (miroirConfig.emulatedServerConfig.emulatedServerType == "indexedDb") {
-      const localUuidIndexedDb: IndexedDb = new IndexedDb(miroirConfig.emulatedServerConfig.indexedDbName);
-      const localDataStore: DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
-      // const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl,miroirConfig.emulatedServerConfig.indexedDbName,localUuidIndexedDb,localDataStore);
-      const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localDataStore);
+    console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
+    if (miroirConfig.miroirServerConfig.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.emulatedServerType == "indexedDb") {
+      // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
+      // const localUuidIndexedDb: IndexedDb = new IndexedDb(miroirConfig.ServerConfig.indexedDbName);
+      const localMiroirDataStore: DataStoreInterface = new IndexedDbDataStore(new IndexedDb(miroirConfig.miroirServerConfig.indexedDbName));
+      const localAppDataStore: DataStoreInterface = new IndexedDbDataStore(new IndexedDb(miroirConfig.appServerConfig.indexedDbName));
+      const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
 
       let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
       let localDataStoreServer: SetupServerApi | undefined = undefined;
@@ -102,71 +98,72 @@ export async function createMswStore(
       }
 
       return Promise.resolve({
-        localDataStore,
+        localMiroirDataStore,
+        localAppDataStore,
         localDataStoreWorker,
         localDataStoreServer,
-        reduxStore,
-        localAndRemoteController,
-        domainController,
-        miroirContext,
       });
     } else {
-      // if (browserInfo.type == 'browser') {
-      // if (platformType == 'browser') {
-
       if (process["browser"]) {
         console.error(
-          "createMswStore cannot connect browser directly to database, please use local indexed DB instead, or access database through a REST server"
+          "createMswRestServer cannot connect browser directly to database, please use local indexed DB instead, or access database through a REST server"
         );
         return Promise.resolve({
-          localDataStore: undefined,
+          localMiroirDataStore: undefined,
+          localAppDataStore: undefined,
           localDataStoreWorker: undefined,
           localDataStoreServer: undefined,
-          reduxStore,
-          localAndRemoteController,
-          domainController,
-          miroirContext,
         });
       } else {
-        console.warn("createMswStore loading miroir-datastore-postgres!", process["browser"]);
-        // const lib = await import("miroir-datastore-postgres");
-        // const createServer = lib.createServer;
-        const localDataStore: DataStoreInterface = await createSqlServerProxy(
-          'miroir',
-          'miroir',
-          miroirConfig.emulatedServerConfig.connectionString,
-          miroirConfig.emulatedServerConfig.schema,
-          miroirConfig.emulatedServerConfig.connectionString,
-          miroirConfig.emulatedServerConfig.schema,
-        );
-        const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localDataStore);
+        if (miroirConfig.miroirServerConfig.emulatedServerType == "Sql" && miroirConfig.appServerConfig.emulatedServerType == "Sql") {
+          console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
+          console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.schema,'library datastore schema',miroirConfig.appServerConfig.schema);
+          const localMiroirDataStore: DataStoreInterface = await createSqlServerProxy(
+            'miroir',
+            'miroir',
+            miroirConfig.miroirServerConfig.connectionString,
+            miroirConfig.miroirServerConfig.schema,
+            miroirConfig.miroirServerConfig.connectionString,
+            miroirConfig.miroirServerConfig.schema,
+          );
+          const localAppDataStore: DataStoreInterface = await createSqlServerProxy(
+            'library',
+            'app',
+            miroirConfig.appServerConfig.connectionString,
+            miroirConfig.appServerConfig.schema,
+            miroirConfig.appServerConfig.connectionString,
+            miroirConfig.appServerConfig.schema,
+          );
 
-        let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
-        let localDataStoreServer: SetupServerApi | undefined = undefined;
-        localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
+          const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
 
-        return Promise.resolve({
-          localDataStore,
-          localDataStoreWorker: undefined,
-          localDataStoreServer,
-          reduxStore,
-          localAndRemoteController,
-          domainController,
-          miroirContext,
-        });
-        // return { localDataStore: undefined, localDataStoreWorker:undefined, localDataStoreServer:undefined, reduxStore, localAndRemoteController, domainController, miroirContext };
+          let localDataStoreServer: SetupServerApi | undefined = undefined;
+          localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
+
+          return Promise.resolve({
+            localMiroirDataStore,
+            localAppDataStore,
+            localDataStoreWorker: undefined,
+            localDataStoreServer,
+          });
+        } else {
+          console.warn("createMswRestServer mixed mode not allowed!");
+          return Promise.resolve({
+            localMiroirDataStore: undefined,
+            localAppDataStore: undefined,
+            localDataStoreWorker: undefined,
+            localDataStoreServer: undefined,
+          });
+        }
       }
     }
   } else {
-    console.warn("createMswStore server will be queried on", miroirConfig["serverConfig"].rootApiUrl);
+    console.warn("createMswRestServer non-emulated server will be queried on", miroirConfig["serverConfig"].rootApiUrl);
     return Promise.resolve({
-      localDataStore: undefined,
+      localMiroirDataStore: undefined,
+      localAppDataStore: undefined,
       localDataStoreWorker: undefined,
       localDataStoreServer: undefined,
-      reduxStore,
-      localAndRemoteController,
-      domainController,
-      miroirContext,
     });
   }
 }

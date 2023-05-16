@@ -9,7 +9,7 @@ import { defaultMiroirMetaModel, entityDefinitionEntityDefinition, MiroirConfig,
 import miroirConfig from "assets/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
-import { createMswStore } from "miroir-fwk/createStore";
+import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createStore";
 import { miroirAppStartup } from "startup";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
@@ -26,14 +26,18 @@ async function start(root:Root) {
   if (process.env.NODE_ENV === "development") {
 
     const {
-      localDataStore,
-      localDataStoreWorker,
-      localDataStoreServer,
       reduxStore: mReduxStore,
       localAndRemoteController,
       domainController,
       miroirContext: myMiroirContext,
-    } = await createMswStore(miroirConfig as MiroirConfig, 'browser', window.fetch.bind(window), setupWorker);
+    } = await createReduxStoreAndRestClient(miroirConfig as MiroirConfig, window.fetch.bind(window));
+
+    const {
+      localMiroirDataStore,
+      localAppDataStore,
+      localDataStoreWorker,
+      localDataStoreServer,
+    } = await createMswRestServer(miroirConfig as MiroirConfig, 'browser', setupWorker);
 
     // const mswWorker = setupWorker(...mServer.handlers);
     if (!!localDataStoreWorker) {
@@ -42,15 +46,13 @@ async function start(root:Root) {
       console.log('##############################################');
       await localDataStoreWorker.start();
     }
-    if (!!localDataStore) { // datastore is emulated
-      await localDataStore.open();
-      await localDataStore.createProxy(defaultMiroirMetaModel);
-      await localDataStore?.clear();
-      // console.log('localDataStore.db',localDataStore.getdb());
-    }
+    // if (!!localDataStore) { // datastore is emulated
+    //   await localDataStore.open();
+    //   await localDataStore.bootFromPersistedState(defaultMiroirMetaModel);
+    //   await localDataStore?.clear();
+    //   // console.log('localDataStore.db',localDataStore.getdb());
+    // }
 
-    // load Miroir Configuration
-    // await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
 
     root.render(
       <Provider store={mReduxStore.getInnerStore()}>

@@ -30,8 +30,9 @@ export function selectReportInstances(reportUuid:string):DomainStateSelector{
 // export function selectEntityInstances(deploymentUuid:string,parentUuid:string):DomainStateSelector{
 export function selectEntityInstances(parentUuid:string | undefined):DomainStateSelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
-    // console.log('selectEntityInstances', parentName, Object.keys(domainState))
+    console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (parentUuid && domainState[parentUuid]) {
+      console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
       return DomainInstanceUuidIndexToArray(domainState[parentUuid]);
     } else {
       return [];

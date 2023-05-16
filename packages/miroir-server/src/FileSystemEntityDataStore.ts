@@ -32,7 +32,7 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
     
   }
 
-  createProxy(
+  bootFromPersistedState(
     metaModel:MiroirMetaModel,
   ): Promise<void> {
     return Promise.resolve();
@@ -41,7 +41,7 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   // #########################################################################################
   dropModelAndData(): Promise<void> {
     console.log('FileSystemEntityDataStore dropModelAndData');
-    this.clear();
+    this.clear(undefined as MiroirMetaModel);
     return Promise.resolve();
   }
   // #########################################################################################
@@ -72,7 +72,7 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   }
 
   // #########################################################################################
-  clear() {
+  clear(metaModel: MiroirMetaModel) {
     const files = fs.readdirSync(this.modelDirectory);
     console.log('FileSystemEntityDataStore clear found entities',files);
     for (const file of files) {

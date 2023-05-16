@@ -19,6 +19,7 @@ import entityReport from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa8
 
 // import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import { throwExceptionIfError } from "./ErrorUtils.js";
+import { circularReplacer } from "../tools.js";
 
 export default {};
 
@@ -150,6 +151,9 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           objects: instances,
         }
       );
+
+      console.log("LocalAndRemoteController loadConfigurationFromRemoteDataStore",deploymentUuid,"all instances stored:", JSON.stringify(this.localCache.getState(),circularReplacer()));
+
       return Promise.resolve();
     } catch (error) {
       console.warn("LocalAndRemoteController loadConfigurationFromRemoteDataStore", error);

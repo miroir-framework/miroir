@@ -35,7 +35,8 @@ import {
   ApplicationSection,
   Uuid,
   reportEntityList,
-  reportEntityDefinitionList
+  reportEntityDefinitionList,
+  applicationVersionInitialMiroirVersion
 } from "miroir-core";
 import {
   useLocalCacheDeploymentSectionReports,
@@ -429,7 +430,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     applicationDeployment: applicationDeploymentMiroir,
                     applicationModelBranch: applicationModelBranchMiroirMasterBranch,
                     applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                    applicationVersion:applicationVersionLibraryInitialVersion,
+                    applicationVersion:applicationVersionInitialMiroirVersion,
                   }
                 }
               );

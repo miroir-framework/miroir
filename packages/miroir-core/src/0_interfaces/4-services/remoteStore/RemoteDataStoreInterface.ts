@@ -71,9 +71,8 @@ export declare interface RemoteDataStoreInterface {
 
 
 export interface DataStoreInterface {
-  createProxy(
+  bootFromPersistedState(
     metaModel:MiroirMetaModel,
-    // dataStoreType: DataStoreApplicationType,
   ):Promise<void>;
 
   dropModelAndData(metaModel:MiroirMetaModel):Promise<void>;
@@ -91,7 +90,7 @@ export interface DataStoreInterface {
   open();
   close();
 
-  clear();
+  clear(metaModel: MiroirMetaModel);
  
   
   getEntities():string[]; //TODO: remove!
