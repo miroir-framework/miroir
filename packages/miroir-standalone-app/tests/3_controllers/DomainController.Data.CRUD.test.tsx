@@ -28,7 +28,15 @@ import {
 } from "miroir-core";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { applicationDeploymentLibrary, DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import {
+  applicationDeploymentLibrary,
+  DisplayLoadingInfo,
+  miroirAfterAll,
+  miroirAfterEach,
+  miroirBeforeAll,
+  miroirBeforeEach,
+  renderWithProviders,
+} from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
 import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
@@ -36,7 +44,6 @@ import entityBook from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4
 import reportBookList from "miroir-standalone-app/src/assets/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
 import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
-import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import author1 from "../../src/assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json";
 import author2 from "../../src/assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json";
 import author3 from "../../src/assets/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json";
@@ -45,6 +52,11 @@ import book4 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa64
 import book1 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
+import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+
+// import config from "miroir-standalone-app/tests/miroirConfig.test.json";
+// import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -103,75 +115,19 @@ afterEach(
 describe(
   'DomainController.Data.CRUD',
   () => {
+
     // ###########################################################################################
     it(
       'Refresh all Instances',
-      async () => {
-        try {
-          console.log('Refresh all Instances start');
-          const displayLoadingInfo=<DisplayLoadingInfo/>
-          const user = userEvent.setup()
-
-          // await localDataStore.dropModelAndData();
-          // await localDataStore.initModel();
-
-          await localAppDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await localAppDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppDataStore?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-          // await localappDataStore?.upsertDataInstance(book3.parentUuid, book3 as Instance);
-          await localAppDataStore?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
-
-          // console.log(
-          //   'after test preparation',
-          //   await localAppDataStore?.getState()
-          // );
-          const {
-            getByText,
-            getAllByRole,
-            // container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityBook.name}
-              entityUuid={entityBook.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
-            />
-            ,
-            {store:reduxStore.getInnerStore()}
-          );
-
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-            }
-          );
-
-
-
-          await user.click(screen.getByRole('button'))
-
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-              expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-            }
-          );
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
+      async() => {
+        await refreshAllInstancesTest(
+          localMiroirDataStore,
+          localAppDataStore,
+          reduxStore,
+          domainController,
+          miroirContext,
+        );
+        return Promise.resolve();
       }
     )
 
@@ -321,14 +277,14 @@ describe(
 
           await localAppDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
           await localAppDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppDataStore?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book3.parentUuid, book3 as EntityInstance);
-          await localAppDataStore?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+          await localAppDataStore.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
+          await localAppDataStore.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(book3.parentUuid, book3 as EntityInstance);
+          await localAppDataStore.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
 
           const {
             getByText,
@@ -442,7 +398,7 @@ describe(
         try {
           
           console.log('update Book definition start');
-  
+
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
 
@@ -484,7 +440,7 @@ describe(
           );
   
           await user.click(screen.getByRole('button'))
-  
+
           await waitFor(
             () => {
               getAllByRole(/step:1/)
@@ -492,10 +448,10 @@ describe(
           ).then(
             ()=> {
               // expect(screen.queryByText(/caef8a59-39eb-48b5-ad59-a7642d3a1e8f/i)).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
   
@@ -567,5 +523,8 @@ describe(
         }
       }
     )
+
+
+
   } //  end describe('DomainController.Data.CRUD',
 )

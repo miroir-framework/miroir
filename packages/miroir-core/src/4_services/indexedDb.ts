@@ -11,7 +11,13 @@ export class IndexedDb {
 
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
-    await this.db?.close();
+    if (this.db?.status =='open' ) {
+      console.log('IndexedDb closeObjectStore closing db...', this.db?.status);
+      await this.db?.close();
+    } else {
+      console.log('IndexedDb closeObjectStore db already closed...', this.db?.status);
+    }
+    // console.log('IndexedDb closeObjectStore db closed!');
     this.db = undefined;
     this.subLevels?.clear();
     return Promise.resolve(undefined);
@@ -20,13 +26,18 @@ export class IndexedDb {
   // #############################################################################################
   public async openObjectStore():Promise<void> {
     console.log('IndexedDb openObjectStore');
-    
-    return this.db?.open();
+    if(this.db !== undefined) {
+      await this.db?.open();
+    } else {
+      this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
+    }
+    return Promise.resolve(undefined);
   }
 
   // #############################################################################################
   public async clearObjectStore():Promise<void> {
-    return this.db?.clear();
+    console.log('IndexedDb clearObjectStore, does nothing! (missing API to list all existing sublevels)');
+    // return this.db?.clear();
   }
 
   // #############################################################################
@@ -34,15 +45,15 @@ export class IndexedDb {
     try {
       if(this.db !== undefined) {
         await this.db.open();
-        console.log('createObjectStore opened db')
+        console.log('indexedDb createObjectStore opened db')
         this.subLevels = this.createSubLevels(this.db,tableNames);
         return Promise.resolve(undefined);
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
         this.subLevels = this.createSubLevels(this.db,tableNames);
-        console.log('createObjectStore created db with sublevels',tableNames,this.subLevels)
-        console.log('createObjectStore db',this.db)
-        console.log('createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
+        console.log('indexedDb createObjectStore created db with sublevels',tableNames,this.subLevels)
+        console.log('indexedDb createObjectStore db',this.db)
+        console.log('indexedDb createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
         return Promise.resolve(undefined);
       }
     } catch (error) {
@@ -52,7 +63,30 @@ export class IndexedDb {
   }
 
   // #############################################################################
+  public addSubLevels(tableNames:string[]) {
+    console.log('indexedDb addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
+    // console.log('indexedDb addSubLevels db:',this.db);
+    this.subLevels = new Map<string, any>([
+      ...this.subLevels.entries(),
+      ...tableNames.filter(n=>!this.subLevels.has(n)).map(
+        (tableName: string) => {
+          const result: [string, any] = [
+            tableName,
+            <any>this.db?.sublevel(tableName),
+          ];
+          console.log('indexedDb adding sublevel:',tableName,'result',result);
+          result[1].clear();
+          console.log('indexedDb addSubLevels added and cleared sublevel:',result[0]);
+          
+          return result;
+        }
+      ),
+    ]);
+  }
+
+  // #############################################################################
   private createSubLevels(db: Level, tableNames:string[]) {
+    console.log('indexedDb createSublevels',db,tableNames)
     return new Map<string, any>([
       ...tableNames.map(
           (tableName: string) => {
@@ -61,6 +95,7 @@ export class IndexedDb {
             <any>db.sublevel(tableName),
           ];
           result[1].clear();
+          console.log('indexedDb createSubLevels added and cleared sublevel:',result[0]);
           return result;
         }
       ),
@@ -82,26 +117,10 @@ export class IndexedDb {
     this.subLevels = new Map<string, any>([
       ...Array.from(this.subLevels.entries()).filter(s=>!tableNames.includes(s[0]))
     ]);
-  }
-  // #############################################################################
-  public addSubLevels(tableNames:string[]) {
-    console.log('indexedDb addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
-    // console.log('indexedDb addSubLevels db:',this.db);
-    this.subLevels = new Map<string, any>([
-      ...this.subLevels.entries(),
-      ...tableNames.filter(n=>!this.hasSubLevel(n)).map(
-          (tableName: string) => {
-          const result: [string, any] = [
-            tableName,
-            <any>this.db?.sublevel(tableName),
-          ];
-          result[1].clear();
-          console.log('indexedDb added sublevel:',result[0]);
-          
-          return result;
-        }
-      ),
-    ]);
+    for (const tableName of tableNames) {
+      this.db?.sublevel(tableName).clear()
+    }
+    
   }
 
   // #############################################################################################

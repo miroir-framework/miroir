@@ -84,8 +84,8 @@ export async function createMswRestServer(
     if (miroirConfig.miroirServerConfig.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.emulatedServerType == "indexedDb") {
       // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
       // const localUuidIndexedDb: IndexedDb = new IndexedDb(miroirConfig.ServerConfig.indexedDbName);
-      const localMiroirDataStore: DataStoreInterface = new IndexedDbDataStore(new IndexedDb(miroirConfig.miroirServerConfig.indexedDbName));
-      const localAppDataStore: DataStoreInterface = new IndexedDbDataStore(new IndexedDb(miroirConfig.appServerConfig.indexedDbName));
+      const localMiroirDataStore: DataStoreInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.indexedDbName));
+      const localAppDataStore: DataStoreInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.indexedDbName));
       const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
 
       let localDataStoreWorker: SetupWorkerApi | undefined = undefined;

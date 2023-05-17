@@ -300,9 +300,7 @@ function callNextReducer(
                 break;
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-                console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.domainAction.actionName, action);
-                // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelEntityUpdateAction>)
-                // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelReplayableAction>)
+                // console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.domainAction.actionName, action);
                 return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>)
             }
             break;
@@ -316,7 +314,7 @@ function callNextReducer(
         break;
       }
       default: {
-        console.warn('UndoRedoReducer default handling action',action)
+        // console.warn('UndoRedoReducer default handling action',action)
         return callNextReducer(innerReducer, state, action)
       }
     }

@@ -348,7 +348,7 @@ export class SqlDbDatastore implements DataStoreInterface {
       if (this.sqlModelSchemaTableAccess) {
         if (this.sqlModelSchemaTableAccess[parentUuid]) {
 
-          result = this.sqlModelSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()
+          result = await this.sqlModelSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()
         } else {
           result = []
         }
@@ -392,9 +392,9 @@ export class SqlDbDatastore implements DataStoreInterface {
   async getInstances(parentUuid: string): Promise<EntityInstanceCollection> {
     const modelEntitiesUuid = this.dataStoreType == "app"?metamodelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
     if (modelEntitiesUuid.includes(parentUuid)) {
-      return {parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)};
+      return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
     } else {
-      return {parentUuid:parentUuid, applicationSection:'data', instances: await this.getDataInstances(parentUuid)}
+      return Promise.resolve({parentUuid:parentUuid, applicationSection:'data', instances: await this.getDataInstances(parentUuid)});
     }
   }
 

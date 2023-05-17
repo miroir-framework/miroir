@@ -98,6 +98,7 @@ export async function miroirBeforeAll(
   miroirConfig: MiroirConfig,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType|undefined> {
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
     // const wrapped = await createMswRestServer(
     const {
@@ -134,7 +135,7 @@ export async function miroirBeforeAll(
   } catch (error) {
     console.error('Error beforeAll',error);
   }
-  console.log('Done beforeAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
   return Promise.resolve(undefined);
 }
 
@@ -143,10 +144,10 @@ export async function miroirBeforeEach(
   localAppDataStore: DataStoreInterface,
 ) {
   try {
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
     await localAppDataStore.dropModelAndData(defaultMiroirMetaModel);
     await localMiroirDataStore.dropModelAndData(defaultMiroirMetaModel);
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.init');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplications');
     try {
       await localMiroirDataStore.initApplication(
         defaultMiroirMetaModel,
@@ -179,7 +180,7 @@ export async function miroirBeforeEach(
     console.error('beforeEach',error);
     throw(error);
   }
-  console.log('Done beforeEach');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done beforeEach');
 }
 
 export async function miroirAfterEach(
@@ -188,13 +189,13 @@ export async function miroirAfterEach(
 ) {
   try {
     // await localDataStore?.close();
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.clear');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
     await localMiroirDataStore.clear(defaultMiroirMetaModel);
     await localAppDataStore.clear(defaultMiroirMetaModel);
   } catch (error) {
     console.error('Error afterEach',error);
   }
-  console.log('Done afterEach');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
 }
 
 export async function miroirAfterAll(
@@ -202,6 +203,7 @@ export async function miroirAfterAll(
   localAppDataStore: DataStoreInterface,
   localDataStoreServer: SetupServerApi,
 ) {
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {
     await localMiroirDataStore.clear(defaultMiroirMetaModel);
     await localAppDataStore.clear(defaultMiroirMetaModel);
@@ -211,6 +213,6 @@ export async function miroirAfterAll(
   } catch (error) {
     console.error('Error afterAll',error);
   }
-  console.log('Done afterAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
 }
 

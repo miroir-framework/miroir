@@ -39,12 +39,14 @@ import entityBook from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
 
+// import config from "miroir-standalone-app/tests/miroirConfig.test.json";
+// import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 miroirAppStartup();
 miroirCoreStartup();

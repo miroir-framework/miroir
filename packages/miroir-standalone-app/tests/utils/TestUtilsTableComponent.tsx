@@ -33,7 +33,7 @@ export const TestUtilsTableComponent = (
     Report:deploymentReports,
   }
 
-  console.log("TestUtilsTableComponent display instances of entity",props.entityName,props.entityUuid);
+  console.log("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
   console.log("TestUtilsTableComponent libraryAppEntities",libraryAppEntities, "deploymentReports", deploymentReports);
 
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
