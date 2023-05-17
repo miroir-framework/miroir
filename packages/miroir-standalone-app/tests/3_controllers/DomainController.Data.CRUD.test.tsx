@@ -139,6 +139,7 @@ describe(
               entityName={entityBook.name}
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
             {store:reduxStore.getInnerStore()}
@@ -206,6 +207,7 @@ describe(
             <TestUtilsTableComponent
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
             {store:reduxStore.getInnerStore()}
@@ -337,6 +339,7 @@ describe(
               // parentName="Book"
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
             {store:reduxStore.getInnerStore()}
@@ -466,6 +469,7 @@ describe(
               // parentName="Book"
               entityUuid={entityBook.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
             {store:reduxStore.getInnerStore()}

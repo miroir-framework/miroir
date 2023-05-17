@@ -11,8 +11,8 @@ const fetch = require('node-fetch');
 
 
 import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder as any;
 
 
 import {
@@ -25,6 +25,7 @@ import {
   MiroirConfig,
   MiroirContext,
   WrappedModelEntityUpdateWithCUDUpdate,
+  applicationDeploymentMiroir,
   entityEntity,
   entityReport,
   miroirCoreStartup
@@ -42,12 +43,14 @@ import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
 
 
 miroirAppStartup();
 miroirCoreStartup();
 
-let localDataStore: DataStoreInterface;
+let localMiroirDataStore: DataStoreInterface;
+let localAppDataStore: DataStoreInterface;
 let localDataStoreWorker: SetupWorkerApi;
 let localDataStoreServer: SetupServerApi;
 let reduxStore: ReduxStore;
@@ -57,39 +60,43 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
+    const wrappedReduxStore = createReduxStoreAndRestClient(
+      config as MiroirConfig,
+      fetch,
+    );
+
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
       config as MiroirConfig,
-      'nodejs',
-      fetch,
       setupServer
     );
-    if (wrapped) {
-      localDataStore = wrapped.localDataStore as DataStoreInterface;
+    if (wrappedReduxStore && wrapped) {
+      localMiroirDataStore = wrapped.localMiroirDataStore as DataStoreInterface;
+      localAppDataStore = wrapped.localAppDataStore as DataStoreInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      reduxStore = wrapped.reduxStore;
-      domainController = wrapped.domainController;
-      miroirContext = wrapped.miroirContext;
+      reduxStore = wrappedReduxStore.reduxStore;
+      domainController = wrappedReduxStore.domainController;
+      miroirContext = wrappedReduxStore.miroirContext;
     }
   }
 )
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localDataStore);
+    await miroirBeforeEach(localMiroirDataStore,localAppDataStore);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localDataStore,localDataStoreServer);
+    await miroirAfterAll(localMiroirDataStore,localAppDataStore,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localDataStore);
+    await miroirAfterEach(localMiroirDataStore,localAppDataStore);
   }
 )
 
@@ -107,8 +114,8 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
 
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel();
 
           const {
             getByText,
@@ -119,6 +126,8 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
           );
@@ -127,7 +136,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
 
@@ -178,8 +187,8 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAuthorAction,reduxStore.currentModel());
-              await domainController.handleDomainAction(createBookAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,createAuthorAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,createBookAction,reduxStore.currentModel());
             }
           );
   
@@ -208,7 +217,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -234,7 +243,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -262,9 +271,9 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -288,7 +297,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -296,10 +305,10 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction({actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -323,7 +332,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -331,7 +340,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -346,7 +355,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid,{actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   

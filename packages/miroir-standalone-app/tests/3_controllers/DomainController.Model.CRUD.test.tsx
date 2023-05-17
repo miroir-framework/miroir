@@ -12,7 +12,7 @@ const fetch = require('node-fetch');
 
 import { TextDecoder, TextEncoder } from 'util';
 global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+global.TextDecoder = TextDecoder as any
 
 import { SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
@@ -27,6 +27,7 @@ import {
   MiroirConfig,
   MiroirContext,
   WrappedModelEntityUpdateWithCUDUpdate,
+  applicationDeploymentMiroir,
   defaultMiroirMetaModel,
   entityEntity,
   entityReport,
@@ -41,12 +42,14 @@ import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import config from "miroir-standalone-app/tests/miroirConfig.test.json";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { DisplayLoadingInfo, applicationDeploymentLibrary, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
 
 miroirAppStartup();
 miroirCoreStartup();
 
-let localDataStore: DataStoreInterface;
+let localMiroirDataStore: DataStoreInterface;
+let localAppDataStore: DataStoreInterface;
 let localDataStoreWorker: SetupWorkerApi;
 let localDataStoreServer: SetupServerApi;
 let reduxStore: ReduxStore;
@@ -56,39 +59,43 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
+    const wrappedReduxStore = createReduxStoreAndRestClient(
+      config as MiroirConfig,
+      fetch,
+    );
+
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
       config as MiroirConfig,
-      'nodejs',
-      fetch,
       setupServer
     );
-    if (wrapped) {
-      localDataStore = wrapped.localDataStore as DataStoreInterface;
+    if (wrappedReduxStore && wrapped) {
+      localMiroirDataStore = wrapped.localMiroirDataStore as DataStoreInterface;
+      localAppDataStore = wrapped.localAppDataStore as DataStoreInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      reduxStore = wrapped.reduxStore;
-      domainController = wrapped.domainController;
-      miroirContext = wrapped.miroirContext;
+      reduxStore = wrappedReduxStore.reduxStore;
+      domainController = wrappedReduxStore.domainController;
+      miroirContext = wrappedReduxStore.miroirContext;
     }
   }
 )
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localDataStore);
+    await miroirBeforeEach(localMiroirDataStore,localAppDataStore);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localDataStore,localDataStoreServer);
+    await miroirAfterAll(localMiroirDataStore,localAppDataStore,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localDataStore);
+    await miroirAfterEach(localMiroirDataStore,localAppDataStore);
   }
 )
 
@@ -106,8 +113,8 @@ describe(
         // console.log('localDataStore?.clear()');
         // await localDataStore?.clear();
         try {
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel(defaultMiroirMetaModel);
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel(defaultMiroirMetaModel);
   
           const {
             getByText,
@@ -118,6 +125,8 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              instancesApplicationSection="model"
             />
             ,
             {store:reduxStore.getInnerStore()}
@@ -125,7 +134,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -158,8 +167,8 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
   
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel(defaultMiroirMetaModel);
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel(defaultMiroirMetaModel);
   
           const {
             getByText,
@@ -167,9 +176,11 @@ describe(
             container
           } = renderWithProviders(
             <TestUtilsTableComponent
-            entityName={entityEntity.name}
-            entityUuid={entityEntity.uuid}
-            DisplayLoadingInfo={displayLoadingInfo}
+              entityName={entityEntity.name}
+              entityUuid={entityEntity.uuid}
+              DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
           );
@@ -178,7 +189,7 @@ describe(
           console.log('add Report definition step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -217,7 +228,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction, reduxStore.currentModel());
             }
           );
   
@@ -244,7 +255,7 @@ describe(
           console.log('add Report definition step 3: rollbacking/refreshing report list from remote store, reportEntityList be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -283,8 +294,8 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
 
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel(defaultMiroirMetaModel);
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel(defaultMiroirMetaModel);
   
   
           const {
@@ -296,6 +307,8 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
           );
@@ -304,7 +317,7 @@ describe(
           console.log('add Report definition step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -343,7 +356,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction,reduxStore.currentModel());
             }
           );
   
@@ -371,7 +384,7 @@ describe(
           console.log('reduxStore.currentModel()',reduxStore.currentModel())
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -395,7 +408,7 @@ describe(
           console.log('add Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "rollback",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -431,11 +444,11 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel();
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
 
@@ -457,14 +470,14 @@ describe(
           console.log('remove Author entity setup: adding Author entity locally.')
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction, reduxStore.currentModel());
             }
           );
 
           console.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
 
@@ -477,6 +490,8 @@ describe(
                 entityName={entityEntity.name}
                 entityUuid={entityEntity.uuid}
                 DisplayLoadingInfo={displayLoadingInfo}
+                deploymentUuid={applicationDeploymentMiroir.uuid}
+                instancesApplicationSection="model"
               />,
             {store:reduxStore.getInnerStore()}
             // {store:reduxStore.getInnerStore(),loadingStateService:loadingStateService}
@@ -489,7 +504,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
           await user.click(screen.getByRole('button'))
@@ -510,6 +525,7 @@ describe(
           await act(
             async () => {
               await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid, 
                 {
                   actionType: "DomainModelAction",
                   actionName: "updateEntity",
@@ -548,7 +564,7 @@ describe(
           console.log('remove Report definition step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
           await user.click(screen.getByRole('button'))
@@ -570,7 +586,7 @@ describe(
           console.log('remove Report definition step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -609,12 +625,12 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          await localDataStore.dropModelAndData();
-          await localDataStore.initModel();
+          // await localDataStore.dropModelAndData();
+          // await localDataStore.initModel();
 
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
 
@@ -638,14 +654,14 @@ describe(
           console.log('reduxStore.currentModel().',reduxStore.currentModel());
           await act(
             async () => {
-              await domainController.handleDomainAction(createAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction,reduxStore.currentModel());
             }
           );
 
           console.log('update Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -659,6 +675,8 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
           );
@@ -667,7 +685,7 @@ describe(
           console.log('Update Autor definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -705,7 +723,7 @@ describe(
           ;
           await act(
             async () => {
-              await domainController.handleDomainAction(updateAction, reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, updateAction, reduxStore.currentModel());
             }
           );
   
@@ -730,7 +748,7 @@ describe(
           console.log('Update Author entity definition step 3: committin entity list from remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainModelAction({actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
             }
           );
   
@@ -750,7 +768,7 @@ describe(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction({actionName: "replace",actionType:"DomainModelAction"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
