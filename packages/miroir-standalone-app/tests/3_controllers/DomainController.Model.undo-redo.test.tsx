@@ -16,7 +16,7 @@ global.TextDecoder = TextDecoder as any;
 
 
 import {
-  DataStoreInterface,
+  StoreFacadeInterface,
   DomainAction,
   DomainControllerInterface,
   EntityDefinition,
@@ -51,8 +51,8 @@ import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer
 miroirAppStartup();
 miroirCoreStartup();
 
-let localMiroirDataStore: DataStoreInterface;
-let localAppDataStore: DataStoreInterface;
+let localMiroirDataStore: StoreFacadeInterface;
+let localAppDataStore: StoreFacadeInterface;
 let localDataStoreWorker: SetupWorkerApi;
 let localDataStoreServer: SetupServerApi;
 let reduxStore: ReduxStore;
@@ -73,8 +73,8 @@ beforeAll(
       setupServer
     );
     if (wrappedReduxStore && wrapped) {
-      localMiroirDataStore = wrapped.localMiroirDataStore as DataStoreInterface;
-      localAppDataStore = wrapped.localAppDataStore as DataStoreInterface;
+      localMiroirDataStore = wrapped.localMiroirDataStore as StoreFacadeInterface;
+      localAppDataStore = wrapped.localAppDataStore as StoreFacadeInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrappedReduxStore.reduxStore;

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import bodyParser from 'body-parser';
 import {
-  DataStoreInterface,
+  StoreFacadeInterface,
   ApplicationDeployment,
   generateHandlerBody,
   modelActionRunner,
@@ -30,9 +30,9 @@ const app = express(),
 const users = [];
 
 // const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-// const localIndexedDbDataStore:DataStoreInterface = new IndexedDbDataStore(localUuidIndexedDb);
+// const localIndexedDbDataStore:StoreFacadeInterface = new IndexedDbDataStore(localUuidIndexedDb);
 
-const libraryAppFileSystemDataStore:DataStoreInterface = new FileSystemEntityDataStore(
+const libraryAppFileSystemDataStore:StoreFacadeInterface = new FileSystemEntityDataStore(
   'library',
   'app',
   applicationDeploymentLibrary.data.location['directory'],
@@ -43,8 +43,8 @@ const libraryAppFileSystemDataStore:DataStoreInterface = new FileSystemEntityDat
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
 
-// const sqlDbServerProxy:DataStoreInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
-const miroirAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
+// const sqlDbServerProxy:StoreFacadeInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
+const miroirAppSqlServerProxy:StoreFacadeInterface = await createSqlServerProxy(
   'miroir',
   'miroir',
   applicationDeploymentMiroir.model.location['connectionString'],
@@ -52,7 +52,7 @@ const miroirAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
   applicationDeploymentMiroir.data.location['connectionString'],
   applicationDeploymentMiroir.data.location['schema'],
 );
-const libraryAppSqlServerProxy:DataStoreInterface = await createSqlServerProxy(
+const libraryAppSqlServerProxy:StoreFacadeInterface = await createSqlServerProxy(
   'library',
   'app',
   applicationDeploymentLibrary.model.location['connectionString'],

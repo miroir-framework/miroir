@@ -1,5 +1,5 @@
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 import { generateHandlerBody } from "../4_services/RestTools";
 import { rest } from "msw";
@@ -46,8 +46,8 @@ export class RestServerStub {
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    private localMiroirDataStore: DataStoreInterface,
-    private localAppDataStore: DataStoreInterface,
+    private localMiroirDataStore: StoreFacadeInterface,
+    private localAppDataStore: StoreFacadeInterface,
   ) {
     console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStores', localMiroirDataStore, localAppDataStore);
 

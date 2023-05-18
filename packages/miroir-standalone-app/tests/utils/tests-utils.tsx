@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 // As a basic setup, import your same slice reducers
 import {
   ApplicationDeployment,
-  DataStoreInterface,
+  StoreFacadeInterface,
   MiroirConfig,
   applicationDeploymentMiroir,
   applicationMiroir,
@@ -140,15 +140,15 @@ export async function miroirBeforeAll(
 }
 
 export async function miroirBeforeEach(
-  localMiroirDataStore: DataStoreInterface,
-  localAppDataStore: DataStoreInterface,
+  localMiroirDataStore: StoreFacadeInterface,
+  localAppDataStore: StoreFacadeInterface,
 ) {
   try {
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
     await localAppDataStore.dropModelAndData(defaultMiroirMetaModel);
     await localMiroirDataStore.dropModelAndData(defaultMiroirMetaModel);
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplications');
     try {
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
       await localMiroirDataStore.initApplication(
         defaultMiroirMetaModel,
         'miroir',
@@ -158,11 +158,13 @@ export async function miroirBeforeEach(
         applicationVersionInitialMiroirVersion,
         applicationStoreBasedConfigurationMiroir,
       );
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
     } catch (error) {
       console.error('could not initApplication for miroir datastore, can not go further!');
       throw(error);
     }
     try {
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app START');
       await localAppDataStore.initApplication(
         defaultMiroirMetaModel,
         'app',
@@ -172,6 +174,7 @@ export async function miroirBeforeEach(
         applicationVersionLibraryInitialVersion,
         applicationStoreBasedConfigurationLibrary,
       );
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
     } catch (error) {
       console.error('could not initApplication for app datastore, can not go further!');
       throw(error);
@@ -181,11 +184,12 @@ export async function miroirBeforeEach(
     throw(error);
   }
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done beforeEach');
+  return Promise.resolve();
 }
 
 export async function miroirAfterEach(
-  localMiroirDataStore: DataStoreInterface,
-  localAppDataStore: DataStoreInterface,
+  localMiroirDataStore: StoreFacadeInterface,
+  localAppDataStore: StoreFacadeInterface,
 ) {
   try {
     // await localDataStore?.close();
@@ -196,17 +200,18 @@ export async function miroirAfterEach(
     console.error('Error afterEach',error);
   }
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
+  return Promise.resolve();
 }
 
 export async function miroirAfterAll(
-  localMiroirDataStore: DataStoreInterface,
-  localAppDataStore: DataStoreInterface,
+  localMiroirDataStore: StoreFacadeInterface,
+  localAppDataStore: StoreFacadeInterface,
   localDataStoreServer: SetupServerApi,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {
-    await localMiroirDataStore.clear(defaultMiroirMetaModel);
-    await localAppDataStore.clear(defaultMiroirMetaModel);
+    // await localMiroirDataStore.clear(defaultMiroirMetaModel);
+    // await localAppDataStore.clear(defaultMiroirMetaModel);
     await localDataStoreServer?.close();
     await localMiroirDataStore.close();
     await localAppDataStore.close();
@@ -214,5 +219,6 @@ export async function miroirAfterAll(
     console.error('Error afterAll',error);
   }
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
+  return Promise.resolve();
 }
 

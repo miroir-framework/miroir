@@ -1,9 +1,9 @@
 
 import { DataStoreApplicationType, metamodelEntities, modelInitialize } from "../3_controllers/ModelInitializer";
-import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
+import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
-import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 import { IndexedDb } from "./indexedDb";
@@ -11,7 +11,7 @@ import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 
-export class IndexedDbDataStore implements DataStoreInterface{
+export class IndexedDbDataStore implements StoreFacadeInterface{
   private logHeader: string;
 
   constructor(
@@ -21,7 +21,26 @@ export class IndexedDbDataStore implements DataStoreInterface{
   ){
     this.logHeader = 'IndexedDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
+  bootDataStoreFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
+  getEntityNames(): string[] {
+    return []
+  }
+
+  getEntityUuids(): string[] {
+    return []
+  }
+
+  dropData(): Promise<void> {
+    return Promise.resolve()
+  }
+
+  dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid) {
+    
+  }
+  
   // #############################################################################################
   async dropModelAndData(metaModel: MiroirMetaModel):Promise<void>{
     await this.clear(metaModel);
@@ -91,18 +110,18 @@ export class IndexedDbDataStore implements DataStoreInterface{
   }
 
   // #############################################################################################
-  async initializeEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
-    // console.warn('IndexedDbDataStore initializeEntity does nothing: IndexedDbDataStore is not persistent.');
-    console.log(this.logHeader,'initializeEntity','input: entity',entity,'entityDefinition',entityDefinition, 'Entities',this.localUuidIndexedDb.getSubLevels());
+  async createStorageSpaceForInstancesOfEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
+    // console.warn('IndexedDbDataStore createStorageSpaceForInstancesOfEntity does nothing: IndexedDbDataStore is not persistent.');
+    console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','input: entity',entity,'entityDefinition',entityDefinition, 'Entities',this.localUuidIndexedDb.getSubLevels());
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
-      console.error(this.logHeader,'initializeEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'inconsistent input: given entityDefinition is not related to given entity.');
+      console.error(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'inconsistent input: given entityDefinition is not related to given entity.');
     } else {
       if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
         this.localUuidIndexedDb.addSubLevels([entity.uuid]);
       } else {
         this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
-        console.log(this.logHeader,'initializeEntity','input: entity',entity,'entityDefinition',entityDefinition, 'already has entity. Existing entities:',this.localUuidIndexedDb.getSubLevels());
+        console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','input: entity',entity,'entityDefinition',entityDefinition, 'already has entity. Existing entities:',this.localUuidIndexedDb.getSubLevels());
       }
     }
     return Promise.resolve();

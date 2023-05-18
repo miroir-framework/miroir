@@ -6,7 +6,7 @@ import process from "process";
 import {
   DomainControllerInterface,
   DomainController,
-  DataStoreInterface,
+  StoreFacadeInterface,
   IndexedDb,
   IndexedDbDataStore,
   LocalAndRemoteControllerInterface,
@@ -65,8 +65,8 @@ export function createReduxStoreAndRestClient(
 }
 
 export interface CreateMswRestServerReturnType {
-  localMiroirDataStore: DataStoreInterface | undefined,
-  localAppDataStore: DataStoreInterface | undefined,
+  localMiroirDataStore: StoreFacadeInterface | undefined,
+  localAppDataStore: StoreFacadeInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,
 }
@@ -81,11 +81,11 @@ export async function createMswRestServer(
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
     console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
-    if (miroirConfig.miroirServerConfig.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.emulatedServerType == "indexedDb") {
+    if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
       // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
       // const localUuidIndexedDb: IndexedDb = new IndexedDb(miroirConfig.ServerConfig.indexedDbName);
-      const localMiroirDataStore: DataStoreInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.indexedDbName));
-      const localAppDataStore: DataStoreInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.indexedDbName));
+      const localMiroirDataStore: StoreFacadeInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.model.indexedDbName));
+      const localAppDataStore: StoreFacadeInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.model.indexedDbName));
       const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
 
       let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
@@ -115,24 +115,24 @@ export async function createMswRestServer(
           localDataStoreServer: undefined,
         });
       } else {
-        if (miroirConfig.miroirServerConfig.emulatedServerType == "Sql" && miroirConfig.appServerConfig.emulatedServerType == "Sql") {
+        if (miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" && miroirConfig.appServerConfig.model.emulatedServerType == "Sql") {
           console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
-          console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.schema,'library datastore schema',miroirConfig.appServerConfig.schema);
-          const localMiroirDataStore: DataStoreInterface = await createSqlServerProxy(
+          console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.model.schema,'library datastore schema',miroirConfig.appServerConfig.model.schema);
+          const localMiroirDataStore: StoreFacadeInterface = await createSqlServerProxy(
             'miroir',
             'miroir',
-            miroirConfig.miroirServerConfig.connectionString,
-            miroirConfig.miroirServerConfig.schema,
-            miroirConfig.miroirServerConfig.connectionString,
-            miroirConfig.miroirServerConfig.schema,
+            miroirConfig.miroirServerConfig.model.connectionString,
+            miroirConfig.miroirServerConfig.model.schema,
+            miroirConfig.miroirServerConfig.model.connectionString,
+            miroirConfig.miroirServerConfig.model.schema,
           );
-          const localAppDataStore: DataStoreInterface = await createSqlServerProxy(
+          const localAppDataStore: StoreFacadeInterface = await createSqlServerProxy(
             'library',
             'app',
-            miroirConfig.appServerConfig.connectionString,
-            miroirConfig.appServerConfig.schema,
-            miroirConfig.appServerConfig.connectionString,
-            miroirConfig.appServerConfig.schema,
+            miroirConfig.appServerConfig.model.connectionString,
+            miroirConfig.appServerConfig.model.schema,
+            miroirConfig.appServerConfig.model.connectionString,
+            miroirConfig.appServerConfig.model.schema,
           );
 
           const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);

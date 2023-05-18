@@ -67,7 +67,7 @@
     "start-dev": "react-scripts start",
     "build": "react-scripts build --verbose",
     "build-standalone-app": "lerna run build",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles",
     "testOpenHandles": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles",
     "test2": "cross-env NODE_ENV=test node --no-warnings --experimental-vm-modules ../../node_modules/jest/bin/jest.js tests/",
     "magic": "webpack"

@@ -23,12 +23,21 @@ export interface EmulatedServerConfigSql {
   schema: string;
 }
 
-export type EmulatedServerConfig = EmulatedServerConfigIndexedDb | EmulatedServerConfigSql;
+export interface EmulatedServerConfigFileSystem {
+  emulatedServerType: 'filesystem';
+  directory: string;
+}
+
+export type EmulatedServerConfig = EmulatedServerConfigIndexedDb | EmulatedServerConfigSql | EmulatedServerConfigFileSystem;
+export interface EmulatedPartitionedServerConfig {
+  model: EmulatedServerConfig;
+  data: EmulatedServerConfig;
+}
 export interface MiroirConfigForMsw extends MiroirConfigRoot{
   emulateServer: true;
   rootApiUrl: string;
-  miroirServerConfig:EmulatedServerConfig;
-  appServerConfig:EmulatedServerConfig;
+  miroirServerConfig:EmulatedPartitionedServerConfig;
+  appServerConfig:EmulatedPartitionedServerConfig;
 }
 
 export interface ServerConfig {

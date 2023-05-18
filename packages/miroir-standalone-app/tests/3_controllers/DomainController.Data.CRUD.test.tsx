@@ -18,7 +18,7 @@ global.TextDecoder = TextDecoder as any
 
 import {
   applicationDeploymentMiroir,
-  DataStoreInterface,
+  StoreFacadeInterface,
   DomainControllerInterface,
   DomainDataAction,
   EntityDefinition,
@@ -55,14 +55,14 @@ import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore"
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 // import config from "miroir-standalone-app/tests/miroirConfig.test.json";
-// import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 miroirAppStartup();
 miroirCoreStartup();
 
-let localMiroirDataStore: DataStoreInterface,
-  localAppDataStore: DataStoreInterface,
+let localMiroirDataStore: StoreFacadeInterface,
+  localAppDataStore: StoreFacadeInterface,
   localDataStoreWorker,
   localDataStoreServer,
   reduxStore,
@@ -83,8 +83,8 @@ beforeAll(
       setupServer
     );
     if (wrappedReduxStore && wrapped) {
-      localMiroirDataStore = wrapped.localMiroirDataStore as DataStoreInterface;
-      localAppDataStore = wrapped.localAppDataStore as DataStoreInterface;
+      localMiroirDataStore = wrapped.localMiroirDataStore as StoreFacadeInterface;
+      localAppDataStore = wrapped.localAppDataStore as StoreFacadeInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrappedReduxStore.reduxStore;

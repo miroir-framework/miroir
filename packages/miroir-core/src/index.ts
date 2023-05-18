@@ -140,7 +140,9 @@ export {
   LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
+  StoreFacadeInterface,
   DataStoreInterface,
+  ModelStoreInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
   RemoteStoreCRUDAction,

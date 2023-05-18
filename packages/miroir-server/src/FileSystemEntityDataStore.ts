@@ -1,6 +1,6 @@
 import {
   DataStoreApplicationType,
-  DataStoreInterface,
+  StoreFacadeInterface,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -15,7 +15,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 
-export class FileSystemEntityDataStore implements DataStoreInterface {
+export class FileSystemEntityDataStore implements StoreFacadeInterface {
   targetPath: path.ParsedPath;
 
   // #############################################################################################
@@ -31,7 +31,28 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
     console.log('FileSystemEntityDataStore constructor found entities',files);
     
   }
+  getEntityNames(): string[] {
+    throw new Error("Method not implemented.");
+  }
+  getEntityUuids(): string[] {
+    throw new Error("Method not implemented.");
+  }
+  dropData(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  bootDataStoreFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string) {
+    throw new Error("Method not implemented.");
+  }
 
+  initializeEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+    throw new Error("Method not implemented.");
+  }
+
+
+  
   bootFromPersistedState(
     metaModel:MiroirMetaModel,
   ): Promise<void> {
@@ -39,9 +60,9 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   }
 
   // #########################################################################################
-  dropModelAndData(): Promise<void> {
+  dropModelAndData(metaModel:MiroirMetaModel): Promise<void> {
     console.log('FileSystemEntityDataStore dropModelAndData');
-    this.clear(undefined as MiroirMetaModel);
+    this.clear(metaModel);
     return Promise.resolve();
   }
   // #########################################################################################
@@ -93,7 +114,7 @@ export class FileSystemEntityDataStore implements DataStoreInterface {
   }
 
   // #########################################################################################
-  initializeEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+  createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
     this.createEntity(entity,entityDefinition);
   }
 

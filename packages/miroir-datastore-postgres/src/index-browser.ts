@@ -1,4 +1,4 @@
-import { DataStoreInterface } from "miroir-core";
+import { StoreFacadeInterface } from "miroir-core";
 
 /**
  * Empty implementation, intended for use (of the miroir-datastore-postgres package) in the browser.
@@ -8,6 +8,6 @@ import { DataStoreInterface } from "miroir-core";
  */
 export async function createSqlServerProxy (
   connectionString:string,
-):Promise<DataStoreInterface | undefined> {
+):Promise<StoreFacadeInterface | undefined> {
   return Promise.resolve(undefined);
 }

@@ -93,9 +93,10 @@ export const ApplicationDeploymentSchema = ZinstanceWithName.extend({
   type: ClientServerDistributionModeSchema,
   description: z.string(),
   // metaModel: ModelStorageLocation,
-  application:z.string().uuid(),
+  application:z.string().uuid().optional(),
+  applicationVersion:z.string().uuid().optional(),
   applicationModelLevel: ApplicationModelLevelSchema,
-  model: ModelStorageLocationSchema.optional(),
+  model: ModelStorageLocationSchema.optional(), // in the case of a designer access, the zone where the model can be edited.
   data: ModelStorageLocationSchema.optional(),
 });
 

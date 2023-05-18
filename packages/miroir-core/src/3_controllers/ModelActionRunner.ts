@@ -1,6 +1,6 @@
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import { DomainModelInitAction, DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -10,8 +10,8 @@ import applicationDeploymentMiroir from "../assets/35c5608a-7678-4f07-a4ec-76fc5
 export async function initApplicationDeployment(
   deploymentUuid: string,
   actionName:string,
-  miroirDataStoreProxy:DataStoreInterface,
-  appDataStoreProxy:DataStoreInterface,
+  miroirDataStoreProxy:StoreFacadeInterface,
+  appDataStoreProxy:StoreFacadeInterface,
   params:DomainModelInitActionParams
 ) {
   console.log("ModelUpdateRunner model/initModel params",params);
@@ -42,8 +42,8 @@ export async function initApplicationDeployment(
 export async function modelActionRunner(
   deploymentUuid: string,
   actionName:string,
-  miroirDataStoreProxy:DataStoreInterface,
-  appDataStoreProxy:DataStoreInterface,
+  miroirDataStoreProxy:StoreFacadeInterface,
+  appDataStoreProxy:StoreFacadeInterface,
   body:any
 ):Promise<void> {
   // console.log("server post model/"," started #####################################");
@@ -102,7 +102,7 @@ export async function modelActionRunner(
 
   // ##############################################################################################
   export async function applyModelEntityUpdate(
-    appDataStoreProxy:DataStoreInterface,
+    appDataStoreProxy:StoreFacadeInterface,
     update:ModelReplayableUpdate
   ){
     console.log('ModelActionRunner applyModelEntityUpdate',update);
