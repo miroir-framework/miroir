@@ -1,6 +1,7 @@
-import { DataStoreApplicationType, StoreControllerInterface } from "miroir-core";
-import { StoreController } from "src/StoreController";
+import { DataStoreApplicationType, StoreController, StoreControllerInterface } from "miroir-core";
 import { detect } from "detect-browser";
+import { SqlDbDataStore } from "./SqlDbDataStore.js";
+import { SqlDbModelStore } from "./SqlDbModelStore.js";
 
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
@@ -15,24 +16,24 @@ export async function SqlStoreControllerFactory (
 ):Promise<StoreControllerInterface> {
   const seq = await import("sequelize");
 
-  // const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
-  const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
-  try {
-    await modelSequelize.authenticate();
-    console.log('Application',applicationName,'dataStoreType',dataStoreType,'model Connection to postgres model schema', modelSchema, 'has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect model to the postgres database:', error);
-  }
 
-  // const dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
-  const dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
+  const dataStore = new SqlDbDataStore(seq,applicationName,dataStoreType,dataConnectionString,dataSchema);
   try {
-    await dataSequelize.authenticate();
+    await dataStore.connect();
     console.log('Application',applicationName,'dataStoreType',dataStoreType,'data Connection to postgres data schema', dataSchema, 'has been established successfully.');
   } catch (error) {
     console.error('Unable to connect data', dataSchema, ' to the postgres database:', error);
   }
 
-  const sqlDbServer:StoreControllerInterface = new StoreController(applicationName,dataStoreType,modelSequelize,modelSchema,dataSequelize,dataSchema);
+  const modelStore = new SqlDbModelStore(seq,applicationName,dataStoreType,modelConnectionString,modelSchema,dataStore);
+  try {
+    await modelStore.connect()
+    console.log('Application',applicationName,'dataStoreType',dataStoreType,'model Connection to postgres model schema', modelSchema, 'has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect model to the postgres database:', error);
+  }
+
+
+  const sqlDbServer:StoreControllerInterface = new StoreController(applicationName,dataStoreType,modelStore,dataStore);
   return Promise.resolve(sqlDbServer);
 }

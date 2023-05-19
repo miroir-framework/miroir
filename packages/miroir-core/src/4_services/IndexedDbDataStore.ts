@@ -21,6 +21,9 @@ export class IndexedDbDataStore implements StoreControllerInterface{
   ){
     this.logHeader = 'IndexedDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
+  connect(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
   // bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
   //   throw new Error("Method not implemented.");

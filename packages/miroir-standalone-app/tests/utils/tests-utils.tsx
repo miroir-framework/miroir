@@ -18,6 +18,10 @@ import {
   IndexedDbDataStore,
   IndexedDb,
   EmulatedServerConfigIndexedDb,
+  ApplicationSection,
+  DataStoreApplicationType,
+  EmulatedServerConfigSql,
+  EmulatedPartitionedServerConfig,
 } from "miroir-core";
 import { ReduxStoreWithUndoRedo } from 'miroir-redux'
 import { RequestHandler } from 'msw'
@@ -103,7 +107,46 @@ export interface StoreControllerFactoryReturnType {
   localAppStoreController: StoreControllerInterface,
 }
 
-export async function StoreControllerFactory(miroirConfig:MiroirConfig): Promise<StoreControllerFactoryReturnType> {
+export type IndexedDbStoreFactory = (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  config: EmulatedServerConfigIndexedDb,
+) => StoreControllerInterface
+
+export const indexedDbStoreFactory = (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  config: EmulatedServerConfigIndexedDb,
+)=>new IndexedDbDataStore(appName, dataStoreApplicationType,new IndexedDb(config.indexedDbName));
+
+
+export type SqlDbStoreFactory = (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  modelConfig: EmulatedServerConfigSql,
+  appConfig: EmulatedServerConfigSql,
+) => Promise<StoreControllerInterface>;
+
+export const sqlDbStoreFactory = async (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  modelConfig: EmulatedServerConfigSql,
+  appConfig: EmulatedServerConfigSql,
+) => Promise.resolve(SqlStoreControllerFactory(
+  appName,
+  dataStoreApplicationType,
+  modelConfig.connectionString,
+  modelConfig.schema,
+  appConfig.connectionString,
+  appConfig.schema,
+));
+
+
+export async function StoreControllerFactory(
+  miroirConfig:MiroirConfig,
+  indexedDbDataStoreFactory: IndexedDbStoreFactory,
+  sqlDbDataStoreFactory: SqlDbStoreFactory,
+): Promise<StoreControllerFactoryReturnType> {
   let localMiroirStoreController,localAppStoreController;
 
   if (!miroirConfig.emulateServer) {
@@ -111,31 +154,37 @@ export async function StoreControllerFactory(miroirConfig:MiroirConfig): Promise
   }
 
   if (miroirConfig.emulateServer && miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" || miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
-    // throw new Error('well...'); // TODO: really???
     const miroirIndexedDbStoreConfig = miroirConfig.miroirServerConfig.model as EmulatedServerConfigIndexedDb;
     const appIndexedDbStoreConfig = miroirConfig.appServerConfig.model as EmulatedServerConfigIndexedDb;
-    localMiroirStoreController = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirIndexedDbStoreConfig.indexedDbName));
-    localAppStoreController = new IndexedDbDataStore('library', 'app', new IndexedDb(appIndexedDbStoreConfig.indexedDbName));
+    localMiroirStoreController = indexedDbDataStoreFactory('miroir','miroir',miroirIndexedDbStoreConfig);
+    localAppStoreController = indexedDbDataStoreFactory('library','app',appIndexedDbStoreConfig);
   }
 
-  if (miroirConfig.emulateServer && miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" && miroirConfig.appServerConfig.model.emulatedServerType == "Sql") {
+  if (
+    miroirConfig.emulateServer &&
+    miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" &&
+    miroirConfig.appServerConfig.model.emulatedServerType == "Sql" &&
+    miroirConfig.miroirServerConfig.data.emulatedServerType == "Sql" &&
+    miroirConfig.appServerConfig.data.emulatedServerType == "Sql"
+  ) {
     console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
-    console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.model.schema,'library datastore schema',miroirConfig.appServerConfig.model.schema);
-    localMiroirStoreController = await SqlStoreControllerFactory(
-      'miroir',
-      'miroir',
-      miroirConfig.miroirServerConfig.model.connectionString,
+    console.log(
+      "createMswRestServer sql mirroir datastore schema",
       miroirConfig.miroirServerConfig.model.schema,
-      miroirConfig.miroirServerConfig.model.connectionString,
-      miroirConfig.miroirServerConfig.model.schema,
+      "library datastore schema",
+      miroirConfig.appServerConfig.model.schema
     );
-    localAppStoreController = await SqlStoreControllerFactory(
-      'library',
-      'app',
-      miroirConfig.appServerConfig.model.connectionString,
-      miroirConfig.appServerConfig.model.schema,
-      miroirConfig.appServerConfig.model.connectionString,
-      miroirConfig.appServerConfig.model.schema,
+    localMiroirStoreController = await sqlDbDataStoreFactory(
+      "miroir",
+      "miroir",
+      miroirConfig.miroirServerConfig.model,
+      miroirConfig.miroirServerConfig.data
+    );
+    localAppStoreController = await sqlDbDataStoreFactory(
+      "library",
+      "app",
+      miroirConfig.appServerConfig.model,
+      miroirConfig.appServerConfig.data,
     );
   }
 

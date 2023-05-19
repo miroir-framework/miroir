@@ -10,7 +10,6 @@ import {
   ModelReplayableUpdate,
   ModelStoreInterface,
   StoreControllerInterface,
-  Uuid,
   WrappedModelEntityUpdateWithCUDUpdate,
   applyModelEntityUpdate,
   entityEntity,
@@ -18,35 +17,29 @@ import {
   metamodelEntities,
   modelInitialize
 } from "miroir-core";
-import { Sequelize } from "sequelize";
-import { SqlDbModelStore } from "./SqlDbModelStore.js";
-import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "./utils.js";
-import { SqlDbDataStore } from "./SqlDbDataStore.js";
 
 
 export class StoreController implements StoreControllerInterface {
   private logHeader: string;
-  private dataStore:DataStoreInterface;
-  private modelStore:ModelStoreInterface;
 
   constructor(
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
-    private modelSequelize: Sequelize,
-    private modelSchema: string,
-    dataSequelize: Sequelize,
-    dataSchema: string,
-  ) {
+    private modelStore:ModelStoreInterface,
+    private dataStore:DataStoreInterface,
+    ) {
     this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
-    this.dataStore = new SqlDbDataStore(applicationName,dataStoreType,dataSequelize,dataSchema);
-    this.modelStore = new SqlDbModelStore(applicationName,dataStoreType,modelSequelize,modelSchema,this.dataStore);
   }
 
-    // ##############################################################################################
-    async applyModelEntityUpdate(update: ModelReplayableUpdate) {
-      console.log("SqlDbServer applyModelEntityUpdates", JSON.stringify(update));
-      await applyModelEntityUpdate(this,update);
-    }
+  connect():Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  // ##############################################################################################
+  async applyModelEntityUpdate(update: ModelReplayableUpdate) {
+    console.log("SqlDbServer applyModelEntityUpdates", JSON.stringify(update));
+    await applyModelEntityUpdate(this,update);
+  }
   
   // #############################################################################################
   async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
@@ -78,7 +71,7 @@ export class StoreController implements StoreControllerInterface {
 
   // ##############################################################################################
   async close() {
-    await this.modelSequelize.close();
+    await this.modelStore.close();
     await this.dataStore.close();
     return Promise.resolve();
     // disconnect from DB?
@@ -107,43 +100,6 @@ export class StoreController implements StoreControllerInterface {
   }
   
   // ##############################################################################################
-  // TODO: does side effect on sequelize object => refactor!
-  getAccessToEntity(sequelize:Sequelize, entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
-    return {
-      [entity.uuid]: {
-        parentName: entity.parentName, 
-        sequelizeModel: sequelize.define(
-          entity.name,
-          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
-          {
-            freezeTableName: true,
-            schema: this.modelSchema,
-          }
-        ),
-      },
-    };
-  }
-  
-  // ##############################################################################################
-  // TODO: does side effect => refactor!
-  getAccessToModelSectionEntity(entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
-    return {
-      [entity.uuid]: {
-        parentName: entity.parentName,
-        sequelizeModel: this.modelSequelize.define(
-          entity.name,
-          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
-          {
-            freezeTableName: true,
-            schema: this.modelSchema,
-          }
-        ),
-      },
-    };
-  }
-  
-  
-  // // ##############################################################################################
   async initApplication(
     metaModel:MiroirMetaModel,
     dataStoreType: DataStoreApplicationType,
@@ -266,9 +222,6 @@ export class StoreController implements StoreControllerInterface {
   }
 
 
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbDataStore

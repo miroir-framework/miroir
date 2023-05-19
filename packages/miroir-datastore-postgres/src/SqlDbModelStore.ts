@@ -20,19 +20,36 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 export class SqlDbModelStore implements ModelStoreInterface {
   private sqlModelSchemaTableAccess: SqlUuidEntityDefinition = {};
   private logHeader: string;
+  public modelSequelize: Sequelize;
 
   // ##############################################################################################
   constructor(
+    seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
-    private modelSequelize: Sequelize,
-    private modelSchema: string,
+    public modelConnectionString:string,
+    public modelSchema:string,
     private sqlDbDataStore: DataStoreInterface,
+
+    // private modelSequelize: Sequelize,
+    // private modelSchema: string,
     // private sqlDbStoreFacade: StoreControllerInterface
   ) {
     this.logHeader = "SqlDbDataStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
+    this.modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   }
 
+  // ##############################################################################################
+  public async connect():Promise<void> {
+    try {
+      await this.modelSequelize.authenticate();
+      console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.modelSchema, 'has been established successfully.');
+    } catch (error) {
+      console.error('Unable to connect data', this.modelSchema, ' to the postgres database:', error);
+    }
+  }
+
+  
   // ##############################################################################################
   // TODO: does side effect => refactor!
   getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
@@ -398,4 +415,12 @@ export class SqlDbModelStore implements ModelStoreInterface {
   applyModelEntityUpdate(update: ModelReplayableUpdate) {
     throw new Error("Method not implemented.");
   }
+
+  // ##############################################################################################
+  async close() {
+    await this.modelSequelize?.close();
+    return Promise.resolve();
+    // disconnect from DB?
+  }
+  
 }

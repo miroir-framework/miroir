@@ -163,33 +163,32 @@ export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
+  cacheFetchPolicy,
+  cacheInvalidationPolicy,
+  ConfigurationService,
+  PackageConfiguration,
+  undoRedoHistorization,
+} from "./3_controllers/ConfigurationService.js";
+export {
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
-export {
-  DataStoreApplicationType,
-  modelInitialize,
-  metamodelEntities,
-} from './3_controllers/ModelInitializer.js';
-export {
+ export {
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,
 } from './3_controllers/ModelActionRunner.js';
 export {
-  cacheFetchPolicy,
-  cacheInvalidationPolicy,
-  ConfigurationService,
-  // DeploymentModes,
-  PackageConfiguration,
-  // serverStorageKind,
-  undoRedoHistorization,
-} from "./3_controllers/ConfigurationService.js";
+  DataStoreApplicationType,
+  modelInitialize,
+  metamodelEntities,
+} from './3_controllers/ModelInitializer.js';
 export { LocalAndRemoteController } from './3_controllers/LocalAndRemoteController.js';
 export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
+export { StoreController } from './3_controllers/StoreController.js';
 export {
   IndexedDbDataStore,
 } from './4_services/IndexedDbDataStore.js';

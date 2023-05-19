@@ -31,6 +31,21 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
     console.log('FileSystemEntityDataStore constructor found entities',files);
     
   }
+  connect(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
+    throw new Error("Method not implemented.");
+  }
+  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
+    throw new Error("Method not implemented.");
+  }
   getEntityNames(): string[] {
     throw new Error("Method not implemented.");
   }
@@ -40,7 +55,7 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
   dropData(): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string) {
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string):Promise<void> {
     throw new Error("Method not implemented.");
   }
 
@@ -51,7 +66,9 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
 
   
   bootFromPersistedState(
-    metaModel:MiroirMetaModel,
+    // metaModel:MiroirMetaModel,
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
   ): Promise<void> {
     return Promise.resolve();
   }
@@ -90,12 +107,13 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
   }
 
   // #########################################################################################
-  clear(metaModel: MiroirMetaModel) {
+  clear(metaModel: MiroirMetaModel):Promise<void> {
     const files = fs.readdirSync(this.modelDirectory);
     console.log('FileSystemEntityDataStore clear found entities',files);
     for (const file of files) {
       fs.rmSync(file,{recursive:true,force:true})
     }
+    return Promise.resolve()
   }
 
   // #########################################################################################
@@ -113,10 +131,11 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
   // #########################################################################################
   createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
     this.createEntity(entity,entityDefinition);
+    return Promise.resolve()
   }
 
   // #########################################################################################
-  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
     const entities = fs.readdirSync(this.modelDirectory);
 
     if (!entities.includes(entity.uuid)) {
@@ -125,10 +144,11 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
 
     fs.writeFileSync(path.join(this.modelDirectory,entityEntity.uuid,entity.uuid),JSON.stringify(entity))
     fs.writeFileSync(path.join(this.modelDirectory,entityEntityDefinition.uuid,entityDefinition.uuid),JSON.stringify(entityDefinition))
+    return Promise.resolve()
   }
 
   // #########################################################################################
-  dropEntity(entityUuid: string) {
+  dropEntity(entityUuid: string):Promise<void> {
     const entities = fs.readdirSync(this.modelDirectory);
 
     if (entities.includes(entityUuid)) {
@@ -140,15 +160,19 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
 
     // fs.writeFileSync(path.join(this.directory,entityEntity.uuid,entity.uuid),JSON.stringify(entity))
     // fs.writeFileSync(path.join(this.directory,entityEntityDefinition.uuid,entityDefinition.uuid),JSON.stringify(entityDefinition))
+    return Promise.resolve()
   }
 
   // #########################################################################################
-  dropEntities(entityUuids: string[]) {
+  dropEntities(entityUuids: string[]):Promise<void> {
     entityUuids.forEach(e =>this.dropEntity(e));
+    return Promise.resolve()
   }
 
   // #########################################################################################
-  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {}
+  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate):Promise<void> {
+    return Promise.resolve()
+  }
 
   // #########################################################################################
   // getInstances(entityUuid: string): Promise<EntityInstance[]> {

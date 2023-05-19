@@ -70,7 +70,9 @@ export declare interface RemoteDataStoreInterface {
 }
 
 export interface ModelStoreInterface {
+  close();
 
+  connect():Promise<void>;
   bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
@@ -106,6 +108,9 @@ export interface ModelStoreInterface {
 }
 
 export interface DataStoreInterface {
+
+  connect():Promise<void>;
+
   bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],

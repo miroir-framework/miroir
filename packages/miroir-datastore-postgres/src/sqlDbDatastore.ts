@@ -14,17 +14,30 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 export class SqlDbDataStore implements DataStoreInterface {
   private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = {};
   private logHeader: string;
+  public dataSequelize: Sequelize;
 
   // ##############################################################################################
   constructor(
+    seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
-    private dataSequelize: Sequelize,
-    private dataSchema: string,
+    public dataConnectionString:string,
+    public dataSchema:string,
+    // private dataSequelize: Sequelize,
   ) {
     this.logHeader = 'SqlDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
   }
 
+  // ##############################################################################################
+  public async connect():Promise<void> {
+    try {
+      await this.dataSequelize.authenticate();
+      console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.dataSchema, 'has been established successfully.');
+    } catch (error) {
+      console.error('Unable to connect data', this.dataSchema, ' to the postgres database:', error);
+    }
+  }
 
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbDataStore

@@ -35,6 +35,8 @@ import {
   IndexedDbDataStore,
   IndexedDb,
   EmulatedServerConfigIndexedDb,
+  ApplicationSection,
+  DataStoreApplicationType,
 } from "miroir-core";
 import {
   ReduxStore
@@ -44,12 +46,12 @@ import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9b
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, StoreControllerFactory, applicationDeploymentLibrary, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { DisplayLoadingInfo, StoreControllerFactory, applicationDeploymentLibrary, indexedDbStoreFactory, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders, sqlDbStoreFactory } from "miroir-standalone-app/tests/utils/tests-utils";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
@@ -74,7 +76,11 @@ beforeAll(
 
     const {
       localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(miroirConfig);
+    } = await StoreControllerFactory(
+      miroirConfig,
+      indexedDbStoreFactory,
+      sqlDbStoreFactory,
+    );
     localMiroirStoreController = a;
     localAppStoreController = b;
 

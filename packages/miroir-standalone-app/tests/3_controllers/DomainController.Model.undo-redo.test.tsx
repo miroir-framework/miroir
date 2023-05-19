@@ -40,7 +40,17 @@ import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4
 import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, StoreControllerFactory, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import {
+  DisplayLoadingInfo,
+  StoreControllerFactory,
+  indexedDbStoreFactory,
+  miroirAfterAll,
+  miroirAfterEach,
+  miroirBeforeAll,
+  miroirBeforeEach,
+  renderWithProviders,
+  sqlDbStoreFactory,
+} from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
@@ -70,7 +80,11 @@ beforeAll(
 
     const {
       localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(miroirConfig);
+    } = await StoreControllerFactory(
+      miroirConfig,
+      indexedDbStoreFactory,
+      sqlDbStoreFactory,
+    );
     localMiroirStoreController = a;
     localAppStoreController = b;
 

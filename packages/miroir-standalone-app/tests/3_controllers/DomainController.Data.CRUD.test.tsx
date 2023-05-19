@@ -24,18 +24,20 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirConfig, miroirCoreStartup
+  MiroirConfig, miroirCoreStartup, IndexedDbDataStore, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
 } from "miroir-core";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import {
   applicationDeploymentLibrary,
   DisplayLoadingInfo,
+  indexedDbStoreFactory,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
   renderWithProviders,
+  sqlDbStoreFactory,
   StoreControllerFactory,
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
@@ -84,7 +86,11 @@ beforeAll(
 
     const {
       localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(miroirConfig);
+    } = await StoreControllerFactory(
+      miroirConfig,
+      indexedDbStoreFactory,
+      sqlDbStoreFactory,
+    );
     localMiroirStoreController = a;
     localAppStoreController = b;
 
