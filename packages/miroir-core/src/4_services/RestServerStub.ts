@@ -1,5 +1,5 @@
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 import { generateHandlerBody } from "../4_services/RestTools";
 import { rest } from "msw";
@@ -46,10 +46,10 @@ export class RestServerStub {
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    private localMiroirDataStore: StoreFacadeInterface,
-    private localAppDataStore: StoreFacadeInterface,
+    private localMiroirStoreController: StoreControllerInterface,
+    private localAppStoreController: StoreControllerInterface,
   ) {
-    console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStores', localMiroirDataStore, localAppDataStore);
+    console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStores', localMiroirStoreController, localAppStoreController);
 
     
     this.handlers = [
@@ -61,7 +61,7 @@ export class RestServerStub {
         const parentUuid: string =
         typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
       
-        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
         // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
         console.log("RestServerStub get miroirWithDeployment/ using application",targetDataStore['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
       
@@ -81,7 +81,7 @@ export class RestServerStub {
         const deploymentUuid: string =
           typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
       
-        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
         
         return generateHandlerBody(
           {},
@@ -99,7 +99,7 @@ export class RestServerStub {
         const deploymentUuid: string =
           typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
       
-        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
 
         return generateHandlerBody(
           {},
@@ -113,11 +113,11 @@ export class RestServerStub {
       }),
       rest.delete(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
         const body = await req.json();
-        console.log('delete /miroir/entity', localMiroirDataStore);
+        console.log('delete /miroir/entity', localMiroirStoreController);
         const deploymentUuid: string =
           typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
       
-        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
 
         return generateHandlerBody(
           {},
@@ -137,7 +137,7 @@ export class RestServerStub {
         const deploymentUuid: string =
           typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
       
-        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppDataStore:localMiroirDataStore;
+        const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
         console.log("post model/ actionName",actionName);
         let update = [];
         try {
@@ -147,8 +147,8 @@ export class RestServerStub {
         await modelActionRunner(
           deploymentUuid,
           actionName,
-          localMiroirDataStore,
-          localAppDataStore,
+          localMiroirStoreController,
+          localAppStoreController,
           update
         );
       

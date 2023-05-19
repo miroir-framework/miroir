@@ -3,7 +3,7 @@ import { DataStoreApplicationType, metamodelEntities, modelInitialize } from "..
 import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
-import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 import { IndexedDb } from "./indexedDb";
@@ -11,7 +11,7 @@ import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 
-export class IndexedDbDataStore implements StoreFacadeInterface{
+export class IndexedDbDataStore implements StoreControllerInterface{
   private logHeader: string;
 
   constructor(
@@ -21,9 +21,10 @@ export class IndexedDbDataStore implements StoreFacadeInterface{
   ){
     this.logHeader = 'IndexedDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
-  bootDataStoreFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
+
+  // bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+  //   throw new Error("Method not implemented.");
+  // }
 
   getEntityNames(): string[] {
     return []
@@ -37,9 +38,6 @@ export class IndexedDbDataStore implements StoreFacadeInterface{
     return Promise.resolve()
   }
 
-  dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid) {
-    
-  }
   
   // #############################################################################################
   async dropModelAndData(metaModel: MiroirMetaModel):Promise<void>{
@@ -71,7 +69,8 @@ export class IndexedDbDataStore implements StoreFacadeInterface{
 
   // #############################################################################################
   async bootFromPersistedState(
-    metaModel:MiroirMetaModel,
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
   ):Promise<void> {
     console.log(this.logHeader,'bootFromPersistedState does nothing!');
     
@@ -125,6 +124,15 @@ export class IndexedDbDataStore implements StoreFacadeInterface{
       }
     }
     return Promise.resolve();
+  }
+
+
+  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   // #############################################################################################

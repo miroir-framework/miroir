@@ -8,7 +8,7 @@ import {
   MiroirMetaModel,
   ModelReplayableUpdate,
   ModelStoreInterface,
-  StoreFacadeInterface,
+  StoreControllerInterface,
   WrappedModelEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition,
@@ -28,7 +28,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     private modelSequelize: Sequelize,
     private modelSchema: string,
     private sqlDbDataStore: DataStoreInterface,
-    private sqlDbStoreFacade: StoreFacadeInterface
+    // private sqlDbStoreFacade: StoreControllerInterface
   ) {
     this.logHeader = "SqlDbDataStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
   }
@@ -51,31 +51,34 @@ export class SqlDbModelStore implements ModelStoreInterface {
     };
   }
 
-  // ##############################################################################################
-  async initApplication(
-    metaModel: MiroirMetaModel,
-    dataStoreType: DataStoreApplicationType,
-    application: Application,
-    applicationDeployment: EntityInstance,
-    applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance,
-    applicationStoreBasedConfiguration: EntityInstance
-  ): Promise<void> {
-    await modelInitialize(
-      metaModel,
-      this.sqlDbStoreFacade,
-      dataStoreType,
-      application,
-      applicationDeployment,
-      applicationModelBranch,
-      applicationVersion,
-      applicationStoreBasedConfiguration
-    );
-    return Promise.resolve(undefined);
-  }
+  // // ##############################################################################################
+  // async initApplication(
+  //   metaModel: MiroirMetaModel,
+  //   dataStoreType: DataStoreApplicationType,
+  //   application: Application,
+  //   applicationDeployment: EntityInstance,
+  //   applicationModelBranch: EntityInstance,
+  //   applicationVersion: EntityInstance,
+  //   applicationStoreBasedConfiguration: EntityInstance
+  // ): Promise<void> {
+  //   await modelInitialize(
+  //     metaModel,
+  //     this.sqlDbStoreFacade,
+  //     dataStoreType,
+  //     application,
+  //     applicationDeployment,
+  //     applicationModelBranch,
+  //     applicationVersion,
+  //     applicationStoreBasedConfiguration
+  //   );
+  //   return Promise.resolve(undefined);
+  // }
 
   // ##############################################################################################
-  async bootFromPersistedState(metaModel: MiroirMetaModel): Promise<void> {
+  async bootFromPersistedState(
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
+  ): Promise<void> {
     if (Object.keys(this.sqlModelSchemaTableAccess).length > 0) {
       // TODO: allow refresh
       console.warn(
@@ -88,11 +91,11 @@ export class SqlDbModelStore implements ModelStoreInterface {
 
       if (this.dataStoreType == "miroir") {
         // TODO: read metamodel version in configuration first, and open table with the corresponding definition
-        this.sqlModelSchemaTableAccess = metaModel.entities
+        this.sqlModelSchemaTableAccess = entities
           .filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) >= 0) // the meta-model only has Entity and EntityDefinition entities
           .reduce((prev, curr: MetaEntity) => {
             // TODO: take into account Application Version to determine applicable Entity Definition
-            const entityDefinition = metaModel.entityDefinitions.find((e) => e.entityUuid == curr.uuid);
+            const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
             // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
             if (entityDefinition) {
               return Object.assign(prev, this.getAccessToModelSectionEntity(curr, entityDefinition));
@@ -102,9 +105,9 @@ export class SqlDbModelStore implements ModelStoreInterface {
           }, {});
       } else {
         // create proxies for model Entities (Entity, EntityDefinition, Report, etc.)
-        this.sqlModelSchemaTableAccess = metaModel.entities.reduce((prev, curr: MetaEntity) => {
+        this.sqlModelSchemaTableAccess = entities.reduce((prev, curr: MetaEntity) => {
           // TODO: take into account Application Version to determine applicable Entity Definition
-          const entityDefinition = metaModel.entityDefinitions.find((e) => e.entityUuid == curr.uuid);
+          const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
           // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
           if (entityDefinition) {
             return Object.assign(prev, this.getAccessToModelSectionEntity(curr, entityDefinition));
@@ -114,24 +117,10 @@ export class SqlDbModelStore implements ModelStoreInterface {
         }, {});
       }
 
-      const entities = (await this.getModelInstances(entityEntity.uuid)) as MetaEntity[];
-      const entityDefinitions = (await this.getModelInstances(entityEntityDefinition.uuid)) as EntityDefinition[];
+      const dataEntities = (await this.getModelInstances(entityEntity.uuid)) as MetaEntity[];
+      const dataEntityDefinitions = (await this.getModelInstances(entityEntityDefinition.uuid)) as EntityDefinition[];
 
-      await this.sqlDbDataStore.bootDataStoreFromPersistedState(entities, entityDefinitions);
-      // this.sqlDataSchemaTableAccess = entities
-      //   .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
-      //   .reduce(
-      //     (prev, curr: MetaEntity) => {
-      //       const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
-      //       // console.warn("sqlDbServer start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid,'found entityDefinition',entityDefinition);
-      //       if (entityDefinition) {
-      //         return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
-      //       } else {
-      //         return prev;
-      //       }
-      //     }, {}
-      //   )
-      // ;
+      await this.sqlDbDataStore.bootFromPersistedState(dataEntities, dataEntityDefinitions);
     }
     console.log(
       "###################",

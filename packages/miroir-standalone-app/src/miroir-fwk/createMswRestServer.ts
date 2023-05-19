@@ -1,27 +1,25 @@
+import { detect } from "detect-browser";
 import { RequestHandler, SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
-import { detect } from "detect-browser";
 import process from "process";
 
 import {
-  DomainControllerInterface,
   DomainController,
-  StoreFacadeInterface,
-  IndexedDb,
-  IndexedDbDataStore,
-  LocalAndRemoteControllerInterface,
+  DomainControllerInterface,
   LocalAndRemoteController,
-  MiroirContext,
+  LocalAndRemoteControllerInterface,
   MiroirConfig,
+  MiroirContext,
   RestClient,
   RestServerStub,
+  StoreControllerInterface
 } from "miroir-core";
-import { createSqlServerProxy } from "miroir-datastore-postgres";
 import {
-  RemoteStoreAccessReduxSaga,
   ReduxStore,
+  RemoteStoreAccessReduxSaga,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
+import { SqlStoreControllerFactory } from "miroir-datastore-postgres";
 
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
@@ -65,14 +63,16 @@ export function createReduxStoreAndRestClient(
 }
 
 export interface CreateMswRestServerReturnType {
-  localMiroirDataStore: StoreFacadeInterface | undefined,
-  localAppDataStore: StoreFacadeInterface | undefined,
+  // localMiroirStoreController: StoreControllerInterface | undefined,
+  // localAppStoreController: StoreControllerInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,
 }
 export async function createMswRestServer(
   miroirConfig: MiroirConfig,
   platformType: "browser" | "nodejs",
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   console.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
@@ -83,10 +83,9 @@ export async function createMswRestServer(
     console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
     if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
       // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
-      // const localUuidIndexedDb: IndexedDb = new IndexedDb(miroirConfig.ServerConfig.indexedDbName);
-      const localMiroirDataStore: StoreFacadeInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.model.indexedDbName));
-      const localAppDataStore: StoreFacadeInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.model.indexedDbName));
-      const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
+      // const localMiroirStoreController: StoreControllerInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.model.indexedDbName));
+      // const localAppStoreController: StoreControllerInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.model.indexedDbName));
+      const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
       let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
       let localDataStoreServer: SetupServerApi | undefined = undefined;
@@ -98,8 +97,8 @@ export async function createMswRestServer(
       }
 
       return Promise.resolve({
-        localMiroirDataStore,
-        localAppDataStore,
+        // localMiroirStoreController,
+        // localAppStoreController,
         localDataStoreWorker,
         localDataStoreServer,
       });
@@ -109,8 +108,8 @@ export async function createMswRestServer(
           "createMswRestServer cannot connect browser directly to database, please use local indexed DB instead, or access database through a REST server"
         );
         return Promise.resolve({
-          localMiroirDataStore: undefined,
-          localAppDataStore: undefined,
+          // localMiroirStoreController: undefined,
+          // localAppStoreController: undefined,
           localDataStoreWorker: undefined,
           localDataStoreServer: undefined,
         });
@@ -118,39 +117,39 @@ export async function createMswRestServer(
         if (miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" && miroirConfig.appServerConfig.model.emulatedServerType == "Sql") {
           console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
           console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.model.schema,'library datastore schema',miroirConfig.appServerConfig.model.schema);
-          const localMiroirDataStore: StoreFacadeInterface = await createSqlServerProxy(
-            'miroir',
-            'miroir',
-            miroirConfig.miroirServerConfig.model.connectionString,
-            miroirConfig.miroirServerConfig.model.schema,
-            miroirConfig.miroirServerConfig.model.connectionString,
-            miroirConfig.miroirServerConfig.model.schema,
-          );
-          const localAppDataStore: StoreFacadeInterface = await createSqlServerProxy(
-            'library',
-            'app',
-            miroirConfig.appServerConfig.model.connectionString,
-            miroirConfig.appServerConfig.model.schema,
-            miroirConfig.appServerConfig.model.connectionString,
-            miroirConfig.appServerConfig.model.schema,
-          );
+          // const localMiroirStoreController: StoreControllerInterface = await SqlStoreControllerFactory(
+          //   'miroir',
+          //   'miroir',
+          //   miroirConfig.miroirServerConfig.model.connectionString,
+          //   miroirConfig.miroirServerConfig.model.schema,
+          //   miroirConfig.miroirServerConfig.model.connectionString,
+          //   miroirConfig.miroirServerConfig.model.schema,
+          // );
+          // const localAppStoreController: StoreControllerInterface = await SqlStoreControllerFactory(
+          //   'library',
+          //   'app',
+          //   miroirConfig.appServerConfig.model.connectionString,
+          //   miroirConfig.appServerConfig.model.schema,
+          //   miroirConfig.appServerConfig.model.connectionString,
+          //   miroirConfig.appServerConfig.model.schema,
+          // );
 
-          const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirDataStore, localAppDataStore);
+          const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
           let localDataStoreServer: SetupServerApi | undefined = undefined;
           localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
 
           return Promise.resolve({
-            localMiroirDataStore,
-            localAppDataStore,
+            localMiroirStoreController,
+            localAppStoreController,
             localDataStoreWorker: undefined,
             localDataStoreServer,
           });
         } else {
           console.warn("createMswRestServer mixed mode not allowed!");
           return Promise.resolve({
-            localMiroirDataStore: undefined,
-            localAppDataStore: undefined,
+            localMiroirStoreController: undefined,
+            localAppStoreController: undefined,
             localDataStoreWorker: undefined,
             localDataStoreServer: undefined,
           });
@@ -160,8 +159,8 @@ export async function createMswRestServer(
   } else {
     console.warn("createMswRestServer non-emulated server will be queried on", miroirConfig["serverConfig"].rootApiUrl);
     return Promise.resolve({
-      localMiroirDataStore: undefined,
-      localAppDataStore: undefined,
+      localMiroirStoreController: undefined,
+      localAppStoreController: undefined,
       localDataStoreWorker: undefined,
       localDataStoreServer: undefined,
     });

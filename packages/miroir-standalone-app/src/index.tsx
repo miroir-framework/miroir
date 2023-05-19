@@ -9,7 +9,7 @@ import { defaultMiroirMetaModel, entityDefinitionEntityDefinition, MiroirConfig,
 import miroirConfig from "assets/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
-import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createStore";
+import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
 import { miroirAppStartup } from "startup";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
@@ -32,20 +32,19 @@ async function start(root:Root) {
       miroirContext: myMiroirContext,
     } = await createReduxStoreAndRestClient(miroirConfig as MiroirConfig, window.fetch.bind(window));
 
-    const {
-      localMiroirDataStore,
-      localAppDataStore,
-      localDataStoreWorker,
-      localDataStoreServer,
-    } = await createMswRestServer(miroirConfig as MiroirConfig, 'browser', setupWorker);
+    // const {
+    //   localMiroirStoreController,
+    //   localAppStoreController,
+    //   localDataStoreWorker,
+    //   localDataStoreServer,
+    // } = await createMswRestServer(miroirConfig as MiroirConfig, 'browser', setupWorker);
 
-    // const mswWorker = setupWorker(...mServer.handlers);
-    if (!!localDataStoreWorker) {
-      console.log('##############################################');
-      localDataStoreWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
-      console.log('##############################################');
-      await localDataStoreWorker.start();
-    }
+    // if (!!localDataStoreWorker) {
+    //   console.log('##############################################');
+    //   localDataStoreWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
+    //   console.log('##############################################');
+    //   await localDataStoreWorker.start();
+    // }
     // if (!!localDataStore) { // datastore is emulated
     //   await localDataStore.open();
     //   await localDataStore.bootFromPersistedState(defaultMiroirMetaModel);

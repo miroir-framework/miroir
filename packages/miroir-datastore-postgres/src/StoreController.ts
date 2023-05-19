@@ -9,13 +9,14 @@ import {
   MiroirMetaModel,
   ModelReplayableUpdate,
   ModelStoreInterface,
-  StoreFacadeInterface,
+  StoreControllerInterface,
   Uuid,
   WrappedModelEntityUpdateWithCUDUpdate,
   applyModelEntityUpdate,
   entityEntity,
   entityEntityDefinition,
-  metamodelEntities
+  metamodelEntities,
+  modelInitialize
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlDbModelStore } from "./SqlDbModelStore.js";
@@ -23,10 +24,10 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 import { SqlDbDataStore } from "./SqlDbDataStore.js";
 
 
-  export class SqlDbStoreFacade implements StoreFacadeInterface {
+export class StoreController implements StoreControllerInterface {
   private logHeader: string;
-  private sqlDbDataDataStore:DataStoreInterface;
-  private sqlDbModelStore:ModelStoreInterface;
+  private dataStore:DataStoreInterface;
+  private modelStore:ModelStoreInterface;
 
   constructor(
     public applicationName: string,
@@ -36,27 +37,75 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
     dataSequelize: Sequelize,
     dataSchema: string,
   ) {
-    this.logHeader = 'SqlDbStoreFacade' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
-    this.sqlDbDataDataStore = new SqlDbDataStore(applicationName,dataStoreType,dataSequelize,dataSchema);
-    this.sqlDbModelStore = new SqlDbModelStore(applicationName,dataStoreType,modelSequelize,modelSchema,this.sqlDbDataDataStore,this);
+    this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.dataStore = new SqlDbDataStore(applicationName,dataStoreType,dataSequelize,dataSchema);
+    this.modelStore = new SqlDbModelStore(applicationName,dataStoreType,modelSequelize,modelSchema,this.dataStore);
+  }
+
+    // ##############################################################################################
+    async applyModelEntityUpdate(update: ModelReplayableUpdate) {
+      console.log("SqlDbServer applyModelEntityUpdates", JSON.stringify(update));
+      await applyModelEntityUpdate(this,update);
+    }
+  
+  // #############################################################################################
+  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+    console.log(this.logHeader,'upsertInstance application',this.applicationName,'type',this.dataStoreType,'parentUuid',parentUuid,'data entities',this.getEntities());
+    
+    if (this.getEntities().includes(parentUuid)) {
+      await this.upsertDataInstance(parentUuid,instance);
+    } else {
+      await this.upsertModelInstance(parentUuid,instance);
+    }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async getInstances(parentUuid: string): Promise<EntityInstanceCollection> {
+    const modelEntitiesUuid = this.dataStoreType == "app"?metamodelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+    if (modelEntitiesUuid.includes(parentUuid)) {
+      return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
+    } else {
+      return Promise.resolve({parentUuid:parentUuid, applicationSection:'data', instances: await this.getDataInstances(parentUuid)});
+    }
+  }
+
+  // ##############################################################################################
+  open() {
+      // connect to DB?
+      console.warn('sqlDbDataStore does nothing!');
+  }
+
+  // ##############################################################################################
+  async close() {
+    await this.modelSequelize.close();
+    await this.dataStore.close();
+    return Promise.resolve();
+    // disconnect from DB?
+  }
+  
+
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+    return this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
   }
 
   getEntityNames(): string[] {
-    throw new Error("Method not implemented.");
+    return this.dataStore.getEntityNames();
   }
   getEntityUuids(): string[] {
-    throw new Error("Method not implemented.");
+    return this.dataStore.getEntityUuids();
   }
   dropData(): Promise<void> {
-    throw new Error("Method not implemented.");
+    return this.dataStore.dropData();
   }
-  bootDataStoreFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid) {
-    throw new Error("Method not implemented.");
-  }
-
+  
   // ##############################################################################################
   // TODO: does side effect on sequelize object => refactor!
   getAccessToEntity(sequelize:Sequelize, entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
@@ -103,31 +152,34 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
-    ):Promise<void> {
-      return this.sqlDbModelStore.initApplication(
+  ):Promise<void> {
+    await modelInitialize(
       metaModel,
+      this,
       dataStoreType,
       application,
       applicationDeployment,
       applicationModelBranch,
       applicationVersion,
-      applicationStoreBasedConfiguration,
-    )
+      applicationStoreBasedConfiguration
+    );
+    return Promise.resolve(undefined);
   }
 
   // ##############################################################################################
   async dropModelAndData(
     metaModel:MiroirMetaModel,
   ):Promise<void> {
-    return this.sqlDbModelStore.dropModelAndData(metaModel);
+    return this.modelStore.dropModelAndData(metaModel);
   }
     
   // ##############################################################################################
   // does side effects! ugly!
   async bootFromPersistedState(
-    metaModel:MiroirMetaModel,
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
   ): Promise<void> {
-    return this.sqlDbModelStore.bootFromPersistedState(metaModel);
+    return this.modelStore.bootFromPersistedState(entities,entityDefinitions);
   }
   
 
@@ -136,7 +188,7 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ):Promise<void> {
-    return this.sqlDbModelStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
+    return this.modelStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
   // ##############################################################################################
@@ -144,45 +196,21 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void> {
-    return this.sqlDbModelStore.createEntity(entity,entityDefinition);
+    return this.modelStore.createEntity(entity,entityDefinition);
   }
 
   // ##############################################################################################
   async dropEntity(entityUuid: string) {
-    return this.sqlDbModelStore.dropEntity(entityUuid);
+    return this.modelStore.dropEntity(entityUuid);
   }
 
 
   // ##############################################################################################
     async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-      return this.sqlDbModelStore.getModelInstances(parentUuid);
+      return this.modelStore.getModelInstances(parentUuid);
     }
 
 
-  // ##############################################################################################
-  // async getInstances(parentUuid: string): Promise<EntityInstance[]> {
-  async getInstances(parentUuid: string): Promise<EntityInstanceCollection> {
-    const modelEntitiesUuid = this.dataStoreType == "app"?metamodelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
-    if (modelEntitiesUuid.includes(parentUuid)) {
-      return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
-    } else {
-      return Promise.resolve({parentUuid:parentUuid, applicationSection:'data', instances: await this.getDataInstances(parentUuid)});
-    }
-  }
-
-  // ##############################################################################################
-  open() {
-      // connect to DB?
-      console.warn('sqlDbDataStore does nothing!');
-  }
-
-  // ##############################################################################################
-  async close() {
-    await this.modelSequelize.close();
-    await this.sqlDbDataDataStore.close();
-    return Promise.resolve();
-    // disconnect from DB?
-  }
 
   // ##############################################################################################
   async clear(metaModel: MiroirMetaModel):Promise<void> { // redundant with dropModelAndData?
@@ -191,12 +219,12 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
 
   // ##############################################################################################
   getEntities(): string[] {
-    return this.sqlDbModelStore.getEntities();
+    return this.modelStore.getEntities();
   }
 
   // ##############################################################################################
   async dropEntities(entityUuids: string[]) {
-    return this.sqlDbModelStore.dropEntities(entityUuids);
+    return this.modelStore.dropEntities(entityUuids);
   }
 
   async renameStorageSpaceForInstancesOfEntity(
@@ -205,54 +233,38 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
     entity: MetaEntity,
     entityDefinition: EntityDefinition,
   ):Promise<void> {
-    return this.sqlDbDataDataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
+    return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
   }
 
   // ##############################################################################################
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
-    return this.sqlDbModelStore.renameEntity(update);
+    return this.modelStore.renameEntity(update);
   }
 
 
   // ##############################################################################################
   async upsertModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.sqlDbModelStore.upsertModelInstance(parentUuid,instance)
+    return this.modelStore.upsertModelInstance(parentUuid,instance)
   }
 
-  // #############################################################################################
-  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log(this.logHeader,'upsertInstance application',this.applicationName,'type',this.dataStoreType,'parentUuid',parentUuid,'data entities',this.getEntities());
-    
-    if (this.getEntities().includes(parentUuid)) {
-      await this.upsertDataInstance(parentUuid,instance);
-    } else {
-      await this.upsertModelInstance(parentUuid,instance);
-    }
-    return Promise.resolve();
-  }
 
   // ##############################################################################################
   async deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-    return this.sqlDbModelStore.deleteModelInstances(parentUuid,instances);
+    return this.modelStore.deleteModelInstances(parentUuid,instances);
   }
 
 
   // ##############################################################################################
   async deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.sqlDbModelStore.deleteModelInstance(parentUuid,instance);
+    return this.modelStore.deleteModelInstance(parentUuid,instance);
   }
 
 
   // ##############################################################################################
   existsEntity(entityUuid:string):boolean {
-    return this.sqlDbModelStore.existsEntity(entityUuid);
+    return this.modelStore.existsEntity(entityUuid);
   }
 
-  // ##############################################################################################
-  async applyModelEntityUpdate(update: ModelReplayableUpdate) {
-    console.log("SqlDbServer applyModelEntityUpdates", JSON.stringify(update));
-    await applyModelEntityUpdate(this,update);
-  }
 
   // ##############################################################################################
   // ##############################################################################################
@@ -260,32 +272,32 @@ import { SqlDbDataStore } from "./SqlDbDataStore.js";
   // ##############################################################################################
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbDataStore
-    return this.sqlDbDataDataStore.getState();
+    return this.dataStore.getState();
   }
 
   // ##############################################################################################
   async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
-    return this.sqlDbDataDataStore.getDataInstance(parentUuid,uuid);
+    return this.dataStore.getDataInstance(parentUuid,uuid);
   }
 
   // ##############################################################################################
   async getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return this.sqlDbDataDataStore.getDataInstances(parentUuid);
+    return this.dataStore.getDataInstances(parentUuid);
   }
 
   // ##############################################################################################
   async upsertDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.sqlDbDataDataStore.upsertDataInstance(parentUuid,instance);
+    return this.dataStore.upsertDataInstance(parentUuid,instance);
   }
 
   // ##############################################################################################
   async deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-    return this.sqlDbDataDataStore.deleteDataInstances(parentUuid,instances);
+    return this.dataStore.deleteDataInstances(parentUuid,instances);
   }
 
 
   // ##############################################################################################
   async deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.sqlDbDataDataStore.deleteDataInstance(parentUuid,instance);
+    return this.dataStore.deleteDataInstance(parentUuid,instance);
   }
 }

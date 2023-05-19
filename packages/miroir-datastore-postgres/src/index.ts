@@ -1,6 +1,3 @@
-// export {
-//   SqlDbServer,
-// } from './sqlDbServer'
 export {
-  createSqlServerProxy,
-} from './CreateSqlServerProxy'
+  SqlStoreControllerFactory,
+} from './SqlStoreControllerFactory'

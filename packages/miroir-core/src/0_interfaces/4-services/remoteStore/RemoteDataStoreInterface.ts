@@ -70,38 +70,31 @@ export declare interface RemoteDataStoreInterface {
 }
 
 export interface ModelStoreInterface {
-  getEntities():string[]; //TODO: remove!
-  existsEntity(entityUuid:string):boolean;
-
-  initApplication(
-    metaModel:MiroirMetaModel, 
-    dataStoreType: DataStoreApplicationType,
-    application: Application,
-    applicationDeployment: EntityInstance,
-    applicationModelBranch: EntityInstance,
-    applicationVersion: EntityInstance,
-    applicationStoreBasedConfiguration: EntityInstance,
-  ):Promise<void>;
 
   bootFromPersistedState(
-    metaModel:MiroirMetaModel,
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
   ):Promise<void>;
+
+  getEntities():string[]; //TODO: remove!
+  existsEntity(entityUuid:string):boolean;
 
   createStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  );
+  ): Promise<void>;
+
   createEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  );
+  ): Promise<void>;
+  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate): Promise<void>;
+  dropEntity(parentUuid:string): Promise<void>;
+  dropEntities(parentUuid:string[]): Promise<void>;
+
   dropModelAndData(
     metaModel:MiroirMetaModel,
   ):Promise<void>;
-
-  dropEntity(parentUuid:string);
-  dropEntities(parentUuid:string[]);
-  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate);
 
   getModelInstances(parentUuid: string): Promise<EntityInstance[]>;
 
@@ -113,15 +106,7 @@ export interface ModelStoreInterface {
 }
 
 export interface DataStoreInterface {
-  getEntityNames():string[]; //TODO: remove!
-  getEntityUuids():string[]; //TODO: remove!
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
-
-  dropData(
-    // metaModel:MiroirMetaModel
-  ):Promise<void>;
-
-  bootDataStoreFromPersistedState(
+  bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ): Promise<void>;
@@ -129,40 +114,50 @@ export interface DataStoreInterface {
   createStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  );
+  ): Promise<void>;
 
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
-  );
+  ): Promise<void>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition,
-  );
-  // upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  ): Promise<void>;
+
+  getEntityNames():string[]; //TODO: remove!
+  getEntityUuids():string[]; //TODO: remove!
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getDataInstances(parentUuid: string): Promise<EntityInstance[]>;
   upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
+  dropData(
+    // metaModel:MiroirMetaModel
+  ):Promise<void>;
+
   close();
 
 }
 
-export interface StoreFacadeInterface extends ModelStoreInterface, DataStoreInterface{
-  bootFromPersistedState(
-    metaModel:MiroirMetaModel,
-  ):Promise<void>;
-
-  // dropModelAndData(metaModel:MiroirMetaModel):Promise<void>;
-
-
+export interface StoreControllerInterface extends ModelStoreInterface, DataStoreInterface{
   open();
   close();
 
-  clear(metaModel: MiroirMetaModel);
+  initApplication(
+    metaModel:MiroirMetaModel, 
+    dataStoreType: DataStoreApplicationType,
+    application: Application,
+    applicationDeployment: EntityInstance,
+    applicationModelBranch: EntityInstance,
+    applicationVersion: EntityInstance,
+    applicationStoreBasedConfiguration: EntityInstance,
+  ):Promise<void>;
+
+  clear(metaModel: MiroirMetaModel): Promise<void>;
   getInstances(parentUuid:string):Promise<EntityInstanceCollection | undefined>;
 }

@@ -1,18 +1,18 @@
-import { DataStoreApplicationType, StoreFacadeInterface } from "miroir-core";
-import { SqlDbStoreFacade } from "src/SqlDbStoreFacade";
+import { DataStoreApplicationType, StoreControllerInterface } from "miroir-core";
+import { StoreController } from "src/StoreController";
 import { detect } from "detect-browser";
 
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
 
-export async function createSqlServerProxy (
+export async function SqlStoreControllerFactory (
   applicationName: string,
   dataStoreType: DataStoreApplicationType,
   modelConnectionString:string,
   modelSchema:string,
   dataConnectionString:string,
   dataSchema:string,
-):Promise<StoreFacadeInterface> {
+):Promise<StoreControllerInterface> {
   const seq = await import("sequelize");
 
   // const modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema,logging: (...msg) => console.log(msg)}) // Example for postgres
@@ -33,6 +33,6 @@ export async function createSqlServerProxy (
     console.error('Unable to connect data', dataSchema, ' to the postgres database:', error);
   }
 
-  const sqlDbServer:StoreFacadeInterface = new SqlDbStoreFacade(applicationName,dataStoreType,modelSequelize,modelSchema,dataSequelize,dataSchema);
+  const sqlDbServer:StoreControllerInterface = new StoreController(applicationName,dataStoreType,modelSequelize,modelSchema,dataSequelize,dataSchema);
   return Promise.resolve(sqlDbServer);
 }

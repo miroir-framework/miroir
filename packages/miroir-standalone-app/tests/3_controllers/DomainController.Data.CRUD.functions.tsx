@@ -18,7 +18,7 @@ global.TextDecoder = TextDecoder as any
 
 import {
   applicationDeploymentMiroir,
-  StoreFacadeInterface,
+  StoreControllerInterface,
   DomainControllerInterface,
   DomainDataAction,
   EntityDefinition,
@@ -48,11 +48,11 @@ import book3 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b
 import book4 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
 import book1 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
   export async function refreshAllInstancesTest(
-    localMiroirDataStore: StoreFacadeInterface,
-    localAppDataStore: StoreFacadeInterface,
+    localMiroirStoreController: StoreControllerInterface,
+    localAppStoreController: StoreControllerInterface,
     reduxStore: ReduxStore,
     domainController: DomainControllerInterface,
     miroirContext: MiroirContext,
@@ -65,20 +65,20 @@ import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore"
       // await localDataStore.dropModelAndData();
       // await localDataStore.initModel();
 
-      await localAppDataStore.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-      await localAppDataStore.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-      await localAppDataStore?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-      await localAppDataStore?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-      await localAppDataStore?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-      await localAppDataStore?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-      await localAppDataStore?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-      await localAppDataStore?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
+      await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+      await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+      await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
       // await localappDataStore?.upsertDataInstance(book3.parentUuid, book3 as Instance);
-      await localAppDataStore?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+      await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
 
       // console.log(
       //   'after test preparation',
-      //   await localAppDataStore?.getState()
+      //   await localAppStoreController?.getState()
       // );
       const {
         getByText,

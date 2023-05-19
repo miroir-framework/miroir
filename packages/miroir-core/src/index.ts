@@ -55,6 +55,13 @@ export {
 } from './0_interfaces/1_core/ModelVersion.js';
 export {
   DeploymentMode,
+  EmulatedPartitionedServerConfig,
+  EmulatedServerConfig,
+  EmulatedServerConfigFileSystem,
+  EmulatedServerConfigIndexedDb,
+  EmulatedServerConfigSql,
+  MiroirConfigForMsw,
+  MiroirConfigForRest,
   MiroirConfig,
   ServerConfig,
   StoreBasedConfiguration,
@@ -140,7 +147,7 @@ export {
   LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
-  StoreFacadeInterface,
+  StoreControllerInterface,
   DataStoreInterface,
   ModelStoreInterface,
   RemoteDataStoreInterface,

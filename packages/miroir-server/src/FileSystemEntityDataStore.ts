@@ -1,6 +1,6 @@
 import {
   DataStoreApplicationType,
-  StoreFacadeInterface,
+  StoreControllerInterface,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -15,7 +15,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 
-export class FileSystemEntityDataStore implements StoreFacadeInterface {
+export class FileSystemEntityDataStore implements StoreControllerInterface {
   targetPath: path.ParsedPath;
 
   // #############################################################################################
@@ -38,9 +38,6 @@ export class FileSystemEntityDataStore implements StoreFacadeInterface {
     throw new Error("Method not implemented.");
   }
   dropData(): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  bootDataStoreFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
     throw new Error("Method not implemented.");
   }
   dropStorageSpaceForInstancesOfEntity(entityUuid: string) {

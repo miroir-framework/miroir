@@ -1,4 +1,4 @@
-import { StoreFacadeInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import entityApplication from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityApplicationDeployment from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
@@ -46,7 +46,7 @@ export const metamodelEntities = [
 
 export async function modelInitialize(
   metaModel:MiroirMetaModel,
-  datastore:StoreFacadeInterface,
+  datastore:StoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
   application: Application,
   applicationDeployment: EntityInstance,

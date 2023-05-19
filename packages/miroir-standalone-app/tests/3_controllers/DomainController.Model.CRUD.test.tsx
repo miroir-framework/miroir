@@ -18,7 +18,7 @@ import { SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
 
 import {
-  StoreFacadeInterface,
+  StoreControllerInterface,
   DomainAction,
   DomainControllerInterface,
   EntityDefinition,
@@ -32,6 +32,9 @@ import {
   entityEntity,
   entityReport,
   miroirCoreStartup,
+  IndexedDbDataStore,
+  IndexedDb,
+  EmulatedServerConfigIndexedDb,
 } from "miroir-core";
 import {
   ReduxStore
@@ -41,18 +44,20 @@ import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9b
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { DisplayLoadingInfo, applicationDeploymentLibrary, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createStore";
+import { DisplayLoadingInfo, StoreControllerFactory, applicationDeploymentLibrary, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
-// import config from "miroir-standalone-app/tests/miroirConfig.test.json";
-import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-// import config from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+
+const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 miroirAppStartup();
 miroirCoreStartup();
 
-let localMiroirDataStore: StoreFacadeInterface;
-let localAppDataStore: StoreFacadeInterface;
+let localMiroirStoreController: StoreControllerInterface;
+let localAppStoreController: StoreControllerInterface;
 let localDataStoreWorker: SetupWorkerApi;
 let localDataStoreServer: SetupServerApi;
 let reduxStore: ReduxStore;
@@ -63,18 +68,27 @@ let miroirContext: MiroirContext;
 beforeAll(
   async () => {
     const wrappedReduxStore = createReduxStoreAndRestClient(
-      config as MiroirConfig,
+      miroirConfig as MiroirConfig,
       fetch,
     );
 
+    const {
+      localMiroirStoreController:a,localAppStoreController:b
+    } = await StoreControllerFactory(miroirConfig);
+    localMiroirStoreController = a;
+    localAppStoreController = b;
+
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
-      config as MiroirConfig,
-      setupServer
+      miroirConfig as MiroirConfig,
+      setupServer,
+      localMiroirStoreController,
+      localAppStoreController,
     );
+
     if (wrappedReduxStore && wrapped) {
-      localMiroirDataStore = wrapped.localMiroirDataStore as StoreFacadeInterface;
-      localAppDataStore = wrapped.localAppDataStore as StoreFacadeInterface;
+      // localMiroirStoreController = wrapped.localMiroirStoreController as StoreControllerInterface;
+      // localAppStoreController = wrapped.localAppStoreController as StoreControllerInterface;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       reduxStore = wrappedReduxStore.reduxStore;
@@ -86,19 +100,19 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localMiroirDataStore,localAppDataStore);
+    await miroirBeforeEach(localMiroirStoreController,localAppStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localMiroirDataStore,localAppDataStore,localDataStoreServer);
+    await miroirAfterAll(localMiroirStoreController,localAppStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localMiroirDataStore,localAppDataStore);
+    await miroirAfterEach(localMiroirStoreController,localAppStoreController);
   }
 )
 

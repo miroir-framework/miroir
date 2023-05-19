@@ -138,7 +138,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   
 
   // ##############################################################################################
-  async bootDataStoreFromPersistedState(
+  async bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ): Promise<void> {
@@ -147,7 +147,7 @@ export class SqlDbDataStore implements DataStoreInterface {
       .reduce(
         (prev, curr: MetaEntity) => {
           const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
-          console.log(this.logHeader,"bootDataStoreFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
+          console.log(this.logHeader,"bootFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
           if (entityDefinition) {
             return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
           } else {
@@ -163,7 +163,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   async createStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ) {
+  ): Promise<void> {
     this.sqlDataSchemaTableAccess = Object.assign(
       {},
       this.sqlDataSchemaTableAccess,
@@ -181,7 +181,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition,
-  ) {
+  ): Promise<void> {
     await this.dataSequelize.getQueryInterface().renameTable({tableName:oldName,schema:this.dataSchema}, newName);
     // console.log(this.logHeader, 'renameEntity renameTable done.');
     // removing dataSequelize model with old name
@@ -199,7 +199,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   // ##############################################################################################
   async dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
-  ) {
+  ): Promise<void> {
     if (this.sqlDataSchemaTableAccess && this.sqlDataSchemaTableAccess[entityUuid]) {
       const model = this.sqlDataSchemaTableAccess[entityUuid];
       console.log(this.logHeader,"dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, 'parentName',model.parentName);

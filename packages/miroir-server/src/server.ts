@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import bodyParser from 'body-parser';
 import {
-  StoreFacadeInterface,
+  StoreControllerInterface,
   ApplicationDeployment,
   generateHandlerBody,
   modelActionRunner,
@@ -11,7 +11,7 @@ import {
   // applicationDeploymentLibrary,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { createSqlServerProxy } from 'miroir-datastore-postgres';
+import { SqlStoreControllerFactory } from 'miroir-datastore-postgres';
 import { FileSystemEntityDataStore } from './FileSystemEntityDataStore.js';
 import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
@@ -30,9 +30,9 @@ const app = express(),
 const users = [];
 
 // const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-// const localIndexedDbDataStore:StoreFacadeInterface = new IndexedDbDataStore(localUuidIndexedDb);
+// const localIndexedDbDataStore:StoreControllerInterface = new IndexedDbDataStore(localUuidIndexedDb);
 
-const libraryAppFileSystemDataStore:StoreFacadeInterface = new FileSystemEntityDataStore(
+const libraryAppFileSystemDataStore:StoreControllerInterface = new FileSystemEntityDataStore(
   'library',
   'app',
   applicationDeploymentLibrary.data.location['directory'],
@@ -43,8 +43,8 @@ const libraryAppFileSystemDataStore:StoreFacadeInterface = new FileSystemEntityD
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
 
-// const sqlDbServerProxy:StoreFacadeInterface = await createSqlServerProxy('postgres://postgres:postgres@localhost:5432/postgres');
-const miroirAppSqlServerProxy:StoreFacadeInterface = await createSqlServerProxy(
+// const sqlDbServerProxy:StoreControllerInterface = await SqlStoreControllerFactory('postgres://postgres:postgres@localhost:5432/postgres');
+const miroirAppSqlServerProxy:StoreControllerInterface = await SqlStoreControllerFactory(
   'miroir',
   'miroir',
   applicationDeploymentMiroir.model.location['connectionString'],
@@ -52,7 +52,7 @@ const miroirAppSqlServerProxy:StoreFacadeInterface = await createSqlServerProxy(
   applicationDeploymentMiroir.data.location['connectionString'],
   applicationDeploymentMiroir.data.location['schema'],
 );
-const libraryAppSqlServerProxy:StoreFacadeInterface = await createSqlServerProxy(
+const libraryAppSqlServerProxy:StoreControllerInterface = await SqlStoreControllerFactory(
   'library',
   'app',
   applicationDeploymentLibrary.model.location['connectionString'],
