@@ -55,8 +55,8 @@ import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 miroirAppStartup();

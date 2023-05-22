@@ -8,13 +8,11 @@ import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
 import { SetupWorkerApi } from "msw";
 
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
-
-import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder as any
-
+import { TextDecoder, TextEncoder } from "util";
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder as any;
 
 import {
   applicationDeploymentMiroir,
@@ -25,14 +23,22 @@ import {
   EntityInstance,
   LocalAndRemoteControllerInterface,
   MetaEntity,
-  MiroirConfig, MiroirContext, miroirCoreStartup
+  MiroirConfig,
+  MiroirContext,
+  miroirCoreStartup,
 } from "miroir-core";
-import {
-  ReduxStore
-} from "miroir-redux";
+import { ReduxStore } from "miroir-redux";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { applicationDeploymentLibrary, DisplayLoadingInfo, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach, renderWithProviders } from "miroir-standalone-app/tests/utils/tests-utils";
+import {
+  applicationDeploymentLibrary,
+  DisplayLoadingInfo,
+  miroirAfterAll,
+  miroirAfterEach,
+  miroirBeforeAll,
+  miroirBeforeEach,
+  renderWithProviders,
+} from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
 import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
@@ -50,77 +56,74 @@ import book1 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a5
 import book2 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
-  export async function refreshAllInstancesTest(
-    localMiroirStoreController: StoreControllerInterface,
-    localAppStoreController: StoreControllerInterface,
-    reduxStore: ReduxStore,
-    domainController: DomainControllerInterface,
-    miroirContext: MiroirContext,
-  ) {
-    try {
-      console.log('Refresh all Instances start');
-      const displayLoadingInfo=<DisplayLoadingInfo/>
-      const user = userEvent.setup()
+export async function refreshAllInstancesTest(
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
+  reduxStore: ReduxStore,
+  domainController: DomainControllerInterface,
+  miroirContext: MiroirContext
+) {
+  try {
+    console.log("Refresh all Instances start");
+    const displayLoadingInfo = <DisplayLoadingInfo />;
+    const user = userEvent.setup();
 
-      // await localDataStore.dropModelAndData();
-      // await localDataStore.initModel();
+    // await localDataStore.dropModelAndData();
+    // await localDataStore.initModel();
 
-      await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-      await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-      await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-      await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-      await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-      await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-      await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-      await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-      // await localappDataStore?.upsertDataInstance(book3.parentUuid, book3 as Instance);
-      await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+    await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+    await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+    await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
+    await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
+    await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
+    await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
+    await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
+    await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
+    // await localappDataStore?.upsertDataInstance(book3.parentUuid, book3 as Instance);
+    await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
 
-      // console.log(
-      //   'after test preparation',
-      //   await localAppStoreController?.getState()
-      // );
-      const {
-        getByText,
-        getAllByRole,
-        // container
-      } = renderWithProviders(
-        <TestUtilsTableComponent
-          entityName={entityBook.name}
-          entityUuid={entityBook.uuid}
-          DisplayLoadingInfo={displayLoadingInfo}
-          deploymentUuid={applicationDeploymentLibrary.uuid}
-        />
-        ,
-        {store:reduxStore.getInnerStore()}
-      );
+    // console.log(
+    //   'after test preparation',
+    //   await localAppStoreController?.getState()
+    // );
+    const {
+      getByText,
+      getAllByRole,
+      // container
+    } = renderWithProviders(
+      <TestUtilsTableComponent
+        entityName={entityBook.name}
+        entityUuid={entityBook.uuid}
+        DisplayLoadingInfo={displayLoadingInfo}
+        deploymentUuid={applicationDeploymentLibrary.uuid}
+      />,
+      { store: reduxStore.getInnerStore() }
+    );
 
-      await act(
-        async () => {
-          await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-          await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-        }
-      );
+    await act(async () => {
+      await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+        actionType: "DomainModelAction",
+        actionName: "rollback",
+      });
+      await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+        actionType: "DomainModelAction",
+        actionName: "rollback",
+      });
+    });
 
+    await user.click(screen.getByRole("button"));
 
-
-      await user.click(screen.getByRole('button'))
-
-      await waitFor(
-        () => {
-          getAllByRole(/step:1/)
-        },
-      ).then(
-        ()=> {
-          expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
-          expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-          expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-          expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
-        }
-      );
-    } catch (error) {
-      console.error('error during test',expect.getState().currentTestName,error);
-      expect(false).toBeTruthy();
-    }
-    return Promise.resolve();
+    await waitFor(() => {
+      getAllByRole(/step:1/);
+    }).then(() => {
+      expect(screen.queryByText(new RegExp(`${book3.uuid}`, "i"))).toBeNull(); // Et dans l'éternité je ne m'ennuierai pas
+      expect(getByText(new RegExp(`${book1.uuid}`, "i"))).toBeTruthy(); // The Bride Wore Black
+      expect(getByText(new RegExp(`${book2.uuid}`, "i"))).toBeTruthy(); // The Design of Everyday Things
+      expect(getByText(new RegExp(`${book4.uuid}`, "i"))).toBeTruthy(); // Rear Window
+    });
+  } catch (error) {
+    console.error("error during test", expect.getState().currentTestName, error);
+    expect(false).toBeTruthy();
   }
+  return Promise.resolve();
+}

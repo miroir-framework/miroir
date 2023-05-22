@@ -183,6 +183,7 @@ export class IndexedDbStoreController implements StoreControllerInterface{
     // TODO: fix applicationSection!!!
     const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
     console.log(this.logHeader,'getInstances','section',section,'entity',entityUuid,'found modelEntities',modelEntitiesUuid);
+
     
     // if (modelEntitiesUuid.includes(entityUuid)) {
     if (section == 'data') {

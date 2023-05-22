@@ -58,8 +58,8 @@ import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRes
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 // import { SqlStoreFactory } from "miroir-datastore-postgres";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
@@ -544,8 +544,5 @@ describe(
         }
       }
     )
-
-
-
   } //  end describe('DomainController.Data.CRUD',
 )

@@ -53,16 +53,17 @@ export class StoreController implements StoreControllerInterface {
     } else {
       await this.upsertModelInstance(instance.parentUuid,instance);
     }
-    return Promise.resolve();
+    return Promise.resolve(instance);
   }
 
   // ##############################################################################################
   async getInstances(section: ApplicationSection, parentUuid: string): Promise<EntityInstanceCollection> {
-    const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
-    if (modelEntitiesUuid.includes(parentUuid)) {
-      return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
-    } else {
+    // const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+    // if (modelEntitiesUuid.includes(parentUuid)) {
+    if (section == 'data') {
       return Promise.resolve({parentUuid:parentUuid, applicationSection:'data', instances: await this.getDataInstances(parentUuid)});
+    } else {
+      return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
     }
   }
 
