@@ -26,12 +26,14 @@ export class IndexedDbModelStore implements ModelStoreInterface {
     // this.modelSequelize = new Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   }
 
-  // ##################################################################################################
-  async close() {
-    console.error(this.logHeader,'close() does nothing!');
-    return Promise.resolve();
+  // ##############################################################################################
+  async close():Promise<void> {
+    console.log(this.logHeader,'close(): closing');
+    await this.localUuidIndexedDb.closeObjectStore();
+    console.log(this.logHeader,'close(): closed');
+      return Promise.resolve();
   }
-
+  
   // ##################################################################################################
   async connect(): Promise<void> {
     console.log(this.logHeader,'connect(): opening');

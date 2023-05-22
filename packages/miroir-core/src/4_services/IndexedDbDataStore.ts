@@ -25,7 +25,15 @@ export class IndexedDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+  async close():Promise<void> {
+    console.log(this.logHeader,'close(): closing');
+    await this.localUuidIndexedDb.closeObjectStore();
+    console.log(this.logHeader,'close(): closed');
+      return Promise.resolve();
+  }
+  
+  // ##############################################################################################
+  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
     console.log(this.logHeader,'bootFromPersistedState does nothing!');
     return Promise.resolve();
   }
@@ -59,7 +67,7 @@ export class IndexedDbDataStore implements DataStoreInterface {
 
   // ##############################################################################################
   renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    console.log(this.logHeader,'renameStorageSpaceForInstancesOfEntity does nothing for entity',oldName,', since Entities are indexed by Uuid! Existing entities:',this.localUuidIndexedDb.getSubLevels());
+    console.warn(this.logHeader,'renameStorageSpaceForInstancesOfEntity does nothing for entity',oldName,', since Entities are indexed by Uuid! Existing entities:',this.localUuidIndexedDb.getSubLevels());
     return Promise.resolve();
   }
 
@@ -101,19 +109,19 @@ export class IndexedDbDataStore implements DataStoreInterface {
 
   // #############################################################################################
   async upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbStoreController upsertDataInstance',instance.parentUuid, instance);
+    console.log(this.logHeader, 'upsertDataInstance',instance.parentUuid, instance);
 
     if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
       await this.localUuidIndexedDb.putValue(parentUuid,instance);
     } else {
-      console.error('IndexedDbStoreController upsertDataInstance',instance.parentUuid,'does not exists.');
+      console.error(this.logHeader, 'upsertDataInstance',instance.parentUuid,'does not exists.');
     }
     return Promise.resolve();
   }
 
   // #############################################################################################
   async deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
-    console.log('IndexedDbStoreController deleteDataInstances',parentUuid, instances);
+    console.log(this.logHeader, 'deleteDataInstances',parentUuid, instances);
     for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
     }
@@ -122,7 +130,7 @@ export class IndexedDbDataStore implements DataStoreInterface {
 
   // #############################################################################################
   async deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log('IndexedDbStoreController deleteDataInstance',parentUuid, instance);
+    console.log(this.logHeader, 'deleteDataInstance',parentUuid, instance);
     // for (const o of instances) {
     await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
     // }
@@ -130,13 +138,9 @@ export class IndexedDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  dropData(): Promise<void> {
-    return this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
-  }
-
-  // ##############################################################################################
-  close() {
-    console.log(this.logHeader,'close() does nothing!');
+  async dropData(): Promise<void> {
+    await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
     return Promise.resolve();
   }
+
 }

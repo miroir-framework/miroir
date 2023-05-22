@@ -31,7 +31,7 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import {
   applicationDeploymentLibrary,
   DisplayLoadingInfo,
-  indexedDbStoreFactory,
+  indexedDbStoreControllerFactory,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
@@ -58,7 +58,8 @@ import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRes
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 // import { SqlStoreFactory } from "miroir-datastore-postgres";
 
@@ -88,12 +89,14 @@ beforeAll(
       localMiroirStoreController:a,localAppStoreController:b
     } = await StoreControllerFactory(
       miroirConfig,
-      indexedDbStoreFactory,
+      indexedDbStoreControllerFactory,
       // sqlDbStoreControllerFactory,
     );
     localMiroirStoreController = a;
     localAppStoreController = b;
 
+    console.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
+    
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfig,
@@ -111,6 +114,7 @@ beforeAll(
       domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
     }
+    return Promise.resolve();
   }
 )
 
@@ -326,6 +330,7 @@ describe(
           console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
@@ -373,15 +378,15 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
   
           // ##########################################################################################################
-          console.log('Remove Book instance step 3: rollbacking/refreshing report list from remote store, removed book must still be present in the report list.')
+          console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -401,7 +406,7 @@ describe(
             ()=> {
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );

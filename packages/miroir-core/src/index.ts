@@ -190,7 +190,7 @@ export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
-export { StoreController } from './3_controllers/StoreController.js';
+export { OldStoreController } from './3_controllers/OldStoreController.js';
 export {
   IndexedDbDataStore,
 } from './4_services/IndexedDbDataStore.js';

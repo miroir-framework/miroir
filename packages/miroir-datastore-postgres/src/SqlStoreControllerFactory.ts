@@ -1,4 +1,4 @@
-import { DataStoreApplicationType, DataStoreInterface, ModelStoreInterface, StoreController, StoreControllerInterface } from "miroir-core";
+import { DataStoreApplicationType, DataStoreInterface, ModelStoreInterface, OldStoreController, StoreControllerInterface } from "miroir-core";
 import { detect } from "detect-browser";
 import { SqlDbDataStore } from "./SqlDbDataStore.js";
 import { SqlDbModelStore } from "./SqlDbModelStore.js";
@@ -18,7 +18,7 @@ export async function SqlStoreFactory (
 ):Promise<StoreControllerInterface> {
   // const seq = await import("sequelize");
 
-
+  throw new Error('do not call obsolete SqlStoreFactory!');
   const dataStore2 = new SqlDbDataStore(applicationName,dataStoreType,dataConnectionString,dataSchema);
   try {
     // await dataStore.connect();
@@ -38,7 +38,7 @@ export async function SqlStoreFactory (
   }
 
 
-  // const sqlDbServer:StoreControllerInterface = new StoreController(applicationName,dataStoreType,modelStore,dataStore);
-  const sqlDbServer:StoreControllerInterface = new StoreController(applicationName,dataStoreType,modelStore2,dataStore2);
+  // const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore,dataStore);
+  const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore2,dataStore2);
   return Promise.resolve(sqlDbServer);
 }

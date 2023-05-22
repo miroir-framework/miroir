@@ -37,6 +37,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     } catch (error) {
       console.error('Unable to connect data', this.dataSchema, ' to the postgres database:', error);
     }
+    return Promise.resolve();
   }
 
   // ##############################################################################################
@@ -144,7 +145,7 @@ export class SqlDbDataStore implements DataStoreInterface {
 
     // this.sqlModelSchemaTableAccess = {};
     this.sqlDataSchemaTableAccess = {};
-    console.log(this.logHeader,'dropData done, entities',this.getEntityNames());
+    console.log(this.logHeader,'dropData done, entities',this.getEntityUuids());
     
     return Promise.resolve();
   }
@@ -207,6 +208,7 @@ export class SqlDbDataStore implements DataStoreInterface {
         entityDefinition
       )
     );
+    return Promise.resolve();
   }
 
   // ##############################################################################################
@@ -222,6 +224,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     } else {
       console.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
     }
+    return Promise.resolve();
   }
 
   // ##############################################################################################

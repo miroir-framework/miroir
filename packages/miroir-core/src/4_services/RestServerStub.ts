@@ -129,7 +129,7 @@ export class RestServerStub {
       }),
       rest.delete(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
         const body = await req.json();
-        console.log('delete /miroir/entity', localMiroirStoreController);
+        console.log('delete /miroirWithDeployment/:deploymentUuid/:section/entity', localMiroirStoreController);
         const deploymentUuid: string =
           typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
       
@@ -139,12 +139,12 @@ export class RestServerStub {
         const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
 
         return generateHandlerBody(
-          {},
-          [],
+          {section},
+          ['section'],
           body,
           'delete',
-          "/miroirWithDeployment/entity/",
-          targetDataStore.deleteDataInstance.bind(targetDataStore),
+          "/miroirWithDeployment/:deploymentUuid/:section/entity",
+          targetDataStore.deleteInstance.bind(targetDataStore),
           (localData)=>res(ctx.json(localData))
         )
       }),

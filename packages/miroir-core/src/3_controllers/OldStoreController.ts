@@ -10,7 +10,7 @@ import { DataStoreApplicationType, applicationModelEntities, modelInitialize } f
 import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 
-export class StoreController implements StoreControllerInterface {
+export class OldStoreController implements StoreControllerInterface {
   private logHeader: string;
 
   constructor(
@@ -19,7 +19,7 @@ export class StoreController implements StoreControllerInterface {
     private modelStore:ModelStoreInterface,
     private dataStore:DataStoreInterface,
     ) {
-    this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.logHeader = 'OldStoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
 
   // ##############################################################################################
@@ -39,10 +39,6 @@ export class StoreController implements StoreControllerInterface {
     await applyModelEntityUpdate(this,update);
   }
   
-  deleteInstances(section: ApplicationSection, parentUuid:string, instances:EntityInstance[]):Promise<any> {
-    return Promise.resolve();
-  }
-
   // #############################################################################################
   async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any> {
     console.log(this.logHeader,'upsertInstance application',this.applicationName,'type',this.dataStoreType,'data entities',this.getEntities());
@@ -192,6 +188,29 @@ export class StoreController implements StoreControllerInterface {
     return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
   }
 
+  // ##############################################################################################
+  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
+    if (section == 'data') {
+      await this.deleteDataInstance(instance.parentUuid,instance);
+    } else {
+      await this.deleteModelInstance(instance.parentUuid,instance);
+    }
+    return Promise.resolve(instance);
+  }
+
+  // ##############################################################################################
+  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>{
+    for (const instance of instances) {
+      if (section == 'data') {
+        await this.deleteDataInstance(instance.parentUuid,instance);
+      } else {
+        await this.deleteModelInstance(instance.parentUuid,instance);
+      }
+    }
+    return Promise.resolve();
+  }
+
+  
   // ##############################################################################################
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
     return this.modelStore.renameEntity(update);

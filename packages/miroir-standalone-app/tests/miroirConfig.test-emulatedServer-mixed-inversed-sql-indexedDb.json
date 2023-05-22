@@ -2,23 +2,22 @@
   "emulateServer": true,
   "rootApiUrl":"http://localhost:3080",
   "miroirServerConfig":{
-    "model": {
-      "emulatedServerType": "Sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
-    },
     "data": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-miroir-uuid"
+    },
+    "model": {
       "emulatedServerType": "Sql",
       "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
       "schema": "miroir"
     }
   },
   "appServerConfig": {
-    "model": {
-      "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets"
-    },
     "data": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-app-uuid"
+    },
+    "model": {
       "emulatedServerType": "Sql",
       "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
       "schema": "library"

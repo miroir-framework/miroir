@@ -49,6 +49,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     } catch (error) {
       console.error('Unable to connect data', this.modelSchema, ' to the postgres database:', error);
     }
+    return Promise.resolve();
   }
 
   
@@ -153,7 +154,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
       "###################",
       this.logHeader,
       "bootFromPersistedState data found this.dataSequelize",
-      this.sqlDbDataStore.getEntityNames()
+      this.sqlDbDataStore.getEntityUuids()
     );
     return Promise.resolve();
   }
@@ -166,8 +167,6 @@ export class SqlDbModelStore implements ModelStoreInterface {
     // await this.dataSequelize.drop();
 
     this.sqlModelSchemaTableAccess = {};
-    // this.sqlDataSchemaTableAccess = {};
-    // console.log(this.logHeader,'dropModelAndData DONE',this.getEntities(),this.getEntityNames(),this.getEntityUuids());
     console.log(this.logHeader, "dropModelAndData DONE", this.getEntities());
 
     return Promise.resolve();
@@ -241,7 +240,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
       "entityDefinition",
       entityDefinition,
       "sqlEntities",
-      this.sqlDbDataStore.getEntityNames()
+      this.sqlDbDataStore.getEntityUuids()
     );
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
@@ -319,7 +318,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
       }
     } else {
       if (this.sqlDbDataStore.getEntityUuids().includes(entityUuid)) {
-        this.sqlDbDataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
+        await this.sqlDbDataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
         await this.deleteModelInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
         //remove all entity definitions for the dropped entity
@@ -333,6 +332,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
         console.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
       }
     }
+    return Promise.resolve();
   }
   // ##############################################################################################
   async dropEntities(entityUuids: string[]) {
@@ -340,6 +340,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     for (const e of entityUuids) {
       await this.dropEntity(e);
     }
+    return Promise.resolve();
   }
   // ##############################################################################################
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {
@@ -379,6 +380,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
       console.error('renameEntity could not execute update',update);
     }
     console.log(this.logHeader, 'renameEntity done.');
+    return Promise.resolve();
   }
 
   // ##############################################################################################
@@ -420,7 +422,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
   }
 
   // ##############################################################################################
-  async close() {
+  async close(): Promise<void> {
     await this.modelSequelize?.close();
     return Promise.resolve();
     // disconnect from DB?

@@ -23,10 +23,11 @@ import {
   EmulatedPartitionedServerConfig,
   ModelStoreInterface,
   DataStoreInterface,
-  StoreController,
+  OldStoreController,
   IndexedDbStoreController,
   IndexedDbDataStore,
   IndexedDbModelStore,
+  EmulatedServerConfig,
 } from "miroir-core";
 import { ReduxStoreWithUndoRedo } from 'miroir-redux'
 import { RequestHandler } from 'msw'
@@ -107,18 +108,27 @@ export const DisplayLoadingInfo:React.FC<{reportUuid?:string}> = (props:{reportU
   );
 }
 
+
+// ############################################################################################################
+// ############################################################################################################
+// ############################################################################################################
+// ############################################################################################################
+// ############################################################################################################
+// ############################################################################################################
+// ############################################################################################################
+
 export interface StoreControllerFactoryReturnType {
   localMiroirStoreController: StoreControllerInterface,
   localAppStoreController: StoreControllerInterface,
 }
 
-export type IndexedDbStoreFactory = (
+export type IndexedDbStoreControllerFactory = (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
   config: EmulatedServerConfigIndexedDb,
 ) => StoreControllerInterface
 
-export const indexedDbStoreFactory = (
+export const indexedDbStoreControllerFactory = (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
   config: EmulatedServerConfigIndexedDb,
@@ -128,139 +138,100 @@ export const indexedDbStoreFactory = (
   return new IndexedDbStoreController(appName, dataStoreApplicationType,modelStore,dataStore);
 }
 
+export async function storeFactory (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  section:ApplicationSection,
+  config: EmulatedServerConfig,
+  dataStore?: DataStoreInterface,
+):Promise<DataStoreInterface | ModelStoreInterface> {
+  if (section == 'model' && !dataStore) {
+    throw new Error('storeFactory model section factory must receive data section store.')
+  }
+  if (config.emulatedServerType == 'indexedDb') {
+    // const indexedDbStoreConfig = config as EmulatedServerConfigIndexedDb;
+    if (section == 'model') {
+      if (!dataStore) {
+        throw new Error('storeFactory model section factory must receive data section store.')
+      } else {
+        return Promise.resolve(new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore))
+      }
+    } else {
+      return Promise.resolve(new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data')))
+    }
+  }
+  if (config.emulatedServerType == 'Sql') {
+    console.log('StoreControllerFactory creating mixed app data sql store controller');
 
-// export type SqlDbStoreControllerFactory = (
-//   appName: string,
-//   dataStoreApplicationType: DataStoreApplicationType,
-//   // modelConfig: EmulatedServerConfigSql,
-//   // appConfig: EmulatedServerConfigSql,
-//   modelStore:ModelStoreInterface,
-//   dataStore:DataStoreInterface,
-//   modelConnectionString:string,
-//   modelSchema:string,
-//   dataConnectionString:string,
-//   dataSchema:string,
-// ) => Promise<StoreControllerInterface>;
+    // const appDataIndexedDbStoreConfig = miroirConfig.appServerConfig.data as EmulatedServerConfigSql;
+    if (section == 'model') {
+      if (!dataStore) {
+        throw new Error('storeFactory model section factory must receive data section store.')
+      } else {
+        const appModelStore = new SqlDbModelStore(
+          appName,
+          dataStoreApplicationType,
+          config.connectionString,
+          config.schema,
+          dataStore
+        );
+    
+        try {
+          await appModelStore.connect();
+        } catch (error) {
+          console.error('StoreControllerFactory Unable to connect model', config.schema, ' to the postgres database:', error);
+        }
+        // appDataStore = new IndexedDbDataStore('library','app',new IndexedDb(appDataIndexedDbStoreConfig.indexedDbName + '-data'));
+        return Promise.resolve(appModelStore);
+      }
+    } else {
+      const appDataStore = new SqlDbDataStore(
+        appName,
+        dataStoreApplicationType,
+        config.connectionString,
+        config.schema
+      );
+  
+      try {
+        await appDataStore.connect();
+      } catch (error) {
+        console.error('StoreControllerFactory Unable to connect data', config.schema, ' to the postgres database:', error);
+      }
+      // appDataStore = new IndexedDbDataStore('library','app',new IndexedDb(appDataIndexedDbStoreConfig.indexedDbName + '-data'));
+      return Promise.resolve(appDataStore);
+    }
+  }
 
-// export const sqlDbStoreControllerFactory:SqlDbStoreControllerFactory = async (
-//   appName: string,
-//   dataStoreApplicationType: DataStoreApplicationType,
-//   // modelConfig: EmulatedServerConfigSql,
-//   // appConfig: EmulatedServerConfigSql,
-//   modelStore:ModelStoreInterface,
-//   dataStore:DataStoreInterface,
-//   modelConnectionString:string,
-//   modelSchema:string,
-//   dataConnectionString:string,
-//   dataSchema:string,
-// ) => Promise.resolve(SqlStoreFactory(
-//   appName,
-//   dataStoreApplicationType,
-//   modelStore,
-//   dataStore,
-//   modelConnectionString,
-//   modelSchema,
-//   dataConnectionString,
-//   dataSchema,
-//   // modelConfig.connectionString,
-//   // modelConfig.schema,
-//   // appConfig.connectionString,
-//   // appConfig.schema,
-// ));
+  if (config.emulatedServerType == 'filesystem') {
+    // return new FileSystemEntityDataStore
+    throw new Error('storeFactory filesystem unimplemented!')
+  }
+  throw new Error('storeFactory config.emulatedServerType unknown!')
+}
 
 
+// #################################################################################################################
 export async function StoreControllerFactory(
   miroirConfig:MiroirConfig,
-  indexedDbDataStoreFactory: IndexedDbStoreFactory,
+  indexedDbStoreControllerFactory: IndexedDbStoreControllerFactory,
   // sqlDbStoreControllerFactory: SqlDbStoreControllerFactory,
 ): Promise<StoreControllerFactoryReturnType> {
   let localMiroirStoreController,localAppStoreController;
 
+  console.log('StoreControllerFactory called with config:',miroirConfig);
 
   if (!miroirConfig.emulateServer) {
-    throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
+    throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
   }
 
-  if (miroirConfig.emulateServer && miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" || miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
-    const miroirIndexedDbStoreConfig = miroirConfig.miroirServerConfig.model as EmulatedServerConfigIndexedDb;
-    const appIndexedDbStoreConfig = miroirConfig.appServerConfig.model as EmulatedServerConfigIndexedDb;
-    localMiroirStoreController = indexedDbDataStoreFactory('miroir','miroir',miroirIndexedDbStoreConfig);
-    localAppStoreController = indexedDbDataStoreFactory('library','app',appIndexedDbStoreConfig);
-  }
+  let miroirModelStore:ModelStoreInterface, miroirDataStore:DataStoreInterface, appModelStore:ModelStoreInterface, appDataStore:DataStoreInterface;
+  appDataStore = await storeFactory('library','app','data',miroirConfig.appServerConfig.data) as DataStoreInterface;
+  appModelStore = await storeFactory('library','app','model',miroirConfig.appServerConfig.model,appDataStore) as ModelStoreInterface;
+  miroirDataStore = await storeFactory('miroir','miroir','data',miroirConfig.miroirServerConfig.data) as DataStoreInterface;
+  miroirModelStore = await storeFactory('miroir','miroir','model',miroirConfig.miroirServerConfig.model,miroirDataStore) as ModelStoreInterface;
 
-  if (
-    miroirConfig.emulateServer &&
-    miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" &&
-    miroirConfig.appServerConfig.model.emulatedServerType == "Sql" &&
-    miroirConfig.miroirServerConfig.data.emulatedServerType == "Sql" &&
-    miroirConfig.appServerConfig.data.emulatedServerType == "Sql"
-  ) {
-    console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
-    console.log(
-      "createMswRestServer sql mirroir datastore schema",
-      miroirConfig.miroirServerConfig.model.schema,
-      "library datastore schema",
-      miroirConfig.appServerConfig.model.schema
-    );
-
-    const miroirDataStore = new SqlDbDataStore(
-      "miroir",
-      "miroir",
-      miroirConfig.miroirServerConfig.data.connectionString,
-      miroirConfig.miroirServerConfig.data.schema
-    );
-
-    try {
-      await miroirDataStore.connect();
-    } catch (error) {
-      console.error('Unable to connect data', miroirConfig.miroirServerConfig.data.schema, ' to the postgres database:', error);
-    }
-
-    const miroirModelStore = new SqlDbModelStore(
-      "miroir",
-      "miroir",
-      miroirConfig.miroirServerConfig.model.connectionString,
-      miroirConfig.miroirServerConfig.model.schema,
-      miroirDataStore
-    );
-
-    try {
-      await miroirModelStore.connect();
-    } catch (error) {
-      console.error('Unable to connect data', miroirConfig.miroirServerConfig.model.schema, ' to the postgres database:', error);
-    }
-
-    localMiroirStoreController = new StoreController("miroir","miroir",miroirModelStore,miroirDataStore);
-
-    const appDataStore = new SqlDbDataStore(
-      "library",
-      "app",
-      miroirConfig.appServerConfig.data.connectionString,
-      miroirConfig.appServerConfig.data.schema
-    );
-
-    try {
-      await appDataStore.connect();
-    } catch (error) {
-      console.error('Unable to connect data', miroirConfig.appServerConfig.data.schema, ' to the postgres database:', error);
-    }
-
-    const appModelStore = new SqlDbModelStore(
-      "library",
-      "app",
-      miroirConfig.appServerConfig.model.connectionString,
-      miroirConfig.appServerConfig.model.schema,
-      appDataStore
-    );
-
-    try {
-      await appModelStore.connect();
-    } catch (error) {
-      console.error('Unable to connect data', miroirConfig.appServerConfig.model.schema, ' to the postgres database:', error);
-    }
-
-    localAppStoreController = new StoreController("library","app",appModelStore,appDataStore);
-  }
+  localAppStoreController = new IndexedDbStoreController('library','app',appModelStore,appDataStore);
+  localMiroirStoreController = new IndexedDbStoreController('miroir','miroir',miroirModelStore,miroirDataStore);
 
   return Promise.resolve({
     localMiroirStoreController,
@@ -268,6 +239,7 @@ export async function StoreControllerFactory(
   });
 }
 
+// #################################################################################################################
 export async function miroirBeforeAll(
   miroirConfig: MiroirConfig,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,
@@ -323,10 +295,11 @@ export async function miroirBeforeAll(
   return Promise.resolve(undefined);
 }
 
+// ###############################################################################################
 export async function miroirBeforeEach(
   localMiroirStoreController: StoreControllerInterface,
   localAppStoreController: StoreControllerInterface,
-) {
+):Promise<void> {
   try {
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
     await localAppStoreController.dropModelAndData(defaultMiroirMetaModel);
@@ -371,10 +344,11 @@ export async function miroirBeforeEach(
   return Promise.resolve();
 }
 
+// #################################################################################################################
 export async function miroirAfterEach(
   localMiroirStoreController: StoreControllerInterface,
   localAppStoreController: StoreControllerInterface,
-) {
+):Promise<void> {
   try {
     // await localDataStore?.close();
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
@@ -394,8 +368,6 @@ export async function miroirAfterAll(
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {
-    // await localMiroirStoreController.clear(defaultMiroirMetaModel);
-    // await localAppStoreController.clear(defaultMiroirMetaModel);
     await localDataStoreServer?.close();
     await localMiroirStoreController.close();
     await localAppStoreController.close();

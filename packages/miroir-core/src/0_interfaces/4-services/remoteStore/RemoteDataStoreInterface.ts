@@ -164,6 +164,7 @@ export interface StoreControllerInterface extends ModelStoreInterface, DataStore
   clear(metaModel: MiroirMetaModel): Promise<void>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
-  deleteInstances(section: ApplicationSection, parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
+  deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;
   applyModelEntityUpdate(update:ModelReplayableUpdate);
 }

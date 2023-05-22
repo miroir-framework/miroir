@@ -1,0 +1,30 @@
+{
+  "emulateServer": true,
+  "rootApiUrl":"http://localhost:3080",
+  "miroirServerConfig":{
+    "model": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-miroir-uuid"
+    },
+    "data": {
+      "emulatedServerType": "Sql",
+      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroir"
+    }
+  },
+  "appServerConfig": {
+    "model": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-app-uuid"
+    },
+    "data": {
+      "emulatedServerType": "Sql",
+      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false,
+  "versionControlForDataConceptLevel": false
+}

@@ -1,7 +1,7 @@
 
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
+import Instance, { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
@@ -91,8 +91,8 @@ export class IndexedDbStoreController implements StoreControllerInterface{
   
   // ##############################################################################################
   async close():Promise<void> {
-    console.log(this.logHeader,'close() does nothing!');
-    // TODO: close does not work, gives an error after test executes!!
+    await this.modelStore.close();
+    await this.dataStore.close();
     return Promise.resolve();
   }
 
@@ -127,12 +127,12 @@ export class IndexedDbStoreController implements StoreControllerInterface{
   }
 
   // #############################################################################################
-  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
+  async renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
     return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
   }
 
   // #############################################################################################
-  dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
     return this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
   }
 
@@ -184,7 +184,7 @@ export class IndexedDbStoreController implements StoreControllerInterface{
     const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
     console.log(this.logHeader,'getInstances','section',section,'entity',entityUuid,'found modelEntities',modelEntitiesUuid);
 
-    
+
     // if (modelEntitiesUuid.includes(entityUuid)) {
     if (section == 'data') {
       return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.getDataInstances(entityUuid)});
@@ -208,12 +208,22 @@ export class IndexedDbStoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async deleteInstances(section: ApplicationSection, parentUuid:string, instances:EntityInstance[]):Promise<any>{
+  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
+    if (section == 'data') {
+      await this.deleteDataInstance(instance.parentUuid,instance);
+    } else {
+      await this.deleteModelInstance(instance.parentUuid,instance);
+    }
+    return Promise.resolve(instance);
+  }
+
+  // ##############################################################################################
+  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>{
     for (const instance of instances) {
       if (section == 'data') {
-        await this.deleteDataInstance(parentUuid,instance);
+        await this.deleteDataInstance(instance.parentUuid,instance);
       } else {
-        await this.deleteModelInstance(parentUuid,instance);
+        await this.deleteModelInstance(instance.parentUuid,instance);
       }
     }
     return Promise.resolve();
@@ -282,7 +292,7 @@ export class IndexedDbStoreController implements StoreControllerInterface{
   }
   
   // ##############################################################################################
-  async applyModelEntityUpdate(update:ModelReplayableUpdate){
+  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>{
     console.log('IndexedDbStoreController applyModelEntityUpdate',update);
     await applyModelEntityUpdate(this,update);
     return Promise.resolve();

@@ -10,6 +10,7 @@ import {
   WrappedModelEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition,
+  ApplicationSection,
 } from "miroir-core";
 
 import * as fs from "fs";
@@ -30,6 +31,9 @@ export class FileSystemEntityDataStore implements StoreControllerInterface {
     const files = fs.readdirSync(this.modelDirectory);
     console.log('FileSystemEntityDataStore constructor found entities',files);
     
+  }
+  deleteInstances(section: ApplicationSection, parentUuid: string, instances: EntityInstance[]): Promise<any> {
+    throw new Error("Method not implemented.");
   }
   connect(): Promise<void> {
     throw new Error("Method not implemented.");

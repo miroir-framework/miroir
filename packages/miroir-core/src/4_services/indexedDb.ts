@@ -40,6 +40,7 @@ export class IndexedDb {
   public async clearObjectStore():Promise<void> {
     console.log(this.logHeader, 'clearObjectStore, does nothing! (missing API to list all existing sublevels)');
     // return this.db?.clear();
+    return Promise.resolve(undefined);
   }
 
   // #############################################################################
@@ -115,7 +116,7 @@ export class IndexedDb {
   }
 
   // #############################################################################
-  public async removeSubLevels(tableNames:string[]) {
+  public async removeSubLevels(tableNames:string[]):Promise<void> {
     this.subLevels = new Map<string, any>([
       ...Array.from(this.subLevels.entries()).filter(s=>!tableNames.includes(s[0]))
     ]);
@@ -143,12 +144,12 @@ export class IndexedDb {
   public async getAllValue(parentUuid: string):Promise<any[]> {
     console.log(this.logHeader, 'getAllValue', parentUuid);
     const store = this.subLevels.get(parentUuid);
-    const result = store?store.values({valueEncoding: 'json'}).all():[];
+    const result =  store?(await store.values({valueEncoding: 'json'}).all()):[];
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  public async putValue(parentUuid: string, value: any) {
+  public async putValue(parentUuid: string, value: any):Promise<any> {
     const store = this.subLevels.get(parentUuid);
     // console.log('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
@@ -157,7 +158,7 @@ export class IndexedDb {
   }
 
   // #############################################################################################
-  public async putBulkValue(tableName: string, values: any[]) {
+  public async putBulkValue(tableName: string, values: any[]):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
     const store = this.subLevels.get(tableName);
     for (const value of values) {
@@ -178,7 +179,7 @@ export class IndexedDb {
     }
     await store?.del(uuid);
     console.log(this.logHeader, 'DeleteValue', uuid);
-    return uuid;
+    return Promise.resolve(uuid);
   }
 }
 
