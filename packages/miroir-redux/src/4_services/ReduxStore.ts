@@ -31,7 +31,8 @@ import {
   StoreBasedConfiguration,
   applicationDeploymentMiroir,
   Uuid,
-  DomainAncillaryOrReplayableActionWithDeployment
+  DomainAncillaryOrReplayableActionWithDeployment,
+  ApplicationSection
 } from "miroir-core";
 import {
   LocalCacheSlice,
@@ -156,41 +157,56 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
 
   // ###############################################################################
-  public currentModel():MiroirMetaModel{
-    console.log('currentModel() from state:',this.innerReduxStore.getState());
+  public currentModel(deploymentUuid:string):MiroirMetaModel{
+    console.log('currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState());
     
-    return {
-      entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-      entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-      reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as MiroirReport[],
-      configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-      applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [],
-    };
+    if (!deploymentUuid) {
+      throw new Error('currentModel(deploymentUuid) parameter can not be undefined.');
+    } else {
+      if (deploymentUuid == applicationDeploymentMiroir.uuid) {
+        return {
+          entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
+          entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
+          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as MiroirReport[],
+          configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          applicationVersionCrossEntityDefinition: [],
+        };
+      } else {
+        return {
+          entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
+          entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
+          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityReport.uuid].entities) as MiroirReport[],
+          configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          applicationVersionCrossEntityDefinition: [],
+        };
+      }
+    }
   }
 
-  // ###############################################################################
-  async handleRemoteStoreCRUDAction(action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
-    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
-    )
-    console.log("ReduxStore handleRemoteStoreCRUDAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
+  // // ###############################################################################
+  // async handleRemoteStoreCRUDAction(action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
+  //   const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
+  //     this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
+  //   )
+  //   console.log("ReduxStore handleRemoteStoreCRUDAction", action, "returned", result)
+  //   return Promise.resolve(result);
+  // }
+
+  // // ###############################################################################
+  // async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
+  //   const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
+  //     this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(action)
+  //   )
+  //   console.log("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
+  //   return Promise.resolve(result);
+  // }
 
   // ###############################################################################
-  async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
+  async handleRemoteStoreCRUDActionWithDeployment(deploymentUuid: string, section: ApplicationSection, action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
     const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(action)
-    )
-    console.log("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
-
-  // ###############################################################################
-  async handleRemoteStoreCRUDActionWithDeployment(deploymentUuid: string, action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
-    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDActionWithDeployment.creator({deploymentUuid, action})
+      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDActionWithDeployment.creator({deploymentUuid, section, action})
     )
     console.log("ReduxStore handleRemoteStoreCRUDActionWithDeployment", action, "returned", result)
     return Promise.resolve(result);

@@ -15,13 +15,18 @@ import {
   applicationVersionInitialMiroirVersion,
   circularReplacer,
   defaultMiroirMetaModel,
-  IndexedDbDataStore,
   IndexedDb,
   EmulatedServerConfigIndexedDb,
   ApplicationSection,
   DataStoreApplicationType,
   EmulatedServerConfigSql,
   EmulatedPartitionedServerConfig,
+  ModelStoreInterface,
+  DataStoreInterface,
+  StoreController,
+  IndexedDbStoreController,
+  IndexedDbDataStore,
+  IndexedDbModelStore,
 } from "miroir-core";
 import { ReduxStoreWithUndoRedo } from 'miroir-redux'
 import { RequestHandler } from 'msw'
@@ -33,7 +38,7 @@ import applicationLibrary from "../../src/assets/a659d350-dd97-4da9-91de-524fa01
 import applicationVersionLibraryInitialVersion from "../../src/assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import applicationStoreBasedConfigurationLibrary from "../../src/assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
-import { SqlStoreControllerFactory } from 'miroir-datastore-postgres';
+import { SqlDbDataStore, SqlDbModelStore } from 'miroir-datastore-postgres';
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -117,37 +122,60 @@ export const indexedDbStoreFactory = (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
   config: EmulatedServerConfigIndexedDb,
-)=>new IndexedDbDataStore(appName, dataStoreApplicationType,new IndexedDb(config.indexedDbName));
+)=>{
+  const dataStore = new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
+  const modelStore = new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
+  return new IndexedDbStoreController(appName, dataStoreApplicationType,modelStore,dataStore);
+}
 
 
-export type SqlDbStoreFactory = (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  modelConfig: EmulatedServerConfigSql,
-  appConfig: EmulatedServerConfigSql,
-) => Promise<StoreControllerInterface>;
+// export type SqlDbStoreControllerFactory = (
+//   appName: string,
+//   dataStoreApplicationType: DataStoreApplicationType,
+//   // modelConfig: EmulatedServerConfigSql,
+//   // appConfig: EmulatedServerConfigSql,
+//   modelStore:ModelStoreInterface,
+//   dataStore:DataStoreInterface,
+//   modelConnectionString:string,
+//   modelSchema:string,
+//   dataConnectionString:string,
+//   dataSchema:string,
+// ) => Promise<StoreControllerInterface>;
 
-export const sqlDbStoreFactory = async (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  modelConfig: EmulatedServerConfigSql,
-  appConfig: EmulatedServerConfigSql,
-) => Promise.resolve(SqlStoreControllerFactory(
-  appName,
-  dataStoreApplicationType,
-  modelConfig.connectionString,
-  modelConfig.schema,
-  appConfig.connectionString,
-  appConfig.schema,
-));
+// export const sqlDbStoreControllerFactory:SqlDbStoreControllerFactory = async (
+//   appName: string,
+//   dataStoreApplicationType: DataStoreApplicationType,
+//   // modelConfig: EmulatedServerConfigSql,
+//   // appConfig: EmulatedServerConfigSql,
+//   modelStore:ModelStoreInterface,
+//   dataStore:DataStoreInterface,
+//   modelConnectionString:string,
+//   modelSchema:string,
+//   dataConnectionString:string,
+//   dataSchema:string,
+// ) => Promise.resolve(SqlStoreFactory(
+//   appName,
+//   dataStoreApplicationType,
+//   modelStore,
+//   dataStore,
+//   modelConnectionString,
+//   modelSchema,
+//   dataConnectionString,
+//   dataSchema,
+//   // modelConfig.connectionString,
+//   // modelConfig.schema,
+//   // appConfig.connectionString,
+//   // appConfig.schema,
+// ));
 
 
 export async function StoreControllerFactory(
   miroirConfig:MiroirConfig,
   indexedDbDataStoreFactory: IndexedDbStoreFactory,
-  sqlDbDataStoreFactory: SqlDbStoreFactory,
+  // sqlDbStoreControllerFactory: SqlDbStoreControllerFactory,
 ): Promise<StoreControllerFactoryReturnType> {
   let localMiroirStoreController,localAppStoreController;
+
 
   if (!miroirConfig.emulateServer) {
     throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
@@ -174,18 +202,64 @@ export async function StoreControllerFactory(
       "library datastore schema",
       miroirConfig.appServerConfig.model.schema
     );
-    localMiroirStoreController = await sqlDbDataStoreFactory(
+
+    const miroirDataStore = new SqlDbDataStore(
       "miroir",
       "miroir",
-      miroirConfig.miroirServerConfig.model,
-      miroirConfig.miroirServerConfig.data
+      miroirConfig.miroirServerConfig.data.connectionString,
+      miroirConfig.miroirServerConfig.data.schema
     );
-    localAppStoreController = await sqlDbDataStoreFactory(
+
+    try {
+      await miroirDataStore.connect();
+    } catch (error) {
+      console.error('Unable to connect data', miroirConfig.miroirServerConfig.data.schema, ' to the postgres database:', error);
+    }
+
+    const miroirModelStore = new SqlDbModelStore(
+      "miroir",
+      "miroir",
+      miroirConfig.miroirServerConfig.model.connectionString,
+      miroirConfig.miroirServerConfig.model.schema,
+      miroirDataStore
+    );
+
+    try {
+      await miroirModelStore.connect();
+    } catch (error) {
+      console.error('Unable to connect data', miroirConfig.miroirServerConfig.model.schema, ' to the postgres database:', error);
+    }
+
+    localMiroirStoreController = new StoreController("miroir","miroir",miroirModelStore,miroirDataStore);
+
+    const appDataStore = new SqlDbDataStore(
       "library",
       "app",
-      miroirConfig.appServerConfig.model,
-      miroirConfig.appServerConfig.data,
+      miroirConfig.appServerConfig.data.connectionString,
+      miroirConfig.appServerConfig.data.schema
     );
+
+    try {
+      await appDataStore.connect();
+    } catch (error) {
+      console.error('Unable to connect data', miroirConfig.appServerConfig.data.schema, ' to the postgres database:', error);
+    }
+
+    const appModelStore = new SqlDbModelStore(
+      "library",
+      "app",
+      miroirConfig.appServerConfig.model.connectionString,
+      miroirConfig.appServerConfig.model.schema,
+      appDataStore
+    );
+
+    try {
+      await appModelStore.connect();
+    } catch (error) {
+      console.error('Unable to connect data', miroirConfig.appServerConfig.model.schema, ' to the postgres database:', error);
+    }
+
+    localAppStoreController = new StoreController("library","app",appModelStore,appDataStore);
   }
 
   return Promise.resolve({

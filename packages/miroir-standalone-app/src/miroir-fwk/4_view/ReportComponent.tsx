@@ -38,10 +38,23 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   // const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(props.deploymentUuid,'model');
   // console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
   
-  const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(props.chosenDeploymentUuid,props.chosenApplicationSection,props.currentMiroirReport?.definition.parentUuid?props.currentMiroirReport?.definition.parentUuid:'');
-  
+  const instancesToDisplay: EntityInstance[] = useLocalCacheInstancesForEntity(
+    props.chosenDeploymentUuid,
+    props.chosenApplicationSection,
+    props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+  );
 
-  const instancesStringified:EntityInstance[] = instancesToDisplay.map(i=>Object.fromEntries(Object.entries(i).map(e=>[e[0],props.currentMiroirEntityDefinition?.attributes?.find(a=>a.name==e[0])?.type=='OBJECT'?JSON.stringify(e[1]):e[1]])) as EntityInstance);
+  const instancesStringified: EntityInstance[] = instancesToDisplay.map(
+    (i) =>
+      Object.fromEntries(
+        Object.entries(i).map((e) => [
+          e[0],
+          props.currentMiroirEntityDefinition?.attributes?.find((a) => a.name == e[0])?.type == "OBJECT"
+            ? JSON.stringify(e[1])
+            : e[1],
+        ])
+      ) as EntityInstance
+  );
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);

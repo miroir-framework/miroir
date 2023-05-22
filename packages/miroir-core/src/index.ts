@@ -181,7 +181,9 @@ export {
 export {
   DataStoreApplicationType,
   modelInitialize,
-  metamodelEntities,
+  applicationModelEntities,
+  metaModelEntities,
+  miroirModelEntities,
 } from './3_controllers/ModelInitializer.js';
 export { LocalAndRemoteController } from './3_controllers/LocalAndRemoteController.js';
 export { ErrorLogService } from './3_controllers/ErrorLogService.js';
@@ -192,6 +194,12 @@ export { StoreController } from './3_controllers/StoreController.js';
 export {
   IndexedDbDataStore,
 } from './4_services/IndexedDbDataStore.js';
+export {
+  IndexedDbModelStore,
+} from './4_services/IndexedDbModelStore.js';
+export {
+  IndexedDbStoreController,
+} from './4_services/IndexedDbStoreController.js';
 export {
   IndexedDb
 } from './4_services/indexedDb.js';

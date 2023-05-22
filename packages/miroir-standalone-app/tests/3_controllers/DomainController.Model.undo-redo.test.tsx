@@ -49,7 +49,7 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
   renderWithProviders,
-  sqlDbStoreFactory,
+  // sqlDbStoreControllerFactory,
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
@@ -83,7 +83,7 @@ beforeAll(
     } = await StoreControllerFactory(
       miroirConfig,
       indexedDbStoreFactory,
-      sqlDbStoreFactory,
+      // sqlDbStoreControllerFactory,
     );
     localMiroirStoreController = a;
     localAppStoreController = b;

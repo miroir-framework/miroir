@@ -1,6 +1,6 @@
 import { MiroirMetaModel } from '../../../0_interfaces/1_core/Model.js';
 import { EntityDefinition, MetaEntity, Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
-import { EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
+import { ApplicationSection, EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { MError } from '../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 import { CRUDActionName, DomainModelInitAction, DomainModelReplayableAction, DomainModelResetAction } from '../../2_domain/DomainControllerInterface.js';
@@ -51,9 +51,9 @@ export interface RestClientInterface {
  */
 export interface RemoteStoreNetworkClientInterface {
   handleNetworkAction(networkAction:RemoteStoreAction):Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
-  handleNetworkRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
+  // handleNetworkRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
+  // handleNetworkRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, section:ApplicationSection, action:RemoteStoreCRUDAction):Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid:string, action:RemoteStoreModelAction):Promise<RestClientCallReturnType>;
 }
 
@@ -63,9 +63,9 @@ export default {}
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface RemoteDataStoreInterface {
-  handleRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
-  handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
-  handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
+  // handleRemoteStoreCRUDAction(action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
+  // handleRemoteStoreModelAction(action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, section:ApplicationSection, action:RemoteStoreCRUDAction):Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelActionWithDeployment(deploymentUuid:string, action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
 }
 
@@ -103,8 +103,6 @@ export interface ModelStoreInterface {
   upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-
-  applyModelEntityUpdate(update:ModelReplayableUpdate);
 }
 
 export interface DataStoreInterface {
@@ -164,5 +162,8 @@ export interface StoreControllerInterface extends ModelStoreInterface, DataStore
   ):Promise<void>;
 
   clear(metaModel: MiroirMetaModel): Promise<void>;
-  getInstances(parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
+  deleteInstances(section: ApplicationSection, parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  applyModelEntityUpdate(update:ModelReplayableUpdate);
 }

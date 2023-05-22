@@ -1,23 +1,14 @@
-import {
-  Application,
-  DataStoreApplicationType,
-  DataStoreInterface,
-  EntityDefinition,
-  EntityInstance,
-  EntityInstanceCollection,
-  MetaEntity,
-  MiroirMetaModel,
-  ModelReplayableUpdate,
-  ModelStoreInterface,
-  StoreControllerInterface,
-  WrappedModelEntityUpdateWithCUDUpdate,
-  applyModelEntityUpdate,
-  entityEntity,
-  entityEntityDefinition,
-  metamodelEntities,
-  modelInitialize
-} from "miroir-core";
+import { Application } from "../0_interfaces/1_core/Application.js";
+import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { applyModelEntityUpdate } from "./ModelActionRunner.js";
+import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "./ModelInitializer.js";
 
+import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 
 export class StoreController implements StoreControllerInterface {
   private logHeader: string;
@@ -31,8 +22,15 @@ export class StoreController implements StoreControllerInterface {
     this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
 
+  // ##############################################################################################
   connect():Promise<void> {
     throw new Error("Method not implemented.");
+  }
+
+  // ##############################################################################################
+  open() {
+    // connect to DB?
+    console.warn('sqlDbDataStore does nothing!');
   }
 
   // ##############################################################################################
@@ -41,21 +39,26 @@ export class StoreController implements StoreControllerInterface {
     await applyModelEntityUpdate(this,update);
   }
   
+  deleteInstances(section: ApplicationSection, parentUuid:string, instances:EntityInstance[]):Promise<any> {
+    return Promise.resolve();
+  }
+
   // #############################################################################################
-  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log(this.logHeader,'upsertInstance application',this.applicationName,'type',this.dataStoreType,'parentUuid',parentUuid,'data entities',this.getEntities());
+  async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any> {
+    console.log(this.logHeader,'upsertInstance application',this.applicationName,'type',this.dataStoreType,'data entities',this.getEntities());
     
-    if (this.getEntities().includes(parentUuid)) {
-      await this.upsertDataInstance(parentUuid,instance);
+    // if (this.getEntities().includes(parentUuid)) {
+    if (section == 'data') {
+      await this.upsertDataInstance(instance.parentUuid,instance);
     } else {
-      await this.upsertModelInstance(parentUuid,instance);
+      await this.upsertModelInstance(instance.parentUuid,instance);
     }
     return Promise.resolve();
   }
 
   // ##############################################################################################
-  async getInstances(parentUuid: string): Promise<EntityInstanceCollection> {
-    const modelEntitiesUuid = this.dataStoreType == "app"?metamodelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+  async getInstances(section: ApplicationSection, parentUuid: string): Promise<EntityInstanceCollection> {
+    const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
     if (modelEntitiesUuid.includes(parentUuid)) {
       return Promise.resolve({parentUuid:parentUuid, applicationSection:'model', instances: await this.getModelInstances(parentUuid)});
     } else {
@@ -63,11 +66,6 @@ export class StoreController implements StoreControllerInterface {
     }
   }
 
-  // ##############################################################################################
-  open() {
-      // connect to DB?
-      console.warn('sqlDbDataStore does nothing!');
-  }
 
   // ##############################################################################################
   async close() {
@@ -162,9 +160,9 @@ export class StoreController implements StoreControllerInterface {
 
 
   // ##############################################################################################
-    async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-      return this.modelStore.getModelInstances(parentUuid);
-    }
+  async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
+    return this.modelStore.getModelInstances(parentUuid);
+  }
 
 
 
@@ -183,6 +181,7 @@ export class StoreController implements StoreControllerInterface {
     return this.modelStore.dropEntities(entityUuids);
   }
 
+  // ##############################################################################################
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
@@ -224,7 +223,7 @@ export class StoreController implements StoreControllerInterface {
 
   // ##############################################################################################
   // ##############################################################################################
-  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbDataStore
+  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbStoreController
     return this.dataStore.getState();
   }
 

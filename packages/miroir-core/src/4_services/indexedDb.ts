@@ -4,18 +4,20 @@ import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-
 export class IndexedDb {
   public db: Level | undefined = undefined;
   private subLevels: Map<string, Level> = new Map();
+  private logHeader: string;
 
   // #############################################################################################
   constructor(private databaseName: string) {
+    this.logHeader = 'IndexedDb ' + databaseName;
   }
 
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     if (this.db?.status =='open' ) {
-      console.log('IndexedDb closeObjectStore closing db...', this.db?.status);
+      console.log(this.logHeader,'closeObjectStore closing db...', this.db?.status);
       await this.db?.close();
     } else {
-      console.log('IndexedDb closeObjectStore db already closed...', this.db?.status);
+      console.log(this.logHeader, 'closeObjectStore db already closed...', this.db?.status);
     }
     // console.log('IndexedDb closeObjectStore db closed!');
     this.db = undefined;
@@ -25,7 +27,7 @@ export class IndexedDb {
 
   // #############################################################################################
   public async openObjectStore():Promise<void> {
-    console.log('IndexedDb openObjectStore');
+    console.log(this.logHeader, 'openObjectStore');
     if(this.db !== undefined) {
       await this.db?.open();
     } else {
@@ -36,7 +38,7 @@ export class IndexedDb {
 
   // #############################################################################################
   public async clearObjectStore():Promise<void> {
-    console.log('IndexedDb clearObjectStore, does nothing! (missing API to list all existing sublevels)');
+    console.log(this.logHeader, 'clearObjectStore, does nothing! (missing API to list all existing sublevels)');
     // return this.db?.clear();
   }
 
@@ -45,15 +47,15 @@ export class IndexedDb {
     try {
       if(this.db !== undefined) {
         await this.db.open();
-        console.log('indexedDb createObjectStore opened db')
+        console.log(this.logHeader, 'createObjectStore opened db')
         this.subLevels = this.createSubLevels(this.db,tableNames);
         return Promise.resolve(undefined);
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
         this.subLevels = this.createSubLevels(this.db,tableNames);
-        console.log('indexedDb createObjectStore created db with sublevels',tableNames,this.subLevels)
-        console.log('indexedDb createObjectStore db',this.db)
-        console.log('indexedDb createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
+        console.log(this.logHeader, 'createObjectStore created db with sublevels',tableNames,this.subLevels)
+        console.log(this.logHeader, 'createObjectStore db',this.db)
+        console.log(this.logHeader, 'createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
         return Promise.resolve(undefined);
       }
     } catch (error) {
@@ -64,7 +66,7 @@ export class IndexedDb {
 
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
-    console.log('indexedDb addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
+    console.log(this.logHeader, 'addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
     // console.log('indexedDb addSubLevels db:',this.db);
     this.subLevels = new Map<string, any>([
       ...this.subLevels.entries(),
@@ -74,9 +76,9 @@ export class IndexedDb {
             tableName,
             <any>this.db?.sublevel(tableName),
           ];
-          console.log('indexedDb adding sublevel:',tableName,'result',result);
+          console.log(this.logHeader, 'adding sublevel:',tableName);
           result[1].clear();
-          console.log('indexedDb addSubLevels added and cleared sublevel:',result[0]);
+          console.log(this.logHeader, 'addSubLevels added and cleared sublevel:',result[0]);
           
           return result;
         }
@@ -86,7 +88,7 @@ export class IndexedDb {
 
   // #############################################################################
   private createSubLevels(db: Level, tableNames:string[]) {
-    console.log('indexedDb createSublevels',db,tableNames)
+    console.log(this.logHeader, 'createSublevels',db,tableNames)
     return new Map<string, any>([
       ...tableNames.map(
           (tableName: string) => {
@@ -113,25 +115,25 @@ export class IndexedDb {
   }
 
   // #############################################################################
-  public removeSubLevels(tableNames:string[]) {
+  public async removeSubLevels(tableNames:string[]) {
     this.subLevels = new Map<string, any>([
       ...Array.from(this.subLevels.entries()).filter(s=>!tableNames.includes(s[0]))
     ]);
     for (const tableName of tableNames) {
-      this.db?.sublevel(tableName).clear()
+      await this.db?.sublevel(tableName).clear()
     }
-    
+    return Promise.resolve();
   }
 
   // #############################################################################################
   public async getValue(parentUuid: string, instanceUuid: string): Promise<any> {
     const table = this.subLevels.get(parentUuid)
-    console.log('IndexedDb getValue for entity',parentUuid,'instance uuid',instanceUuid,table);
+    console.log(this.logHeader, 'getValue for entity',parentUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
       result = await table.get(instanceUuid, {valueEncoding: 'json'});
     } else {
-      console.error('IndexedDb getValue table for parentUuid not found:',parentUuid);
+      console.error(this.logHeader, 'getValue table for parentUuid not found:',parentUuid);
     }
     // console.log('IndexedDb getValue ', tableName, result);
     return Promise.resolve(result);
@@ -139,7 +141,7 @@ export class IndexedDb {
 
   // #############################################################################################
   public async getAllValue(parentUuid: string):Promise<any[]> {
-    console.log('IndexedDb getAllValue', parentUuid);
+    console.log(this.logHeader, 'getAllValue', parentUuid);
     const store = this.subLevels.get(parentUuid);
     const result = store?store.values({valueEncoding: 'json'}).all():[];
     return Promise.resolve(result);
@@ -160,7 +162,7 @@ export class IndexedDb {
     const store = this.subLevels.get(tableName);
     for (const value of values) {
       const result = await store?.put(value.uuid,value, {valueEncoding: 'json'});
-      console.log('IndexedDb PutBulkValue ', JSON.stringify(result));
+      console.log(this.logHeader, 'PutBulkValue ', JSON.stringify(result));
     }
     return this.getAllValue(tableName); // TODO: do not return the full table!
   }
@@ -171,11 +173,11 @@ export class IndexedDb {
     const store = this.subLevels.get(tableUuid);
     const result = await store?.get(uuid);
     if (!result) {
-      console.warn('IndexedDb deleteValue Id not found', uuid);
+      console.warn(this.logHeader, 'deleteValue Id not found', uuid);
       return Promise.resolve(result);
     }
     await store?.del(uuid);
-    console.log('IndexedDb DeleteValue', uuid);
+    console.log(this.logHeader, 'DeleteValue', uuid);
     return uuid;
   }
 }

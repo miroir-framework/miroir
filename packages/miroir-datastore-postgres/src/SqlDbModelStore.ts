@@ -24,7 +24,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
 
   // ##############################################################################################
   constructor(
-    seq: any,
+    // seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
     public modelConnectionString:string,
@@ -35,8 +35,10 @@ export class SqlDbModelStore implements ModelStoreInterface {
     // private modelSchema: string,
     // private sqlDbStoreFacade: StoreControllerInterface
   ) {
-    this.logHeader = "SqlDbDataStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
-    this.modelSequelize = new seq.Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
+    this.logHeader = "SqlDbModelStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
+    // if (!seq) throw Error('seq is undefined!');
+
+    this.modelSequelize = new Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   }
 
   // ##############################################################################################
@@ -283,7 +285,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
       }
       // }
     }
-    console.error(this.logHeader, "createEntity", "done for", entity.name);
+    console.log(this.logHeader, "createEntity", "done for", entity.name);
     return Promise.resolve();
   }
 
@@ -411,6 +413,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     await this.sqlModelSchemaTableAccess[parentUuid].sequelizeModel.destroy({ where: { uuid: instance.uuid } });
     return Promise.resolve();
   }
+  
   // ##############################################################################################
   applyModelEntityUpdate(update: ModelReplayableUpdate) {
     throw new Error("Method not implemented.");

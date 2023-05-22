@@ -21,5 +21,5 @@ export declare interface LocalCacheInterface
   handleLocalCacheAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction);
   currentTransaction():DomainModelReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentInfo(): LocalCacheInfo;
-  currentModel(): MiroirMetaModel;
+  currentModel(deploymentUuid:string): MiroirMetaModel;
 }

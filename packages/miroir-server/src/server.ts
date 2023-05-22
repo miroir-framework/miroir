@@ -11,7 +11,7 @@ import {
   // applicationDeploymentLibrary,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { SqlStoreControllerFactory } from 'miroir-datastore-postgres';
+import { SqlStoreFactory } from 'miroir-datastore-postgres';
 import { FileSystemEntityDataStore } from './FileSystemEntityDataStore.js';
 import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
@@ -30,7 +30,7 @@ const app = express(),
 const users = [];
 
 // const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-// const localIndexedDbDataStore:StoreControllerInterface = new IndexedDbDataStore(localUuidIndexedDb);
+// const localIndexedDbDataStore:StoreControllerInterface = new IndexedDbStoreController(localUuidIndexedDb);
 
 const libraryAppFileSystemDataStore:StoreControllerInterface = new FileSystemEntityDataStore(
   'library',
@@ -43,8 +43,8 @@ const libraryAppFileSystemDataStore:StoreControllerInterface = new FileSystemEnt
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
 
-// const sqlDbServerProxy:StoreControllerInterface = await SqlStoreControllerFactory('postgres://postgres:postgres@localhost:5432/postgres');
-const miroirAppSqlServerProxy:StoreControllerInterface = await SqlStoreControllerFactory(
+// const sqlDbServerProxy:StoreControllerInterface = await SqlStoreFactory('postgres://postgres:postgres@localhost:5432/postgres');
+const miroirAppSqlServerProxy:StoreControllerInterface = await SqlStoreFactory(
   'miroir',
   'miroir',
   applicationDeploymentMiroir.model.location['connectionString'],
@@ -52,7 +52,7 @@ const miroirAppSqlServerProxy:StoreControllerInterface = await SqlStoreControlle
   applicationDeploymentMiroir.data.location['connectionString'],
   applicationDeploymentMiroir.data.location['schema'],
 );
-const libraryAppSqlServerProxy:StoreControllerInterface = await SqlStoreControllerFactory(
+const libraryAppSqlServerProxy:StoreControllerInterface = await SqlStoreFactory(
   'library',
   'app',
   applicationDeploymentLibrary.model.location['connectionString'],

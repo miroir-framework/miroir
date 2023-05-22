@@ -111,7 +111,7 @@ export async function modelActionRunner(
       [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
       appDataStoreProxy.existsEntity(modelCUDupdate.objects[0].parentUuid)
     ) {
-      // console.log('IndexedDbDataStore applyModelEntityUpdate',modelEntityUpdate);
+      // console.log('IndexedDbStoreController applyModelEntityUpdate',modelEntityUpdate);
       if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {

@@ -7,30 +7,43 @@ export const generateHandlerBody = async (
   instances:EntityInstance[],
   HttpMethod:HttpMethod,
   url:string,
-  method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
+  // method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
+  method:(...params)=>Promise<any>,
   jsonFormater:(a:any)=>any,
 ) => {
-  // console.log('##################################### generateHandlerBody called', HttpMethod, url, "started");
   // console.log('generateHandlerBody called with params',params);
   
-  let localData
-  if (paramNames.length > 0) {// get
+  let localData;
+  let paramVals: string[] = [];
+  if (paramNames.length > 0) {// get BAAAAAAAD
     // assuming first param is always entityUuid of instances
-    const paramVal: string = typeof params[paramNames[0]] == "string" ? params[paramNames[0]] : params[paramNames[0]][0];
+    // const paramVal: string = typeof params[paramNames[0]] == "string" ? params[paramNames[0]] : params[paramNames[0]][0];
+    paramVals = paramNames.map(p=>typeof params[p] == "string" ? params[p] : params[p][0]);
     // console.log("generateHandlerBody execute method for params", paramNames,'value',paramVal);
-    localData = await method(paramVal);
+    // localData = await method(...Object.values(params));
+    // localData = await method(...paramVals);
   }
 
-  if (instances.length > 0) { // put, post
-    // console.log("generateHandlerBody execute method for payload instances, named", instances.map(i=>i['name']));
-    for (const instance of instances) {
-      await method(instance.parentUuid,instance)
+  console.log('##################################### generateHandlerBody called', HttpMethod, url, "started",'params',paramVals,'instances',instances);
+  if (paramNames.length > 0 || instances.length > 0) { // put, post. BAAAAAAAD
+    console.log("generateHandlerBody execute method for payload instances, named", instances.map(i=>i['name']));
+
+    if (instances.length > 0) {
+      for (const instance of instances) {
+        if (paramVals.length > 0) {
+          localData = await method(...paramVals,instance)
+        } else {
+          localData = await method(instance)
+        }
+      }
+    } else {
+      localData = await method(...paramVals);
     }
-    localData = instances;
+    // localData = instances;
   }
 
-  // console.log("server received", localData);
+  // console.log("generateHandlerBody received", localData);
   // console.log("##################################### end: ",HttpMethod, url);
-  return jsonFormater(localData);
+  return localData?jsonFormater(localData):[];
 
 }

@@ -18,7 +18,7 @@ export class SqlDbDataStore implements DataStoreInterface {
 
   // ##############################################################################################
   constructor(
-    seq: any,
+    // seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
     public dataConnectionString:string,
@@ -26,7 +26,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     // private dataSequelize: Sequelize,
   ) {
     this.logHeader = 'SqlDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
-    this.dataSequelize = new seq.Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
+    this.dataSequelize = new Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
   }
 
   // ##############################################################################################
@@ -40,7 +40,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbDataStore
+  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbStoreController
     let result = {};
     console.log(this.logHeader,'getState this.getEntities()',this.getEntityUuids());
     

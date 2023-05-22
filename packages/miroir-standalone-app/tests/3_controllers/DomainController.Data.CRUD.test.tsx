@@ -24,7 +24,7 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirConfig, miroirCoreStartup, IndexedDbDataStore, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
+  MiroirConfig, miroirCoreStartup, IndexedDbStoreController, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
 } from "miroir-core";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -37,7 +37,7 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
   renderWithProviders,
-  sqlDbStoreFactory,
+  // sqlDbStoreControllerFactory,
   StoreControllerFactory,
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
@@ -58,9 +58,9 @@ import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRes
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
-import { SqlStoreControllerFactory } from "miroir-datastore-postgres";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+// import { SqlStoreFactory } from "miroir-datastore-postgres";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
@@ -89,7 +89,7 @@ beforeAll(
     } = await StoreControllerFactory(
       miroirConfig,
       indexedDbStoreFactory,
-      sqlDbStoreFactory,
+      // sqlDbStoreControllerFactory,
     );
     localMiroirStoreController = a;
     localAppStoreController = b;
@@ -153,10 +153,10 @@ describe(
 
     // ###########################################################################################
     it(
-      'Add Book definition then rollback',
+      'Add Book instance then rollback',
       async () => {
         try {
-          console.log('Add Book definition then rollback start');
+          console.log('Add Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -193,6 +193,7 @@ describe(
           console.log('add Book step 1: the Book must be absent in the local cache report list.')
           await act(
             async () => {
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
@@ -208,13 +209,13 @@ describe(
             ()=> {
               expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
   
           // ##########################################################################################################
-          console.log('add Book step 2: the Book must then be present in the local cache report list.')
+          console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
           const createAction: DomainDataAction = {
             actionName:'create',
             actionType:"DomainDataAction",
@@ -240,15 +241,15 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
-  
+
           // ##########################################################################################################
-          console.log('add Book definition step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
+          console.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -266,10 +267,10 @@ describe(
             },
           ).then(
             ()=> {
-              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // Et dans l'éternité je ne m'ennuierai pas
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
         } catch (error) {
@@ -281,12 +282,12 @@ describe(
 
     // ###########################################################################################
     it(
-      'Remove Book definition then rollback',
+      'Remove Book instance then rollback',
       async () => {
 
         try {
           
-          console.log('Remove Book definition then rollback start');
+          console.log('Remove Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -322,7 +323,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Remove Book step 1: the Book must be present in the local cache report list.')
+          console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -347,7 +348,7 @@ describe(
         // }
   
           // ##########################################################################################################
-          console.log('remove Book step 2: the Book must then be absent from the local cache report list.')
+          console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
           const createAction: DomainDataAction = {
             actionName:'delete',
             actionType:"DomainDataAction",
@@ -380,7 +381,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Remove Book definition step 3: rollbacking/refreshing report list from remote store, removed book must still be absent from the report list.')
+          console.log('Remove Book instance step 3: rollbacking/refreshing report list from remote store, removed book must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -398,10 +399,10 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(new RegExp(`${book3.uuid}`,'i'))).toBeNull() // Et dans l'éternité je ne m'ennuierai pas
               expect(getByText(new RegExp(`${book1.uuid}`,'i'))).toBeTruthy() // The Bride Wore Black
-              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
               expect(getByText(new RegExp(`${book2.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book3.uuid}`,'i'))).toBeTruthy() // The Design of Everyday Things
+              expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
         } catch (error) {
@@ -413,11 +414,11 @@ describe(
 
     // ###########################################################################################
     it(
-      'Update Book definition then commit',
+      'Update Book instance then commit',
       async () => {
         try {
           
-          console.log('update Book definition start');
+          console.log('update Book instance start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -452,7 +453,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Update Bool definition step 1: loading initial configuration, book must be present in report list.')
+          console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -476,7 +477,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+          console.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
           const updateAction: DomainDataAction = {
             actionName: "update",
             actionType:"DomainDataAction",
@@ -486,7 +487,7 @@ describe(
                 parentUuid: book4.parentUuid,
                 applicationSection:'data',
                 instances: [
-                  Object.assign({},book4,{"name":"RRear WindowW", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
+                  Object.assign({},book4,{"name":"Tthe Bride Wore Blackk", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
                   // {
                   //   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
                   //   "parentName":"Book",
@@ -514,12 +515,12 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/RRear WindowW/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/Tthe Bride Wore Blackk/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('Update Book definition step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
+          console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -534,7 +535,7 @@ describe(
             },
           ).then(
             ()=> {
-              expect(screen.queryByText(/RRear WindowW/i)).toBeTruthy() // Report List
+              expect(screen.queryByText(/Tthe Bride Wore Blackk/i)).toBeTruthy() // Report List
             }
           );
         } catch (error) {

@@ -6,7 +6,7 @@ import { StoreControllerInterface } from "miroir-core";
  * @param connectionString 
  * @returns 
  */
-export async function SqlStoreControllerFactory (
+export async function SqlStoreFactory (
   connectionString:string,
 ):Promise<StoreControllerInterface | undefined> {
   return Promise.resolve(undefined);

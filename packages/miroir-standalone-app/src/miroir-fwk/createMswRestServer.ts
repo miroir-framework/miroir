@@ -19,7 +19,7 @@ import {
   RemoteStoreAccessReduxSaga,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
-import { SqlStoreControllerFactory } from "miroir-datastore-postgres";
+// import { SqlStoreFactory } from "miroir-datastore-postgres";
 
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
@@ -83,8 +83,8 @@ export async function createMswRestServer(
     console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
     if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
       // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
-      // const localMiroirStoreController: StoreControllerInterface = new IndexedDbDataStore('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.model.indexedDbName));
-      // const localAppStoreController: StoreControllerInterface = new IndexedDbDataStore('library', 'app', new IndexedDb(miroirConfig.appServerConfig.model.indexedDbName));
+      // const localMiroirStoreController: StoreControllerInterface = new IndexedDbStoreController('miroir', 'miroir',new IndexedDb(miroirConfig.miroirServerConfig.model.indexedDbName));
+      // const localAppStoreController: StoreControllerInterface = new IndexedDbStoreController('library', 'app', new IndexedDb(miroirConfig.appServerConfig.model.indexedDbName));
       const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
       let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
@@ -115,9 +115,9 @@ export async function createMswRestServer(
         });
       } else {
         if (miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" && miroirConfig.appServerConfig.model.emulatedServerType == "Sql") {
-          console.warn("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
+          console.log("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
           console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.model.schema,'library datastore schema',miroirConfig.appServerConfig.model.schema);
-          // const localMiroirStoreController: StoreControllerInterface = await SqlStoreControllerFactory(
+          // const localMiroirStoreController: StoreControllerInterface = await SqlStoreFactory(
           //   'miroir',
           //   'miroir',
           //   miroirConfig.miroirServerConfig.model.connectionString,
@@ -125,7 +125,7 @@ export async function createMswRestServer(
           //   miroirConfig.miroirServerConfig.model.connectionString,
           //   miroirConfig.miroirServerConfig.model.schema,
           // );
-          // const localAppStoreController: StoreControllerInterface = await SqlStoreControllerFactory(
+          // const localAppStoreController: StoreControllerInterface = await SqlStoreFactory(
           //   'library',
           //   'app',
           //   miroirConfig.appServerConfig.model.connectionString,
