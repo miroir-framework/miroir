@@ -24,7 +24,7 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirConfig, miroirCoreStartup, IndexedDbStoreController, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
+  MiroirConfig, miroirCoreStartup, StoreController, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
 } from "miroir-core";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -61,7 +61,6 @@ import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions"
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
-// import { SqlStoreFactory } from "miroir-datastore-postgres";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 

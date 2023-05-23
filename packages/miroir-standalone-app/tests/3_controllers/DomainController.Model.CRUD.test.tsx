@@ -210,10 +210,10 @@ describe(
 
     // ###########################################################################################
     it(
-      'Add Report definition then rollback',
+      'Add Entity then rollback',
       async () => {
         try {
-          console.log('Add Report definition then rollback start');
+          console.log('Add Entity then rollback start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
@@ -230,17 +230,18 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 1: loading initial configuration, entity Author must be absent from entity list.')
+          console.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -253,13 +254,12 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 2: adding reportEntityList, it must then be present in the local cache report list.')
-          // console.log('add Report definition step 2: reduxStore.currentModel()',reduxStore.currentModel())
+          console.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
             actionType:"DomainModelAction",
             actionName: "updateEntity",
@@ -279,7 +279,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction, reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -298,15 +298,15 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 3: rollbacking/refreshing report list from remote store, reportEntityList be absent in the report list.')
+          console.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -322,10 +322,7 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // expect(absentReport).toBeNull() 
-              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
         } catch (error) {
@@ -358,7 +355,7 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
@@ -369,6 +366,7 @@ describe(
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -381,7 +379,7 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
               // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
               // expect(absentReport).toBeNull() 
               // expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
@@ -389,7 +387,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 2: adding Author entity, it must then be present in the local cache entity list.')
+          console.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
             actionType:"DomainModelAction",
             actionName: "updateEntity",
@@ -407,7 +405,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, createAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -426,16 +424,16 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 3: committing report list to remote store, reportEntityList must be present in the report list afterwards.')
-          console.log('reduxStore.currentModel()',reduxStore.currentModel())
+          console.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
+          // console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -451,15 +449,15 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 4: rollbacking/refreshing report list from remote store after the first commit, reportEntityList must still be present in the report list.')
+          console.log('add Report definition step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {actionName: "rollback",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -475,7 +473,7 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
         } catch (error) {
@@ -495,8 +493,6 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
-          // await localDataStore.dropModelAndData();
-          // await localDataStore.initModel();
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -522,14 +518,14 @@ describe(
           console.log('remove Author entity setup: adding Author entity locally.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
 
           console.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
 
@@ -568,12 +564,11 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 2: removing Author entity from local store, it must be absent from the entity list.')
+          console.log('remove Entity step 2: removing Author entity from local store, it must be absent from the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(
@@ -591,7 +586,7 @@ describe(
                     },
                   }
                   },
-                reduxStore.currentModel()
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -604,19 +599,14 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // // console.log("absentReport", absentReport);
-              // expect(absentReport).toBeNull()
-              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 3: commit to remote store, Author entity must still be absent from the report list.')
+          console.log('remove Entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
           await user.click(screen.getByRole('button'))
@@ -627,15 +617,11 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // expect(absentReport).toBeNull()
-              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
   
           // ##########################################################################################################
-          console.log('remove Report definition step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
+          console.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
@@ -654,10 +640,6 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // expect(absentReport).toBeNull()
-              // expect(getByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
             }
           );
         } catch (error) {
@@ -749,6 +731,7 @@ describe(
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   
@@ -761,7 +744,6 @@ describe(
           ).then(
             ()=> {
               expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
   
@@ -808,7 +790,7 @@ describe(
           );
 
           // ##########################################################################################################
-          console.log('Update Author entity definition step 3: committing entity list from remote store, modified entity must still be present in the report list.')
+          console.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
@@ -831,7 +813,7 @@ describe(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
   

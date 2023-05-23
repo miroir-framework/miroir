@@ -1,18 +1,18 @@
 
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import Instance, { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance";
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
-import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
-import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
-import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner";
-import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer";
+import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import Instance, { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
+import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { IndexedDb } from "./indexedDb";
+import { IndexedDb } from "./indexedDb.js";
 
 
-export class IndexedDbStoreController implements StoreControllerInterface{
+export class StoreController implements StoreControllerInterface{
   private logHeader: string;
 
   constructor(
@@ -22,7 +22,7 @@ export class IndexedDbStoreController implements StoreControllerInterface{
     private modelStore:ModelStoreInterface,
     private dataStore:DataStoreInterface,
   ){
-    this.logHeader = 'IndexedDbStoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
   connect(): Promise<void> {
     throw new Error("Method not implemented.");
@@ -293,7 +293,7 @@ export class IndexedDbStoreController implements StoreControllerInterface{
   
   // ##############################################################################################
   async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>{
-    console.log('IndexedDbStoreController applyModelEntityUpdate',update);
+    console.log('StoreController applyModelEntityUpdate',update);
     await applyModelEntityUpdate(this,update);
     return Promise.resolve();
   }

@@ -30,7 +30,7 @@ const app = express(),
 const users = [];
 
 // const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-// const localIndexedDbDataStore:StoreControllerInterface = new IndexedDbStoreController(localUuidIndexedDb);
+// const localIndexedDbDataStore:StoreControllerInterface = new StoreController(localUuidIndexedDb);
 
 const libraryAppFileSystemDataStore:StoreControllerInterface = new FileSystemEntityDataStore(
   'library',

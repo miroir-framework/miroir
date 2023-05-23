@@ -59,7 +59,7 @@ export class IndexedDbModelStore implements ModelStoreInterface {
 
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity:MetaEntity, entityDefinition: EntityDefinition) {
-    // console.warn('IndexedDbStoreController createStorageSpaceForInstancesOfEntity does nothing: IndexedDbStoreController is not persistent.');
+    // console.warn('StoreController createStorageSpaceForInstancesOfEntity does nothing: StoreController is not persistent.');
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
       console.error(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'inconsistent input: given entityDefinition is not related to given entity.');
@@ -153,7 +153,7 @@ export class IndexedDbModelStore implements ModelStoreInterface {
         await this.dataStore.deleteDataInstance(entityEntityDefinition.uuid, entityDefinition)
       }
     } else {
-      console.warn('IndexedDbStoreController dropEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
+      console.warn('StoreController dropEntity sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
     }
     return Promise.resolve();
   }

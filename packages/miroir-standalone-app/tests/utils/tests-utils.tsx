@@ -23,8 +23,7 @@ import {
   EmulatedPartitionedServerConfig,
   ModelStoreInterface,
   DataStoreInterface,
-  OldStoreController,
-  IndexedDbStoreController,
+  StoreController,
   IndexedDbDataStore,
   IndexedDbModelStore,
   EmulatedServerConfig,
@@ -135,7 +134,7 @@ export const indexedDbStoreControllerFactory = (
 )=>{
   const dataStore = new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
   const modelStore = new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
-  return new IndexedDbStoreController(appName, dataStoreApplicationType,modelStore,dataStore);
+  return new StoreController(appName, dataStoreApplicationType,modelStore,dataStore);
 }
 
 export async function storeFactory (
@@ -230,8 +229,8 @@ export async function StoreControllerFactory(
   miroirDataStore = await storeFactory('miroir','miroir','data',miroirConfig.miroirServerConfig.data) as DataStoreInterface;
   miroirModelStore = await storeFactory('miroir','miroir','model',miroirConfig.miroirServerConfig.model,miroirDataStore) as ModelStoreInterface;
 
-  localAppStoreController = new IndexedDbStoreController('library','app',appModelStore,appDataStore);
-  localMiroirStoreController = new IndexedDbStoreController('miroir','miroir',miroirModelStore,miroirDataStore);
+  localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
+  localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);
 
   return Promise.resolve({
     localMiroirStoreController,

@@ -1,6 +1,3 @@
-// export {
-//   SqlStoreFactory,
-// } from './SqlStoreFactory'
 export {
   SqlDbDataStore,
 } from './SqlDbDataStore.js'

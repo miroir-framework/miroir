@@ -73,10 +73,10 @@ export async function modelInitialize(
     console.log(logHeader, 'created entity EntityDefinition',storeController.getEntities());
   
     // // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);!
-    await storeController.upsertModelInstance(entityEntity.uuid, entityEntity as EntityInstance);
-    await storeController.upsertModelInstance(entityEntity.uuid, entityEntityDefinition as EntityInstance);
-    await storeController.upsertModelInstance(entityEntityDefinition.uuid, entityDefinitionEntity as EntityInstance);
-    await storeController.upsertModelInstance(entityEntityDefinition.uuid, entityDefinitionEntityDefinition as EntityInstance);
+    await storeController.upsertInstance('model', entityEntity as EntityInstance);
+    await storeController.upsertInstance('model', entityEntityDefinition as EntityInstance);
+    await storeController.upsertInstance('model', entityDefinitionEntity as EntityInstance);
+    await storeController.upsertInstance('model', entityDefinitionEntityDefinition as EntityInstance);
     console.log(logHeader, 'created entity entity',storeController.getEntities());
   
     // bootstrap Application
@@ -103,21 +103,21 @@ export async function modelInitialize(
     await storeController.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
     console.log(logHeader, 'created entity EntityReport',storeController.getEntities());
     
-    await storeController.upsertDataInstance(entityReport.uuid, reportConfigurationList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportEntityDefinitionList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportEntityList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportApplicationList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportApplicationDeploymentList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportApplicationModelBranchList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportApplicationVersionList as EntityInstance);
-    await storeController.upsertDataInstance(entityReport.uuid, reportReportList as EntityInstance);
+    await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
+    await storeController.upsertInstance('data', reportEntityDefinitionList as EntityInstance);
+    await storeController.upsertInstance('data', reportEntityList as EntityInstance);
+    await storeController.upsertInstance('data', reportApplicationList as EntityInstance);
+    await storeController.upsertInstance('data', reportApplicationDeploymentList as EntityInstance);
+    await storeController.upsertInstance('data', reportApplicationModelBranchList as EntityInstance);
+    await storeController.upsertInstance('data', reportApplicationVersionList as EntityInstance);
+    await storeController.upsertInstance('data', reportReportList as EntityInstance);
 
 
-    await storeController.upsertDataInstance(entityApplication.uuid, application);
-    await storeController.upsertDataInstance(entityApplicationDeployment.uuid, applicationDeployment);
-    await storeController.upsertDataInstance(entityApplicationModelBranch.uuid, applicationModelBranch);
-    await storeController.upsertDataInstance(entityApplicationVersion.uuid, applicationVersion);
-    await storeController.upsertDataInstance(entityStoreBasedConfiguration.uuid, applicationStoreBasedConfiguration);
+    await storeController.upsertInstance('data', application);
+    await storeController.upsertInstance('data', applicationDeployment);
+    await storeController.upsertInstance('data', applicationModelBranch);
+    await storeController.upsertInstance('data', applicationVersion);
+    await storeController.upsertInstance('data', applicationStoreBasedConfiguration);
   }
 
   if (dataStoreType == 'app') {

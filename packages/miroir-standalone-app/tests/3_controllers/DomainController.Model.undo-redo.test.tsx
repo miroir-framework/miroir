@@ -43,6 +43,7 @@ import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestU
 import {
   DisplayLoadingInfo,
   StoreControllerFactory,
+  applicationDeploymentLibrary,
   indexedDbStoreControllerFactory,
   miroirAfterAll,
   miroirAfterEach,
@@ -154,7 +155,7 @@ describe(
               entityName={entityEntity.name}
               entityUuid={entityEntity.uuid}
               DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
+              deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
             {store:reduxStore.getInnerStore(),}
@@ -165,6 +166,7 @@ describe(
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
             }
           );
 
@@ -215,8 +217,8 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,createAuthorAction,reduxStore.currentModel());
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,createBookAction,reduxStore.currentModel());
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,createAuthorAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,createBookAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -245,7 +247,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -271,7 +273,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -299,9 +301,9 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -325,7 +327,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -333,10 +335,10 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -360,7 +362,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
   
@@ -368,7 +370,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
             }
           );
       
@@ -383,7 +385,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid,{actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel());
+              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid,{actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   

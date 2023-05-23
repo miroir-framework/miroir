@@ -41,7 +41,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in IndexedDbStoreController
+  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
     let result = {};
     console.log(this.logHeader,'getState this.getEntities()',this.getEntityUuids());
     

@@ -1,4 +1,4 @@
-import { DataStoreApplicationType, DataStoreInterface, ModelStoreInterface, OldStoreController, StoreControllerInterface } from "miroir-core";
+import { DataStoreApplicationType, DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "miroir-core";
 import { detect } from "detect-browser";
 import { SqlDbDataStore } from "./SqlDbDataStore.js";
 import { SqlDbModelStore } from "./SqlDbModelStore.js";
@@ -19,26 +19,26 @@ export async function SqlStoreFactory (
   // const seq = await import("sequelize");
 
   throw new Error('do not call obsolete SqlStoreFactory!');
-  const dataStore2 = new SqlDbDataStore(applicationName,dataStoreType,dataConnectionString,dataSchema);
-  try {
-    // await dataStore.connect();
-    await dataStore2.connect();
-    console.log('Application',applicationName,'dataStoreType',dataStoreType,'data Connection to postgres data schema', dataSchema, 'has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect data', dataSchema, ' to the postgres database:', error);
-  }
+  // const dataStore2 = new SqlDbDataStore(applicationName,dataStoreType,dataConnectionString,dataSchema);
+  // try {
+  //   // await dataStore.connect();
+  //   await dataStore2.connect();
+  //   console.log('Application',applicationName,'dataStoreType',dataStoreType,'data Connection to postgres data schema', dataSchema, 'has been established successfully.');
+  // } catch (error) {
+  //   console.error('Unable to connect data', dataSchema, ' to the postgres database:', error);
+  // }
 
-  const modelStore2 = new SqlDbModelStore(applicationName,dataStoreType,modelConnectionString,modelSchema,dataStore2);
-  try {
-    // await modelStore.connect()
-    await modelStore2.connect()
-    console.log('Application',applicationName,'dataStoreType',dataStoreType,'model Connection to postgres model schema', modelSchema, 'has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect model to the postgres database:', error);
-  }
+  // const modelStore2 = new SqlDbModelStore(applicationName,dataStoreType,modelConnectionString,modelSchema,dataStore2);
+  // try {
+  //   // await modelStore.connect()
+  //   await modelStore2.connect()
+  //   console.log('Application',applicationName,'dataStoreType',dataStoreType,'model Connection to postgres model schema', modelSchema, 'has been established successfully.');
+  // } catch (error) {
+  //   console.error('Unable to connect model to the postgres database:', error);
+  // }
 
 
-  // const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore,dataStore);
-  const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore2,dataStore2);
-  return Promise.resolve(sqlDbServer);
+  // // const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore,dataStore);
+  // const sqlDbServer:StoreControllerInterface = new OldStoreController(applicationName,dataStoreType,modelStore2,dataStore2);
+  // return Promise.resolve(sqlDbServer);
 }

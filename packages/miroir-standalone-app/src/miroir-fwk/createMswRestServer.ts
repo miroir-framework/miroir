@@ -19,7 +19,6 @@ import {
   RemoteStoreAccessReduxSaga,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
-// import { SqlStoreFactory } from "miroir-datastore-postgres";
 
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
