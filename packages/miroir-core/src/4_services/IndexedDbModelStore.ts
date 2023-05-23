@@ -2,7 +2,7 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
-import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { DataStoreInterface, ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { DataStoreApplicationType } from "../3_controllers/ModelInitializer";
 import { IndexedDb } from "./indexedDb.js";
@@ -21,9 +21,6 @@ export class IndexedDbModelStore implements ModelStoreInterface {
     private dataStore: DataStoreInterface,
   ) {
     this.logHeader = "IndexedDbModelStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
-    // if (!seq) throw Error('seq is undefined!');
-
-    // this.modelSequelize = new Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   }
 
   // ##############################################################################################
@@ -101,16 +98,23 @@ export class IndexedDbModelStore implements ModelStoreInterface {
 
   // #############################################################################################
   async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
+    // TODO: identical to the Filesystem implementation!
     const cudUpdate = update.equivalentModelCUDUpdates[0];
     // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-    if (cudUpdate && cudUpdate.objects[0].instances[0].parentUuid && cudUpdate.objects[0].instances[0].uuid) {
-      const currentValue = await this.dataStore.getInstance(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+    if (
+      cudUpdate 
+      && cudUpdate.objects[0].instances[0].parentUuid 
+      && cudUpdate.objects[0].instances[0].parentUuid == entityEntity.uuid
+      && cudUpdate.objects[0].instances[0].uuid
+    ) {
+      const currentValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
       console.log(this.logHeader, 'renameEntity',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
-      await this.dataStore.upsertInstance(cudUpdate.objects[0].instances[0].parentUuid, cudUpdate.objects[0].instances[0]);
-      const updatedValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+      await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
+      const updatedValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
+      // TODO: update EntityDefinition, too!
       console.log(this.logHeader, 'renameEntity done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
     } else {
-      console.error(this.logHeader, 'renameEntity incorrect parameter',cudUpdate);
+      throw new Error(this.logHeader + ' renameEntity incorrect parameter ' + cudUpdate);
     }
     return Promise.resolve();
   }
@@ -162,6 +166,12 @@ export class IndexedDbModelStore implements ModelStoreInterface {
     await this.localUuidIndexedDb.removeSubLevels(this.getEntities())
     console.log(this.logHeader, "dropModelAndData DONE", this.getEntities());
     return Promise.resolve();
+  }
+
+  // #############################################################################################
+  async getInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
+    const result = await this.localUuidIndexedDb.getValue(parentUuid,uuid);
+    return Promise.resolve(result);
   }
 
   // #############################################################################################

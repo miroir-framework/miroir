@@ -32,6 +32,8 @@ import { ReduxStoreWithUndoRedo } from 'miroir-redux'
 import { RequestHandler } from 'msw'
 import { SetupServerApi } from 'msw/lib/node'
 import { CreateMswRestServerReturnType, createMswRestServer, createReduxStoreAndRestClient } from '../../src/miroir-fwk/createMswRestServer'
+import { FileSystemDataStore } from '../../src/miroir-fwk/3_controllers/FileSystemDataStore'
+import { FileSystemModelStore } from '../../src/miroir-fwk/3_controllers/FileSystemModelStore'
 
 import applicationLibrary from "../../src/assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import applicationDeploymentLibrary from '../../src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
@@ -151,7 +153,7 @@ export async function storeFactory (
     // const indexedDbStoreConfig = config as EmulatedServerConfigIndexedDb;
     if (section == 'model') {
       if (!dataStore) {
-        throw new Error('storeFactory model section factory must receive data section store.')
+        throw new Error('storeFactory indexedDb model section factory must receive data section store.')
       } else {
         return Promise.resolve(new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore))
       }
@@ -159,13 +161,26 @@ export async function storeFactory (
       return Promise.resolve(new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data')))
     }
   }
+
+  if (config.emulatedServerType == 'filesystem') {
+    if (section == 'model') {
+      if (!dataStore) {
+        throw new Error('storeFactory filesystem model section factory must receive data section store.')
+      } else {
+        return Promise.resolve(new FileSystemModelStore(appName,dataStoreApplicationType,config.directory,dataStore))
+      }
+    } else {
+      return Promise.resolve(new FileSystemDataStore(appName,dataStoreApplicationType,config.directory))
+    }
+  }
+
   if (config.emulatedServerType == 'Sql') {
     console.log('StoreControllerFactory creating mixed app data sql store controller');
 
     // const appDataIndexedDbStoreConfig = miroirConfig.appServerConfig.data as EmulatedServerConfigSql;
     if (section == 'model') {
       if (!dataStore) {
-        throw new Error('storeFactory model section factory must receive data section store.')
+        throw new Error('storeFactory sql model section factory must receive data section store.')
       } else {
         const appModelStore = new SqlDbModelStore(
           appName,
@@ -201,10 +216,6 @@ export async function storeFactory (
     }
   }
 
-  if (config.emulatedServerType == 'filesystem') {
-    // return new FileSystemEntityDataStore
-    throw new Error('storeFactory filesystem unimplemented!')
-  }
   throw new Error('storeFactory config.emulatedServerType unknown!')
 }
 

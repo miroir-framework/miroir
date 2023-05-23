@@ -226,57 +226,6 @@ export class StoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return this.modelStore.getInstances(parentUuid);
-  }
-
-  // // #############################################################################################
-  // async getModelInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
-  //   const result = await this.localUuidIndexedDb.getValue(parentUuid,uuid);
-  //   return Promise.resolve(result);
-  // }
-  
-  // // ##############################################################################################
-  // async upsertModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   return this.modelStore.upsertInstance(parentUuid,instance)
-  // }
-
-  // // ##############################################################################################
-  // async deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-  //   return this.modelStore.deleteInstances(parentUuid,instances);
-  // }
-
-  // // ##############################################################################################
-  // async deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   return this.modelStore.deleteInstance(parentUuid,instance);
-  // }
-
-  // // ##############################################################################################
-  // async getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
-  //   return this.dataStore.getInstances(parentUuid);
-  // }
-
-  // // ##############################################################################################
-  // async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
-  //   return this.dataStore.getInstance(parentUuid,uuid);
-  // }
-
-  // // ##############################################################################################
-  // async upsertDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   return this.dataStore.upsertDataInstance(parentUuid,instance);
-  // }
-
-  // // ##############################################################################################
-  // async deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-  //   return this.dataStore.deleteDataInstances(parentUuid,instances);
-  // }
-
-  // // ##############################################################################################
-  // async deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   return this.dataStore.deleteDataInstance(parentUuid,instance);
-  // }
-
-  // ##############################################################################################
   existsEntity(entityUuid:string):boolean {
     return this.modelStore.existsEntity(entityUuid);
   }

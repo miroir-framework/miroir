@@ -12,7 +12,7 @@ import {
   defaultMiroirMetaModel
 } from "miroir-core";
 import { SqlStoreFactory } from 'miroir-datastore-postgres';
-import { FileSystemEntityDataStore } from './FileSystemEntityDataStore.js';
+import { FileSystemEntityDataStore } from './FileSystemModelStore.js';
 import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
 

@@ -71,29 +71,6 @@ export class SqlDbModelStore implements ModelStoreInterface {
     };
   }
 
-  // // ##############################################################################################
-  // async initApplication(
-  //   metaModel: MiroirMetaModel,
-  //   dataStoreType: DataStoreApplicationType,
-  //   application: Application,
-  //   applicationDeployment: EntityInstance,
-  //   applicationModelBranch: EntityInstance,
-  //   applicationVersion: EntityInstance,
-  //   applicationStoreBasedConfiguration: EntityInstance
-  // ): Promise<void> {
-  //   await modelInitialize(
-  //     metaModel,
-  //     this.sqlDbStoreFacade,
-  //     dataStoreType,
-  //     application,
-  //     applicationDeployment,
-  //     applicationModelBranch,
-  //     applicationVersion,
-  //     applicationStoreBasedConfiguration
-  //   );
-  //   return Promise.resolve(undefined);
-  // }
-
   // ##############################################################################################
   async bootFromPersistedState(
     entities : MetaEntity[],
@@ -365,6 +342,17 @@ export class SqlDbModelStore implements ModelStoreInterface {
     }
     console.log(this.logHeader, 'renameEntity done.');
     return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    if (this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[parentUuid]) {
+      const result:EntityInstance = (await this.sqlModelSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
+      return Promise.resolve(result);
+    } else {
+      console.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+      return Promise.resolve(undefined);
+    }
   }
 
   // ##############################################################################################

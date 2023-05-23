@@ -59,7 +59,8 @@ import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions"
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-sql-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-indexedDb.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-filesystem.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
@@ -175,7 +176,7 @@ describe(
           await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
           await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
           await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-          // await localAppStoreController?.upsertDataInstance(book3.parentUuid, book3 as Instance);
+          // await localAppStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
           await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
 
           const {

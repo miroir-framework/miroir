@@ -80,62 +80,21 @@ export async function createMswRestServer(
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
     console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
-    // if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
-      const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
+    const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
-      let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
-      let localDataStoreServer: SetupServerApi | undefined = undefined;
-      if (platformType == "browser") {
-        localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
-      }
-      if (platformType == "nodejs") {
-        localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
-      }
+    let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
+    let localDataStoreServer: SetupServerApi | undefined = undefined;
+    if (platformType == "browser") {
+      localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
+    }
+    if (platformType == "nodejs") {
+      localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
+    }
 
-      return Promise.resolve({
-        // localMiroirStoreController,
-        // localAppStoreController,
-        localDataStoreWorker,
-        localDataStoreServer,
-      });
-    // } else {
-    //   if (process["browser"]) {
-    //     console.error(
-    //       "createMswRestServer cannot connect browser directly to database, please use local indexed DB instead, or access database through a REST server"
-    //     );
-    //     return Promise.resolve({
-    //       // localMiroirStoreController: undefined,
-    //       // localAppStoreController: undefined,
-    //       localDataStoreWorker: undefined,
-    //       localDataStoreServer: undefined,
-    //     });
-    //   } else {
-    //     if (miroirConfig.miroirServerConfig.model.emulatedServerType == "Sql" && miroirConfig.appServerConfig.model.emulatedServerType == "Sql") {
-    //       console.log("createMswRestServer loading miroir-datastore-postgres!", process["browser"]);
-    //       console.log("createMswRestServer sql mirroir datastore schema", miroirConfig.miroirServerConfig.model.schema,'library datastore schema',miroirConfig.appServerConfig.model.schema);
-
-    //       const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
-
-    //       let localDataStoreServer: SetupServerApi | undefined = undefined;
-    //       localDataStoreServer = createRestServiceFromHandlers(...restServerStub.handlers);
-
-    //       return Promise.resolve({
-    //         localMiroirStoreController,
-    //         localAppStoreController,
-    //         localDataStoreWorker: undefined,
-    //         localDataStoreServer,
-    //       });
-    //     } else {
-    //       console.warn("createMswRestServer mixed mode not allowed!");
-    //       return Promise.resolve({
-    //         localMiroirStoreController: undefined,
-    //         localAppStoreController: undefined,
-    //         localDataStoreWorker: undefined,
-    //         localDataStoreServer: undefined,
-    //       });
-    //     }
-    //   }
-    // }
+    return Promise.resolve({
+      localDataStoreWorker,
+      localDataStoreServer,
+    });
   } else {
     console.warn("createMswRestServer non-emulated server will be queried on", miroirConfig["serverConfig"].rootApiUrl);
     return Promise.resolve({

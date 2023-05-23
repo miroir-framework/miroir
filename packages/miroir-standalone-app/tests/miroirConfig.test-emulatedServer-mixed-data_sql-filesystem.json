@@ -3,8 +3,8 @@
   "rootApiUrl":"http://localhost:3080",
   "miroirServerConfig":{
     "model": {
-      "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-miroir-uuid"
+      "emulatedServerType": "filesystem",
+      "directory":"C:/Users/nono/Documents/devhome/tmp/miroir_model"
     },
     "data": {
       "emulatedServerType": "Sql",
@@ -14,8 +14,8 @@
   },
   "appServerConfig": {
     "model": {
-      "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-app-uuid"
+      "emulatedServerType": "filesystem",
+      "directory":"C:/Users/nono/Documents/devhome/tmp/library_model"
     },
     "data": {
       "emulatedServerType": "Sql",

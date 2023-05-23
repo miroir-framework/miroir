@@ -89,7 +89,7 @@ export class SqlDbDataStore implements DataStoreInterface {
       const result:EntityInstance = (await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
       return Promise.resolve(result);
     } else {
-      console.warn('getDataInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+      console.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
       return Promise.resolve(undefined);
     }
   }
@@ -100,7 +100,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     let result;
     if (this.sqlDataSchemaTableAccess) {
       if (this.sqlDataSchemaTableAccess[parentUuid]) {
-        console.log('getDataInstances calling this.sqlEntities findall', parentUuid);
+        console.log('getInstances calling this.sqlEntities findall', parentUuid);
 
         result = this.sqlDataSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()
       } else {
@@ -114,7 +114,7 @@ export class SqlDbDataStore implements DataStoreInterface {
 
   // ##############################################################################################
   async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    console.log("upsertDataInstance application",this.applicationName,"upserting into Parent", instance["parentUuid"], 'named', instance["parentName"], 'existing data schema entities', Object.keys(this.sqlDataSchemaTableAccess?this.sqlDataSchemaTableAccess:{}),'instance',instance);
+    console.log("upsertInstance application",this.applicationName,"upserting into Parent", instance["parentUuid"], 'named', instance["parentName"], 'existing data schema entities', Object.keys(this.sqlDataSchemaTableAccess?this.sqlDataSchemaTableAccess:{}),'instance',instance);
     // return this.sqlUuidEntities[instance.parentUuid].sequelizeModel.create(instance as any);
     return this.sqlDataSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
   }

@@ -68,7 +68,8 @@ import book2 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-sql-indexedDb.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-inversed-sql-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_indexedDb-sql.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-filesystem.json";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 

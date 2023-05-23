@@ -110,6 +110,7 @@ export interface ModelStoreInterface extends AbstractStoreInterface {
     metaModel:MiroirMetaModel,
   ):Promise<void>;
 
+  getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstances(parentUuid: string): Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
@@ -153,11 +154,6 @@ export interface DataStoreInterface extends AbstractStoreInterface{
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  // getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
-  // getDataInstances(parentUuid: string): Promise<EntityInstance[]>;
-  // upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  // deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  // deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
   dropData(
     // metaModel:MiroirMetaModel
@@ -188,10 +184,16 @@ export interface StoreControllerInterface extends AbstractStoreInterface{
   dropEntity(parentUuid:string): Promise<void>;
   dropEntities(parentUuid:string[]): Promise<void>;
 
+  dropModelAndData(
+    metaModel:MiroirMetaModel,
+  ):Promise<void>;
+
   clear(metaModel: MiroirMetaModel): Promise<void>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;
+
+
   applyModelEntityUpdate(update:ModelReplayableUpdate);
 }

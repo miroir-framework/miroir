@@ -83,13 +83,13 @@ export class IndexedDbDataStore implements DataStoreInterface {
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{
     let result = {};
-    console.log('getState this.getEntities()',this.getEntityUuids());
-    
+    console.log(this.logHeader, 'getState this.getEntities()',this.getEntityUuids());
+
     for (const parentUuid of this.getEntityUuids()) {
-      console.log('getState getting instances for',parentUuid);
+      console.log(this.logHeader, 'getState getting instances for',parentUuid);
       const instances = await this.getInstances(parentUuid);
-      console.log('getState found instances',parentUuid,instances);
-      
+      console.log(this.logHeader, 'getState found instances',parentUuid,instances);
+
       Object.assign(result,{[parentUuid]:instances});
     }
     return Promise.resolve(result);
@@ -109,21 +109,22 @@ export class IndexedDbDataStore implements DataStoreInterface {
 
   // #############################################################################################
   async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-    console.log(this.logHeader, 'upsertDataInstance',instance.parentUuid, instance);
+    console.log(this.logHeader, 'upsertInstance',instance.parentUuid, instance);
 
     if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
       await this.localUuidIndexedDb.putValue(parentUuid,instance);
     } else {
-      console.error(this.logHeader, 'upsertDataInstance',instance.parentUuid,'does not exists.');
+      console.error(this.logHeader, 'upsertInstance',instance.parentUuid,'does not exists.');
     }
     return Promise.resolve();
   }
 
   // #############################################################################################
   async deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
-    console.log(this.logHeader, 'deleteDataInstances',parentUuid, instances);
+    console.log(this.logHeader, 'deleteInstances',parentUuid, instances);
     for (const o of instances) {
-      await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
+      // await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
+      await this.deleteInstance(parentUuid, {uuid:o.uuid} as EntityInstance);
     }
     return Promise.resolve();
   }
