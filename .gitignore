@@ -5,8 +5,8 @@ packages/miroir-core/dist*/
 packages/miroir-core/dist/index.js
 packages/miroir-core/dist/src/0_interfaces/2_domain/instanceDomainInterface.d.ts
 packages/miroir-core/dist/src/index.d.ts
-packages/miroir-datastore-postgres/node_modules*/
-packages/miroir-datastore-postgres/dist*/
+packages/miroir-store-postgres/node_modules*/
+packages/miroir-store-postgres/dist*/
 packages/miroir-react/node_modules*/
 packages/miroir-react/dist*/
 packages/miroir-server/node_modules*/
@@ -27,3 +27,4 @@ packages/miroir-standalone-app/miroir*/
 packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/indexedDb-app-uuid*/
 packages/miroir-standalone-app/indexedDb-miroir-uuid*/
+packages/miroir-standalone-app/tmp*/

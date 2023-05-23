@@ -9,8 +9,6 @@ import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
 import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { IndexedDb } from "./indexedDb.js";
-
 
 export class StoreController implements StoreControllerInterface{
   private logHeader: string;
@@ -104,6 +102,11 @@ export class StoreController implements StoreControllerInterface{
     return Promise.resolve();
   }
 
+  // ##############################################################################################
+  existsEntity(entityUuid:string):boolean {
+    return this.modelStore.existsEntity(entityUuid);
+  }
+  
   // #############################################################################################
   getEntities(): string[] {
     return this.dataStore.getEntityUuids();
@@ -225,11 +228,6 @@ export class StoreController implements StoreControllerInterface{
     return Promise.resolve();
   }
 
-  // ##############################################################################################
-  existsEntity(entityUuid:string):boolean {
-    return this.modelStore.existsEntity(entityUuid);
-  }
-  
   // ##############################################################################################
   async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>{
     console.log('StoreController applyModelEntityUpdate',update);

@@ -11,7 +11,7 @@ import {
   // applicationDeploymentLibrary,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { SqlStoreFactory } from 'miroir-datastore-postgres';
+import { SqlStoreFactory } from 'miroir-store-postgres';
 import { FileSystemEntityDataStore } from './FileSystemModelStore.js';
 import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';

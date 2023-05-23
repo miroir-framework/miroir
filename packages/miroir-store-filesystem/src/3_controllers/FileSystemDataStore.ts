@@ -31,12 +31,14 @@ export class FileSystemDataStore implements DataStoreInterface {
 
   // #############################################################################################
   connect(): Promise<void> {
-    throw new Error("Method not implemented.");
+    console.log(this.logHeader, 'connect does nothing!');
+    return Promise.resolve();
   }
 
   // #############################################################################################
-  close() {
-    throw new Error("Method not implemented.");
+  close(): Promise<void> {
+    console.log(this.logHeader, 'close does nothing!');
+    return Promise.resolve();
   }
   // #############################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {

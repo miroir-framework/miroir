@@ -26,7 +26,7 @@ export {
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
-  StorageType,
+  StorageTypeSchema as StorageType,
   ZapplicationConceptLevel,
   ZinstanceSchema,
   Zinstance,
@@ -163,17 +163,25 @@ export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {
+  defaultMiroirMetaModel,
+  getCurrentEntityDefinition,
+ } from './1_core/Model.js';
+export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,
   PackageConfiguration,
   undoRedoHistorization,
+  StoreFactory,
+  StoreFactoryRegister,
 } from "./3_controllers/ConfigurationService.js";
 export {
-  defaultMiroirMetaModel,
-  getCurrentEntityDefinition,
- } from './1_core/Model.js';
- export {
+  ErrorDataStore
+} from './3_controllers/ErrorDataStore.js';
+export {
+  ErrorModelStore
+} from './3_controllers/ErrorModelStore.js';
+export {
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,
@@ -191,17 +199,8 @@ export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
-  IndexedDbDataStore,
-} from './4_services/IndexedDbDataStore.js';
-export {
-  IndexedDbModelStore,
-} from './4_services/IndexedDbModelStore.js';
-export {
   StoreController,
 } from './4_services/StoreController.js';
-export {
-  IndexedDb
-} from './4_services/indexedDb.js';
 export {
   RestClient
 } from './4_services/RestClient.js';

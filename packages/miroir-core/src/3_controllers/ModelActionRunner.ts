@@ -1,22 +1,22 @@
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import { DomainModelInitAction, DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import applicationDeploymentMiroir from "../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 
 export async function initApplicationDeployment(
   deploymentUuid: string,
   actionName:string,
-  miroirDataStoreProxy:StoreControllerInterface,
-  appDataStoreProxy:StoreControllerInterface,
+  miroirStoreController:StoreControllerInterface,
+  appStoreController:StoreControllerInterface,
   params:DomainModelInitActionParams
 ) {
   console.log("ModelUpdateRunner model/initModel params",params);
   if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
-    await miroirDataStoreProxy.initApplication(
+    await miroirStoreController.initApplication(
       // defaultMiroirMetaModel,
       params.metaModel,
       params.dataStoreType,
@@ -27,7 +27,7 @@ export async function initApplicationDeployment(
       params.applicationStoreBasedConfiguration,
     );
   } else { // different Proxy object!!!!!!
-    await appDataStoreProxy.initApplication(
+    await appStoreController.initApplication(
       params.metaModel,
       'app',
       params.application,
@@ -37,7 +37,7 @@ export async function initApplicationDeployment(
       params.applicationStoreBasedConfiguration,
     );
   }
-  console.log('server post resetModel after initModel, entities:',miroirDataStoreProxy.getEntities());
+  console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntities());
 }
 export async function modelActionRunner(
   deploymentUuid: string,
@@ -102,28 +102,28 @@ export async function modelActionRunner(
 
   // ##############################################################################################
   export async function applyModelEntityUpdate(
-    appDataStoreProxy:StoreControllerInterface,
+    storeController:StoreControllerInterface,
     update:ModelReplayableUpdate
   ){
     console.log('ModelActionRunner applyModelEntityUpdate',update);
     const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     if (
       [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
-      appDataStoreProxy.existsEntity(modelCUDupdate.objects[0].parentUuid)
+      storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
     ) {
       // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
       if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity":{
-            await appDataStoreProxy.dropEntity(update.modelEntityUpdate.entityUuid)
+            await storeController.dropEntity(update.modelEntityUpdate.entityUuid)
             break;
           }
           case "alterEntityAttribute": { 
             break;
           }
           case "renameEntity":{
-            await appDataStoreProxy.renameEntity(update);
+            await storeController.renameEntity(update);
             break;
           }
           // case "renameEntity": {
@@ -132,7 +132,7 @@ export async function modelActionRunner(
           case "createEntity": {
             for (const entity of update.modelEntityUpdate.entities) {
               console.log('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
-              await appDataStoreProxy.createEntity(entity.entity, entity.entityDefinition);
+              await storeController.createEntity(entity.entity, entity.entityDefinition);
             }
             break;
           }
@@ -146,7 +146,7 @@ export async function modelActionRunner(
           case "update":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await appDataStoreProxy.upsertDataInstance(instance.parentUuid, instance);
+                await storeController.upsertInstance('data', instance);
               }
             }
             break;
@@ -154,7 +154,7 @@ export async function modelActionRunner(
           case "delete":{
             for (const instanceCollection of update.objects) {
               for (const instance of instanceCollection.instances) {
-                await appDataStoreProxy.deleteDataInstance(instanceCollection.parentUuid, instance)
+                await storeController.deleteInstance('data', instance)
               }
             }
             break;

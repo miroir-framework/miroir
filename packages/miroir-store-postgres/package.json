@@ -1,0 +1,40 @@
+{
+  "name": "miroir-store-postgres",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The Miroir implementation for accessing Postgres databases.",
+  "main": "dist/bundle.esm.js",
+  "types": "dist/bundle.d.ts",
+  "module": "dist/bundle.esm.js",
+  "browser": "dist/bundle-browser.esm.js",
+  "type": "module",
+  "dependencies": {
+    "detect-browser": "^5.3.0",
+    "miroir-core": "*",
+    "pg": "^8.9.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.29.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@types/jest": "^29.2.4",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^4.1.1",
+    "rollup": "^3.10.1",
+    "rollup-plugin-dts": "^5.1.1",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.4"
+  },
+  "scripts": {
+    "watch": "lerna watch --scope='miroir-store-postgres' --include-dependencies -- lerna run build --scope='miroir-store-postgres'",
+    "build": "rollup --config",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "test": "jest --verbose --silent=false -t"
+  },
+  "author": "Arnaud Bailly",
+  "license": "MIT"
+}

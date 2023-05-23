@@ -1,7 +1,7 @@
 import { StoreControllerInterface } from "miroir-core";
 
 /**
- * Empty implementation, intended for use (of the miroir-datastore-postgres package) in the browser.
+ * Empty implementation, intended for use (of the miroir-store-postgres package) in the browser.
  * IT DOES NOTHING!
  * @param connectionString 
  * @returns 

@@ -74,15 +74,17 @@ export class FileSystemModelStore implements ModelStoreInterface {
   }
 
   // #########################################################################################
-  open() {
+  open(): Promise<void> {
     const files = fs.readdirSync(this.directory);
     console.log(this.logHeader, 'open does nothing! existing entities',files);
+    return Promise.resolve();
   }
 
   // #########################################################################################
-  close() {
+  close(): Promise<void> {
     const files = fs.readdirSync(this.directory);
     console.log(this.logHeader, 'close does nothing! existing entities',files);
+    return Promise.resolve();
   }
 
   // #########################################################################################

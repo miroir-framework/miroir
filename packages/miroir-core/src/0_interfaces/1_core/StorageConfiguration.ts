@@ -21,11 +21,13 @@ export const Zmodel = ZinstanceWithName.extend({
   description: z.string(),
 })
 
-export const StorageType = z.enum([
+export const StorageTypeSchema = z.enum([
   "sql",
   "filesystem",
   "indexedDb",
 ]);
+
+export type StorageType = z.infer<typeof StorageTypeSchema>;
 
 export const ClientServerDistributionModeSchema = z.enum([
   "singleNode",
@@ -38,13 +40,13 @@ export const DeploymentSide = z.enum([
 ]);
 
 export const ClientFileStorage = z.object({
-  type: z.literal(StorageType.enum.filesystem),
+  type: z.literal(StorageTypeSchema.enum.filesystem),
   side: z.literal(DeploymentSide.enum.client),
   location: z.string(),
 });
 
 export const ServerFileStorage = z.object({
-  type: z.literal(StorageType.enum.filesystem),
+  type: z.literal(StorageTypeSchema.enum.filesystem),
   side: z.literal(DeploymentSide.enum.server),
   directory: z.string(),
 });
@@ -55,7 +57,7 @@ export const FileStorage = z.union([
 ]);
 
 export const ServerSqlStorage = z.object({
-  type: z.literal(StorageType.enum.sql),
+  type: z.literal(StorageTypeSchema.enum.sql),
   side: z.literal(DeploymentSide.enum.server),
   connectionString: z.string(),
   schema: z.string(),

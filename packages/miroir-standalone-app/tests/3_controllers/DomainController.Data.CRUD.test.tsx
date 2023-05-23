@@ -18,6 +18,7 @@ global.TextDecoder = TextDecoder as any
 
 import {
   applicationDeploymentMiroir,
+  ConfigurationService,
   DomainControllerInterface,
   DomainDataAction,
   EntityDefinition,
@@ -56,17 +57,20 @@ import book1 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a5
 import book2 from "../../src/assets/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-indexedDb.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-filesystem.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-filesystem.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 miroirAppStartup();
 miroirCoreStartup();
+miroirStoreFileSystemStartup();
 
 let 
   localMiroirStoreController: StoreControllerInterface,
@@ -88,6 +92,7 @@ beforeAll(
     const {
       localMiroirStoreController:a,localAppStoreController:b
     } = await StoreControllerFactory(
+      ConfigurationService.storeFactoryRegister,
       miroirConfig,
       indexedDbStoreControllerFactory,
       // sqlDbStoreControllerFactory,

@@ -26,7 +26,9 @@
     "http-proxy-middleware": "^1.0.4",
     "isomorphic-git": "^1.23.0",
     "miroir-core": "*",
-    "miroir-datastore-postgres": "*"
+    "miroir-store-postgres": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-store-filesystem": "*"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

@@ -1,5 +1,12 @@
 
 // TODO: put in ConfigurationServiceInterface
+
+import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
+import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
+import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
+import { DataStoreInterface, ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { DataStoreApplicationType } from "./ModelInitializer.js";
+
 // export type DeploymentModes = 'local' | 'remote';
 export type cacheInvalidationPolicy = 'routing' | 'periodic' | 'never';
 export type cacheFetchPolicy = 'onDemand' |'routing' | 'periodic' | 'never';
@@ -10,11 +17,27 @@ export interface PackageConfiguration {
   packageName: string;
   packageVersion: string;
 }
+
+export type StoreFactory = (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  section:ApplicationSection,
+  config: EmulatedServerConfig,
+  dataStore?: DataStoreInterface,
+)=>Promise<DataStoreInterface | ModelStoreInterface>;
+// export interface StoreFactoryRegister {
+//   [storageType:string]: {[section:string]: StoreFactory};
+// }
+// export type StoreFactoryRegister = Map<{storagType:string,Map<string, StoreFactory>>;
+// export type StoreFactoryRegister = Map<{storageType:string,section:string},StoreFactory>;
+export type StoreFactoryRegister = Map<string,StoreFactory>;
+
 /**
  * Allows Miroir packages to inject (and access?) configuration information.
  */
 export class ConfigurationService {
   static packages:PackageConfiguration[] = [];
+  static storeFactoryRegister:StoreFactoryRegister = new Map();
 
   constructor() {
     
@@ -26,6 +49,19 @@ export class ConfigurationService {
   public static registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
     console.log("ConfigurationService registerPackageConfiguration",packageConfiguration);
     this.packages.push(packageConfiguration);
+  }
+
+  public static registerStoreFactory(storageType:StorageType, section: ApplicationSection, storeFactory: StoreFactory) {
+    console.log("ConfigurationService registerStoreFactory",this.storeFactoryRegister);
+    this.storeFactoryRegister.set(
+      JSON.stringify({storageType, section}), storeFactory
+    );
+    // Object.fromEntries([
+    //   ...Object.entries(this.storeFactoryRegister),
+    //   [
+    //     storageType,
+    //   ]
+    //   {[storageType]:{[section]:storeFactory}});
   }
 
 }

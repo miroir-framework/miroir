@@ -176,6 +176,8 @@ export interface StoreControllerInterface extends AbstractStoreInterface{
 
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // From DataStoreControllerInterface used only for testing purposes!
   getEntities():string[]; // From ModelStoreControllerInterface  TODO: remove!
+
+  existsEntity(entityUuid:string):boolean;
   createEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
