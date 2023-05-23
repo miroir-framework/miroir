@@ -73,14 +73,14 @@ export async function refreshAllInstancesTest(
 
     await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
     await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-    await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-    await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-    await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-    await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-    await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-    await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-    // await localappDataStore?.upsertDataInstance(book3.parentUuid, book3 as Instance);
-    await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+    await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+    await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+    await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+    await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+    await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+    // await localAppStoreController?.upsertInstance('data', book3 as Instance);
+    await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
 
     // console.log(
     //   'after test preparation',

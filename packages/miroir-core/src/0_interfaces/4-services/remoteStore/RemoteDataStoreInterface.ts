@@ -69,22 +69,34 @@ export declare interface RemoteDataStoreInterface {
   handleRemoteStoreModelActionWithDeployment(deploymentUuid:string, action:RemoteStoreModelAction):Promise<RemoteStoreCRUDActionReturnType>;
 }
 
-export interface ModelStoreInterface {
-  close();
-
+export interface AbstractStoreInterface {
   connect():Promise<void>;
+  close();
   bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ):Promise<void>;
-
-  getEntities():string[]; //TODO: remove!
-  existsEntity(entityUuid:string):boolean;
-
   createStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
+}
+
+export interface ModelStoreInterface extends AbstractStoreInterface {
+
+  // connect():Promise<void>;
+  // bootFromPersistedState(
+  //   entities : MetaEntity[],
+  //   entityDefinitions : EntityDefinition[],
+  // ):Promise<void>;
+
+  getEntities():string[]; //TODO: remove!
+  existsEntity(entityUuid:string):boolean;
+
+  // createStorageSpaceForInstancesOfEntity(
+  //   entity:MetaEntity,
+  //   entityDefinition: EntityDefinition,
+  // ): Promise<void>;
 
   createEntity(
     entity:MetaEntity,
@@ -98,26 +110,29 @@ export interface ModelStoreInterface {
     metaModel:MiroirMetaModel,
   ):Promise<void>;
 
-  getModelInstances(parentUuid: string): Promise<EntityInstance[]>;
-
-  upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  getInstances(parentUuid: string): Promise<EntityInstance[]>;
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  // upsertModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  // deleteModelInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  // deleteModelInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 }
 
-export interface DataStoreInterface {
+export interface DataStoreInterface extends AbstractStoreInterface{
 
-  connect():Promise<void>;
+  // connect():Promise<void>;
+  // // close();
 
-  bootFromPersistedState(
-    entities : MetaEntity[],
-    entityDefinitions : EntityDefinition[],
-  ): Promise<void>;
+  // bootFromPersistedState(
+  //   entities : MetaEntity[],
+  //   entityDefinitions : EntityDefinition[],
+  // ): Promise<void>;
 
-  createStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
-    entityDefinition: EntityDefinition,
-  ): Promise<void>;
+  // createStorageSpaceForInstancesOfEntity(
+  //   entity:MetaEntity,
+  //   entityDefinition: EntityDefinition,
+  // ): Promise<void>;
 
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
@@ -133,23 +148,25 @@ export interface DataStoreInterface {
   getEntityNames():string[]; //TODO: remove!
   getEntityUuids():string[]; //TODO: remove!
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
-  getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
-  getDataInstances(parentUuid: string): Promise<EntityInstance[]>;
-  upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
+  getInstances(parentUuid: string): Promise<EntityInstance[]>;
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  // getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
+  // getDataInstances(parentUuid: string): Promise<EntityInstance[]>;
+  // upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  // deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
+  // deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 
   dropData(
     // metaModel:MiroirMetaModel
   ):Promise<void>;
-
-  close();
-
 }
 
-export interface StoreControllerInterface extends ModelStoreInterface, DataStoreInterface{
-  open();
-  close();
+export interface StoreControllerInterface extends AbstractStoreInterface{
+  open();//?
+  // close();
 
   initApplication(
     metaModel:MiroirMetaModel, 
@@ -160,6 +177,16 @@ export interface StoreControllerInterface extends ModelStoreInterface, DataStore
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
   ):Promise<void>;
+
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // From DataStoreControllerInterface used only for testing purposes!
+  getEntities():string[]; // From ModelStoreControllerInterface  TODO: remove!
+  createEntity(
+    entity:MetaEntity,
+    entityDefinition: EntityDefinition,
+  ): Promise<void>;
+  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate): Promise<void>;
+  dropEntity(parentUuid:string): Promise<void>;
+  dropEntities(parentUuid:string[]): Promise<void>;
 
   clear(metaModel: MiroirMetaModel): Promise<void>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;

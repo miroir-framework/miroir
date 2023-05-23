@@ -106,15 +106,11 @@ export class StoreController implements StoreControllerInterface{
 
   // #############################################################################################
   getEntities(): string[] {
-    // return this.localUuidIndexedDb.getSubLevels();
-    // return this.modelStore.getEntities();
     return this.dataStore.getEntityUuids();
   }
 
   // #############################################################################################
   getModelEntities(): string[] {
-    // return this.localUuidIndexedDb.getSubLevels();
-    // return this.modelStore.getEntities();
     return this.modelStore.getEntities();
   }
 
@@ -126,15 +122,15 @@ export class StoreController implements StoreControllerInterface{
     return this.modelStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
-  // #############################################################################################
-  async renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
-    return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
-  }
+  // // #############################################################################################
+  // async renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
+  //   return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
+  // }
 
-  // #############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
-    return this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
-  }
+  // // #############################################################################################
+  // async dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
+  //   return this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
+  // }
 
   // ##############################################################################################
   async createEntity(
@@ -187,9 +183,9 @@ export class StoreController implements StoreControllerInterface{
 
     // if (modelEntitiesUuid.includes(entityUuid)) {
     if (section == 'data') {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.getDataInstances(entityUuid)});
+      return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.dataStore.getInstances(entityUuid)});
     } else {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.getModelInstances(entityUuid)});
+      return Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelStore.getInstances(entityUuid)});
     }
     // return {parentUuid:entityUuid,applicationSection:'model',instances:await this.localUuidIndexedDb.getAllValue(entityUuid) as EntityInstance[]};
   }
@@ -200,9 +196,9 @@ export class StoreController implements StoreControllerInterface{
     
     // if (this.getEntities().includes(parentUuid)) {
     if (section == 'data') {
-      await this.upsertDataInstance(instance.parentUuid,instance);
+      await this.dataStore.upsertInstance(instance.parentUuid,instance);
     } else {
-      await this.upsertModelInstance(instance.parentUuid,instance);
+      await this.modelStore.upsertInstance(instance.parentUuid,instance);
     }
     return Promise.resolve(instance);
   }
@@ -210,9 +206,9 @@ export class StoreController implements StoreControllerInterface{
   // ##############################################################################################
   async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
     if (section == 'data') {
-      await this.deleteDataInstance(instance.parentUuid,instance);
+      await this.dataStore.deleteInstance(instance.parentUuid,instance);
     } else {
-      await this.deleteModelInstance(instance.parentUuid,instance);
+      await this.modelStore.deleteInstance(instance.parentUuid,instance);
     }
     return Promise.resolve(instance);
   }
@@ -221,9 +217,9 @@ export class StoreController implements StoreControllerInterface{
   async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>{
     for (const instance of instances) {
       if (section == 'data') {
-        await this.deleteDataInstance(instance.parentUuid,instance);
+        await this.dataStore.deleteInstance(instance.parentUuid,instance);
       } else {
-        await this.deleteModelInstance(instance.parentUuid,instance);
+        await this.modelStore.deleteInstance(instance.parentUuid,instance);
       }
     }
     return Promise.resolve();
@@ -231,7 +227,7 @@ export class StoreController implements StoreControllerInterface{
 
   // ##############################################################################################
   async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return this.modelStore.getModelInstances(parentUuid);
+    return this.modelStore.getInstances(parentUuid);
   }
 
   // // #############################################################################################
@@ -240,51 +236,45 @@ export class StoreController implements StoreControllerInterface{
   //   return Promise.resolve(result);
   // }
   
-  // ##############################################################################################
-  async upsertModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.modelStore.upsertModelInstance(parentUuid,instance)
-  }
-
-  // ##############################################################################################
-  async deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-    return this.modelStore.deleteModelInstances(parentUuid,instances);
-  }
-
-  // ##############################################################################################
-  async deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.modelStore.deleteModelInstance(parentUuid,instance);
-  }
-
-  // ##############################################################################################
-  async getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
-    return this.dataStore.getDataInstances(parentUuid);
-  }
-
-  // ##############################################################################################
-  async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
-    return this.dataStore.getDataInstance(parentUuid,uuid);
-  }
-
-  // // #############################################################################################
-  // async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
-  //   const result = await this.upsertDataInstance(parentUuid,instance);
-  //   return Promise.resolve(result);
+  // // ##############################################################################################
+  // async upsertModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  //   return this.modelStore.upsertInstance(parentUuid,instance)
   // }
 
-  // ##############################################################################################
-  async upsertDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.dataStore.upsertDataInstance(parentUuid,instance);
-  }
+  // // ##############################################################################################
+  // async deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  //   return this.modelStore.deleteInstances(parentUuid,instances);
+  // }
 
-  // ##############################################################################################
-  async deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-    return this.dataStore.deleteDataInstances(parentUuid,instances);
-  }
+  // // ##############################################################################################
+  // async deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  //   return this.modelStore.deleteInstance(parentUuid,instance);
+  // }
 
-  // ##############################################################################################
-  async deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    return this.dataStore.deleteDataInstance(parentUuid,instance);
-  }
+  // // ##############################################################################################
+  // async getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
+  //   return this.dataStore.getInstances(parentUuid);
+  // }
+
+  // // ##############################################################################################
+  // async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+  //   return this.dataStore.getInstance(parentUuid,uuid);
+  // }
+
+  // // ##############################################################################################
+  // async upsertDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  //   return this.dataStore.upsertDataInstance(parentUuid,instance);
+  // }
+
+  // // ##############################################################################################
+  // async deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  //   return this.dataStore.deleteDataInstances(parentUuid,instances);
+  // }
+
+  // // ##############################################################################################
+  // async deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  //   return this.dataStore.deleteDataInstance(parentUuid,instance);
+  // }
 
   // ##############################################################################################
   existsEntity(entityUuid:string):boolean {

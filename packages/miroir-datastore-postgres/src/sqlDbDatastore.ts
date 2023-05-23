@@ -47,7 +47,7 @@ export class SqlDbDataStore implements DataStoreInterface {
     
     for (const parentUuid of this.getEntityUuids()) {
       console.log(this.logHeader,'getState getting instances for',parentUuid);
-      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:await this.getDataInstances(parentUuid)};
+      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:await this.getInstances(parentUuid)};
       console.log(this.logHeader,'getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});
@@ -84,7 +84,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async getDataInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+  async getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
     if (this.sqlDataSchemaTableAccess && this.sqlDataSchemaTableAccess[parentUuid]) {
       const result:EntityInstance = (await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
       return Promise.resolve(result);
@@ -96,7 +96,7 @@ export class SqlDbDataStore implements DataStoreInterface {
 
   // ##############################################################################################
   // async getDataInstances(parentUuid: string, sqlEntities?: SqlUuidEntityDefinition): Promise<EntityInstance[]> {
-  async getDataInstances(parentUuid: string): Promise<EntityInstance[]> {
+  async getInstances(parentUuid: string): Promise<EntityInstance[]> {
     let result;
     if (this.sqlDataSchemaTableAccess) {
       if (this.sqlDataSchemaTableAccess[parentUuid]) {
@@ -113,23 +113,23 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async upsertDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
     console.log("upsertDataInstance application",this.applicationName,"upserting into Parent", instance["parentUuid"], 'named', instance["parentName"], 'existing data schema entities', Object.keys(this.sqlDataSchemaTableAccess?this.sqlDataSchemaTableAccess:{}),'instance',instance);
     // return this.sqlUuidEntities[instance.parentUuid].sequelizeModel.create(instance as any);
     return this.sqlDataSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
   }
 
   // ##############################################################################################
-  async deleteDataInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
     for (const instance of instances) {
-      await this.deleteDataInstance(parentUuid,instance);
+      await this.deleteInstance(parentUuid,instance);
     }
     return Promise.resolve();
   }
 
 
   // ##############################################################################################
-  async deleteDataInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
     console.log('deleteDataInstance', parentUuid,instance);
     await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
     return Promise.resolve();

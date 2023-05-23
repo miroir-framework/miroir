@@ -153,11 +153,11 @@ export async function modelInitialize(
     await storeController.createStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
     console.log(logHeader, 'app initialized entity EntityReport',storeController.getEntities());
     
-    await storeController.upsertModelInstance(entityApplication.uuid, application);
-    await storeController.upsertModelInstance(entityApplicationDeployment.uuid, applicationDeployment);
-    await storeController.upsertModelInstance(entityApplicationModelBranch.uuid, applicationModelBranch);
-    await storeController.upsertModelInstance(entityApplicationVersion.uuid, applicationVersion);
-    await storeController.upsertModelInstance(entityStoreBasedConfiguration.uuid, applicationStoreBasedConfiguration);
+    await storeController.upsertInstance('model', application);
+    await storeController.upsertInstance('model', applicationDeployment);
+    await storeController.upsertInstance('model', applicationModelBranch);
+    await storeController.upsertInstance('model', applicationVersion);
+    await storeController.upsertInstance('model', applicationStoreBasedConfiguration);
   }
 
 

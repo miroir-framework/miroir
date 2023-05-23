@@ -137,8 +137,8 @@ export class SqlDbModelStore implements ModelStoreInterface {
         }, {});
       }
 
-      const dataEntities = (await this.getModelInstances(entityEntity.uuid)) as MetaEntity[];
-      const dataEntityDefinitions = (await this.getModelInstances(entityEntityDefinition.uuid)) as EntityDefinition[];
+      const dataEntities = (await this.getInstances(entityEntity.uuid)) as MetaEntity[];
+      const dataEntityDefinitions = (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[];
 
       await this.sqlDbDataStore.bootFromPersistedState(dataEntities, dataEntityDefinitions);
     }
@@ -289,22 +289,6 @@ export class SqlDbModelStore implements ModelStoreInterface {
   }
 
   // ##############################################################################################
-  async getModelInstances(parentUuid: string): Promise<EntityInstance[]> {
-    console.log(this.logHeader, "getModelInstances calling findall", parentUuid);
-    let result;
-    if (this.sqlModelSchemaTableAccess) {
-      if (this.sqlModelSchemaTableAccess[parentUuid]) {
-        result = await this.sqlModelSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll();
-      } else {
-        result = [];
-      }
-    } else {
-      result = [];
-    }
-    return Promise.resolve(result);
-  }
-
-  // ##############################################################################################
   async dropEntity(entityUuid: string) {
     if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
       // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -319,14 +303,14 @@ export class SqlDbModelStore implements ModelStoreInterface {
     } else {
       if (this.sqlDbDataStore.getEntityUuids().includes(entityUuid)) {
         await this.sqlDbDataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
-        await this.deleteModelInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
+        await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
         //remove all entity definitions for the dropped entity
         const entityDefinitions = (
-          (await this.getModelInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
+          (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
         ).filter((i) => i.entityUuid == entityUuid);
         for (const entityDefinition of entityDefinitions) {
-          await this.deleteModelInstance(entityEntityDefinition.uuid, entityDefinition);
+          await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {
         console.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
@@ -370,8 +354,8 @@ export class SqlDbModelStore implements ModelStoreInterface {
 
       if (modelCUDupdate.objects && model?.parentName) { // this.modelSequelize indexes tables by name, it has to be updated to stay consistent
         // update the instance in table Entity and EntityDefinition corresponding to the renamed entity
-        await this.upsertModelInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
-        await this.upsertModelInstance(entityEntityDefinition.uuid, modelCUDupdate.objects[1].instances[0]);
+        await this.upsertInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
+        await this.upsertInstance(entityEntityDefinition.uuid, modelCUDupdate.objects[1].instances[0]);
         
       } else {
         console.error('renameEntity could not execute update',update);
@@ -384,10 +368,26 @@ export class SqlDbModelStore implements ModelStoreInterface {
   }
 
   // ##############################################################################################
-  async upsertModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  async getInstances(parentUuid: string): Promise<EntityInstance[]> {
+    console.log(this.logHeader, "getModelInstances calling findall", parentUuid);
+    let result;
+    if (this.sqlModelSchemaTableAccess) {
+      if (this.sqlModelSchemaTableAccess[parentUuid]) {
+        result = await this.sqlModelSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll();
+      } else {
+        result = [];
+      }
+    } else {
+      result = [];
+    }
+    return Promise.resolve(result);
+  }
+
+  // ##############################################################################################
+  async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
     console.log(
       this.logHeader,
-      "upsertModelInstance",
+      "upsertInstance",
       this.applicationName,
       "upserting into Parent",
       instance["parentUuid"],
@@ -403,15 +403,15 @@ export class SqlDbModelStore implements ModelStoreInterface {
     return Promise.resolve();
   }
   // ##############################################################################################
-  async deleteModelInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
     for (const instance of instances) {
-      await this.deleteModelInstance(parentUuid, instance);
+      await this.deleteInstance(parentUuid, instance);
     }
     return Promise.resolve();
   }
   // ##############################################################################################
-  async deleteModelInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-    console.log("deleteModelInstance", parentUuid, instance);
+  async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    console.log("deleteInstance", parentUuid, instance);
     await this.sqlModelSchemaTableAccess[parentUuid].sequelizeModel.destroy({ where: { uuid: instance.uuid } });
     return Promise.resolve();
   }

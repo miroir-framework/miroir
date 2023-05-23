@@ -87,7 +87,7 @@ export class IndexedDbDataStore implements DataStoreInterface {
     
     for (const parentUuid of this.getEntityUuids()) {
       console.log('getState getting instances for',parentUuid);
-      const instances = await this.getDataInstances(parentUuid);
+      const instances = await this.getInstances(parentUuid);
       console.log('getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});
@@ -96,19 +96,19 @@ export class IndexedDbDataStore implements DataStoreInterface {
   }
 
   // #############################################################################################
-  async getDataInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
+  async getInstance(parentUuid:string,uuid:string):Promise<EntityInstance | undefined> {
     const result = await this.localUuidIndexedDb.getValue(parentUuid,uuid);
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async getDataInstances(parentUuid:string):Promise<any> {
+  async getInstances(parentUuid:string):Promise<any> {
     const result = await this.localUuidIndexedDb.getAllValue(parentUuid);
     return Promise.resolve(result);
   }
 
   // #############################################################################################
-  async upsertDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+  async upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
     console.log(this.logHeader, 'upsertDataInstance',instance.parentUuid, instance);
 
     if (this.localUuidIndexedDb.hasSubLevel(parentUuid)) {
@@ -120,7 +120,7 @@ export class IndexedDbDataStore implements DataStoreInterface {
   }
 
   // #############################################################################################
-  async deleteDataInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
+  async deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any> {
     console.log(this.logHeader, 'deleteDataInstances',parentUuid, instances);
     for (const o of instances) {
       await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
@@ -129,7 +129,7 @@ export class IndexedDbDataStore implements DataStoreInterface {
   }
 
   // #############################################################################################
-  async deleteDataInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
+  async deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any> {
     console.log(this.logHeader, 'deleteDataInstance',parentUuid, instance);
     // for (const o of instances) {
     await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);

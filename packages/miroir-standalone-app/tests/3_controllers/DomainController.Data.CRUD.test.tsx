@@ -4,9 +4,9 @@
  */
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { SetupWorkerApi } from "msw";
 import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
-import { SetupWorkerApi } from "msw";
 
 const fetch = require('node-fetch');
 
@@ -18,13 +18,13 @@ global.TextDecoder = TextDecoder as any
 
 import {
   applicationDeploymentMiroir,
-  StoreControllerInterface,
   DomainControllerInterface,
   DomainDataAction,
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirConfig, miroirCoreStartup, StoreController, IndexedDb, DataStoreApplicationType, EmulatedServerConfigIndexedDb
+  MiroirConfig, miroirCoreStartup,
+  StoreControllerInterface
 } from "miroir-core";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -169,14 +169,14 @@ describe(
 
           await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
           await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
+          await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
           // await localAppStoreController?.upsertDataInstance(book3.parentUuid, book3 as Instance);
-          await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
 
           const {
             getByText,
@@ -294,21 +294,17 @@ describe(
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
-          // const loadingStateService = new LoadingStateService();
-  
-          // await localDataStore.dropModelAndData();
-          // await localDataStore.initModel();
 
           await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
           await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-          await localAppStoreController.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(book3.parentUuid, book3 as EntityInstance);
-          await localAppStoreController.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+          await localAppStoreController.upsertInstance('model', reportBookList as EntityInstance);
+          await localAppStoreController.upsertInstance('data', author1 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', author2 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', author3 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', book1 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', book2 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', book3 as EntityInstance);
+          await localAppStoreController.upsertInstance('data', book4 as EntityInstance);
 
           const {
             getByText,
@@ -432,14 +428,14 @@ describe(
 
           await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
           await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController?.upsertModelInstance(reportBookList.parentUuid, reportBookList as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author1.parentUuid, author1 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author2.parentUuid, author2 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(author3.parentUuid, author3 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book1.parentUuid, book1 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book2.parentUuid, book2 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book3.parentUuid, book3 as EntityInstance);
-          await localAppStoreController?.upsertDataInstance(book4.parentUuid, book4 as EntityInstance);
+          await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
+          await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
 
           const {
             getByText,
