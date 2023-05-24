@@ -6,7 +6,7 @@ import {
   CUDActionNamesArray,
   DomainAncillaryOrReplayableAction,
   DomainAncillaryOrReplayableActionWithDeployment,
-  DomainModelReplayableAction, EntityDefinition,
+  DomainTransactionalReplayableAction, EntityDefinition,
   EntityInstanceCollection,
   ModelEntityUpdateActionNamesObject
 } from "miroir-core";
@@ -30,11 +30,11 @@ export interface InnerStoreStateInterface {
 }
 
 export interface ReduxStateChanges {
-  // action:PayloadAction<DomainDataAction|DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
-  // action:PayloadAction<DomainModelAction>, changes:Patch[]; inverseChanges:Patch[];
-  // action:DomainModelAction, changes:Patch[]; inverseChanges:Patch[];
-  // action:DomainModelEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
-  action:DomainModelReplayableAction, changes:Patch[]; inverseChanges:Patch[];
+  // action:PayloadAction<DomainDataAction|DomainTransactionalAction>, changes:Patch[]; inverseChanges:Patch[];
+  // action:PayloadAction<DomainTransactionalAction>, changes:Patch[]; inverseChanges:Patch[];
+  // action:DomainTransactionalAction, changes:Patch[]; inverseChanges:Patch[];
+  // action:DomainTransactionalEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb.
@@ -108,7 +108,7 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
   state:InnerStoreStateInterface,
-  // action:PayloadAction<DomainModelAction>
+  // action:PayloadAction<DomainTransactionalAction>
   // action:PayloadAction<DomainAncillaryOrReplayableAction>
   action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
 ):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} {
@@ -140,7 +140,7 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    // action: PayloadAction<DomainModelReplayableAction>,
+    // action: PayloadAction<DomainTransactionalReplayableAction>,
     action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
@@ -151,7 +151,7 @@ function callUndoRedoReducer(
       console.log('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
       return state;
     } else { // presentModelSnapshot !== newSnapshot
-      const newPatch:ReduxStateChanges = { action:action.payload.domainAction as DomainModelReplayableAction, changes, inverseChanges };
+      const newPatch:ReduxStateChanges = { action:action.payload.domainAction as DomainTransactionalReplayableAction, changes, inverseChanges };
 
 
       console.log('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
@@ -202,9 +202,9 @@ function callNextReducer(
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
 
     switch (action.type) {
-      case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction: // TODO: here?
-      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction + '/resolved': // TODO: here?
-      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDAction: {
+      case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: // TODO: here?
+      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment + '/resolved': // TODO: here?
+      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: {
         console.log('UndoRedoReducer handleRemoteStoreCRUDAction', action)
         return callNextReducer(innerReducer, state, action);
       }
@@ -230,11 +230,11 @@ function callNextReducer(
             }
             break;
           }
-          case "DomainModelAction": {
+          case "DomainTransactionalAction": {
             switch (action.payload.domainAction.actionName) {
               case 'rollback':
               case 'replaceLocalCache': {
-                // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainModelAction>)
+                // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainTransactionalAction>)
                 const next = callNextReducer(innerReducer, state, action)
                 return {
                   // dataCache,
@@ -300,14 +300,14 @@ function callNextReducer(
                 break;
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-                // console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainModelAction action.payload.actionName', action.payload.domainAction.actionName, action);
+                // console.warn('UndoRedoReducer handleLocalCacheAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
                 return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>)
             }
             break;
           }
           default: {
             console.error('UndoRedoReducer handleLocalCacheAction default case for action', action);
-            // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainModelAction>)
+            // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainTransactionalAction>)
             break;
           }
         }

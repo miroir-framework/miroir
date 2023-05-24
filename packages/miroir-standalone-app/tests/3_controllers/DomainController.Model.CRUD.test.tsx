@@ -29,7 +29,7 @@ import {
   MiroirContext,
   StoreControllerFactory,
   StoreControllerInterface,
-  WrappedModelEntityUpdateWithCUDUpdate,
+  WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentMiroir,
   entityEntity,
   entityReport,
@@ -184,7 +184,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -239,8 +239,8 @@ describe(
           console.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -260,10 +260,10 @@ describe(
           // ##########################################################################################################
           console.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -287,7 +287,7 @@ describe(
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           console.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -305,7 +305,7 @@ describe(
           console.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -364,8 +364,8 @@ describe(
           console.log('add Report definition step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -388,10 +388,10 @@ describe(
           // ##########################################################################################################
           console.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -412,7 +412,7 @@ describe(
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
 
           await waitFor(
@@ -432,7 +432,7 @@ describe(
           // console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -456,7 +456,7 @@ describe(
           console.log('add Report definition step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -494,16 +494,16 @@ describe(
 
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
 
           const createAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -524,7 +524,7 @@ describe(
           console.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
 
@@ -551,7 +551,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
           await user.click(screen.getByRole('button'))
@@ -573,10 +573,10 @@ describe(
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid, 
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "updateEntity",
                   update: {
-                    updateActionName: "WrappedModelEntityUpdate",
+                    updateActionName: "WrappedTransactionalEntityUpdate",
                     modelEntityUpdate: {
                       updateActionType: "ModelEntityUpdate",
                       updateActionName: "DeleteEntity",
@@ -605,7 +605,7 @@ describe(
           console.log('remove Entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
           await user.click(screen.getByRole('button'))
@@ -623,7 +623,7 @@ describe(
           console.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -673,16 +673,16 @@ describe(
     
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
 
           const createAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -705,7 +705,7 @@ describe(
           console.log('update Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -729,8 +729,8 @@ describe(
           console.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -751,10 +751,10 @@ describe(
           // const updatedReport = 
           const updateAction: DomainAction = 
             {
-              actionType: "DomainModelAction",
+              actionType: "DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                updateActionName:"WrappedModelEntityUpdate",
+                updateActionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate:{
                   updateActionType:"ModelEntityUpdate",
                   updateActionName: "renameEntity",
@@ -774,7 +774,7 @@ describe(
           console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
   
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
   
           await user.click(screen.getByRole('button'))
   
@@ -792,7 +792,7 @@ describe(
           console.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -812,7 +812,7 @@ describe(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   

@@ -1,7 +1,7 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
-import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 
 export class ErrorModelStore implements ModelStoreInterface {
@@ -15,7 +15,7 @@ export class ErrorModelStore implements ModelStoreInterface {
   createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate): Promise<void> {
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void> {
     throw new Error("Method not implemented.");
   }
   dropEntity(parentUuid: string): Promise<void> {

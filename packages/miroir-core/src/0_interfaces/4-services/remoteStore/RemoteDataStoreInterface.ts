@@ -3,8 +3,8 @@ import { MError } from "../../../0_interfaces/3_controllers/ErrorLogServiceInter
 import {
   CRUDActionName,
   DomainModelInitAction,
-  DomainModelReplayableAction,
-  DomainModelResetAction,
+  DomainTransactionalReplayableAction,
+  DomainTransactionalResetAction,
 } from "../../2_domain/DomainControllerInterface.js";
 
 export interface RemoteStoreCRUDAction {
@@ -16,7 +16,7 @@ export interface RemoteStoreCRUDAction {
   objects?: EntityInstance[];
 }
 
-export type RemoteStoreModelAction = DomainModelReplayableAction | DomainModelResetAction | DomainModelInitAction;
+export type RemoteStoreModelAction = DomainTransactionalReplayableAction | DomainTransactionalResetAction | DomainModelInitAction;
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 

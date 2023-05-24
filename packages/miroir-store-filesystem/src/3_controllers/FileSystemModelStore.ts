@@ -7,7 +7,7 @@ import {
   MetaEntity,
   MiroirMetaModel,
   ModelReplayableUpdate,
-  WrappedModelEntityUpdateWithCUDUpdate,
+  WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition,
   ApplicationSection,
@@ -186,7 +186,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
   }
 
   // #########################################################################################
-  async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate):Promise<void> {
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<void> {
     // TODO: identical to IndexedDbModelStore implementation!
     console.log(this.logHeader,'renameEntity',update);
     const cudUpdate = update.equivalentModelCUDUpdates[0];

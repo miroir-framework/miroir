@@ -7,7 +7,7 @@ import {
   MiroirMetaModel,
   ModelReplayableUpdate,
   ModelStoreInterface,
-  WrappedModelEntityUpdateWithCUDUpdate,
+  WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition
 } from "miroir-core";
@@ -295,7 +295,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     return Promise.resolve();
   }
   // ##############################################################################################
-  async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate) {
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate) {
     if (
       update.equivalentModelCUDUpdates.length 
       && update.equivalentModelCUDUpdates[0]

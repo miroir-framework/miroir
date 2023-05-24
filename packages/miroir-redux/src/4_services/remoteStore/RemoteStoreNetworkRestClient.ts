@@ -86,12 +86,12 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       // args: []
       args: ["RemoteStoreCRUDAction", "RemoteStoreCRUDActionWithDeployment"].includes(networkAction.actionType)
         ? networkAction["objects"]
-        : ["DomainModelAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
+        : ["DomainTransactionalAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
         ? networkAction["update"]?[networkAction["update"]]:networkAction["params"]
         : [],
-      // args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainModelAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
-      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])
-      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainModelAction'?(networkAction.actionName=='initModel'?[]:[networkAction["update"]]):[])
+      // args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainTransactionalAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
+      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainTransactionalAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])
+      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainTransactionalAction'?(networkAction.actionName=='initModel'?[]:[networkAction["update"]]):[])
     };
   }
 

@@ -134,10 +134,10 @@ async function uploadBooksAndReports(
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
     {
-    actionType: "DomainModelAction",
+    actionType: "DomainTransactionalAction",
     actionName: "updateEntity",
     update: {
-      updateActionName:"WrappedModelEntityUpdate",
+      updateActionName:"WrappedTransactionalEntityUpdate",
       modelEntityUpdate: {
         updateActionType: "ModelEntityUpdate",
         updateActionName: "createEntity",
@@ -152,7 +152,7 @@ async function uploadBooksAndReports(
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
     {
-    actionType: "DomainModelAction",
+    actionType: "DomainTransactionalAction",
     actionName: "UpdateMetaModelInstance",
     update: {
       updateActionType: "ModelCUDInstanceUpdate",
@@ -170,7 +170,7 @@ async function uploadBooksAndReports(
 
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
-    { actionName: "commit", actionType: "DomainModelAction", label:"Adding Author and Book entities" },
+    { actionName: "commit", actionType: "DomainTransactionalAction", label:"Adding Author and Book entities" },
     currentModel
   );
 
@@ -313,8 +313,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
-                actionType: "DomainModelAction",
+              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+                actionType: "DomainTransactionalAction",
                 actionName: "undo",
               });
             }}
@@ -325,8 +325,8 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentMiroir.uuid, {
-                actionType: "DomainModelAction",
+              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+                actionType: "DomainTransactionalAction",
                 actionName: "redo",
               });
             }}
@@ -337,10 +337,10 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "commit",
                 },
                 defaultMiroirMetaModel
@@ -353,10 +353,10 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "commit",
                 },
                 defaultMiroirMetaModel
@@ -369,10 +369,10 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
@@ -388,14 +388,14 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "resetModel",
                 }
               );
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "resetModel",
                 }
               );
@@ -405,7 +405,7 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
@@ -421,7 +421,7 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "initModel",
                   params: {
                     dataStoreType:'miroir',
@@ -437,7 +437,7 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "initModel",
                   params: {
                     dataStoreType:'app',
@@ -458,14 +458,14 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
@@ -483,14 +483,14 @@ export const RootComponent = (props: RootComponentProps) => {
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 }
               );
@@ -523,13 +523,13 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "updateEntity",
                   update: {
-                    updateActionName: "WrappedModelEntityUpdate",
+                    updateActionName: "WrappedTransactionalEntityUpdate",
                     modelEntityUpdate: {
                       updateActionType: "ModelEntityUpdate",
                       updateActionName: "renameEntity",
@@ -549,10 +549,10 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentMiroir.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "UpdateMetaModelInstance",
                   update: {
                     updateActionType: "ModelCUDInstanceUpdate",
@@ -561,7 +561,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       {
                         parentName: reportReportList.parentName,
                         parentUuid: reportReportList.parentUuid,
-                        applicationSection:'model',
+                        applicationSection:'data',
                         instances: [
                           Object.assign({}, reportReportList, {
                             name: "Report2List",
@@ -582,13 +582,13 @@ export const RootComponent = (props: RootComponentProps) => {
         <span>
           <button
             onClick={async () => {
-              await domainController.handleDomainModelAction(
+              await domainController.handleDomainTransactionalAction(
                 applicationDeploymentLibrary.uuid,
                 {
-                  actionType: "DomainModelAction",
+                  actionType: "DomainTransactionalAction",
                   actionName: "updateEntity",
                   update: {
-                    updateActionName: "WrappedModelEntityUpdate",
+                    updateActionName: "WrappedTransactionalEntityUpdate",
                     modelEntityUpdate: {
                       updateActionType: "ModelEntityUpdate",
                       updateActionName: "DeleteEntity",

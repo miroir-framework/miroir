@@ -1,7 +1,7 @@
 import { EntityDefinition, MetaEntity, Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from '../../../0_interfaces/1_core/Instance.js';
 import { MiroirMetaModel } from '../../../0_interfaces/1_core/Model.js';
-import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
+import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../../../0_interfaces/2_domain/ModelUpdateInterface.js';
 import { DataStoreApplicationType } from '../../../3_controllers/ModelInitializer.js';
 import { Application } from '../../1_core/Application.js';
 
@@ -28,7 +28,7 @@ export interface ModelStoreInterface extends AbstractStoreInterface {
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
-  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate): Promise<void>;
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void>;
   dropEntity(parentUuid:string): Promise<void>;
   dropEntities(parentUuid:string[]): Promise<void>;
 
@@ -92,7 +92,7 @@ export interface StoreControllerInterface extends AbstractStoreInterface{
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
-  renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate): Promise<void>;
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void>;
   dropEntity(parentUuid:string): Promise<void>;
   dropEntities(parentUuid:string[]): Promise<void>;
 

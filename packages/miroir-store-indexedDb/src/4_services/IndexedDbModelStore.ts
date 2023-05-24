@@ -6,7 +6,7 @@ import {
   MetaEntity,
   MiroirMetaModel,
   ModelStoreInterface,
-  WrappedModelEntityUpdateWithCUDUpdate,
+  WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition,
 } from "miroir-core";
@@ -99,7 +99,7 @@ export class IndexedDbModelStore implements ModelStoreInterface {
   }
 
   // #############################################################################################
-  async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate){
     // TODO: identical to the Filesystem implementation!
     const cudUpdate = update.equivalentModelCUDUpdates[0];
     // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);

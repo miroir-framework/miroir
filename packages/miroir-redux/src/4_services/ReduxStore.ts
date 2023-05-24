@@ -9,8 +9,8 @@ import { all } from 'redux-saga/effects';
 import {
   DomainAncillaryOrReplayableAction,
   DomainDataAction,
-  DomainModelAncillaryOrReplayableAction,
-  DomainModelReplayableAction,
+  DomainTransactionalAncillaryOrReplayableAction,
+  DomainTransactionalReplayableAction,
   EntityDefinition,
   entityDefinitionEntityDefinition,
   entityEntity,
@@ -222,8 +222,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // // ###############################################################################
-  // handleLocalCacheModelAction(domainAction:DomainModelAncillaryOrReplayableAction) {
-  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainModelAncillaryOrReplayableAction) {
+  // handleLocalCacheModelAction(domainAction:DomainTransactionalAncillaryOrReplayableAction) {
+  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainTransactionalAncillaryOrReplayableAction) {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
@@ -252,7 +252,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  currentTransaction():DomainModelReplayableAction[]{
+  currentTransaction():DomainTransactionalReplayableAction[]{
     console.log("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action);
   }

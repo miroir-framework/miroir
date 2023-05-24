@@ -102,13 +102,13 @@ export const MTableComponent = (props: MTableComponentProps) => {
     if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
       const entity = e.data as MetaEntity;
       // sending ModelUpdates
-      await domainController.handleDomainModelAction(
+      await domainController.handleDomainTransactionalAction(
         contextDeploymentUuid,
         {
-          actionType: "DomainModelAction",
+          actionType: "DomainTransactionalAction",
           actionName: "updateEntity",
           update: {
-            updateActionName:"WrappedModelEntityUpdate",
+            updateActionName:"WrappedTransactionalEntityUpdate",
             modelEntityUpdate:{
               updateActionType:"ModelEntityUpdate",
               updateActionName: "renameEntity",

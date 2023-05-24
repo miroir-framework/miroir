@@ -204,8 +204,8 @@ describe(
           console.log('add Book step 1: the Book must be absent in the local cache report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
           console.log('add Book step 1: done replace.')
@@ -263,7 +263,7 @@ describe(
           console.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -333,8 +333,8 @@ describe(
           console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -392,7 +392,7 @@ describe(
           console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -464,7 +464,7 @@ describe(
           console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -531,7 +531,7 @@ describe(
           console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   

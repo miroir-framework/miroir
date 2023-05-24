@@ -1,6 +1,6 @@
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { ApplicationSection, EntityInstanceCollection, EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
-import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainModelAncillaryOrReplayableAction, DomainModelReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainTransactionalAncillaryOrReplayableAction, DomainTransactionalReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
@@ -39,7 +39,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainModelAncillaryOrReplayableAction) {
+  public async handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction) {
     return this.localCache.handleLocalCacheModelAction(deploymentUuid, action);
   }
 
@@ -78,7 +78,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
    * .
    * @returns the content of the current local cache transaction, not typed so as not to impose any implementation details
    */
-  currentLocalCacheTransaction(): DomainModelReplayableAction[] {
+  currentLocalCacheTransaction(): DomainTransactionalReplayableAction[] {
     return this.localCache.currentTransaction();
   }
 
@@ -182,7 +182,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
       );
       this.localCache.handleLocalCacheModelAction(deploymentUuid, {
         actionName: "replaceLocalCache",
-        actionType: "DomainModelAction",
+        actionType: "DomainTransactionalAction",
         objects: instances,
       });
 

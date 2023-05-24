@@ -7,12 +7,12 @@ import {
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
   DomainDataAction,
-  DomainModelAction,
-  DomainModelReplayableAction
+  DomainTransactionalAction,
+  DomainTransactionalReplayableAction
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
 import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
-import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
+import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
@@ -32,7 +32,7 @@ export class DomainController implements DomainControllerInterface {
   constructor(private LocalAndRemoteController: LocalAndRemoteControllerInterface) {}
 
   // ########################################################################################
-  currentTransaction(): DomainModelReplayableAction[] {
+  currentTransaction(): DomainTransactionalReplayableAction[] {
     return this.LocalAndRemoteController.currentLocalCacheTransaction();
   }
 
@@ -42,13 +42,13 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  async handleDomainModelAction(
+  async handleDomainTransactionalAction(
     deploymentUuid:Uuid,
-    domainModelAction: DomainModelAction,
+    domainModelAction: DomainTransactionalAction,
     currentModel:MiroirMetaModel,
   ): Promise<void> {
     console.log(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainModelAction start actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
       domainModelAction['actionName'],
       "deployment", deploymentUuid,
       "action",
@@ -94,7 +94,7 @@ export class DomainController implements DomainControllerInterface {
             branch: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
             application:'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainModelEntityUpdateAction)=>t.update)
+            // modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().flatMap((t:DomainTransactionalEntityUpdateAction)=>t.update)
             modelStructureMigration: this.LocalAndRemoteController.currentLocalCacheTransaction().map((t)=>t.update)
           };
   
@@ -120,7 +120,7 @@ export class DomainController implements DomainControllerInterface {
                 // TODO: replace with parallel implementation Promise.all?
                 await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
                   deploymentUuid,
-                  'model',
+                  replayAction.update.objects[0].applicationSection,
                   {
                   actionType:'RemoteStoreCRUDAction',
                   actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
@@ -167,8 +167,8 @@ export class DomainController implements DomainControllerInterface {
         console.log('DomainController updateModel correspondingCUDUpdate',domainModelAction,currentModel);
         
         const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel);
-        const structureUpdatesWithCUDUpdates: WrappedModelEntityUpdateWithCUDUpdate = {
-          updateActionName: 'WrappedModelEntityUpdateWithCUDUpdate',
+        const structureUpdatesWithCUDUpdates: WrappedTransactionalEntityUpdateWithCUDUpdate = {
+          updateActionName: 'WrappedTransactionalEntityUpdateWithCUDUpdate',
           modelEntityUpdate:domainModelAction?.update.modelEntityUpdate,
           equivalentModelCUDUpdates: cudUpdate?[cudUpdate]:[],
         };
@@ -183,7 +183,7 @@ export class DomainController implements DomainControllerInterface {
       }
 
       default: {
-        console.warn("DomainController handleDomainModelAction cannot handle action name for", domainModelAction);
+        console.warn("DomainController handleDomainTransactionalAction cannot handle action name for", domainModelAction);
         break;
       }
     }
@@ -191,8 +191,8 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
-  async handleDomainDataAction(deploymentUuid:Uuid, domainAction: DomainDataAction): Promise<void> {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction", domainAction.actionName, domainAction.objects);
+  async handleDomainNonTransactionalAction(deploymentUuid:Uuid, domainAction: DomainDataAction): Promise<void> {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction", domainAction.actionName, domainAction.objects);
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
     if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainAction.actionName)) {
       // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
@@ -200,7 +200,7 @@ export class DomainController implements DomainControllerInterface {
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         console.log(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction sending to remote storage instances",
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction sending to remote storage instances",
           instances.parentName, instances.instances
         );
         await this.LocalAndRemoteController.handleRemoteStoreCRUDActionWithDeployment(
@@ -214,13 +214,13 @@ export class DomainController implements DomainControllerInterface {
           });
       }
       console.log(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction calling handleLocalCacheDataAction", domainAction
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheDataAction", domainAction
       );
       await this.LocalAndRemoteController.handleLocalCacheDataAction(deploymentUuid, domainAction);
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction end", domainAction);
+      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
       console.error(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainDataAction could not handle action name",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction could not handle action name",
         domainAction.actionName,
         "for action",
         domainAction
@@ -268,19 +268,19 @@ export class DomainController implements DomainControllerInterface {
     switch (domainAction.actionType) {
       case "DomainDataAction": {
         if (!!entityDomainAction) {
-          await this.handleDomainDataAction(deploymentUuid, entityDomainAction as DomainDataAction);
+          await this.handleDomainNonTransactionalAction(deploymentUuid, entityDomainAction as DomainDataAction);
         }
         if (!!otherDomainAction) {
-          await this.handleDomainDataAction(deploymentUuid, otherDomainAction as DomainDataAction);
+          await this.handleDomainNonTransactionalAction(deploymentUuid, otherDomainAction as DomainDataAction);
         }
         return Promise.resolve()
       }
-      case "DomainModelAction": {
+      case "DomainTransactionalAction": {
         if (!!entityDomainAction) {
-            await this.handleDomainModelAction(deploymentUuid, entityDomainAction as DomainModelAction, currentModel);
+            await this.handleDomainTransactionalAction(deploymentUuid, entityDomainAction as DomainTransactionalAction, currentModel);
         }
         if (!!otherDomainAction) {
-          await this.handleDomainModelAction(deploymentUuid, otherDomainAction as DomainModelAction, currentModel);
+          await this.handleDomainTransactionalAction(deploymentUuid, otherDomainAction as DomainTransactionalAction, currentModel);
         }
         return Promise.resolve()
       }

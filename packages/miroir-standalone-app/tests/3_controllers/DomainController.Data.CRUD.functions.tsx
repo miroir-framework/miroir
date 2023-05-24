@@ -102,11 +102,11 @@ export async function refreshAllInstancesTest(
 
     await act(async () => {
       await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-        actionType: "DomainModelAction",
+        actionType: "DomainTransactionalAction",
         actionName: "rollback",
       });
       await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-        actionType: "DomainModelAction",
+        actionType: "DomainTransactionalAction",
         actionName: "rollback",
       });
     });

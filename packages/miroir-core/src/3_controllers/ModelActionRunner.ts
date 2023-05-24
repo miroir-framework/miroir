@@ -106,13 +106,13 @@ export async function modelActionRunner(
     update:ModelReplayableUpdate
   ){
     console.log('ModelActionRunner applyModelEntityUpdate',update);
-    const modelCUDupdate = update.updateActionName == 'WrappedModelEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+    const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     if (
       [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
       storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
     ) {
       // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
-      if (update.updateActionName == "WrappedModelEntityUpdateWithCUDUpdate") {
+      if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
         const modelEntityUpdate = update.modelEntityUpdate;
         switch (update.modelEntityUpdate.updateActionName) {
           case "DeleteEntity":{

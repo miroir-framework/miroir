@@ -56,16 +56,16 @@ export interface ModelCUDInstanceUpdate {
   objects:EntityInstanceCollection[];
 }
   
-export interface WrappedModelEntityUpdate {
-  updateActionName:'WrappedModelEntityUpdate',
+export interface WrappedTransactionalEntityUpdate {
+  updateActionName:'WrappedTransactionalEntityUpdate',
   modelEntityUpdate: ModelEntityUpdate;
 }
 
-export interface WrappedModelEntityUpdateWithCUDUpdate {
-  updateActionName:'WrappedModelEntityUpdateWithCUDUpdate',
+export interface WrappedTransactionalEntityUpdateWithCUDUpdate {
+  updateActionName:'WrappedTransactionalEntityUpdateWithCUDUpdate',
   modelEntityUpdate: ModelEntityUpdate;
   equivalentModelCUDUpdates: ModelCUDInstanceUpdate[];
 }
 
-export type ModelUpdate = WrappedModelEntityUpdate | ModelCUDInstanceUpdate;
-export type ModelReplayableUpdate = WrappedModelEntityUpdateWithCUDUpdate | ModelCUDInstanceUpdate;
+export type ModelUpdate = WrappedTransactionalEntityUpdate | ModelCUDInstanceUpdate;
+export type ModelReplayableUpdate = WrappedTransactionalEntityUpdateWithCUDUpdate | ModelCUDInstanceUpdate;

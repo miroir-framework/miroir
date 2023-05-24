@@ -16,7 +16,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   DomainDataAction,
-  DomainModelAction,
+  DomainTransactionalAction,
   ModelEntityUpdateConverter,
   EntityDefinition,
   DomainAction,
@@ -29,10 +29,9 @@ import {
   applicationDeploymentMiroir,
   Zinstance,
   DomainActionWithDeployment,
-  DomainModelRollbackAction,
-  DomainModelReplaceLocalCacheAction,
   ApplicationSection,
   ApplicationSectionOpposite,
+  DomainTransactionalReplaceLocalCacheAction,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -242,7 +241,8 @@ function handleLocalCacheNonTransactionalAction(
   state: NewLocalCacheSliceState, 
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
-  action: DomainDataAction) {
+  action: DomainDataAction
+) {
   // const deploymentUuid = applicationDeploymentMiroir.uuid
   console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction called', 'deploymentUuid', deploymentUuid, 'applicationSection', applicationSection,'action',action);
   switch (action.actionName) {
@@ -293,12 +293,12 @@ function handleLocalCacheNonTransactionalAction(
 }
 
 //#########################################################################################
-function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainModelAction) {
+function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainTransactionalAction) {
   // const deploymentUuid = applicationDeploymentMiroir.uuid;
   console.log('localCacheSliceObject handleLocalCacheModelAction called', action.actionName, 'deploymentUuid', deploymentUuid, 'action', action);
   switch (action.actionName) {
     case 'replaceLocalCache': {
-      const castAction:DomainModelReplaceLocalCacheAction = action;
+      const castAction:DomainTransactionalReplaceLocalCacheAction = action;
       console.log('localCacheSliceObject replaceLocalCache',deploymentUuid, action);
       
       for (let instanceCollection of action.objects) {
@@ -325,7 +325,8 @@ function handleLocalCacheModelAction(state: NewLocalCacheSliceState, deploymentU
       ;
       console.log('localCacheSliceObject handleLocalCacheModelAction updateModel domainDataAction',domainDataAction);
 
-      handleLocalCacheNonTransactionalAction(state, deploymentUuid, 'model', domainDataAction);
+      // TODO: handle object instanceCollections by ApplicationSection
+      handleLocalCacheNonTransactionalAction(state, deploymentUuid, domainDataAction.objects[0].applicationSection, domainDataAction);
       break;
     }
     case "updateEntity": {
@@ -359,7 +360,7 @@ function handleLocalCacheAction(state: NewLocalCacheSliceState, deploymentUuid: 
       handleLocalCacheNonTransactionalAction(state, deploymentUuid, 'data', action);
       break;
     }
-    case 'DomainModelAction': {
+    case 'DomainTransactionalAction': {
       handleLocalCacheModelAction(state, deploymentUuid, action);
       break;
     }

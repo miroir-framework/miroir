@@ -24,7 +24,7 @@ import {
   MetaEntity,
   MiroirConfig,
   MiroirContext,
-  WrappedModelEntityUpdateWithCUDUpdate,
+  WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentMiroir,
   entityEntity,
   entityReport,
@@ -175,8 +175,8 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainModelAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
 
@@ -197,10 +197,10 @@ describe(
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -211,10 +211,10 @@ describe(
             }
           };
           const createBookAction: DomainAction = {
-            actionType:"DomainModelAction",
+            actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedModelEntityUpdate",
+              updateActionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
                 updateActionType: "ModelEntityUpdate",
                 updateActionName: "createEntity",
@@ -238,8 +238,8 @@ describe(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -257,7 +257,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
             }
           );
   
@@ -266,7 +266,7 @@ describe(
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -283,7 +283,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
   
@@ -293,8 +293,8 @@ describe(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -311,9 +311,9 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
       
@@ -322,7 +322,7 @@ describe(
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
       
           await waitFor(
             () => {
@@ -337,7 +337,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
   
@@ -345,10 +345,10 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainModelAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
       
@@ -357,7 +357,7 @@ describe(
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
       
           await waitFor(
             () => {
@@ -372,7 +372,7 @@ describe(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
   
@@ -380,7 +380,7 @@ describe(
           console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainModelAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
             }
           );
       
@@ -390,12 +390,12 @@ describe(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedModelEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
   
           await act(
             async () => {
-              await domainController.handleDomainModelAction(applicationDeploymentLibrary.uuid,{actionName: "commit",actionType:"DomainModelAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid,{actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   

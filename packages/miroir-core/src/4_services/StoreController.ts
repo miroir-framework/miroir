@@ -4,7 +4,7 @@ import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefin
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
-import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
@@ -196,7 +196,7 @@ export class StoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async renameEntity(update: WrappedModelEntityUpdateWithCUDUpdate){
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate){
     return this.modelStore.renameEntity(update);
   }
 
