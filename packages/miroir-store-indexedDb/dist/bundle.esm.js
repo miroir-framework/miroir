@@ -1,4 +1,4 @@
-import { entityEntity, entityEntityDefinition, entityDefinitionEntityDefinition } from 'miroir-core';
+import { entityEntity, entityEntityDefinition, entityDefinitionEntityDefinition, ConfigurationService, ErrorModelStore, ErrorDataStore } from 'miroir-core';
 import { Level } from 'level';
 
 class IndexedDbDataStore {
@@ -415,4 +415,16 @@ class IndexedDb {
     }
 }
 
-export { IndexedDb, IndexedDbDataStore, IndexedDbModelStore };
+function miroirStoreIndexedDbStartup() {
+    ConfigurationService.registerStoreFactory("indexedDb", "model", async (appName, dataStoreApplicationType, section, config, dataStore) => {
+        console.log('called registerStoreFactory function for filesystem, model');
+        return Promise.resolve(config.emulatedServerType == "indexedDb" && dataStore
+            ? new IndexedDbModelStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
+            : new ErrorModelStore());
+    });
+    ConfigurationService.registerStoreFactory("indexedDb", "data", async (appName, dataStoreApplicationType, section, config, dataStore) => Promise.resolve(config.emulatedServerType == "indexedDb"
+        ? new IndexedDbDataStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
+        : new ErrorDataStore()));
+}
+
+export { IndexedDb, IndexedDbDataStore, IndexedDbModelStore, miroirStoreIndexedDbStartup };

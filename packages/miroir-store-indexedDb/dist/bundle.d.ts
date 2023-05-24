@@ -73,4 +73,6 @@ declare class IndexedDbModelStore implements ModelStoreInterface {
     deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any>;
 }
 
-export { IndexedDb, IndexedDbDataStore, IndexedDbModelStore };
+declare function miroirStoreIndexedDbStartup(): void;
+
+export { IndexedDb, IndexedDbDataStore, IndexedDbModelStore, miroirStoreIndexedDbStartup };

@@ -18,7 +18,7 @@ export interface EmulatedServerConfigIndexedDb {
   indexedDbName: string;
 }
 export interface EmulatedServerConfigSql {
-  emulatedServerType: 'Sql';
+  emulatedServerType: 'sql';
   connectionString: string;
   schema: string;
 }

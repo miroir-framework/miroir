@@ -28,7 +28,9 @@ import {
   applicationDeploymentMiroir,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
+  StoreControllerFactory,
+  ConfigurationService
 } from "miroir-core";
 import {
   ReduxStore
@@ -38,11 +40,9 @@ import entityAuthor from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9b
 import entityBook from "miroir-standalone-app/src/assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import entityDefinitionAuthor from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import entityDefinitionBook from "miroir-standalone-app/src/assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
-import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,
-  StoreControllerFactory,
   applicationDeploymentLibrary,
   indexedDbStoreControllerFactory,
   miroirAfterAll,
@@ -50,21 +50,30 @@ import {
   miroirBeforeAll,
   miroirBeforeEach,
   renderWithProviders,
-  // sqlDbStoreControllerFactory,
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
 
+import { miroirAppStartup } from "miroir-standalone-app/src/startup";
+import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
+import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
+import { miroirStorePostgresStartup } from "miroir-store-postgres";
+
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
-// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-sql-indexedDb.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed-data_sql-filesystem.json";
+import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 miroirAppStartup();
 miroirCoreStartup();
+miroirStoreFileSystemStartup();
+miroirStoreIndexedDbStartup();
+miroirStorePostgresStartup();
 
 let localMiroirStoreController: StoreControllerInterface;
 let localAppStoreController: StoreControllerInterface;
@@ -85,8 +94,8 @@ beforeAll(
     const {
       localMiroirStoreController:a,localAppStoreController:b
     } = await StoreControllerFactory(
+      ConfigurationService.storeFactoryRegister,
       miroirConfig,
-      indexedDbStoreControllerFactory,
       // sqlDbStoreControllerFactory,
     );
     localMiroirStoreController = a;

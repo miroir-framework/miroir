@@ -200,6 +200,8 @@ export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
   StoreController,
+  StoreControllerFactory,
+  StoreControllerFactoryReturnType,
 } from './4_services/StoreController.js';
 export {
   RestClient

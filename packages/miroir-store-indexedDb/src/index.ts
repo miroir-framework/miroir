@@ -7,3 +7,6 @@ export {
 export {
   IndexedDb
 } from './4_services/indexedDb.js';
+export {
+  miroirStoreIndexedDbStartup
+} from './startup.js';

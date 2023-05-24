@@ -4,3 +4,6 @@ export {
 export {
   SqlDbModelStore,
 } from './SqlDbModelStore.js'
+export {
+  miroirStorePostgresStartup,
+} from './startup.js'

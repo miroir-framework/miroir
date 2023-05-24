@@ -1,22 +1,86 @@
 
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import Instance, { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
 import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
 import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 
+// #######################################################################################################################
+export interface StoreControllerFactoryReturnType {
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
+}
+
+
+// #######################################################################################################################
+export async function storeFactory (
+  storeFactoryRegister:StoreFactoryRegister,
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  section:ApplicationSection,
+  config: EmulatedServerConfig,
+  dataStore?: DataStoreInterface,
+):Promise<DataStoreInterface | ModelStoreInterface> {
+  console.log('storeFactory called for',appName, dataStoreApplicationType, section, config);
+  if (section == 'model' && !dataStore) {
+    throw new Error('storeFactory model section factory must receive data section store.')
+  }
+  const storeFactoryRegisterKey:string = JSON.stringify({storageType:config.emulatedServerType,section});
+  const foundStoreFactory = storeFactoryRegister.get(storeFactoryRegisterKey);
+  if (foundStoreFactory) {
+    if (section == 'model') {
+      return foundStoreFactory(appName,dataStoreApplicationType,section,config,dataStore)
+    } else {
+      return foundStoreFactory(appName,dataStoreApplicationType,section,config)
+    }
+  } else {
+    throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)
+  }
+}
+
+
+// #################################################################################################################
+export async function StoreControllerFactory(
+  storeFactoryRegister:StoreFactoryRegister,
+  miroirConfig:MiroirConfig,
+): Promise<StoreControllerFactoryReturnType> {
+  let localMiroirStoreController,localAppStoreController;
+
+  console.log('StoreControllerFactory called with config:',miroirConfig);
+
+  if (!miroirConfig.emulateServer) {
+    throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
+  }
+
+  let miroirModelStore:ModelStoreInterface, miroirDataStore:DataStoreInterface, appModelStore:ModelStoreInterface, appDataStore:DataStoreInterface;
+  appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data',miroirConfig.appServerConfig.data) as DataStoreInterface;
+  appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model',miroirConfig.appServerConfig.model,appDataStore) as ModelStoreInterface;
+  miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data',miroirConfig.miroirServerConfig.data) as DataStoreInterface;
+  miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model',miroirConfig.miroirServerConfig.model,miroirDataStore) as ModelStoreInterface;
+
+  localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
+  localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);
+
+  return Promise.resolve({
+    localMiroirStoreController,
+    localAppStoreController,
+  });
+}
+
+// #######################################################################################################################
 export class StoreController implements StoreControllerInterface{
   private logHeader: string;
 
   constructor(
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
-    // private localUuidIndexedDb: IndexedDb,
     private modelStore:ModelStoreInterface,
     private dataStore:DataStoreInterface,
   ){
@@ -25,10 +89,6 @@ export class StoreController implements StoreControllerInterface{
   connect(): Promise<void> {
     throw new Error("Method not implemented.");
   }
-
-  // bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-  //   throw new Error("Method not implemented.");
-  // }
 
   getEntityNames(): string[] {
     return this.dataStore.getEntityNames();
@@ -125,16 +185,6 @@ export class StoreController implements StoreControllerInterface{
     return this.modelStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
-  // // #############################################################################################
-  // async renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition):Promise<void> {
-  //   return this.dataStore.renameStorageSpaceForInstancesOfEntity(oldName,newName,entity,entityDefinition);
-  // }
-
-  // // #############################################################################################
-  // async dropStorageSpaceForInstancesOfEntity(entityUuid:Uuid):Promise<void> {
-  //   return this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
-  // }
-
   // ##############################################################################################
   async createEntity(
     entity:MetaEntity,
@@ -160,20 +210,8 @@ export class StoreController implements StoreControllerInterface{
 
   // ##############################################################################################
   // used only for testing purposes!
-  // async getState():Promise<{[uuid:string]:EntityInstance[]}>{
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{
     return this.dataStore.getState();
-    // let result = {};
-    // console.log('getState this.getEntities()',this.getEntities());
-    
-    // for (const parentUuid of this.getEntities()) {
-    //   console.log('getState getting instances for',parentUuid);
-    //   const instances = await this.getDataInstances(parentUuid);
-    //   console.log('getState found instances',parentUuid,instances);
-      
-    //   Object.assign(result,{[parentUuid]:instances});
-    // }
-    // return Promise.resolve(result);
   }
   
   // #############################################################################################

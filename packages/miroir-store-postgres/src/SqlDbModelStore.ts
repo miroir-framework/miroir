@@ -1,5 +1,4 @@
 import {
-  Application,
   DataStoreApplicationType,
   DataStoreInterface,
   EntityDefinition,
@@ -8,11 +7,9 @@ import {
   MiroirMetaModel,
   ModelReplayableUpdate,
   ModelStoreInterface,
-  StoreControllerInterface,
   WrappedModelEntityUpdateWithCUDUpdate,
   entityEntity,
-  entityEntityDefinition,
-  modelInitialize,
+  entityEntityDefinition
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "./utils.js";
@@ -24,19 +21,13 @@ export class SqlDbModelStore implements ModelStoreInterface {
 
   // ##############################################################################################
   constructor(
-    // seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
     public modelConnectionString:string,
     public modelSchema:string,
     private sqlDbDataStore: DataStoreInterface,
-
-    // private modelSequelize: Sequelize,
-    // private modelSchema: string,
-    // private sqlDbStoreFacade: StoreControllerInterface
   ) {
     this.logHeader = "SqlDbModelStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
-    // if (!seq) throw Error('seq is undefined!');
 
     this.modelSequelize = new Sequelize(modelConnectionString,{schema:modelSchema}) // Example for postgres
   }

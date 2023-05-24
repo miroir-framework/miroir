@@ -1,45 +1,40 @@
-import type { RenderOptions } from '@testing-library/react'
-import { render } from '@testing-library/react'
-import React, { PropsWithChildren, useState } from 'react'
-import { Provider } from 'react-redux'
+import type { RenderOptions } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import React, { PropsWithChildren, useState } from 'react';
+import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
   ApplicationDeployment,
-  StoreControllerInterface,
+  ApplicationSection,
+  DataStoreApplicationType,
+  DataStoreInterface,
+  EmulatedServerConfig,
+  EmulatedServerConfigIndexedDb,
   MiroirConfig,
+  ModelStoreInterface,
+  StoreController,
+  StoreControllerInterface,
+  StoreFactoryRegister,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
-  circularReplacer,
-  defaultMiroirMetaModel,
-  EmulatedServerConfigIndexedDb,
-  ApplicationSection,
-  DataStoreApplicationType,
-  EmulatedServerConfigSql,
-  EmulatedPartitionedServerConfig,
-  ModelStoreInterface,
-  DataStoreInterface,
-  StoreController,
-  EmulatedServerConfig,
-  StoreFactoryRegister,
+  defaultMiroirMetaModel
 } from "miroir-core";
-import { ReduxStoreWithUndoRedo } from 'miroir-redux'
-import { RequestHandler } from 'msw'
-import { SetupServerApi } from 'msw/lib/node'
-import { CreateMswRestServerReturnType, createMswRestServer, createReduxStoreAndRestClient } from '../../src/miroir-fwk/createMswRestServer'
+import { ReduxStoreWithUndoRedo } from 'miroir-redux';
+import { RequestHandler } from 'msw';
+import { SetupServerApi } from 'msw/lib/node';
+import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
-import {IndexedDb, IndexedDbDataStore,IndexedDbModelStore} from 'miroir-store-indexedDb'
-import {FileSystemDataStore,FileSystemModelStore} from 'miroir-store-filesystem'
-import { SqlDbDataStore, SqlDbModelStore } from 'miroir-store-postgres';
+import { IndexedDb, IndexedDbDataStore, IndexedDbModelStore } from 'miroir-store-indexedDb';
 
 import applicationLibrary from "../../src/assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import applicationDeploymentLibrary from '../../src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
+import applicationStoreBasedConfigurationLibrary from "../../src/assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 import applicationVersionLibraryInitialVersion from "../../src/assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
-import applicationStoreBasedConfigurationLibrary from "../../src/assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -117,11 +112,6 @@ export const DisplayLoadingInfo:React.FC<{reportUuid?:string}> = (props:{reportU
 // ############################################################################################################
 // ############################################################################################################
 
-export interface StoreControllerFactoryReturnType {
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
-}
-
 export type IndexedDbStoreControllerFactory = (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
@@ -136,135 +126,6 @@ export const indexedDbStoreControllerFactory = (
   const dataStore = new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
   const modelStore = new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
   return new StoreController(appName, dataStoreApplicationType,modelStore,dataStore);
-}
-
-export async function storeFactory (
-  storeFactoryRegister:StoreFactoryRegister,
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  section:ApplicationSection,
-  config: EmulatedServerConfig,
-  dataStore?: DataStoreInterface,
-):Promise<DataStoreInterface | ModelStoreInterface> {
-  console.log('storeFactory called for',appName, dataStoreApplicationType, section, config);
-  if (section == 'model' && !dataStore) {
-    throw new Error('storeFactory model section factory must receive data section store.')
-  }
-  if (config.emulatedServerType == 'indexedDb') {
-    // const indexedDbStoreConfig = config as EmulatedServerConfigIndexedDb;
-    if (section == 'model') {
-      if (!dataStore) {
-        throw new Error('storeFactory indexedDb model section factory must receive data section store.')
-      } else {
-        return Promise.resolve(new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore))
-      }
-    } else {
-      return Promise.resolve(new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data')))
-    }
-  }
-
-  if (config.emulatedServerType == 'filesystem') {
-    
-    if (section == 'model') {
-      if (!dataStore) {
-        throw new Error('storeFactory filesystem model section factory must receive data section store.')
-      } else {
-        // return Promise.resolve(new FileSystemModelStore(appName,dataStoreApplicationType,config.directory,dataStore))
-        // return storeFactoryRegister['filesystem']['model'](appName,dataStoreApplicationType,section,config,dataStore)
-        
-        const foundStoreFactory = storeFactoryRegister.get(JSON.stringify({storageType:'filesystem',section:'model'}));
-        console.log('XXXXXXXXXXXXXXXXXXXXXX',storeFactoryRegister.has(JSON.stringify({storageType:'filesystem',section:'model'})),foundStoreFactory);
-        if (foundStoreFactory) {
-          return foundStoreFactory(appName,dataStoreApplicationType,section,config,dataStore)
-        } else {
-          throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)
-        }
-      }
-    } else {
-      // return Promise.resolve(new FileSystemDataStore(appName,dataStoreApplicationType,config.directory))
-      const foundStoreFactory = storeFactoryRegister.get(JSON.stringify({storageType:'filesystem',section:'data'}));
-      if (foundStoreFactory) {
-        return foundStoreFactory(appName,dataStoreApplicationType,section,config)
-      } else {
-        throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)
-      }
-    }
-  }
-
-  if (config.emulatedServerType == 'Sql') {
-    console.log('StoreControllerFactory creating mixed app data sql store controller');
-
-    // const appDataIndexedDbStoreConfig = miroirConfig.appServerConfig.data as EmulatedServerConfigSql;
-    if (section == 'model') {
-      if (!dataStore) {
-        throw new Error('storeFactory sql model section factory must receive data section store.')
-      } else {
-        const appModelStore = new SqlDbModelStore(
-          appName,
-          dataStoreApplicationType,
-          config.connectionString,
-          config.schema,
-          dataStore
-        );
-    
-        try {
-          await appModelStore.connect();
-        } catch (error) {
-          console.error('StoreControllerFactory Unable to connect model', config.schema, ' to the postgres database:', error);
-        }
-        // appDataStore = new IndexedDbDataStore('library','app',new IndexedDb(appDataIndexedDbStoreConfig.indexedDbName + '-data'));
-        return Promise.resolve(appModelStore);
-      }
-    } else {
-      const appDataStore = new SqlDbDataStore(
-        appName,
-        dataStoreApplicationType,
-        config.connectionString,
-        config.schema
-      );
-  
-      try {
-        await appDataStore.connect();
-      } catch (error) {
-        console.error('StoreControllerFactory Unable to connect data', config.schema, ' to the postgres database:', error);
-      }
-      // appDataStore = new IndexedDbDataStore('library','app',new IndexedDb(appDataIndexedDbStoreConfig.indexedDbName + '-data'));
-      return Promise.resolve(appDataStore);
-    }
-  }
-
-  throw new Error('storeFactory config.emulatedServerType unknown!')
-}
-
-
-// #################################################################################################################
-export async function StoreControllerFactory(
-  storeFactoryRegister:StoreFactoryRegister,
-  miroirConfig:MiroirConfig,
-  indexedDbStoreControllerFactory: IndexedDbStoreControllerFactory,
-  // sqlDbStoreControllerFactory: SqlDbStoreControllerFactory,
-): Promise<StoreControllerFactoryReturnType> {
-  let localMiroirStoreController,localAppStoreController;
-
-  console.log('StoreControllerFactory called with config:',miroirConfig);
-
-  if (!miroirConfig.emulateServer) {
-    throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
-  }
-
-  let miroirModelStore:ModelStoreInterface, miroirDataStore:DataStoreInterface, appModelStore:ModelStoreInterface, appDataStore:DataStoreInterface;
-  appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data',miroirConfig.appServerConfig.data) as DataStoreInterface;
-  appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model',miroirConfig.appServerConfig.model,appDataStore) as ModelStoreInterface;
-  miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data',miroirConfig.miroirServerConfig.data) as DataStoreInterface;
-  miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model',miroirConfig.miroirServerConfig.model,miroirDataStore) as ModelStoreInterface;
-
-  localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
-  localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);
-
-  return Promise.resolve({
-    localMiroirStoreController,
-    localAppStoreController,
-  });
 }
 
 // #################################################################################################################
