@@ -1,6 +1,6 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
-import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { DataStoreInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 
 export class ErrorDataStore implements DataStoreInterface {
   constructor() {};

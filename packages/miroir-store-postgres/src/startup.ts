@@ -22,7 +22,7 @@ export function miroirStorePostgresStartup() {
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
     ): Promise<DataStoreInterface | ModelStoreInterface> => {
-      console.log('called registerStoreFactory function for filesystem, model');
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       return Promise.resolve(
         config.emulatedServerType == "sql" && dataStore
@@ -40,11 +40,13 @@ export function miroirStorePostgresStartup() {
       section: ApplicationSection,
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> =>
-      Promise.resolve(
+    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      return Promise.resolve(
         config.emulatedServerType == "sql"
           ? new SqlDbDataStore(appName, dataStoreApplicationType, config.connectionString, config.schema)
           : new ErrorDataStore()
       )
+    }
   );
 }

@@ -43,7 +43,7 @@ export class IndexedDbModelStore implements ModelStoreInterface {
 
   // ##################################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    console.error(this.logHeader,'bootFromPersistedState does nothing!');
+    console.log(this.logHeader,'bootFromPersistedState does nothing!');
     return Promise.resolve();
   }
   // ##################################################################################################

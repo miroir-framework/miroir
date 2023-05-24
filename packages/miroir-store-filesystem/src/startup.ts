@@ -23,7 +23,7 @@ export function miroirStoreFileSystemStartup() {
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
     ): Promise<DataStoreInterface | ModelStoreInterface> => {
-      console.log('called registerStoreFactory function for filesystem, model');
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       return Promise.resolve(
         config.emulatedServerType == "filesystem" && dataStore
@@ -41,12 +41,14 @@ export function miroirStoreFileSystemStartup() {
       section: ApplicationSection,
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> =>
-      Promise.resolve(
+    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      return Promise.resolve(
         config.emulatedServerType == "filesystem"
           ? new FileSystemDataStore(appName, dataStoreApplicationType, config.directory)
           : new ErrorDataStore()
       )
+    }
   );
 }
 

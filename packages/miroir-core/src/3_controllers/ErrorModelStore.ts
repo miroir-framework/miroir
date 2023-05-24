@@ -2,7 +2,7 @@ import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefin
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 
 export class ErrorModelStore implements ModelStoreInterface {
   constructor() {};

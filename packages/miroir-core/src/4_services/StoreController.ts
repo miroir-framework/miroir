@@ -5,7 +5,7 @@ import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "..
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { ModelReplayableUpdate, WrappedModelEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
 import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
@@ -131,12 +131,14 @@ export class StoreController implements StoreControllerInterface{
     return Promise.resolve();
   }
 
+
   // #############################################################################################
   async bootFromPersistedState(
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ):Promise<void> {
-    console.log(this.logHeader,'bootFromPersistedState does nothing!');
+    await this.modelStore.bootFromPersistedState(entities ,entityDefinitions);
+    await this.dataStore.bootFromPersistedState(entities ,entityDefinitions);
     return Promise.resolve();
   }
 

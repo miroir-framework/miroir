@@ -9,7 +9,8 @@ export const generateHandlerBody = async (
   url:string,
   // method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
   method:(...params)=>Promise<any>,
-  jsonFormater:(a:any)=>any,
+  returnJsonResultContinuation:(a:any)=>any,
+// ):Promise<any[]> => {
 ) => {
   // console.log('generateHandlerBody called with params',params);
   
@@ -44,6 +45,14 @@ export const generateHandlerBody = async (
 
   // console.log("generateHandlerBody received", localData);
   // console.log("##################################### end: ",HttpMethod, url);
-  return localData?jsonFormater(localData):[];
+  return localData?returnJsonResultContinuation(localData):[];
+
+  // const result = localData?localData:[];
+  // if (returnJsonResultContinuation) {
+  //   returnJsonResultContinuation(result);
+  //   return Promise.resolve()
+  // } else {
+  //   return Promise.resolve(result)
+  // }
 
 }

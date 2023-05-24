@@ -62,8 +62,6 @@ export function createReduxStoreAndRestClient(
 }
 
 export interface CreateMswRestServerReturnType {
-  // localMiroirStoreController: StoreControllerInterface | undefined,
-  // localAppStoreController: StoreControllerInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,
 }

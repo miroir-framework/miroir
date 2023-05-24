@@ -23,7 +23,7 @@ export function miroirStoreIndexedDbStartup() {
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
     ): Promise<DataStoreInterface | ModelStoreInterface> => {
-      console.log('called registerStoreFactory function for filesystem, model');
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       return Promise.resolve(
         config.emulatedServerType == "indexedDb" && dataStore
@@ -41,11 +41,13 @@ export function miroirStoreIndexedDbStartup() {
       section: ApplicationSection,
       config: EmulatedServerConfig,
       dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> =>
-      Promise.resolve(
+    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      return Promise.resolve(
         config.emulatedServerType == "indexedDb"
           ? new IndexedDbDataStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
           : new ErrorDataStore()
       )
+    }
   );
 }

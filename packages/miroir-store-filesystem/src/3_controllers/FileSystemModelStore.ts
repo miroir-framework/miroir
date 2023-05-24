@@ -53,11 +53,10 @@ export class FileSystemModelStore implements ModelStoreInterface {
   
   // #############################################################################################
   bootFromPersistedState(
-    // metaModel:MiroirMetaModel,
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ): Promise<void> {
-    console.error(this.logHeader,'bootFromPersistedState does nothing!');
+    console.log(this.logHeader,'bootFromPersistedState does nothing!');
     return Promise.resolve();
   }
 

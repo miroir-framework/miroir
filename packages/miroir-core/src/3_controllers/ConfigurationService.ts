@@ -4,7 +4,7 @@
 import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { DataStoreInterface, ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+import { DataStoreInterface, ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 import { DataStoreApplicationType } from "./ModelInitializer.js";
 
 // export type DeploymentModes = 'local' | 'remote';
@@ -25,11 +25,7 @@ export type StoreFactory = (
   config: EmulatedServerConfig,
   dataStore?: DataStoreInterface,
 )=>Promise<DataStoreInterface | ModelStoreInterface>;
-// export interface StoreFactoryRegister {
-//   [storageType:string]: {[section:string]: StoreFactory};
-// }
-// export type StoreFactoryRegister = Map<{storagType:string,Map<string, StoreFactory>>;
-// export type StoreFactoryRegister = Map<{storageType:string,section:string},StoreFactory>;
+
 export type StoreFactoryRegister = Map<string,StoreFactory>;
 
 /**
@@ -56,12 +52,6 @@ export class ConfigurationService {
     this.storeFactoryRegister.set(
       JSON.stringify({storageType, section}), storeFactory
     );
-    // Object.fromEntries([
-    //   ...Object.entries(this.storeFactoryRegister),
-    //   [
-    //     storageType,
-    //   ]
-    //   {[storageType]:{[section]:storeFactory}});
   }
 
 }

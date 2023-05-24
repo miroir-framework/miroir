@@ -147,9 +147,6 @@ export {
   LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
-  StoreControllerInterface,
-  DataStoreInterface,
-  ModelStoreInterface,
   RemoteDataStoreInterface,
   RemoteStoreAction,
   RemoteStoreCRUDAction,
@@ -159,6 +156,12 @@ export {
   RestClientCallReturnType,
   RestClientInterface,
 } from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+export {
+  AbstractStoreInterface,
+  DataStoreInterface,
+  ModelStoreInterface,
+  StoreControllerInterface,
+} from "./0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
@@ -211,6 +214,8 @@ export {
 } from './4_services/RestTools.js';
 export {
   RestServerStub,
+  getHandler,
+  postPutDeleteHandler,
 } from './4_services/RestServerStub.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';

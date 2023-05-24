@@ -71,11 +71,11 @@ export class SqlDbModelStore implements ModelStoreInterface {
       // TODO: allow refresh
       console.warn(
         this.logHeader,
-        "bootModelStortFromPersistedState initialization can not be done a second time",
+        "bootFromPersistedState initialization can not be done a second time",
         this.sqlModelSchemaTableAccess
       );
     } else {
-      console.log(this.logHeader, "bootModelStortFromPersistedState started");
+      console.log(this.logHeader, "bootFromPersistedState started");
 
       if (this.dataStoreType == "miroir") {
         // TODO: read metamodel version in configuration first, and open table with the corresponding definition

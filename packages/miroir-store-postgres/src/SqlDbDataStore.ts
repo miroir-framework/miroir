@@ -41,6 +41,28 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
+  async bootFromPersistedState(
+    entities : MetaEntity[],
+    entityDefinitions : EntityDefinition[],
+  ): Promise<void> {
+    this.sqlDataSchemaTableAccess = entities
+      .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
+      .reduce(
+        (prev, curr: MetaEntity) => {
+          const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
+          console.log(this.logHeader,"bootFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
+          if (entityDefinition) {
+            return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
+          } else {
+            return prev;
+          }
+        }, {}
+      )
+    ;
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
     let result = {};
     console.log(this.logHeader,'getState this.getEntities()',this.getEntityUuids());
@@ -151,27 +173,6 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
   
 
-  // ##############################################################################################
-  async bootFromPersistedState(
-    entities : MetaEntity[],
-    entityDefinitions : EntityDefinition[],
-  ): Promise<void> {
-    this.sqlDataSchemaTableAccess = entities
-      .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
-      .reduce(
-        (prev, curr: MetaEntity) => {
-          const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
-          console.log(this.logHeader,"bootFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
-          if (entityDefinition) {
-            return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
-          } else {
-            return prev;
-          }
-        }, {}
-      )
-    ;
-    return Promise.resolve();
-  }
 
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(

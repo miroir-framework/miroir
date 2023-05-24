@@ -1,6 +1,8 @@
 import express from 'express';
 import { z } from "zod";
 
+import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 import bodyParser from 'body-parser';
 import {
   StoreControllerInterface,
@@ -9,70 +11,75 @@ import {
   modelActionRunner,
   applicationDeploymentMiroir,
   // applicationDeploymentLibrary,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  StoreControllerFactory,
+  ConfigurationService,
+  MiroirConfig,
+  miroirCoreStartup,
+  ApplicationSection,
+  getHandler,
+  postPutDeleteHandler
 } from "miroir-core";
-import { SqlStoreFactory } from 'miroir-store-postgres';
-import { FileSystemEntityDataStore } from './FileSystemModelStore.js';
-import { readFile } from 'fs/promises';
-import { readFileSync } from 'fs';
+// import { SqlStoreFactory } from 'miroir-store-postgres';
+// import { FileSystemEntityDataStore } from './FileSystemModelStore.js';
+import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
+import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
+import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 
 // import applicationDeploymentLibrary from './assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4';
 // import applicationDeploymentLibrary from './assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json' assert { type: 'json' };
 // const applicationDeploymentLibrary =await import("./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json", {assert: { type: "json" }});
 // TODO: find a better solution!
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
+
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
+console.log('configFileContents',configFileContents)
+
 const applicationDeploymentLibrary = JSON.parse(readFileSync(new URL('./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json', import.meta.url)).toString());
 console.log('applicationDeploymentLibrary',applicationDeploymentLibrary)
-// const express = require('express');
+
+const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+// miroirAppStartup();
+miroirCoreStartup();
+miroirStoreFileSystemStartup();
+miroirStoreIndexedDbStartup();
+miroirStorePostgresStartup();
+
+
 const app = express(),
       port = 3080;
 
 // placeholder for the data
 const users = [];
 
-// const localUuidIndexedDb: IndexedDb = new IndexedDb("miroir-uuid-indexedDb")
-// const localIndexedDbDataStore:StoreControllerInterface = new StoreController(localUuidIndexedDb);
-
-const libraryAppFileSystemDataStore:StoreControllerInterface = new FileSystemEntityDataStore(
-  'library',
-  'app',
-  applicationDeploymentLibrary.data.location['directory'],
-  applicationDeploymentLibrary.data.location['directory'],
-);
-
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
+let
+  localMiroirStoreController:StoreControllerInterface,
+  localAppStoreController:StoreControllerInterface
+;
 
-// const sqlDbServerProxy:StoreControllerInterface = await SqlStoreFactory('postgres://postgres:postgres@localhost:5432/postgres');
-const miroirAppSqlServerProxy:StoreControllerInterface = await SqlStoreFactory(
-  'miroir',
-  'miroir',
-  applicationDeploymentMiroir.model.location['connectionString'],
-  applicationDeploymentMiroir.model.location['schema'],
-  applicationDeploymentMiroir.data.location['connectionString'],
-  applicationDeploymentMiroir.data.location['schema'],
+const {
+  localMiroirStoreController:a,localAppStoreController:b
+} = await StoreControllerFactory(
+  ConfigurationService.storeFactoryRegister,
+  miroirConfig,
 );
-const libraryAppSqlServerProxy:StoreControllerInterface = await SqlStoreFactory(
-  'library',
-  'app',
-  applicationDeploymentLibrary.model.location['connectionString'],
-  applicationDeploymentLibrary.model.location['schema'],
-  // applicationDeploymentLibrary.data.location['connectionString'],
-  // applicationDeploymentLibrary.data.location['schema'],
-  applicationDeploymentLibrary.model.location['connectionString'],
-  applicationDeploymentLibrary.model.location['schema'],
-);
+localMiroirStoreController = a;
+localAppStoreController = b;
 
 try {
-  await miroirAppSqlServerProxy.bootFromPersistedState(defaultMiroirMetaModel);
+  await localMiroirStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
 } catch(e) {
-  console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
+  console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntities(),'error',e);
 }
 
 try {
-  await libraryAppSqlServerProxy.bootFromPersistedState(defaultMiroirMetaModel);
+  await localAppStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
 } catch(e) {
-  console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",miroirAppSqlServerProxy.getEntities(),'error',e);
+  console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntities(),'error',e);
 }
 
 
@@ -82,78 +89,55 @@ app.use(bodyParser.json());
 
 let count: number = 0;
 // ##############################################################################################
-app.get("/miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all", async (req, res, ctx) => {
+app.get("/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async (req, res, ctx) => {
   // TODO: remove, it is identical to post!!
   const body = await req.body;
-  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all called, count',count++,'body',body);
-  // console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
-  
-  const deploymentUuid: string =
-    typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
-  
-  const parentUuid: string =
-    typeof req.params["parentUuid"] == "string" ? req.params["parentUuid"] : req.params["parentUuid"][0];
-  
-  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
-  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  console.log("server get miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
+  console.log('get "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all" called, count',count++,'body',body);
 
-  return generateHandlerBody(
-    {parentUuid},
-    ['parentUuid'],
-    body,
-    'get',
-    "/miroirWithDeployment/entity/",
-    targetProxy.getInstances.bind(targetProxy),
+  console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
+  await getHandler(
+    "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+    localMiroirStoreController,
+    localAppStoreController,
+    req,
     res.json.bind(res)
   )
 });
 
-
 // ##############################################################################################
-app.put("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
+app.put("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
   // TODO: remove, it is identical to post!!
   const body = await req.body;
+
   console.log('put /miroirWithDeployment/entity received count',count++,'body',body);
   console.log('put /miroirWithDeployment/entity received req.originalUrl',req.originalUrl)
-  
-  const deploymentUuid: string =
-    typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
-  
-  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
-  // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  console.log("server put miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
-  return generateHandlerBody(
-    req.params,
-    [],
-    body,
+  await postPutDeleteHandler(
+    "/miroirWithDeployment/:deploymentUuid/:section/entity",
     'put',
-    "/miroirWithDeployment/entity/",
-    targetProxy.upsertInstance.bind(targetProxy),
+    body,
+    localMiroirStoreController,
+    localAppStoreController,
+    req,
     res.json.bind(res)
   )
 });
 
 // ##############################################################################################
-app.post("/miroirWithDeployment/:deploymentUuid/entity", async (req, res, ctx) => {
+app.post("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
+  // TODO: remove, it is identical to post!!
   const body = await req.body;
-  console.log('post /miroirWithDeployment/entity received, count',count++,'body',body);
-  console.log('post /miroirWithDeployment/entity received req.originalUrl',req.originalUrl)
-  
-  const deploymentUuid: string =
-    typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
-  
-  const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppSqlServerProxy:miroirAppSqlServerProxy;
-  console.log("server post miroirWithDeployment/ using application",targetProxy['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
-  return generateHandlerBody(
-    req.params,
-    [],
-    body,
+  console.log('post /miroirWithDeployment/:deploymentUuid/:section/entity received count',count++,'body',body);
+  console.log('post /miroirWithDeployment/:deploymentUuid/:section/entity received req.originalUrl',req.originalUrl)
+
+  await postPutDeleteHandler(
+    "/miroirWithDeployment/:deploymentUuid/:section/entity",
     'post',
-    "/miroirWithDeployment/entity/",
-    targetProxy.upsertInstance.bind(targetProxy),
+    body,
+    localMiroirStoreController,
+    localAppStoreController,
+    req,
     res.json.bind(res)
   )
 });
@@ -178,12 +162,12 @@ app.post("/modelWithDeployment" + '/:deploymentUuid' + '/:actionName', async (re
   await modelActionRunner(
     deploymentUuid,
     actionName,
-    miroirAppSqlServerProxy,
-    libraryAppSqlServerProxy,
+    localMiroirStoreController,
+    localAppStoreController,
     update
   );
  
-  return res.json([]);
+  res.json([]);
 });
 
 // ##############################################################################################

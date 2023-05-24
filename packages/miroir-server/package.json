@@ -7,9 +7,12 @@
   "scripts": {
     "watch": "lerna watch --scope='miroir-server' --include-dependencies -- lerna run build --scope='miroir-server'",
     "start": "node server.bundle.js",
-    "build": "webpack",
+    "build": "npm run copy-all && webpack",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "copy-config": "copyfiles -u 1 config/**/*.json dist/config",
+    "copy-all": "npm run copy-files && npm run copy-config",
     "dev": "nodemon ./server.ts --experimental-json-modules localhost 3080",
-    "dev2": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\""
+    "dev2": "npm run copy-all && concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\""
   },
   "repository": {
     "type": "git",
