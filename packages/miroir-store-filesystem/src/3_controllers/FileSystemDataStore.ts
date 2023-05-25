@@ -113,7 +113,7 @@ export class FileSystemDataStore implements DataStoreInterface {
 
   // #############################################################################################
   getInstance(entityUuid: string, uuid: string): Promise<EntityInstance | undefined> {
-    const entityInstancePath = path.join(this.directory,entityUuid,uuid)
+    const entityInstancePath = path.join(this.directory,entityUuid,fullName(uuid))
     return Promise.resolve(JSON.parse(fs.readFileSync(entityInstancePath).toString()) as EntityInstance);
   }
 
