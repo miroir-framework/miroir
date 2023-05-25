@@ -1,6 +1,6 @@
 import {
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -11,26 +11,24 @@ import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "./utils.js";
 
 
-export class SqlDbDataStore implements DataStoreInterface {
+export class SqlDbDataStore implements IDataSectionStore {
   private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = {};
   private logHeader: string;
   public dataSequelize: Sequelize;
 
   // ##############################################################################################
   constructor(
-    // seq: any,
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
     public dataConnectionString:string,
     public dataSchema:string,
-    // private dataSequelize: Sequelize,
   ) {
     this.logHeader = 'SqlDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
     this.dataSequelize = new Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
   }
 
   // ##############################################################################################
-  public async connect():Promise<void> {
+  public async open():Promise<void> {
     try {
       await this.dataSequelize.authenticate();
       console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.dataSchema, 'has been established successfully.');
@@ -40,6 +38,13 @@ export class SqlDbDataStore implements DataStoreInterface {
     return Promise.resolve();
   }
 
+  // ##############################################################################################
+  async close() {
+    await this.dataSequelize.close();
+    return Promise.resolve();
+    // disconnect from DB?
+  }
+  
   // ##############################################################################################
   async bootFromPersistedState(
     entities : MetaEntity[],
@@ -65,7 +70,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
     let result = {};
-    console.log(this.logHeader,'getState this.getEntities()',this.getEntityUuids());
+    console.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
     
     for (const parentUuid of this.getEntityUuids()) {
       console.log(this.logHeader,'getState getting instances for',parentUuid);
@@ -75,11 +80,6 @@ export class SqlDbDataStore implements DataStoreInterface {
       Object.assign(result,{[parentUuid]:instances});
     }
     return Promise.resolve(result);
-  }
-
-  // ##############################################################################################
-  getEntityNames():string[] {
-    return Object.keys(this.dataSequelize.models);
   }
 
   // ##############################################################################################
@@ -158,7 +158,7 @@ export class SqlDbDataStore implements DataStoreInterface {
   }
 
   // ##############################################################################################
-  async dropData(
+  async clear(
     // metaModel:MiroirMetaModel,
   ):Promise<void> {
     // drop data anq model Entities
@@ -167,7 +167,7 @@ export class SqlDbDataStore implements DataStoreInterface {
 
     // this.sqlModelSchemaTableAccess = {};
     this.sqlDataSchemaTableAccess = {};
-    console.log(this.logHeader,'dropData done, entities',this.getEntityUuids());
+    console.log(this.logHeader,'clear done, entities',this.getEntityUuids());
     
     return Promise.resolve();
   }
@@ -228,12 +228,6 @@ export class SqlDbDataStore implements DataStoreInterface {
     return Promise.resolve();
   }
 
-  // ##############################################################################################
-  async close() {
-    await this.dataSequelize.close();
-    return Promise.resolve();
-    // disconnect from DB?
-  }
   
 
 }

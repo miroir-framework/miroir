@@ -1,7 +1,7 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http.js";
 import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 import { generateHandlerBody } from "../4_services/RestTools";
 import { rest } from "msw";
@@ -44,8 +44,8 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
 
 export function getHandler(
   url: string, // log only, to remove?
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
   req:any,
   continuationFunction:(any)=>any
 ) {
@@ -78,8 +78,8 @@ export function postPutDeleteHandler(
   url: string, // log only, to remove?
   method: HttpMethod,
   body: any[],
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
   req:any,
   continuationFunction:(any)=>any
 ) {
@@ -108,8 +108,8 @@ export class RestServerStub {
   // ##################################################################################
   constructor(
     private rootApiUrl: string,
-    private localMiroirStoreController: StoreControllerInterface,
-    private localAppStoreController: StoreControllerInterface,
+    private localMiroirStoreController: IStoreController,
+    private localAppStoreController: IStoreController,
   ) {
     console.log('RestServerStub constructor rootApiUrl', rootApiUrl, 'localIndexedDbDataStores', localMiroirStoreController, localAppStoreController);
 

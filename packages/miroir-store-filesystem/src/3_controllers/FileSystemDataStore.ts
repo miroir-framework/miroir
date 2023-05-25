@@ -1,6 +1,6 @@
 import {
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -13,7 +13,7 @@ import * as path from "path";
 import { fullName } from "./FileSystemModelStore.js";
 
 
-export class FileSystemDataStore implements DataStoreInterface {
+export class FileSystemDataStore implements IDataSectionStore {
   private logHeader: string;
   private targetPath: path.ParsedPath;
 
@@ -30,9 +30,10 @@ export class FileSystemDataStore implements DataStoreInterface {
     console.log(this.logHeader, 'constructor found entities',files);
   }
 
-  // #############################################################################################
-  connect(): Promise<void> {
-    console.log(this.logHeader, 'connect does nothing!');
+  // #########################################################################################
+  open(): Promise<void> {
+    const entityDirectories = fs.readdirSync(this.directory);
+    console.log(this.logHeader, 'open does nothing! existing entities',entityDirectories);
     return Promise.resolve();
   }
 
@@ -77,20 +78,16 @@ export class FileSystemDataStore implements DataStoreInterface {
   }
 
   // #############################################################################################
-  async dropData(): Promise<void> {
-    console.log(this.logHeader, 'dropData this.getEntities()',this.getEntityUuids());
+  async clear(): Promise<void> {
+    console.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
-      console.log(this.logHeader, 'dropData for entity',parentUuid);
+      console.log(this.logHeader, 'clear for entity',parentUuid);
       await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
     }
     return Promise.resolve();
   }
   
-  // #############################################################################################
-  getEntityNames(): string[] {
-    throw new Error("Method not implemented.");
-  }
   // #############################################################################################
   getEntityUuids(): string[] {
     const files = fs.readdirSync(this.directory);
@@ -99,7 +96,7 @@ export class FileSystemDataStore implements DataStoreInterface {
   // #############################################################################################
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
     let result = {};
-    console.log(this.logHeader, 'getState this.getEntities()',this.getEntityUuids());
+    console.log(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
       console.log(this.logHeader, 'getState getting instances for',parentUuid);

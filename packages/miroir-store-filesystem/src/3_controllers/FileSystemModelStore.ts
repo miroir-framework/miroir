@@ -1,13 +1,13 @@
 import {
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   MetaEntity,
   MiroirMetaModel,
   ModelReplayableUpdate,
-  ModelStoreInterface,
+  IModelSectionStore,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition
@@ -23,7 +23,7 @@ export function fullName(baseName:string) {
 export function extractName(fullName:string) {
   return fullName.substring(fullName.length-5);
 }
-export class FileSystemModelStore implements ModelStoreInterface {
+export class FileSystemModelStore implements IModelSectionStore {
   private targetPath: path.ParsedPath;
   private logHeader: string;
 
@@ -32,7 +32,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
     private directory: string,
-    private dataStore: DataStoreInterface,
+    private dataStore: IDataSectionStore,
   ) {
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FileSystemEntityDataStore constructor');
     this.targetPath = path.parse(directory);
@@ -41,21 +41,6 @@ export class FileSystemModelStore implements ModelStoreInterface {
     this.logHeader = 'FileSystemModelStore ' + applicationName + ' dataStoreType ' + dataStoreType
   }
 
-  // #############################################################################################
-  connect(): Promise<void> {
-    console.log(this.logHeader,'connect() does nothing.');
-    return Promise.resolve();
-  }
-
-  // #############################################################################################
-  getEntityNames(): string[] {
-    throw new Error("Method not implemented.");
-  }
-  // #############################################################################################
-  getEntityUuids(): string[] {
-    throw new Error("Method not implemented.");
-  }
-  
   // #############################################################################################
   bootFromPersistedState(
     entities : MetaEntity[],
@@ -66,11 +51,11 @@ export class FileSystemModelStore implements ModelStoreInterface {
   }
 
   // #########################################################################################
-  async dropModelAndData(metaModel:MiroirMetaModel): Promise<void> {
-    console.log(this.logHeader,'dropModelAndData');
-    await this.dataStore.dropData();
+  async clear(): Promise<void> {
+    console.log(this.logHeader,'clear');
+    await this.dataStore.clear();
     const entityDirectories = fs.readdirSync(this.directory);
-    console.log(this.logHeader, 'dropModelAndData found entities',entityDirectories);
+    console.log(this.logHeader, 'clear found entities',entityDirectories);
     for (const directory of entityDirectories) {
       fs.rmSync(path.join(this.directory,directory),{recursive:true,force:true})
     }
@@ -92,7 +77,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
   }
 
   // #########################################################################################
-  getEntities(): string[] {
+  getEntityUuids(): string[] {
     const entityDirectories = fs.readdirSync(this.directory);
     return entityDirectories;
   }
@@ -103,7 +88,14 @@ export class FileSystemModelStore implements ModelStoreInterface {
     return entityDirectories.includes(entityUuid);
   }
 
-  // #############################################################################################
+  // #########################################################################################
+  // used only for testing purposes!
+  // getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
+    getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
+      return Promise.resolve({});
+    }
+  
+    // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
     // console.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
     const entityInstancesDirectory = path.join(this.directory,entity.uuid)
@@ -114,6 +106,23 @@ export class FileSystemModelStore implements ModelStoreInterface {
       fs.rmSync(entityInstancesDirectory,{ recursive: true, force: true })
       fs.mkdirSync(entityInstancesDirectory)
     }
+    return Promise.resolve();
+  }
+
+  // #############################################################################################
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+    const entityInstancesPath = path.join(this.directory,entityUuid)
+    if (fs.existsSync(entityInstancesPath)) {
+      fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
+    } else {
+      console.log(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
+    }
+    return Promise.resolve();
+  }
+
+  // #############################################################################################
+  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+    console.log(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
     return Promise.resolve();
   }
 
@@ -161,13 +170,13 @@ export class FileSystemModelStore implements ModelStoreInterface {
       console.warn(this.logHeader,'dropEntity entity not found:', entityUuid);
     }
 
-    if(this.getEntities().includes(entityEntityDefinition.uuid)) {
+    if(this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
       await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
     } else {
-      console.warn(this.logHeader,'dropEntity sublevel for entityEntity does not exist',entityEntity.uuid,'existing entities',this.getEntities());
+      console.warn(this.logHeader,'dropEntity sublevel for entityEntity does not exist',entityEntity.uuid,'existing entities',this.getEntityUuids());
     }
 
-    if(this.getEntities().includes(entityEntityDefinition.uuid)) {
+    if(this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
       await this.deleteInstance(entityEntity.uuid, {uuid:entityUuid} as EntityInstance);
 
       const entityDefinitions = (await this.dataStore.getInstances(entityEntityDefinition.uuid) as EntityDefinition[]).filter(i=>i.entityUuid == entityUuid)
@@ -177,7 +186,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
         await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition)
       }
     } else {
-      console.warn('StoreController dropEntity entity entityEntityDefinition does not exist',entityEntityDefinition.uuid,'existing entities',this.getEntities());
+      console.warn('StoreController dropEntity entity entityEntityDefinition does not exist',entityEntityDefinition.uuid,'existing entities',this.getEntityUuids());
     }
     return Promise.resolve();
   }
@@ -190,7 +199,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
 
   // #########################################################################################
   async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<void> {
-    // TODO: identical to IndexedDbModelStore implementation!
+    // TODO: identical to IndexedDbModelSectionStore implementation!
     console.log(this.logHeader,'renameEntity',update);
     const cudUpdate = update.equivalentModelCUDUpdates[0];
     // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
@@ -233,13 +242,6 @@ export class FileSystemModelStore implements ModelStoreInterface {
       console.warn('FileSystemEntityDataStore getInstances application',this.applicationName,'dataStoreType',this.dataStoreType,'entityUuid',entityUuid,'could not find path',entityInstancesPath);
       return Promise.resolve([]);
     }
-  }
-
-  // #########################################################################################
-  // used only for testing purposes!
-  // getState(): Promise<{ [uuid: string]: EntityInstance[] }> {
-  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
-    return Promise.resolve({});
   }
 
   // #########################################################################################

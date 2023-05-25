@@ -12,7 +12,7 @@ import {
   MiroirContext,
   RestClient,
   RestServerStub,
-  StoreControllerInterface
+  IStoreController
 } from "miroir-core";
 import {
   ReduxStore,
@@ -68,8 +68,8 @@ export interface CreateMswRestServerReturnType {
 export async function createMswRestServer(
   miroirConfig: MiroirConfig,
   platformType: "browser" | "nodejs",
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   console.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);

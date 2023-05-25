@@ -8,13 +8,13 @@ import {
   ApplicationDeployment,
   ApplicationSection,
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EmulatedServerConfig,
   EmulatedServerConfigIndexedDb,
   MiroirConfig,
-  ModelStoreInterface,
+  IModelSectionStore,
   StoreController,
-  StoreControllerInterface,
+  IStoreController,
   StoreFactoryRegister,
   applicationDeploymentMiroir,
   applicationMiroir,
@@ -28,13 +28,13 @@ import { RequestHandler } from 'msw';
 import { SetupServerApi } from 'msw/lib/node';
 import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
-import { IndexedDb, IndexedDbDataStore, IndexedDbModelStore } from 'miroir-store-indexedDb';
+import { IndexedDb, IndexedDbDataSectionStore, IndexedDbModelSectionStore } from 'miroir-store-indexedDb';
 
-import applicationLibrary from "../../src/assets/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import applicationDeploymentLibrary from '../../src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
-import applicationStoreBasedConfigurationLibrary from "../../src/assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
-import applicationVersionLibraryInitialVersion from "../../src/assets/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
-import applicationModelBranchLibraryMasterBranch from "../../src/assets/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+import applicationStoreBasedConfigurationLibrary from "../../src/assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
+import applicationVersionLibraryInitialVersion from "../../src/assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
+import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -112,28 +112,28 @@ export const DisplayLoadingInfo:React.FC<{reportUuid?:string}> = (props:{reportU
 // ############################################################################################################
 // ############################################################################################################
 
-export type IndexedDbStoreControllerFactory = (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  config: EmulatedServerConfigIndexedDb,
-) => StoreControllerInterface
+// export type IndexedDbStoreControllerFactory = (
+//   appName: string,
+//   dataStoreApplicationType: DataStoreApplicationType,
+//   config: EmulatedServerConfigIndexedDb,
+// ) => IStoreController
 
-export const indexedDbStoreControllerFactory = (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  config: EmulatedServerConfigIndexedDb,
-)=>{
-  const dataStore = new IndexedDbDataStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
-  const modelStore = new IndexedDbModelStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
-  return new StoreController(appName, dataStoreApplicationType,modelStore,dataStore);
-}
+// export const indexedDbStoreControllerFactory = (
+//   appName: string,
+//   dataStoreApplicationType: DataStoreApplicationType,
+//   config: EmulatedServerConfigIndexedDb,
+// )=>{
+//   const dataStore = new IndexedDbDataSectionStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
+//   const modelStore = new IndexedDbModelSectionStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
+//   return new StoreController(appName, dataStoreApplicationType,modelStore,dataStore);
+// }
 
 // #################################################################################################################
 export async function miroirBeforeAll(
   miroirConfig: MiroirConfig,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
 ):Promise<CreateMswRestServerReturnType|undefined> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
@@ -186,13 +186,13 @@ export async function miroirBeforeAll(
 
 // ###############################################################################################
 export async function miroirBeforeEach(
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
 ):Promise<void> {
   try {
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-    await localAppStoreController.dropModelAndData(defaultMiroirMetaModel);
-    await localMiroirStoreController.dropModelAndData(defaultMiroirMetaModel);
+    await localAppStoreController.clear();
+    await localMiroirStoreController.clear();
     try {
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
       await localMiroirStoreController.initApplication(
@@ -235,14 +235,14 @@ export async function miroirBeforeEach(
 
 // #################################################################################################################
 export async function miroirAfterEach(
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
 ):Promise<void> {
   try {
     // await localDataStore?.close();
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
-    await localMiroirStoreController.clear(defaultMiroirMetaModel);
-    await localAppStoreController.clear(defaultMiroirMetaModel);
+    await localMiroirStoreController.clear();
+    await localAppStoreController.clear();
   } catch (error) {
     console.error('Error afterEach',error);
   }
@@ -251,8 +251,8 @@ export async function miroirAfterEach(
 }
 
 export async function miroirAfterAll(
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
   localDataStoreServer: SetupServerApi,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');

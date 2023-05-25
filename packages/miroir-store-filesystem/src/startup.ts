@@ -2,11 +2,11 @@ import {
   ApplicationSection,
   ConfigurationService,
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EmulatedServerConfig,
   ErrorDataStore,
   ErrorModelStore,
-  ModelStoreInterface,
+  IModelSectionStore,
 } from "miroir-core";
 import packageJson from "../package.json";
 import { FileSystemModelStore } from "./3_controllers/FileSystemModelStore.js";
@@ -21,8 +21,8 @@ export function miroirStoreFileSystemStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       return Promise.resolve(
@@ -40,8 +40,8 @@ export function miroirStoreFileSystemStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       return Promise.resolve(
         config.emulatedServerType == "filesystem"

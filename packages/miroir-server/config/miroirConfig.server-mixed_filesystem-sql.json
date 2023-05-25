@@ -7,9 +7,8 @@
       "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets/miroir_model"
     },
     "data": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
+      "emulatedServerType": "filesystem",
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets/miroir_data"
     }
   },
   "appServerConfig": {

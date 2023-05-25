@@ -2,14 +2,14 @@ import {
   ApplicationSection,
   ConfigurationService,
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EmulatedServerConfig,
   ErrorDataStore,
   ErrorModelStore,
-  ModelStoreInterface,
+  IModelSectionStore,
 } from "miroir-core";
-import { IndexedDbModelStore } from "./4_services/IndexedDbModelStore.js";
-import { IndexedDbDataStore } from "./4_services/IndexedDbDataStore.js";
+import { IndexedDbModelSectionStore } from "./4_services/IndexedDbModelSectionStore.js";
+import { IndexedDbDataSectionStore } from "./4_services/IndexedDbDataSectionStore.js";
 import { IndexedDb } from "./4_services/indexedDb.js";
 
 export function miroirStoreIndexedDbStartup() {
@@ -21,13 +21,13 @@ export function miroirStoreIndexedDbStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
-      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
+      console.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       
       return Promise.resolve(
         config.emulatedServerType == "indexedDb" && dataStore
-          ? new IndexedDbModelStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
+          ? new IndexedDbModelSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
           : new ErrorModelStore()
       )
     }
@@ -40,12 +40,12 @@ export function miroirStoreIndexedDbStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
-      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
+      console.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       return Promise.resolve(
         config.emulatedServerType == "indexedDb"
-          ? new IndexedDbDataStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
+          ? new IndexedDbDataSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
           : new ErrorDataStore()
       )
     }

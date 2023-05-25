@@ -1,6 +1,6 @@
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
@@ -10,8 +10,8 @@ import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f0
 export async function initApplicationDeployment(
   deploymentUuid: string,
   actionName:string,
-  miroirStoreController:StoreControllerInterface,
-  appStoreController:StoreControllerInterface,
+  miroirStoreController:IStoreController,
+  appStoreController:IStoreController,
   params:DomainModelInitActionParams
 ) {
   console.log("ModelUpdateRunner model/initModel params",params);
@@ -37,13 +37,13 @@ export async function initApplicationDeployment(
       params.applicationStoreBasedConfiguration,
     );
   }
-  console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntities());
+  console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntityUuids());
 }
 export async function modelActionRunner(
   deploymentUuid: string,
   actionName:string,
-  miroirDataStoreProxy:StoreControllerInterface,
-  appDataStoreProxy:StoreControllerInterface,
+  miroirDataStoreProxy:IStoreController,
+  appDataStoreProxy:IStoreController,
   body:any
 ):Promise<void> {
   // console.log("server post model/"," started #####################################");
@@ -52,14 +52,14 @@ export async function modelActionRunner(
   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
   console.log('###################################### ModelUpdateRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
-  console.log('ModelUpdateRunner getEntities()', miroirDataStoreProxy.getEntities());
+  console.log('ModelUpdateRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   switch (actionName) {
     case 'resetModel':{
       // const update = (await req.body)[0];
       console.log("ModelUpdateRunner resetModel update");
-      await miroirDataStoreProxy.dropModelAndData(defaultMiroirMetaModel);
-      await appDataStoreProxy.dropModelAndData(defaultMiroirMetaModel);
-      console.log('ModelUpdateRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntities());
+      await miroirDataStoreProxy.clear();
+      await appDataStoreProxy.clear();
+      console.log('ModelUpdateRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'initModel':{
@@ -102,7 +102,7 @@ export async function modelActionRunner(
 
   // ##############################################################################################
   export async function applyModelEntityUpdate(
-    storeController:StoreControllerInterface,
+    storeController:IStoreController,
     update:ModelReplayableUpdate
   ){
     console.log('ModelActionRunner applyModelEntityUpdate',update);

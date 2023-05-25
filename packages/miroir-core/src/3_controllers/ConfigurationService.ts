@@ -4,7 +4,7 @@
 import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { DataStoreInterface, ModelStoreInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+import { IDataSectionStore, IModelSectionStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { DataStoreApplicationType } from "./ModelInitializer.js";
 
 // export type DeploymentModes = 'local' | 'remote';
@@ -23,8 +23,8 @@ export type StoreFactory = (
   dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
   config: EmulatedServerConfig,
-  dataStore?: DataStoreInterface,
-)=>Promise<DataStoreInterface | ModelStoreInterface>;
+  dataStore?: IDataSectionStore,
+)=>Promise<IDataSectionStore | IModelSectionStore>;
 
 export type StoreFactoryRegister = Map<string,StoreFactory>;
 

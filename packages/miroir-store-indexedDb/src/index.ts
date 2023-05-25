@@ -1,9 +1,9 @@
 export {
-  IndexedDbDataStore,
-} from './4_services/IndexedDbDataStore.js';
+  IndexedDbDataSectionStore,
+} from './4_services/IndexedDbDataSectionStore.js';
 export {
-  IndexedDbModelStore,
-} from './4_services/IndexedDbModelStore.js';
+  IndexedDbModelSectionStore,
+} from './4_services/IndexedDbModelSectionStore.js';
 export {
   IndexedDb
 } from './4_services/indexedDb.js';

@@ -2,11 +2,11 @@ import {
   ApplicationSection,
   ConfigurationService,
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EmulatedServerConfig,
   ErrorDataStore,
   ErrorModelStore,
-  ModelStoreInterface,
+  IModelSectionStore,
 } from "miroir-core";
 import { SqlDbModelStore } from "./SqlDbModelStore.js";
 import { SqlDbDataStore } from "./SqlDbDataStore.js";
@@ -20,8 +20,8 @@ export function miroirStorePostgresStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       return Promise.resolve(
@@ -39,8 +39,8 @@ export function miroirStorePostgresStartup() {
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: EmulatedServerConfig,
-      dataStore?: DataStoreInterface
-    ): Promise<DataStoreInterface | ModelStoreInterface> => {
+      dataStore?: IDataSectionStore
+    ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       return Promise.resolve(
         config.emulatedServerType == "sql"

@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 import { readFileSync } from 'fs';
 import bodyParser from 'body-parser';
 import {
-  StoreControllerInterface,
+  IStoreController,
   ApplicationDeployment,
   generateHandlerBody,
   modelActionRunner,
@@ -57,8 +57,8 @@ const users = [];
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
 let
-  localMiroirStoreController:StoreControllerInterface,
-  localAppStoreController:StoreControllerInterface
+  localMiroirStoreController:IStoreController,
+  localAppStoreController:IStoreController
 ;
 
 const {
@@ -73,13 +73,13 @@ localAppStoreController = b;
 try {
   await localMiroirStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
 } catch(e) {
-  console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntities(),'error',e);
+  console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
 }
 
 try {
   await localAppStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
 } catch(e) {
-  console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntities(),'error',e);
+  console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
 }
 
 

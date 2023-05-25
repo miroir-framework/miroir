@@ -29,7 +29,7 @@ import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { StoreControllerInterface } from '../0_interfaces/4-services/remoteStore/StoreControllerInterface.js';
+import { IStoreController } from '../0_interfaces/4-services/remoteStore/IStoreController.js';
 
 export type DataStoreApplicationType = 'miroir' | 'app';
 
@@ -50,7 +50,7 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(e
 
 export async function modelInitialize(
   metaModel:MiroirMetaModel,
-  storeController:StoreControllerInterface,
+  storeController:IStoreController,
   dataStoreType: DataStoreApplicationType,
   application: Application,
   applicationDeployment: EntityInstance,
@@ -70,38 +70,38 @@ export async function modelInitialize(
   
     // bootstrap MetaClass EntityDefinition
     await storeController.createStorageSpaceForInstancesOfEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
-    console.log(logHeader, 'created entity EntityDefinition',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityDefinition',storeController.getEntityUuids());
   
     // // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition);!
     await storeController.upsertInstance('model', entityEntity as EntityInstance);
     await storeController.upsertInstance('model', entityEntityDefinition as EntityInstance);
     await storeController.upsertInstance('model', entityDefinitionEntity as EntityInstance);
     await storeController.upsertInstance('model', entityDefinitionEntityDefinition as EntityInstance);
-    console.log(logHeader, 'created entity entity',storeController.getEntities());
+    console.log(logHeader, 'created entity entity',storeController.getEntityUuids());
   
     // bootstrap Application
     await storeController.createEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
-    console.log(logHeader, 'created entity EntityApplication',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityApplication',storeController.getEntityUuids());
     
     // bootstrap ApplicationModelBranch
     await storeController.createEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
-    console.log(logHeader, 'created entity EntityApplicationModelBranch',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityApplicationModelBranch',storeController.getEntityUuids());
     
     // bootstrap ApplicationVersion
     await storeController.createEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
-    console.log(logHeader, 'created entity EntityApplicationVersion',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityApplicationVersion',storeController.getEntityUuids());
     
     // bootstrap Application
     await storeController.createEntity(entityApplicationDeployment as MetaEntity, entityDefinitionApplicationDeployment as EntityDefinition);
-    console.log(logHeader, 'created entity EntityApplicationDeployment',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityApplicationDeployment',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
-    console.log(logHeader, 'created entity EntityStoreBasedConfiguration',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityStoreBasedConfiguration',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
-    console.log(logHeader, 'created entity EntityReport',storeController.getEntities());
+    console.log(logHeader, 'created entity EntityReport',storeController.getEntityUuids());
     
     await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
     await storeController.upsertInstance('data', reportEntityDefinitionList as EntityInstance);
@@ -123,35 +123,35 @@ export async function modelInitialize(
   if (dataStoreType == 'app') {
     await storeController.createStorageSpaceForInstancesOfEntity(entityEntity as MetaEntity,entityDefinitionEntity as EntityDefinition); //entityDefinition for entityEntity has not been inserted!
   
-    console.log(logHeader, 'app initialized entity entity',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity entity',storeController.getEntityUuids());
   
     // bootstrap MetaClass EntityDefinition
     await storeController.createStorageSpaceForInstancesOfEntity(entityEntityDefinition as MetaEntity, entityDefinitionEntityDefinition as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityDefinition',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityDefinition',storeController.getEntityUuids());
   
     // bootstrap Application
     await storeController.createStorageSpaceForInstancesOfEntity(entityApplication as MetaEntity, entityDefinitionApplication as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityApplication',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityApplication',storeController.getEntityUuids());
     
     // bootstrap ApplicationModelBranch
     await storeController.createStorageSpaceForInstancesOfEntity(entityApplicationModelBranch as MetaEntity, entityDefinitionApplicationModelBranch as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityApplicationModelBranch',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityApplicationModelBranch',storeController.getEntityUuids());
     
     // bootstrap ApplicationVersion
     await storeController.createStorageSpaceForInstancesOfEntity(entityApplicationVersion as MetaEntity, entityDefinitionApplicationVersion as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityApplicationVersion',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityApplicationVersion',storeController.getEntityUuids());
     
     // bootstrap Application
     await storeController.createStorageSpaceForInstancesOfEntity(entityApplicationDeployment as MetaEntity, entityDefinitionApplicationDeployment as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityApplicationDeployment',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityApplicationDeployment',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createStorageSpaceForInstancesOfEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityStoreBasedConfiguration',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityStoreBasedConfiguration',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
-    console.log(logHeader, 'app initialized entity EntityReport',storeController.getEntities());
+    console.log(logHeader, 'app initialized entity EntityReport',storeController.getEntityUuids());
     
     await storeController.upsertInstance('model', application);
     await storeController.upsertInstance('model', applicationDeployment);

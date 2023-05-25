@@ -1,20 +1,21 @@
 import {
   DataStoreApplicationType,
-  DataStoreInterface,
+  IDataSectionStore,
   EntityDefinition,
   EntityInstance,
   MetaEntity,
   MiroirMetaModel,
   ModelReplayableUpdate,
-  ModelStoreInterface,
+  IModelSectionStore,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
-  entityEntityDefinition
+  entityEntityDefinition,
+  Uuid,
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "./utils.js";
 
-export class SqlDbModelStore implements ModelStoreInterface {
+export class SqlDbModelStore implements IModelSectionStore {
   private sqlModelSchemaTableAccess: SqlUuidEntityDefinition = {};
   private logHeader: string;
   public modelSequelize: Sequelize;
@@ -25,7 +26,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
     public dataStoreType: DataStoreApplicationType,
     public modelConnectionString:string,
     public modelSchema:string,
-    private sqlDbDataStore: DataStoreInterface,
+    private sqlDbDataStore: IDataSectionStore,
   ) {
     this.logHeader = "SqlDbModelStore" + " Application " + this.applicationName + " dataStoreType " + this.dataStoreType;
 
@@ -33,7 +34,7 @@ export class SqlDbModelStore implements ModelStoreInterface {
   }
 
   // ##############################################################################################
-  public async connect():Promise<void> {
+  public async open():Promise<void> {
     try {
       await this.modelSequelize.authenticate();
       console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.modelSchema, 'has been established successfully.');
@@ -43,10 +44,40 @@ export class SqlDbModelStore implements ModelStoreInterface {
     return Promise.resolve();
   }
 
+  // ##############################################################################################
+  async close(): Promise<void> {
+    await this.modelSequelize?.close();
+    return Promise.resolve();
+    // disconnect from DB?
+  }
   
   // ##############################################################################################
+  async clear(): Promise<void> {
+    // drop data anq model Entities
+    await this.sqlDbDataStore.clear();
+    await this.modelSequelize.drop();
+    // await this.dataSequelize.drop();
+
+    this.sqlModelSchemaTableAccess = {};
+    console.log(this.logHeader, "clear DONE", this.getEntityUuids());
+
+    return Promise.resolve();
+  }
+
+
+  // ##############################################################################################
+  getEntityUuids(): string[] {
+    return this.sqlDbDataStore.getEntityUuids();
+  }
+
+  // ##############################################################################################
+  existsEntity(entityUuid: string): boolean {
+    return this.sqlDbDataStore.getEntityUuids().includes(entityUuid);
+  }
+
+  // ##############################################################################################
   // TODO: does side effect => refactor!
-  getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
+  private getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
     return {
       [entity.uuid]: {
         parentName: entity.parentName,
@@ -128,29 +159,6 @@ export class SqlDbModelStore implements ModelStoreInterface {
   }
 
   // ##############################################################################################
-  async dropModelAndData(metaModel: MiroirMetaModel): Promise<void> {
-    // drop data anq model Entities
-    await this.sqlDbDataStore.dropData();
-    await this.modelSequelize.drop();
-    // await this.dataSequelize.drop();
-
-    this.sqlModelSchemaTableAccess = {};
-    console.log(this.logHeader, "dropModelAndData DONE", this.getEntities());
-
-    return Promise.resolve();
-  }
-
-  // ##############################################################################################
-  getEntities(): string[] {
-    return this.sqlDbDataStore.getEntityUuids();
-  }
-
-  // ##############################################################################################
-  existsEntity(entityUuid: string): boolean {
-    return this.sqlDbDataStore.getEntityUuids().includes(entityUuid);
-  }
-
-  // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
     console.log(
       this.logHeader,
@@ -194,6 +202,44 @@ export class SqlDbModelStore implements ModelStoreInterface {
         entity.name
       );
       await this.sqlModelSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
+    }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async renameStorageSpaceForInstancesOfEntity(
+    oldName: string,
+    newName: string,
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition,
+  ): Promise<void> {
+    await this.modelSequelize.getQueryInterface().renameTable({tableName:oldName,schema:this.modelSchema}, newName);
+    // console.log(this.logHeader, 'renameEntity renameTable done.');
+    // removing dataSequelize model with old name
+    this.modelSequelize.modelManager.removeModel(this.modelSequelize.model(oldName));
+    // creating dataSequelize model for the renamed entity
+    Object.assign(
+      this.sqlModelSchemaTableAccess,
+      this.getAccessToModelSectionEntity( // TODO: decouple from ModelUpdateConverter implementation
+        entity,
+        entityDefinition
+      )
+    );
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async dropStorageSpaceForInstancesOfEntity(
+    entityUuid:Uuid,
+  ): Promise<void> {
+    if (this.sqlModelSchemaTableAccess && this.sqlModelSchemaTableAccess[entityUuid]) {
+      const model = this.sqlModelSchemaTableAccess[entityUuid];
+      console.log(this.logHeader,"dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, 'parentName',model.parentName);
+      // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
+      await model.sequelizeModel.drop();
+      delete this.sqlModelSchemaTableAccess[entityUuid];
+    } else {
+      console.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
     }
     return Promise.resolve();
   }
@@ -398,13 +444,6 @@ export class SqlDbModelStore implements ModelStoreInterface {
   // ##############################################################################################
   applyModelEntityUpdate(update: ModelReplayableUpdate) {
     throw new Error("Method not implemented.");
-  }
-
-  // ##############################################################################################
-  async close(): Promise<void> {
-    await this.modelSequelize?.close();
-    return Promise.resolve();
-    // disconnect from DB?
   }
   
 }
