@@ -1,23 +1,28 @@
 import {
   DataStoreApplicationType,
-  StoreControllerInterface,
+  DataStoreInterface,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   MetaEntity,
   MiroirMetaModel,
   ModelReplayableUpdate,
+  ModelStoreInterface,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
-  entityEntityDefinition,
-  ApplicationSection,
-  ModelStoreInterface,
-  DataStoreInterface,
+  entityEntityDefinition
 } from "miroir-core";
 
 import * as fs from "fs";
 import * as path from "path";
 
+const fileExt = '.json'
+export function fullName(baseName:string) {
+  return baseName + fileExt;
+}
+export function extractName(fullName:string) {
+  return fullName.substring(fullName.length-5);
+}
 export class FileSystemModelStore implements ModelStoreInterface {
   private targetPath: path.ParsedPath;
   private logHeader: string;
@@ -64,50 +69,50 @@ export class FileSystemModelStore implements ModelStoreInterface {
   async dropModelAndData(metaModel:MiroirMetaModel): Promise<void> {
     console.log(this.logHeader,'dropModelAndData');
     await this.dataStore.dropData();
-    const files = fs.readdirSync(this.directory);
-    console.log(this.logHeader, 'dropModelAndData found entities',files);
-    for (const file of files) {
-      fs.rmSync(path.join(this.directory,file),{recursive:true,force:true})
+    const entityDirectories = fs.readdirSync(this.directory);
+    console.log(this.logHeader, 'dropModelAndData found entities',entityDirectories);
+    for (const directory of entityDirectories) {
+      fs.rmSync(path.join(this.directory,directory),{recursive:true,force:true})
     }
     return Promise.resolve()
   }
 
   // #########################################################################################
   open(): Promise<void> {
-    const files = fs.readdirSync(this.directory);
-    console.log(this.logHeader, 'open does nothing! existing entities',files);
+    const entityDirectories = fs.readdirSync(this.directory);
+    console.log(this.logHeader, 'open does nothing! existing entities',entityDirectories);
     return Promise.resolve();
   }
 
   // #########################################################################################
   close(): Promise<void> {
-    const files = fs.readdirSync(this.directory);
-    console.log(this.logHeader, 'close does nothing! existing entities',files);
+    const entityDirectories = fs.readdirSync(this.directory);
+    console.log(this.logHeader, 'close does nothing! existing entities',entityDirectories);
     return Promise.resolve();
   }
 
   // #########################################################################################
   getEntities(): string[] {
-    const files = fs.readdirSync(this.directory);
-    return files;
+    const entityDirectories = fs.readdirSync(this.directory);
+    return entityDirectories;
   }
 
   // #########################################################################################
   existsEntity(entityUuid: string): boolean {
-    const files = fs.readdirSync(this.directory);
-    return files.includes(entityUuid);
+    const entityDirectories = fs.readdirSync(this.directory);
+    return entityDirectories.includes(entityUuid);
   }
 
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
     // console.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
-    const entityInstancesPath = path.join(this.directory,entity.uuid)
-    if (!fs.existsSync(entityInstancesPath)) {
-      fs.mkdirSync(entityInstancesPath)
+    const entityInstancesDirectory = path.join(this.directory,entity.uuid)
+    if (!fs.existsSync(entityInstancesDirectory)) {
+      fs.mkdirSync(entityInstancesDirectory)
     } else {
       console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
-      fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
-      fs.mkdirSync(entityInstancesPath)
+      fs.rmSync(entityInstancesDirectory,{ recursive: true, force: true })
+      fs.mkdirSync(entityInstancesDirectory)
     }
     return Promise.resolve();
   }
@@ -128,11 +133,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
       } else {
         await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
         await this.upsertInstance(entityEntity.uuid, entity);
-        // if(this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
         await this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
-        // } else {
-        //   console.warn(this.logHeader,'createEntity',entity.name,'sublevel for entityEntityDefinition does not exist',entityEntityDefinition.uuid,this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid));
-        // }
       }
     }
 
@@ -143,8 +144,10 @@ export class FileSystemModelStore implements ModelStoreInterface {
       fs.mkdirSync(path.join(this.directory,entity.uuid))
     }
 
-    fs.writeFileSync(path.join(this.directory,entityEntity.uuid,entity.uuid),JSON.stringify(entity))
-    fs.writeFileSync(path.join(this.directory,entityEntityDefinition.uuid,entityDefinition.uuid),JSON.stringify(entityDefinition))
+    await this.upsertInstance(entityEntity.uuid,entity);
+    await this.upsertInstance(entityEntityDefinition.uuid,entityDefinition);
+    // fs.writeFileSync(path.join(this.directory,entityEntity.uuid,fullName(entity.uuid)),JSON.stringify(entity))
+    // fs.writeFileSync(path.join(this.directory,entityEntityDefinition.uuid,fullName(entityDefinition.uuid)),JSON.stringify(entityDefinition))
     return Promise.resolve()
   }
 
@@ -241,7 +244,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
 
   // #########################################################################################
   upsertInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
-    const filePath = path.join(this.directory,entityUuid,instance.uuid);
+    const filePath = path.join(this.directory,entityUuid,fullName(instance.uuid));
     fs.writeFileSync(filePath,JSON.stringify(instance, undefined, 2))
 
     return Promise.resolve(undefined);
@@ -258,7 +261,7 @@ export class FileSystemModelStore implements ModelStoreInterface {
 
   // #############################################################################################
   deleteInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
-    const filePath = path.join(this.directory,entityUuid,instance.uuid);
+    const filePath = path.join(this.directory,entityUuid,fullName(instance.uuid));
     fs.rmSync(filePath);
     return Promise.resolve();
   }

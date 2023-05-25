@@ -15,7 +15,7 @@
   "appServerConfig": {
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/tmp/library_model"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets/library_model"
     },
     "data": {
       "emulatedServerType": "sql",

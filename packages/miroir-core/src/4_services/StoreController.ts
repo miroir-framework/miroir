@@ -9,8 +9,8 @@ import { DataStoreInterface, ModelStoreInterface, StoreControllerInterface } fro
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
 import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
-import entityEntity from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityEntityDefinition from "../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
+import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 
 // #######################################################################################################################
 export interface StoreControllerFactoryReturnType {
@@ -134,11 +134,13 @@ export class StoreController implements StoreControllerInterface{
 
   // #############################################################################################
   async bootFromPersistedState(
-    entities : MetaEntity[],
-    entityDefinitions : EntityDefinition[],
+    metaModelEntities : MetaEntity[],
+    metaModelEntityDefinitions : EntityDefinition[],
   ):Promise<void> {
-    await this.modelStore.bootFromPersistedState(entities ,entityDefinitions);
-    await this.dataStore.bootFromPersistedState(entities ,entityDefinitions);
+    await this.modelStore.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
+    const dataEntities = await this.modelStore.getInstances(entityEntity.uuid) as MetaEntity[];
+    const dataEntityDefinitions = await this.modelStore.getInstances(entityEntityDefinition.uuid) as EntityDefinition[];
+    await this.dataStore.bootFromPersistedState(dataEntities, dataEntityDefinitions);
     return Promise.resolve();
   }
 

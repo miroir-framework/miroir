@@ -10,6 +10,7 @@ import {
 
 import * as fs from "fs";
 import * as path from "path";
+import { fullName } from "./FileSystemModelStore.js";
 
 
 export class FileSystemDataStore implements DataStoreInterface {
@@ -134,7 +135,7 @@ export class FileSystemDataStore implements DataStoreInterface {
   }
   // #########################################################################################
   upsertInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
-    const filePath = path.join(this.directory,entityUuid,instance.uuid);
+    const filePath = path.join(this.directory,entityUuid,fullName(instance.uuid));
     fs.writeFileSync(filePath,JSON.stringify(instance, undefined, 2))
 
     return Promise.resolve(undefined);
@@ -151,7 +152,7 @@ export class FileSystemDataStore implements DataStoreInterface {
 
   // #############################################################################################
   deleteInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
-    const filePath = path.join(this.directory,entityUuid,instance.uuid);
+    const filePath = path.join(this.directory,entityUuid,fullName(instance.uuid));
     fs.rmSync(filePath);
     return Promise.resolve();
   }

@@ -17,11 +17,11 @@ import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers
 import { LocalCacheInfo } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 
-import entityApplicationVersion from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-import entityDefinitionEntityDefinition from "../assets/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
-import instanceConfigurationReference from '../assets/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
+import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
+import instanceConfigurationReference from '../assets/miroir_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import { ApplicationSection } from '../0_interfaces/1_core/Instance.js';
-import applicationDeploymentMiroir from '../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
+import applicationDeploymentMiroir from '../assets/miroir_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the

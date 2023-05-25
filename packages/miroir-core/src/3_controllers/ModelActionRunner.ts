@@ -2,9 +2,9 @@ import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainCont
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { StoreControllerInterface } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
-import entityEntity from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityEntityDefinition from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import applicationDeploymentMiroir from "../assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
+import applicationDeploymentMiroir from "../assets/miroir_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 
 export async function initApplicationDeployment(
