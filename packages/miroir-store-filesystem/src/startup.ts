@@ -9,8 +9,8 @@ import {
   IModelSectionStore,
 } from "miroir-core";
 import packageJson from "../package.json";
-import { FileSystemModelStore } from "./3_controllers/FileSystemModelStore.js";
-import { FileSystemDataStore } from "./3_controllers/FileSystemDataStore.js";
+import { FileSystemModelSectionStore } from "./3_controllers/FileSystemModelSectionStore.js";
+import { FileSystemDataSectionStore } from "./3_controllers/FileSystemDataSectionStore.js";
 
 export function miroirStoreFileSystemStartup() {
   ConfigurationService.registerStoreFactory(
@@ -27,7 +27,7 @@ export function miroirStoreFileSystemStartup() {
       
       return Promise.resolve(
         config.emulatedServerType == "filesystem" && dataStore
-          ? new FileSystemModelStore(appName, dataStoreApplicationType, config.directory, dataStore)
+          ? new FileSystemModelSectionStore(appName, dataStoreApplicationType, config.directory, dataStore)
           : new ErrorModelStore()
       )
     }
@@ -45,7 +45,7 @@ export function miroirStoreFileSystemStartup() {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       return Promise.resolve(
         config.emulatedServerType == "filesystem"
-          ? new FileSystemDataStore(appName, dataStoreApplicationType, config.directory)
+          ? new FileSystemDataSectionStore(appName, dataStoreApplicationType, config.directory)
           : new ErrorDataStore()
       )
     }

@@ -1,9 +1,9 @@
 export {
-  FileSystemDataStore,
-} from './3_controllers/FileSystemDataStore.js'
+  FileSystemDataSectionStore,
+} from './3_controllers/FileSystemDataSectionStore.js'
 export {
-  FileSystemModelStore,
-} from './3_controllers/FileSystemModelStore.js'
+  FileSystemModelSectionStore as FileSystemModelStore,
+} from './3_controllers/FileSystemModelSectionStore.js'
 export {
   miroirStoreFileSystemStartup,
 } from './startup.js'

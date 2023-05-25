@@ -141,6 +141,7 @@ export class StoreController implements IStoreController{
   // ##############################################################################################
   async clear():Promise<void> {
     console.log(this.logHeader,'clear',this.getEntityUuids());
+    await this.dataStore.clear();
     await this.modelStore.clear();
     return Promise.resolve();
   }
