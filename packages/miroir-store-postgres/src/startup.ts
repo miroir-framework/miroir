@@ -8,7 +8,7 @@ import {
   ErrorModelStore,
   IModelSectionStore,
 } from "miroir-core";
-import { SqlDbModelStore } from "./SqlDbModelStore.js";
+import { SqlDbModelStore } from "./SqlDbModelSectionStore.js";
 import { SqlDbDataStore } from "./SqlDbDataStore.js";
 
 export function miroirStorePostgresStartup() {

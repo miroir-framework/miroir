@@ -3,7 +3,7 @@ export {
 } from './SqlDbDataStore.js'
 export {
   SqlDbModelStore,
-} from './SqlDbModelStore.js'
+} from './SqlDbModelSectionStore.js'
 export {
   miroirStorePostgresStartup,
 } from './startup.js'
