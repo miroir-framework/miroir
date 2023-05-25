@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { defaultMiroirMetaModel, entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
-import miroirConfig from "assets/miroirConfig.json";
+import miroirConfig from "assets/library_model/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
