@@ -1,13 +1,13 @@
 import { EntityDefinition, EntityInstance, IAbstractEntityStore, IAbstractInstanceStore, IDataSectionStore, MetaEntity, WrappedTransactionalEntityUpdateWithCUDUpdate, entityEntity, entityEntityDefinition } from "miroir-core";
 import { FileSystemStore } from "./FileSystemStore.js";
-import { FileSystemDbInstanceStoreMixin, MixedFileSystemDbInstanceStore } from "./FileSystemInstanceStoreMixin.js";
+import { FileSystemInstanceStoreMixin, MixedFileSystemInstanceStore } from "./FileSystemInstanceStoreMixin.js";
 
 import * as fs from "fs";
 import * as path from "path";
 
-export const MixedFileSystemDbEntityAndInstanceStore = FileSystemDbEntityStoreMixin(FileSystemDbInstanceStoreMixin(FileSystemStore))
+export const MixedFileSystemDbEntityAndInstanceStore = FileSystemDbEntityStoreMixin(FileSystemInstanceStoreMixin(FileSystemStore))
 
-export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSystemDbInstanceStore>(Base: TBase) {
+export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSystemInstanceStore>(Base: TBase) {
   return class MixedSqlDbEntityStore extends Base implements IAbstractEntityStore, IAbstractInstanceStore {
     public dataStore: IDataSectionStore;
 

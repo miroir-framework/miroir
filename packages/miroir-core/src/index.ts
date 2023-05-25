@@ -162,6 +162,7 @@ export {
   IModelSectionStore,
   IAbstractEntityStore,
   IAbstractInstanceStore,
+  IStorageSpaceHandler,
   IStoreController,
 } from "./0_interfaces/4-services/remoteStore/IStoreController.js";
 export { } from './1_core/Report.js';

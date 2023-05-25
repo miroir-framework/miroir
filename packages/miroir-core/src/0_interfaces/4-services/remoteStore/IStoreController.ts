@@ -14,18 +14,18 @@ export interface IAbstractStore {
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ):Promise<void>;
-}
+  getEntityUuids():string[];
+  clear():Promise<void>;
 
-export interface IAbstractInstanceStore {
-  clear():Promise<void>; // clear cannot be part of IAbstractStore because its implementation differs in AbstractEntityStore and AbstractInstanceStore
+}
+export interface IStorageSpaceHandler {
+  dropStorageSpaceForInstancesOfEntity(
+    entityUuid:Uuid,
+  ): Promise<void>;
 
   createStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
-
-  dropStorageSpaceForInstancesOfEntity(
-    entityUuid:Uuid,
   ): Promise<void>;
 
   renameStorageSpaceForInstancesOfEntity(
@@ -34,8 +34,9 @@ export interface IAbstractInstanceStore {
     entity: MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
+}
 
-  getEntityUuids():string[]; //TODO: remove!
+export interface IAbstractInstanceStore {
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstances(parentUuid: string): Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
@@ -44,9 +45,6 @@ export interface IAbstractInstanceStore {
 }
 
 export interface IAbstractEntityStore {
-  clear():Promise<void>; // clear cannot be part of IAbstractStore because its implementation differs in AbstractEntityStore and AbstractInstanceStore
-
-  getEntityUuids():string[]; //TODO: remove!
   existsEntity(entityUuid:string):boolean;
 
   createEntity(
@@ -56,22 +54,20 @@ export interface IAbstractEntityStore {
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void>;
   dropEntity(parentUuid:string): Promise<void>;
   dropEntities(parentUuid:string[]): Promise<void>;
-
 }
 
 // ###############################################################################################################
 // Data and Model sections
-export interface IModelSectionStore extends IAbstractStore, IAbstractInstanceStore, IAbstractEntityStore {
+export interface IModelSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore, IAbstractEntityStore {
 }
 
-export interface IDataSectionStore extends IAbstractStore, IAbstractInstanceStore {
+export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
 // ###############################################################################################################
 // store Controller
 export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
-
   initApplication(
     metaModel:MiroirMetaModel, 
     dataStoreType: DataStoreApplicationType,

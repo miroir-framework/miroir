@@ -1,4 +1,4 @@
-import { DataStoreApplicationType, IDataSectionStore, EntityDefinition, EntityInstance, IAbstractEntityStore, IAbstractInstanceStore, IAbstractStore, MetaEntity, WrappedTransactionalEntityUpdateWithCUDUpdate, entityEntity, entityEntityDefinition } from "miroir-core";
+import { DataStoreApplicationType, IDataSectionStore, EntityDefinition, EntityInstance, IAbstractEntityStore, IAbstractInstanceStore, IAbstractStore, MetaEntity, WrappedTransactionalEntityUpdateWithCUDUpdate, entityEntity, entityEntityDefinition, IStorageSpaceHandler } from "miroir-core";
 import { IndexedDb } from "./indexedDb.js";
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
@@ -6,7 +6,7 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableIndexedDbStore = GConstructor<IndexedDbStore>;
 
 // base class for IndexedDb store mixins
-export class IndexedDbStore implements IAbstractStore {
+export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
   public applicationName: string;
   public dataStoreType: DataStoreApplicationType;
   public localUuidIndexedDb: IndexedDb;
@@ -46,6 +46,94 @@ export class IndexedDbStore implements IAbstractStore {
   // ##################################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
     console.log(this.logHeader,'bootFromPersistedState does nothing!');
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async clear(): Promise<void> {
+    await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  getEntityUuids(): string[] {
+    return this.localUuidIndexedDb.getSubLevels();
+  }
+  
+  // #############################################################################################
+  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+    console.log(
+      this.logHeader,
+      "createStorageSpaceForInstancesOfEntity",
+      "input: entity",
+      entity,
+      "entityDefinition",
+      entityDefinition,
+      "Entities",
+      this.localUuidIndexedDb.getSubLevels()
+    );
+    if (entity.uuid != entityDefinition.entityUuid) {
+      // inconsistent input, raise exception
+      console.error(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity",
+        "Application",
+        this.applicationName,
+        "dataStoreType",
+        this.dataStoreType,
+        "inconsistent input: given entityDefinition is not related to given entity."
+      );
+    } else {
+      if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
+        this.localUuidIndexedDb.addSubLevels([entity.uuid]);
+      } else {
+        this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
+        console.log(
+          this.logHeader,
+          "createStorageSpaceForInstancesOfEntity",
+          "input: entity",
+          entity,
+          "entityDefinition",
+          entityDefinition,
+          "already has entity. Existing entities:",
+          this.localUuidIndexedDb.getSubLevels()
+        );
+      }
+    }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+    if (!this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
+      await this.localUuidIndexedDb.removeSubLevels([entityUuid]);
+    } else {
+      console.log(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity",
+        "input: entity",
+        entityUuid,
+        "not found. Existing entities:",
+        this.localUuidIndexedDb.getSubLevels()
+      );
+    }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  renameStorageSpaceForInstancesOfEntity(
+    oldName: string,
+    newName: string,
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<void> {
+    console.warn(
+      this.logHeader,
+      "renameStorageSpaceForInstancesOfEntity does nothing for entity",
+      oldName,
+      ", since Entities are indexed by Uuid! Existing entities:",
+      this.localUuidIndexedDb.getSubLevels()
+    );
     return Promise.resolve();
   }
 }

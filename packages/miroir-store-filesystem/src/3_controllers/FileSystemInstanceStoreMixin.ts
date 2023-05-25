@@ -12,10 +12,10 @@ export function extractName(fullName:string) {
   return fullName.substring(fullName.length-5);
 }
 
-export const MixedFileSystemDbInstanceStore = FileSystemDbInstanceStoreMixin(FileSystemStore)
+export const MixedFileSystemInstanceStore = FileSystemInstanceStoreMixin(FileSystemStore)
 
 
-export function FileSystemDbInstanceStoreMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
+export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
   return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
     // ##############################################################################################
     constructor(
@@ -26,54 +26,47 @@ export function FileSystemDbInstanceStoreMixin<TBase extends MixableFileSystemDb
       ...args:any[]
     ) {
       super(...args)
-      // this.logHeader = 'SqlDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
-      // this.dataSequelize = new Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
     }
     
-    // #############################################################################################
-    async clear(): Promise<void> {
-      console.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
+    // // #############################################################################################
+    // async clear(): Promise<void> {
+    //   console.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
 
-      for (const parentUuid of this.getEntityUuids()) {
-        console.log(this.logHeader, 'clear for entity',parentUuid);
-        await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
-      }
-      return Promise.resolve();
-    }
+    //   for (const parentUuid of this.getEntityUuids()) {
+    //     console.log(this.logHeader, 'clear for entity',parentUuid);
+    //     await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
+    //   }
+    //   return Promise.resolve();
+    // }
     
-    // #############################################################################################
-    createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-      // console.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
-      const entityInstancesPath = path.join(this.directory,entity.uuid)
-      if (!fs.existsSync(entityInstancesPath)) {
-        fs.mkdirSync(entityInstancesPath)
-      } else {
-        console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
-      }
-      return Promise.resolve();
-    }
+    // // #############################################################################################
+    // createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+    //   // console.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
+    //   const entityInstancesPath = path.join(this.directory,entity.uuid)
+    //   if (!fs.existsSync(entityInstancesPath)) {
+    //     fs.mkdirSync(entityInstancesPath)
+    //   } else {
+    //     console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
+    //   }
+    //   return Promise.resolve();
+    // }
 
-    // #############################################################################################
-    dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
-      const entityInstancesPath = path.join(this.directory,entityUuid)
-      if (fs.existsSync(entityInstancesPath)) {
-        fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
-      } else {
-        console.log(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
-      }
-      return Promise.resolve();
-    }
+    // // #############################################################################################
+    // dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+    //   const entityInstancesPath = path.join(this.directory,entityUuid)
+    //   if (fs.existsSync(entityInstancesPath)) {
+    //     fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
+    //   } else {
+    //     console.log(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
+    //   }
+    //   return Promise.resolve();
+    // }
 
-    // #############################################################################################
-    renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-      console.log(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
-      return Promise.resolve();
-    }
-    // #############################################################################################
-    getEntityUuids(): string[] {
-      const files = fs.readdirSync(this.directory);
-      return files;
-    }
+    // // #############################################################################################
+    // renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+    //   console.log(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
+    //   return Promise.resolve();
+    // }
     // #############################################################################################
     getInstance(entityUuid: string, uuid: string): Promise<EntityInstance | undefined> {
       const entityInstancePath = path.join(this.directory,entityUuid,fullName(uuid))

@@ -158,9 +158,6 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
         console.log(this.logHeader,'renameEntity update',update);
         console.log(this.logHeader,'renameEntity model',model);
         
-        // console.log(this.logHeader,'renameEntity modelSequelize tables',Object.keys(this.modelSequelize.models), 'this.sqlSchemaTableAccess',this.sqlSchemaTableAccess);
-        // console.log(this.logHeader,'renameEntity dataSequelize ',this.dataSequelize.config,'tables',Object.keys(this.dataSequelize.models),'this.sqlDataSchemaTableAccess',this.sqlDataSchemaTableAccess);
-        
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
           update.modelEntityUpdate['entityName'],
           update.modelEntityUpdate['targetValue'],
@@ -182,7 +179,5 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
       console.log(this.logHeader, 'renameEntity done.');
       return Promise.resolve();
     }
-
-    
   }
 }
