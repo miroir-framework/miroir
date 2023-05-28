@@ -1,14 +1,27 @@
+import * as React from "react";
 import {
+  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
+  Dialog,
+  DialogTitle,
   FormControl,
   InputLabel,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
+  Typography,
 } from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
+import AddIcon from '@mui/icons-material/Add';
 import {
   ConfigurationService,
   DomainControllerInterface,
@@ -51,7 +64,6 @@ import {
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 
-import * as React from "react";
 import { ReportComponent } from "./ReportComponent";
 
 // import entityApplication from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
@@ -90,6 +102,7 @@ import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e
 import folio from "assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json";
 import penguin from "assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json";
 import springer from "assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json";
+import { SimpleDialog, emails } from "./InstanceEditorDialog";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -118,6 +131,7 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
     }
   }
 }
+
 export interface RootComponentProps {
   // store:any;
   reportName: string;
@@ -216,6 +230,7 @@ async function uploadBooksAndReports(
 
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
+
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -253,6 +268,7 @@ export const RootComponent = (props: RootComponentProps) => {
       displayedDeploymentDefinition
   ;
 
+  const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
@@ -691,8 +707,11 @@ export const RootComponent = (props: RootComponentProps) => {
           <ReportComponent 
             chosenDeploymentUuid={displayedDeploymentUuid} 
             chosenApplicationSection={displayedApplicationSection}
-            reportUuid={displayedReportUuid} 
+            displayedDeploymentDefinition={displayedDeploymentDefinition}
+            reportUuid={displayedReportUuid}
+            currentModel={currentModel}
             currentMiroirReport={currentMiroirReport}
+            currentMiroirEntity={currentReportTargetEntity}
             currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
           />
         </CardContent>

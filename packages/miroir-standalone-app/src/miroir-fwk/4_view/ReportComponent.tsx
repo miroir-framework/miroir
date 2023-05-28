@@ -1,4 +1,29 @@
-import { ApplicationSection, EntityDefinition, EntityInstance, MetaEntity, MiroirReport } from "miroir-core";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
+import AddIcon from '@mui/icons-material/Add';
+import { v4 as uuidv4 } from 'uuid';
+
+import { ApplicationDeployment, ApplicationSection, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, MiroirReport, entityEntity } from "miroir-core";
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
@@ -12,15 +37,18 @@ import * as React from "react";
 
 import { MTableComponent } from "./MTableComponent";
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
+import { EditorAttribute, SimpleDialog, emails } from "./InstanceEditorDialog";
 // import { getColumnDefinitions } from "miroir-react";
 
 export interface MiroirReportComponentProps {
   // reportName: string;
   chosenDeploymentUuid: string;
+  displayedDeploymentDefinition: ApplicationDeployment | undefined;
   chosenApplicationSection: ApplicationSection | undefined;
   currentMiroirReport: MiroirReport | undefined;
-  // currentMiroirEntity: MetaEntity | undefined;
+  currentMiroirEntity: MetaEntity | undefined;
   currentMiroirEntityDefinition: EntityDefinition | undefined;
+  currentModel:MiroirMetaModel,
   reportUuid: string;
 };
 
@@ -28,6 +56,19 @@ export interface MiroirReportComponentProps {
 export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   props: MiroirReportComponentProps
 ) => {
+  const [open, setOpen] = React.useState(false);
+
+  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value: string) => {
+    setOpen(false);
+    // setSelectedValue(value);
+  };
+
   // console.log("ReportComponent props",props);
   // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   // const miroirReports:MiroirReport[] = useLocalCacheReports();
@@ -56,9 +97,32 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
       ) as EntityInstance
   );
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
+  console.log("ReportComponent props.currentMiroirEntity",props.currentMiroirEntity);
   // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
   // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
-  const columnDefs=props.currentMiroirEntityDefinition?getColumnDefinitions(props.currentMiroirEntityDefinition?.attributes):[];
+  const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
+  const currentEditorAttributes: EditorAttribute[] = currentEntityAttributes.map(a=>{
+    // switch (props.currentMiroirEntityDefinition?.parentUuid) {
+      // case entityEntity.uuid
+        switch (a.name) {
+          case 'uuid':
+            return {attribute:a,value:uuidv4()}
+          case 'parentName':
+            return {attribute:a,value:props.currentMiroirEntity?.name}
+          case 'parentUuid':
+            return {attribute:a,value:props.currentMiroirEntity?.uuid}
+          case 'conceptLevel':
+            return {attribute:a,value:'Model'}
+          case 'application':
+            return {attribute:a,value:props.displayedDeploymentDefinition?.application}
+          default:
+            return {attribute:a,value:''}
+        }
+    //   default:
+    //     return {attribute:a,value:''};
+    // }
+  });
+  const columnDefs=getColumnDefinitions(currentEntityAttributes);
   console.log("ReportComponent columnDefs",columnDefs);
 
   return (
@@ -75,7 +139,28 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
         </h3>
 
       </div>
-      <p></p>
+      <span>
+          <div>
+            <Typography variant="subtitle1" component="div">
+              Selected: {selectedValue}
+            </Typography>
+            <br />
+            <Button variant="outlined" onClick={handleClickOpen}>
+              Open simple dialog
+            </Button>
+            <SimpleDialog
+              selectedValue={selectedValue}
+              editorAttributes={currentEditorAttributes}
+              displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+              currentModel={props.currentModel}
+              // rowData={instancesStringified}
+              open={open}
+              onClose={handleClose}
+            />
+          </div>
+        </span>
+      <p>
+      </p>
       <div>
         {
           props.currentMiroirReport?

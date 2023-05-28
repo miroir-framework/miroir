@@ -35,60 +35,60 @@
   },
   "attributes": [
     {
-        "id": 1,
-        "name": "uuid",
-        "defaultLabel": "Uuid",
-        "type": "STRING",
-        "nullable": false,
-        "editable": false
+      "id": 1,
+      "name": "uuid",
+      "defaultLabel": "Uuid",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
     },
     {
-        "id": 2,
-        "name": "parentName",
-        "defaultLabel": "Parent Entity Name",
-        "type": "STRING",
-        "nullable": true,
-        "editable": true
+      "id": 2,
+      "name": "parentName",
+      "defaultLabel": "Parent Entity Name",
+      "type": "STRING",
+      "nullable": true,
+      "editable": true
     },
     {
-        "id": 3,
-        "name": "parentUuid",
-        "defaultLabel": "Parent Entity",
-        "type": "STRING",
-        "nullable": false,
-        "editable": false
+      "id": 3,
+      "name": "parentUuid",
+      "defaultLabel": "Parent Entity",
+      "type": "STRING",
+      "nullable": false,
+      "editable": false
     },
     {
-        "id": 4,
-        "name": "name",
-        "defaultLabel": "Name",
-        "type": "STRING",
-        "nullable": false,
-        "editable": true
+      "id": 4,
+      "name": "conceptLevel",
+      "defaultLabel": "Concept Level",
+      "type": "STRING",
+      "nullable": true,
+      "editable": false
     },
     {
-        "id": 5,
-        "name": "conceptLevel",
-        "defaultLabel": "Concept Level",
-        "type": "STRING",
-        "nullable": true,
-        "editable": false
+      "id": 5,
+      "name": "application",
+      "defaultLabel": "Application",
+      "type": "STRING",
+      "nullable": true,
+      "editable": false
     },
     {
-        "id": 6,
-        "name": "application",
-        "defaultLabel": "Application",
-        "type": "STRING",
-        "nullable": true,
-        "editable": false
+      "id": 6,
+      "name": "name",
+      "defaultLabel": "Name",
+      "type": "STRING",
+      "nullable": false,
+      "editable": true
     },
     {
-        "id": 7,
-        "name": "description",
-        "defaultLabel": "Description",
-        "type": "STRING",
-        "nullable": true,
-        "editable": true
+      "id": 7,
+      "name": "description",
+      "defaultLabel": "Description",
+      "type": "STRING",
+      "nullable": true,
+      "editable": true
     }
   ]
 }
