@@ -1,31 +1,12 @@
-import * as React from "react";
 import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
   Dialog,
   DialogTitle,
-  FormControl,
-  InputLabel,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography,
+  ListItem
 } from "@mui/material";
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
-import { blue } from "@mui/material/colors";
 
-import { useForm, SubmitHandler } from "react-hook-form";
-import { ApplicationDeployment, DomainController, DomainControllerInterface, EntityAttribute, EntityInstance, MiroirMetaModel } from "miroir-core";
+import { ApplicationDeployment, DomainControllerInterface, EntityAttribute, EntityInstance, MiroirMetaModel } from "miroir-core";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
 
 // type Inputs = {
@@ -54,7 +35,9 @@ export interface SimpleDialogProps {
 }
 
 // #####################################################################################################
-export function SimpleDialog(props: SimpleDialogProps) {
+export function InstanceEditorDialog(props: SimpleDialogProps) {
+  // const classes = useStyles();
+
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
   const { onClose, selectedValue, open } = props;
 
@@ -97,7 +80,7 @@ export function SimpleDialog(props: SimpleDialogProps) {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>Set backup account</DialogTitle>
+      <DialogTitle>add Entity</DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
       {/* register your input into the hook by invoking the "register" function */}

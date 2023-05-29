@@ -1,6 +1,11 @@
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import { ApplicationSection, EntityInstanceCollection, EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
-import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainTransactionalAncillaryOrReplayableAction, DomainTransactionalReplayableAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { ApplicationSection, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import {
+  DomainAncillaryOrReplayableAction,
+  DomainDataAction,
+  DomainTransactionalAncillaryOrReplayableAction,
+  DomainTransactionalReplayableAction,
+} from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
@@ -14,15 +19,14 @@ import {
   RemoteStoreModelAction
 } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 
-import { applicationModelEntities, metaModelEntities, miroirModelEntities } from "../3_controllers/ModelInitializer.js";
+import { metaModelEntities, miroirModelEntities } from "../3_controllers/ModelInitializer.js";
 
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 
 // import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
-import { throwExceptionIfError } from "./ErrorUtils.js";
-import { circularReplacer } from "../tools.js";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import { circularReplacer } from "../tools.js";
+import { throwExceptionIfError } from "./ErrorUtils.js";
 
 export default {};
 
@@ -39,17 +43,17 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
   ) {}
 
   //####################################################################################
-  public async handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction) {
+  public handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction):void {
     return this.localCache.handleLocalCacheModelAction(deploymentUuid, action);
   }
 
   //####################################################################################
-  public async handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction) {
+  public handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction):void {
     return this.localCache.handleLocalCacheDataAction(deploymentUuid, action);
   }
 
   //####################################################################################
-  public async handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction) {
+  public handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction):void {
     return this.localCache.handleLocalCacheAction(deploymentUuid, action);
   }
 
@@ -100,7 +104,7 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
     deploymentUuid: string,
   ): Promise<void> {
     try {
-      const dataEntitiesFromModelSection: EntityInstanceCollection = await throwExceptionIfError(
+      const dataEntitiesFromModelSection: EntityInstanceCollection | void = await throwExceptionIfError(
         this.miroirContext.errorLogService,
         this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
         this.remoteStore, //this
@@ -113,6 +117,10 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         }
       );
 
+      if (!dataEntitiesFromModelSection) {
+        throw new Error("LocalAndRemoteController loadConfigurationFromRemoteDataStore could not fetch entity instance list");
+        
+      }
       console.log(
         "LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",
         deploymentUuid,
@@ -154,9 +162,9 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
         console.log(
           "LocalAndRemoteController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
-          e["name"]
+          (e as any)["name"]
         );
-        const entityInstanceCollection: EntityInstanceCollection = await throwExceptionIfError(
+        const entityInstanceCollection: EntityInstanceCollection | void = await throwExceptionIfError(
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
           this.remoteStore, // this
@@ -173,7 +181,11 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
           e.entity["name"],
           entityInstanceCollection
         );
-        instances.push(entityInstanceCollection);
+        if (entityInstanceCollection) {
+          instances.push(entityInstanceCollection);
+        } else {
+          console.warn("LocalAndRemoteController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
+        }
       }
 
       console.log(

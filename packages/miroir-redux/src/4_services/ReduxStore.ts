@@ -7,57 +7,56 @@ import { all } from 'redux-saga/effects';
 
 
 import {
+  applicationDeploymentMiroir,
+  ApplicationSection,
   DomainAncillaryOrReplayableAction,
+  DomainAncillaryOrReplayableActionWithDeployment,
   DomainDataAction,
   DomainTransactionalAncillaryOrReplayableAction,
   DomainTransactionalReplayableAction,
+  entityApplicationVersion,
   EntityDefinition,
-  entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
-  entityApplicationVersion,
   entityReport,
   entityStoreBasedConfiguration,
   LocalCacheInfo,
   LocalCacheInterface,
   MetaEntity,
-  MiroirMetaModel,
   MiroirApplicationVersion,
+  MiroirMetaModel,
   MiroirReport,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
   StoreBasedConfiguration,
-  applicationDeploymentMiroir,
-  Uuid,
-  DomainAncillaryOrReplayableActionWithDeployment,
-  ApplicationSection
+  Uuid
 } from "miroir-core";
 import {
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
   localCacheSliceInputActionNamesObject
-} from "src/4_services/localStore/LocalCacheSlice";
+} from "../4_services/localStore/LocalCacheSlice";
 import {
   createUndoRedoReducer,
   InnerStoreStateInterface,
   ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo
-} from "src/4_services/localStore/UndoRedoReducer";
+} from "../4_services/localStore/UndoRedoReducer";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
   RemoteStoreRestSagaInputActionNamesArray
-} from "src/4_services/remoteStore/RemoteStoreRestAccessSaga";
+} from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
 
 
-function roughSizeOfObject( object ) {
+function roughSizeOfObject( object: any ) {
 
-  var objectList:any[] = [];
-  var stack = [ object ];
-  var bytes = 0;
+  const objectList:any[] = [];
+  const stack = [ object ];
+  let bytes = 0;
 
   while ( stack.length ) {
-      var value = stack.pop();
+      const value = stack.pop();
 
       if ( typeof value === 'boolean' ) {
           bytes += 4;
@@ -76,7 +75,7 @@ function roughSizeOfObject( object ) {
       {
           objectList.push( value );
 
-          for( var i in value ) {
+          for( let i in value ) {
               stack.push( value[ i ] );
           }
       }
@@ -223,7 +222,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // // ###############################################################################
   // handleLocalCacheModelAction(domainAction:DomainTransactionalAncillaryOrReplayableAction) {
-  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainTransactionalAncillaryOrReplayableAction) {
+  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainTransactionalAncillaryOrReplayableAction): void {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
@@ -233,7 +232,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // // ###############################################################################
   // handleLocalCacheDataAction(domainAction:DomainDataAction) {
-  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction:DomainDataAction) {
+  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction:DomainDataAction): void {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
@@ -243,7 +242,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // // ###############################################################################
   // handleLocalCacheAction(domainAction:DomainAncillaryOrReplayableAction) {
-  handleLocalCacheAction(deploymentUuid: Uuid, domainAction:DomainAncillaryOrReplayableAction) {
+  handleLocalCacheAction(deploymentUuid: Uuid, domainAction:DomainAncillaryOrReplayableAction):void {
     this.innerReduxStore.dispatch(
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
       // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)

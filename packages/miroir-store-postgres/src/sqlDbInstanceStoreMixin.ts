@@ -1,4 +1,4 @@
-import { EntityDefinition, EntityInstance, IAbstractInstanceStore, MetaEntity, Uuid } from "miroir-core"
+import { EntityInstance, IAbstractInstanceStore } from "miroir-core"
 import { MixableSqlDbStore, SqlDbStore } from "./SqlDbStore.js"
 
 export const MixedSqlDbInstanceStore = SqlDbInstanceStoreMixin(SqlDbStore)
@@ -57,7 +57,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
       } else {
         result = []
       }
-      return Promise.resolve(result);
+      return Promise.resolve(result as EntityInstance[]);
     }
 
     // ##############################################################################################

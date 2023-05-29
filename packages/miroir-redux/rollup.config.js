@@ -1,5 +1,7 @@
+import typescript2 from 'rollup-plugin-typescript2';
 import pluginJson from '@rollup/plugin-json';
-import typescript2 from 'rollup-plugin-typescript2'
+import dts from 'rollup-plugin-dts';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 export default [
   {
@@ -27,4 +29,17 @@ export default [
       pluginJson(),
     ],
   },
+  {
+    input: ["dist/src/index.d.ts"],
+    output: [
+      {
+        file: `dist/bundle.d.ts`,
+        format: 'esm',
+      }
+    ],
+    plugins: [
+      pluginJson(),
+      dts(),
+    ],
+  }
 ];

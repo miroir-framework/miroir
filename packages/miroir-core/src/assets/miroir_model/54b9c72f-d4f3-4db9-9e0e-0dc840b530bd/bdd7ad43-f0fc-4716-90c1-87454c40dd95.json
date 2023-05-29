@@ -7,76 +7,6 @@
   "conceptLevel":"MetaModel",
   "description": "definition of an entity",
   "instanceValidationJsonSchema": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "additionalProperties": false,
-    "if": {"properties": {"parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"}},
-    "then": { "required": ["uuid","parentUuid","name","instanceValidationJsonSchema"]},
-    "else": { "required": ["uuid","parentUuid","name"]},
-    "properties": {
-      "uuid": {
-        "title": "Uuid",
-        "type": "string"
-      },
-      "parentName": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "parentUuid": {
-        "title": "Entity Definition",
-        "type": "string"
-      },
-      "name": {
-        "title": "Name",
-        "type": "string"
-      },
-      "icon": {
-        "title": "Icon",
-        "type": "string"
-      },
-      "instanceValidationJsonSchema":{"type":"object"},
-      "attributes": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "required":["id","name","defaultLabel","type"],
-          "properties": {
-            "id": {
-              "title": "Id",
-              "type": "integer"
-            },
-            "name": {
-              "title": "Name",
-              "type": "string"
-            },
-            "parentName": {
-              "title": "Entity Name",
-              "type": "string"
-            },
-            "objectEntityUuid": {
-              "title": "In the case of an OBJECT, Entity Definition Uuid for this object",
-              "type": "string"
-            },
-            "defaultLabel": {
-              "title": "Default Label",
-              "type": "string"
-            },
-            "type": {
-              "title": "Type",
-              "type": "string"
-            },
-            "nullable": {
-              "title": "Nullable",
-              "type": "boolean"
-            },
-            "editable": {
-              "title": "Editable",
-              "type": "boolean"
-            }
-          }
-        }
-      }
-    }
   },
   "attributes": [
     {
@@ -105,6 +35,14 @@
     },
     {
       "id": 4,
+      "name": "conceptLevel",
+      "defaultLabel": "Concept Level",
+      "type": "STRING",
+      "nullable": true,
+      "editable": false
+    },
+    {
+      "id": 5,
       "name": "entityUuid",
       "defaultLabel": "Entity of the definition",
       "type": "STRING",
@@ -112,20 +50,12 @@
       "editable": false
     },
     {
-      "id": 5,
+      "id": 6,
       "name": "name",
       "defaultLabel": "Name",
       "type": "STRING",
       "nullable": false,
       "editable": true
-    },
-    {
-      "id": 6,
-      "name": "conceptLevel",
-      "defaultLabel": "Concept Level",
-      "type": "STRING",
-      "nullable": true,
-      "editable": false
     },
     {
       "id": 7,

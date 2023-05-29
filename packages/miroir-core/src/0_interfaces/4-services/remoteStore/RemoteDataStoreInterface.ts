@@ -25,7 +25,7 @@ export interface RemoteStoreCRUDActionReturnType {
   errorMessage?: string;
   error?: MError;
   // instances: EntityInstanceCollection[]
-  instanceCollection: EntityInstanceCollection;
+  instanceCollection?: EntityInstanceCollection;
 }
 
 export interface RestClientCallReturnType {

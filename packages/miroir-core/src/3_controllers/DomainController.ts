@@ -63,7 +63,7 @@ export class DomainController implements DomainControllerInterface {
       }
       case "undo":
       case "redo": {
-        await this.LocalAndRemoteController.handleLocalCacheModelAction(deploymentUuid, domainModelAction);
+        this.LocalAndRemoteController.handleLocalCacheModelAction(deploymentUuid, domainModelAction);
         break;
       }
       case "initModel": 
@@ -134,7 +134,7 @@ export class DomainController implements DomainControllerInterface {
   
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.LocalAndRemoteController.currentLocalCacheTransaction());
   
-          await this.LocalAndRemoteController.handleLocalCacheAction(
+          this.LocalAndRemoteController.handleLocalCacheAction(
             deploymentUuid,
             {
               actionName:'create',
@@ -143,7 +143,7 @@ export class DomainController implements DomainControllerInterface {
             }
           );
   
-          await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
+          this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
   
           const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
           console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -230,6 +230,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ########################################################################################
+  // TODO: useless??????????????????????????????????????????????????????????????????????
   async handleDomainAction(
     deploymentUuid:Uuid,
     domainAction: DomainAction,
@@ -238,12 +239,12 @@ export class DomainController implements DomainControllerInterface {
     let entityDomainAction:DomainAction | undefined = undefined;
     let otherDomainAction:DomainAction | undefined = undefined;
     const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','rollback','replace','undo','redo'];
-    console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',domainAction['objects']);
+    console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',(domainAction as any)['objects']);
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.parentUuid == entityDefinitionEntityDefinition.uuid):[];
-      const otherObjects = Array.isArray(domainAction['objects'])?domainAction['objects'].filter(a=>a.parentUuid !== entityDefinitionEntityDefinition.uuid):[];
+      const entityObjects = Array.isArray((domainAction as any)['objects'])?(domainAction as any)['objects'].filter((a:any)=>a.parentUuid == entityDefinitionEntityDefinition.uuid):[];
+      const otherObjects = Array.isArray((domainAction as any)['objects'])?(domainAction as any)['objects'].filter((a:any)=>a.parentUuid !== entityDefinitionEntityDefinition.uuid):[];
 
       if(entityObjects.length > 0){
         entityDomainAction = {

@@ -1,43 +1,18 @@
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography,
+  Button
 } from "@mui/material";
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ApplicationDeployment, ApplicationSection, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, MiroirReport, entityEntity } from "miroir-core";
+import { ApplicationDeployment, ApplicationSection, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, MiroirReport } from "miroir-core";
 import {
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
-  useLocalCacheEntityDefinitions,
-  useLocalCacheInstancesForReport,
-  useLocalCacheReports,
-  useLocalCacheInstancesForEntity,
+  useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
 import * as React from "react";
 
-import { MTableComponent } from "./MTableComponent";
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
-import { EditorAttribute, SimpleDialog, emails } from "./InstanceEditorDialog";
+import { EditorAttribute, InstanceEditorDialog, emails } from "./InstanceEditorDialog";
+import { MTableComponent } from "./MTableComponent";
 // import { getColumnDefinitions } from "miroir-react";
 
 export interface MiroirReportComponentProps {
@@ -127,36 +102,12 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
 
   return (
     <div>
-      <div>
-          {/* props: {JSON.stringify(props)} */}
-          {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
-          colonnes: {JSON.stringify(columnDefs)}
-          <p/>
-          deployment: {JSON.stringify(props.chosenDeploymentUuid)}
-          <p/>
-        <h3>
-          {props.currentMiroirReport?.defaultLabel}
-        </h3>
-
-      </div>
       <span>
           <div>
-            <Typography variant="subtitle1" component="div">
+            {/* <Typography variant="subtitle1" component="div">
               Selected: {selectedValue}
             </Typography>
-            <br />
-            <Button variant="outlined" onClick={handleClickOpen}>
-              Open simple dialog
-            </Button>
-            <SimpleDialog
-              selectedValue={selectedValue}
-              editorAttributes={currentEditorAttributes}
-              displayedDeploymentDefinition={props.displayedDeploymentDefinition}
-              currentModel={props.currentModel}
-              // rowData={instancesStringified}
-              open={open}
-              onClose={handleClose}
-            />
+            <br /> */}
           </div>
         </span>
       <p>
@@ -167,6 +118,29 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
             (
               columnDefs?.length > 0?
                 <div>
+                  <div>
+                      {/* props: {JSON.stringify(props)} */}
+                      {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
+                      colonnes: {JSON.stringify(columnDefs)}
+                      <p/>
+                      deployment: {JSON.stringify(props.chosenDeploymentUuid)}
+                      <p/>
+                    <h3>
+                      {props.currentMiroirReport?.defaultLabel}
+                      <Button variant="outlined" onClick={handleClickOpen}>
+                        <AddBoxIcon/>
+                      </Button>
+                    </h3>
+                  </div>
+                  <InstanceEditorDialog
+                    selectedValue={selectedValue}
+                    editorAttributes={currentEditorAttributes}
+                    displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                    currentModel={props.currentModel}
+                    // rowData={instancesStringified}
+                    open={open}
+                    onClose={handleClose}
+                  />
                   <MTableComponent
                     reportDefinition={props.currentMiroirReport}
                     columnDefs={columnDefs}

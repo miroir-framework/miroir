@@ -91,5 +91,5 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
   deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;
 
 
-  applyModelEntityUpdate(update:ModelReplayableUpdate);
+  applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>;
 }

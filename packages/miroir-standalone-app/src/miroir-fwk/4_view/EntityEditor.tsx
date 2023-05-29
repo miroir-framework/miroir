@@ -1,5 +1,5 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { useCallback, useState, useRef, forwardRef, useImperativeHandle, useEffect } from "react";
+import { useCallback, useState, useRef, forwardRef, useImperativeHandle, useEffect, KeyboardEvent } from "react";
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -47,20 +47,20 @@ export default forwardRef((props:ICellEditorParams, ref) => {
 
   // const cancelBeforeStart =  props.charPress && '1234567890'.indexOf(props.charPress) < 0;
 
-  const isLeftOrRight = (event) => {
+  const isLeftOrRight = (event: { key: string; }) => {
     return ['ArrowLeft', 'ArrowRight'].indexOf(event.key) > -1;
   };
 
-  const isCharNumeric = (charStr) => {
+  const isCharNumeric = (charStr: string) => {
     return !!/\d/.test(charStr);
   };
 
-  const isKeyPressedNumeric = (event) => {
+  const isKeyPressedNumeric = (event: { key: any; }) => {
     const charStr = event.key;
     return isCharNumeric(charStr);
   };
 
-  const isBackspace = (event) => {
+  const isBackspace = (event: { key: string; }) => {
     return event.key === KEY_BACKSPACE;
   };
 
@@ -69,12 +69,12 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     setValue(e.target.value);
   }
 
-  const finishedEditingPressed = (event) => {
+  const finishedEditingPressed = (event: { key: any; }) => {
     const key = event.key;
     return key === KEY_ENTER || key === KEY_TAB;
   };
 
-  const onKeyDown = (event) => {
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     console.log('onKeyDown char typed', event.key)
     if (isLeftOrRight(event) || isBackspace(event)) {
       event.stopPropagation();

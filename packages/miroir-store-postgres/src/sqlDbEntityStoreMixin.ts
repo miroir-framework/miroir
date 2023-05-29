@@ -159,8 +159,8 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
         console.log(this.logHeader,'renameEntity model',model);
         
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-          update.modelEntityUpdate['entityName'],
-          update.modelEntityUpdate['targetValue'],
+          (update.modelEntityUpdate as any)['entityName'],
+          (update.modelEntityUpdate as any)['targetValue'],
           update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
           update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
         );

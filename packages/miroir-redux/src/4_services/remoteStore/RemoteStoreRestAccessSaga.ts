@@ -72,7 +72,7 @@ export class RemoteStoreRestAccessReduxSaga {
         property,
         ActionCreatorWithPayload<any, property>
       >,
-      generator:(any) => RemoteStoreSagaGenReturnType
+      generator:(a:any) => RemoteStoreSagaGenReturnType
     }
   } = {
     // handleRemoteStoreCRUDAction: {
@@ -149,7 +149,7 @@ export class RemoteStoreRestAccessReduxSaga {
     handleRemoteStoreCRUDActionWithDeployment: {
       name: "handleRemoteStoreCRUDActionWithDeployment",
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<{deploymentUuid:string, section:ApplicationSection, action:RemoteStoreCRUDAction},"handleRemoteStoreCRUDActionWithDeployment">("handleRemoteStoreCRUDActionWithDeployment"),
-      generator: function*(p:PayloadAction<{deploymentUuid:string, section:ApplicationSection, action:RemoteStoreCRUDAction}>):RemoteStoreSagaGenReturnType {
+      generator: function*(this:RemoteStoreRestAccessReduxSaga,p:PayloadAction<{deploymentUuid:string, section:ApplicationSection, action:RemoteStoreCRUDAction}>):RemoteStoreSagaGenReturnType {
         const {deploymentUuid, section, action} = p.payload;
         try {
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment param",p);
@@ -183,12 +183,13 @@ export class RemoteStoreRestAccessReduxSaga {
             error: { errorMessage: e["message"], stack: [e["message"]] },
           } as RemoteStoreCRUDActionReturnType;
         }
-      }.bind(this)
+      }.bind(this as RemoteStoreRestAccessReduxSaga)
     },
     handleRemoteStoreModelActionWithDeployment: {
       name: "handleRemoteStoreModelActionWithDeployment",
       creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<{deploymentUuid:string, action:RemoteStoreModelAction},"handleRemoteStoreModelActionWithDeployment">("handleRemoteStoreModelActionWithDeployment"),
-      generator: function*(p:PayloadAction<{deploymentUuid:string, action:RemoteStoreCRUDAction}>):RemoteStoreSagaGenReturnType {
+      // generator: function*(this:RemoteStoreRestAccessReduxSaga,p:PayloadAction<{deploymentUuid:string, action:RemoteStoreCRUDAction}>):RemoteStoreSagaGenReturnType {
+      generator: function*(this:RemoteStoreRestAccessReduxSaga,p:PayloadAction<{deploymentUuid:string, action:RemoteStoreModelAction}>):RemoteStoreSagaGenReturnType {
         const {deploymentUuid, action} = p.payload;
         try {
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment",action);
@@ -201,8 +202,7 @@ export class RemoteStoreRestAccessReduxSaga {
           // } = yield call(() => this.client.handleNetworkAction(action));
           const result = {
             status:'ok',
-            instanceCollection:
-              {entity:action?.parentUuid, instanceCollection:clientResult['data']}
+            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
           console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
@@ -226,7 +226,7 @@ export class RemoteStoreRestAccessReduxSaga {
     yield all(
       [
         ...Object.values(this.remoteStoreRestAccessSagaInputPromiseActions).map(
-          a => takeEvery(
+          (a:any) => takeEvery(
             a.creator,
             handlePromiseActionForSaga(a.generator)
           )

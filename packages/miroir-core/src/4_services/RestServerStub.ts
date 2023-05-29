@@ -47,7 +47,7 @@ export function getHandler(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   req:any,
-  continuationFunction:(any)=>any
+  continuationFunction:(arg0: any)=>any
 ) {
   const deploymentUuid: string =
   typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
@@ -60,7 +60,7 @@ export function getHandler(
 
   const targetStoreController = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  console.log("RestServerStub get miroirWithDeployment/ using application",targetStoreController['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
+  console.log("RestServerStub get miroirWithDeployment/ using application",(targetStoreController as any)['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
 
   return generateHandlerBody(
     {section, parentUuid},
@@ -81,7 +81,7 @@ export function postPutDeleteHandler(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   req:any,
-  continuationFunction:(any)=>any
+  continuationFunction:(arg0: any)=>any
 ) {
   console.log(method,url, body);
   const deploymentUuid: string =

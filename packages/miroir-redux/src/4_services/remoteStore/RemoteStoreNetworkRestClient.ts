@@ -44,8 +44,8 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
 
   // ##################################################################################
   private networkActionUrlAddition(networkAction: RemoteStoreAction): string {
-    return networkAction["uuid"]
-      ? networkAction["uuid"]
+    return (networkAction as any)["uuid"]
+      ? (networkAction as any)["uuid"]
       : networkAction.actionName == "read"
       ? networkAction.parentUuid + "/all"
       : "";
@@ -81,13 +81,13 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     args: any[];
   } {
     return {
-      operation: this.operationMethod[actionHttpMethods[networkAction.actionName]],
+      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]],
       url: this.networkActionUrl(networkAction, rootApiUrl),
       // args: []
       args: ["RemoteStoreCRUDAction", "RemoteStoreCRUDActionWithDeployment"].includes(networkAction.actionType)
-        ? networkAction["objects"]
+        ? (networkAction as any)["objects"]
         : ["DomainTransactionalAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
-        ? networkAction["update"]?[networkAction["update"]]:networkAction["params"]
+        ? (networkAction as any)["update"]?[(networkAction as any)["update"]]:(networkAction as any)["params"]
         : [],
       // args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainTransactionalAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
       // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainTransactionalAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])

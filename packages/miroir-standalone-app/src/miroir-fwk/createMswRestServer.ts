@@ -73,7 +73,7 @@ export async function createMswRestServer(
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   console.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
-  console.log("createMswRestServer process.browser", process["browser"]);
+  console.log("createMswRestServer process.browser", (process as any)["browser"]);
 
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped

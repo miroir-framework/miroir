@@ -24,7 +24,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
     // ##############################################################################################
     async clear(): Promise<void> {
       // drop data anq model Entities
-      await this.dataStore.clear();
+      // await this.dataStore.clear();
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids())
       console.log(this.logHeader, "clear DONE", this.getEntityUuids());
       return Promise.resolve();

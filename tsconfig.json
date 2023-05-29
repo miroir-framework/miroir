@@ -10,6 +10,9 @@
     "allowJs": true,
     "allowSyntheticDefaultImports":true,
     "resolveJsonModule": true,
+    "lib": ["es6", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
     "strictNullChecks": true,
     "plugins": [
       { "name": "typescript-plugin-css-modules" }

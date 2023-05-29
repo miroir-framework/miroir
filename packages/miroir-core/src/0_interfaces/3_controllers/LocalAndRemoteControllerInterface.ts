@@ -10,11 +10,9 @@ import {
 
 export interface LocalAndRemoteControllerInterface {
   loadConfigurationFromRemoteDataStore(deploymentUuid: string,): Promise<void>;
-  handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction);
-  handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction);
-  handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction);
-  // handleRemoteStoreCRUDAction(action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
-  // handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
+  handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction):void;
+  handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction):void;
+  handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction):void;
   handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelActionWithDeployment(deploymentUuid:string, action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
   currentLocalCacheTransaction(): DomainTransactionalReplayableAction[];

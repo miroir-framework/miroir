@@ -1,41 +1,38 @@
-import { 
-  CellClickedEvent, 
-  CellDoubleClickedEvent, 
-  CellEditingStartedEvent, 
-  CellEditingStoppedEvent, 
-  CellValueChangedEvent, 
-  ColDef, 
-  ColGroupDef, 
-  RowDataUpdatedEvent 
+import {
+  CellClickedEvent,
+  CellDoubleClickedEvent,
+  CellEditingStartedEvent,
+  CellEditingStoppedEvent,
+  CellValueChangedEvent,
+  ColDef,
+  ColGroupDef,
+  RowDataUpdatedEvent
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-import SimpleEditor from './SimpleEditor';
-import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
-import { useCallback, useState } from 'react';
 import {
   DomainControllerInterface,
   EntityDefinition,
   MetaEntity,
-  MiroirMetaModel,
   MiroirApplicationVersion,
+  MiroirMetaModel,
   MiroirReport,
   StoreBasedConfiguration,
-  entityEntity,
-  applicationDeploymentMiroir,
+  entityEntity
 } from "miroir-core";
+import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import {
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
   useLocalCacheModelVersion,
   useLocalCacheReports,
-  useLocalCacheStoreBasedConfiguration,
-  useLocalCacheTransactions,
+  useLocalCacheSectionEntities,
+  useLocalCacheSectionEntityDefinitions,
+  useLocalCacheStoreBasedConfiguration
 } from "miroir-fwk/4_view/hooks";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import { useCallback } from 'react';
 
 export interface MTableComponentProps {
   // columnDefs:{"headerName": string, "field": string}[];

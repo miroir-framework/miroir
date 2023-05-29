@@ -8,7 +8,7 @@ export const generateHandlerBody = async (
   HttpMethod:HttpMethod,
   url:string,
   // method:(parentName:string,instance?:EntityInstance)=>Promise<any>,
-  method:(...params)=>Promise<any>,
+  method:(...params: any)=>Promise<any>,
   returnJsonResultContinuation:(a:any)=>any,
 // ):Promise<any[]> => {
 ) => {
@@ -27,7 +27,7 @@ export const generateHandlerBody = async (
 
   console.log('##################################### generateHandlerBody called', HttpMethod, url, "started",'params',paramVals,'instances',instances);
   if (paramNames.length > 0 || instances.length > 0) { // put, post. BAAAAAAAD
-    console.log("generateHandlerBody execute method for payload instances, named", instances.map(i=>i['name']));
+    console.log("generateHandlerBody execute method for payload instances, named", instances.map((i:any)=>i['name']));
 
     if (instances.length > 0) {
       for (const instance of instances) {

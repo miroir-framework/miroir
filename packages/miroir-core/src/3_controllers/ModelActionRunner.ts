@@ -78,10 +78,10 @@ export async function modelActionRunner(
       const update: ModelReplayableUpdate = body[0];
       console.log("ModelUpdateRunner updateEntity update",update);
       if (update) {
-        switch (update['action']) {
+        switch ((update as any)['action']) {
           default: {
             const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-            console.log('ModelUpdateRunner updateEntity update',update['action'],'used targetProxy',targetProxy['applicationName'],deploymentUuid,applicationDeploymentMiroir.uuid);
+            console.log('ModelUpdateRunner updateEntity update',(update as any)['action'],'used targetProxy',(targetProxy as any)['applicationName'],deploymentUuid,applicationDeploymentMiroir.uuid);
             
             await targetProxy.applyModelEntityUpdate(update);
             console.log('ModelUpdateRunner applyModelEntityUpdate done', update);
@@ -104,7 +104,7 @@ export async function modelActionRunner(
   export async function applyModelEntityUpdate(
     storeController:IStoreController,
     update:ModelReplayableUpdate
-  ){
+  ):Promise<void>{
     console.log('ModelActionRunner applyModelEntityUpdate',update);
     const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
     if (

@@ -1,6 +1,17 @@
 import * as React from "react";
 
-import { ApplicationSection, EntityDefinition, EntityInstance, MetaEntity, MiroirReport, Uuid, entityDefinitionEntity, entityDefinitionEntityDefinition, entityEntity, entityEntityDefinition } from 'miroir-core';
+import { 
+  ApplicationSection, 
+  EntityDefinition, 
+  EntityInstance, 
+  MetaEntity, 
+  MiroirReport, 
+  Uuid, 
+  entityDefinitionEntity, 
+  entityDefinitionEntityDefinition, 
+  entityEntity, 
+  entityEntityDefinition 
+} from 'miroir-core';
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheInstancesForEntity,
@@ -38,16 +49,16 @@ export const TestUtilsTableComponent = (
 
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
   let instancesToDisplay:EntityInstance[];
-  let currentMiroirEntity;
-  let currentMiroirEntityDefinition;
+  let currentMiroirEntity:MetaEntity;
+  let currentMiroirEntityDefinition: EntityDefinition;
 
   if ([entityEntity.uuid,entityEntityDefinition.uuid].includes(props.entityUuid)) {
-    currentMiroirEntity = props.entityUuid == entityEntity.uuid?entityEntity:entityEntityDefinition;
-    currentMiroirEntityDefinition = props.entityUuid == entityEntity.uuid?entityDefinitionEntity:entityDefinitionEntityDefinition;
+    currentMiroirEntity = (props.entityUuid == entityEntity.uuid?entityEntity:entityEntityDefinition) as MetaEntity;
+    currentMiroirEntityDefinition = (props.entityUuid == entityEntity.uuid?entityDefinitionEntity:entityDefinitionEntityDefinition) as EntityDefinition;
     instancesToDisplay = props.entityUuid == entityEntity.uuid?entitiesOfDataSection:entityDefinitionsOfDataSection;
   } else {
-    currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid);
-    currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid);
+    currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid) as MetaEntity;
+    currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
     console.log("TestUtilsTableComponent currentMiroirEntity",currentMiroirEntity);
     instancesToDisplay = useLocalCacheInstancesForEntity(props.deploymentUuid,props.instancesApplicationSection?props.instancesApplicationSection:'data',currentMiroirEntity?.uuid);
   }
@@ -74,7 +85,7 @@ export const TestUtilsTableComponent = (
               <tr>
                 {
                   currentAttributes.map(
-                    (a, key) => (
+                    (a:any, key:any) => (
                       <th  key={a.name}>{a.name}</th>
                     )
                   )
@@ -84,7 +95,7 @@ export const TestUtilsTableComponent = (
             <tbody>
               {
                   instancesToDisplay.map(
-                  (e) => (
+                  (e:any) => (
                     <tr key={e['name']}>
                       {
                         currentAttributes.map(

@@ -32,6 +32,7 @@ import {
   ApplicationSection,
   ApplicationSectionOpposite,
   DomainTransactionalReplaceLocalCacheAction,
+  EntityInstanceWithName,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -219,7 +220,7 @@ function ReplaceInstancesForSectionEntity(
     )
     :undefined
   ;
-  console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid,'entity',(entity?entity['name']:'entity not found for deployment'));
+  console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid,'entity',(entity?(entity as any)['name']:'entity not found for deployment'));
   const sliceEntityAdapter = getInitializedSectionEntityAdapter(deploymentUuid,section,instanceCollection.parentUuid,state);
 
   state[deploymentUuid][section][instanceCollection.parentUuid] = sliceEntityAdapter.setAll(state[deploymentUuid][section][instanceCollection.parentUuid], instanceCollection.instances);
@@ -259,7 +260,7 @@ function handleLocalCacheNonTransactionalAction(
         console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
         
         if(instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {// TODO: does it work? How?
-          console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction creating entityAdapter for Entities',instanceCollection.instances.map(i=>i['name']));
+          console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
           
           instanceCollection.instances.forEach(i=>getInitializedSectionEntityAdapter(deploymentUuid, applicationSection, i['uuid'], state));
         }
