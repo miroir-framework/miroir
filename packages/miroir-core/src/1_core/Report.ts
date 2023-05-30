@@ -1,11 +1,11 @@
 // import { Instance } from '../0_interfaces/1_core/Instance.js';
 // import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
-// import { MiroirReport } from '../0_interfaces/1_core/Report.js';
+// import { Report } from '../0_interfaces/1_core/Report.js';
 
 // function ReportgetDataInstancesToDispay (
-//     report:MiroirReport,
+//     report:Report,
 //     miroirEntities:EntityDefinition[],
-//     miroirReports:MiroirReport[],
+//     miroirReports:Report[],
 //     miroirBooks:Instance[],
 //   ):any[] {
 //     let result:any[];

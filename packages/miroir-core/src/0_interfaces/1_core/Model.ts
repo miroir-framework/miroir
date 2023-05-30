@@ -1,12 +1,11 @@
 import { z } from "zod";
 
-import { EntityInstance, EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
+import { EntityInstance, EntityInstanceSchema, EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 import { MiroirApplicationVersion } from "../../0_interfaces/1_core/ModelVersion";
-import { ZinstanceSchema } from "../../0_interfaces/1_core/StorageConfiguration";
 
 import { EntityDefinition, MetaEntity } from "./EntityDefinition";
 import { StoreBasedConfiguration } from "./MiroirConfig";
-import { MiroirReport } from "./Report";
+import { Report } from "./Report";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -19,7 +18,7 @@ export interface MiroirModel {
   [parentUuid: string]: {[uuid:string]:EntityInstance}
 }
 
-export const ZapplicationVersionCrossEntityDefinition = ZinstanceSchema.extend({
+export const ZapplicationVersionCrossEntityDefinition = EntityInstanceSchema.extend({
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });
@@ -28,7 +27,7 @@ export const ZapplicationVersionCrossEntityDefinition = ZinstanceSchema.extend({
 export interface MiroirMetaModel {// TODO: the name of meta-model entities cannot change in the current implementation
   entities: MetaEntity[];
   entityDefinitions: EntityDefinition[];
-  reports: MiroirReport[];
+  reports: Report[];
   applicationVersions: MiroirApplicationVersion[];
   applicationVersionCrossEntityDefinition: z.infer<typeof ZapplicationVersionCrossEntityDefinition>[];
   configuration: StoreBasedConfiguration[];

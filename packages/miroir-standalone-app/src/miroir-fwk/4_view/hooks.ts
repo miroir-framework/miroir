@@ -8,7 +8,7 @@ import {
   entityStoreBasedConfiguration,
   EntityInstance,
   MiroirApplicationVersion,
-  MiroirReport,
+  Report,
   selectEntityInstances,
   selectReportInstances,
   StoreBasedConfiguration,
@@ -75,19 +75,19 @@ export function useLocalCacheSectionEntityDefinitions(deploymentUuid:string|unde
 }
 
 //#########################################################################################
-export function useLocalCacheReports(): MiroirReport[] {
-  const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'model',entityReport.uuid));
-  const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[]: [];
+export function useLocalCacheReports(): Report[] {
+  const miroirReportsState: EntityState<Report> = useSelector(selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid,'model',entityReport.uuid));
+  const miroirReports: Report[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as Report[]: [];
   return miroirReports;
 }
 
 //#########################################################################################
-export function useLocalCacheDeploymentSectionReports(deploymentUuid:string|undefined,section:ApplicationSection|undefined): MiroirReport[] {
+export function useLocalCacheDeploymentSectionReports(deploymentUuid:string|undefined,section:ApplicationSection|undefined): Report[] {
   // if (deploymentUuid && section) {
-    const miroirReportsState: EntityState<MiroirReport> = useSelector(selectInstancesForSectionEntity(deploymentUuid,section,entityReport.uuid));
+    const miroirReportsState: EntityState<Report> = useSelector(selectInstancesForSectionEntity(deploymentUuid,section,entityReport.uuid));
     console.log('useLocalCacheDeploymentSectionReports',deploymentUuid,section,'state',miroirReportsState);
     
-    const miroirReports: MiroirReport[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as MiroirReport[] : [];
+    const miroirReports: Report[] = miroirReportsState?.entities ? Object.values(miroirReportsState.entities) as Report[] : [];
     return miroirReports;
   // } else {
   //   return []

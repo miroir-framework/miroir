@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Box,
   Card,
@@ -7,8 +8,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent
+  SelectChangeEvent,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
+// import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
 import {
   // applicationDeploymentLibrary,
@@ -20,7 +24,7 @@ import {
   EntityInstance,
   MetaEntity,
   MiroirMetaModel,
-  MiroirReport,
+  Report,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -40,7 +44,6 @@ import {
   useLocalCacheTransactions
 } from "miroir-fwk/4_view/hooks";
 import { ReduxStateChanges } from "miroir-redux";
-import * as React from "react";
 
 import { ReportComponent } from "./ReportComponent";
 
@@ -114,7 +117,7 @@ export interface RootComponentProps {
   reportName: string;
 }
 
-function defaultToEntityList(value: string | undefined, miroirReports: MiroirReport[]): string | undefined {
+function defaultToEntityList(value: string | undefined, miroirReports: Report[]): string | undefined {
   return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
 }
 
@@ -207,7 +210,6 @@ async function uploadBooksAndReports(
 
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
-
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -251,9 +253,9 @@ export const RootComponent = (props: RootComponentProps) => {
   ;
   console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  // const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(displayedDeploymentUuid,displayedApplicationSection?displayedApplicationSection:'data');
-  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
-  const availableReports: MiroirReport[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
+  // const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(displayedDeploymentUuid,displayedApplicationSection?displayedApplicationSection:'data');
+  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
+  const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
     deploymentReports.filter(r=>(
         ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
         ||
@@ -268,7 +270,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
   
-  const currentMiroirReport: MiroirReport | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
+  const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
   const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
   
@@ -683,10 +685,9 @@ export const RootComponent = (props: RootComponentProps) => {
         <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent>
           <ReportComponent 
-            chosenDeploymentUuid={displayedDeploymentUuid} 
+            tableComponentReportType="EntityInstance"
             chosenApplicationSection={displayedApplicationSection}
             displayedDeploymentDefinition={displayedDeploymentDefinition}
-            reportUuid={displayedReportUuid}
             currentModel={currentModel}
             currentMiroirReport={currentMiroirReport}
             currentMiroirEntity={currentReportTargetEntity}

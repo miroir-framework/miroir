@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { ZinstanceWithName } from "./StorageConfiguration.js";
+import { EntityInstanceWithNameSchema } from "./Instance.js";
 
-export const ApplicationSchema = ZinstanceWithName.extend({
+export const ApplicationSchema = EntityInstanceWithNameSchema.extend({
   defaultLabel: z.string(),
   description: z.string(),
 })

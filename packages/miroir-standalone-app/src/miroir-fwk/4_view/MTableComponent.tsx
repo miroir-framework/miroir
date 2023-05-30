@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
   CellClickedEvent,
   CellDoubleClickedEvent,
@@ -13,13 +14,19 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
+import { z } from "zod";
+
 import {
   DomainControllerInterface,
   EntityDefinition,
+  EntityDefinitionSchema,
   MetaEntity,
+  MetaEntitySchema,
   MiroirApplicationVersion,
   MiroirMetaModel,
-  MiroirReport,
+  Report,
+  ReportDefinitionSchema,
+  ReportSchema,
   StoreBasedConfiguration,
   entityEntity
 } from "miroir-core";
@@ -32,15 +39,59 @@ import {
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheStoreBasedConfiguration
 } from "miroir-fwk/4_view/hooks";
-import { useCallback } from 'react';
 
-export interface MTableComponentProps {
-  // columnDefs:{"headerName": string, "field": string}[];
-  columnDefs:(ColDef<any> | ColGroupDef<any>)[];
-  rowData:any[];
-  reportDefinition: MiroirReport,
-  children:any;
-};
+export const TableComponentTypeSchema = z.enum([
+  "EntityInstance",
+  "JSON_ARRAY",
+]);
+
+export type TableComponentType = z.infer<typeof TableComponentTypeSchema>;
+
+export const TableComponentEntityInstancePropsSchema = z.object({
+  type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
+  currentMiroirEntity: MetaEntitySchema.optional(),
+  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  columnDefs:z.array(z.any()),
+  rowData: z.array(z.any()),
+  reportDefinition: ReportSchema,
+  children: z.any(),
+  // side: z.literal(DeploymentSide.enum.client),
+  // location: z.string(),
+});
+export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEntityInstancePropsSchema>;
+
+export const TableComponentJsonArrayPropsSchema = z.object({
+  type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
+  currentMiroirEntity: MetaEntitySchema.optional(),
+  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  columnDefs:z.array(z.any()),
+  rowData: z.array(z.any()),
+  reportDefinition: ReportSchema,
+  children: z.any(),
+  // side: z.literal(DeploymentSide.enum.client),
+  // location: z.string(),
+});
+export type TableComponentJsonArrayProps = z.infer<typeof TableComponentJsonArrayPropsSchema>;
+
+// ##########################################################################################
+export const TableComponentPropsSchema = z.union([
+  TableComponentEntityInstancePropsSchema,
+  TableComponentJsonArrayPropsSchema,
+]);
+
+export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
+
+
+// export interface MTableComponentProps {
+//   // columnDefs:{"headerName": string, "field": string}[];
+//   type: TableComponentType,
+//   currentMiroirEntity: MetaEntity | undefined;
+//   currentMiroirEntityDefinition: EntityDefinition | undefined;
+//   columnDefs:(ColDef<any> | ColGroupDef<any>)[];
+//   rowData:any[];
+//   reportDefinition: Report,
+//   children:any;
+// };
 
 function onCellClicked(e:CellClickedEvent) {
   console.warn("onCellClicked",e)
@@ -63,10 +114,14 @@ function onRowDataUpdated(e:RowDataUpdatedEvent) {
   console.warn("onRowDataUpdated",e)
 }
 
+function onRowValueChanged(e:RowDataUpdatedEvent) {
+  console.warn("onRowValueChanged",e)
+}
 
-export const MTableComponent = (props: MTableComponentProps) => {
+
+export const MTableComponent = (props: TableComponentProps) => {
   const contextDeploymentUuid = useMiroirContextDeploymentUuid();
-  const miroirReports: MiroirReport[] = useLocalCacheReports();
+  const miroirReports: Report[] = useLocalCacheReports();
   const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
   const currentMiroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(contextDeploymentUuid,'model');
   const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
@@ -96,50 +151,50 @@ export const MTableComponent = (props: MTableComponentProps) => {
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
     console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
-    if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
-      const entity = e.data as MetaEntity;
-      // sending ModelUpdates
-      await domainController.handleDomainTransactionalAction(
-        contextDeploymentUuid,
-        {
-          actionType: "DomainTransactionalAction",
-          actionName: "updateEntity",
-          update: {
-            updateActionName:"WrappedTransactionalEntityUpdate",
-            modelEntityUpdate:{
-              updateActionType:"ModelEntityUpdate",
-              updateActionName: "renameEntity",
-              entityName: e.oldValue,
-              entityUuid: entity.uuid,
-              targetValue: e.newValue,
-            },
-          }
-        },
-        currentModel
-      );
+    // if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
+    //   const entity = e.data as MetaEntity;
+    //   // sending ModelUpdates
+    //   await domainController.handleDomainTransactionalAction(
+    //     contextDeploymentUuid,
+    //     {
+    //       actionType: "DomainTransactionalAction",
+    //       actionName: "updateEntity",
+    //       update: {
+    //         updateActionName:"WrappedTransactionalEntityUpdate",
+    //         modelEntityUpdate:{
+    //           updateActionType:"ModelEntityUpdate",
+    //           updateActionName: "renameEntity",
+    //           entityName: e.oldValue,
+    //           entityUuid: entity.uuid,
+    //           targetValue: e.newValue,
+    //         },
+    //       }
+    //     },
+    //     currentModel
+    //   );
         
-    } else {
-      console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
-      // sending DataUpdates
-      await domainController.handleDomainAction(
-        contextDeploymentUuid,
-        {
-          actionType: "DomainDataAction",
-          actionName: "update",
-          objects: [
-            {
-              parentUuid: props.reportDefinition.definition.parentUuid,
-              applicationSection:'data',
-              instances:[
-                // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})
-                e.data
-              ]
-            }
-          ]
-        },
-        currentModel
-      );
-    }
+    // } else {
+    //   console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
+    //   // sending DataUpdates
+    //   await domainController.handleDomainAction(
+    //     contextDeploymentUuid,
+    //     {
+    //       actionType: "DomainDataAction",
+    //       actionName: "update",
+    //       objects: [
+    //         {
+    //           parentUuid: props.reportDefinition.definition.parentUuid,
+    //           applicationSection:'data',
+    //           instances:[
+    //             // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})
+    //             e.data
+    //           ]
+    //         }
+    //       ]
+    //     },
+    //     currentModel
+    //   );
+    // }
   },[props,currentModel,])
 
   return (
@@ -163,6 +218,7 @@ export const MTableComponent = (props: MTableComponentProps) => {
         onCellValueChanged={onCellValueChanged}
         onRowDataUpdated={onRowDataUpdated}
         onCellDoubleClicked={onCellDoubleClicked}
+        onRowValueChanged={onRowValueChanged}
         getRowId={params=>params.data.uuid}
         defaultColDef={
           {

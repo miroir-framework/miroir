@@ -5,9 +5,10 @@ import {
   ListItem
 } from "@mui/material";
 
-import { ApplicationDeployment, DomainControllerInterface, EntityAttribute, EntityInstance, MiroirMetaModel } from "miroir-core";
+import { ApplicationDeployment, DomainControllerInterface, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, entityEntityDefinition } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
+import { ReportComponent } from "./ReportComponent";
 
 // type Inputs = {
 //   example: string,
@@ -24,8 +25,10 @@ export interface EditorAttribute {
   value: any;
 }
 
-export interface SimpleDialogProps {
+export interface InstanceEditorDialogProps {
   open: boolean;
+  currentMiroirEntity: MetaEntity | undefined;
+  currentMiroirEntityDefinition: EntityDefinition | undefined;
   editorAttributes: EditorAttribute[];
   displayedDeploymentDefinition: ApplicationDeployment | undefined;
   currentModel:MiroirMetaModel,
@@ -35,37 +38,38 @@ export interface SimpleDialogProps {
 }
 
 // #####################################################################################################
-export function InstanceEditorDialog(props: SimpleDialogProps) {
+export function InstanceEditorDialog(props: InstanceEditorDialogProps) {
   // const classes = useStyles();
-
+  console.log('InstanceEditorDialog',props);
+  
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
   const { onClose, selectedValue, open } = props;
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async data => {
-    if (props.displayedDeploymentDefinition) {
-      await domainController.handleDomainAction(
-        props.displayedDeploymentDefinition?.uuid,
-        {
-        actionType: "DomainTransactionalAction",
-        actionName: "UpdateMetaModelInstance",
-        update: {
-          updateActionType: "ModelCUDInstanceUpdate",
-          updateActionName: "create",
-          objects: [{
-            parentName: data.name,
-            parentUuid: data.parentUuid,
-            applicationSection:'model',
-            instances: [
-              data as EntityInstance
-            ]
-          }],
-        }
-      },props.currentModel);
-    } else {
-      throw new Error('SimpleDialog onSubmit props.displayedDeploymentDefinition is undefined.')
-    }
-    console.log(data);
+    // if (props.displayedDeploymentDefinition) {
+    //   await domainController.handleDomainAction(
+    //     props.displayedDeploymentDefinition?.uuid,
+    //     {
+    //     actionType: "DomainTransactionalAction",
+    //     actionName: "UpdateMetaModelInstance",
+    //     update: {
+    //       updateActionType: "ModelCUDInstanceUpdate",
+    //       updateActionName: "create",
+    //       objects: [{
+    //         parentName: data.name,
+    //         parentUuid: data.parentUuid,
+    //         applicationSection:'model',
+    //         instances: [
+    //           data as EntityInstance
+    //         ]
+    //       }],
+    //     }
+    //   },props.currentModel);
+    // } else {
+    //   throw new Error('SimpleDialog onSubmit props.displayedDeploymentDefinition is undefined.')
+    // }
+    console.log('SimpleDialog onSubmit',data);
   
     onClose(JSON.stringify(data))
   }
@@ -93,21 +97,27 @@ export function InstanceEditorDialog(props: SimpleDialogProps) {
             props?.editorAttributes?.map(
               (editorAttribute) => (
                 <ListItem disableGutters key={editorAttribute.attribute.name}>
-                  {editorAttribute.attribute.name}: <input defaultValue={editorAttribute.value} {...register(editorAttribute.attribute.name)}
-                />
-                  {/* <ListItemButton onClick={() => handleListItemClick(email)} key={email}>
-                  <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                      <PersonIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={email} />
-                </ListItemButton> */}
+                  {editorAttribute.attribute.name}: <input defaultValue={editorAttribute.value} {...register(editorAttribute.attribute.name)}/>
                 </ListItem>
               )
             )
           }
         </List>
+        {
+          // props.displayedDeploymentDefinition?.uuid = entit
+          props.currentMiroirEntity?.uuid == entityEntityDefinition.uuid ?
+            <ReportComponent
+              tableComponentReportType="JSON_ARRAY"
+              chosenApplicationSection={'model'}
+              currentMiroirReport={undefined}
+              displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+              currentModel={props.currentModel}
+              currentMiroirEntity={props.currentMiroirEntity}
+              currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
+            />
+            :
+            <div></div>
+        }
 
 
 
@@ -117,33 +127,6 @@ export function InstanceEditorDialog(props: SimpleDialogProps) {
 
       <input type="submit" />
     </form>
-      {/* <List sx={{ pt: 0 }}>
-        {emails.map((email) => (
-          <ListItem disableGutters>
-            <ListItemButton onClick={() => handleListItemClick(email)} key={email}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                  <PersonIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={email} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <ListItem disableGutters>
-          <ListItemButton
-            autoFocus
-            onClick={() => handleListItemClick('addAccount')}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <AddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="Add account" />
-          </ListItemButton>
-        </ListItem>
-      </List> */}
     </Dialog>
   );
 }

@@ -5,7 +5,7 @@ import {
   EntityDefinition, 
   EntityInstance, 
   MetaEntity, 
-  MiroirReport, 
+  Report, 
   Uuid, 
   entityDefinitionEntity, 
   entityDefinitionEntityDefinition, 
@@ -36,9 +36,9 @@ export const TestUtilsTableComponent = (
   const entitiesOfDataSection:MetaEntity [] = useLocalCacheSectionEntities(props.deploymentUuid,'model');
   const entityDefinitionsOfDataSection:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(props.deploymentUuid,'model');
 
-  const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(props.deploymentUuid,'model');
+  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(props.deploymentUuid,'model');
 
-  // const miroirReports:MiroirReport[] = useLocalCacheReports();
+  // const miroirReports:Report[] = useLocalCacheReports();
   const entityInstances = {
     Entity: entitiesOfDataSection,
     Report:deploymentReports,

@@ -1,30 +1,25 @@
+import { Autocomplete, Box, TextField } from '@mui/material';
+import {
+  ICellEditorParams,
+  ICellRendererParams
+} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import React, {
+import {
   forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
-import ReactDOM, { render } from 'react-dom';
-import { AgGridReact } from 'ag-grid-react';
-import {
-  ColDef,
-  ICellEditorParams,
-  ICellRendererParams,
-} from 'ag-grid-community';
-import { Autocomplete, Box, TextField } from '@mui/material';
+import ReactDOM from 'react-dom';
 
-import { EntityDefinition, EntityInstance, EntityInstanceWithName, MetaEntity } from 'miroir-core';
+import { EntityDefinition, EntityInstanceWithName, MetaEntity } from 'miroir-core';
 import {
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
-  useLocalCacheEntityDefinitions,
   useLocalCacheInstancesForEntity,
-  useLocalCacheInstancesForReport,
+  useLocalCacheSectionEntities,
+  useLocalCacheSectionEntityDefinitions
 } from "miroir-fwk/4_view/hooks";
 import { useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 
@@ -42,9 +37,9 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
   // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
 
-  const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',props['entityUuid']) as EntityInstanceWithName[];
+  const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
   // const imageForMood = (mood: string) =>
   //   'https://www.ag-grid.com/example-assets/genders/' +
@@ -70,9 +65,9 @@ export const SelectEntityInstanceEditor = memo(
     const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
     // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-    const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === props['entityUuid']);
+    const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   
-    const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,props['entityUuid'],'data') as EntityInstanceWithName[];
+    const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,(props as any)['entityUuid'],'data') as EntityInstanceWithName[];
     const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);

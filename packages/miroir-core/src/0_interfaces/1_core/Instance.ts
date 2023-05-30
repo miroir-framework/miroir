@@ -1,27 +1,41 @@
-// export type ApplicationConceptLevel = "MetaMetaModel" | "MetaModel" | "Model" | "Data";
-export type ApplicationConceptLevel = "MetaModel" | "Model" | "Data";
-export interface EntityInstance {
-  "uuid": string,
-  "parentName"?: string,
-  "parentUuid": string,
-  "conceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
-  // "instanceOfThisInstanceConceptLevel"?: ApplicationConceptLevel, // by default, instances do not have a conceptLevel, which implies "Data".
-}
+import { z } from "zod";
 
-export interface EntityInstanceWithName extends EntityInstance {
-  "name":string,
-}
+// ##########################################################################################
+export const ApplicationConceptLevelSchema = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
+export type ApplicationConceptLevel = z.infer<typeof ApplicationConceptLevelSchema>;
 
-export type ApplicationSection = 'model' | 'data';
+// ##########################################################################################
+export const EntityInstanceSchema = z.object({
+  uuid: z.string().uuid(),
+  parentUuid: z.string().uuid(),
+  parentName: z.string().optional(),
+  conceptLevel: ApplicationConceptLevelSchema.optional(),
+});
+export type EntityInstance = z.infer<typeof EntityInstanceSchema>;
 
+// ##########################################################################################
+export const EntityInstanceWithNameSchema = EntityInstanceSchema.extend({
+  name: z.string(),
+});
+export type EntityInstanceWithName = z.infer<typeof EntityInstanceWithNameSchema>;
+
+// ##########################################################################################
+export const ApplicationSectionSchema = z.union([z.literal("model"), z.literal("data")]);
+export type ApplicationSection = z.infer<typeof ApplicationSectionSchema>;
+
+// ##########################################################################################
 export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSection {
   return s == 'model'?'data':'model';
 }
-export interface EntityInstanceCollection {
-  parentName?: string;
-  parentUuid:string;
-  applicationSection:ApplicationSection;
-  instances: EntityInstance[];
-}
+
+// ##########################################################################################
+export const EntityInstanceCollectionSchema = z.object({
+  parentName: z.string().optional(),
+  parentUuid: z.string().uuid(),
+  applicationSection: ApplicationSectionSchema,
+  instances: z.array(EntityInstanceSchema)
+});
+export type EntityInstanceCollection = z.infer<typeof EntityInstanceCollectionSchema>;
+
 
 export default {}

@@ -160,7 +160,7 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "UpdateMetaModelInstance": {
-        await this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);
+        this.LocalAndRemoteController.handleLocalCacheAction(deploymentUuid, domainModelAction);
         break;
       }
       case "updateEntity": {
@@ -175,7 +175,7 @@ export class DomainController implements DomainControllerInterface {
         console.log('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
         
 
-        await this.LocalAndRemoteController.handleLocalCacheAction(
+        this.LocalAndRemoteController.handleLocalCacheAction(
           deploymentUuid,
           {...domainModelAction,update:structureUpdatesWithCUDUpdates}
         );

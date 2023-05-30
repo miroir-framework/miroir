@@ -40,7 +40,7 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 
-import { MiroirReport, } from "../0_interfaces/1_core/Report.js";
+import { Report, } from "../0_interfaces/1_core/Report.js";
 
 // TODO: define current configuration!
 export const defaultMiroirMetaModel:MiroirMetaModel = {
@@ -70,14 +70,14 @@ export const defaultMiroirMetaModel:MiroirMetaModel = {
     applicationVersionInitialMiroirVersion
   ],
   reports: [
-    reportApplicationDeploymentList as MiroirReport,
-    reportApplicationList as MiroirReport,
-    reportApplicationModelBranchList as MiroirReport,
-    reportApplicationVersionList as MiroirReport,
-    reportConfigurationList as MiroirReport,
-    reportEntityDefinitionList as MiroirReport,
-    reportEntityList as MiroirReport,
-    reportReportList as MiroirReport,
+    reportApplicationDeploymentList as Report,
+    reportApplicationList as Report,
+    reportApplicationModelBranchList as Report,
+    reportApplicationVersionList as Report,
+    reportConfigurationList as Report,
+    reportEntityDefinitionList as Report,
+    reportEntityList as Report,
+    reportReportList as Report,
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
@@ -117,14 +117,14 @@ export const nodeConfigurationMetaModel:MiroirMetaModel = {
     applicationVersionInitialMiroirVersion
   ],
   reports: [
-    reportApplicationDeploymentList as MiroirReport,
-    reportApplicationList as MiroirReport,
-    reportApplicationModelBranchList as MiroirReport,
-    reportApplicationVersionList as MiroirReport,
-    reportConfigurationList as MiroirReport,
-    reportEntityDefinitionList as MiroirReport,
-    reportEntityList as MiroirReport,
-    reportReportList as MiroirReport,
+    reportApplicationDeploymentList as Report,
+    reportApplicationList as Report,
+    reportApplicationModelBranchList as Report,
+    reportApplicationVersionList as Report,
+    reportConfigurationList as Report,
+    reportEntityDefinitionList as Report,
+    reportEntityList as Report,
+    reportReportList as Report,
   ],
   applicationVersionCrossEntityDefinition: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,

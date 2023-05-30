@@ -25,14 +25,13 @@ import {
   entityEntityDefinition,
   MetaEntity,
   Uuid,
-  ZinstanceSchema,
   applicationDeploymentMiroir,
-  Zinstance,
   DomainActionWithDeployment,
   ApplicationSection,
   ApplicationSectionOpposite,
   DomainTransactionalReplaceLocalCacheAction,
   EntityInstanceWithName,
+  EntityInstanceSchema,
 } from "miroir-core";
 import { ReduxStateChanges, ReduxStateWithUndoRedo } from "./UndoRedoReducer";
 
@@ -67,12 +66,12 @@ export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNa
 // export const ZLocalCacheEntitySliceState = z.record(z.string().uuid(),z.ZodType<EntityState<EntityInstance>>);
 
 export const ZEntityId = z.union([z.number(),z.string()]);
-export const ZDictionary = z.record(z.string().uuid(),ZinstanceSchema);
+export const ZDictionary = z.record(z.string().uuid(),EntityInstanceSchema);
 export type MiroirDictionary = z.infer<typeof ZDictionary>;
 export const ZEntityState = z.object({ids:ZEntityId, entities:ZDictionary});
 // export const ZLocalCacheEntitySliceState = z.record(z.string().uuid(),ZEntityState);
 // export type LocalCacheEntitySliceState = {[entityUuid: Uuid]:z.infer<typeof ZEntityState>};
-export type LocalCacheEntitySliceState = {[entityUuid: Uuid]:EntityState<Zinstance>};
+export type LocalCacheEntitySliceState = {[entityUuid: Uuid]:EntityState<EntityInstance>};
 export type LocalCacheSectionSliceState = {
   model:LocalCacheEntitySliceState,
   data:LocalCacheEntitySliceState,
@@ -126,12 +125,12 @@ type TITI = z.infer<typeof titiSchema>
 const getLocalCacheSliceEntityAdapter: (
   // parentName: string
   entityUuid: string
-) => EntityAdapter<Zinstance> = _memoize(
+) => EntityAdapter<EntityInstance> = _memoize(
 // ) => EntityAdapter<EntityInstance> = _memoize(
   (entityUuid: string) => {
     // console.log("getEntityAdapter creating EntityAdapter For entity", parentName);
     // const result = createEntityAdapter<EntityInstance>({
-    const result:EntityAdapter<Zinstance> = createEntityAdapter<Zinstance>({
+    const result:EntityAdapter<EntityInstance> = createEntityAdapter<EntityInstance>({
       // Assume IDs are stored in a field other than `book.id`
       selectId: (entity) => entity.uuid,
       // Keep the "all IDs" array sorted based on book titles

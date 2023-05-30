@@ -70,6 +70,40 @@
       "name": "attributes",
       "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",
+      "lineFormat": [
+        {
+          "id": 1,
+          "name": "id",
+          "defaultLabel": "Id",
+          "type": "NUMBER",
+          "nullable": false,
+          "editable": false
+        },
+        {
+          "id": 2,
+          "name": "name",
+          "defaultLabel": "Name",
+          "type": "STRING",
+          "nullable": false,
+          "editable": false
+        },
+        {
+          "id": 3,
+          "name": "defaultLabel",
+          "defaultLabel": "Default Label",
+          "type": "STRING",
+          "nullable": false,
+          "editable": true
+        },
+        {
+          "id": 4,
+          "name": "type",
+          "defaultLabel": "Type",
+          "type": "STRING",
+          "nullable": false,
+          "editable": true
+        }
+      ],
       "nullable": false,
       "editable": true
     }

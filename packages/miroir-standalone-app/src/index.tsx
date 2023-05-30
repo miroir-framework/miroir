@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Container, createTheme, ThemeProvider } from "@mui/material";
 import { setupWorker } from "msw";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -11,6 +11,7 @@ import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReact
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
 import { miroirAppStartup } from "startup";
+import { blue, red } from "@mui/material/colors";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
@@ -51,10 +52,27 @@ async function start(root:Root) {
     //   await localDataStore?.clear();
     //   // console.log('localDataStore.db',localDataStore.getdb());
     // }
-
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: red[500],
+        },
+      },
+      spacing: 2,
+      components: {
+        MuiList: {
+          defaultProps:{
+            style: {border: `10px dashed ${blue[500]}`,}
+          }
+        }
+      }
+    });
+    
+    theme.spacing(10);
 
     root.render(
-      <Provider store={mReduxStore.getInnerStore()}>
+      <ThemeProvider theme={theme}>
+        <Provider store={mReduxStore.getInnerStore()}>
         <div>
           <h1>Miroir standalone demo app {uuidv4()}</h1>
           {/* <h1>Miroir standalone demo app</h1> */}
@@ -70,6 +88,8 @@ async function start(root:Root) {
           </Container>
         </div>
       </Provider>
+      
+      </ThemeProvider>
     );
   } else {
     root.render(

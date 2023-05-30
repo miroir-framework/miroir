@@ -25,7 +25,7 @@ import {
   MetaEntity,
   MiroirApplicationVersion,
   MiroirMetaModel,
-  MiroirReport,
+  Report,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
@@ -166,7 +166,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
         return {
           entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
           entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as MiroirReport[],
+          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as Report[],
           configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
           applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
@@ -175,7 +175,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
         return {
           entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
           entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityReport.uuid].entities) as MiroirReport[],
+          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityReport.uuid].entities) as Report[],
           configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
           applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],

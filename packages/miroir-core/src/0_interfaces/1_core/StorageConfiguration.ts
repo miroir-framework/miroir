@@ -1,25 +1,7 @@
 import { z } from "zod";
+import { EntityInstanceWithNameSchema } from "./Instance.js";
 
 
-export const ZapplicationConceptLevel = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
-
-export const ZinstanceSchema = z.object({
-  uuid: z.string().uuid(),
-  parentUuid: z.string().uuid(),
-  parentName: z.string().optional(),
-  conceptLevel: ZapplicationConceptLevel.optional(),
-  // instanceOfThisInstanceConceptLevel: ZapplicationConceptLevel.optional(),
-});
-
-export type Zinstance = z.infer<typeof ZinstanceSchema>;
-
-export const ZinstanceWithName = ZinstanceSchema.extend({
-  name: z.string(),
-});
-
-export const Zmodel = ZinstanceWithName.extend({
-  description: z.string(),
-})
 
 export const StorageTypeSchema = z.enum([
   "sql",
@@ -90,7 +72,7 @@ export const ApplicationModelLevelSchema = z.enum([
 export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
 
 
-export const ApplicationDeploymentSchema = ZinstanceWithName.extend({
+export const ApplicationDeploymentSchema = EntityInstanceWithNameSchema.extend({
   // uuid: z.string().uuid(),
   type: ClientServerDistributionModeSchema,
   description: z.string(),

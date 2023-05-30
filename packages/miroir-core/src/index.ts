@@ -3,13 +3,17 @@ export {
   ApplicationSchema,
 } from './0_interfaces/1_core/Application.js';
 export {
+  EntityAttributeSchema,
   EntityAttribute,
+  EntityAttributeTypeSchema,
   EntityAttributeType,
-  EntityAttributeTypeNameArray,
-  EntityAttributeTypeObject,
+  EntityDefinitionSchema,
   EntityDefinition,
-  MetaEntity,
+  InstanceDictionaryNum,
   InstanceDictionary,
+  MetaEntitySchema,
+  MetaEntity,
+  UuidSchema,
   Uuid,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
@@ -26,13 +30,8 @@ export {
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
-  StorageTypeSchema as StorageType,
-  ZapplicationConceptLevel,
-  ZinstanceSchema,
-  Zinstance,
-  ZinstanceWithName,
-  Zmodel,
-  ClientServerDistributionModeSchema as ClientServerDistributionMode,
+  StorageTypeSchema,
+  ClientServerDistributionModeSchema,
 } from './0_interfaces/1_core/StorageConfiguration.js';
 export {
   HttpMethod,
@@ -40,12 +39,17 @@ export {
   HttpMethodsObject,
 } from './0_interfaces/1_core/Http.js';
 export {
-  EntityInstance,
-  EntityInstanceCollection,
-  EntityInstanceWithName,
+  ApplicationConceptLevelSchema,
   ApplicationConceptLevel,
+  ApplicationSectionSchema,
   ApplicationSection,
   ApplicationSectionOpposite,
+  EntityInstanceSchema,
+  EntityInstance,
+  EntityInstanceCollectionSchema,
+  EntityInstanceCollection,
+  EntityInstanceWithNameSchema,
+  EntityInstanceWithName,
 } from './0_interfaces/1_core/Instance.js';
 export {
   MiroirMetaModel,
@@ -67,8 +71,14 @@ export {
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {
-  MiroirReport,
-  MiroirReportDefinition
+  ReportDefinitionSchema,
+  ReportListDefinitionSchema,
+  ReportListDefinition,
+  ReportSchema,
+  Report,
+  ReportTypeSchema,
+  ReportType,
+  ReportDefinition,
 } from './0_interfaces/1_core/Report.js';
 export {
   CRUDActionName,

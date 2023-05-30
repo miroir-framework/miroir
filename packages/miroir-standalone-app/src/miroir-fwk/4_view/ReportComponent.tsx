@@ -1,31 +1,58 @@
+import * as React from "react";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {
   Button
 } from "@mui/material";
+import { z } from "zod";
 import { v4 as uuidv4 } from 'uuid';
 
-import { ApplicationDeployment, ApplicationSection, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, MiroirReport } from "miroir-core";
+import { ApplicationDeployment, ApplicationDeploymentSchema, ApplicationSection, ApplicationSectionSchema, EntityAttribute, EntityDefinition, EntityDefinitionSchema, EntityInstance, MetaEntity, MetaEntitySchema, MiroirMetaModel, Report, ReportSchema } from "miroir-core";
 import {
   useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
-import * as React from "react";
 
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
 import { EditorAttribute, InstanceEditorDialog, emails } from "./InstanceEditorDialog";
-import { MTableComponent } from "./MTableComponent";
+import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
+import { ColDef } from "ag-grid-community";
 // import { getColumnDefinitions } from "miroir-react";
 
-export interface MiroirReportComponentProps {
-  // reportName: string;
-  chosenDeploymentUuid: string;
-  displayedDeploymentDefinition: ApplicationDeployment | undefined;
-  chosenApplicationSection: ApplicationSection | undefined;
-  currentMiroirReport: MiroirReport | undefined;
-  currentMiroirEntity: MetaEntity | undefined;
-  currentMiroirEntityDefinition: EntityDefinition | undefined;
-  currentModel:MiroirMetaModel,
-  reportUuid: string;
-};
+
+// export const TableComponentReportTypeSchema = z.enum([
+//   "EntityInstance",
+//   "JSON_ARRAY",
+// ]);
+
+// export type TableComponentReportType = z.infer<typeof TableComponentReportTypeSchema>;
+export const ReportComponentPropsSchema = z.object({
+  // tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
+  tableComponentReportType: TableComponentTypeSchema,
+  currentMiroirReport: ReportSchema.optional(),
+  currentMiroirEntity: MetaEntitySchema.optional(),
+  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
+  chosenApplicationSection: ApplicationSectionSchema.optional(),
+  currentModel:z.any(),
+  // columnDefs:z.array(z.any()),
+  // rowData: z.array(z.any()),
+  // children: z.any(),
+  // side: z.literal(DeploymentSide.enum.client),
+  // location: z.string(),
+});
+export type MiroirReportComponentProps = z.infer<typeof ReportComponentPropsSchema>;
+
+// export interface MiroirReportComponentProps {
+//   // reportName: string;
+//   // chosenDeploymentUuid: string;
+//   tableComponentReportType:TableComponentType,
+//   currentMiroirReport: Report | undefined;
+//   currentMiroirEntity: MetaEntity | undefined;
+//   currentMiroirEntityDefinition: EntityDefinition | undefined;
+//   displayedDeploymentDefinition: ApplicationDeployment | undefined;
+//   chosenApplicationSection: ApplicationSection | undefined;
+//   currentModel:MiroirMetaModel,
+//   // reportUuid: string;
+// };
 
 
 export const ReportComponent: React.FC<MiroirReportComponentProps> = (
@@ -45,59 +72,56 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
   };
 
   // console.log("ReportComponent props",props);
-  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
-  // const miroirReports:MiroirReport[] = useLocalCacheReports();
-  
-  
-  // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(props.deploymentUuid,'model');
-  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(props.deploymentUuid,'model');
-  // const deploymentReports: MiroirReport[] = useLocalCacheDeploymentSectionReports(props.deploymentUuid,'model');
-  // console.log("ReportComponent miroirEntities",miroirEntities, "miroirEntityDefinitions", miroirEntityDefinitions);
-  
-  const instancesToDisplay: EntityInstance[] = useLocalCacheInstancesForEntity(
-    props.chosenDeploymentUuid,
-    props.chosenApplicationSection,
-    props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
-  );
+  let instancesToDisplay: EntityInstance[];
+  let instancesStringified: EntityInstance[];
+  const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
+  let currentEditorAttributes: EditorAttribute[];
 
-  const instancesStringified: EntityInstance[] = instancesToDisplay.map(
-    (i) =>
-      Object.fromEntries(
-        Object.entries(i).map((e) => [
-          e[0],
-          props.currentMiroirEntityDefinition?.attributes?.find((a) => a.name == e[0])?.type == "OBJECT"
-            ? JSON.stringify(e[1])
-            : e[1],
-        ])
-      ) as EntityInstance
-  );
+  let columnDefs:ColDef<any>[];
+
+  if (props.tableComponentReportType == "EntityInstance") {
+    instancesToDisplay = useLocalCacheInstancesForEntity(
+      props.displayedDeploymentDefinition?.uuid,
+      props.chosenApplicationSection,
+      props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+    );
+  
+    instancesStringified = instancesToDisplay.map(
+      (i) =>
+        Object.fromEntries(
+          Object.entries(i).map((e) => [
+            e[0],
+            props.currentMiroirEntityDefinition?.attributes?.find((a) => a.name == e[0])?.type == "OBJECT"
+              ? JSON.stringify(e[1])
+              : e[1],
+          ])
+        ) as EntityInstance
+    );
+    currentEditorAttributes = currentEntityAttributes.map(a=>{
+      const attributeDefaultValue:any = {
+        'uuid': uuidv4(),
+        'parentName':props.currentMiroirEntity?.name,
+        'parentUuid':props.currentMiroirEntity?.uuid,
+        'conceptLevel':'Model',
+        'application': props.displayedDeploymentDefinition?.application
+      }
+      if (Object.keys(attributeDefaultValue).includes(a.name)) {
+        return {attribute:a,value:attributeDefaultValue[a.name]}
+      } else {
+        return {attribute:a,value:''}
+      }
+    });
+    columnDefs=getColumnDefinitions(currentEntityAttributes);
+
+  } else { // props.tableComponentReportType == "JSON_ARRAY"
+    instancesToDisplay = []
+    instancesStringified = []
+    currentEditorAttributes = []
+    columnDefs = []
+  }
+
   console.log("ReportComponent instancesToDisplay",instancesToDisplay);
   console.log("ReportComponent props.currentMiroirEntity",props.currentMiroirEntity);
-  // console.log("ReportComponent currentMiroirReport",currentMiroirReport);
-  // console.log("ReportComponent currentMiroirEntity",currentMiroirEntity);
-  const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
-  const currentEditorAttributes: EditorAttribute[] = currentEntityAttributes.map(a=>{
-    // switch (props.currentMiroirEntityDefinition?.parentUuid) {
-      // case entityEntity.uuid
-        switch (a.name) {
-          case 'uuid':
-            return {attribute:a,value:uuidv4()}
-          case 'parentName':
-            return {attribute:a,value:props.currentMiroirEntity?.name}
-          case 'parentUuid':
-            return {attribute:a,value:props.currentMiroirEntity?.uuid}
-          case 'conceptLevel':
-            return {attribute:a,value:'Model'}
-          case 'application':
-            return {attribute:a,value:props.displayedDeploymentDefinition?.application}
-          default:
-            return {attribute:a,value:''}
-        }
-    //   default:
-    //     return {attribute:a,value:''};
-    // }
-  });
-  const columnDefs=getColumnDefinitions(currentEntityAttributes);
   console.log("ReportComponent columnDefs",columnDefs);
 
   return (
@@ -123,7 +147,7 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
                       {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
                       colonnes: {JSON.stringify(columnDefs)}
                       <p/>
-                      deployment: {JSON.stringify(props.chosenDeploymentUuid)}
+                      deployment: {JSON.stringify(props.displayedDeploymentDefinition?.uuid)}
                       <p/>
                     <h3>
                       {props.currentMiroirReport?.defaultLabel}
@@ -132,16 +156,26 @@ export const ReportComponent: React.FC<MiroirReportComponentProps> = (
                       </Button>
                     </h3>
                   </div>
-                  <InstanceEditorDialog
-                    selectedValue={selectedValue}
-                    editorAttributes={currentEditorAttributes}
-                    displayedDeploymentDefinition={props.displayedDeploymentDefinition}
-                    currentModel={props.currentModel}
-                    // rowData={instancesStringified}
-                    open={open}
-                    onClose={handleClose}
-                  />
+                  {
+                    props.tableComponentReportType == "EntityInstance"?
+                      <InstanceEditorDialog
+                        selectedValue={selectedValue}
+                        currentMiroirEntity={props.currentMiroirEntity}
+                        currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
+                        editorAttributes={currentEditorAttributes}
+                        displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                        currentModel={props.currentModel}
+                        // rowData={instancesStringified}
+                        open={open}
+                        onClose={handleClose}
+                      />
+                    :
+                    <div/>
+                  }
                   <MTableComponent
+                    type={props.tableComponentReportType}
+                    currentMiroirEntity={props.currentMiroirEntity}
+                    currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
                     reportDefinition={props.currentMiroirReport}
                     columnDefs={columnDefs}
                     rowData={instancesStringified}
