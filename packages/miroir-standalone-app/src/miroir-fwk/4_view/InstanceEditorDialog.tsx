@@ -5,7 +5,7 @@ import {
   ListItem
 } from "@mui/material";
 
-import { ApplicationDeployment, DomainControllerInterface, EntityAttribute, EntityDefinition, EntityInstance, MetaEntity, MiroirMetaModel, entityEntityDefinition } from "miroir-core";
+import { ApplicationDeployment, DomainControllerInterface, EntityAttribute, EntityDefinition, MetaEntity, MiroirMetaModel, entityEntityDefinition } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
 import { ReportComponent } from "./ReportComponent";
@@ -109,11 +109,11 @@ export function InstanceEditorDialog(props: InstanceEditorDialogProps) {
             <ReportComponent
               tableComponentReportType="JSON_ARRAY"
               chosenApplicationSection={'model'}
-              currentMiroirReport={undefined}
+              // currentMiroirReport={undefined}
               displayedDeploymentDefinition={props.displayedDeploymentDefinition}
               currentModel={props.currentModel}
-              currentMiroirEntity={props.currentMiroirEntity}
-              currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
+              // currentMiroirEntity={props.currentMiroirEntity}
+              // currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
             />
             :
             <div></div>

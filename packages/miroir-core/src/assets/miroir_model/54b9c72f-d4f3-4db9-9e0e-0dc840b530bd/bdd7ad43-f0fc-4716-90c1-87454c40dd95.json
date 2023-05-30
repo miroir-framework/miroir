@@ -70,6 +70,8 @@
       "name": "attributes",
       "defaultLabel": "Entity Definition Attributes",
       "type": "ARRAY",
+      "nullable": false,
+      "editable": true,
       "lineFormat": [
         {
           "id": 1,
@@ -103,9 +105,7 @@
           "nullable": false,
           "editable": true
         }
-      ],
-      "nullable": false,
-      "editable": true
+      ]
     }
   ]
 }

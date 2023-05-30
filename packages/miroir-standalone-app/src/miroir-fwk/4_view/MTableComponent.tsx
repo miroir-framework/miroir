@@ -62,11 +62,11 @@ export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEnt
 
 export const TableComponentJsonArrayPropsSchema = z.object({
   type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
-  currentMiroirEntity: MetaEntitySchema.optional(),
-  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  // currentMiroirEntity: MetaEntitySchema.optional(),
+  // currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
   columnDefs:z.array(z.any()),
   rowData: z.array(z.any()),
-  reportDefinition: ReportSchema,
+  // reportDefinition: ReportSchema,
   children: z.any(),
   // side: z.literal(DeploymentSide.enum.client),
   // location: z.string(),
@@ -81,6 +81,7 @@ export const TableComponentPropsSchema = z.union([
 
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
+// const a: TableComponentProps
 
 // export interface MTableComponentProps {
 //   // columnDefs:{"headerName": string, "field": string}[];

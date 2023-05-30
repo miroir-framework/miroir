@@ -3,6 +3,11 @@ export {
   ApplicationSchema,
 } from './0_interfaces/1_core/Application.js';
 export {
+  EntityAttributeCoreSchema,
+  EntityAttributeArraySchema,
+  EntityAttributeArray,
+  EntityAttributeNoArrayType,
+  EntityAttributeNoArrayTypeSchema,
   EntityAttributeSchema,
   EntityAttribute,
   EntityAttributeTypeSchema,
