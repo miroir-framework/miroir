@@ -4,6 +4,7 @@ import { EntityInstanceWithNameSchema } from "./Instance.js";
 // ##########################################################################################
 export const EntityAttributeNoArrayTypeSchema = z.union([
   z.literal("STRING"),
+  z.literal("BOOLEAN"),
   // z.literal("ARRAY"),
   z.literal("OBJECT"),
   z.literal("ENTITY_INSTANCE_UUID")

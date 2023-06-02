@@ -1,14 +1,17 @@
 import { DomainControllerInterface, MiroirContext, MiroirContextInterface } from "miroir-core";
-import * as React from "react";
+import { createContext, useContext, useState } from "react";
+// import * as React from "react";
   
 export interface MiroirReactContext {
   miroirContext:MiroirContextInterface,
   domainController: DomainControllerInterface;
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
+  innerFormOutput: any;
+  setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const miroirReactContext = React.createContext<MiroirReactContext>({} as MiroirReactContext);
+const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
 
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(
@@ -24,35 +27,42 @@ export function MiroirContextReactProvider(
       | React.ReactPortal;
   }
 ) {
-  const [deploymentUuid, setDeploymentUuid] = React.useState("");
+  const [deploymentUuid, setDeploymentUuid] = useState("");
+  const [innerFormOutput, setInnerFormOutput] = useState<any>({});
 
   const value = {
     miroirContext: props.miroirContext || new MiroirContext(),
     domainController: props.domainController,
     deploymentUuid,
-    setDeploymentUuid
+    setDeploymentUuid,
+    innerFormOutput,
+    setInnerFormOutput
   };
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }
 
 export function useMiroirContextDeploymentUuid() {
-  return React.useContext(miroirReactContext)?.deploymentUuid;
+  return useContext(miroirReactContext)?.deploymentUuid;
 }
 
 export function useMiroirContextSetDeploymentUuid() {
-  return React.useContext(miroirReactContext).setDeploymentUuid;
+  return useContext(miroirReactContext).setDeploymentUuid;
+}
+
+export function useMiroirContextInnerFormOutput() {
+  return [useContext(miroirReactContext)?.innerFormOutput,useContext(miroirReactContext)?.setInnerFormOutput];
 }
 
 export function useMiroirContextServiceHook() {
-  return React.useContext(miroirReactContext);
+  return useContext(miroirReactContext);
 }
 
 export const useErrorLogServiceHook = () => {
   // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
-  return React.useContext(miroirReactContext)?.miroirContext.errorLogService.getErrorLog();
+  return useContext(miroirReactContext)?.miroirContext.errorLogService.getErrorLog();
 }
 
 export const useDomainControllerServiceHook = () => {
   // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
-  return React.useContext(miroirReactContext)?.domainController;
+  return useContext(miroirReactContext)?.domainController;
 }

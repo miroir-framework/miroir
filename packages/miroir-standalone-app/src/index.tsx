@@ -64,6 +64,24 @@ async function start(root:Root) {
           defaultProps:{
             style: {border: `10px dashed ${blue[500]}`,}
           }
+        },
+        MuiDialog: {
+          defaultProps:{
+            // style: {maxWidth: "100vw",display:"inline-flex"}
+            // style: {maxWidth: "100vw"}
+            style: {display:"inline-flex", justifyContent:'center', alignItems:"center"}
+          }
+        },
+        MuiDialogTitle: {
+          defaultProps:{
+            style: {display:"flex"}
+          }
+        },
+        MuiPaper: {
+          defaultProps:{
+            style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
+            // style: {display:"inline-flex"}
+          }
         }
       }
     });

@@ -53,6 +53,7 @@ export const TableComponentEntityInstancePropsSchema = z.object({
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
   columnDefs:z.array(z.any()),
   rowData: z.array(z.any()),
+  styles:z.any().optional(),
   reportDefinition: ReportSchema,
   children: z.any(),
   // side: z.literal(DeploymentSide.enum.client),
@@ -66,6 +67,7 @@ export const TableComponentJsonArrayPropsSchema = z.object({
   // currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
   columnDefs:z.array(z.any()),
   rowData: z.array(z.any()),
+  styles:z.any().optional(),
   // reportDefinition: ReportSchema,
   children: z.any(),
   // side: z.literal(DeploymentSide.enum.client),
@@ -202,14 +204,18 @@ export const MTableComponent = (props: TableComponentProps) => {
     <div
       id="tata"
       className="ag-theme-alpine"
-      style={
-        {
-          height: '500px',
-          width: 'auto'
-        }
+      style={props.styles
+      //   {
+      //     // height: 'auto',
+      //     height: '50vw',
+      //     width: '90vw',
+      //     // maxHeight: '100vw',
+      // //     width: 'auto',
+      //     // display: 'inline-flex'
+      //     // display: 'flex'
+      //   }
       }
     >
-      {/* {props.children} */}
       <AgGridReact
         columnDefs={props.columnDefs}
         rowData={props.rowData}
@@ -220,7 +226,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         onRowDataUpdated={onRowDataUpdated}
         onCellDoubleClicked={onCellDoubleClicked}
         onRowValueChanged={onRowValueChanged}
-        getRowId={params=>params.data.uuid}
+        getRowId={params=>params.data.uuid?params.data.uuid:params.data.id}
         defaultColDef={
           {
             editable: true,
