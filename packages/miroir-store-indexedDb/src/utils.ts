@@ -9,11 +9,12 @@ export type SqlUuidEntityDefinition = {
 };
 
 const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
-  STRING: DataTypes.STRING,
   ARRAY: DataTypes.JSONB, // OK?
-  OBJECT: DataTypes.JSONB, 
-  // OBJECT: DataTypes.STRING, // TODO: use JSONB for OBJECTs on postgres!
+  BOOLEAN: DataTypes.BOOLEAN,
   ENTITY_INSTANCE_UUID: DataTypes.STRING,
+  OBJECT: DataTypes.JSONB, 
+  STRING: DataTypes.STRING,
+  // OBJECT: DataTypes.STRING, // TODO: use JSONB for OBJECTs on postgres!
 };
 
 // ##############################################################################################

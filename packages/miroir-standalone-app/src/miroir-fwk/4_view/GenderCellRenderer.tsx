@@ -12,6 +12,34 @@ import React, { memo, useMemo } from 'react';
 //   );
 // };
 
+export const ToolsCellRenderer:React.MemoExoticComponent<(props: ICellRendererParams) => JSX.Element> = memo((props: ICellRendererParams) => {
+
+  const imageForMood = (mood: string) =>
+    'https://www.ag-grid.com/example-assets/genders/' +
+    (mood === 'Female' ? 'female.png' : 'male.png');
+
+  const mood = useMemo(() => imageForMood('Female'), []);
+  console.log('ToolsCellRenderer',props);
+  
+
+  // return <img width="20px" src={mood} />;
+  return (
+    <span>
+      {/* <button onClick={()=>(props as any)['onClick']('EntityInstance-EntityDefinition',props.data) }> */}
+      <button onClick={
+        ()=>{
+          console.log('ToolsCellRenderer calling onClick!');
+          
+          (props as any)['onClick'](props.data);
+        } 
+      }>
+      <img width="20px" src={mood} />
+        edit
+      </button>
+    </span>
+  )
+})
+
 const GenderCellRenderer = memo((props: ICellRendererParams) => {
   const imageForMood = (mood: string) =>
     'https://www.ag-grid.com/example-assets/genders/' +

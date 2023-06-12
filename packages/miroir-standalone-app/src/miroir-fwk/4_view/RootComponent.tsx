@@ -688,21 +688,27 @@ export const RootComponent = (props: RootComponentProps) => {
         <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
         <CardContent> */}
         {/* <FormProvider {...reactFormHooks}> */}
-          <ReportComponent 
-            tableComponentReportType="EntityInstance"
-            styles={
-              {
-                  height: '20vw',
-                  width: '90vw',
+        {
+          currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
+            <ReportComponent 
+              tableComponentReportType="EntityInstance"
+              label={"EntityInstance-"+currentReportTargetEntity?.name}
+              styles={
+                {
+                    height: '20vw',
+                    width: '90vw',
+                  }
                 }
-              }
-            chosenApplicationSection={displayedApplicationSection}
-            displayedDeploymentDefinition={displayedDeploymentDefinition}
-            currentModel={currentModel}
-            currentMiroirReport={currentMiroirReport}
-            currentMiroirEntity={currentReportTargetEntity}
-            currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-          />
+              chosenApplicationSection={displayedApplicationSection}
+              displayedDeploymentDefinition={displayedDeploymentDefinition}
+              currentModel={currentModel}
+              currentMiroirReport={currentMiroirReport}
+              currentMiroirEntity={currentReportTargetEntity}
+              currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+            />
+          :
+          <div>Oops.</div>
+        }
         {/* </FormProvider> */}
     </div>
   );

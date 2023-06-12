@@ -1,18 +1,17 @@
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import {
-  Button
-} from "@mui/material";
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
 
 import {
+  ApplicationDeployment,
   ApplicationDeploymentSchema,
   ApplicationSectionSchema,
   DomainControllerInterface,
+  EntityArrayAttribute,
   EntityAttribute,
-  EntityAttributeArray,
+  EntityAttributeCore,
   EntityDefinitionSchema,
   EntityInstance,
+  MetaEntity,
   MetaEntitySchema,
   ReportSchema,
   entityDefinitionEntityDefinition
@@ -23,37 +22,32 @@ import {
 
 import { ColDef } from "ag-grid-community";
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
-import { useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { EditorAttribute, JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
-import { MTableComponent, TableComponentTypeSchema } from "./MTableComponent";
+import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-// import { getColumnDefinitions } from "miroir-react";
-
-
-// export const TableComponentReportTypeSchema = z.enum([
-//   "EntityInstance",
-//   "JSON_ARRAY",
-// ]);
 
 export const ReportComponentCorePropsSchema = z.object({
   styles:z.any().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
-  chosenApplicationSection: ApplicationSectionSchema.optional(),
+  chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks (eg useLocalCacheInstancesForEntity) in the same order, irrelevant of tableComponentReportType
+  label:z.string(),
 });
 
 export const ReportComponentEntityInstancePropsSchema = ReportComponentCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
+  chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
-  currentMiroirReport: ReportSchema.optional(),
-  currentMiroirEntity: MetaEntitySchema.optional(),
-  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  currentMiroirReport: ReportSchema,
+  currentMiroirEntity: MetaEntitySchema,
+  currentMiroirEntityDefinition: EntityDefinitionSchema,
 });
 
 export const ReportComponentJsonArrayPropsSchema = ReportComponentCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
   columnDefs: z.array(z.any()),
-  label:z.string(),
+  rowData: z.array(z.any()),
+  // object: z.any(),
 });
 
 // ##########################################################################################
@@ -63,40 +57,86 @@ export const ReportComponentPropsSchema = z.union([
 ]);
 export type ReportComponentProps = z.infer<typeof ReportComponentPropsSchema>;
 
+export function defaultFormValues(
+  tableComponentType: TableComponentType,
+  currentEntityAttributes:EntityAttribute[],
+  idList?:{id:number}[],
+  currentMiroirEntity?: MetaEntity,
+  displayedDeploymentDefinition?: ApplicationDeployment,
+):any {
+  console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityAttributes',currentEntityAttributes);
+  
+  if (tableComponentType == "EntityInstance") {
+    const attributeDefaultValue:any = {
+      'uuid': uuidv4(),
+      // 'id': 1,
+      'parentName':currentMiroirEntity?.name,
+      'parentUuid':currentMiroirEntity?.uuid,
+      'conceptLevel':'Model',
+      'application': displayedDeploymentDefinition?.application,
+      'attributes': [],
+    }
+    const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+      let result
+      if (Object.keys(attributeDefaultValue).includes(a.name)) {
+        result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+      } else {
+        result = Object.assign({},acc,{[a.name]:''})
+      }
+      console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
+      return result;
+    },{});
+    console.log('defaultFormValues return',currentEditorAttributes);
+    return currentEditorAttributes;
+  }
+  if (tableComponentType == "JSON_ARRAY") {
+    const newId = idList? idList?.reduce((acc:number,curr:{id:number}) => Math.max(curr.id,acc),0) + 1 : 1;
+    const attributeDefaultValue:any = {
+      'uuid': uuidv4(),
+      'id': newId,
+      'conceptLevel':'Model',
+      // 'attributes': [],
+    }
+    const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+      let result
+      if (Object.keys(attributeDefaultValue).includes(a.name)) {
+        result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+      } else {
+        result = Object.assign({},acc,{[a.name]:''})
+      }
+      console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a.name,':',result);
+      return result;
+    },{});
+    console.log('defaultFormValues return',currentEditorAttributes);
+    return currentEditorAttributes;
+  }
+}
+
+
 // ##########################################################################################
+// export const ReportComponent: React.FC<ReportComponentProps> = memo((
 export const ReportComponent: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const [dialogFormObject, setdialogFormObject] = useMiroirContextInnerFormOutput();
 
-  const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  // const [innerDialogIsOpen, setInnerDialogIsOpen] = useState(false);
-  const [dialogFormOutput, setdialogFormOutput] = useMiroirContextInnerFormOutput();
-
-  // const [editableAttributes, setEditableAttributes] = React.useState(entityDefinitionEntityDefinition.attributes.slice());
-
-  const handleDialogFormOpen = () => {
-    setdialogFormIsOpen(true);
-  };
-
-  const handleDialogFormClose = (value: string) => {
-    console.log('ReportComponent handleDialogFormClose',value);
-    
-    setdialogFormIsOpen(false);
-  };
-
-  const onSubmitFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+  const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
     const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-    console.log('JsonObjectFormEditorDialog onSubmitFormDialog',buttonType,'received event',data,'dialogFormOutput',dialogFormOutput);
-    if (buttonType == 'InnerDialog') {
-      const previousValue = dialogFormOutput && dialogFormOutput['attributes']?dialogFormOutput['attributes']:[];
-      const newValue = previousValue.slice();
-      newValue.push(data as EntityAttribute);
-      setdialogFormOutput({attributes:newValue}); // TODO use Zod parse!
-      handleDialogFormClose(JSON.stringify(data))
-      console.log('JsonObjectFormEditorDialog onSubmitFormDialog',event,'dialogFormOutput',dialogFormOutput);
+    console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogFormObject);
+    if (props.tableComponentReportType == 'JSON_ARRAY') {
+      if (buttonType == 'InnerDialog') {
+        const previousValue = dialogFormObject && dialogFormObject['attributes']?dialogFormObject['attributes']:props.rowData;
+        const newAttributesValue = previousValue.slice();
+        newAttributesValue.push(data as EntityAttributeCore);
+        const newObject = Object.assign({},dialogFormObject?dialogFormObject:{},{attributes:newAttributesValue});
+        setdialogFormObject(newObject); // TODO use Zod parse!
+        console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogFormObject,'newObject',newObject);
+      } else {
+        console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
+      }
     } else {
-      console.log('JsonObjectFormEditorDialog onSubmitFormDialog ignored event',buttonType);
+      console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
     }
   }
 
@@ -106,13 +146,14 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
     props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
   );
 
+  let columnDefs:ColDef<any>[];
+
+
   if (props.tableComponentReportType == "EntityInstance") {
-    let instancesWithStringifiedJsonAttributes: EntityInstance[];
     const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
     let currentEditorAttributes: EditorAttribute[];
 
-    let columnDefs:ColDef<any>[];
-
+    let instancesWithStringifiedJsonAttributes: EntityInstance[];
     instancesWithStringifiedJsonAttributes = instancesToDisplay.map(
       (i) =>
         Object.fromEntries(
@@ -124,58 +165,82 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
           ])
         ) as EntityInstance
     );
-    currentEditorAttributes = currentEntityAttributes.map(a=>{
-      const attributeDefaultValue:any = {
-        'uuid': uuidv4(),
-        'parentName':props.currentMiroirEntity?.name,
-        'parentUuid':props.currentMiroirEntity?.uuid,
-        'conceptLevel':'Model',
-        'application': props.displayedDeploymentDefinition?.application,
-        'attributes': "[]",
-      }
-      if (Object.keys(attributeDefaultValue).includes(a.name)) {
-        console.log('ReportComponent setting default value for attribute',a.name,':',attributeDefaultValue[a.name]);
-        
-        return {attribute:a,value:attributeDefaultValue[a.name]}
-      } else {
-        return {attribute:a,value:''}
-      }
-    });
+  
     columnDefs=getColumnDefinitions(currentEntityAttributes);
+    
+  
 
     console.log("ReportComponent instancesToDisplay",instancesToDisplay);
     console.log("ReportComponent props.currentMiroirEntity",props?.currentMiroirEntity);
     console.log("ReportComponent columnDefs",columnDefs);
 
-    const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
-      const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'dialogFormOutput',dialogFormOutput,buttonType,data);
-      const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormOutput['attributes']})
-      if (buttonType == 'OuterDialog') {
-        if (props.displayedDeploymentDefinition) {
-          await domainController.handleDomainAction(
-            props.displayedDeploymentDefinition?.uuid,
-            {
+    const onCreateFormObject = async (data:any) => {
+      const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
+      console.log('ReportComponent onEditFormObject called with new object value',newEntity);
+      
+      if (props.displayedDeploymentDefinition) {
+        await domainController.handleDomainAction(
+          props.displayedDeploymentDefinition?.uuid,
+          {
             actionType: "DomainTransactionalAction",
             actionName: "UpdateMetaModelInstance",
             update: {
               updateActionType: "ModelCUDInstanceUpdate",
               updateActionName: "create",
-              objects: [{
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection:'model',
-                instances: [
-                  newEntity 
-                ]
-              }],
+              objects: [
+                {
+                  parentName: data.name,
+                  parentUuid: data.parentUuid,
+                  applicationSection:'model',
+                  instances: [
+                    newEntity 
+                  ]
+                }
+              ],
             }
-          },props.currentModel);
-        } else {
-          throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
-        }
+          },props.currentModel
+        );
+      } else {
+        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      }
+    }
+
+    const onEditFormObject = async (data:any) => {
+      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
+      console.log('ReportComponent onEditFormObject called with new object value',data);
       
-        handleDialogFormClose(JSON.stringify(data))
+      if (props.displayedDeploymentDefinition) {
+        await domainController.handleDomainAction(
+          props.displayedDeploymentDefinition?.uuid,
+          {
+            actionType: "DomainTransactionalAction",
+            actionName: "UpdateMetaModelInstance",
+            update: {
+              updateActionType: "ModelCUDInstanceUpdate",
+              updateActionName: "update",
+              objects: [
+                {
+                  parentName: data.name,
+                  parentUuid: data.parentUuid,
+                  applicationSection:'model',
+                  instances: [
+                    data 
+                  ]
+                }
+              ],
+            }
+          },props.currentModel
+        );
+      } else {
+        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      }
+    }
+
+    const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+      const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
+      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogFormObject,buttonType,);
+      if (buttonType == 'OuterDialog') {
+        await onCreateFormObject(data);
       } else {
         console.log('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
         
@@ -190,37 +255,37 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
               columnDefs?.length > 0?
                 <div style={{display:"flex", flexDirection:"column", alignItems:'center'}}>
                   <div>
-                      {/* props: {JSON.stringify(props)} */}
-                      {/* erreurs: {JSON.stringify(errorLog.getErrorLog())} */}
                       colonnes: {JSON.stringify(columnDefs)}
                       <p/>
                       deployment: {JSON.stringify(props.displayedDeploymentDefinition?.uuid)}
                       <p/>
-                    <h3>
-                      {props?.currentMiroirReport?.defaultLabel}
-                      <Button variant="outlined" onClick={handleDialogFormOpen}>
-                        <AddBoxIcon/>
-                      </Button>
-                    </h3>
                   </div>
                   <JsonObjectFormEditorDialog
+                    showButton={true}
                     isAttributes={true}
                     label='OuterDialog'
-                    editorAttributes={currentEditorAttributes}
-                    isOpen={dialogFormIsOpen}
+                    entityAttributes={currentEntityAttributes}
+                    formObject={defaultFormValues(props.tableComponentReportType, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
                     onSubmit={onSubmitOuterDialog}
-                    onClose={handleDialogFormClose}
                   />
-                  <MTableComponent
-                    type={props.tableComponentReportType}
-                    styles={props.styles}
-                    currentMiroirEntity={props.currentMiroirEntity}
-                    currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
-                    reportDefinition={props.currentMiroirReport}
-                    columnDefs={columnDefs}
-                    rowData={instancesWithStringifiedJsonAttributes}
-                  >
-                  </MTableComponent>
+                  {
+                    props.displayedDeploymentDefinition?
+                    <MTableComponent
+                      type={props.tableComponentReportType}
+                      displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                      styles={props.styles}
+                      currentMiroirEntity={props.currentMiroirEntity}
+                      currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
+                      reportDefinition={props.currentMiroirReport}
+                      columnDefs={columnDefs}
+                      rowData={instancesWithStringifiedJsonAttributes}
+                      displayTools={true}
+                      onRowEdit={onEditFormObject}
+                    >
+                    </MTableComponent>
+                    :
+                    <div></div>
+                  }
                 </div>
               :
                 <span>No elements in the report</span>
@@ -231,28 +296,27 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
       </div>
     );
   } else { // props.tableComponentReportType == "JSON_ARRAY"
-    const entityDefinitionAttribute:EntityAttributeArray = entityDefinitionEntityDefinition.attributes[7] as EntityAttributeArray;
+    const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;
+    const existingRows = dialogFormObject && dialogFormObject['attributes']?dialogFormObject['attributes']:props.rowData
+    // const entityDefinitionAttribute:EntityAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityAttribute;
 
+    console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogFormObject);
+    
     return (
       <div>
-        <h3>
-          {props.label}:
-          <Button variant="outlined" onClick={handleDialogFormOpen}>
-            <AddBoxIcon/>
-          </Button>
-        </h3>
         <JsonObjectFormEditorDialog
-          editorAttributes={entityDefinitionAttribute.lineFormat.map(a =>({attribute:a as EntityAttribute,value:''}))}
+          showButton={true}
+          entityAttributes={entityDefinitionAttribute.lineFormat}
+          formObject={defaultFormValues(props.tableComponentReportType, entityDefinitionAttribute.lineFormat, existingRows)}
           label='InnerDialog'
-          isOpen={dialogFormIsOpen}
-          onSubmit={onSubmitFormDialog}
-          onClose={handleDialogFormClose}
+          onSubmit={onSubmitInnerFormDialog}
         />
         <MTableComponent
           type="JSON_ARRAY"
           styles={props.styles}
           columnDefs={props.columnDefs}
-          rowData={dialogFormOutput && dialogFormOutput['attributes']?dialogFormOutput['attributes']:[]}
+          rowData={existingRows}
+          displayTools={true}
         >
         </MTableComponent>
       </div>

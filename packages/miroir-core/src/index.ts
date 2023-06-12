@@ -4,8 +4,11 @@ export {
 } from './0_interfaces/1_core/Application.js';
 export {
   EntityAttributeCoreSchema,
-  EntityAttributeArraySchema,
-  EntityAttributeArray,
+  EntityAttributeCore,
+  EntityAttributeUntypedCoreSchema,
+  EntityAttributeUntypedCore,
+  EntityArrayAttributeSchema,
+  EntityArrayAttribute,
   EntityAttributeNoArrayType,
   EntityAttributeNoArrayTypeSchema,
   EntityAttributeSchema,

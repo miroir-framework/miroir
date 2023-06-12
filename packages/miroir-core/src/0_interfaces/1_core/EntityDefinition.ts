@@ -39,18 +39,15 @@ export const EntityAttributeCoreSchema = EntityAttributeUntypedCoreSchema.extend
 });
 export type EntityAttributeCore = z.infer<typeof EntityAttributeCoreSchema>;
 
-export const EntityAttributeArraySchema = EntityAttributeUntypedCoreSchema.extend({
+export const EntityArrayAttributeSchema = EntityAttributeUntypedCoreSchema.extend({
   type: z.literal("ARRAY"),
   lineFormat: z.array(EntityAttributeCoreSchema)
 });
-export type EntityAttributeArray = z.infer<typeof EntityAttributeArraySchema>;
+export type EntityArrayAttribute = z.infer<typeof EntityArrayAttributeSchema>;
 
-// export const EntityAttributeSchema = EntityAttributeCoreSchema.extend({
-//   lineFormat?: z.array(EntityAttributeCoreSchema)
-// });
 export const EntityAttributeSchema = z.union([
   EntityAttributeCoreSchema,
-  EntityAttributeArraySchema
+  EntityArrayAttributeSchema
 ]);
 export type EntityAttribute = z.infer<typeof EntityAttributeSchema>;
 

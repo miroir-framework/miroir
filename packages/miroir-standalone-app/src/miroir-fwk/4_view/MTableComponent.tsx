@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   CellClickedEvent,
   CellDoubleClickedEvent,
@@ -16,7 +16,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { z } from "zod";
 
+import { SubmitHandler } from 'react-hook-form';
+
 import {
+  ApplicationDeploymentSchema,
   DomainControllerInterface,
   EntityDefinition,
   EntityDefinitionSchema,
@@ -39,6 +42,9 @@ import {
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheStoreBasedConfiguration
 } from "miroir-fwk/4_view/hooks";
+import { ToolsCellRenderer } from './GenderCellRenderer';
+import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
+import { defaultFormValues } from './ReportComponent';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -47,31 +53,31 @@ export const TableComponentTypeSchema = z.enum([
 
 export type TableComponentType = z.infer<typeof TableComponentTypeSchema>;
 
-export const TableComponentEntityInstancePropsSchema = z.object({
-  type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
-  currentMiroirEntity: MetaEntitySchema.optional(),
-  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+export const TableComponentCorePropsSchema = z.object({
   columnDefs:z.array(z.any()),
   rowData: z.array(z.any()),
   styles:z.any().optional(),
-  reportDefinition: ReportSchema,
   children: z.any(),
-  // side: z.literal(DeploymentSide.enum.client),
-  // location: z.string(),
+  displayTools: z.boolean(),
+  // onRowDelete: z.function().optional(),
+})
+
+export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSchema.extend({
+  type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
+  displayedDeploymentDefinition: ApplicationDeploymentSchema,
+  currentMiroirEntity: MetaEntitySchema,
+  currentMiroirEntityDefinition: EntityDefinitionSchema,
+  reportDefinition: ReportSchema,
+  onRowEdit: z.function().args(z.any()).returns(z.void()),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEntityInstancePropsSchema>;
 
-export const TableComponentJsonArrayPropsSchema = z.object({
+export const TableComponentJsonArrayPropsSchema = TableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
-  // currentMiroirEntity: MetaEntitySchema.optional(),
-  // currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
-  columnDefs:z.array(z.any()),
-  rowData: z.array(z.any()),
-  styles:z.any().optional(),
-  // reportDefinition: ReportSchema,
-  children: z.any(),
-  // side: z.literal(DeploymentSide.enum.client),
-  // location: z.string(),
+  // columnDefs:z.array(z.any()),
+  // rowData: z.array(z.any()),
+  // styles:z.any().optional(),
+  // children: z.any(),
 });
 export type TableComponentJsonArrayProps = z.infer<typeof TableComponentJsonArrayPropsSchema>;
 
@@ -83,18 +89,6 @@ export const TableComponentPropsSchema = z.union([
 
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
-// const a: TableComponentProps
-
-// export interface MTableComponentProps {
-//   // columnDefs:{"headerName": string, "field": string}[];
-//   type: TableComponentType,
-//   currentMiroirEntity: MetaEntity | undefined;
-//   currentMiroirEntityDefinition: EntityDefinition | undefined;
-//   columnDefs:(ColDef<any> | ColGroupDef<any>)[];
-//   rowData:any[];
-//   reportDefinition: Report,
-//   children:any;
-// };
 
 function onCellClicked(e:CellClickedEvent) {
   console.warn("onCellClicked",e)
@@ -132,14 +126,13 @@ export const MTableComponent = (props: TableComponentProps) => {
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
-  // const [displayedReportName, setDisplayedReportName] = React.useState('');
-  // const [displayedReportUuid, setDisplayedReportUuid] = useState("");
 
-  // const handleChange = (event: SelectChangeEvent) => {
-  //   // setDisplayedReportName(event.target.value?event.target.value as string:(miroirReports.find((r)=>r.name=='EntityList')?'EntityList':undefined));
-  //   setDisplayedReportUuid(defaultToEntityList(event.target.value, miroirReports));
-  // };
+  const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
+  const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
 
+
+  console.log('MTableComponent started with props',props);
+  
 
   const currentModel: MiroirMetaModel =  {
     entities: currentMiroirEntities,
@@ -150,7 +143,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     applicationVersionCrossEntityDefinition: [],
   };
 
-  console.log("MTableComponent miroirReports", currentModel);
+  // console.log("MTableComponent miroirReports", currentModel);
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
     console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
@@ -200,44 +193,113 @@ export const MTableComponent = (props: TableComponentProps) => {
     // }
   },[props,currentModel,])
 
+  const onSubmitFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+    console.log('MTableComponent onSubmitFormDialog called with data',data);
+    
+    if (props.type == 'EntityInstance') {
+      await props.onRowEdit(data);
+    } else {
+      console.error('MTableComponent onSubmitFormDialog called for not EntityInstance');
+    }
+    handleDialogFormClose('');
+  }
+
+  // const handleDialogFormOpen = (label:string,a:any) => {
+  const handleDialogFormOpen = (a:any) => {
+    console.log('MTableComponent handleDialogFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
+    
+    if (a) {
+      // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
+      setdialogFormObject(a);
+      console.log('ReportComponent handleDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
+    } else {
+      // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
+      setdialogFormObject(undefined);
+      console.log('ReportComponent handleDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+    }
+    setdialogFormIsOpen(true);
+  };
+
+  const handleDialogFormClose = (value: string) => {
+    console.log('ReportComponent handleDialogFormClose',value);
+    
+    setdialogFormIsOpen(false);
+  };
+
+  const columnDefs = [
+    {
+    field: 'tools',
+    cellRenderer: ToolsCellRenderer,
+    // cellEditor: SelectEntityInstanceEditor,
+    // cellEditorPopup: true,
+    editable:false,
+    // sort:'asc',
+    // cellEditorParams: {
+    //   entityUuid: entityPublisher.uuid
+    // },
+    cellRendererParams: {
+      // entityUuid: ''
+      onClick:handleDialogFormOpen
+    },
+  }
+].concat(props.columnDefs);
+  
+  // const rowData = props.rowData.concat({})
+
   return (
-    <div
-      id="tata"
-      className="ag-theme-alpine"
-      style={props.styles
-      //   {
-      //     // height: 'auto',
-      //     height: '50vw',
-      //     width: '90vw',
-      //     // maxHeight: '100vw',
-      // //     width: 'auto',
-      //     // display: 'inline-flex'
-      //     // display: 'flex'
-      //   }
+    <div>
+      {
+        props.type == 'EntityInstance'?
+        <div>
+          <JsonObjectFormEditorDialog
+            showButton={false}
+            isOpen={dialogFormIsOpen}
+            isAttributes={true}
+            label='OuterDialog'
+            // editorAttributes={defaultEditorAttributes(props,currentEntityAttributes)}
+            entityAttributes={props.currentMiroirEntityDefinition.attributes}
+            // formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,props.currentMiroirEntity,props.displayedDeploymentDefinition)}
+            formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
+            // isOpen={dialogFormIsOpen}
+            onSubmit={onSubmitFormDialog}
+            // onClose={handleDialogFormClose}
+          />
+          <span>
+          Mtable after form dialog
+          </span>
+        </div>
+        :
+        <div></div>
       }
-    >
-      <AgGridReact
-        columnDefs={props.columnDefs}
-        rowData={props.rowData}
-        onCellClicked={onCellClicked}
-        onCellEditingStarted={onCellEditingStarted}
-        onCellEditingStopped={onCellEditingStopped}
-        onCellValueChanged={onCellValueChanged}
-        onRowDataUpdated={onRowDataUpdated}
-        onCellDoubleClicked={onCellDoubleClicked}
-        onRowValueChanged={onRowValueChanged}
-        getRowId={params=>params.data.uuid?params.data.uuid:params.data.id}
-        defaultColDef={
-          {
-            editable: true,
-            sortable: true,
-            filter: true,
-            resizable: true,
-            cellEditor: EntityEditor,
-          }
-        }
+      <div
+        id="tata"
+        className="ag-theme-alpine"
+        style={props.styles}
       >
-      </AgGridReact>
+        <AgGridReact
+          // columnDefs={props.columnDefs}
+          columnDefs={columnDefs}
+          rowData={props.rowData}
+          onCellClicked={onCellClicked}
+          onCellEditingStarted={onCellEditingStarted}
+          onCellEditingStopped={onCellEditingStopped}
+          onCellValueChanged={onCellValueChanged}
+          onRowDataUpdated={onRowDataUpdated}
+          onCellDoubleClicked={onCellDoubleClicked}
+          onRowValueChanged={onRowValueChanged}
+          getRowId={params=>params.data.uuid?params.data.uuid:params.data.id}
+          defaultColDef={
+            {
+              editable: true,
+              sortable: true,
+              filter: true,
+              resizable: true,
+              cellEditor: EntityEditor,
+            }
+          }
+        >
+        </AgGridReact>
+      </div>
     </div>
   );
 }
