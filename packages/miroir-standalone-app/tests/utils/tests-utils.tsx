@@ -1,21 +1,14 @@
+import * as React from 'react';
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import React, { PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, createContext, useState } from 'react';
 import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
   ApplicationDeployment,
-  ApplicationSection,
-  DataStoreApplicationType,
-  IDataSectionStore,
-  EmulatedServerConfig,
-  EmulatedServerConfigIndexedDb,
-  MiroirConfig,
-  IModelSectionStore,
-  StoreController,
   IStoreController,
-  StoreFactoryRegister,
+  MiroirConfig,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -28,7 +21,6 @@ import { RequestHandler } from 'msw';
 import { SetupServerApi } from 'msw/lib/node';
 import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
-import { IndexedDb, IndexedDbDataSectionStore, IndexedDbModelSectionStore } from 'miroir-store-indexedDb';
 
 import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import applicationDeploymentLibrary from '../../src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
@@ -89,9 +81,9 @@ export class LoadingStateInterface {
   step: number;
 }
 
-const loadingStateContext = React.createContext<{loadingStateService:LoadingStateInterface}>({loadingStateService:{loaded:false,step:0}});
+const loadingStateContext = createContext<{loadingStateService:LoadingStateInterface}>({loadingStateService:{loaded:false,step:0}});
 
-export const DisplayLoadingInfo:React.FC<{reportUuid?:string}> = (props:{reportUuid?:string}) => {
+export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:string}) => {
   const [step,setStep] = useState(0);
   const [loaded,setLoaded] = useState(false);
   return (

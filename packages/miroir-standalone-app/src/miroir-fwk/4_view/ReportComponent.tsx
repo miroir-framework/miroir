@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
+import { ColDef } from "ag-grid-community";
+import { SubmitHandler } from 'react-hook-form';
+
 
 import {
   ApplicationDeployment,
@@ -20,9 +23,7 @@ import {
   useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
 
-import { ColDef } from "ag-grid-community";
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
-import { SubmitHandler } from 'react-hook-form';
 import { EditorAttribute, JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -119,19 +120,19 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
-  const [dialogFormObject, setdialogFormObject] = useMiroirContextInnerFormOutput();
+  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
     const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-    console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogFormObject);
+    console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
     if (props.tableComponentReportType == 'JSON_ARRAY') {
       if (buttonType == 'InnerDialog') {
-        const previousValue = dialogFormObject && dialogFormObject['attributes']?dialogFormObject['attributes']:props.rowData;
+        const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
         const newAttributesValue = previousValue.slice();
         newAttributesValue.push(data as EntityAttributeCore);
-        const newObject = Object.assign({},dialogFormObject?dialogFormObject:{},{attributes:newAttributesValue});
-        setdialogFormObject(newObject); // TODO use Zod parse!
-        console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogFormObject,'newObject',newObject);
+        const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
+        setdialogOuterFormObject(newObject); // TODO use Zod parse!
+        console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
       } else {
         console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
       }
@@ -175,8 +176,8 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
     console.log("ReportComponent columnDefs",columnDefs);
 
     const onCreateFormObject = async (data:any) => {
-      const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      console.log('ReportComponent onEditFormObject called with new object value',newEntity);
+      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
+      console.log('ReportComponent onEditFormObject called with new object value',data);
       
       if (props.displayedDeploymentDefinition) {
         await domainController.handleDomainAction(
@@ -193,7 +194,8 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
                   parentUuid: data.parentUuid,
                   applicationSection:'model',
                   instances: [
-                    newEntity 
+                    // newEntity 
+                    data
                   ]
                 }
               ],
@@ -238,7 +240,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
 
     const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
       const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogFormObject,buttonType,);
+      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
       if (buttonType == 'OuterDialog') {
         await onCreateFormObject(data);
       } else {
@@ -297,10 +299,10 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
     );
   } else { // props.tableComponentReportType == "JSON_ARRAY"
     const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;
-    const existingRows = dialogFormObject && dialogFormObject['attributes']?dialogFormObject['attributes']:props.rowData
+    const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
     // const entityDefinitionAttribute:EntityAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityAttribute;
 
-    console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogFormObject);
+    console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
     
     return (
       <div>

@@ -15,6 +15,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { getColumnDefinitions } from './EntityViewer';
 import { ReportComponent } from "./ReportComponent";
 import { useState } from "react";
+import { useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
 export type JsonObjectFormEditorDialogInputs = {[a:string]:any}
 
@@ -38,6 +39,8 @@ export interface JsonObjectFormEditorWithButtonDialogProps extends JsonObjectFor
 export interface JsonObjectFormEditorDialogWithoutButtonProps  extends JsonObjectFormEditorCoreDialogProps {
   showButton: false;
   isOpen: boolean;
+  onClose: (a?:any) => void;
+  // onClose: z.function().args(z.any()).returns(z.void()),
 }
 
 export type JsonObjectFormEditorDialogProps= JsonObjectFormEditorWithButtonDialogProps | JsonObjectFormEditorDialogWithoutButtonProps;
@@ -57,35 +60,43 @@ const Item = styled(Paper)(({ theme }) => ({
 // #####################################################################################################
 export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProps) {
   const logHeader = 'JsonObjectEditorDialog ' + (props.label? props.label + ' ':'');
-  const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
+  const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = useForm<JsonObjectFormEditorDialogInputs>({defaultValues:props.formObject});
   const { errors } = formState;
   console.log(logHeader,'called with props',props,'formState',formState.isDirty,formState.isLoading,formState.isSubmitSuccessful,formState.isSubmitted,formState.isSubmitting,formState.isValid,formState.isValidating,'getValues()',getValues());
 
-  const formIsOpen = dialogFormIsOpen || (!props.showButton && props.isOpen);
+  const formIsOpen = addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
-  const handleDialogFormButtonClick = (label:string,a:any) => {
-    console.log(logHeader,'handleDialogFormOpen',label,'called dialogFormObject props.formObject',props.formObject, 'passed value',a);
+  const handleAddObjectDialogFormButtonClick = (label:string,a:any) => {
+    console.log(logHeader,'handleAddObjectDialogFormOpen',label,'called, props.formObject',props.formObject, 'passed value',a);
     
-    setdialogFormIsOpen(true);
+    setAddObjectdialogFormIsOpen(true);
     reset(props.formObject);
+    setdialogOuterFormObject(a);
   };
 
-  const handleDialogFormClose = (value: string) => {
-    console.log(logHeader,'handleDialogFormClose',value);
+  const handleAddObjectDialogFormClose = (value: string) => {
+    console.log(logHeader,'handleAddObjectDialogFormClose',value);
     
-    setdialogFormIsOpen(false);
+    setAddObjectdialogFormIsOpen(false);
+    if (!props.showButton) {
+      props.onClose();
+    }
   };
 
 
-  const handleDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+  const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
     const result = props.onSubmit(data,event);
     const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-    console.log(logHeader,'handleDialogFormSubmit buttonType',buttonType,'props',props, 'passed value',data);
+    console.log(logHeader,'handleAddObjectDialogFormSubmit buttonType',buttonType,'props',props, 'passed value',data);
 
     if (buttonType == props.label) {
-      handleDialogFormClose('');
+      handleAddObjectDialogFormClose('');
+    } else {
+      console.warn(logHeader,'handleAddObjectDialogFormSubmit nog closing dialog form',props.label,'buttonType',buttonType);
+      
     }
     return result;
   }
@@ -102,22 +113,26 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         props.showButton?
         <h3>
           {props.label}
-          <Button variant="outlined" onClick={()=>handleDialogFormButtonClick(props?.label,props?.formObject)}>
+          <Button variant="outlined" onClick={()=>handleAddObjectDialogFormButtonClick(props?.label,props?.formObject)}>
             <AddBoxIcon/>
           </Button>
         </h3>
         :
         <div></div>
       }
-      <Dialog onClose={handleDialogFormClose} open={formIsOpen}  >
-        <DialogTitle>add Entity</DialogTitle>
+      <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}  >
+        {/* <DialogTitle>add Entity</DialogTitle> */}
+        <DialogTitle>{props.label} add Element</DialogTitle>
         {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
-        <form id={'form.'+props.label} onSubmit={handleSubmit(handleDialogFormSubmit)} style={{display:"inline-flex"}}>
+        <form id={'form.'+props.label} onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)} style={{display:"inline-flex"}}>
           {/* register your input into the hook by invoking the "register" function */}
           {/* <input defaultValue="test" {...register("example")} /> */}
           {/* include validation with required or other standard HTML validation rules */}
           {/* <input {...register("exampleRequired", { required: true })} /> */}
           <Grid sx={{display:'inline-flex',flexDirection:'column'}}>
+            <Item>
+              {JSON.stringify(props.formObject)}
+            </Item>
             <Item>
               <List sx={{ pt: 0}}>
                 {

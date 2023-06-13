@@ -1,15 +1,13 @@
-import { useCallback, useState } from 'react';
 import {
   CellClickedEvent,
   CellDoubleClickedEvent,
   CellEditingStartedEvent,
   CellEditingStoppedEvent,
   CellValueChangedEvent,
-  ColDef,
-  ColGroupDef,
   RowDataUpdatedEvent
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
+import { useCallback, useState } from 'react';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -28,10 +26,8 @@ import {
   MiroirApplicationVersion,
   MiroirMetaModel,
   Report,
-  ReportDefinitionSchema,
   ReportSchema,
-  StoreBasedConfiguration,
-  entityEntity
+  StoreBasedConfiguration
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
@@ -193,35 +189,35 @@ export const MTableComponent = (props: TableComponentProps) => {
     // }
   },[props,currentModel,])
 
-  const onSubmitFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
-    console.log('MTableComponent onSubmitFormDialog called with data',data);
+  const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+    console.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
     if (props.type == 'EntityInstance') {
       await props.onRowEdit(data);
     } else {
-      console.error('MTableComponent onSubmitFormDialog called for not EntityInstance');
+      console.error('MTableComponent onSubmitTableRowFormDialog called for not EntityInstance');
     }
-    handleDialogFormClose('');
+    handleDialogTableRowFormClose('');
   }
 
   // const handleDialogFormOpen = (label:string,a:any) => {
-  const handleDialogFormOpen = (a:any) => {
-    console.log('MTableComponent handleDialogFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
+  const handleDialogTableRowFormOpen = (a:any) => {
+    console.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(a);
-      console.log('ReportComponent handleDialogFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      console.log('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      console.log('ReportComponent handleDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      console.log('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
   };
 
-  const handleDialogFormClose = (value: string) => {
-    console.log('ReportComponent handleDialogFormClose',value);
+  const handleDialogTableRowFormClose = (value: string) => {
+    console.log('ReportComponent handleDialogTableRowFormClose',value);
     
     setdialogFormIsOpen(false);
   };
@@ -230,8 +226,6 @@ export const MTableComponent = (props: TableComponentProps) => {
     {
     field: 'tools',
     cellRenderer: ToolsCellRenderer,
-    // cellEditor: SelectEntityInstanceEditor,
-    // cellEditorPopup: true,
     editable:false,
     // sort:'asc',
     // cellEditorParams: {
@@ -239,7 +233,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     // },
     cellRendererParams: {
       // entityUuid: ''
-      onClick:handleDialogFormOpen
+      onClick:handleDialogTableRowFormOpen
     },
   }
 ].concat(props.columnDefs);
@@ -261,12 +255,9 @@ export const MTableComponent = (props: TableComponentProps) => {
             // formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,props.currentMiroirEntity,props.displayedDeploymentDefinition)}
             formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
             // isOpen={dialogFormIsOpen}
-            onSubmit={onSubmitFormDialog}
-            // onClose={handleDialogFormClose}
+            onSubmit={onSubmitTableRowFormDialog}
+            onClose={handleDialogTableRowFormClose}
           />
-          <span>
-          Mtable after form dialog
-          </span>
         </div>
         :
         <div></div>
