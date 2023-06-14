@@ -132,6 +132,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const currentModel: MiroirMetaModel =  {
     entities: currentMiroirEntities,
+    // entityDefinitions: currentMiroirEntityDefinitions as EntityDefinition[],
     entityDefinitions: currentMiroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,

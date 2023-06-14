@@ -84,6 +84,7 @@ import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97b
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { FormProvider, useForm } from "react-hook-form";
+import { Importer } from "./Importer";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -620,6 +621,7 @@ export const RootComponent = (props: RootComponentProps) => {
         erreurs: {JSON.stringify(errorLog)}
       </h3>
       <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+      <Importer filename='' currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
       <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>

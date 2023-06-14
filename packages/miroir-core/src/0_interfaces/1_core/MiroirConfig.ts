@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EntityInstance } from "../../0_interfaces/1_core/Instance";
+import { EntityInstance, EntityInstanceSchema } from "../../0_interfaces/1_core/Instance";
 import { ApplicationDeploymentSchema } from "../../0_interfaces/1_core/StorageConfiguration.js";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
@@ -52,6 +52,12 @@ export interface MiroirConfigForRest extends MiroirConfigRoot{
 
 export type MiroirConfig = MiroirConfigForMsw | MiroirConfigForRest;
 
-export interface StoreBasedConfiguration extends EntityInstance {
-  definition:{"currentModelVersion":string}
-}
+export const StoreBasedConfigurationSchema = EntityInstanceSchema.extend({
+  definition: z.object({currentModelVersion: z.string()})
+})
+
+export type StoreBasedConfiguration = z.infer<typeof StoreBasedConfigurationSchema>
+
+// export interface StoreBasedConfiguration extends EntityInstance {
+//   definition:{"currentModelVersion":string}
+// }

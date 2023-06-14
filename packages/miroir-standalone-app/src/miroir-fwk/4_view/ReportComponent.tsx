@@ -129,7 +129,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
       if (buttonType == 'InnerDialog') {
         const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
         const newAttributesValue = previousValue.slice();
-        newAttributesValue.push(data as EntityAttributeCore);
+        newAttributesValue.push(data as EntityAttribute);
         const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
         setdialogOuterFormObject(newObject); // TODO use Zod parse!
         console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);

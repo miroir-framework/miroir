@@ -76,8 +76,7 @@
     "testClearCache": "cross-env NODE_ENV=test jest --clearCache",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
     "testOpenHandles": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles \"DomainController.Data.CRUD\"",
-    "test2": "cross-env NODE_ENV=test node --no-warnings --experimental-vm-modules ../../node_modules/jest/bin/jest.js tests/",
-    "magic": "webpack"
+    "test2": "cross-env NODE_ENV=test node --no-warnings --experimental-vm-modules ../../node_modules/jest/bin/jest.js tests/"
   },
   "author": "Arnaud Bailly",
   "license": "MIT",

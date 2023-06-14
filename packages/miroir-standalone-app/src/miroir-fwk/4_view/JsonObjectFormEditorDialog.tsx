@@ -161,7 +161,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                       } else {
                         return (
                           <ListItem disableGutters key={entityAttribute.name}>
-                            {entityAttribute.name} {props.formObject[entityAttribute.name]}: <input form={'form.'+props.label} defaultValue={props.formObject[entityAttribute.name]} {...register(entityAttribute.name)}/>
+                            {entityAttribute.name}: <input form={'form.'+props.label} defaultValue={props.formObject[entityAttribute.name]} {...register(entityAttribute.name)}/>
                           </ListItem>
                         )
                       }

@@ -60,6 +60,7 @@ export {
   EntityInstanceWithName,
 } from './0_interfaces/1_core/Instance.js';
 export {
+  MiroirMetaModelSchema,
   MiroirMetaModel,
 } from './0_interfaces/1_core/Model.js';
 export {
@@ -76,6 +77,7 @@ export {
   MiroirConfigForRest,
   MiroirConfig,
   ServerConfig,
+  StoreBasedConfigurationSchema,
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {

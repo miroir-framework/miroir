@@ -10,8 +10,6 @@ export interface ModelResetUpdate {
 export interface ModelEntityUpdateCreateMetaModelInstance {
   updateActionType: 'ModelEntityUpdate';
   updateActionName: 'createEntity';
-  // parentName?:string;
-  // parentUuid:string;
   entities: {
     entity: MetaEntity;
     entityDefinition: EntityDefinition
