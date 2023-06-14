@@ -5,7 +5,17 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { Button } from "@mui/material";
 // import * as XLSX from 'xlsx/xlsx.mjs';
 import * as XLSX from 'xlsx';
-import { DomainAction, EntityDefinition, MetaEntity, entityEntity, entityEntityDefinition, MiroirMetaModelSchema, DomainController, DomainControllerInterface, EntityAttribute } from "miroir-core";
+import {
+  DomainAction,
+  EntityDefinition,
+  MetaEntity,
+  entityEntity,
+  entityEntityDefinition,
+  MiroirMetaModelSchema,
+  DomainController,
+  DomainControllerInterface,
+  EntityAttribute,
+} from "miroir-core";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
 // import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 

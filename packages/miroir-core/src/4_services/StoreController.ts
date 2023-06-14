@@ -5,10 +5,11 @@ import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "..
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { IDataSectionStore, IModelSectionStore, IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
-import { DataStoreApplicationType, applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
+import { applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 

@@ -1,69 +1,115 @@
-import { EntityAttribute, EntityDefinition, MetaEntity } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceCollection } from "../../0_interfaces/1_core/Instance";
-import { CUDActionName } from "../../0_interfaces/2_domain/DomainControllerInterface";
+import { z } from "zod";
+import { EntityAttributePartialSchema, EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition";
+import { EntityInstanceCollectionSchema } from "../../0_interfaces/1_core/Instance";
 
-export interface ModelResetUpdate {
-  updateActionType: 'ModelResetUpdate';
-  updateActionName: 'resetModel';
-}
 
-export interface ModelEntityUpdateCreateMetaModelInstance {
-  updateActionType: 'ModelEntityUpdate';
-  updateActionName: 'createEntity';
-  entities: {
-    entity: MetaEntity;
-    entityDefinition: EntityDefinition
-  }[];
-}
+// #############################################################################################
+export const CUDActionNamesArray = [
+  "create",
+  "update",
+  "delete",
+] as const;
+export const CUDActionNameSchema = z.enum(
+  CUDActionNamesArray
+);
 
-export interface ModelEntityUpdateAlterEntityAttribute {
-  updateActionType: 'ModelEntityUpdate';
-  updateActionName: 'alterEntityAttribute';
-  parentName?:string;
-  parentUuid:string;
-  entityAttributeId: number;
-  update:Partial<EntityAttribute>;
-}
+export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 
-export interface ModelEntityUpdateDeleteMetaModelInstance {
-  updateActionType: 'ModelEntityUpdate';
-  updateActionName: 'DeleteEntity';
-  entityName?:string;
-  entityUuid:string;
-  // instanceUuid:string;
-}
+// #############################################################################################
+export const ModelResetUpdateSchema = z.object({
+  updateActionType: z.literal('ModelResetUpdate'),
+  updateActionName: z.literal('resetModel'),
+});
+export type ModelResetUpdate = z.infer<typeof ModelResetUpdateSchema>;
 
-export interface ModelEntityUpdateRenameEntity {
-  updateActionType: 'ModelEntityUpdate';
-  updateActionName: 'renameEntity';
-  entityName?:string;
-  entityUuid:string;
-  entityAttributeName?:string;
-  targetValue?:any;
-}
+// #############################################################################################
+export const ModelEntityUpdateCreateMetaModelInstanceSchema = z.object({
+  updateActionType: z.literal('ModelEntityUpdate'),
+  updateActionName: z.literal('createEntity'),
+  entities: z.array(z.object({
+    entity: MetaEntitySchema,
+    entityDefinition: EntityDefinitionSchema
+  }))
+});
+export type ModelEntityUpdateCreateMetaModelInstance = z.infer<typeof ModelEntityUpdateCreateMetaModelInstanceSchema>;
 
-export type ModelEntityUpdate =
-  | ModelEntityUpdateCreateMetaModelInstance
-  | ModelEntityUpdateAlterEntityAttribute
-  | ModelEntityUpdateDeleteMetaModelInstance
-  | ModelEntityUpdateRenameEntity
-;
-export interface ModelCUDInstanceUpdate {
-  updateActionType: 'ModelCUDInstanceUpdate';
-  updateActionName: CUDActionName;
-  objects:EntityInstanceCollection[];
-}
-  
-export interface WrappedTransactionalEntityUpdate {
-  updateActionName:'WrappedTransactionalEntityUpdate',
-  modelEntityUpdate: ModelEntityUpdate;
-}
 
-export interface WrappedTransactionalEntityUpdateWithCUDUpdate {
-  updateActionName:'WrappedTransactionalEntityUpdateWithCUDUpdate',
-  modelEntityUpdate: ModelEntityUpdate;
-  equivalentModelCUDUpdates: ModelCUDInstanceUpdate[];
-}
+// #############################################################################################
+export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
+  updateActionType: z.literal('ModelEntityUpdate'),
+  updateActionName: z.literal('alterEntityAttribute'),
+  parentName:z.string().optional(),
+  parentUuid:z.string(),
+  entityAttributeId: z.number(),
+  update:EntityAttributePartialSchema,
+});
+export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
 
-export type ModelUpdate = WrappedTransactionalEntityUpdate | ModelCUDInstanceUpdate;
-export type ModelReplayableUpdate = WrappedTransactionalEntityUpdateWithCUDUpdate | ModelCUDInstanceUpdate;
+// #############################################################################################
+export const ModelEntityUpdateDeleteMetaModelInstanceSchema = z.object({
+  updateActionType: z.literal('ModelEntityUpdate'),
+  updateActionName: z.literal('DeleteEntity'),
+  entityName:z.string().optional(),
+  entityUuid:z.string(),
+});
+export type ModelEntityUpdateDeleteMetaModelInstance = z.infer<typeof ModelEntityUpdateDeleteMetaModelInstanceSchema>;
+
+
+// #############################################################################################
+export const ModelEntityUpdateRenameEntitySchema = z.object({
+  updateActionType: z.literal('ModelEntityUpdate'),
+  updateActionName: z.literal('renameEntity'),
+  entityName:z.string().optional(),
+  entityUuid:z.string(),
+  entityAttributeName:z.string().optional(),
+  targetValue:z.any().optional(),
+});
+export type ModelEntityUpdateRenameEntity = z.infer<typeof ModelEntityUpdateRenameEntitySchema>;
+
+
+// #############################################################################################
+export const ModelEntityUpdateSchema = z.union([
+  ModelEntityUpdateCreateMetaModelInstanceSchema,
+  ModelEntityUpdateAlterEntityAttributeSchema,
+  ModelEntityUpdateDeleteMetaModelInstanceSchema,
+  ModelEntityUpdateRenameEntitySchema,
+]);
+export type ModelEntityUpdate = z.infer<typeof ModelEntityUpdateSchema>;
+
+// #############################################################################################
+export const ModelCUDInstanceUpdateSchema = z.object({
+  updateActionType: z.literal('ModelCUDInstanceUpdate'),
+  updateActionName: CUDActionNameSchema,
+  objects:z.array(EntityInstanceCollectionSchema),
+});
+export type ModelCUDInstanceUpdate = z.infer<typeof ModelCUDInstanceUpdateSchema>;
+
+
+// #############################################################################################
+export const WrappedTransactionalEntityUpdateSchema = z.object({
+  updateActionName: z.literal('WrappedTransactionalEntityUpdate'),
+  modelEntityUpdate: ModelEntityUpdateSchema,
+});
+export type WrappedTransactionalEntityUpdate = z.infer<typeof WrappedTransactionalEntityUpdateSchema>;
+
+
+// #############################################################################################
+export const WrappedTransactionalEntityUpdateWithCUDUpdateSchema = z.object({
+  updateActionName: z.literal('WrappedTransactionalEntityUpdateWithCUDUpdate'),
+  modelEntityUpdate: ModelEntityUpdateSchema,
+  equivalentModelCUDUpdates: z.array(ModelCUDInstanceUpdateSchema),
+});
+export type WrappedTransactionalEntityUpdateWithCUDUpdate = z.infer<typeof WrappedTransactionalEntityUpdateWithCUDUpdateSchema>;
+
+
+// #############################################################################################
+export const ModelUpdateSchema = z.union([
+  WrappedTransactionalEntityUpdateSchema, ModelCUDInstanceUpdateSchema
+]);
+export type ModelUpdate = z.infer<typeof ModelUpdateSchema>;
+
+// #############################################################################################
+export const ModelReplayableUpdateSchema = z.union([
+  WrappedTransactionalEntityUpdateWithCUDUpdateSchema, ModelCUDInstanceUpdateSchema
+]);
+export type ModelReplayableUpdate = z.infer<typeof ModelReplayableUpdateSchema>;

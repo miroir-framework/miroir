@@ -17,7 +17,7 @@ export interface MiroirModel {
   [parentUuid: string]: {[uuid:string]:EntityInstance}
 }
 
-export const ZapplicationVersionCrossEntityDefinitionSchema = EntityInstanceSchema.extend({
+export const ApplicationVersionCrossEntityDefinitionSchema = EntityInstanceSchema.extend({
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });
@@ -28,7 +28,7 @@ export const MiroirMetaModelSchema = z.object({
   reports: z.array(ReportSchema),
   // applicationVersions: MiroirApplicationVersion[];
   applicationVersions: z.array(z.any()),
-  applicationVersionCrossEntityDefinition: z.array(ZapplicationVersionCrossEntityDefinitionSchema),
+  applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
   configuration: z.array(StoreBasedConfigurationSchema),
 });
 

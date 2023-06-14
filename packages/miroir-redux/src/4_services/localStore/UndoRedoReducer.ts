@@ -4,13 +4,11 @@ import produce, { Patch, applyPatches, enablePatches } from "immer";
 import {
   CRUDActionNamesArrayString,
   CUDActionNamesArray,
-  DomainAncillaryOrReplayableAction,
   DomainAncillaryOrReplayableActionWithDeployment,
   DomainTransactionalReplayableAction, EntityDefinition,
-  EntityInstanceCollection,
-  ModelEntityUpdateActionNamesObject
+  EntityInstanceCollection
 } from "miroir-core";
-import { LocalCacheSliceState, NewLocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "../../4_services/localStore/LocalCacheSlice";
+import { NewLocalCacheSliceState, localCacheSliceInputActionNamesObject, localCacheSliceName } from "../../4_services/localStore/LocalCacheSlice";
 import { RemoteStoreRestSagaInputActionNamesObject } from "../../4_services/remoteStore/RemoteStoreRestAccessSaga";
 enablePatches(); // to gather undo/redo operation history
 
@@ -75,7 +73,7 @@ const forgetHistoryActionsTypes: string[] = [
 ];
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
-    (CUDActionNamesArray as string[]).concat([ModelEntityUpdateActionNamesObject.updateEntity,'UpdateMetaModelInstance']).map(
+    (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
     a => ({
       // type: localCacheSliceName + '/' + localCacheSliceInputActionNamesOb#ject.handleLocalCacheModelAction,
       type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,

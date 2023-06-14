@@ -51,6 +51,12 @@ export const EntityAttributeSchema = z.union([
 ]);
 export type EntityAttribute = z.infer<typeof EntityAttributeSchema>;
 
+export const EntityAttributePartialSchema = z.union([
+  EntityAttributeCoreSchema.partial(),
+  EntityArrayAttributeSchema.partial()
+]);
+export type EntityAttributePartial = z.infer<typeof EntityAttributePartialSchema>;
+
 
 // #################################################################################################
 export const MetaEntitySchema = EntityInstanceWithNameSchema.extend({

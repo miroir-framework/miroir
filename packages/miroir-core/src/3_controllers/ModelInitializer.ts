@@ -30,8 +30,8 @@ import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefin
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { IStoreController } from '../0_interfaces/4-services/remoteStore/IStoreController.js';
+import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
 
-export type DataStoreApplicationType = 'miroir' | 'app';
 
 export const metaModelEntities: MetaEntity[] = [
   entityApplication,

@@ -1,17 +1,16 @@
 import { Container, createTheme, ThemeProvider } from "@mui/material";
-import { setupWorker } from "msw";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
-import { defaultMiroirMetaModel, entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
+import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
+import { blue, red } from "@mui/material/colors";
 import miroirConfig from "assets/miroirConfig.json";
 import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
-import { createMswRestServer, createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
+import { createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
 import { miroirAppStartup } from "startup";
-import { blue, red } from "@mui/material/colors";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");

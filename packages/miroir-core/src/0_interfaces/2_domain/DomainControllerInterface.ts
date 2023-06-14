@@ -1,170 +1,223 @@
+import { z } from "zod";
+
 import { Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
 import {
-  ModelCUDInstanceUpdate,
-  WrappedTransactionalEntityUpdate,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
+  CUDActionNameSchema,
+  CUDActionNamesArray,
+  ModelCUDInstanceUpdateSchema,
+  WrappedTransactionalEntityUpdateSchema,
+  WrappedTransactionalEntityUpdateWithCUDUpdateSchema
 } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
-import { DataStoreApplicationType } from "../../3_controllers/ModelInitializer.js";
-import { Application } from "../1_core/Application.js";
-import { EntityInstance, EntityInstanceCollection } from "../1_core/Instance.js";
-import { MiroirMetaModel } from "../1_core/Model.js";
+import { ApplicationSchema } from "../1_core/Application.js";
+import { EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
+import { MiroirMetaModel, MiroirMetaModelSchema } from "../1_core/Model.js";
+import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
-export const CUDActionNamesObject = {
-  create: "create",
-  update: "update",
-  delete: "delete",
-};
-export type CUDActionName = keyof typeof CUDActionNamesObject;
-export const CUDActionNamesArray: CRUDActionName[] = Object.keys(CUDActionNamesObject) as CRUDActionName[];
-export const CUDActionNamesArrayString: string[] = CUDActionNamesArray.map((a) => a);
 
-// #############################################################################################
-export const CRUDActionNamesObject = {
-  ...CUDActionNamesObject,
-  read: "read",
-};
-export type CRUDActionName = keyof typeof CRUDActionNamesObject;
-export const CRUDActionNamesArray: CRUDActionName[] = Object.keys(CRUDActionNamesObject) as CRUDActionName[];
+
+export const CRUDActionNamesArray = [
+  ...CUDActionNamesArray,
+  "read",
+] as const;
+export const CRUDActionNameSchema = z.enum(
+  CRUDActionNamesArray
+);
+export type CRUDActionName = z.infer<typeof CRUDActionNameSchema>;
 export const CRUDActionNamesArrayString: string[] = CRUDActionNamesArray.map((a) => a);
 
 // #############################################################################################
-export const undoRedoActionNamesObject = {
-  undo: "undo",
-  redo: "redo",
-};
-export type UndoRedoActionName = keyof typeof undoRedoActionNamesObject;
-export const undoRedoActionNamesArray: UndoRedoActionName[] = Object.keys(
-  undoRedoActionNamesObject
-) as UndoRedoActionName[];
+export const UndoRedoActionNamesArray = [
+  "undo",
+  "redo",
+] as const;
+export const UndoRedoActionNamesSchema = z.enum(
+  UndoRedoActionNamesArray
+);
+export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 
-// // #############################################################################################
-export const ModelEntityUpdateActionNamesObject = {
-  resetModel: "resetModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
-  initModel: "initModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
-  updateEntity: "updateEntity",
-};
-export type ModelEntityUpdateActionName = keyof typeof ModelEntityUpdateActionNamesObject;
-export const ModelEntityUpdateActionNamesArray: ModelEntityUpdateActionName[] = Object.keys(
-  ModelEntityUpdateActionNamesObject
-) as ModelEntityUpdateActionName[];
+// #############################################################################################
+export const ModelEntityUpdateActionNamesArray = [
+  "resetModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
+  "initModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
+  "updateEntity",
+] as const;
+export const ModelEntityUpdateActionNameSchema = z.enum(
+  ModelEntityUpdateActionNamesArray
+);
+export type ModelEntityUpdateActionName = z.infer<typeof ModelEntityUpdateActionNameSchema>;
 export const ModelEntityUpdateActionNamesArrayString: string[] = ModelEntityUpdateActionNamesArray.map((a) => a);
 
 // #############################################################################################
-export interface DomainDataAction {
-  actionType: "DomainDataAction";
-  actionName: CUDActionName;
-  steps?: number; // for undo / redo
-  uuid?: string;
-  objects: EntityInstanceCollection[];
-}
+export const DomainDataActionSchema = z.object({
+  actionType: z.literal("DomainDataAction"),
+  actionName: CUDActionNameSchema,
+  steps: z.number().optional(),
+  uuid: z.string().optional(),
+  objects: z.array(EntityInstanceCollectionSchema),
+});
+export type DomainDataAction = z.infer<typeof DomainDataActionSchema>;
 
-export interface DomainTransactionalEntityUpdateAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "updateEntity"; //`${ModelEntityUpdateActionNamesObject.updateModel}`;
-  update: WrappedTransactionalEntityUpdate;
-}
-
-export interface DomainTransactionalReplayableEntityUpdateAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "updateEntity"; //`${ModelEntityUpdateActionNamesObject.updateModel}`;
-  update: WrappedTransactionalEntityUpdateWithCUDUpdate;
-}
-
-export interface DomainTransactionalCUDAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "UpdateMetaModelInstance";
-  update: ModelCUDInstanceUpdate;
-}
-
-export type DomainTransactionalReplayableAction =
-  | DomainTransactionalReplayableEntityUpdateAction
-  | DomainTransactionalCUDAction;
-
-export interface DomainTransactionalCommitAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "commit";
-  label?: string;
-}
-
-export interface DomainTransactionalRollbackAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "rollback";
-}
-
-export interface DomainTransactionalReplaceLocalCacheAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "replaceLocalCache";
-  objects: EntityInstanceCollection[];
-}
-
-export interface DomainTransactionalUndoRedoAction {
-  actionType: "DomainTransactionalAction";
-  actionName: UndoRedoActionName;
-  // objects?:EntityInstanceCollection[]; // for "replace" action only. To separate, for clarification?
-}
-
-export interface DomainTransactionalResetAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "resetModel";
-}
-
-export interface DomainModelInitActionParams {
-  metaModel: MiroirMetaModel;
-  dataStoreType: DataStoreApplicationType;
-  application: Application;
-  applicationDeployment: EntityInstance;
-  applicationModelBranch: EntityInstance;
-  applicationVersion: EntityInstance;
-  applicationStoreBasedConfiguration: EntityInstance;
-}
-export interface DomainModelInitAction {
-  actionType: "DomainTransactionalAction";
-  actionName: "initModel";
-  params: DomainModelInitActionParams;
-}
-
-export type DomainAncillaryAction =
-  | DomainTransactionalCommitAction
-  | DomainTransactionalRollbackAction
-  | DomainTransactionalReplaceLocalCacheAction
-  | DomainTransactionalUndoRedoAction
-  | DomainTransactionalResetAction
-  | DomainModelInitAction;
-
-export type DomainTransactionalAction =
-  | DomainAncillaryAction
-  | DomainTransactionalCUDAction
-  | DomainTransactionalEntityUpdateAction;
-
-export type DomainTransactionalAncillaryOrReplayableAction =
-  | DomainAncillaryAction
-  | DomainTransactionalCUDAction
-  | DomainTransactionalReplayableEntityUpdateAction;
 
 // #############################################################################################
-export const remoteStoreActionNamesObject = {
-  ...CRUDActionNamesObject,
-  ...ModelEntityUpdateActionNamesObject,
-};
-export type RemoteStoreActionName = keyof typeof remoteStoreActionNamesObject;
-export const remoteStoreActionNamesArray: RemoteStoreActionName[] = Object.keys(
-  remoteStoreActionNamesObject
-) as RemoteStoreActionName[];
+export const DomainTransactionalEntityUpdateActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("updateEntity"),
+  update: WrappedTransactionalEntityUpdateSchema,
+});
+export type DomainTransactionalEntityUpdateAction = z.infer<typeof DomainTransactionalEntityUpdateActionSchema>;
+
 
 // #############################################################################################
-export type DomainAction = DomainDataAction | DomainTransactionalAction;
-export interface DomainActionWithDeployment {
-  deploymentUuid: Uuid;
-  domainAction: DomainAction;
-}
+export const DomainTransactionalReplayableEntityUpdateActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("updateEntity"),
+  update: WrappedTransactionalEntityUpdateWithCUDUpdateSchema,
+});
+export type DomainTransactionalReplayableEntityUpdateAction = z.infer<typeof DomainTransactionalReplayableEntityUpdateActionSchema>;
 
-export type DomainAncillaryOrReplayableAction = DomainDataAction | DomainTransactionalAncillaryOrReplayableAction;
 
-export interface DomainAncillaryOrReplayableActionWithDeployment {
-  deploymentUuid: Uuid;
-  domainAction: DomainAncillaryOrReplayableAction;
-}
+// #############################################################################################
+export const DomainTransactionalCUDActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("UpdateMetaModelInstance"),
+  update: ModelCUDInstanceUpdateSchema,
+});
+export type DomainTransactionalCUDAction = z.infer<typeof DomainTransactionalCUDActionSchema>;
+
+// #############################################################################################
+export const DomainTransactionalReplayableActionSchema = z.union([
+  DomainTransactionalReplayableEntityUpdateActionSchema,
+  DomainTransactionalCUDActionSchema,
+]);
+export type DomainTransactionalReplayableAction = z.infer<typeof DomainTransactionalReplayableActionSchema>;
+  
+// #############################################################################################
+export const DomainTransactionalCommitActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("commit"),
+  label: z.string().optional(),
+});
+export type DomainTransactionalCommitAction = z.infer<typeof DomainTransactionalCommitActionSchema>;
+
+
+// #############################################################################################
+export const DomainTransactionalRollbackActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("rollback"),
+  label: z.string().optional(),
+});
+export type DomainTransactionalRollbackAction = z.infer<typeof DomainTransactionalRollbackActionSchema>;
+
+// #############################################################################################
+export const DomainTransactionalReplaceLocalCacheActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("replaceLocalCache"),
+  objects: z.array(EntityInstanceCollectionSchema)
+});
+export type DomainTransactionalReplaceLocalCacheAction = z.infer<typeof DomainTransactionalReplaceLocalCacheActionSchema>;
+
+// #############################################################################################
+export const DomainTransactionalUndoRedoActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: UndoRedoActionNamesSchema,
+});
+export type DomainTransactionalUndoRedoAction = z.infer<typeof DomainTransactionalUndoRedoActionSchema>;
+
+// #############################################################################################
+export const DomainTransactionalResetActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("resetModel"),
+});
+export type DomainTransactionalResetAction = z.infer<typeof DomainTransactionalResetActionSchema>;
+
+// #############################################################################################
+export const DomainModelInitActionParamsSchema = z.object({
+  metaModel: MiroirMetaModelSchema,
+  dataStoreType: DataStoreApplicationTypeSchema,
+  application: ApplicationSchema,
+  applicationDeployment: EntityInstanceSchema,
+  applicationModelBranch: EntityInstanceSchema,
+  applicationVersion: EntityInstanceSchema,
+  applicationStoreBasedConfiguration: EntityInstanceSchema,
+});
+export type DomainModelInitActionParams = z.infer<typeof DomainModelInitActionParamsSchema>;
+
+
+
+// #############################################################################################
+export const DomainModelInitActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("initModel"),
+  params: DomainModelInitActionParamsSchema
+});
+export type DomainModelInitAction = z.infer<typeof DomainModelInitActionSchema>;
+
+// #############################################################################################
+export const DomainAncillaryActionSchema = z.union([
+  DomainTransactionalCommitActionSchema,
+  DomainTransactionalRollbackActionSchema,
+  DomainTransactionalReplaceLocalCacheActionSchema,
+  DomainTransactionalUndoRedoActionSchema,
+  DomainTransactionalResetActionSchema,
+  DomainModelInitActionSchema,
+]);
+export type DomainAncillaryAction = z.infer<typeof DomainAncillaryActionSchema>;
+  
+
+// #############################################################################################
+export const DomainTransactionalActionSchema = z.union([
+  DomainAncillaryActionSchema,
+  DomainTransactionalCUDActionSchema,
+  DomainTransactionalEntityUpdateActionSchema,
+]);
+export type DomainTransactionalAction = z.infer<typeof DomainTransactionalActionSchema>;
+  
+// #############################################################################################
+export const DomainTransactionalAncillaryOrReplayableActionSchema = z.union([
+  DomainAncillaryActionSchema,
+  DomainTransactionalCUDActionSchema,
+  DomainTransactionalReplayableEntityUpdateActionSchema,
+]);
+export type DomainTransactionalAncillaryOrReplayableAction = z.infer<typeof DomainTransactionalAncillaryOrReplayableActionSchema>;
+    
+
+// #############################################################################################
+export const remoteStoreActionNamesArray = [
+  ...CRUDActionNamesArray,
+  ...ModelEntityUpdateActionNamesArray,
+] as const;
+export const remoteStoreActionNamesSchema = z.enum(
+  remoteStoreActionNamesArray
+);
+
+export type RemoteStoreActionName = z.infer<typeof remoteStoreActionNamesSchema>;
+
+
+// #############################################################################################
+export const DomainActionSchema = z.union([DomainDataActionSchema, DomainTransactionalActionSchema]);
+export type DomainAction = z.infer<typeof DomainActionSchema>;
+
+
+// #############################################################################################
+export const DomainActionWithDeploymentSchema = z.object({
+  deploymentUuid: z.string().uuid(),
+  domainAction: DomainActionSchema,
+});
+export type DomainActionWithDeployment = z.infer<typeof DomainActionWithDeploymentSchema>;
+
+
+export const DomainAncillaryOrReplayableActionSchema = z.union([DomainDataActionSchema, DomainTransactionalAncillaryOrReplayableActionSchema]);
+export type DomainAncillaryOrReplayableAction = z.infer<typeof DomainAncillaryOrReplayableActionSchema>;
+
+
+// #############################################################################################
+export const DomainAncillaryOrReplayableActionWithDeploymentSchema = z.object({
+  deploymentUuid: z.string().uuid(),
+  domainAction: DomainAncillaryOrReplayableActionSchema,
+});
+export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof DomainAncillaryOrReplayableActionWithDeploymentSchema>;
+
 
 export interface DomainInstancesUuidIndex {
   [uuid: string]: EntityInstance;

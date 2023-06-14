@@ -4,8 +4,8 @@
 import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
+import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { IDataSectionStore, IModelSectionStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
-import { DataStoreApplicationType } from "./ModelInitializer.js";
 
 // export type DeploymentModes = 'local' | 'remote';
 export type cacheInvalidationPolicy = 'routing' | 'periodic' | 'never';
