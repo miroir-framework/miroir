@@ -15,6 +15,8 @@ import {
   DomainController,
   DomainControllerInterface,
   EntityAttribute,
+  DomainDataAction,
+  EntityInstance,
 } from "miroir-core";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
 // import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
@@ -35,7 +37,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   const [file, setFile] = useState(null);
   const [fileDataURL, setFileDataURL] = useState<any>(null);
-  const [fileData, setFileData] = useState<any>(null);
+  const [fileData, setFileData] = useState<any[]>([]);
   const [currentWorkSheet, setCurrentWorkSheet] = useState<XLSX.WorkSheet | undefined>(undefined);
 
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -111,7 +113,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       conceptLevel: "Model",
       attributes: attributes,
     }
-    const createAction: DomainAction = {
+    const createEntityAction: DomainAction = {
       actionType:"DomainTransactionalAction",
       actionName: "updateEntity",
       update: {
@@ -127,7 +129,38 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         },
       }
     };
-    await domainController.handleDomainAction(props.currentDeploymentUuid, createAction, props.currentModel);
+    await domainController.handleDomainAction(props.currentDeploymentUuid, createEntityAction, props.currentModel);
+    await domainController.handleDomainAction(props.currentDeploymentUuid, {actionName: "commit",actionType:"DomainTransactionalAction"},props.currentModel);
+    // const entityColumns = 
+    const instances:EntityInstance[] = 
+      fileData.map(
+        (r:any) => {
+          return Object.fromEntries(
+            [
+              ...Object.entries(r).map((e,index)=>([[attributes[index].name],e[1]])),
+              ['parentName',newEntity.name],
+              ['parentUuid',newEntity.uuid],
+            ]
+          ) as EntityInstance
+        }
+      ) 
+    ;
+    console.log('adding instances',instances);
+    
+    const createRowsAction: DomainDataAction = {
+      actionName:'create',
+      actionType:"DomainDataAction",
+      objects:[
+        {
+          parentName:newEntity.name,
+          parentUuid:newEntity.uuid,
+          applicationSection:'data',
+          instances:instances,
+        }
+      ]
+    };
+    await domainController.handleDomainAction(props.currentDeploymentUuid, createRowsAction);
+
   }
 
   return (
