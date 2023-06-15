@@ -1,23 +1,16 @@
 import express from 'express';
-import { z } from "zod";
 
-import { readFile } from 'fs/promises';
-import { readFileSync } from 'fs';
 import bodyParser from 'body-parser';
+import { readFileSync } from 'fs';
 import {
-  IStoreController,
-  ApplicationDeployment,
-  generateHandlerBody,
-  modelActionRunner,
-  applicationDeploymentMiroir,
-  // applicationDeploymentLibrary,
-  defaultMiroirMetaModel,
-  StoreControllerFactory,
   ConfigurationService,
+  IStoreController,
   MiroirConfig,
-  miroirCoreStartup,
-  ApplicationSection,
+  StoreControllerFactory,
+  defaultMiroirMetaModel,
   getHandler,
+  miroirCoreStartup,
+  modelActionRunner,
   postPutDeleteHandler
 } from "miroir-core";
 // import { SqlStoreFactory } from 'miroir-store-postgres';
@@ -26,14 +19,12 @@ import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 
-// import applicationDeploymentLibrary from './assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4';
-// import applicationDeploymentLibrary from './assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json' assert { type: 'json' };
 // const applicationDeploymentLibrary =await import("./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json", {assert: { type: "json" }});
 // TODO: find a better solution!
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 
-const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 console.log('configFileContents',configFileContents)
 

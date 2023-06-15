@@ -184,24 +184,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     }
   }
 
-  // // ###############################################################################
-  // async handleRemoteStoreCRUDAction(action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
-  //   const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-  //     this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDAction.creator(action)
-  //   )
-  //   console.log("ReduxStore handleRemoteStoreCRUDAction", action, "returned", result)
-  //   return Promise.resolve(result);
-  // }
-
-  // // ###############################################################################
-  // async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
-  //   const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-  //     this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(action)
-  //   )
-  //   console.log("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
-  //   return Promise.resolve(result);
-  // }
-
   // ###############################################################################
   async handleRemoteStoreCRUDActionWithDeployment(deploymentUuid: string, section: ApplicationSection, action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
     const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
@@ -220,32 +202,23 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     return Promise.resolve(result);
   }
 
-  // // ###############################################################################
-  // handleLocalCacheModelAction(domainAction:DomainTransactionalAncillaryOrReplayableAction) {
+  // ###############################################################################
   handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainTransactionalAncillaryOrReplayableAction): void {
     this.innerReduxStore.dispatch(
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](action)
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }
 
-  // // ###############################################################################
-  // handleLocalCacheDataAction(domainAction:DomainDataAction) {
+  // ###############################################################################
   handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction:DomainDataAction): void {
     this.innerReduxStore.dispatch(
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }
 
-  // // ###############################################################################
-  // handleLocalCacheAction(domainAction:DomainAncillaryOrReplayableAction) {
+  // ###############################################################################
   handleLocalCacheAction(deploymentUuid: Uuid, domainAction:DomainAncillaryOrReplayableAction):void {
     this.innerReduxStore.dispatch(
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDataAction](action)
-      // LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](applicationDeploymentMiroir.uuid,action)
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
     );
   }

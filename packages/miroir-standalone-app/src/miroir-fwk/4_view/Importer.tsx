@@ -24,11 +24,6 @@ export const ImporterCorePropsSchema = z.object({
   filename:z.string(),
   currentModel: MiroirMetaModelSchema,
   currentDeploymentUuid: z.string().uuid(),
-  // rowData: z.array(z.any()),
-  // styles:z.any().optional(),
-  // children: z.any(),
-  // displayTools: z.boolean(),
-  // onRowDelete: z.function().optional(),
 })
 
 export type ImporterCoreProps = z.infer<typeof ImporterCorePropsSchema>;

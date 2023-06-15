@@ -1,22 +1,12 @@
 import {
   DataStoreApplicationType,
-  IDataSectionStore,
-  EntityDefinition,
-  EntityInstance,
   EntityInstanceCollection,
-  MetaEntity,
-  Uuid
+  IDataSectionStore
 } from "miroir-core";
-import { Sequelize } from "sequelize";
-import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "./utils.js";
 import { MixedSqlDbInstanceStore } from "./sqlDbInstanceStoreMixin.js";
 
 
 export class SqlDbDataStore extends MixedSqlDbInstanceStore implements IDataSectionStore {
-  // private sqlDataSchemaTableAccess: SqlUuidEntityDefinition = {};
-  // private logHeader: string;
-  // public dataSequelize: Sequelize;
-
   // ##############################################################################################
   constructor(
     applicationName: string,
@@ -31,211 +21,20 @@ export class SqlDbDataStore extends MixedSqlDbInstanceStore implements IDataSect
       dataSchema,
       'SqlDbDataStore' + ' Application '+ applicationName +' dataStoreType ' + dataStoreType
     )
-    // this.dataSequelize = new Sequelize(dataConnectionString,{schema:dataSchema}) // Example for postgres
   }
 
-    // ##############################################################################################
-    async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
-      let result = {};
-      console.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
-      
-      for (const parentUuid of this.getEntityUuids()) {
-        console.log(this.logHeader,'getState getting instances for',parentUuid);
-        const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:await this.getInstances(parentUuid)};
-        console.log(this.logHeader,'getState found instances',parentUuid,instances);
-        
-        Object.assign(result,{[parentUuid]:instances});
-      }
-      return Promise.resolve(result);
-    }
-  
-  // // ##############################################################################################
-  // public async open():Promise<void> {
-  //   try {
-  //     await this.dataSequelize.authenticate();
-  //     console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.dataSchema, 'has been established successfully.');
-  //   } catch (error) {
-  //     console.error('Unable to connect data', this.dataSchema, ' to the postgres database:', error);
-  //   }
-  //   return Promise.resolve();
-  // }
-
-  // // ##############################################################################################
-  // async close() {
-  //   await this.dataSequelize.close();
-  //   return Promise.resolve();
-  //   // disconnect from DB?
-  // }
-  
-  // // ##############################################################################################
-  // async bootFromPersistedState(
-  //   entities : MetaEntity[],
-  //   entityDefinitions : EntityDefinition[],
-  // ): Promise<void> {
-  //   this.sqlDataSchemaTableAccess = entities
-  //     .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
-  //     .reduce(
-  //       (prev, curr: MetaEntity) => {
-  //         const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
-  //         console.log(this.logHeader,"bootFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
-  //         if (entityDefinition) {
-  //           return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
-  //         } else {
-  //           return prev;
-  //         }
-  //       }, {}
-  //     )
-  //   ;
-  //   return Promise.resolve();
-  // }
-
-
-  // // ##############################################################################################
-  // getEntityUuids():string[] {
-  //   return Object.keys(this.sqlDataSchemaTableAccess);
-  // }
-
-  // // ##############################################################################################
-  // getAccessToDataSectionEntity(entity: MetaEntity,entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
-  //   // TODO: does side effect => refactor!
-  //   return {
-  //     [entity.uuid]: {
-  //       parentName: entity.parentName,
-  //       sequelizeModel: this.dataSequelize.define(
-  //         entity.name,
-  //         fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
-  //         {
-  //           freezeTableName: true,
-  //           schema: this.dataSchema,
-  //         }
-  //       ),
-  //     },
-  //   };
-  // }
-
-  // // ##############################################################################################
-  // async getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
-  //   if (this.sqlDataSchemaTableAccess && this.sqlDataSchemaTableAccess[parentUuid]) {
-  //     const result:EntityInstance = (await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
-  //     return Promise.resolve(result);
-  //   } else {
-  //     console.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
-  //     return Promise.resolve(undefined);
-  //   }
-  // }
-
-  // // ##############################################################################################
-  // // async getDataInstances(parentUuid: string, sqlEntities?: SqlUuidEntityDefinition): Promise<EntityInstance[]> {
-  // async getInstances(parentUuid: string): Promise<EntityInstance[]> {
-  //   let result;
-  //   if (this.sqlDataSchemaTableAccess) {
-  //     if (this.sqlDataSchemaTableAccess[parentUuid]) {
-  //       console.log('getInstances calling this.sqlEntities findall', parentUuid);
-
-  //       result = this.sqlDataSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()
-  //     } else {
-  //       result = []
-  //     }
-  //   } else {
-  //     result = []
-  //   }
-  //   return Promise.resolve(result);
-  // }
-
-  // // ##############################################################################################
-  // async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   console.log("upsertInstance application",this.applicationName,"upserting into Parent", instance["parentUuid"], 'named', instance["parentName"], 'existing data schema entities', Object.keys(this.sqlDataSchemaTableAccess?this.sqlDataSchemaTableAccess:{}),'instance',instance);
-  //   // return this.sqlUuidEntities[instance.parentUuid].sequelizeModel.create(instance as any);
-  //   return this.sqlDataSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
-  // }
-
-  // // ##############################################################################################
-  // async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-  //   for (const instance of instances) {
-  //     await this.deleteInstance(parentUuid,instance);
-  //   }
-  //   return Promise.resolve();
-  // }
-
-
-  // // ##############################################################################################
-  // async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-  //   console.log('deleteDataInstance', parentUuid,instance);
-  //   await this.sqlDataSchemaTableAccess[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
-  //   return Promise.resolve();
-  // }
-
-  // // ##############################################################################################
-  // async clear(
-  //   // metaModel:MiroirMetaModel,
-  // ):Promise<void> {
-  //   // drop data anq model Entities
-  //   // await this.modelSequelize.drop();
-  //   await this.dataSequelize.drop();
-
-  //   // this.sqlModelSchemaTableAccess = {};
-  //   this.sqlDataSchemaTableAccess = {};
-  //   console.log(this.logHeader,'clear done, entities',this.getEntityUuids());
+  // ##############################################################################################
+  async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
+    let result = {};
+    console.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
     
-  //   return Promise.resolve();
-  // }
-  
-
-
-  // // ##############################################################################################
-  // async createStorageSpaceForInstancesOfEntity(
-  //   entity:MetaEntity,
-  //   entityDefinition: EntityDefinition,
-  // ): Promise<void> {
-  //   this.sqlDataSchemaTableAccess = Object.assign(
-  //     {},
-  //     this.sqlDataSchemaTableAccess,
-  //     this.getAccessToDataSectionEntity(entity, entityDefinition)
-  //   );
-  //   console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'creating data schema table',entity.name);
-  //   await this.sqlDataSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
-  //   console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'done creating data schema table',entity.name);
-  //   return Promise.resolve();
-  // }
-
-  // // ##############################################################################################
-  // async renameStorageSpaceForInstancesOfEntity(
-  //   oldName: string,
-  //   newName: string,
-  //   entity: MetaEntity,
-  //   entityDefinition: EntityDefinition,
-  // ): Promise<void> {
-  //   await this.dataSequelize.getQueryInterface().renameTable({tableName:oldName,schema:this.dataSchema}, newName);
-  //   // console.log(this.logHeader, 'renameEntity renameTable done.');
-  //   // removing dataSequelize model with old name
-  //   this.dataSequelize.modelManager.removeModel(this.dataSequelize.model(oldName));
-  //   // creating dataSequelize model for the renamed entity
-  //   Object.assign(
-  //     this.sqlDataSchemaTableAccess,
-  //     this.getAccessToDataSectionEntity( // TODO: decouple from ModelUpdateConverter implementation
-  //       entity,
-  //       entityDefinition
-  //     )
-  //   );
-  //   return Promise.resolve();
-  // }
-
-  // // ##############################################################################################
-  // async dropStorageSpaceForInstancesOfEntity(
-  //   entityUuid:Uuid,
-  // ): Promise<void> {
-  //   if (this.sqlDataSchemaTableAccess && this.sqlDataSchemaTableAccess[entityUuid]) {
-  //     const model = this.sqlDataSchemaTableAccess[entityUuid];
-  //     console.log(this.logHeader,"dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, 'parentName',model.parentName);
-  //     // this.sequelize.modelManager.removeModel(this.sequelize.model(model.parentName));
-  //     await model.sequelizeModel.drop();
-  //     delete this.sqlDataSchemaTableAccess[entityUuid];
-  //   } else {
-  //     console.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
-  //   }
-  //   return Promise.resolve();
-  // }
-
-  
-
+    for (const parentUuid of this.getEntityUuids()) {
+      console.log(this.logHeader,'getState getting instances for',parentUuid);
+      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:await this.getInstances(parentUuid)};
+      console.log(this.logHeader,'getState found instances',parentUuid,instances);
+      
+      Object.assign(result,{[parentUuid]:instances});
+    }
+    return Promise.resolve(result);
+  }
 }

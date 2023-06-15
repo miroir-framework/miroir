@@ -89,9 +89,6 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
         : ["DomainTransactionalAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
         ? (networkAction as any)["update"]?[(networkAction as any)["update"]]:(networkAction as any)["params"]
         : [],
-      // args: ['RemoteStoreCRUDAction','RemoteStoreCRUDActionWithDeployment'].includes(networkAction.actionType) ? networkAction["objects"] : (['DomainTransactionalAction','DomainModelActionWithDeployment'].includes(networkAction.actionType)?[networkAction["update"]]:[])
-      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainTransactionalAction'?(networkAction.actionName=='initModel'?[{entities:networkAction.entities,entityDefinitions:networkAction.entityDefinitions}]:[networkAction["update"]]):[])
-      // args: networkAction.actionType == 'RemoteStoreCRUDAction'? networkAction["objects"] : (networkAction.actionType == 'DomainTransactionalAction'?(networkAction.actionName=='initModel'?[]:[networkAction["update"]]):[])
     };
   }
 
@@ -102,22 +99,13 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     console.log("RemoteStoreNetworkRestClient handleAction", networkAction, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
-  // async handleNetworkRemoteStoreCRUDAction(action: RemoteStoreAction): Promise<RestClientCallReturnType> {
-  //   const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroir/entity");
-  //   console.error("RemoteStoreNetworkRestClient handleRemoteStoreCRUDAction", action, "callParams", callParams);
-  //   return callParams.operation(callParams.url, callParams.args);
-  // }
-  // async handleNetworkRemoteStoreModelAction(action: RemoteStoreAction): Promise<RestClientCallReturnType> {
-  //   const callParams = this.getRestCallParams(action, this.rootApiUrl + "/model/" + action.actionName);
-  //   console.error("RemoteStoreNetworkRestClient handleRemoteStoreModelAction", action, "callParams", callParams);
-  //   return callParams.operation(callParams.url, callParams.args);
-  // }
 
   async handleNetworkRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(action, this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section +"/entity");
     console.log("RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDActionWithDeployment", action, deploymentUuid, section,"callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
+
   async handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid:string, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(action, this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName);
     console.log("RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelActionWithDeployment", action, "callParams", callParams);

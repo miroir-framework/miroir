@@ -57,16 +57,6 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
     return this.localCache.handleLocalCacheAction(deploymentUuid, action);
   }
 
-  // //####################################################################################
-  // public async handleRemoteStoreCRUDAction(action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
-  //   return this.remoteStore.handleRemoteStoreCRUDAction(action);
-  // }
-
-  // //####################################################################################
-  // public async handleRemoteStoreModelAction(action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
-  //   return this.remoteStore.handleRemoteStoreModelAction(action);
-  // }
-
   //####################################################################################
   public async handleRemoteStoreCRUDActionWithDeployment(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
     return this.remoteStore.handleRemoteStoreCRUDActionWithDeployment(deploymentUuid, section, action);

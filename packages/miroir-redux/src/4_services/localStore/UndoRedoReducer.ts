@@ -35,7 +35,7 @@ export interface ReduxStateChanges {
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
 /**
- * In the case of a remote deployment, the whole state goes into the indexedDb.
+ * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.
  * the cache and presentSnapshot then give the local view of the client on the
  * global state that is stored in the data store.
  * In the case of a local deployment, the local state goes in the indexedDb also,
@@ -138,7 +138,6 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    // action: PayloadAction<DomainTransactionalReplayableAction>,
     action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
@@ -168,7 +167,6 @@ function callUndoRedoReducer(
 function callNextReducer(
   innerReducer:InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  // action: PayloadAction<DomainAncillaryOrReplayableAction>,
   action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
 ): ReduxStateWithUndoRedo {
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;

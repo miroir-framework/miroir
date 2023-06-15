@@ -20,6 +20,7 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler{
 
   // ##############################################################################################
   constructor(
+    // actual arguments are:
     // public applicationName: string,
     // public dataStoreType: DataStoreApplicationType,
     // public connectionString:string,

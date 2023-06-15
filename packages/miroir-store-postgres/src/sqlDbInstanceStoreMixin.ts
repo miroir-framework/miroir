@@ -8,6 +8,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
   return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
     // ##############################################################################################
     constructor(
+      // actual arguments are:
       // public applicationName: string,
       // public dataStoreType: DataStoreApplicationType,
       // public dataConnectionString:string,
@@ -17,20 +18,6 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
     ) {
       super(...args)
     }
-
-    // // ######################################################################################
-    // async clear(): Promise<void> {
-    //   await this.sequelize.drop();
-    //   this.sqlSchemaTableAccess = {};
-    //   console.log(this.logHeader,'clear done, entities',this.getEntityUuids());
-      
-    //   return Promise.resolve();
-    // }
-
-    // // ##############################################################################################
-    // getEntityUuids():string[] {
-    //   return Object.keys(this.sqlSchemaTableAccess);
-    // }
 
     // ##############################################################################################
     async getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
