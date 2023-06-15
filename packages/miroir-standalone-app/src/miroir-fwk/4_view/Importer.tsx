@@ -17,6 +17,7 @@ import {
   EntityAttribute,
   DomainDataAction,
   EntityInstance,
+  Report,
 } from "miroir-core";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
 // import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
@@ -95,7 +96,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       description: "",
       name: "test",
     }
-    const attributes: EntityAttribute[] = Object.values(fileData[0]).map((a:string,index)=>({
+    const attributes: EntityAttribute[] = [
+      {
+        id:0,
+        type:'STRING',
+        name: 'uuid',
+        defaultLabel:'Uuid',
+        description: '',
+        editable: false,
+        nullable: false,
+      } as EntityAttribute
+    ].concat(Object.values(fileData[0]).map((a:string,index)=>({
       id:index + 1,
       type:'STRING',
       name: a,
@@ -103,9 +114,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       description: '',
       editable: true,
       nullable: true,
-    }));
+    })));
     const newEntityDefinition:EntityDefinition = {
-      name: "test",
+      name: "Fountain",
       uuid: uuidv4(),
       parentName: "EntityDefinition",
       parentUuid: entityEntityDefinition.uuid,
@@ -130,6 +141,37 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       }
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createEntityAction, props.currentModel);
+    const newEntityReport: Report = {
+      "uuid": uuidv4(),
+      "parentName":"Report",
+      "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel":"Model",
+      "name":"FountainList",
+      "defaultLabel": "List of Fountains",
+      "type": "list",
+      "definition": {
+        "parentName": "Fountain",
+        "parentUuid": newEntity.uuid
+      }
+    }
+    const createReportAction: DomainAction =     {
+      actionType: "DomainTransactionalAction",
+      actionName: "UpdateMetaModelInstance",
+      update: {
+        updateActionType: "ModelCUDInstanceUpdate",
+        updateActionName: "create",
+        objects: [{
+          parentName: newEntityReport.parentName,
+          parentUuid: newEntityReport.parentUuid,
+          applicationSection:'model',
+          instances: [
+            newEntityReport as EntityInstance
+          ]
+        }],
+      }
+    };
+    await domainController.handleDomainAction(props.currentDeploymentUuid, createReportAction, props.currentModel);
+
     await domainController.handleDomainAction(props.currentDeploymentUuid, {actionName: "commit",actionType:"DomainTransactionalAction"},props.currentModel);
     // const entityColumns = 
     const instances:EntityInstance[] = 
@@ -138,6 +180,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           return Object.fromEntries(
             [
               ...Object.entries(r).map((e,index)=>([[attributes[index].name],e[1]])),
+              ['uuid',uuidv4()],
               ['parentName',newEntity.name],
               ['parentUuid',newEntity.uuid],
             ]
@@ -160,7 +203,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       ]
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createRowsAction);
-
+    
   }
 
   return (

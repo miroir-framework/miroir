@@ -454,7 +454,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
+          console.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
