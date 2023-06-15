@@ -396,7 +396,14 @@ export const RootComponent = (props: RootComponentProps) => {
                 }
               );
               console.log(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
               );
               await domainController.handleDomainAction(
                 applicationDeploymentMiroir.uuid,
@@ -407,7 +414,32 @@ export const RootComponent = (props: RootComponentProps) => {
               );
             }}
           >
-            Reset database
+            Reset Application database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "resetData",
+                }
+              );
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              // await domainController.handleDomainAction(
+              //   applicationDeploymentLibrary.uuid,
+              //   {
+              //     actionType: "DomainTransactionalAction",
+              //     actionName: "rollback",
+              //   }
+              // );
+            }}
+          >
+            Reset Library Application Data
           </button>
         </span>
         <p />
@@ -446,6 +478,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   }
                 }
               );
+              // TODO: transactional action must not autocommit! initModel neither?!
               // .then(
               // async () => {
               console.log(

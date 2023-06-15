@@ -62,6 +62,7 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler{
   
   // ######################################################################################
   async clear(): Promise<void> {
+    console.log(this.logHeader,'clear start, entities',this.getEntityUuids());
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
     console.log(this.logHeader,'clear done, entities',this.getEntityUuids());
@@ -74,12 +75,13 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler{
     entities : MetaEntity[],
     entityDefinitions : EntityDefinition[],
   ): Promise<void> {
+    console.log(this.logHeader,"bootFromPersistedState called!", entities.map(e=>e.name+':'+e.uuid));
     this.sqlSchemaTableAccess = entities
-      .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
+      // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce(
         (prev, curr: MetaEntity) => {
           const entityDefinition = entityDefinitions.find(e=>e.entityUuid==curr.uuid);
-          console.log(this.logHeader,"bootFromPersistedState start sqlDataSchemaTableAccess init initializing entity", curr.name,curr.parentUuid);
+          console.log(this.logHeader,"bootFromPersistedState start sqlSchemaTableAccess init initializing entity", curr.name,curr.uuid);
           if (entityDefinition) {
             return Object.assign(prev, this.getAccessToDataSectionEntity(curr,entityDefinition));
           } else {

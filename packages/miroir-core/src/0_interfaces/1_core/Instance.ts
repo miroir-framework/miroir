@@ -29,6 +29,7 @@ export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSect
 }
 
 // ##########################################################################################
+// TODO: make parameterized type for instances!
 export const EntityInstanceCollectionSchema = z.object({
   parentName: z.string().optional(),
   parentUuid: z.string().uuid(),

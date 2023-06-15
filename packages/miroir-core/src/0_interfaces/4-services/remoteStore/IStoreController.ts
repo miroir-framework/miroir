@@ -16,8 +16,9 @@ export interface IAbstractStore {
   ):Promise<void>;
   getEntityUuids():string[];
   clear():Promise<void>;
-
 }
+
+// ###########################################################################################
 export interface IStorageSpaceHandler {
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
@@ -36,6 +37,7 @@ export interface IStorageSpaceHandler {
   ): Promise<void>;
 }
 
+// ###########################################################################################
 export interface IAbstractInstanceStore {
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstances(parentUuid: string): Promise<EntityInstance[]>;
@@ -44,6 +46,7 @@ export interface IAbstractInstanceStore {
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
 }
 
+// ###########################################################################################
 export interface IAbstractEntityStore {
   existsEntity(entityUuid:string):boolean;
 
@@ -78,13 +81,19 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
     applicationStoreBasedConfiguration: EntityInstance,
   ):Promise<void>;
 
-  createStorageSpaceForInstancesOfEntity(
+  createModelStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
 
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // From DataStoreControllerInterface used only for testing purposes!
+  createDataStorageSpaceForInstancesOfEntity(
+    entity:MetaEntity,
+    entityDefinition: EntityDefinition,
+  ): Promise<void>;
 
+  clearDataInstances():Promise<void>;
+
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // From DataStoreControllerInterface used only for testing purposes!
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;

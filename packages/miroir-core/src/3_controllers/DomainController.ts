@@ -67,6 +67,7 @@ export class DomainController implements DomainControllerInterface {
         break;
       }
       case "initModel": 
+      case "resetData": 
       case "resetModel": {
         await this.LocalAndRemoteController.handleRemoteStoreModelActionWithDeployment(deploymentUuid,domainModelAction);
         break;
@@ -238,7 +239,7 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     let entityDomainAction:DomainAction | undefined = undefined;
     let otherDomainAction:DomainAction | undefined = undefined;
-    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','initModel','commit','rollback','replace','undo','redo'];
+    const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','resetData','initModel','commit','rollback','replace','undo','redo'];
     console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',(domainAction as any)['objects']);
 
     // if (domainAction.actionName!="updateEntity"){

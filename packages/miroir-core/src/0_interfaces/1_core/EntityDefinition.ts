@@ -71,7 +71,6 @@ export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   entityUuid: UuidSchema,
   description: z.string().optional(),
   instanceValidationJsonSchema:z.object({}).optional(),
-  // attributes: z.array(EntityAttributeCoreSchema)
   attributes: z.array(EntityAttributeSchema)
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;

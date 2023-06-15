@@ -4,7 +4,8 @@ import {
   CRUDActionName,
   DomainModelInitAction,
   DomainTransactionalReplayableAction,
-  DomainTransactionalResetAction,
+  DomainTransactionalResetDataAction,
+  DomainTransactionalResetModelAction,
 } from "../../2_domain/DomainControllerInterface.js";
 
 export interface RemoteStoreCRUDAction {
@@ -16,7 +17,12 @@ export interface RemoteStoreCRUDAction {
   objects?: EntityInstance[];
 }
 
-export type RemoteStoreModelAction = DomainTransactionalReplayableAction | DomainTransactionalResetAction | DomainModelInitAction;
+export type RemoteStoreModelAction =
+  | DomainTransactionalReplayableAction
+  | DomainTransactionalResetModelAction
+  | DomainTransactionalResetDataAction
+  | DomainModelInitAction
+;
 
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 

@@ -1,10 +1,9 @@
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 
 export async function initApplicationDeployment(
@@ -60,6 +59,14 @@ export async function modelActionRunner(
       await miroirDataStoreProxy.clear();
       await appDataStoreProxy.clear();
       console.log('ModelUpdateRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+      break;
+    }
+    case 'resetData':{
+      // const update = (await req.body)[0];
+      console.log("ModelUpdateRunner resetData update");
+      // await miroirDataStoreProxy.clear();
+      await appDataStoreProxy.clearDataInstances();
+      console.log('ModelUpdateRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'initModel':{
@@ -140,7 +147,6 @@ export async function modelActionRunner(
             break;
         }
       } else {
-        // same implementation as in sqlDbServer
         switch (update.updateActionName) {
           case "create": 
           case "update":{

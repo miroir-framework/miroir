@@ -39,6 +39,7 @@ export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 // #############################################################################################
 export const ModelEntityUpdateActionNamesArray = [
   "resetModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
+  "resetData", // to delete all DB contents. DANGEROUS. TEMPORARY?
   "initModel", // to delete all DB contents. DANGEROUS. TEMPORARY?
   "updateEntity",
 ] as const;
@@ -125,11 +126,18 @@ export const DomainTransactionalUndoRedoActionSchema = z.object({
 export type DomainTransactionalUndoRedoAction = z.infer<typeof DomainTransactionalUndoRedoActionSchema>;
 
 // #############################################################################################
-export const DomainTransactionalResetActionSchema = z.object({
+export const DomainTransactionalResetModelActionSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
   actionName: z.literal("resetModel"),
 });
-export type DomainTransactionalResetAction = z.infer<typeof DomainTransactionalResetActionSchema>;
+export type DomainTransactionalResetModelAction = z.infer<typeof DomainTransactionalResetModelActionSchema>;
+
+// #############################################################################################
+export const DomainTransactionalResetDataActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalAction"),
+  actionName: z.literal("resetData"),
+});
+export type DomainTransactionalResetDataAction = z.infer<typeof DomainTransactionalResetDataActionSchema>;
 
 // #############################################################################################
 export const DomainModelInitActionParamsSchema = z.object({
@@ -159,7 +167,8 @@ export const DomainAncillaryActionSchema = z.union([
   DomainTransactionalRollbackActionSchema,
   DomainTransactionalReplaceLocalCacheActionSchema,
   DomainTransactionalUndoRedoActionSchema,
-  DomainTransactionalResetActionSchema,
+  DomainTransactionalResetModelActionSchema,
+  DomainTransactionalResetDataActionSchema,
   DomainModelInitActionSchema,
 ]);
 export type DomainAncillaryAction = z.infer<typeof DomainAncillaryActionSchema>;

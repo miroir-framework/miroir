@@ -19,7 +19,7 @@ export class SqlDbDataStore extends MixedSqlDbInstanceStore implements IDataSect
       dataStoreType,
       dataConnectionString,
       dataSchema,
-      'SqlDbDataStore' + ' Application '+ applicationName +' dataStoreType ' + dataStoreType
+      'SqlDbDataStore' + ' Application '+ applicationName +' dataStoreType ' + dataStoreType + ' section data'
     )
   }
 

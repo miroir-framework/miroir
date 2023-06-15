@@ -15,12 +15,19 @@ export const CUDActionNameSchema = z.enum(
 
 export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 
-// #############################################################################################
-export const ModelResetUpdateSchema = z.object({
-  updateActionType: z.literal('ModelResetUpdate'),
-  updateActionName: z.literal('resetModel'),
-});
-export type ModelResetUpdate = z.infer<typeof ModelResetUpdateSchema>;
+// // #############################################################################################
+// export const ModelResetUpdateSchema = z.object({
+//   updateActionType: z.literal('ModelResetUpdate'),
+//   updateActionName: z.literal('resetModel'),
+// });
+// export type ModelResetUpdate = z.infer<typeof ModelResetUpdateSchema>;
+
+// // #############################################################################################
+// export const ModelResetDataUpdateSchema = z.object({
+//   updateActionType: z.literal('ModelResetUpdate'),
+//   updateActionName: z.literal('resetData'),
+// });
+// export type ModelResetDataUpdate = z.infer<typeof ModelResetDataUpdateSchema>;
 
 // #############################################################################################
 export const ModelEntityUpdateCreateMetaModelInstanceSchema = z.object({

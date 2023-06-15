@@ -82,8 +82,8 @@ export class StoreController implements IStoreController{
   constructor(
     public applicationName: string,
     public dataStoreType: DataStoreApplicationType,
-    private modelStore:IModelSectionStore,
-    private dataStore:IDataSectionStore,
+    private modelSectionStore:IModelSectionStore,
+    private dataSectionStore:IDataSectionStore,
   ){
     this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
@@ -118,56 +118,87 @@ export class StoreController implements IStoreController{
     metaModelEntities : MetaEntity[],
     metaModelEntityDefinitions : EntityDefinition[],
   ):Promise<void> {
-    await this.modelStore.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
-    const dataEntities = await this.modelStore.getInstances(entityEntity.uuid) as MetaEntity[];
-    const dataEntityDefinitions = await this.modelStore.getInstances(entityEntityDefinition.uuid) as EntityDefinition[];
-    await this.dataStore.bootFromPersistedState(dataEntities, dataEntityDefinitions);
+    await this.modelSectionStore.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
+    const dataEntities = await this.modelSectionStore.getInstances(entityEntity.uuid) as MetaEntity[];
+    const dataEntityDefinitions = await this.modelSectionStore.getInstances(entityEntityDefinition.uuid) as EntityDefinition[];
+    await this.dataSectionStore.bootFromPersistedState(
+      dataEntities.filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+      dataEntityDefinitions
+    );
     return Promise.resolve();
   }
 
   // #############################################################################################
   async open():Promise<void> {
-    await this.dataStore.open(); // replace by open?
-    await this.modelStore.open();
+    await this.dataSectionStore.open(); // replace by open?
+    await this.modelSectionStore.open();
     return Promise.resolve();
   }
   
   // ##############################################################################################
   async close():Promise<void> {
-    await this.modelStore.close();
-    await this.dataStore.close();
+    await this.modelSectionStore.close();
+    await this.dataSectionStore.close();
     return Promise.resolve();
   }
 
   // ##############################################################################################
   async clear():Promise<void> {
     console.log(this.logHeader,'clear',this.getEntityUuids());
-    await this.dataStore.clear();
-    await this.modelStore.clear();
+    await this.dataSectionStore.clear();
+    await this.modelSectionStore.clear();
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async clearDataInstances():Promise<void> {
+    console.log(this.logHeader,'clearDataInstances',this.getEntityUuids());
+    const dataSectionEntities:EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
+    const dataSectionEntityDefinitions:EntityInstanceCollection = await this.getInstances("model", entityEntityDefinition.uuid);
+    const dataSectionFilteredEntities:MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter((e:MetaEntity)=>['Entity','EntityDefinition'].indexOf(e.name)==-1); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    console.log(this.logHeader,'clearDataInstances found entities to clear:',dataSectionFilteredEntities);
+    await this.dataSectionStore.clear();
+    
+    for (const entity of dataSectionFilteredEntities) {
+      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.instances.find((d:EntityDefinition)=>d.entityUuid == entity.uuid) as EntityDefinition;
+      if (entityDefinition) {
+        await this.createDataStorageSpaceForInstancesOfEntity(entity,entityDefinition);
+      } else {
+        console.error(this.logHeader,'clearDataInstances could not find entity definition for Entity',entity);
+      }
+    }
     return Promise.resolve();
   }
 
   // ##############################################################################################
   existsEntity(entityUuid:string):boolean {
-    return this.modelStore.existsEntity(entityUuid);
+    return this.modelSectionStore.existsEntity(entityUuid);
   }
   
   // #############################################################################################
   getEntityUuids(): string[] {
-    return this.dataStore.getEntityUuids();
+    return this.dataSectionStore.getEntityUuids();
   }
 
   // #############################################################################################
   getModelEntities(): string[] {
-    return this.modelStore.getEntityUuids();
+    return this.modelSectionStore.getEntityUuids();
   }
 
   // ##############################################################################################
-  async createStorageSpaceForInstancesOfEntity(
+  async createModelStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ):Promise<void> {
-    return this.modelStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
+    return this.modelSectionStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
+  }
+
+  // ##############################################################################################
+  async createDataStorageSpaceForInstancesOfEntity(
+    entity:MetaEntity,
+    entityDefinition: EntityDefinition,
+  ):Promise<void> {
+    return this.dataSectionStore.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
   // ##############################################################################################
@@ -175,28 +206,28 @@ export class StoreController implements IStoreController{
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void> {
-    return this.modelStore.createEntity(entity,entityDefinition);
+    return this.modelSectionStore.createEntity(entity,entityDefinition);
   }
 
   // ##############################################################################################
   async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate){
-    return this.modelStore.renameEntity(update);
+    return this.modelSectionStore.renameEntity(update);
   }
 
   // ##############################################################################################
   async dropEntity(entityUuid: string) {
-    return this.modelStore.dropEntity(entityUuid);
+    return this.modelSectionStore.dropEntity(entityUuid);
   }
 
   // ##############################################################################################
   async dropEntities(entityUuids: string[]) {
-    return this.modelStore.dropEntities(entityUuids);
+    return this.modelSectionStore.dropEntities(entityUuids);
   }
 
   // ##############################################################################################
   // used only for testing purposes!
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{
-    return this.dataStore.getState();
+    return this.dataSectionStore.getState();
   }
   
   // #############################################################################################
@@ -209,9 +240,9 @@ export class StoreController implements IStoreController{
 
     // if (modelEntitiesUuid.includes(entityUuid)) {
     if (section == 'data') {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.dataStore.getInstances(entityUuid)});
+      return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.dataSectionStore.getInstances(entityUuid)});
     } else {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelStore.getInstances(entityUuid)});
+      return Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelSectionStore.getInstances(entityUuid)});
     }
     // return {parentUuid:entityUuid,applicationSection:'model',instances:await this.localUuidIndexedDb.getAllValue(entityUuid) as EntityInstance[]};
   }
@@ -222,9 +253,9 @@ export class StoreController implements IStoreController{
     
     // if (this.getEntityUuids().includes(parentUuid)) {
     if (section == 'data') {
-      await this.dataStore.upsertInstance(instance.parentUuid,instance);
+      await this.dataSectionStore.upsertInstance(instance.parentUuid,instance);
     } else {
-      await this.modelStore.upsertInstance(instance.parentUuid,instance);
+      await this.modelSectionStore.upsertInstance(instance.parentUuid,instance);
     }
     return Promise.resolve(instance);
   }
@@ -232,9 +263,9 @@ export class StoreController implements IStoreController{
   // ##############################################################################################
   async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
     if (section == 'data') {
-      await this.dataStore.deleteInstance(instance.parentUuid,instance);
+      await this.dataSectionStore.deleteInstance(instance.parentUuid,instance);
     } else {
-      await this.modelStore.deleteInstance(instance.parentUuid,instance);
+      await this.modelSectionStore.deleteInstance(instance.parentUuid,instance);
     }
     return Promise.resolve(instance);
   }
@@ -243,9 +274,9 @@ export class StoreController implements IStoreController{
   async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>{
     for (const instance of instances) {
       if (section == 'data') {
-        await this.dataStore.deleteInstance(instance.parentUuid,instance);
+        await this.dataSectionStore.deleteInstance(instance.parentUuid,instance);
       } else {
-        await this.modelStore.deleteInstance(instance.parentUuid,instance);
+        await this.modelSectionStore.deleteInstance(instance.parentUuid,instance);
       }
     }
     return Promise.resolve();

@@ -5,6 +5,7 @@ import { EntityInstance, EntityInstanceSchema, EntityInstanceWithName } from "..
 import { EntityDefinitionSchema, MetaEntitySchema } from "./EntityDefinition";
 import { StoreBasedConfigurationSchema } from "./MiroirConfig";
 import { ReportSchema } from "./Report";
+import { MiroirApplicationVersionSchema } from "./ModelVersion";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -26,22 +27,12 @@ export const MiroirMetaModelSchema = z.object({
   entities: z.array(MetaEntitySchema),
   entityDefinitions: z.array(EntityDefinitionSchema),
   reports: z.array(ReportSchema),
-  // applicationVersions: MiroirApplicationVersion[];
-  applicationVersions: z.array(z.any()),
+  applicationVersions: z.array(MiroirApplicationVersionSchema),
   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
   configuration: z.array(StoreBasedConfigurationSchema),
 });
 
 export type MiroirMetaModel = z.infer<typeof MiroirMetaModelSchema>
 
-
-// export interface MiroirMetaModel {// TODO: the name of meta-model entities cannot change in the current implementation
-//   entities: MetaEntity[];
-//   entityDefinitions: EntityDefinition[];
-//   reports: Report[];
-//   applicationVersions: MiroirApplicationVersion[];
-//   applicationVersionCrossEntityDefinition: z.infer<typeof ZapplicationVersionCrossEntityDefinitionSchema>[];
-//   configuration: StoreBasedConfiguration[];
-// }
 
 

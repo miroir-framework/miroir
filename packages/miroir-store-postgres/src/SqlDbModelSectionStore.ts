@@ -20,7 +20,7 @@ export class SqlDbModelStore extends MixedSqlDbEntityAndInstanceStore implements
       dataStoreType,
       connectionString,
       schema,
-      "SqlDbModelStore" + " Application " + applicationName + " dataStoreType " + dataStoreType,
+      "SqlDbModelStore" + " Application " + applicationName + " dataStoreType " + dataStoreType  + ' section model',
       sqlDbDataStore,
     )
   }
