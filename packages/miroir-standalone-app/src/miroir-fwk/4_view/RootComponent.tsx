@@ -1,14 +1,32 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import MailIcon from '@mui/icons-material/Mail';
+import MenuIcon from '@mui/icons-material/Menu';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
 import {
-  Box,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Typography
 } from "@mui/material";
-import * as React from "react";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Toolbar from '@mui/material/Toolbar';
+import { styled, useTheme } from '@mui/material/styles';
+import { useState } from 'react';
+// import * as React from "react";
 // import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
 import {
   // applicationDeploymentLibrary,
   ApplicationDeployment,
@@ -40,7 +58,8 @@ import {
 } from "miroir-fwk/4_view/hooks";
 import { ReduxStateChanges } from "miroir-redux";
 
-import { ReportComponent } from "./ReportComponent";
+
+
 
 // import entityApplication from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 // import entityApplicationDeployment from '../assets/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
@@ -60,6 +79,7 @@ import entityDefinitionBook from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0
 import entityDefinitionPubliser from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import entityDefinitionAuthor from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 
+// import applicationDeploymentLibrary from 'assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationLibrary from "assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 // import applicationDeploymentLibrary from 'assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationStoreBasedConfigurationLibrary from "assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
@@ -79,7 +99,9 @@ import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97b
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { useForm } from "react-hook-form";
-import { Importer } from "./Importer";
+import PersistentDrawerLeft from './SideBar';
+import { Importer } from './Importer';
+import { ReportComponent } from './ReportComponent';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -205,8 +227,72 @@ async function uploadBooksAndReports(
   });
 }
 
+const drawerWidth = 200;
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+  open?: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create('margin', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: `-${drawerWidth}px`,
+  ...(open && {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  }),
+}));
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme, open }) => ({
+  transition: theme.transitions.create(['margin', 'width'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: `${drawerWidth}px`,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-end',
+}));
+
+
 export const RootComponent = (props: RootComponentProps) => {
   // const errorLog: ErrorLogServiceInterface = ErrorLogServiceCreator();
+
+  const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   const reactFormHooks = useForm();
 
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -221,8 +307,8 @@ export const RootComponent = (props: RootComponentProps) => {
   const setDisplayedDeploymentUuid = useMiroirContextSetDeploymentUuid();
 
   // component state
-  const [displayedReportUuid, setDisplayedReportUuid] = React.useState("");
-  const [displayedApplicationSection, setDisplayedApplicationSection] = React.useState<ApplicationSection | undefined>('' as ApplicationSection);
+  const [displayedReportUuid, setDisplayedReportUuid] = useState("");
+  const [displayedApplicationSection, setDisplayedApplicationSection] = useState<ApplicationSection | undefined>('' as ApplicationSection);
 
   const libraryAppEntities:MetaEntity [] = useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model');
   const libraryAppEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model');
@@ -303,9 +389,87 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // const {store} = props;
   return (
-    <div>
+    <div> 
+      {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
+      <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <div id="miroirRoot-buttons">
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Persistent drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <Main open={open}>
+        <DrawerHeader />
+        <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
+          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
+          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
+          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
+          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
+          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
+          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
+          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
+          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
+          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
+          sapien faucibus et molestie ac.
+        </Typography>
         <span>
           <button
             onClick={async () => {
@@ -430,13 +594,13 @@ export const RootComponent = (props: RootComponentProps) => {
               console.log(
                 "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
               );
-              // await domainController.handleDomainAction(
-              //   applicationDeploymentLibrary.uuid,
-              //   {
-              //     actionType: "DomainTransactionalAction",
-              //     actionName: "rollback",
-              //   }
-              // );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
             }}
           >
             Reset Library Application Data
@@ -529,16 +693,6 @@ export const RootComponent = (props: RootComponentProps) => {
             fetch Miroir & App configurations from database
           </button>
         </span>
-        {/* <p />
-        <span>
-          <button
-            onClick={async () => {
-              await uploadInitialMiroirConfiguration(domainController,currentModel);
-            }}
-          >
-            upload Miroir configuration to database
-          </button>
-        </span> */}
         <p />
         <span>
           <button
@@ -634,7 +788,6 @@ export const RootComponent = (props: RootComponentProps) => {
             Remove Author entity
           </button>
         </span>
-      </div>
       <p />
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
@@ -644,10 +797,12 @@ export const RootComponent = (props: RootComponentProps) => {
       <p />
       <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
       <p />
-      <h3>
-        {/* props: {JSON.stringify(props)} */}
-        erreurs: {JSON.stringify(errorLog)}
-      </h3>
+      <Box>
+        <h3>
+          erreurs: {JSON.stringify(errorLog)}
+        </h3>
+
+      </Box>
       <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
       <Importer filename='' currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
       <p />
@@ -714,10 +869,6 @@ export const RootComponent = (props: RootComponentProps) => {
           </Select>
         </FormControl>
       </Box>
-      {/* <Card>
-        <CardHeader>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</CardHeader>
-        <CardContent> */}
-        {/* <FormProvider {...reactFormHooks}> */}
         {
           currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
             <ReportComponent 
@@ -739,7 +890,514 @@ export const RootComponent = (props: RootComponentProps) => {
           :
           <div>Oops.</div>
         }
-        {/* </FormProvider> */}
+
+      </Main>
+    </Box>
+
+    {/* <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="static" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Persistent drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <Main open={open}>
+        <DrawerHeader />
+        <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
+          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
+          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
+          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
+          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
+          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
+          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
+          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
+          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
+          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
+          sapien faucibus et molestie ac.
+        </Typography>
+        </Main>
+    </Box> */}
+      {/* // TOTO */}
+      {/* // <div id="miroirRoot-buttons"> */}
+        {/* <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+                actionType: "DomainTransactionalAction",
+                actionName: "undo",
+              });
+            }}
+          >
+            undo
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+                actionType: "DomainTransactionalAction",
+                actionName: "redo",
+              });
+            }}
+          >
+            Redo
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "commit",
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Commit Miroir
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "commit",
+                },
+                defaultMiroirMetaModel
+              );
+            }}
+          >
+            Commit Library app
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+            }}
+          >
+            Rollback
+          </button>
+        </span>
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "resetModel",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "resetModel",
+                }
+              );
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+            }}
+          >
+            Reset Application database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "resetData",
+                }
+              );
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+            }}
+          >
+            Reset Library Application Data
+          </button>
+        </span>
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "initModel",
+                  params: {
+                    dataStoreType:'miroir',
+                    metaModel: defaultMiroirMetaModel,
+                    application: applicationMiroir,
+                    applicationDeployment: applicationDeploymentMiroir,
+                    applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+                    applicationVersion:applicationVersionInitialMiroirVersion,
+                  }
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "initModel",
+                  params: {
+                    dataStoreType:'app',
+                    metaModel: defaultMiroirMetaModel,
+                    application: applicationLibrary,
+                    applicationDeployment: applicationDeploymentLibrary,
+                    applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+                    applicationVersion:applicationVersionLibraryInitialVersion,
+                  }
+                }
+              );
+              // TODO: transactional action must not autocommit! initModel neither?!
+              // .then(
+              // async () => {
+              console.log(
+                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+              // }
+              // );
+            }}
+          >
+            Init database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+              await domainController.handleDomainAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "rollback",
+                }
+              );
+            }
+          }
+          >
+            fetch Miroir & App configurations from database
+          </button>
+        </span>
+        <p />
+        <span>
+          <button
+            onClick={async () => {
+              await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+            }}
+          >
+            upload App configuration to database
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "updateEntity",
+                  update: {
+                    updateActionName: "WrappedTransactionalEntityUpdate",
+                    modelEntityUpdate: {
+                      updateActionType: "ModelEntityUpdate",
+                      updateActionName: "renameEntity",
+                      entityName: entityBook.name,
+                      entityUuid: entityBook.uuid,
+                      targetValue: "Bookss",
+                    },
+                  },
+                },
+                libraryAppModel
+              );
+            }}
+          >
+            Modify Book entity name
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentMiroir.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "UpdateMetaModelInstance",
+                  update: {
+                    updateActionType: "ModelCUDInstanceUpdate",
+                    updateActionName: "update",
+                    objects: [
+                      {
+                        parentName: reportReportList.parentName,
+                        parentUuid: reportReportList.parentUuid,
+                        applicationSection:'data',
+                        instances: [
+                          Object.assign({}, reportReportList, {
+                            name: "Report2List",
+                            defaultLabel: "Modified List of Reports",
+                          }) as EntityInstance,
+                        ],
+                      },
+                    ],
+                  },
+                },
+                defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
+              );
+            }}
+          >
+            Modify Report List name
+          </button>
+        </span>
+        <span>
+          <button
+            onClick={async () => {
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentLibrary.uuid,
+                {
+                  actionType: "DomainTransactionalAction",
+                  actionName: "updateEntity",
+                  update: {
+                    updateActionName: "WrappedTransactionalEntityUpdate",
+                    modelEntityUpdate: {
+                      updateActionType: "ModelEntityUpdate",
+                      updateActionName: "DeleteEntity",
+                      entityName: entityAuthor.name,
+                      entityUuid: entityAuthor.uuid,
+                      // instanceUuid:entityAuthor.uuid,
+                    },
+                  },
+                },
+                libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
+              );
+            }}
+          >
+            Remove Author entity
+          </button>
+        </span>*/}
+      {/* </div>  */}
+      {/* <p />
+      <p />
+      <span>transactions: {JSON.stringify(transactions)}</span>
+      <p />
+      <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
+      <p />
+      <p />
+      <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+      <p /> */}
+      {/* <Box>
+        <h3>
+          erreurs: {JSON.stringify(errorLog)}
+        </h3>
+
+      </Box> */}
+      {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
+      {/* <Importer filename='' currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer> */}
+      {/* <p /> */}
+      {/* <Box sx={{ minWidth: 50 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Chosen application Deployment</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={displayedDeploymentUuid}
+            label="displayedDeploymentUuid"
+            onChange={handleChangeDisplayedDeployment}
+          >
+            {deployments.map((deployment) => {
+              return (
+                <MenuItem key={deployment.name} value={deployment.uuid}>
+                  {deployment.description}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box> */}
+      {/* <p />
+      <p /> */}
+      {/* <Box sx={{ minWidth: 50 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Chosen Application Section</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={displayedApplicationSection}
+            label="displayedApplicationSection"
+            onChange={handleChangeDisplayedApplicationSection}
+          >
+            {['model','data'].map((applicationSection) => {
+              return (
+                <MenuItem key={applicationSection} value={applicationSection}>
+                  {applicationSection}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box> */}
+      {/* <p /> */}
+      {/* <Box sx={{ minWidth: 50 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Displayed Report</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={displayedReportUuid}
+            label="displayedReportUuid"
+            onChange={handleChangeDisplayedReport}
+          >
+            {availableReports.map((r) => {
+              return (
+                <MenuItem key={r.name} value={r.uuid}>
+                  {r.defaultLabel}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box> */}
+        {/* {
+          currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
+            <ReportComponent 
+              tableComponentReportType="EntityInstance"
+              label={"EntityInstance-"+currentReportTargetEntity?.name}
+              styles={
+                {
+                    height: '20vw',
+                    width: '90vw',
+                  }
+                }
+              chosenApplicationSection={displayedApplicationSection}
+              displayedDeploymentDefinition={displayedDeploymentDefinition}
+              currentModel={currentModel}
+              currentMiroirReport={currentMiroirReport}
+              currentMiroirEntity={currentReportTargetEntity}
+              currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+            />
+          :
+          <div>Oops.</div>
+        } */}
     </div>
   );
 };

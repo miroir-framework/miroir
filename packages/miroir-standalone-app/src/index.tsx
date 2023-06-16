@@ -1,7 +1,6 @@
-import { Container, createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
-import { v4 as uuidv4 } from 'uuid';
 
 import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
@@ -11,6 +10,8 @@ import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReact
 import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
 import { miroirAppStartup } from "startup";
+import PersistentDrawerLeft from "./miroir-fwk/4_view/SideBar";
+import { StrictMode } from "react";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
@@ -88,25 +89,23 @@ async function start(root:Root) {
     theme.spacing(10);
 
     root.render(
-      <ThemeProvider theme={theme}>
-        <Provider store={mReduxStore.getInnerStore()}>
-        <div>
-          <h1>Miroir standalone demo app {uuidv4()}</h1>
-          {/* <h1>Miroir standalone demo app</h1> */}
-          <Container maxWidth="xl">
-            <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
-              {/* store={mReduxStore.getInnerStore() */}
-              <RootComponent
-                // reportName="AuthorList"
-                // reportName="BookList"
-                reportName="EntityList"
-              ></RootComponent>
-            </MiroirContextReactProvider>
-          </Container>
-        </div>
-      </Provider>
-      
-      </ThemeProvider>
+      <StrictMode>
+        <StyledEngineProvider injectFirst>
+          {/* <ThemeProvider theme={theme}> */}
+            <Provider store={mReduxStore.getInnerStore()}>
+              <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
+                {/* <PersistentDrawerLeft>
+                </PersistentDrawerLeft> */}
+                <RootComponent
+                    // reportName="AuthorList"
+                    // reportName="BookList"
+                    reportName="EntityList"
+                  ></RootComponent>
+                </MiroirContextReactProvider>
+            </Provider>
+          {/* </ThemeProvider> */}
+        </StyledEngineProvider>
+      </StrictMode>
     );
   } else {
     root.render(

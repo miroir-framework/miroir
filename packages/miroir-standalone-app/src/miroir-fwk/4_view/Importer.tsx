@@ -154,7 +154,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         "parentUuid": newEntity.uuid
       }
     }
-    const createReportAction: DomainAction =     {
+    const createReportAction: DomainAction = {
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
       update: {
@@ -203,7 +203,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       ]
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createRowsAction);
-    
   }
 
   return (
