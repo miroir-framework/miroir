@@ -103,22 +103,36 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
     async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<void> {
       // TODO: identical to IndexedDbModelSectionStore implementation!
       console.log(this.logHeader,'renameEntity',update);
-      const cudUpdate = update.equivalentModelCUDUpdates[0];
       // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
       if (
-        cudUpdate 
-        && cudUpdate.objects[0].instances[0].parentUuid 
-        && cudUpdate.objects[0].instances[0].parentUuid == entityEntity.uuid
-        && cudUpdate.objects[0].instances[0].uuid
+        update.equivalentModelCUDUpdates.length 
+        && update.equivalentModelCUDUpdates[0]
+        && update.equivalentModelCUDUpdates[0].objects?.length
+        && update.equivalentModelCUDUpdates[0].objects[0]
+        && update.equivalentModelCUDUpdates[0].objects[1]
+        && update.equivalentModelCUDUpdates[0].objects[0].instances[0]
+        && update.equivalentModelCUDUpdates[0].objects[1].instances[0]
+        // cudUpdate 
+        // && cudUpdate.objects[0].instances[0].parentUuid 
+        // && cudUpdate.objects[0].instances[0].parentUuid == entityEntity.uuid
+        // && cudUpdate.objects[0].instances[0].uuid
       ) {
+        const cudUpdate = update.equivalentModelCUDUpdates[0];
         const currentValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
         console.log(this.logHeader, 'renameEntity',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
         const updatedValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
         console.log(this.logHeader, 'renameEntity done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
+
+        await this.dataStore.renameStorageSpaceForInstancesOfEntity(
+          (update.modelEntityUpdate as any)['entityName'],
+          (update.modelEntityUpdate as any)['targetValue'],
+          update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
+          update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
+        );
       } else {
-        throw new Error(this.logHeader + ' renameEntity incorrect parameter ' + cudUpdate);
+        throw new Error(this.logHeader + ' renameEntity could not execute update ' + update);
       }
       return Promise.resolve();
     }
