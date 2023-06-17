@@ -1,24 +1,78 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import AdbIcon from '@mui/icons-material/Adb';
+import MenuIcon from '@mui/icons-material/Menu';
+import { default as AppBar, default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import MuiDrawer from '@mui/material/Drawer';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+export interface ResponsiveAppBarProps {
+  handleDrawerOpen: ()=>void,
+  open: boolean,
+  children:any,
+}
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const drawerWidth = 200;
+
+
+const StyledAppBar =
+// React.useEffect(
+styled(
+  MuiAppBar, 
+  {shouldForwardProp: (prop) => prop !== "open"}
+)<AppBarProps>(
+  ({ theme, open }) => ({
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(
+      ["margin", "width"], 
+      {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }
+    ),
+    // ...(
+    //   !open && {
+    //     marginLeft: `24px`,
+    //   }
+    // ),
+    ...(
+      open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(
+          ["margin", "width"], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+          }
+        ),
+      }
+    )
+  })
+);
+// ,[props.open])
+;
+
+
+
+export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -35,10 +89,22 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  
+
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+    <StyledAppBar position="fixed" open={props.open}>
+      {/* <Container maxWidth="xl"> */}
+        {/* <Toolbar disableGutters> */}
+        <Toolbar>
+        <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={props.handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(props.open && { display: 'none' }) }}
+          >
+          <MenuIcon />
+          </IconButton>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
@@ -155,8 +221,8 @@ function ResponsiveAppBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      {/* </Container> */}
+    </StyledAppBar>
   );
 }
 export default ResponsiveAppBar;

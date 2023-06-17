@@ -103,7 +103,7 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
 
 export interface RootComponentProps {
   // store:any;
-  reportName: string;
+  // reportName: string;
 }
 
 function defaultToEntityList(value: string | undefined, miroirReports: Report[]): string | undefined {

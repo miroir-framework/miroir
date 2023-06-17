@@ -1,20 +1,46 @@
-import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { createTheme, StyledEngineProvider } from "@mui/material";
 import { createRoot, Root } from "react-dom/client";
-import { Provider } from "react-redux";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 
 import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
 import { blue, red } from "@mui/material/colors";
 import miroirConfig from "assets/miroirConfig.json";
-import { MiroirContextReactProvider } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { RootComponent } from "miroir-fwk/4_view/RootComponent";
 import { createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
-import { miroirAppStartup } from "startup";
-import PersistentDrawerLeft from "./miroir-fwk/4_view/SideBar";
 import { StrictMode } from "react";
+import { miroirAppStartup } from "startup";
+import RootRoute from "./miroir-fwk/4_view/routes/root";
+import ErrorPage from "./miroir-fwk/4_view/ErrorPage";
+import { Provider } from "react-redux";
+import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
+import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
+import { HomePage } from "./miroir-fwk/4_view/HomePage";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
+
+const router = createBrowserRouter([
+  // {
+  //   path: "/",
+  //   element: <RootRoute/>,
+  //   errorElement: <ErrorPage />,
+  // },
+  {
+    path: "/",
+    element: <RootComponent></RootComponent>,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "home",
+        element: <HomePage></HomePage>,
+        // errorElement: <ErrorPage />,
+      },
+    ]
+  },
+]);
 
 // ###################################################################################
 async function start(root:Root) {
@@ -90,21 +116,15 @@ async function start(root:Root) {
 
     root.render(
       <StrictMode>
-        <StyledEngineProvider injectFirst>
           {/* <ThemeProvider theme={theme}> */}
-            <Provider store={mReduxStore.getInnerStore()}>
-              <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
-                {/* <PersistentDrawerLeft>
-                </PersistentDrawerLeft> */}
-                <RootComponent
-                    // reportName="AuthorList"
-                    // reportName="BookList"
-                    reportName="EntityList"
-                  ></RootComponent>
-                </MiroirContextReactProvider>
-            </Provider>
-          {/* </ThemeProvider> */}
+        <StyledEngineProvider injectFirst>
+          <Provider store={mReduxStore.getInnerStore()}>
+            <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
+              <RouterProvider router={router} />
+            </MiroirContextReactProvider>
+          </Provider>
         </StyledEngineProvider>
+          {/* </ThemeProvider> */}
       </StrictMode>
     );
   } else {
