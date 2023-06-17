@@ -2,6 +2,7 @@ import { createTheme, StyledEngineProvider } from "@mui/material";
 import { createRoot, Root } from "react-dom/client";
 import {
   createBrowserRouter,
+  Link,
   RouterProvider,
 } from "react-router-dom";
 
@@ -18,6 +19,7 @@ import { Provider } from "react-redux";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
+import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
@@ -36,6 +38,11 @@ const router = createBrowserRouter([
       {
         path: "home",
         element: <HomePage></HomePage>,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "report/:deploymentUuid/:applicationSection/:reportUuid",
+        element: <ReportPage />,
         // errorElement: <ErrorPage />,
       },
     ]

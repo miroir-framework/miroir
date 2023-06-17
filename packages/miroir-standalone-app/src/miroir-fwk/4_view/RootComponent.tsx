@@ -5,6 +5,11 @@ import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import {
+  createBrowserRouter,
+  Link,
+  RouterProvider,
+} from "react-router-dom";
+import {
   Typography
 } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -206,6 +211,10 @@ export const RootComponent = (props: RootComponentProps) => {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
+          <Link to={`/home`}>Home</Link>
+          <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>report</Link>
+          <p/>
+
         <Outlet></Outlet>
         {/* <HomePage></HomePage> */}
       </Main>
