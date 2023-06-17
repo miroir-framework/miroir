@@ -16,6 +16,7 @@ import {
 import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
+  useLocalCacheInstancesForEntity,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheTransactions
@@ -24,6 +25,8 @@ import { ReduxStateChanges } from "miroir-redux";
 
 
 import { ReportComponent } from '../ReportComponent';
+import { List, ListItem } from '@mui/material';
+import { getColumnDefinitions } from '../EntityViewer';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -59,12 +62,13 @@ export interface ReportPageProps {
   // reportName: string;
 }
 
-export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid';
+export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 
 
 // ###############################################################################################################
-export const ReportPage = (props: ReportPageProps) => {
-  const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+export const EntityInstancePage = (props: ReportPageProps) => {
+  const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
+  // const params = useParams<ReportUrlParams>();
   console.log('ReportPage params',params);
   
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
@@ -102,15 +106,24 @@ export const ReportPage = (props: ReportPageProps) => {
   const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
 
-  console.log("ReportPage deploymentReports",deploymentReports);
+  // console.log("ReportPage deploymentReports",deploymentReports);
 
   // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
   
-  const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === params.reportUuid);
-  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+  // const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === params.reportUuid);
+  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === params.entityUuid);
   const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
   
-  if (params.applicationSection) {
+  const entityAttributes = currentReportTargetEntityDefinition?.attributes;
+
+  const instancesToDisplay = useLocalCacheInstancesForEntity(
+    params.deploymentUuid,
+    params.applicationSection as ApplicationSection,
+    params.entityUuid,
+  );
+
+  const instance:any = instancesToDisplay.find(i=>i.uuid == params.instanceUuid)
+  if (params.applicationSection && instance) {
     return (
       <div> 
         params:{JSON.stringify(params)}
@@ -149,24 +162,64 @@ export const ReportPage = (props: ReportPageProps) => {
   
         </Box>
         <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+
           {
-            currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
-              <ReportComponent
-                tableComponentReportType="EntityInstance"
-                label={"EntityInstance-"+currentReportTargetEntity?.name}
-                styles={
+            currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
+              <div>
+                <List sx={{ pt: 0}}>
                   {
-                      height: '20vw',
-                      width: '90vw',
-                    }
+                    entityAttributes?.map(
+                      (entityAttribute) => {
+                        if (entityAttribute.type == "ARRAY") {
+                          const columnDefs:any[]=getColumnDefinitions(entityAttribute.lineFormat);
+                          return (
+                            <ListItem disableGutters key={entityAttribute.name}>
+                              <span>
+                                <ReportComponent
+                                  tableComponentReportType="JSON_ARRAY"
+                                  label={"JSON_ARRAY-"+entityAttribute.name}
+                                  columnDefs={columnDefs}
+                                  rowData={instance[entityAttribute.name]}
+                                  styles={
+                                    {
+                                      width: '50vw',
+                                      height: '22vw',
+                                    }
+                                  }
+                                ></ReportComponent>
+                              </span>
+                            </ListItem>
+                          )
+                        } else {
+                          return (
+                            <ListItem disableGutters key={entityAttribute.name}>
+                              {entityAttribute.name}: {instance[entityAttribute.name]}
+                            </ListItem>
+                          )
+                        }
+                      }
+                    )
                   }
-                chosenApplicationSection={params.applicationSection as ApplicationSection}
-                displayedDeploymentDefinition={displayedDeploymentDefinition}
-                currentModel={currentModel}
-                currentMiroirReport={currentMiroirReport}
-                currentMiroirEntity={currentReportTargetEntity}
-                currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-              />
+                </List>
+
+                {/* <ReportComponent
+                  tableComponentReportType="EntityInstance"
+                  label={"EntityInstance-"+currentReportTargetEntity?.name}
+                  styles={
+                    {
+                        height: '20vw',
+                        width: '90vw',
+                      }
+                    }
+                  chosenApplicationSection={params.applicationSection as ApplicationSection}
+                  displayedDeploymentDefinition={displayedDeploymentDefinition}
+                  currentModel={currentModel}
+                  currentMiroirReport={currentMiroirReport}
+                  currentMiroirEntity={currentReportTargetEntity}
+                  currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+                /> */}
+              </div>
+
             :
             <div>Oops.</div>
           }

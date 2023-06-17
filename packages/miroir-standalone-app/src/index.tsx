@@ -20,6 +20,7 @@ import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextRea
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
+import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePage";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
@@ -43,6 +44,11 @@ const router = createBrowserRouter([
       {
         path: "report/:deploymentUuid/:applicationSection/:reportUuid",
         element: <ReportPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "instance/:deploymentUuid/:applicationSection/:entityUuid/:instanceUuid",
+        element: <EntityInstancePage />,
         // errorElement: <ErrorPage />,
       },
     ]

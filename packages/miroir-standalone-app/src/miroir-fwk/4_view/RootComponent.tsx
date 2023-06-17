@@ -213,6 +213,7 @@ export const RootComponent = (props: RootComponentProps) => {
         <DrawerHeader />
           <Link to={`/home`}>Home</Link>
           <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>report</Link>
+          <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Instance</Link>
           <p/>
 
         <Outlet></Outlet>

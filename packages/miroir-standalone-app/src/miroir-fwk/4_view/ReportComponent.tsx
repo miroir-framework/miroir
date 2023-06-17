@@ -298,7 +298,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
       </div>
     );
   } else { // props.tableComponentReportType == "JSON_ARRAY"
-    const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;
+    const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;// assumption: the only JSON_ARRAY ReportComponent instance displays the list of attributes of an Entity
     const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
     // const entityDefinitionAttribute:EntityAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityAttribute;
 
