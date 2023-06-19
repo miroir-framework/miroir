@@ -38,6 +38,7 @@ import {
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheStoreBasedConfiguration
 } from "miroir-fwk/4_view/hooks";
+import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { defaultFormValues } from './ReportComponent';
@@ -49,13 +50,27 @@ export const TableComponentTypeSchema = z.enum([
 
 export type TableComponentType = z.infer<typeof TableComponentTypeSchema>;
 
+export const TableComponentCellSchema = z.object({
+  link:z.string().optional(),
+  value:z.any(),
+})
+
+export type TableComponentCell = z.infer<typeof TableComponentCellSchema>;
+
+// {[i:string]: TableComponentCell }
+export const TableComponentRowSchema = z.record(TableComponentCellSchema);
+
+export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
+
+
 export const TableComponentCorePropsSchema = z.object({
   columnDefs:z.array(z.any()),
-  rowData: z.array(z.any()),
+  // rowData: z.array(z.any()),
+  // rowData: TableComponentCellSchema,
+  rowData: z.array(TableComponentRowSchema),
   styles:z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
-  // onRowDelete: z.function().optional(),
 })
 
 export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSchema.extend({
@@ -70,10 +85,6 @@ export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEnt
 
 export const TableComponentJsonArrayPropsSchema = TableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
-  // columnDefs:z.array(z.any()),
-  // rowData: z.array(z.any()),
-  // styles:z.any().optional(),
-  // children: z.any(),
 });
 export type TableComponentJsonArrayProps = z.infer<typeof TableComponentJsonArrayPropsSchema>;
 
@@ -86,33 +97,10 @@ export const TableComponentPropsSchema = z.union([
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
 
-function onCellClicked(e:CellClickedEvent) {
-  console.warn("onCellClicked",e)
-}
-
-
-function onCellDoubleClicked(e:CellDoubleClickedEvent) {
-  console.warn("onCellDoubleClicked",e)
-}
-
-function onCellEditingStarted(e:CellEditingStartedEvent) {
-  console.warn("onCellEditingStarted",e)
-}
-
-function onCellEditingStopped(e:CellEditingStoppedEvent) {
-  console.warn("onCellEditingStarted",e)
-}
-
-function onRowDataUpdated(e:RowDataUpdatedEvent) {
-  console.warn("onRowDataUpdated",e)
-}
-
-function onRowValueChanged(e:RowDataUpdatedEvent) {
-  console.warn("onRowValueChanged",e)
-}
 
 
 export const MTableComponent = (props: TableComponentProps) => {
+  const navigate = useNavigate();
   const contextDeploymentUuid = useMiroirContextDeploymentUuid();
   const miroirReports: Report[] = useLocalCacheReports();
   const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
@@ -132,7 +120,6 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const currentModel: MiroirMetaModel =  {
     entities: currentMiroirEntities,
-    // entityDefinitions: currentMiroirEntityDefinitions as EntityDefinition[],
     entityDefinitions: currentMiroirEntityDefinitions,
     reports: miroirReports,
     configuration: storeBasedConfigurations,
@@ -225,22 +212,53 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const columnDefs = [
     {
-    field: 'tools',
-    cellRenderer: ToolsCellRenderer,
-    editable:false,
-    // sort:'asc',
-    // cellEditorParams: {
-    //   entityUuid: entityPublisher.uuid
-    // },
-    cellRendererParams: {
-      // entityUuid: ''
-      onClick:handleDialogTableRowFormOpen
-    },
-  }
-].concat(props.columnDefs);
+      field: 'tools',
+      cellRenderer: ToolsCellRenderer,
+      editable:false,
+      // sort:'asc',
+      // cellEditorParams: {
+      //   entityUuid: entityPublisher.uuid
+      // },
+      cellRendererParams: {
+        // entityUuid: ''
+        onClick:handleDialogTableRowFormOpen
+      },
+    }
+  ].concat(props.columnDefs);
   
   // const rowData = props.rowData.concat({})
-
+  function onCellClicked(e:CellClickedEvent) {
+    console.warn("onCellClicked",e)
+    // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
+    if (props.type == 'EntityInstance' && e.colDef.field) {
+      const columDefinitionDetails=props.columnDefs.find(c=>c.name == e.colDef.field);
+      const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes.find(a=>a.name == e.colDef.field);
+      const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
+      navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+    }
+  }
+  
+  
+  function onCellDoubleClicked(e:CellDoubleClickedEvent) {
+    console.warn("onCellDoubleClicked",e)
+  }
+  
+  function onCellEditingStarted(e:CellEditingStartedEvent) {
+    console.warn("onCellEditingStarted",e)
+  }
+  
+  function onCellEditingStopped(e:CellEditingStoppedEvent) {
+    console.warn("onCellEditingStarted",e)
+  }
+  
+  function onRowDataUpdated(e:RowDataUpdatedEvent) {
+    console.warn("onRowDataUpdated",e)
+  }
+  
+  function onRowValueChanged(e:RowDataUpdatedEvent) {
+    console.warn("onRowValueChanged",e)
+  }
+  
   return (
     <div>
       {
@@ -251,11 +269,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             isOpen={dialogFormIsOpen}
             isAttributes={true}
             label='OuterDialog'
-            // editorAttributes={defaultEditorAttributes(props,currentEntityAttributes)}
             entityAttributes={props.currentMiroirEntityDefinition.attributes}
-            // formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,props.currentMiroirEntity,props.displayedDeploymentDefinition)}
             formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
-            // isOpen={dialogFormIsOpen}
             onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}
           />
@@ -269,8 +284,8 @@ export const MTableComponent = (props: TableComponentProps) => {
         style={props.styles}
       >
         <AgGridReact
-          // columnDefs={props.columnDefs}
           columnDefs={columnDefs}
+          // rowData={props.rowData.map((v:TableComponentRow)=>Object.fromEntries(Object.entries(v).map((e)=>[e[0],e[1].value])))}
           rowData={props.rowData}
           onCellClicked={onCellClicked}
           onCellEditingStarted={onCellEditingStarted}

@@ -22,6 +22,7 @@ import {
   useLocalCacheSectionEntityDefinitions
 } from "miroir-fwk/4_view/hooks";
 import { useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import { Link } from 'react-router-dom';
 
 
 // backspace starts the editor on Windows
@@ -34,26 +35,47 @@ const KEY_TAB = 'Tab';
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
   console.log('EntityInstanceCellRenderer',props);
   const deploymentUuid = useMiroirContextDeploymentUuid();
-  const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
+  const entityUuid = (props as any)['entityUuid'];
+  // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === entityUuid);
 
   const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
+  // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
-  // const imageForMood = (mood: string) =>
-  //   'https://www.ag-grid.com/example-assets/genders/' +
-  //   (mood === 'Female' ? 'female.png' : 'male.png');
 
-  // const mood = useMemo(() => imageForMood(props.value), [props.value]);
+  // if (entityUuid) {
+  //   return (
+  //     <span>
+  //       {/* {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'} */}
+  //       <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
+  //     </span>
+  //   );
+  // } else {
+    return (
+      <span>
+        {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'}
+      </span>
+    );
+  // }
+})
 
-  // return <img width="20px" src={mood} />;
+export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
+  console.log('DefaultCellRenderer',props.value,props.value && props.value["value"],(props.value && props.value["value"]?props.value["value"]:props.value),props);
+  // const deploymentUuid = useMiroirContextDeploymentUuid();
+  // // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
+  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
+  // const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
+
+  // const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
+  // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
+
   return (
     <span>
-      {/* <img width="20px" src={mood} /> */}
-      {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'}
+      {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
+      {props.value?props.value:'null value'}
     </span>
-  )
+  );
 })
 
 
@@ -61,9 +83,7 @@ export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
     const deploymentUuid = useMiroirContextDeploymentUuid();
-    // const miroirEntities:MetaEntity [] = useLocalCacheEntities();
     const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-    // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
     const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   

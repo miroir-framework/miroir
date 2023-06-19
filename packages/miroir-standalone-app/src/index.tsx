@@ -13,7 +13,6 @@ import miroirConfig from "assets/miroirConfig.json";
 import { createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
 import { StrictMode } from "react";
 import { miroirAppStartup } from "startup";
-import RootRoute from "./miroir-fwk/4_view/routes/root";
 import ErrorPage from "./miroir-fwk/4_view/ErrorPage";
 import { Provider } from "react-redux";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";

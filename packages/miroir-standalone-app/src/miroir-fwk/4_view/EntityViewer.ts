@@ -2,7 +2,7 @@ import { EntityAttribute } from "miroir-core";
 import GenderCellRenderer from "./GenderCellRenderer";
 import { ColDef } from "ag-grid-community";
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
-import { EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
+import { DefaultCellRenderer, EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
 import entityAuthor from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
 import entityPublisher from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
 
@@ -66,18 +66,26 @@ export function getColumnDefinitions(attributes:EntityAttribute[]):ColDef<any>[]
           );
           break;
         }
-        default: {
+        case 'conceptLevel':{
+          console.log('getColumnDefinitions column conceptLevel', a);
           return {
             "field": a?.name,
             "headerName": a?.defaultLabel,
+          }
+        }
+        default: {
+          return {
+            "field": a?.name,
+            cellRenderer: DefaultCellRenderer,
+            cellRendererParams: {
+              columnName: a?.name
+            },
+          "headerName": a?.defaultLabel,
             // "sort":'asc'
   
           }
           break;
         }
-      }
-      if (a.name == 'gender') {
-      } else {
       }
     }
   );

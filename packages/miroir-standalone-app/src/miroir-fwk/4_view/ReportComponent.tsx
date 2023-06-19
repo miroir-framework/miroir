@@ -9,6 +9,7 @@ import {
   ApplicationDeploymentSchema,
   ApplicationSectionSchema,
   DomainControllerInterface,
+  DomainDataAction,
   EntityArrayAttribute,
   EntityAttribute,
   EntityAttributeCore,
@@ -25,7 +26,7 @@ import {
 
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
 import { EditorAttribute, JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
-import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
+import { MTableComponent, TableComponentCell, TableComponentRow, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
 export const ReportComponentCorePropsSchema = z.object({
@@ -152,10 +153,9 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
 
   if (props.tableComponentReportType == "EntityInstance") {
     const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
-    let currentEditorAttributes: EditorAttribute[];
 
-    let instancesWithStringifiedJsonAttributes: EntityInstance[];
-    instancesWithStringifiedJsonAttributes = instancesToDisplay.map(
+    // const instancesWithStringifiedJsonAttributes: EntityInstance[] = instancesToDisplay.map(
+    const instancesWithStringifiedJsonAttributes: any[] = instancesToDisplay.map(
       (i) =>
         Object.fromEntries(
           Object.entries(i).map((e) => [
@@ -163,8 +163,10 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
             props.currentMiroirEntityDefinition?.attributes?.find((a) => a.name == e[0])?.type == "OBJECT"
               ? JSON.stringify(e[1])
               : e[1],
+              // ? {value:JSON.stringify(e[1])}
+              // : {value:e[1]},
           ])
-        ) as EntityInstance
+        )
     );
   
     columnDefs=getColumnDefinitions(currentEntityAttributes);
@@ -180,28 +182,46 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
       console.log('ReportComponent onEditFormObject called with new object value',data);
       
       if (props.displayedDeploymentDefinition) {
-        await domainController.handleDomainAction(
-          props.displayedDeploymentDefinition?.uuid,
-          {
-            actionType: "DomainTransactionalAction",
-            actionName: "UpdateMetaModelInstance",
-            update: {
-              updateActionType: "ModelCUDInstanceUpdate",
-              updateActionName: "create",
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection:'model',
-                  instances: [
-                    // newEntity 
-                    data
-                  ]
-                }
-              ],
-            }
-          },props.currentModel
-        );
+        if (props.chosenApplicationSection == 'model') {
+          await domainController.handleDomainAction(
+            props.displayedDeploymentDefinition?.uuid,
+            {
+              actionType: "DomainTransactionalAction",
+              actionName: "UpdateMetaModelInstance",
+              update: {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: "create",
+                objects: [
+                  {
+                    parentName: data.name,
+                    parentUuid: data.parentUuid,
+                    applicationSection:'model',
+                    instances: [
+                      // newEntity 
+                      data
+                    ]
+                  }
+                ],
+              }
+            },props.currentModel
+          );
+        } else {
+          const createAction: DomainDataAction = {
+            actionName: "create",
+            actionType:"DomainDataAction",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection,
+                instances: [
+                  data 
+                ],
+              },
+            ],
+          };
+          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, createAction);
+        }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
@@ -212,27 +232,45 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
       console.log('ReportComponent onEditFormObject called with new object value',data);
       
       if (props.displayedDeploymentDefinition) {
-        await domainController.handleDomainAction(
-          props.displayedDeploymentDefinition?.uuid,
-          {
-            actionType: "DomainTransactionalAction",
-            actionName: "UpdateMetaModelInstance",
-            update: {
-              updateActionType: "ModelCUDInstanceUpdate",
-              updateActionName: "update",
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection:'model',
-                  instances: [
-                    data 
-                  ]
-                }
-              ],
-            }
-          },props.currentModel
-        );
+        if (props.chosenApplicationSection == 'model') {
+          await domainController.handleDomainAction(
+            props.displayedDeploymentDefinition?.uuid,
+            {
+              actionType: "DomainTransactionalAction",
+              actionName: "UpdateMetaModelInstance",
+              update: {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: "update",
+                objects: [
+                  {
+                    parentName: data.name,
+                    parentUuid: data.parentUuid,
+                    applicationSection:props.chosenApplicationSection,
+                    instances: [
+                      data 
+                    ]
+                  }
+                ],
+              }
+            },props.currentModel
+          );
+        } else {
+          const updateAction: DomainDataAction = {
+            actionName: "update",
+            actionType:"DomainDataAction",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection,
+                instances: [
+                  data 
+                ],
+              },
+            ],
+          };
+          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, updateAction);
+        }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }

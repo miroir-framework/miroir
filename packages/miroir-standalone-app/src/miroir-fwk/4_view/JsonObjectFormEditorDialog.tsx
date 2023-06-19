@@ -131,7 +131,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           {/* <input {...register("exampleRequired", { required: true })} /> */}
           <Grid sx={{display:'inline-flex',flexDirection:'column'}}>
             <Item>
-              {JSON.stringify(props.formObject)}
+              formObject: {JSON.stringify(props.formObject)}
             </Item>
             <Item>
               <List sx={{ pt: 0}}>
