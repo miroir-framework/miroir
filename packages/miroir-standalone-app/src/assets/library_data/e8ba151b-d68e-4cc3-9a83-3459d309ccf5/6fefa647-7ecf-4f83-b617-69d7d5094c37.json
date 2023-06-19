@@ -1,7 +1,9 @@
 {
   "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
-  "parentName":"Book",
-  "parentUuid":"e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "name":"The Bride Wore Black",
-  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "name": "The Bride Wore Black",
+  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+  "conceptLevel": "",
+  "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
 }

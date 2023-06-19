@@ -1,7 +1,9 @@
 {
   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
-  "parentName":"Book",
-  "parentUuid":"e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "name":"Rear Window",
-  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
+  "parentName": "Book",
+  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "name": "Rear Window",
+  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+  "conceptLevel": "",
+  "publisher": "1f550a2a-33f5-4a56-83ee-302701039494"
 }
