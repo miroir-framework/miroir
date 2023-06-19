@@ -34,6 +34,36 @@ import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import { HomePage } from './HomePage';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { Outlet } from 'react-router-dom';
+import { ApplicationDeployment, applicationDeploymentMiroir, DomainControllerInterface } from 'miroir-core';
+import { useDomainControllerServiceHook } from './MiroirContextReactProvider';
+
+// duplicated from server!!!!!!!!
+const applicationDeploymentLibrary: ApplicationDeployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"ApplicationDeployment",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationPostgresDeployment",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for Application Library",
+  "applicationModelLevel": "model",
+  "model": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "data": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  }
+}
 
 export interface RootComponentProps {
   // store:any;
@@ -144,6 +174,8 @@ export const RootComponent = (props: RootComponentProps) => {
     setOpen(false);
   };
 
+  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+
   return (
     <div> 
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
@@ -229,12 +261,35 @@ export const RootComponent = (props: RootComponentProps) => {
                 {/* <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Author</Link> */}
                 <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
               </TableCell>
-
             </TableRow>
           </TableBody>
         </Table>
           <p/>
-
+          <span>
+            <button
+              onClick={async () => {
+                console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+                await domainController.handleDomainAction(
+                  applicationDeploymentMiroir.uuid,
+                  {
+                    actionType: "DomainTransactionalAction",
+                    actionName: "rollback",
+                  }
+                );
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  {
+                    actionType: "DomainTransactionalAction",
+                    actionName: "rollback",
+                  }
+                );
+              }
+            }
+            >
+              fetch Miroir & App configurations from database
+            </button>
+          </span>
+        <p />
         <Outlet></Outlet>
         {/* <HomePage></HomePage> */}
       </Main>

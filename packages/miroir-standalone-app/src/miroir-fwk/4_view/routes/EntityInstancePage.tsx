@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { Params, useParams } from 'react-router-dom';
+import { Params, useNavigate, useParams } from 'react-router-dom';
 import {
   ApplicationDeployment,
   ApplicationSection,
@@ -25,7 +25,7 @@ import { ReduxStateChanges } from "miroir-redux";
 
 
 import { ReportComponent } from '../ReportComponent';
-import { List, ListItem } from '@mui/material';
+import { List, ListItem, ListItemButton } from '@mui/material';
 import { getColumnDefinitions } from '../EntityViewer';
 
 // duplicated from server!!!!!!!!
@@ -71,6 +71,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   // const params = useParams<ReportUrlParams>();
   console.log('ReportPage params',params);
   
+  const navigate = useNavigate();
+
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -106,7 +108,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
 
-  // console.log("ReportPage deploymentReports",deploymentReports);
+  console.log("EntityInstancePage currentReportDeploymentSectionEntities",currentReportDeploymentSectionEntities);
 
   // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
   
@@ -128,7 +130,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
       <div> 
         params:{JSON.stringify(params)}
         <p />
-        <span>
+        {/* <span>
             <button
               onClick={async () => {
                 console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
@@ -152,7 +154,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
               fetch Miroir & App configurations from database
             </button>
           </span>
-        <p />
+        <p /> */}
         <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
         <p />
         <Box>
@@ -170,32 +172,54 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                   {
                     entityAttributes?.map(
                       (entityAttribute) => {
-                        if (entityAttribute.type == "ARRAY") {
-                          const columnDefs:any[]=getColumnDefinitions(entityAttribute.lineFormat);
-                          return (
-                            <ListItem disableGutters key={entityAttribute.name}>
-                              <span>
-                                <ReportComponent
-                                  tableComponentReportType="JSON_ARRAY"
-                                  label={"JSON_ARRAY-"+entityAttribute.name}
-                                  columnDefs={columnDefs}
-                                  rowData={instance[entityAttribute.name]}
-                                  styles={
-                                    {
-                                      width: '50vw',
-                                      height: '22vw',
+                        switch (entityAttribute.type) {
+                          case "ARRAY": {
+                            const columnDefs:any[]=getColumnDefinitions(entityAttribute.lineFormat);
+                            return (
+                              <ListItem disableGutters key={entityAttribute.name}>
+                                <span>
+                                  <ReportComponent
+                                    tableComponentReportType="JSON_ARRAY"
+                                    label={"JSON_ARRAY-"+entityAttribute.name}
+                                    columnDefs={columnDefs}
+                                    rowData={instance[entityAttribute.name]}
+                                    styles={
+                                      {
+                                        width: '50vw',
+                                        height: '22vw',
+                                      }
                                     }
-                                  }
-                                ></ReportComponent>
-                              </span>
-                            </ListItem>
-                          )
-                        } else {
-                          return (
-                            <ListItem disableGutters key={entityAttribute.name}>
-                              {entityAttribute.name}: {instance[entityAttribute.name]}
-                            </ListItem>
-                          )
+                                  ></ReportComponent>
+                                </span>
+                              </ListItem>
+                            )
+                            break;
+                          }
+                          case "ENTITY_INSTANCE_UUID": {
+                            // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+                            const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.name == entityAttribute.defaultLabel) 
+                            // const targetObject = 
+                            return (
+                              <ListItemButton disableGutters key={entityAttribute.name} onClick={()=>{
+                                // const url = `/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`;
+                                const url = `/instance/${params.deploymentUuid}/${params.applicationSection}/${targetEntity?.uuid}/${instance[entityAttribute.name]}`;
+                                console.log('navigate to url',url);
+                                
+                                navigate(url)
+                                }}>
+                                {entityAttribute.name}: {instance[entityAttribute.name]}
+                              </ListItemButton>
+                            )
+                          }
+
+                          default: {
+                            return (
+                              <ListItem disableGutters key={entityAttribute.name}>
+                                {entityAttribute.name}: {instance[entityAttribute.name]}
+                              </ListItem>
+                            )
+                            break;
+                          }
                         }
                       }
                     )
