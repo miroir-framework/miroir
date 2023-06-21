@@ -163,7 +163,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
           </h3>
   
         </Box>
-        <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+        {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
 
           {
             currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?

@@ -13,7 +13,7 @@ import {
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
@@ -66,7 +66,9 @@ export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'repo
 export const ReportPage = (props: ReportPageProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   console.log('ReportPage params',params);
-  
+  const setDeploymentUuid = useMiroirContextSetDeploymentUuid()
+  setDeploymentUuid(params.deploymentUuid?params.deploymentUuid:'');
+
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -113,42 +115,17 @@ export const ReportPage = (props: ReportPageProps) => {
   if (params.applicationSection) {
     return (
       <div> 
-        params:{JSON.stringify(params)}
-        <p />
-        <span>
-            <button
-              onClick={async () => {
-                console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                await domainController.handleDomainAction(
-                  applicationDeploymentMiroir.uuid,
-                  {
-                    actionType: "DomainTransactionalAction",
-                    actionName: "rollback",
-                  }
-                );
-                await domainController.handleDomainAction(
-                  applicationDeploymentLibrary.uuid,
-                  {
-                    actionType: "DomainTransactionalAction",
-                    actionName: "rollback",
-                  }
-                );
-              }
-            }
-            >
-              fetch Miroir & App configurations from database
-            </button>
-          </span>
-        <p />
-        <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
-        <p />
+        {/* params:{JSON.stringify(params)}
+        <p /> */}
+        {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+        <p /> */}
         <Box>
           <h3>
             erreurs: {JSON.stringify(errorLog)}
           </h3>
   
         </Box>
-        <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+        {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
           {
             currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
               <ReportComponent

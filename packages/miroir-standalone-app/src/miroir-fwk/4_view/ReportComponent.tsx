@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
-import { z } from "zod";
 import { ColDef } from "ag-grid-community";
 import { SubmitHandler } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import { z } from "zod";
 
 
 import {
@@ -12,9 +12,7 @@ import {
   DomainDataAction,
   EntityArrayAttribute,
   EntityAttribute,
-  EntityAttributeCore,
   EntityDefinitionSchema,
-  EntityInstance,
   MetaEntity,
   MetaEntitySchema,
   ReportSchema,
@@ -25,8 +23,8 @@ import {
 } from "miroir-fwk/4_view/hooks";
 
 import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
-import { EditorAttribute, JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
-import { MTableComponent, TableComponentCell, TableComponentRow, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
+import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
+import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
 export const ReportComponentCorePropsSchema = z.object({
@@ -295,15 +293,15 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
               columnDefs?.length > 0?
                 <div style={{display:"flex", flexDirection:"column", alignItems:'center'}}>
                   <div>
-                      colonnes: {JSON.stringify(columnDefs)}
-                      <p/>
+                      {/* colonnes: {JSON.stringify(columnDefs)} */}
+                      {/* <p/>
                       deployment: {JSON.stringify(props.displayedDeploymentDefinition?.uuid)}
-                      <p/>
+                      <p/> */}
                   </div>
                   <JsonObjectFormEditorDialog
                     showButton={true}
                     isAttributes={true}
-                    label='OuterDialog'
+                    label={props.currentMiroirEntityDefinition.name}
                     entityAttributes={currentEntityAttributes}
                     formObject={defaultFormValues(props.tableComponentReportType, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
                     onSubmit={onSubmitOuterDialog}

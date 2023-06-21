@@ -109,17 +109,19 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   return (
     <div className='JsonObjectFormEditorDialog'>
+      <span>
       {
-        props.showButton?
-        <h3>
-          {props.label}
-          <Button variant="outlined" onClick={()=>handleAddObjectDialogFormButtonClick(props?.label,props?.formObject)}>
-            <AddBoxIcon/>
-          </Button>
-        </h3>
-        :
-        <div></div>
+          props.showButton?
+          <h3>
+            {props.label}
+            <Button variant="outlined" onClick={()=>handleAddObjectDialogFormButtonClick(props?.label,props?.formObject)}>
+              <AddBoxIcon/>
+            </Button>
+          </h3>
+          :
+          <div></div>
       }
+        </span>
       <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}  >
         {/* <DialogTitle>add Entity</DialogTitle> */}
         <DialogTitle>{props.label} add Element</DialogTitle>

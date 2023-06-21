@@ -617,7 +617,7 @@ export const HomePage = (props: RootComponentProps) => {
         </h3>
 
       </Box>
-      <span>packages: {JSON.stringify(ConfigurationService.packages)}</span>
+      {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
       <Importer filename='' currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
       <p />
       <Box sx={{ minWidth: 50 }}>

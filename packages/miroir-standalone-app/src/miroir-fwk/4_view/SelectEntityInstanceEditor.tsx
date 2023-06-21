@@ -35,6 +35,7 @@ const KEY_TAB = 'Tab';
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
   console.log('EntityInstanceCellRenderer',props);
   const deploymentUuid = useMiroirContextDeploymentUuid();
+  // const deploymentUuid = (props as any)('deploymentUuid');
   const entityUuid = (props as any)['entityUuid'];
   // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
   const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');

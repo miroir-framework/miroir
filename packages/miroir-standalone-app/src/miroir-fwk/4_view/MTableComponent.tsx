@@ -230,11 +230,15 @@ export const MTableComponent = (props: TableComponentProps) => {
   function onCellClicked(e:CellClickedEvent) {
     console.warn("onCellClicked",e)
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
-    if (props.type == 'EntityInstance' && e.colDef.field) {
+    if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
       const columDefinitionDetails=props.columnDefs.find(c=>c.name == e.colDef.field);
       const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes.find(a=>a.name == e.colDef.field);
-      const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
-      navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+      if (columnDefinitionAttribute?.type == 'ENTITY_INSTANCE_UUID') {
+        const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
+        navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+      } else {
+        console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.');
+      }
     }
   }
   
@@ -268,7 +272,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             showButton={false}
             isOpen={dialogFormIsOpen}
             isAttributes={true}
-            label='OuterDialog'
+            // label='OuterDialog'
+            label={props.currentMiroirEntityDefinition.name}
             entityAttributes={props.currentMiroirEntityDefinition.attributes}
             formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
             onSubmit={onSubmitTableRowFormDialog}
