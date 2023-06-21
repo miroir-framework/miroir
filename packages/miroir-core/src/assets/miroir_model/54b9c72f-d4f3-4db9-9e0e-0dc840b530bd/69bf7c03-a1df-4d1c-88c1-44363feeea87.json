@@ -12,7 +12,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "ENTITY_INSTANCE_UUID",
+      "type": "UUID",
       "nullable": false,
       "editable": false
     },
@@ -28,7 +28,8 @@
       "id": 3,
       "name": "parentUuid",
       "defaultLabel": "Entity",
-      "type": "ENTITY_INSTANCE_UUID",
+      "applicationSection": "model",
+      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "nullable": false,
       "editable": true
     },
@@ -46,6 +47,7 @@
       "defaultLabel": "Application",
       "description": "The Application of the Branch.",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
       "nullable": false,
       "editable": false
     },
@@ -55,6 +57,7 @@
       "defaultLabel": "Head Version",
       "description": "The Head Application Version of the Branch.",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
       "nullable": false,
       "editable": true
     }

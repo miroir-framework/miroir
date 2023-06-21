@@ -1,41 +1,36 @@
-import { useState } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import {
-  createBrowserRouter,
-  Link,
-  RouterProvider,
-} from "react-router-dom";
 import {
   Table,
   TableBody,
   TableCell,
-  TableRow,
-  Typography
+  TableRow
 } from "@mui/material";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import MuiDrawer from '@mui/material/Drawer';
+import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
+import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Toolbar from '@mui/material/Toolbar';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import { useState } from 'react';
+import {
+  Link, Params, useParams
+} from "react-router-dom";
 
 
-import { HomePage } from './HomePage';
-import ResponsiveAppBar from './ResponsiveAppBar';
-import { Outlet } from 'react-router-dom';
 import { ApplicationDeployment, applicationDeploymentMiroir, DomainControllerInterface } from 'miroir-core';
+import { Outlet } from 'react-router-dom';
 import { useDomainControllerServiceHook } from './MiroirContextReactProvider';
+import ResponsiveAppBar from './ResponsiveAppBar';
+import { ReportUrlParamKeys } from './routes/ReportPage';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -163,6 +158,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 
 export const RootComponent = (props: RootComponentProps) => {
+  const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
@@ -265,6 +261,8 @@ export const RootComponent = (props: RootComponentProps) => {
           </TableBody>
         </Table>
           <p/>
+          params: {JSON.stringify(params)}
+          <p/>
           <span>
             <button
               onClick={async () => {
@@ -290,7 +288,10 @@ export const RootComponent = (props: RootComponentProps) => {
             </button>
           </span>
         <p />
+        {/* <RouterProvider > */}
+        {/* <RouterProvider router={router}/> */}
         <Outlet></Outlet>
+        {/* </RouterProvider> */}
         {/* <HomePage></HomePage> */}
       </Main>
     </Box>

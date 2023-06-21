@@ -6,36 +6,14 @@
   "conceptLevel":"Model",
   "name":"ApplicationDeployment",
   "icon": "Interests",
-  "instanceValidationJsonSchema": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "required": ["uuid","parentUuid","name"],
-    "properties": {
-      "uuid": {
-        "title": "Uuid",
-        "type": "string"
-      },
-      "parentUuid": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "name": {
-        "title": "Name",
-        "type": "string"
-      },
-      "definition": {
-        "title": "Definition",
-        "type": "object"
-      }
-    }
-  },
+  "instanceValidationJsonSchema": {},
   "attributes":
   [
     {
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "ENTITY_INSTANCE_UUID",
+      "type": "UUID",
       "nullable": false,
       "editable": false
     },
@@ -52,6 +30,7 @@
       "name": "parentUuid",
       "defaultLabel": "Entity",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "nullable": false,
       "editable": true
     },
@@ -69,6 +48,7 @@
       "defaultLabel": "Application",
       "description": "The Application of the Branch.",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
       "nullable": false,
       "editable": false
     },

@@ -1,18 +1,20 @@
 import { z } from "zod";
-import { EntityInstanceWithNameSchema } from "./Instance.js";
+import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "./Instance.js";
 
 // ##########################################################################################
-export const EntityAttributeNoArrayTypeSchema = z.union([
+
+export const EntityAttributeExpandedTypeSchema = z.union([
+  z.literal("UUID"),
   z.literal("STRING"),
   z.literal("BOOLEAN"),
-  // z.literal("ARRAY"),
   z.literal("OBJECT"),
-  z.literal("ENTITY_INSTANCE_UUID")
 ]);
-export type EntityAttributeNoArrayType = z.infer<typeof EntityAttributeNoArrayTypeSchema>;
+export type EntityAttributeExpandedType = z.infer<typeof EntityAttributeExpandedTypeSchema>;
+
 
 export const EntityAttributeTypeSchema = z.union([
-  EntityAttributeNoArrayTypeSchema,
+  EntityAttributeExpandedTypeSchema,
+  z.literal("ENTITY_INSTANCE_UUID"),
   z.literal("ARRAY"),
 ]);
 export type EntityAttributeType = z.infer<typeof EntityAttributeTypeSchema>;
@@ -35,7 +37,7 @@ export const EntityAttributeUntypedCoreSchema = z.object({
 export type EntityAttributeUntypedCore = z.infer<typeof EntityAttributeUntypedCoreSchema>;
 
 export const EntityAttributeCoreSchema = EntityAttributeUntypedCoreSchema.extend({
-  type: EntityAttributeNoArrayTypeSchema,
+  type: EntityAttributeExpandedTypeSchema,
 });
 export type EntityAttributeCore = z.infer<typeof EntityAttributeCoreSchema>;
 
@@ -45,14 +47,23 @@ export const EntityArrayAttributeSchema = EntityAttributeUntypedCoreSchema.exten
 });
 export type EntityArrayAttribute = z.infer<typeof EntityArrayAttributeSchema>;
 
+export const EntityForeignKeyAttributeSchema = EntityAttributeUntypedCoreSchema.extend({
+  type: z.literal("ENTITY_INSTANCE_UUID"),
+  applicationSection: ApplicationSectionSchema.optional(),
+  entityUuid: z.string().uuid()
+});
+export type EntityForeignKeyAttribute = z.infer<typeof EntityForeignKeyAttributeSchema>;
+
 export const EntityAttributeSchema = z.union([
   EntityAttributeCoreSchema,
-  EntityArrayAttributeSchema
+  EntityForeignKeyAttributeSchema,
+  EntityArrayAttributeSchema,
 ]);
 export type EntityAttribute = z.infer<typeof EntityAttributeSchema>;
 
 export const EntityAttributePartialSchema = z.union([
   EntityAttributeCoreSchema.partial(),
+  EntityForeignKeyAttributeSchema.partial(),
   EntityArrayAttributeSchema.partial()
 ]);
 export type EntityAttributePartial = z.infer<typeof EntityAttributePartialSchema>;
@@ -72,6 +83,7 @@ export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   description: z.string().optional(),
   instanceValidationJsonSchema:z.object({}).optional(),
   attributes: z.array(EntityAttributeSchema)
+  // attributes: z.array(z.any())
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;
 

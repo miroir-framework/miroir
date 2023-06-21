@@ -13,7 +13,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "Uuid",
-      "type": "STRING",
+      "type": "UUID",
       "nullable": false,
       "editable": false
     },
@@ -45,7 +45,8 @@
       "id": 5,
       "name": "entityUuid",
       "defaultLabel": "Entity of the definition",
-      "type": "STRING",
+      "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "nullable": false,
       "editable": false
     },
@@ -103,6 +104,14 @@
           "defaultLabel": "Type",
           "type": "STRING",
           "nullable": false,
+          "editable": true
+        },
+        {
+          "id": 5,
+          "name": "entityUuid",
+          "defaultLabel": "Entity Uuid",
+          "type": "STRING",
+          "nullable": true,
           "editable": true
         }
       ]

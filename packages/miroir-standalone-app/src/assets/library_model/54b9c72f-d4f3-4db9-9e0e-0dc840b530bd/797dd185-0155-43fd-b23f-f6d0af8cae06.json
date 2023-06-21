@@ -7,31 +7,6 @@
   "name":"Book",
   "icon": "Book",
   "instanceValidationJsonSchema": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "required": ["uuid","parentName","name"],
-    "properties": {
-      "uuid": {
-        "title": "Uuid",
-        "type": "string"
-      },
-      "entityUuid": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "conceptLevel": {
-        "title": "Concept Level",
-        "type": "string"
-      },
-      "name": {
-        "title": "Name",
-        "type": "string"
-      },
-      "author": {
-        "title": "Author",
-        "type": "object"
-      }
-    }
   },
   "attributes":
   [
@@ -39,7 +14,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "uuid",
-      "type": "ENTITY_INSTANCE_UUID",
+      "type": "UUID",
       "nullable": false,
       "editable": false
     },
@@ -48,6 +23,8 @@
       "name": "parentUuid",
       "defaultLabel": "Entity",
       "type": "ENTITY_INSTANCE_UUID",
+      "applicationSection": "model",
+      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "nullable": false,
       "editable": false
     },
@@ -72,6 +49,7 @@
       "name": "author",
       "defaultLabel": "Author",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
       "nullable": true,
       "editable": true
     },
@@ -80,6 +58,7 @@
       "name": "publisher",
       "defaultLabel": "Publisher",
       "type": "ENTITY_INSTANCE_UUID",
+      "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
       "nullable": true,
       "editable": true
     }

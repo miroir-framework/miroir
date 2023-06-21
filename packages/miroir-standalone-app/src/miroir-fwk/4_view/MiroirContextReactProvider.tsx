@@ -1,4 +1,4 @@
-import { DomainControllerInterface, MiroirContext, MiroirContextInterface } from "miroir-core";
+import { ApplicationSection, DomainControllerInterface, MiroirContext, MiroirContextInterface, Uuid } from "miroir-core";
 import { createContext, useContext, useState } from "react";
 // import * as React from "react";
   
@@ -7,8 +7,13 @@ export interface MiroirReactContext {
   domainController: DomainControllerInterface;
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
+  reportUuid: Uuid | undefined;
+  setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>;
+  applicationSection: ApplicationSection | undefined;
+  setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection | undefined>>;
   innerFormOutput: any;
   setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
+
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
@@ -28,6 +33,8 @@ export function MiroirContextReactProvider(
   }
 ) {
   const [deploymentUuid, setDeploymentUuid] = useState("");
+  const [reportUuid, setReportUuid] = useState("");
+  const [applicationSection, setApplicationSection] = useState<ApplicationSection | undefined>(undefined);
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
 
   const value = {
@@ -35,8 +42,12 @@ export function MiroirContextReactProvider(
     domainController: props.domainController,
     deploymentUuid,
     setDeploymentUuid,
+    reportUuid,
+    setReportUuid,
+    applicationSection,
+    setApplicationSection,
     innerFormOutput,
-    setInnerFormOutput
+    setInnerFormOutput,
   };
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }

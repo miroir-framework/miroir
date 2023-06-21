@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { EntityAttributePartialSchema, EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceCollectionSchema } from "../../0_interfaces/1_core/Instance";
+import { EntityAttributePartialSchema, EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { EntityInstanceCollectionSchema } from "../../0_interfaces/1_core/Instance.js";
 
 
 // #############################################################################################

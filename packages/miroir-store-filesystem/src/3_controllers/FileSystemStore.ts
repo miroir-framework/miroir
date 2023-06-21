@@ -13,8 +13,6 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
   public dataStoreType: DataStoreApplicationType;
   public directory: string;
 
-  // public sqlSchemaTableAccess: SqlUuidEntityDefinition = {};
-  // public sequelize: Sequelize;
   public logHeader: string;
 
   // ##############################################################################################

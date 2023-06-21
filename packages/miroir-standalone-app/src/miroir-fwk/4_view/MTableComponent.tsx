@@ -30,7 +30,7 @@ import {
   StoreBasedConfiguration
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import {
   useLocalCacheModelVersion,
   useLocalCacheReports,
@@ -54,20 +54,17 @@ export const TableComponentCellSchema = z.object({
   link:z.string().optional(),
   value:z.any(),
 })
-
 export type TableComponentCell = z.infer<typeof TableComponentCellSchema>;
 
-// {[i:string]: TableComponentCell }
 export const TableComponentRowSchema = z.record(TableComponentCellSchema);
-
 export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 
 export const TableComponentCorePropsSchema = z.object({
   columnDefs:z.array(z.any()),
-  // rowData: z.array(z.any()),
+  rowData: z.array(z.any()),
   // rowData: TableComponentCellSchema,
-  rowData: z.array(TableComponentRowSchema),
+  // rowData: z.array(TableComponentRowSchema),
   styles:z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
@@ -101,6 +98,7 @@ export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
 export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
+  const context = useMiroirContextServiceHook();
   const contextDeploymentUuid = useMiroirContextDeploymentUuid();
   const miroirReports: Report[] = useLocalCacheReports();
   const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
@@ -231,13 +229,14 @@ export const MTableComponent = (props: TableComponentProps) => {
     console.warn("onCellClicked",e)
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
     if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
-      const columDefinitionDetails=props.columnDefs.find(c=>c.name == e.colDef.field);
-      const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes.find(a=>a.name == e.colDef.field);
+      const columDefinitionDetails=props?.columnDefs?.find(c=>c.name == e.colDef.field);
+      const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes.find((a:any)=>a.name == e.colDef.field);
       if (columnDefinitionAttribute?.type == 'ENTITY_INSTANCE_UUID') {
         const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
-        navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+        // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+        navigate(`/instance/${contextDeploymentUuid}/${columnDefinitionAttribute?.applicationSection?columnDefinitionAttribute?.applicationSection:context.applicationSection}/${columnDefinitionAttribute?.entityUuid}/${e.data[e.colDef.field]}`);
       } else {
-        console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.');
+        console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttribute?.type);
       }
     }
   }

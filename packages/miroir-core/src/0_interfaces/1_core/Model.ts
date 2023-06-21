@@ -26,6 +26,7 @@ export const ApplicationVersionCrossEntityDefinitionSchema = EntityInstanceSchem
 export const MiroirMetaModelSchema = z.object({
   entities: z.array(MetaEntitySchema),
   entityDefinitions: z.array(EntityDefinitionSchema),
+  // entityDefinitions: z.array(z.any()),
   reports: z.array(ReportSchema),
   applicationVersions: z.array(MiroirApplicationVersionSchema),
   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),

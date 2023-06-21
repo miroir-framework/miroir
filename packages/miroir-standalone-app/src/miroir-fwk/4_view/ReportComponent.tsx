@@ -64,7 +64,7 @@ export function defaultFormValues(
   currentMiroirEntity?: MetaEntity,
   displayedDeploymentDefinition?: ApplicationDeployment,
 ):any {
-  console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityAttributes',currentEntityAttributes);
+  // console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityAttributes',currentEntityAttributes);
   
   if (tableComponentType == "EntityInstance") {
     const attributeDefaultValue:any = {
@@ -83,10 +83,10 @@ export function defaultFormValues(
       } else {
         result = Object.assign({},acc,{[a.name]:''})
       }
-      console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
+      // console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
       return result;
     },{});
-    console.log('defaultFormValues return',currentEditorAttributes);
+    // console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
   if (tableComponentType == "JSON_ARRAY") {
@@ -107,7 +107,7 @@ export function defaultFormValues(
       console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a.name,':',result);
       return result;
     },{});
-    console.log('defaultFormValues return',currentEditorAttributes);
+    // console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
 }

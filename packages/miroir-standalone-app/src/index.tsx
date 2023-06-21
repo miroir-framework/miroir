@@ -25,14 +25,10 @@ console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionE
 const container = document.getElementById("root");
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/",
-  //   element: <RootRoute/>,
-  //   errorElement: <ErrorPage />,
-  // },
   {
     path: "/",
     element: <RootComponent></RootComponent>,
+    // element: <HomePage></HomePage>,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -53,6 +49,8 @@ const router = createBrowserRouter([
     ]
   },
 ]);
+
+
 
 // ###################################################################################
 async function start(root:Root) {
@@ -133,6 +131,7 @@ async function start(root:Root) {
           <Provider store={mReduxStore.getInnerStore()}>
             <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
               <RouterProvider router={router} />
+              {/* <RootComponent/> */}
             </MiroirContextReactProvider>
           </Provider>
         </StyledEngineProvider>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -10,14 +9,12 @@ import Box from '@mui/material/Box';
 import {
   ApplicationDeployment,
   ApplicationSection,
-  ConfigurationService,
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
   MetaEntity,
   MiroirMetaModel,
   Report,
-  Uuid,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -29,7 +26,7 @@ import {
   reportEntityList,
   reportReportList
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextServiceHook, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
@@ -37,6 +34,7 @@ import {
   useLocalCacheTransactions
 } from "miroir-fwk/4_view/hooks";
 import { ReduxStateChanges } from "miroir-redux";
+import { useState } from 'react';
 
 
 
@@ -73,7 +71,6 @@ import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
 import { ReportComponent } from './ReportComponent';
-import { Link } from 'react-router-dom';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -200,6 +197,8 @@ async function uploadBooksAndReports(
 }
 
 export const HomePage = (props: RootComponentProps) => {
+  const context = useMiroirContextServiceHook();
+
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();
@@ -212,15 +211,19 @@ export const HomePage = (props: RootComponentProps) => {
   const setDisplayedDeploymentUuid = useMiroirContextSetDeploymentUuid();
 
   // component state
-  const [displayedReportUuid, setDisplayedReportUuid] = useState("");
-  const [displayedApplicationSection, setDisplayedApplicationSection] = useState<ApplicationSection | undefined>('' as ApplicationSection);
+  // const [displayedReportUuid, setDisplayedReportUuid] = useState("");
+  // // const [displayedApplicationSection, setDisplayedApplicationSection] = useState<ApplicationSection | undefined>('' as ApplicationSection);
+  const displayedReportUuid = context.reportUuid;
+  const setDisplayedReportUuid = context.setReportUuid;
+  const displayedApplicationSection = context.applicationSection;
+  const setDisplayedApplicationSection = context.setApplicationSection;
 
   // const libraryAppEntities:MetaEntity [] = useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model');
   // const libraryAppEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model');
 
   const libraryAppModel: MiroirMetaModel =  {
     entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
-    entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model'),
+    entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model') as EntityDefinition[],
     reports: useLocalCacheDeploymentSectionReports(applicationDeploymentLibrary.uuid,'model'),
     configuration: [],
     applicationVersions: [],

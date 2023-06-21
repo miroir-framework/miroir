@@ -19,7 +19,7 @@ export const ToolsCellRenderer:React.MemoExoticComponent<(props: ICellRendererPa
     (mood === 'Female' ? 'female.png' : 'male.png');
 
   const mood = useMemo(() => imageForMood('Female'), []);
-  console.log('ToolsCellRenderer',props);
+  // console.log('ToolsCellRenderer',props);
   
 
   // return <img width="20px" src={mood} />;
