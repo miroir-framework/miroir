@@ -234,7 +234,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       if (columnDefinitionAttribute?.type == 'ENTITY_INSTANCE_UUID') {
         const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
         // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
-        navigate(`/instance/${contextDeploymentUuid}/${columnDefinitionAttribute?.applicationSection?columnDefinitionAttribute?.applicationSection:context.applicationSection}/${columnDefinitionAttribute?.entityUuid}/${e.data[e.colDef.field]}`);
+        navigate(`/instance/${contextDeploymentUuid}/${columnDefinitionAttribute?.applicationSection ? columnDefinitionAttribute?.applicationSection : context.applicationSection}/${columnDefinitionAttribute?.entityUuid}/${e.data[e.colDef.field]}`);
       } else {
         console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttribute?.type);
       }

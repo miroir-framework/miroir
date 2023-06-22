@@ -612,7 +612,9 @@ export const HomePage = (props: RootComponentProps) => {
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
       <p />
       <p />
-      <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+      {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+      <p /> */}
+      <span>Applications: {}</span>
       <p />
       <Box>
         <h3>

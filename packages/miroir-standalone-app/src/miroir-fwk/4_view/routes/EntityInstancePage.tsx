@@ -28,6 +28,9 @@ import { ReportComponent } from '../ReportComponent';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import { getColumnDefinitions } from '../EntityViewer';
 
+import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+import { EntityInstanceLink } from '../EntityInstanceLink';
+
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
@@ -125,36 +128,31 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   );
 
   const instance:any = instancesToDisplay.find(i=>i.uuid == params.instanceUuid)
+  const publisherBooks = useLocalCacheInstancesForEntity(
+    // props.displayedDeploymentDefinition?.uuid,
+    params.deploymentUuid,
+    // 'data',
+    params.applicationSection as ApplicationSection,
+    entityBook.uuid,
+    // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+  ).filter((b:any)=>b['publisher'] == instance.uuid)
+  ;
+  const authorBooks = useLocalCacheInstancesForEntity(
+    // props.displayedDeploymentDefinition?.uuid,
+    params.deploymentUuid,
+    // 'data',
+    params.applicationSection as ApplicationSection,
+    entityBook.uuid,
+    // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+  ).filter((b:any)=>b['author'] == instance.uuid)
+  ;
+  console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
+  
   if (params.applicationSection && instance) {
     return (
       <div> 
         params:{JSON.stringify(params)}
         <p />
-        {/* <span>
-            <button
-              onClick={async () => {
-                console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                await domainController.handleDomainAction(
-                  applicationDeploymentMiroir.uuid,
-                  {
-                    actionType: "DomainTransactionalAction",
-                    actionName: "rollback",
-                  }
-                );
-                await domainController.handleDomainAction(
-                  applicationDeploymentLibrary.uuid,
-                  {
-                    actionType: "DomainTransactionalAction",
-                    actionName: "rollback",
-                  }
-                );
-              }
-            }
-            >
-              fetch Miroir & App configurations from database
-            </button>
-          </span>
-        <p /> */}
         <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
         <p />
         <Box>
@@ -163,8 +161,9 @@ export const EntityInstancePage = (props: ReportPageProps) => {
           </h3>
   
         </Box>
-        {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
-
+        <span>
+          Entity Instance Attribute Values:
+        </span>
           {
             currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
               <div>
@@ -200,15 +199,27 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                             const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.name == entityAttribute.defaultLabel) 
                             // const targetObject = 
                             return (
-                              <ListItemButton disableGutters key={entityAttribute.name} onClick={()=>{
-                                // const url = `/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`;
-                                const url = `/instance/${params.deploymentUuid}/${params.applicationSection}/${targetEntity?.uuid}/${instance[entityAttribute.name]}`;
-                                console.log('navigate to url',url);
+                              <ListItem>
+                                {entityAttribute.name}: 
+                                <EntityInstanceLink
+                                  deploymentUuid={params.deploymentUuid as string}
+                                  applicationSection={params.applicationSection as ApplicationSection}
+                                  entityUuid={targetEntity?.uuid as string}
+                                  instanceUuid={instance[entityAttribute.name]}
+                                  label={instance[entityAttribute.name]}
+                                  key={instance[entityAttribute.name]}
+                                />
+                              </ListItem>
+                              // </ListItem>
+                              // <ListItemButton disableGutters key={entityAttribute.name} onClick={()=>{
+                              //   // const url = `/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`;
+                              //   const url = `/instance/${params.deploymentUuid}/${params.applicationSection}/${targetEntity?.uuid}/${instance[entityAttribute.name]}`;
+                              //   console.log('navigate to url',url);
                                 
-                                navigate(url)
-                                }}>
-                                {entityAttribute.name}: {instance[entityAttribute.name]}
-                              </ListItemButton>
+                              //   navigate(url)
+                              //   }}>
+                              //   {entityAttribute.name}: {instance[entityAttribute.name]}
+                              // </ListItemButton>
                             )
                           }
 
@@ -226,24 +237,58 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                   }
                 </List>
 
-                {/* <ReportComponent
-                  tableComponentReportType="EntityInstance"
-                  label={"EntityInstance-"+currentReportTargetEntity?.name}
-                  styles={
-                    {
-                        height: '20vw',
-                        width: '90vw',
+                {/* { */}
+                {/* <div> */}
+                <span>
+                  Publisher Books:
+                </span>
+                <List sx={{ pt: 0}}>
+                  {
+                    publisherBooks?.map(
+                      (book:any) => {
+                        return (
+                          <ListItem disableGutters key={book.name}>
+                            {/* {book.name} */}
+                            <EntityInstanceLink
+                              deploymentUuid={params.deploymentUuid as string}
+                              applicationSection={params.applicationSection as ApplicationSection}
+                              entityUuid={entityBook.uuid}
+                              instanceUuid={book.uuid}
+                              label={book.name}
+                              key={book.uuid}
+                            />
+                          </ListItem>
+                        )
                       }
-                    }
-                  chosenApplicationSection={params.applicationSection as ApplicationSection}
-                  displayedDeploymentDefinition={displayedDeploymentDefinition}
-                  currentModel={currentModel}
-                  currentMiroirReport={currentMiroirReport}
-                  currentMiroirEntity={currentReportTargetEntity}
-                  currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-                /> */}
+                    )
+                  }
+                  </List>
+                <span>
+                  Author Books:
+                </span>
+                <List sx={{ pt: 0}}>
+                  {
+                    authorBooks?.map(
+                      (book:any) => {
+                        return (
+                          <ListItem disableGutters key={book.name}>
+                            {/* {book.name} */}
+                            <EntityInstanceLink
+                              deploymentUuid={params.deploymentUuid as string}
+                              applicationSection={params.applicationSection as ApplicationSection}
+                              entityUuid={entityBook.uuid}
+                              instanceUuid={book.uuid}
+                              label={book.name}
+                              key={book.uuid}
+                            />
+                          </ListItem>
+                        )
+                      }
+                    )
+                  }
+                  </List>
+                {/* } */}
               </div>
-
             :
             <div>Oops.</div>
           }

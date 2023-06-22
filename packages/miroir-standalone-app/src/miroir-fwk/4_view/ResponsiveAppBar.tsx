@@ -15,8 +15,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Page1', 'Page2', 'Page3'];
+const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
 export interface ResponsiveAppBarProps {
   handleDrawerOpen: ()=>void,
