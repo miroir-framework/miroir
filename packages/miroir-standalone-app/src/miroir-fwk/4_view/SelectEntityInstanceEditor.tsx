@@ -21,8 +21,8 @@ import {
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions
 } from "miroir-fwk/4_view/hooks";
-import { useMiroirContextDeploymentUuid } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import { Link } from 'react-router-dom';
+import { useMiroirContextServiceHook } from './MiroirContextReactProvider';
 
 
 // backspace starts the editor on Windows
@@ -34,7 +34,9 @@ const KEY_TAB = 'Tab';
 
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
   console.log('EntityInstanceCellRenderer',props);
-  const deploymentUuid = useMiroirContextDeploymentUuid();
+  const context = useMiroirContextServiceHook();
+
+  const deploymentUuid = context.deploymentUuid;
   // const deploymentUuid = (props as any)('deploymentUuid');
   const entityUuid = (props as any)['entityUuid'];
   // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
@@ -83,7 +85,8 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
-    const deploymentUuid = useMiroirContextDeploymentUuid();
+    const context = useMiroirContextServiceHook();
+    const deploymentUuid = context.deploymentUuid;
     const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
     const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);

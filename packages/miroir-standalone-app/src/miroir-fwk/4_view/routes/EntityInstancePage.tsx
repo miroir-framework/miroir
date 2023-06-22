@@ -135,8 +135,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
     params.applicationSection as ApplicationSection,
     entityBook.uuid,
     // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
-  ).filter((b:any)=>b['publisher'] == instance.uuid)
-  ;
+  ).filter((b:any)=>b['publisher'] == instance.uuid);
+
   const authorBooks = useLocalCacheInstancesForEntity(
     // props.displayedDeploymentDefinition?.uuid,
     params.deploymentUuid,
@@ -144,15 +144,15 @@ export const EntityInstancePage = (props: ReportPageProps) => {
     params.applicationSection as ApplicationSection,
     entityBook.uuid,
     // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
-  ).filter((b:any)=>b['author'] == instance.uuid)
-  ;
+  ).filter((b:any)=>b['author'] == instance.uuid);
+  
   console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
   
   if (params.applicationSection && instance) {
     return (
       <div> 
-        params:{JSON.stringify(params)}
-        <p />
+        {/* params:{JSON.stringify(params)}
+        <p /> */}
         <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
         <p />
         <Box>

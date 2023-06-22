@@ -30,7 +30,7 @@ import {
   StoreBasedConfiguration
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import {
   useLocalCacheModelVersion,
   useLocalCacheReports,
@@ -99,7 +99,7 @@ export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
   const context = useMiroirContextServiceHook();
-  const contextDeploymentUuid = useMiroirContextDeploymentUuid();
+  const contextDeploymentUuid = context.deploymentUuid;
   const miroirReports: Report[] = useLocalCacheReports();
   const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
   const currentMiroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(contextDeploymentUuid,'model');

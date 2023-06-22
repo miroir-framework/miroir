@@ -1,5 +1,5 @@
 import { ApplicationSection, DomainControllerInterface, MiroirContext, MiroirContextInterface, Uuid } from "miroir-core";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 // import * as React from "react";
   
 export interface MiroirReactContext {
@@ -34,13 +34,15 @@ export function MiroirContextReactProvider(
 ) {
   const [deploymentUuid, setDeploymentUuid] = useState("");
   const [reportUuid, setReportUuid] = useState("");
-  const [applicationSection, setApplicationSection] = useState<ApplicationSection | undefined>(undefined);
+  const [applicationSection, setApplicationSection] = useState<ApplicationSection>('data');
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
 
-  const value = {
+  // const value = useMemo<MiroirReactContext>(()=>({
+  const value = useMemo<MiroirReactContext>(()=>({
     miroirContext: props.miroirContext || new MiroirContext(),
     domainController: props.domainController,
     deploymentUuid,
+    // setDeploymentUuid:(...args)=>{console.log('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
     setDeploymentUuid,
     reportUuid,
     setReportUuid,
@@ -48,17 +50,17 @@ export function MiroirContextReactProvider(
     setApplicationSection,
     innerFormOutput,
     setInnerFormOutput,
-  };
+  }),[deploymentUuid,reportUuid,applicationSection,props.miroirContext,props.domainController]);
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }
 
-export function useMiroirContextDeploymentUuid() {
-  return useContext(miroirReactContext)?.deploymentUuid;
-}
+// export function useMiroirContextDeploymentUuid() {
+//   return useContext(miroirReactContext)?.deploymentUuid;
+// }
 
-export function useMiroirContextSetDeploymentUuid() {
-  return useContext(miroirReactContext).setDeploymentUuid;
-}
+// export function useMiroirContextSetDeploymentUuid() {
+//   return useContext(miroirReactContext).setDeploymentUuid;
+// }
 
 export function useMiroirContextInnerFormOutput() {
   return [useContext(miroirReactContext)?.innerFormOutput,useContext(miroirReactContext)?.setInnerFormOutput];

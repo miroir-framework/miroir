@@ -26,7 +26,7 @@ import {
   reportEntityList,
   reportReportList
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextDeploymentUuid, useMiroirContextServiceHook, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
@@ -207,8 +207,8 @@ export const HomePage = (props: RootComponentProps) => {
   // console.log("RootComponent deployments",deployments);
 
   // context utility functions
-  const displayedDeploymentUuid = useMiroirContextDeploymentUuid();
-  const setDisplayedDeploymentUuid = useMiroirContextSetDeploymentUuid();
+  const displayedDeploymentUuid = context.deploymentUuid;
+  const setDisplayedDeploymentUuid = context.setDeploymentUuid;
 
   // component state
   // const [displayedReportUuid, setDisplayedReportUuid] = useState("");
@@ -278,7 +278,9 @@ export const HomePage = (props: RootComponentProps) => {
   };
 
   const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+    console.log('handleChangeDisplayedDeployment',event);
     setDisplayedDeploymentUuid(event.target.value);
+    console.log('handleChangeDisplayedDeployment',displayedDeploymentUuid);
     setDisplayedApplicationSection('data');
     setDisplayedReportUuid("");
   };
@@ -631,7 +633,7 @@ export const HomePage = (props: RootComponentProps) => {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={displayedDeploymentUuid}
+            value={context.deploymentUuid}
             label="displayedDeploymentUuid"
             onChange={handleChangeDisplayedDeployment}
           >

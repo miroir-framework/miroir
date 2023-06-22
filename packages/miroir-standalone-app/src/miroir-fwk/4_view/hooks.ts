@@ -20,10 +20,8 @@ import {
 import {
   ReduxStateChanges,
   selectCurrentTransaction,
-  // selectInstancesForEntity,
   selectInstancesForSectionEntity,
-  // selectInstancesFromDeploymentDomainSelector,
-  selectInstancesFromSectionDomainSelector
+  applySelectorToDomainStateSection,
 } from "miroir-redux";
 import { useSelector } from "react-redux";
 
@@ -34,21 +32,6 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
   return result ? result : [];
 }
 
-// //#########################################################################################
-// export function useLocalCacheEntities(): MetaEntity[] {
-//   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
-//     selectInstancesForEntity(entityEntity.uuid)
-//   );
-//   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
-// }
-
-// //#########################################################################################
-// export function useLocalCacheDeploymentEntities(deploymentUuid:string): MetaEntity[] {
-//   const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
-//     selectInstancesForDeploymentEntity(deploymentUuid, entityEntity.uuid)
-//   );
-//   return miroirEntitiesState?.entities ? Object.values(miroirEntitiesState.entities) as MetaEntity[] : [];
-// }
 
 //#########################################################################################
 export function useLocalCacheSectionEntities(deploymentUuid:string|undefined, section:ApplicationSection|undefined): MetaEntity[] {
@@ -118,7 +101,7 @@ export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
 
 //#########################################################################################
 export function useLocalCacheInstancesForReport(deploymentUuid:string, section: ApplicationSection, reportName: string): EntityInstance[] {
-  return useSelector(selectInstancesFromSectionDomainSelector(deploymentUuid,section)(selectReportInstances(reportName)));
+  return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectReportInstances(reportName)));
 }
 
 // //#########################################################################################
@@ -130,5 +113,6 @@ export function useLocalCacheInstancesForReport(deploymentUuid:string, section: 
 export function useLocalCacheInstancesForEntity(deploymentUuid:string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined): EntityInstance[] {
   console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
   
-  return useSelector(selectInstancesFromSectionDomainSelector(deploymentUuid,section)(selectEntityInstances(entityUuid)));
+  // return useSelector(applySelectorToDomainStateSection(deploymentUuid,section)(selectEntityInstances(entityUuid)));
+  return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectEntityInstances(entityUuid)));
 }

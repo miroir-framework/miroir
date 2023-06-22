@@ -23,15 +23,10 @@ enablePatches(); // to gather undo/redo operation history
  */
 
 export interface InnerStoreStateInterface {
-  // miroirInstances: LocalCacheSliceState;
   miroirInstances: NewLocalCacheSliceState;
 }
 
 export interface ReduxStateChanges {
-  // action:PayloadAction<DomainDataAction|DomainTransactionalAction>, changes:Patch[]; inverseChanges:Patch[];
-  // action:PayloadAction<DomainTransactionalAction>, changes:Patch[]; inverseChanges:Patch[];
-  // action:DomainTransactionalAction, changes:Patch[]; inverseChanges:Patch[];
-  // action:DomainTransactionalEntityUpdateAction, changes:Patch[]; inverseChanges:Patch[];
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
 /**
@@ -55,22 +50,14 @@ export interface ReduxStateWithUndoRedo {
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
-// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAction>) => InnerStoreStateInterface;
-// export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableAction>) => InnerStoreStateInterface;
 export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => InnerStoreStateInterface;
 
 // TODO: make action type explicit!
-// export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAction>) => ReduxStateWithUndoRedo
-// export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableAction>) => ReduxStateWithUndoRedo
 export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => ReduxStateWithUndoRedo
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 const TRANSACTIONS_ENABLED: boolean = true;
 
-const forgetHistoryActionsTypes: string[] = [
-  // refresh from database restores the current local state to the one found in the database. All local changes are cancelled.
-  // mInstanceSliceActionNames.entityInstancesRefreshed
-];
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
     (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
@@ -88,11 +75,6 @@ export type MentityAction = PayloadAction<EntityDefinition[],string>;
 export type Maction = MinstanceAction | MentityAction;
 
 
-//// export const makeActionUpdatesUndoable = (action:string) => {
-//   undoableSliceUpdateActions.push(action.type);
-// }
-
-
 export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWithUndoRedo {
   return {
     previousModelSnapshot: {} as InnerStoreStateInterface,
@@ -106,8 +88,6 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
   state:InnerStoreStateInterface,
-  // action:PayloadAction<DomainTransactionalAction>
-  // action:PayloadAction<DomainAncillaryOrReplayableAction>
   action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
 ):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} {
   console.log('callUndoRedoReducer called with action', action, 'state', state);

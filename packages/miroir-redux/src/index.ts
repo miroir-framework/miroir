@@ -3,12 +3,12 @@ export {
   selectCurrentTransaction,
   // selectInstancesForEntity,
   selectInstancesForSectionEntity,
-  selectInstancesFromSectionDomainSelector,
+  applySelectorToDomainStateSection,
   LocalCacheSectionSliceState,
   
   // selectInstancesFromDomainSelector,
   // selectInstancesFromDeploymentDomainSelector,
-  selectMiroirEntityInstances,
+  // selectMiroirEntityInstances,
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {

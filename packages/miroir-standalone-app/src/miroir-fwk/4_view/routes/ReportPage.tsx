@@ -13,7 +13,7 @@ import {
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextSetDeploymentUuid } from "miroir-fwk/4_view/MiroirContextReactProvider";
+import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
@@ -65,8 +65,10 @@ export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'repo
 // ###############################################################################################################
 export const ReportPage = (props: ReportPageProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+  const context = useMiroirContextServiceHook();
+
   console.log('ReportPage params',params);
-  const setDeploymentUuid = useMiroirContextSetDeploymentUuid()
+  const setDeploymentUuid = context.setDeploymentUuid;
   setDeploymentUuid(params.deploymentUuid?params.deploymentUuid:'');
 
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
