@@ -22,9 +22,10 @@ enablePatches(); // to gather undo/redo operation history
  * 
  */
 
-export interface InnerStoreStateInterface {
-  miroirInstances: NewLocalCacheSliceState;
-}
+// export interface InnerStoreStateInterface {
+//   miroirInstances: NewLocalCacheSliceState;
+// }
+export type InnerStoreStateInterface = NewLocalCacheSliceState;
 
 export interface ReduxStateChanges {
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
@@ -44,9 +45,11 @@ export interface ReduxStateChanges {
  */
 export interface ReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
-  previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
+  // previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
+  previousModelSnapshot: NewLocalCacheSliceState, // state recorded on the previous commit.
   pastModelPatches: ReduxStateChanges[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
-  presentModelSnapshot: InnerStoreStateInterface, // only effects on the current snapshot goes into the undo/redo history
+  // presentModelSnapshot: InnerStoreStateInterface, // only effects on the current snapshot goes into the undo/redo history
+  presentModelSnapshot: NewLocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 

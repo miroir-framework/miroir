@@ -92,7 +92,8 @@ export const selectInstancesForSectionEntity
         // console.log('selectInstancesForSectionEntity',deploymentUuid,section,entityUuid);
         
         if (deploymentUuid && section && entityUuid) {
-          const innerState = state.presentModelSnapshot.miroirInstances;
+          // const innerState = state.presentModelSnapshot.miroirInstances;
+          const innerState = state.presentModelSnapshot;
           const deployment = innerState && deploymentUuid ? innerState[deploymentUuid] : undefined;
           const stateSection = deployment && section ? deployment[section] : undefined;
           const instances = stateSection && entityUuid ? stateSection[entityUuid] : [];
@@ -114,7 +115,8 @@ export const applySelectorToDomainStateSection
   (deploymentUuid:string|undefined, section:ApplicationSection|undefined, selector: DomainStateSelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
-        const deployments = state?.presentModelSnapshot?.miroirInstances;
+        // const deployments = state?.presentModelSnapshot?.miroirInstances;
+        const deployments = state?.presentModelSnapshot;
         const deploymentInstances = deployments && deploymentUuid && section?(deployments[deploymentUuid]?deployments[deploymentUuid][section]:undefined):undefined
         if (deploymentInstances) {
           const domainState: EntitiesDomainState = Object.fromEntries(
