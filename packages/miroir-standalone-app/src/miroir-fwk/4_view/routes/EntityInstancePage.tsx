@@ -74,8 +74,6 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   // const params = useParams<ReportUrlParams>();
   console.log('ReportPage params',params);
   
-  const navigate = useNavigate();
-
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();

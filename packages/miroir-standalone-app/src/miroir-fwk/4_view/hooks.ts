@@ -10,12 +10,13 @@ import {
   MiroirApplicationVersion,
   Report,
   selectEntityInstances,
-  selectReportInstances,
+  selectReportSectionInstances,
   StoreBasedConfiguration,
   entityEntity,
   MetaEntity,
   entityEntityDefinition,
   ApplicationSection,
+  ReportSectionListDefinition,
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -96,8 +97,8 @@ export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForReport(deploymentUuid:string, section: ApplicationSection, reportName: string): EntityInstance[] {
-  return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectReportInstances(reportName)));
+export function useLocalCacheInstancesForReport(deploymentUuid:string, section: ApplicationSection, reportSectionListDefinition: ReportSectionListDefinition): EntityInstance[] {
+  return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectReportSectionInstances(reportSectionListDefinition)));
 }
 
 //#########################################################################################

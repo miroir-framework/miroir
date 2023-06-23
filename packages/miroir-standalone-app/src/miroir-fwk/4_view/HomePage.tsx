@@ -15,6 +15,8 @@ import {
   MetaEntity,
   MiroirMetaModel,
   Report,
+  ReportSectionList,
+  ReportSectionListDefinition,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -264,7 +266,18 @@ export const HomePage = (props: RootComponentProps) => {
   // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
   
   const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
-  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+  const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
+    currentMiroirReport?.type == "list" &&
+    currentMiroirReport.definition.length > 0 &&
+    currentMiroirReport?.definition[0].type == "objectList"
+      ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
+      : undefined
+  ;
+  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionListDefinition
+    ? currentReportDeploymentSectionEntities?.find(
+        (e) => e?.uuid === currentMiroirReportSectionListDefinition.parentUuid
+      )
+    : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
@@ -691,7 +704,7 @@ export const HomePage = (props: RootComponentProps) => {
         </FormControl>
       </Box>
         {
-          currentMiroirReport && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
+          currentMiroirReport && currentMiroirReportSectionListDefinition && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
             <ReportComponent 
               tableComponentReportType="EntityInstance"
               label={"EntityInstance-"+currentReportTargetEntity?.name}
@@ -704,7 +717,7 @@ export const HomePage = (props: RootComponentProps) => {
               chosenApplicationSection={displayedApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
               currentModel={currentModel}
-              currentMiroirReport={currentMiroirReport}
+              currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
               currentMiroirEntity={currentReportTargetEntity}
               currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
             />

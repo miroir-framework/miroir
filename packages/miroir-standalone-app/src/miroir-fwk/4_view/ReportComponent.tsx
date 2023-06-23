@@ -16,6 +16,7 @@ import {
   MetaEntity,
   MetaEntitySchema,
   ReportSchema,
+  ReportSectionListDefinitionSchema,
   entityDefinitionEntityDefinition
 } from "miroir-core";
 import {
@@ -38,7 +39,8 @@ export const ReportComponentEntityInstancePropsSchema = ReportComponentCoreProps
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
-  currentMiroirReport: ReportSchema,
+  // currentMiroirReport: ReportSchema,
+  currentMiroirReportSectionListDefinition: ReportSectionListDefinitionSchema,
   currentMiroirEntity: MetaEntitySchema,
   currentMiroirEntityDefinition: EntityDefinitionSchema,
 });
@@ -143,7 +145,8 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
   const instancesToDisplay = useLocalCacheInstancesForEntity(
     props.displayedDeploymentDefinition?.uuid,
     props.chosenApplicationSection,
-    props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+    // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
+    props.tableComponentReportType == "EntityInstance" && props.currentMiroirReportSectionListDefinition?.parentUuid ? props.currentMiroirReportSectionListDefinition?.parentUuid : ""
   );
 
   let columnDefs:ColDef<any>[];
@@ -288,7 +291,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
     return (
       <div className="MiroirReport-global" style={{display:"flex",}}>
         {
-          props?.currentMiroirReport?
+          props?.currentMiroirReportSectionListDefinition?
             (
               columnDefs?.length > 0?
                 <div style={{display:"flex", flexDirection:"column", alignItems:'center'}}>
@@ -314,7 +317,7 @@ export const ReportComponent: React.FC<ReportComponentProps> = (
                       styles={props.styles}
                       currentMiroirEntity={props.currentMiroirEntity}
                       currentMiroirEntityDefinition={props.currentMiroirEntityDefinition}
-                      reportDefinition={props.currentMiroirReport}
+                      reportSectionListDefinition={props.currentMiroirReportSectionListDefinition}
                       columnDefs={columnDefs}
                       rowData={instancesWithStringifiedJsonAttributes}
                       displayTools={true}

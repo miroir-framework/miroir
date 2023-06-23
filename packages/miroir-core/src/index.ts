@@ -83,14 +83,20 @@ export {
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {
-  ReportDefinitionSchema,
-  ReportListDefinitionSchema,
-  ReportListDefinition,
   ReportSchema,
   Report,
-  ReportTypeSchema,
-  ReportType,
-  ReportDefinition,
+  ReportGridType,
+  ReportGridTypeSchema,
+  ReportListType,
+  ReportListTypeSchema,
+  ReportSectionObjectDetails,
+  ReportSectionObjectDetailsSchema,
+  ReportSectionListDefinitionSchema,
+  ReportSectionListDefinition,
+  ReportSection,
+  ReportSectionList,
+  ReportSectionListSchema,
+  ReportSectionSchema,
 } from './0_interfaces/1_core/Report.js';
 export {
   CRUDActionNameSchema,
@@ -188,7 +194,7 @@ export {
   DataStoreApplicationType,
 } from './0_interfaces/3_controllers/ApplicationControllerInterface.js';
 export {
-  selectReportInstances,
+  selectReportSectionInstances,
   selectEntityInstances,
 } from './2_domain/ReportDisplay';
 export {
