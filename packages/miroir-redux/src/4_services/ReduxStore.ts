@@ -34,6 +34,7 @@ import {
   Uuid
 } from "miroir-core";
 import {
+  getLocalCacheSliceIndex,
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
   localCacheSliceInputActionNamesObject
@@ -152,26 +153,30 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   // ###############################################################################
   public currentModel(deploymentUuid:string):MiroirMetaModel{
     console.log('currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState());
-    
+    const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
+
     if (!deploymentUuid) {
       throw new Error('currentModel(deploymentUuid) parameter can not be undefined.');
     } else {
       if (deploymentUuid == applicationDeploymentMiroir.uuid) {
+
         return {
-          entities: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          entityDefinitions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as Report[],
-          configuration: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          applicationVersions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          entities: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
+          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
+          reports: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityReport.uuid)].entities) as Report[],
+          configuration: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
         };
       } else {
+        // console.log('currentModel reports',reports,getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid));
+        
         return {
-          entities: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          entityDefinitions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityReport.uuid].entities) as Report[],
-          configuration: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          applicationVersions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
+          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
+          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)].entities) as Report[],
+          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
         };
       }

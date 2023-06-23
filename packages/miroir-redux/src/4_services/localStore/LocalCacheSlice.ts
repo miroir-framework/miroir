@@ -77,7 +77,7 @@ export type LocalCacheSectionSliceState = {
 // export type NewLocalCacheSliceState = {[deploymentUuid: Uuid]: LocalCacheSectionSliceState};
 export type NewLocalCacheSliceState = LocalCacheEntitySliceState;
 
-function getLocalCacheSliceIndex(deploymentUuid:Uuid,applicationSection:ApplicationSection,entityUuid:Uuid):string {
+export function getLocalCacheSliceIndex(deploymentUuid:Uuid,applicationSection:ApplicationSection,entityUuid:Uuid):string {
   return deploymentUuid + '_' + applicationSection + '_' + entityUuid;
 }
 
@@ -86,22 +86,13 @@ function getLocalCacheSliceIndex(deploymentUuid:Uuid,applicationSection:Applicat
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 // TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
-export const selectInstancesForSectionEntity
-// : (
-//   deploymentUuid: string | undefined,
-//   section: ApplicationSection | undefined,
-//   entityUuid?: string | undefined
-// ) => any 
-= (deploymentUuid: string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined) => {
+export const selectInstancesForSectionEntity = (deploymentUuid: string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         // console.log('selectInstancesForSectionEntity',deploymentUuid,section,entityUuid);
         
         if (deploymentUuid && section && entityUuid) {
           const innerState = state.presentModelSnapshot;
-          // const deployment = innerState && deploymentUuid ? innerState[deploymentUuid] : undefined;
-          // const stateSection = deployment && section ? deployment[section] : undefined;
-          // const instances = stateSection && entityUuid ? stateSection[entityUuid] : [];
           const index = getLocalCacheSliceIndex(deploymentUuid,section,entityUuid)
           const instances:EntityState<EntityInstance> = innerState && deploymentUuid && section && entityUuid  && innerState[index] ? innerState[index] : {ids:[],entities:{}}
           // console.log('selectInstancesForDeploymentEntity deploymentUuid',deploymentUuid,'entityUuid', entityUuid,'state',state,'instances',instances);
@@ -123,43 +114,20 @@ export const applySelectorToDomainStateSection
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         const deployments = state?.presentModelSnapshot;
-        // const deploymentInstances = deployments && deploymentUuid && section?(deployments[deploymentUuid]?deployments[deploymentUuid][section]:undefined):undefined
-        // if (deploymentInstances) {
-          const domainState: EntitiesDomainState = Object.fromEntries(
-            Object.entries(deployments)
-            .filter(e=>new RegExp(deploymentUuid + '_' + section + '_').test(e[0]))
-            .map((e) => {
-              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0]?e[0]:'');
-              return [entityUuid?entityUuid[1]:'', e[1].entities];
-            })
-          ) as EntitiesDomainState;
-          console.log("applySelectorToDomainStateSection domainState",domainState)
-          return selector(domainState);
-        // } else {
-        //   return selector({} as EntitiesDomainState);
-        // }
+        const domainState: EntitiesDomainState = Object.fromEntries(
+          Object.entries(deployments)
+          .filter(e=>new RegExp(deploymentUuid + '_' + section + '_').test(e[0]))
+          .map((e) => {
+            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0]?e[0]:'');
+            return [entityUuid?entityUuid[1]:'', e[1].entities];
+          })
+        ) as EntitiesDomainState;
+        console.log("applySelectorToDomainStateSection domainState",domainState)
+        return selector(domainState);
       },
       (items: EntityInstance[]) => items
-      // (state: ReduxStateWithUndoRedo) => {
-      //   const deployments = state?.presentModelSnapshot;
-      //   const deploymentInstances = deployments && deploymentUuid && section?(deployments[deploymentUuid]?deployments[deploymentUuid][section]:undefined):undefined
-      //   if (deploymentInstances) {
-      //     const domainState: EntitiesDomainState = Object.fromEntries(
-      //       Object.entries(deploymentInstances).map((e) => {
-      //         // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-      //         // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter 
-      //         return [e[0], e[1].entities];
-      //       })
-      //     ) as EntitiesDomainState;
-      //     // console.log("selectInstancesFromDomainSelector domainState",domainState)
-      //     return selector(domainState);
-      //   } else {
-      //     return selector({} as EntitiesDomainState);
-      //   }
-      // },
-      // (items: EntityInstance[]) => items
     );
   };
 
@@ -197,30 +165,11 @@ function getInitializedSectionEntityAdapter(
   const index = getLocalCacheSliceIndex(deploymentUuid,section,entityUuid);
   if (!state) {
     // console.log('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
-    // const oppositeSectionIndex = 
     state = {[index]: sliceEntityAdapter.getInitialState()} as NewLocalCacheSliceState;
-    // state = {[deploymentUuid]:{
-    //   [section]:{[entityUuid]: sliceEntityAdapter.getInitialState()}},
-    //   [ApplicationSectionOpposite(section)]: {}
-    // } as NewLocalCacheSliceState;
   } else {
     if (!state[index]) {
       state[index] = sliceEntityAdapter.getInitialState()
     }
-    // if (!state[deploymentUuid]) {
-    //   // console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'is undefined, initializing state!',JSON.stringify(state),state == undefined);
-      
-    //   state[deploymentUuid] = {
-    //     // [entityUuid]: sliceEntityAdapter.getInitialState()
-    //     [section]:{[entityUuid]: sliceEntityAdapter.getInitialState()},
-    //     [ApplicationSectionOpposite(section)]: {}
-    //   } as LocalCacheSectionSliceState;
-    // } else {
-    //   if (!state[deploymentUuid][section] || !state[deploymentUuid][section][entityUuid]) {
-    //     // console.log('getInitializedDeploymentEntityAdapter for deployment',deploymentUuid,'and entityUuid',entityUuid,'is undefined, initializing state!');
-    //     state[deploymentUuid][section][entityUuid] = sliceEntityAdapter.getInitialState();
-    //   }
-    // }
   }
   // console.log('getInitializedDeploymentEntityAdapter state',JSON.stringify(state));
   return sliceEntityAdapter;
@@ -237,26 +186,14 @@ function ReplaceInstancesForSectionEntity(
   state: NewLocalCacheSliceState, 
   instanceCollection:EntityInstanceCollection
 ) {
-  console.log('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  // console.log('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
   const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid,section,instanceCollection.parentUuid);
   const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
-  // const entity = state[deploymentUuid]?
-  //   (
-  //     (
-  //       state[deploymentUuid][section]?
-  //         state[deploymentUuid][section][entityEntity.uuid]?.entities[instanceCollection.parentUuid]
-  //       :
-  //         undefined
-  //     )
-  //   )
-  //   :undefined
-  // ;
   console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid,'entity',(entity?(entity as any)['name']:'entity not found for deployment'));
   const sliceEntityAdapter = getInitializedSectionEntityAdapter(deploymentUuid,section,instanceCollection.parentUuid,state);
 
   state[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(state[instanceCollectionEntityIndex], instanceCollection.instances);
-  // state[deploymentUuid][section][instanceCollection.parentUuid] = sliceEntityAdapter.setAll(state[deploymentUuid][section][instanceCollection.parentUuid], instanceCollection.instances);
   // console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
   
 }
@@ -444,14 +381,6 @@ export const LocalCacheSlice = {
   inputActionNames: localCacheSliceInputActionNamesObject,
 };
 
-
-//#########################################################################################
-//# SELECTORS
-//#########################################################################################
-// export const selectMiroirEntityInstances = createSelector(
-//   (state: LocalCacheSliceState) => state,
-//   (items) => items
-// );
 
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
