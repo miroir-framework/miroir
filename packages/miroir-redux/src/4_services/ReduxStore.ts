@@ -40,7 +40,6 @@ import {
 } from "../4_services/localStore/LocalCacheSlice";
 import {
   createUndoRedoReducer,
-  InnerStoreStateInterface,
   ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo
 } from "../4_services/localStore/UndoRedoReducer";
 import RemoteStoreRestAccessReduxSaga, {
@@ -98,11 +97,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   ) {
     this.staticReducers = createUndoRedoReducer(
       LocalCacheSlice.reducer
-      // combineReducers<InnerStoreStateInterface,PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>>(
-      //   {
-      //     miroirInstances: LocalCacheSlice.reducer,
-      //   }
-      // ) 
     );
 
     this.sagaMiddleware = sagaMiddleware();
@@ -164,30 +158,20 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     } else {
       if (deploymentUuid == applicationDeploymentMiroir.uuid) {
         return {
-          entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as Report[],
-          configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
-          // entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          // entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          // reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as Report[],
-          // configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          // applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          entities: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
+          entityDefinitions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
+          reports: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityReport.uuid].entities) as Report[],
+          configuration: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[applicationDeploymentMiroir.uuid]['data'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
         };
       } else {
         return {
-          entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot[deploymentUuid]['model'][entityReport.uuid].entities) as Report[],
-          configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
-          // entities: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-          // entityDefinitions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
-          // reports: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityReport.uuid].entities) as Report[],
-          // configuration: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
-          // applicationVersions: Object.values(this.innerReduxStore.getState().presentModelSnapshot.miroirInstances[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
+          entities: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
+          entityDefinitions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
+          reports: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityReport.uuid].entities) as Report[],
+          configuration: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityStoreBasedConfiguration.uuid].entities) as StoreBasedConfiguration[],
+          applicationVersions: Object.values((this.innerReduxStore.getState().presentModelSnapshot as any)[deploymentUuid]['model'][entityApplicationVersion.uuid].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
         };
       }

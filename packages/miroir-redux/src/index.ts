@@ -13,7 +13,6 @@ export {
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
   InnerReducerInterface,
-  InnerStoreStateInterface,
   ReduxReducerWithUndoRedoInterface as ReduxReducerWithUndoRedo,
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,

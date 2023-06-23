@@ -22,11 +22,6 @@ enablePatches(); // to gather undo/redo operation history
  * 
  */
 
-// export interface InnerStoreStateInterface {
-//   miroirInstances: NewLocalCacheSliceState;
-// }
-export type InnerStoreStateInterface = NewLocalCacheSliceState;
-
 export interface ReduxStateChanges {
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
@@ -45,15 +40,13 @@ export interface ReduxStateChanges {
  */
 export interface ReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
-  // previousModelSnapshot: InnerStoreStateInterface, // state recorded on the previous commit.
   previousModelSnapshot: NewLocalCacheSliceState, // state recorded on the previous commit.
   pastModelPatches: ReduxStateChanges[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
-  // presentModelSnapshot: InnerStoreStateInterface, // only effects on the current snapshot goes into the undo/redo history
   presentModelSnapshot: NewLocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
-export type InnerReducerInterface = (state: InnerStoreStateInterface, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => InnerStoreStateInterface;
+export type InnerReducerInterface = (state: NewLocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => NewLocalCacheSliceState;
 
 // TODO: make action type explicit!
 export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => ReduxStateWithUndoRedo
@@ -80,7 +73,7 @@ export type Maction = MinstanceAction | MentityAction;
 
 export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWithUndoRedo {
   return {
-    previousModelSnapshot: {} as InnerStoreStateInterface,
+    previousModelSnapshot: {} as NewLocalCacheSliceState,
     pastModelPatches: [],
     presentModelSnapshot: reducer(undefined, {type:undefined, payload: undefined}),
     futureModelPatches: []
@@ -90,15 +83,15 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 // ####################################################################################################
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
-  state:InnerStoreStateInterface,
+  state:NewLocalCacheSliceState,
   action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
-):{newSnapshot:InnerStoreStateInterface,changes: Patch[],inverseChanges:Patch[]} {
+):{newSnapshot:NewLocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
   console.log('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
   let inverseChanges:Patch[] = [];
-  const newPresentModelSnapshot:InnerStoreStateInterface = produce(
+  const newPresentModelSnapshot:NewLocalCacheSliceState = produce(
     state,
-    (draftState:InnerStoreStateInterface)=>reducer(draftState, action),
+    (draftState:NewLocalCacheSliceState)=>reducer(draftState, action),
     (patches, inversePatches) => {
       // side effect, for scope extrusion :-/
       changes.push(...patches)
@@ -155,9 +148,9 @@ function callNextReducer(
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
 
-  const newPresentModelSnapshot:InnerStoreStateInterface = produce(
+  const newPresentModelSnapshot:NewLocalCacheSliceState = produce(
     state.presentModelSnapshot,
-    (draftState:InnerStoreStateInterface)=>innerReducer(draftState, action),
+    (draftState:NewLocalCacheSliceState)=>innerReducer(draftState, action),
   );
   return {
     previousModelSnapshot,

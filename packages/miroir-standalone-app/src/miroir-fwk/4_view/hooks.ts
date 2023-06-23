@@ -111,7 +111,7 @@ export function useLocalCacheInstancesForReport(deploymentUuid:string, section: 
 
 //#########################################################################################
 export function useLocalCacheInstancesForEntity(deploymentUuid:string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined): EntityInstance[] {
-  console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
+  console.log('##################################### useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
   
   // return useSelector(applySelectorToDomainStateSection(deploymentUuid,section)(selectEntityInstances(entityUuid)));
   return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectEntityInstances(entityUuid)));
