@@ -24,7 +24,7 @@ import {
 import { ReduxStateChanges } from "miroir-redux";
 
 
-import { ReportComponent } from '../ReportComponent';
+import { ReportSectionDisplay } from '../ReportSectionDisplay';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import { getColumnDefinitions } from '../EntityViewer';
 
@@ -175,7 +175,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                             return (
                               <ListItem disableGutters key={entityAttribute.name}>
                                 <span>
-                                  <ReportComponent
+                                  <ReportSectionDisplay
                                     tableComponentReportType="JSON_ARRAY"
                                     label={"JSON_ARRAY-"+entityAttribute.name}
                                     columnDefs={columnDefs}
@@ -186,7 +186,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                                         height: '22vw',
                                       }
                                     }
-                                  ></ReportComponent>
+                                  ></ReportSectionDisplay>
                                 </span>
                               </ListItem>
                             )

@@ -24,7 +24,7 @@ import {
 import { ReduxStateChanges } from "miroir-redux";
 
 
-import { ReportComponent } from './ReportComponent';
+import { ReportSectionDisplay } from './ReportSectionDisplay';
 import { Button, List, ListItem, ListItemButton } from '@mui/material';
 import { getColumnDefinitions } from './EntityViewer';
 

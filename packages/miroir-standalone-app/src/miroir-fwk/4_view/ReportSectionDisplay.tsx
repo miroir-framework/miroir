@@ -28,14 +28,14 @@ import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
-export const ReportComponentCorePropsSchema = z.object({
+export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
   chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks (eg useLocalCacheInstancesForEntity) in the same order, irrelevant of tableComponentReportType
   label:z.string(),
 });
 
-export const ReportComponentEntityInstancePropsSchema = ReportComponentCorePropsSchema.extend({
+export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
@@ -45,7 +45,7 @@ export const ReportComponentEntityInstancePropsSchema = ReportComponentCoreProps
   currentMiroirEntityDefinition: EntityDefinitionSchema,
 });
 
-export const ReportComponentJsonArrayPropsSchema = ReportComponentCorePropsSchema.extend({
+export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
   columnDefs: z.array(z.any()),
   rowData: z.array(z.any()),
@@ -53,11 +53,11 @@ export const ReportComponentJsonArrayPropsSchema = ReportComponentCorePropsSchem
 });
 
 // ##########################################################################################
-export const ReportComponentPropsSchema = z.union([
-  ReportComponentEntityInstancePropsSchema,
-  ReportComponentJsonArrayPropsSchema,
+export const ReportSectionDisplayPropsSchema = z.union([
+  ReportSectionDisplayEntityInstancePropsSchema,
+  ReportSectionDisplayJsonArrayPropsSchema,
 ]);
-export type ReportComponentProps = z.infer<typeof ReportComponentPropsSchema>;
+export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchema>;
 
 export function defaultFormValues(
   tableComponentType: TableComponentType,
@@ -117,7 +117,7 @@ export function defaultFormValues(
 
 // ##########################################################################################
 // export const ReportComponent: React.FC<ReportComponentProps> = memo((
-export const ReportComponent: React.FC<ReportComponentProps> = (
+export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   const domainController: DomainControllerInterface = useDomainControllerServiceHook();

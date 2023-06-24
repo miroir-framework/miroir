@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { EntityInstanceWithNameSchema } from "./Instance.js";
-import { s } from "msw/lib/SetupApi-f4099ef3.js";
 
 // ##########################################################################################
 export const ReportSectionListDefinitionSchema = z.object({

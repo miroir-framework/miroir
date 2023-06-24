@@ -15,6 +15,7 @@ import {
   MetaEntity,
   MiroirMetaModel,
   Report,
+  ReportSchema,
   ReportSectionList,
   ReportSectionListDefinition,
   applicationDeploymentMiroir,
@@ -72,7 +73,7 @@ import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97b
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
-import { ReportComponent } from './ReportComponent';
+import { ReportSectionDisplay } from './ReportSectionDisplay';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -622,6 +623,8 @@ export const HomePage = (props: RootComponentProps) => {
         </span>
       <p />
       <p />
+      <span>zod: {JSON.stringify(ReportSchema)}</span>
+      <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
@@ -705,7 +708,7 @@ export const HomePage = (props: RootComponentProps) => {
       </Box>
         {
           currentMiroirReport && currentMiroirReportSectionListDefinition && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
-            <ReportComponent 
+            <ReportSectionDisplay 
               tableComponentReportType="EntityInstance"
               label={"EntityInstance-"+currentReportTargetEntity?.name}
               styles={

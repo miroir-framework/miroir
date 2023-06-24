@@ -13,7 +13,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { EntityAttribute } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { getColumnDefinitions } from './EntityViewer';
-import { ReportComponent } from "./ReportComponent";
+import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { useState } from "react";
 import { useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
@@ -145,7 +145,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                         return (
                           <ListItem disableGutters key={entityAttribute.name}>
                             <span>
-                              <ReportComponent
+                              <ReportSectionDisplay
                                 tableComponentReportType="JSON_ARRAY"
                                 label={"JSON_ARRAY-"+entityAttribute.name}
                                 columnDefs={columnDefs}
@@ -156,7 +156,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                                     height: '22vw',
                                   }
                                 }
-                              ></ReportComponent>
+                              ></ReportSectionDisplay>
                             </span>
                           </ListItem>
                         )

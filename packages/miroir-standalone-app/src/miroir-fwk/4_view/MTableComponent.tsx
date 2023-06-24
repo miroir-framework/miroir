@@ -42,7 +42,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
-import { defaultFormValues } from './ReportComponent';
+import { defaultFormValues } from './ReportSectionDisplay';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",

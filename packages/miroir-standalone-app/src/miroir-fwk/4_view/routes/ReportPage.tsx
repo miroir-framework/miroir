@@ -23,7 +23,7 @@ import { ReduxStateChanges } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 
 
-import { ReportComponent } from '../ReportComponent';
+import { ReportSectionDisplay } from '../ReportSectionDisplay';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -142,7 +142,7 @@ export const ReportPage = (props: ReportPageProps) => {
         {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
           {
             currentMiroirReport && currentMiroirReportSectionListDefinition && currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
-              <ReportComponent
+              <ReportSectionDisplay
                 tableComponentReportType="EntityInstance"
                 label={"EntityInstance-"+currentReportTargetEntity?.name}
                 styles={
