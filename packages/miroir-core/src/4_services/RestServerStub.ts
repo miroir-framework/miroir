@@ -3,7 +3,7 @@ import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
-import { generateHandlerBody } from "../4_services/RestTools";
+import { generateHandlerBody } from "../RestTools.js";
 import { rest } from "msw";
 
 // Add an extra delay to all endpoints, so loading spinners show up.

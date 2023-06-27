@@ -10,7 +10,7 @@
     "watch": "lerna watch --scope='miroir-core' --include-dependencies -- lerna run build --scope='miroir-core'",
     "build": "npm run copy-files && rollup --config",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "test": "jest --verbose --silent=false -t"
+    "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
   },
   "author": "Arnaud Bailly",
   "license": "MIT",
@@ -20,16 +20,20 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.20.11",
     "@jest/globals": "^29.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
     "@types/jest": "^29.2.4",
+    "babel-jest": "^29.4.0",
     "copyfiles": "^2.4.1",
     "rimraf": "^4.1.1",
     "rollup": "^3.10.1",
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-typescript2": "^0.34.1",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "zod-to-ts": "^1.1.4",
+    "zod-to-json-schema": "^3.21.2"
   }
 }

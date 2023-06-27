@@ -1,5 +1,5 @@
-import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { EntityInstance } from "../0_interfaces/1_core/Instance";
+import { HttpMethod } from "miroir-core/src/0_interfaces/1_core/Http";
+import { EntityInstance } from "miroir-core/src/0_interfaces/1_core/Instance";
 
 export const generateHandlerBody = async (
   params:{[propName: string]: any},

@@ -69,6 +69,8 @@ export {
   MiroirApplicationVersion,
 } from './0_interfaces/1_core/ModelVersion.js';
 export {
+} from './0_interfaces/1_core/ZodSchema.js';
+export {
   DeploymentMode,
   EmulatedPartitionedServerConfig,
   EmulatedServerConfig,
@@ -239,6 +241,9 @@ export {
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
+ export {
+  getZodSimpleType,
+} from './1_core/ZodSchema.js';
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
@@ -280,7 +285,7 @@ export {
 } from './4_services/RestClient.js';
 export {
   generateHandlerBody
-} from './4_services/RestTools.js';
+} from './RestTools.js';
 export {
   RestServerStub,
   getHandler,
