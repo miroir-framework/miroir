@@ -24,11 +24,11 @@ export function getZodReferentialSetType(elementSet:ZodReferentialElementSet,gen
 export function getZodReferentialType(name:string, element:ZodReferentialElement,getSchemaReferences:()=>ResType,generateForTs?: boolean):ZodTypeAny {
   console.log("getZodReferentialType",name,"converting",element.type,(element.type =='referentialElement'?element.definition:''));
   switch (element.type) {
-    // case "simpleBootstrapElement": {
-    //   // return z.lazy(()=>getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
-    //   return getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
-    //   // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
-    // }
+    case "simpleBootstrapElement": {
+      // return z.lazy(()=>getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
+      return getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
+      // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
+    }
     case "literal": {
       return z.literal(element.definition);
     }

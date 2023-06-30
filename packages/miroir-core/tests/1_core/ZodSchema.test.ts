@@ -15,7 +15,7 @@ import {
   ZodReferentialElementSetSchema,
   ZodSimpleRecordSchema,
   ZodSimpleArraySchema,
-  // ZodSimpleBootstrapElementSchema,
+  ZodSimpleBootstrapElementSchema,
   ZodSimpleObjectSchema,
   ZodSimpleUnionSchema,
   ZodSimpleElementSchema,
@@ -72,14 +72,14 @@ describe(
         const zodSelfReferenceSchema:ResType = {
           // ZodRootSchema,
           ZodEnumSchema,
-          // ZodFunctionSchema,
-          // ZodLazySchema,
+          ZodFunctionSchema,
+          ZodLazySchema,
           ZodLiteralSchema,
           ZodReferentialCoreElementSchema,
           ZodReferentialElementSchema,
           // ZodSimpleArraySchema,
           ZodSimpleAttributeSchema,
-          // ZodSimpleBootstrapElementSchema,
+          ZodSimpleBootstrapElementSchema,
           ZodSimpleElementSchema,
           // ZodSimpleObjectSchema,
           // ZodSimpleRecordSchema,
@@ -134,24 +134,37 @@ describe(
         const referenceSchemaFilePath = path.join(logsPath,'referenceSchema.json');
         const convertedElementSchemaFilePath = path.join(logsPath,'convertedElementSchema.json');
 
-        const referenceSchemaTypeTsString = _zodToJsonSchema(zodSelfReferenceSchema,zodJsonBootstrapSchemaDependencies,"zodSelfReferenceSchema");
+        const referenceSchemaJsonSchema = _zodToJsonSchema(zodSelfReferenceSchema,zodJsonBootstrapSchemaDependencies,"zodSelfReferenceSchema");
+        const referenceSchemaJsonSchemaWithoutBootstrapElement = Object.fromEntries(Object.entries(referenceSchemaJsonSchema).filter(e=>e[0]!='ZodSimpleBootstrapElementSchema'))
+        
+        
+        const referenceSchemaJsonSchemaWithoutBootstrapElementString = JSON.stringify(referenceSchemaJsonSchemaWithoutBootstrapElement,circularReplacer(),2)
+
 
         if (fs.existsSync(referenceSchemaFilePath)) {
           fs.rmSync(referenceSchemaFilePath)
         }
-        fs.writeFileSync(referenceSchemaFilePath,JSON.stringify(referenceSchemaTypeTsString,circularReplacer(),2));
+        fs.writeFileSync(referenceSchemaFilePath,referenceSchemaJsonSchemaWithoutBootstrapElementString);
         // fs.writeFileSync(referenceSchemaFilePath,JSON.stringify(referenceSchemaSerialized,circularReplacer(),2));
         // fs.writeFileSync(referenceSchemaFilePath,typeof referenceSchemaSerialized);
 
 
         const convertedReferentialElement: ResType = getZodReferentialSetType(zodJsonBootstrapSchema);
-        const convertedReferentialElementSetTsString = _zodToJsonSchema(convertedReferentialElement, zodJsonBootstrapSchemaDependencies,"convertedReferentialElement");
+        const convertedReferentialElementJsonSchema = _zodToJsonSchema(convertedReferentialElement, zodJsonBootstrapSchemaDependencies,"convertedReferentialElement");
+        const convertedReferentialElementJsonSchemaWithoutBootstrapElement = Object.fromEntries(Object.entries(convertedReferentialElementJsonSchema).filter(e=>e[0]!='ZodSimpleBootstrapElementSchema'))
         // console.log('getZodReferentialSetType convertedReferentialElement',convertedReferentialElement);
+
+        const convertedReferentialElementJsonString = JSON.stringify(convertedReferentialElementJsonSchemaWithoutBootstrapElement,circularReplacer(),2)
+        let simpleBootstrapString = JSON.stringify(referenceSchemaJsonSchema['ZodSimpleBootstrapElementSchema'],circularReplacer(),2)
+        simpleBootstrapString = simpleBootstrapString.substring(0, simpleBootstrapString.lastIndexOf(",")) + "\n }"; 
+        console.log('simpleBootstrapString',simpleBootstrapString);
+        
+        const convertedReferentialElementJsonStringWithPlainBootstrapElement = convertedReferentialElementJsonString.replace(/\{\}/g,simpleBootstrapString)
 
         if (fs.existsSync(convertedElementSchemaFilePath)) {
           fs.rmSync(convertedElementSchemaFilePath)
         }
-        fs.writeFileSync(convertedElementSchemaFilePath,JSON.stringify(convertedReferentialElementSetTsString,circularReplacer(),2));
+        fs.writeFileSync(convertedElementSchemaFilePath,convertedReferentialElementJsonStringWithPlainBootstrapElement);
         // console.log("getZodReferentialSetType zodSelfSchema", JSON.stringify(
         //   _zodToJsonSchema(getZodReferentialSetType(zodSelfSchema), "zodSelfSchema"),
         //   null,
@@ -160,10 +173,10 @@ describe(
 
 
         // console.log("getZodReferentialSetType referenceSchemaTypeTsString", referenceSchemaTypeTsString);
-        console.log('getZodReferentialSetType convertedReferentialElementSetTsString',convertedReferentialElementSetTsString);
+        console.log('getZodReferentialSetType convertedReferentialElementSetTsString',convertedReferentialElementJsonSchemaWithoutBootstrapElement);
         // console.log("getZodReferentialSetType referenceSchemaTypeTsString", typeof referenceSchemaSerialized);
         
-        expect(convertedReferentialElementSetTsString).toEqual(referenceSchemaTypeTsString);
+        expect(convertedReferentialElementJsonStringWithPlainBootstrapElement.replace(/ +/g, ' ')).toEqual(referenceSchemaJsonSchemaWithoutBootstrapElementString.replace(/ +/g, ' '));
 
         // const referenceSchema: { [z: string]: ZodTypeAny } = {
         //   test0: z.string().optional(),

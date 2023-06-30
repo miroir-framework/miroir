@@ -108,7 +108,7 @@ export type ZodSimpleElement =
   | ZodFunction
   | ZodLazy
   | ZodLiteral
-  // | ZodSimpleBootstrapElement
+  | ZodSimpleBootstrapElement
   | ZodSimpleAttribute
   | ZodSimpleArray
   | ZodSimpleObject
@@ -128,12 +128,12 @@ export const ZodSimpleElementSchema: z.ZodType<ZodSimpleElement> = z.union([
   // withGetType(z.lazy(() => ZodSimpleRecordSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleRecordSchema"))),
   // withGetType(z.lazy(() => ZodSimpleUnionSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleUnionSchema"))),
   z.lazy(()=>ZodEnumSchema),
-  // z.lazy(()=>ZodFunctionSchema),
-  // z.lazy(()=>ZodLazySchema),
+  z.lazy(()=>ZodFunctionSchema),
+  z.lazy(()=>ZodLazySchema),
   z.lazy(()=>ZodLiteralSchema),
   z.lazy(()=>ZodSimpleAttributeSchema),
-  // z.lazy(()=>ZodSimpleBootstrapElementSchema),
   // z.lazy(()=>ZodSimpleArraySchema),
+  z.lazy(()=>ZodSimpleBootstrapElementSchema),
   // z.lazy(()=>ZodSimpleObjectSchema),
   // z.lazy(()=>ZodSimpleRecordSchema),
   // z.lazy(()=>ZodSimpleUnionSchema),
@@ -205,11 +205,11 @@ export const ZodReferentialUnionSchema: z.ZodType<ZodReferentialUnion> = z.objec
 
 
 // ##############################################################################################################
-// export const ZodSimpleBootstrapElementSchema = z.object({
-//   type: z.literal("simpleBootstrapElement"),
-// })
+export const ZodSimpleBootstrapElementSchema = z.object({
+  type: z.literal("simpleBootstrapElement"),
+})
 
-// export type ZodSimpleBootstrapElement = z.infer<typeof ZodSimpleBootstrapElementSchema>;
+export type ZodSimpleBootstrapElement = z.infer<typeof ZodSimpleBootstrapElementSchema>;
 
 // ##############################################################################################################
 export interface ZodSimpleRecord {
@@ -292,6 +292,24 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       "definition": { type: "simpleArray", definition: { type: "simpleType", definition: "string" } },
     },
   },
+  ZodFunctionSchema: {
+    type: "object",
+    definition: {
+      type: { type: "literal", definition: "function" },
+      args: {
+        type: "simpleArray",
+        definition: { type: "referentialElement", definition: "ZodSimpleAttributeSchema" },
+      },
+      returns: { type: "referentialElement", definition: "ZodSimpleAttributeSchema", optional: true },
+    },
+  },
+  ZodLazySchema: {
+    type: "object",
+    definition: {
+      type: { type: "literal", definition: "lazy" },
+      definition: { type: "referentialElement", definition: "ZodFunctionSchema" },
+    },
+  },
   ZodLiteralSchema: {
     type: "object",
     definition: {
@@ -299,24 +317,6 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       "definition": { type: "simpleType", definition: "string" },
     },
   },
-  // // ZodFunctionSchema: {
-  // //   type: "object",
-  // //   definition: {
-  // //     type: { type: "literal", definition: "function" },
-  // //     args: {
-  // //       type: "simpleArray",
-  // //       definition: { type: "referentialElement", definition: "ZodSimpleAttributeSchema" },
-  // //     },
-  // //     returns: { type: "referentialElement", definition: "ZodSimpleAttributeSchema", optional: true },
-  // //   },
-  // // },
-  // // ZodLazySchema: {
-  // //   type: "object",
-  // //   definition: {
-  // //     type: { type: "literal", definition: "lazy" },
-  // //     definition: { type: "referentialElement", definition: "ZodFunctionSchema" },
-  // //   },
-  // // },
   ZodReferentialCoreElementSchema: {
     type: "object",
     definition: {
@@ -364,26 +364,26 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
   // //     },
   // //   },
   // // },
-  // // ZodSimpleArraySchema: {
-  // //   type: "object",
-  // //   // extend: {type:"referentialElement", definition:"ZodRootSchema"},
-  // //   definition: {
-  // //     "optional": { type: "simpleType", definition: "boolean", optional: true },
-  // //     "type": { type: "literal", definition: "simpleArray" },
-  // //     "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
-  // //   },
-  // // },
-  // // ZodSimpleObjectSchema: {
-  // //   type: "object",
-  // //   definition: {
-  // //     "optional": { type: "simpleType", definition: "boolean", optional: true },
-  // //     "type": { type: "literal", definition: "object" },
-  // //     "definition": {
-  // //       type: "record",
-  // //       definition: { type: "simpleBootstrapElement" },
-  // //     },
-  // //   },
-  // // },
+  // ZodSimpleArraySchema: {
+  //   type: "object",
+  //   // extend: {type:"referentialElement", definition:"ZodRootSchema"},
+  //   definition: {
+  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
+  //     "type": { type: "literal", definition: "simpleArray" },
+  //     "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
+  //   },
+  // },
+  // ZodSimpleObjectSchema: {
+  //   type: "object",
+  //   definition: {
+  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
+  //     "type": { type: "literal", definition: "object" },
+  //     "definition": {
+  //       type: "record",
+  //       definition: { type: "simpleBootstrapElement" },
+  //     },
+  //   },
+  // },
   // // // ZodReferentialObjectSchema: {
   // // //   type: "object",
   // // //   definition: {
@@ -416,17 +416,17 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       "definition": { type: "enum", definition: ['any','boolean','string','number',] },
     },
   },
-  // ZodSimpleBootstrapElementSchema: { type: "simpleBootstrapElement" },
+  ZodSimpleBootstrapElementSchema: { type: "simpleBootstrapElement" },
   ZodSimpleElementSchema: {
     type: "referentialUnion",
     definition: [
       { type: "referentialElement", definition: "ZodEnumSchema"},
-      // { type: "referentialElement", definition: "ZodFunctionSchema"},
-      // { type: "referentialElement", definition: "ZodLazySchema"},
+      { type: "referentialElement", definition: "ZodFunctionSchema"},
+      { type: "referentialElement", definition: "ZodLazySchema"},
       { type: "referentialElement", definition: "ZodLiteralSchema"},
       { type: "referentialElement", definition: "ZodSimpleAttributeSchema"},
-      // { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema"},
       // { type: "referentialElement", definition: "ZodSimpleArraySchema"},
+      { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema"},
       // { type: "referentialElement", definition: "ZodSimpleObjectSchema"},
       // { type: "referentialElement", definition: "ZodSimpleRecordSchema"},
       // { type: "referentialElement", definition: "ZodSimpleUnionSchema"},
