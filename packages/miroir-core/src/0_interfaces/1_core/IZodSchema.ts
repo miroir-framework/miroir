@@ -366,15 +366,6 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
   // //     },
   // //   },
   // // },
-  // ZodSimpleArraySchema: {
-  //   type: "object",
-  //   // extend: {type:"referentialElement", definition:"ZodRootSchema"},
-  //   definition: {
-  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
-  //     "type": { type: "literal", definition: "simpleArray" },
-  //     "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
-  //   },
-  // },
   // // // ZodReferentialObjectSchema: {
   // // //   type: "object",
   // // //   definition: {
@@ -408,6 +399,16 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
     },
   },
   ZodSimpleBootstrapElementSchema: { type: "simpleBootstrapElement" },
+  // ZodSimpleArraySchema: {
+  //   type: "object",
+  //   // extend: {type:"referentialElement", definition:"ZodRootSchema"},
+  //   definition: {
+  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
+  //     "type": { type: "literal", definition: "simpleArray" },
+  //     // "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
+  //     "definition": { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema" },
+  //   },
+  // },
   ZodSimpleElementSchema: {
     type: "referentialUnion",
     definition: [

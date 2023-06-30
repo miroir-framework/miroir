@@ -251,7 +251,7 @@ export function referentialElementDependencies(element:ZodSimpleElement | ZodRef
 }
 // ##############################################################################################################
 export function _zodToJsonSchema(referentialSet:ResType, dependencies:{[k:string]:string[]},name?: string):{[k:string]:any} {
-  console.log('############################################# _zodToJsonSchema called',name,'referentialSet',referentialSet);
+  console.log('############################################# _zodToJsonSchema called',name,);
   const referentialSetEntries = Object.entries(referentialSet);
   let result:{[k:string]:any} = {};
 
@@ -261,7 +261,7 @@ export function _zodToJsonSchema(referentialSet:ResType, dependencies:{[k:string
     console.log("_zodToJsonSchema",name,"localDependencies",localDependencies);
     const localReferentialSet = Object.fromEntries(Object.entries(referentialSet).filter(e=>localDependencies.includes(e[0])));
     // const convertedCurrent = zodToJsonSchema(entry[1], {definitions:referentialSet});
-    const convertedCurrent = zodToJsonSchema(entry[1], {$refStrategy:"none"});
+    const convertedCurrent = zodToJsonSchema(entry[1], {$refStrategy:"relative"});
     // const convertedCurrent = zodToJsonSchema(entry[1]);
     console.log('_zodToJsonSchema',name,'converted',convertedCurrent);
     result[entry[0]] = convertedCurrent;

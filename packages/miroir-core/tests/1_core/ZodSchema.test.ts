@@ -77,11 +77,11 @@ describe(
           ZodLiteralSchema,
           ZodReferentialCoreElementSchema,
           ZodReferentialElementSchema,
-          // ZodSimpleArraySchema,
           ZodSimpleAttributeSchema,
           ZodSimpleBootstrapElementSchema,
+          // ZodSimpleArraySchema, // uses ZodSimpleBootstrapElementSchema, must come after ZodSimpleBootstrapElementSchema
           ZodSimpleElementSchema,
-          ZodSimpleObjectSchema,
+          ZodSimpleObjectSchema, // uses ZodSimpleBootstrapElementSchema, must come after ZodSimpleBootstrapElementSchema
           // ZodSimpleRecordSchema,
           // ZodSimpleUnionSchema,
           // ZodSimpleTypeSchema,
@@ -155,11 +155,11 @@ describe(
         // console.log('getZodReferentialSetType convertedReferentialElement',convertedReferentialElement);
 
         const convertedReferentialElementJsonString = JSON.stringify(convertedReferentialElementJsonSchemaWithoutBootstrapElement,circularReplacer(),2)
-        let simpleBootstrapString = JSON.stringify(referenceSchemaJsonSchema['ZodSimpleBootstrapElementSchema'],circularReplacer(),2)
-        simpleBootstrapString = simpleBootstrapString.substring(0, simpleBootstrapString.lastIndexOf(",")) + "\n },"; 
+        let simpleBootstrapString = JSON.stringify(referenceSchemaJsonSchema['ZodSimpleBootstrapElementSchema'],circularReplacer(),2).replace(/ +/g, ' ')
+        simpleBootstrapString = simpleBootstrapString.substring(0, simpleBootstrapString.lastIndexOf(",")).substring(simpleBootstrapString.indexOf("{")+2); 
         console.log('simpleBootstrapString',simpleBootstrapString);
         
-        const convertedReferentialElementJsonStringWithPlainBootstrapElement = convertedReferentialElementJsonString.replace(/\{\}\,/g,simpleBootstrapString)
+        const convertedReferentialElementJsonStringWithPlainBootstrapElement = convertedReferentialElementJsonString.replace(/\"\$ref\": \"2\"/g,simpleBootstrapString)
 
         if (fs.existsSync(convertedElementSchemaFilePath)) {
           fs.rmSync(convertedElementSchemaFilePath)
