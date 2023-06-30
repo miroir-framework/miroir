@@ -24,11 +24,11 @@ export function getZodReferentialSetType(elementSet:ZodReferentialElementSet,gen
 export function getZodReferentialType(name:string, element:ZodReferentialElement,getSchemaReferences:()=>ResType,generateForTs?: boolean):ZodTypeAny {
   console.log("getZodReferentialType",name,"converting",element.type,(element.type =='referentialElement'?element.definition:''));
   switch (element.type) {
-    case "simpleBootstrapElement": {
-      // return z.lazy(()=>getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
-      return getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
-      // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
-    }
+    // case "simpleBootstrapElement": {
+    //   // return z.lazy(()=>getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
+    //   return getZodReferentialType(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
+    //   // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
+    // }
     case "literal": {
       return z.literal(element.definition);
     }
@@ -73,7 +73,7 @@ export function getZodReferentialType(name:string, element:ZodReferentialElement
           // } else {
             // console.log("getZodReferentialType converting referentialElement NOT for TS",element.definition, getSchemaReferences()[element.definition]);
             return z.lazy(()=>{
-              console.log('referentialElement lazy optional called for',name,'element',element,'getSchemaReferences()[element.definition]',getSchemaReferences()[element.definition] );
+              // console.log('referentialElement lazy optional called for',name,'element',element,'getSchemaReferences()[element.definition]',getSchemaReferences()[element.definition] );
               const references = getSchemaReferences();
               if (references && references[element.definition]) {
                 return references[element.definition].optional()
@@ -91,7 +91,7 @@ export function getZodReferentialType(name:string, element:ZodReferentialElement
             // console.log("getZodReferentialType converting referentialElement NOT for TS",element.definition, getSchemaReferences()[element.definition]);
             // return getSchemaReferences()[element.definition];
             return z.lazy(()=>{
-              console.log('referentialElement lazy  called for',name,'element',element,'getSchemaReferences()[element.definition]',getSchemaReferences()[element.definition] );
+              // console.log('referentialElement lazy  called for',name,'element',element,'getSchemaReferences()[element.definition]',getSchemaReferences()[element.definition] );
               const references = getSchemaReferences();
               if (references && references[element.definition]) {
                 return references[element.definition]
@@ -163,9 +163,9 @@ export function getZodReferentialType(name:string, element:ZodReferentialElement
     // }
     case "simpleType": {
       if (element.optional) {
-        return z[element.definition]().optional()
+        return (z as any)[element.definition]().optional()
       } else {
-        return z[element.definition]()
+        return (z as any)[element.definition]()
       }
       break;
     }
@@ -209,7 +209,7 @@ export function getZodSimpleType(name:string,element:ZodSimpleElement):ZodTypeAn
 
 export function referentialElementDependencies(element:ZodSimpleElement | ZodReferentialElement):string[] {
   switch (element.type) {
-    case "simpleBootstrapElement":
+    // case "simpleBootstrapElement":
     case "literal":
     case "simpleType":
     case "referentialElement":
@@ -261,7 +261,8 @@ export function _zodToJsonSchema(referentialSet:ResType, dependencies:{[k:string
     console.log("_zodToJsonSchema",name,"localDependencies",localDependencies);
     const localReferentialSet = Object.fromEntries(Object.entries(referentialSet).filter(e=>localDependencies.includes(e[0])));
     // const convertedCurrent = zodToJsonSchema(entry[1], {definitions:referentialSet});
-    const convertedCurrent = zodToJsonSchema(entry[1], localReferentialSet);
+    const convertedCurrent = zodToJsonSchema(entry[1], {$refStrategy:"none"});
+    // const convertedCurrent = zodToJsonSchema(entry[1]);
     console.log('_zodToJsonSchema',name,'converted',convertedCurrent);
     result[entry[0]] = convertedCurrent;
   }

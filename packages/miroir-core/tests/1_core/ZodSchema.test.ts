@@ -15,7 +15,7 @@ import {
   ZodReferentialElementSetSchema,
   ZodSimpleRecordSchema,
   ZodSimpleArraySchema,
-  ZodSimpleBootstrapElementSchema,
+  // ZodSimpleBootstrapElementSchema,
   ZodSimpleObjectSchema,
   ZodSimpleUnionSchema,
   ZodSimpleElementSchema,
@@ -70,15 +70,16 @@ describe(
 
         
         const zodSelfReferenceSchema:ResType = {
-          // ZodSimpleBootstrapElementSchema,
           // ZodRootSchema,
           ZodEnumSchema,
           // ZodFunctionSchema,
           // ZodLazySchema,
           ZodLiteralSchema,
           ZodReferentialCoreElementSchema,
+          ZodReferentialElementSchema,
           // ZodSimpleArraySchema,
           ZodSimpleAttributeSchema,
+          // ZodSimpleBootstrapElementSchema,
           ZodSimpleElementSchema,
           // ZodSimpleObjectSchema,
           // ZodSimpleRecordSchema,
