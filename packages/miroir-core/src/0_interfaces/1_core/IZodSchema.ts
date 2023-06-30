@@ -134,7 +134,7 @@ export const ZodSimpleElementSchema: z.ZodType<ZodSimpleElement> = z.union([
   z.lazy(()=>ZodSimpleAttributeSchema),
   // z.lazy(()=>ZodSimpleArraySchema),
   z.lazy(()=>ZodSimpleBootstrapElementSchema),
-  // z.lazy(()=>ZodSimpleObjectSchema),
+  z.lazy(()=>ZodSimpleObjectSchema),
   // z.lazy(()=>ZodSimpleRecordSchema),
   // z.lazy(()=>ZodSimpleUnionSchema),
 ])
@@ -237,8 +237,9 @@ export interface ZodObjectWithReferential extends ZodRoot {
   // extend?: ZodSimpleObject | ZodReferentialCoreElement,
 }
 
-export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = ZodRootSchema.extend({
-  // optional: z.boolean().optional(),
+// export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = ZodRootSchema.extend({
+export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = z.object({ // issue with JsonSchema conversion when using extend from ZodRootSchema, although the 2 are functionnaly equivalent
+  optional: z.boolean().optional(),
   type: z.literal('object'),
   // extend: z.string().optional(),
   // extend: ZodSimpleObjectSchema.optional(),
@@ -246,8 +247,9 @@ export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = ZodRootSchema.e
   definition: z.lazy(()=>z.record(z.string(),ZodSimpleElementSchema))
 })
 
-export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential> = ZodRootSchema.extend({
-  // optional: z.boolean().optional(),
+// export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential> = ZodRootSchema.extend({
+export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential> = z.object({
+  optional: z.boolean().optional(),
   type: z.literal('object'),
   // extend: z.string().optional(),
   // extend: ZodReferentialCoreElementSchema.optional(),
@@ -373,17 +375,6 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
   //     "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
   //   },
   // },
-  // ZodSimpleObjectSchema: {
-  //   type: "object",
-  //   definition: {
-  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
-  //     "type": { type: "literal", definition: "object" },
-  //     "definition": {
-  //       type: "record",
-  //       definition: { type: "simpleBootstrapElement" },
-  //     },
-  //   },
-  // },
   // // // ZodReferentialObjectSchema: {
   // // //   type: "object",
   // // //   definition: {
@@ -427,11 +418,22 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       { type: "referentialElement", definition: "ZodSimpleAttributeSchema"},
       // { type: "referentialElement", definition: "ZodSimpleArraySchema"},
       { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema"},
-      // { type: "referentialElement", definition: "ZodSimpleObjectSchema"},
+      { type: "referentialElement", definition: "ZodSimpleObjectSchema"},
       // { type: "referentialElement", definition: "ZodSimpleRecordSchema"},
       // { type: "referentialElement", definition: "ZodSimpleUnionSchema"},
       // { type: "referentialElement", definition: "ZodRootSchema"},
     ]
+  },
+  ZodSimpleObjectSchema: {
+    type: "object",
+    definition: {
+      "optional": { type: "simpleType", definition: "boolean", optional: true },
+      "type": { type: "literal", definition: "object" },
+      "definition": {
+        type: "record",
+        definition: { type: "simpleBootstrapElement" },
+      },
+    },
   },
   // // ZodSimpleObjectSchema: {
   // //   type: "object",

@@ -81,7 +81,7 @@ describe(
           ZodSimpleAttributeSchema,
           ZodSimpleBootstrapElementSchema,
           ZodSimpleElementSchema,
-          // ZodSimpleObjectSchema,
+          ZodSimpleObjectSchema,
           // ZodSimpleRecordSchema,
           // ZodSimpleUnionSchema,
           // ZodSimpleTypeSchema,
@@ -156,20 +156,16 @@ describe(
 
         const convertedReferentialElementJsonString = JSON.stringify(convertedReferentialElementJsonSchemaWithoutBootstrapElement,circularReplacer(),2)
         let simpleBootstrapString = JSON.stringify(referenceSchemaJsonSchema['ZodSimpleBootstrapElementSchema'],circularReplacer(),2)
-        simpleBootstrapString = simpleBootstrapString.substring(0, simpleBootstrapString.lastIndexOf(",")) + "\n }"; 
+        simpleBootstrapString = simpleBootstrapString.substring(0, simpleBootstrapString.lastIndexOf(",")) + "\n },"; 
         console.log('simpleBootstrapString',simpleBootstrapString);
         
-        const convertedReferentialElementJsonStringWithPlainBootstrapElement = convertedReferentialElementJsonString.replace(/\{\}/g,simpleBootstrapString)
+        const convertedReferentialElementJsonStringWithPlainBootstrapElement = convertedReferentialElementJsonString.replace(/\{\}\,/g,simpleBootstrapString)
 
         if (fs.existsSync(convertedElementSchemaFilePath)) {
           fs.rmSync(convertedElementSchemaFilePath)
         }
         fs.writeFileSync(convertedElementSchemaFilePath,convertedReferentialElementJsonStringWithPlainBootstrapElement);
-        // console.log("getZodReferentialSetType zodSelfSchema", JSON.stringify(
-        //   _zodToJsonSchema(getZodReferentialSetType(zodSelfSchema), "zodSelfSchema"),
-        //   null,
-        //   2
-        // ));
+        // fs.writeFileSync(convertedElementSchemaFilePath,convertedReferentialElementJsonString);
 
 
         // console.log("getZodReferentialSetType referenceSchemaTypeTsString", referenceSchemaTypeTsString);
