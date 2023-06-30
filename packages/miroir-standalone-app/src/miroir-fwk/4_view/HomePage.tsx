@@ -21,7 +21,6 @@ import {
   ReportSchema,
   ReportSectionList,
   ReportSectionListDefinition,
-  Test2,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -33,7 +32,6 @@ import {
   reportEntityDefinitionList,
   reportEntityList,
   reportReportList,
-  test2Schema
 } from "miroir-core";
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
@@ -305,11 +303,6 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedReportUuid("");
   };
 
-  // const {node:test2SchemaTs} = zodToTs(test2Schema, 'test2Schema');
-  // const test2SchemaTsString = printNode(test2SchemaTs);
-
-  // const {node:test2SimpleTypeTs} = zodToTs(getZodSimpleType(Test2),'test2Schema')
-  // const test2SimpleTypeTsString = printNode(test2SimpleTypeTs);
   return (
     <div> 
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
@@ -633,12 +626,6 @@ export const HomePage = (props: RootComponentProps) => {
           </button>
         </span>
       <p />
-      {/* <span>getZodSimpleType(Test2): {test2SimpleTypeTsString}</span>
-      <p />
-      <span>test2Schema TS: {test2SchemaTsString}</span>
-      <p />
-      <span>test2SchemaTs == getZodSimpleType(Test2) {test2SchemaTsString == test2SimpleTypeTsString?'true':'false'}</span>
-      <p /> */}
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>

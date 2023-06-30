@@ -69,7 +69,7 @@ export {
   MiroirApplicationVersion,
 } from './0_interfaces/1_core/ModelVersion.js';
 export {
-} from './0_interfaces/1_core/ZodSchema.js';
+} from './0_interfaces/1_core/IZodSchema.js';
 export {
   DeploymentMode,
   EmulatedPartitionedServerConfig,

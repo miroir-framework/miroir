@@ -10,6 +10,8 @@ export default [
       'uuid',
       'msw',
       'zod',
+      'zod-to-ts',
+      'zod-to-json-schema',
     ],
     output: [
         {
