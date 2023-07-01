@@ -242,7 +242,6 @@ export {
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
  export {
-  getZodSimpleType,
 } from './1_core/ZodSchema.js';
 export {
   cacheFetchPolicy,

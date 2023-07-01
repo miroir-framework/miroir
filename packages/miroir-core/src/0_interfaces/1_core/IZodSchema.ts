@@ -1,9 +1,13 @@
 import ts from 'typescript';
-import { ZodType, z } from "zod";
+import { ZodType, ZodTypeAny, z } from "zod";
 
 
 export type ResTypeForTs = {schemas:{[k:string]:ZodType}, references:{[k:string]:ZodType}};
-export type ResType = {[k:string]:ZodType};
+// export type ResType = {[k:string]:ZodType};
+// export type ResType = {[k:string]:{zodSchema:ZodTypeAny, description:string}};
+export interface ZodSchemaAndDescription {zodSchema:ZodTypeAny, description:string};
+
+export type ResType = {[k:string]:ZodSchemaAndDescription};
 
 // type RequiredZodToTsOptions = Required<ZodToTsOptions>; //from zod-to-ts
 type TsType = typeof ts;
@@ -28,24 +32,16 @@ export interface ZodSimpleAttribute extends ZodRoot {
   definition: 'any' | 'boolean' | 'string' | 'number'
 }
 
-export const ZodSimpleAttributeSchema: z.ZodType<ZodSimpleAttribute> = ZodRootSchema.extend({
-// export const ZodSimpleAttributeSchema: z.ZodType<ZodSimpleAttribute> = z.lazy(
-//   ()=>ZodRootSchema.extend({
-    type: z.literal('simpleType'),
-    // definition: withGetType(z.lazy(() => z.enum([
-    //   'any',
-    //   'boolean',
-    //   'string',
-    //   'number',
-    // ])),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleTypeSchema"))), // TODO:keep Schemas clean!!!
-    definition: z.enum([
-      'any',
-      'boolean',
-      'string',
-      'number',
-    ])
-  })
-// )
+export const ZodSimpleAttributeSchema: z.ZodType<ZodSimpleAttribute> = z.object({
+  optional: z.boolean().optional(),
+  type: z.literal('simpleType'),
+  definition: z.enum([
+    'any',
+    'boolean',
+    'string',
+    'number',
+  ])
+})
 
 // ##############################################################################################################
 export const ZodEnumSchema = z.object({
@@ -76,17 +72,12 @@ export const ZodFunctionSchema = z.object({
   // anyway, arg and returns types are not use upon validation to check the function's interface. Suffices for it to be a function, it is then valid.
   args:z.array(ZodSimpleAttributeSchema),
   returns: ZodSimpleAttributeSchema.optional(),
-  // args:withGetType(z.lazy(() => z.array(ZodSimpleAttributeSchema)),(ts) => ts.factory.createArrayTypeNode(ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleAttributeSchema")))), // TODO:keep Schemas clean!!!
-  // returns:withGetType(z.lazy(() => ZodSimpleAttributeSchema.optional()),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleAttributeSchema"))), // TODO:keep Schemas clean!!!
 })
-
-// export type ZodFunction = z.infer<typeof ZodFunctionSchema>;
 
 // ##############################################################################################################
 export const ZodLazySchema = z.object({
   type: z.literal("lazy"),
   definition: ZodFunctionSchema,
-  // definition: withGetType(z.lazy(() => ZodFunctionSchema),(ts) => ts.factory.createIdentifier("ZodFunctionSchema")), // TODO:keep Schemas clean!!!
 })
 
 export type ZodLazy = z.infer<typeof ZodLazySchema>;
@@ -95,7 +86,7 @@ export type ZodLazy = z.infer<typeof ZodLazySchema>;
 // export const ZodReferentialCoreElementSchema = ZodRootSchema.extend({
 export const ZodReferentialCoreElementSchema = z.object({ // inheritance from ZodRootSchema leads to a different JsonSchema thus invalidates tests, although it is semantically equivalent
   optional: z.boolean().optional(),
-  type: z.literal("referentialElement"),
+  type: z.literal("schemaReference"),
   definition: z.string()
 })
 
@@ -108,25 +99,15 @@ export type ZodSimpleElement =
   | ZodFunction
   | ZodLazy
   | ZodLiteral
-  | ZodSimpleBootstrapElement
   | ZodSimpleAttribute
-  | ZodSimpleArray
-  | ZodSimpleObject
-  | ZodSimpleRecord
-  | ZodSimpleUnion
+  // | ZodSimpleArray
+  | ZodSimpleBootstrapElement
+  // | ZodSimpleObject
+  // | ZodSimpleRecord
+  // | ZodSimpleUnion
 ;
 
 export const ZodSimpleElementSchema: z.ZodType<ZodSimpleElement> = z.union([
-  // withGetType(z.lazy(() => ZodEnumSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodEnumSchema"))),
-  // withGetType(z.lazy(() => ZodFunctionSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodFunctionSchema"))),
-  // withGetType(z.lazy(() => ZodLazySchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodLazySchema"))),
-  // withGetType(z.lazy(() => ZodLiteralSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodLiteralSchema"))),
-  // withGetType(z.lazy(() => ZodSimpleAttributeSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleAttributeSchema"))),
-  // withGetType(z.lazy(() => ZodSimpleBootstrapElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleBootstrapElementSchema"))),
-  // withGetType(z.lazy(() => ZodSimpleArraySchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleArraySchema"))),
-  // withGetType(z.lazy(() => ZodSimpleObjectSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleObjectSchema"))),
-  // withGetType(z.lazy(() => ZodSimpleRecordSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleRecordSchema"))),
-  // withGetType(z.lazy(() => ZodSimpleUnionSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleUnionSchema"))),
   z.lazy(()=>ZodEnumSchema),
   z.lazy(()=>ZodFunctionSchema),
   z.lazy(()=>ZodLazySchema),
@@ -134,14 +115,29 @@ export const ZodSimpleElementSchema: z.ZodType<ZodSimpleElement> = z.union([
   z.lazy(()=>ZodSimpleAttributeSchema),
   // z.lazy(()=>ZodSimpleArraySchema),
   z.lazy(()=>ZodSimpleBootstrapElementSchema),
-  z.lazy(()=>ZodSimpleObjectSchema),
+  // z.lazy(()=>ZodSimpleObjectSchema),
   // z.lazy(()=>ZodSimpleRecordSchema),
   // z.lazy(()=>ZodSimpleUnionSchema),
 ])
 
 // ##############################################################################################################
+export interface ZodRecord {
+  type: 'record',
+  // definition: ZodSimpleElement[],
+  definition: ZodReferentialElement,
+}
+
+export const ZodRecordSchema: z.ZodType<ZodRecord> = z.object({
+  type: z.literal('record'),
+  definition: z.lazy(()=>ZodReferentialElementSchema)
+  // definition: withGetType(z.lazy(() => ZodSimpleElementSchema),(ts:TsType) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema")))
+})
+
+
+// ##############################################################################################################
 export type ZodReferentialElement =
 | ZodSimpleElement
+| ZodRecord
 | ZodObjectWithReferential
 | ZodReferentialCoreElement
 | ZodReferentialElementArray
@@ -149,16 +145,12 @@ export type ZodReferentialElement =
 ;
 
 export const ZodReferentialElementSchema: z.ZodType<ZodReferentialElement> = z.union([
-  // withGetType(z.lazy(() => ZodSimpleElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))),
-  // withGetType(z.lazy(() => ZodObjectWithReferentialSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodObjectWithReferentialSchema"))),
-  // withGetType(z.lazy(() => ZodReferentialCoreElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodReferentialCoreElementSchema"))),
-  // withGetType(z.lazy(() => ZodReferentialElementArraySchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodReferentialElementArraySchema"))),
-  // withGetType(z.lazy(() => ZodReferentialUnionSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodReferentialUnionSchema"))),
   z.lazy(()=>ZodSimpleElementSchema),
-  // z.lazy(()=>ZodObjectWithReferentialSchema),
+  z.lazy(()=>ZodRecordSchema),
+  z.lazy(()=>ZodObjectWithReferentialSchema),
   z.lazy(()=>ZodReferentialCoreElementSchema),
-  // z.lazy(()=>ZodReferentialElementArraySchema),
-  // z.lazy(()=>ZodReferentialUnionSchema),
+  z.lazy(()=>ZodReferentialElementArraySchema),
+  z.lazy(()=>ZodReferentialUnionSchema),
 ])
 
 // ##############################################################################################################
@@ -167,19 +159,20 @@ export type ZodReferentialElementSet = z.infer<typeof ZodReferentialElementSetSc
 
 
 // ##############################################################################################################
-export interface ZodSimpleUnion {
-  type: "simpleUnion",
-  definition: ZodSimpleElement[],
-}
-export const ZodSimpleUnionSchema: z.ZodType<ZodSimpleUnion> = z.object({
-  type: z.literal("simpleUnion"),
-  // definition: z.array(ZodSimpleObjectSchema)
-  definition: z.lazy(()=>z.array(ZodSimpleObjectSchema))
-  // definition: withGetType(
-  //   z.lazy(
-  //     () => z.array(ZodSimpleElementSchema)),
-  //     (ts:TsType) => ts.factory.createArrayTypeNode(ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))))
-});
+// export interface ZodSimpleUnion {
+//   type: "simpleUnion",
+//   definition: ZodSimpleElement[],
+// }
+// export const ZodSimpleUnionSchema: z.ZodType<ZodSimpleUnion> = z.object({
+//   type: z.literal("simpleUnion"),
+//   // definition: z.array(ZodSimpleObjectSchema)
+//   // definition: z.lazy(()=>z.array(ZodSimpleObjectSchema))
+//   definition: z.lazy(()=>z.array(ZodSimpleObjectSchema))
+//   // definition: withGetType(
+//   //   z.lazy(
+//   //     () => z.array(ZodSimpleElementSchema)),
+//   //     (ts:TsType) => ts.factory.createArrayTypeNode(ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))))
+// });
 
   // ##############################################################################################################
 export interface ZodReferentialUnion {
@@ -188,7 +181,7 @@ export interface ZodReferentialUnion {
 }
 export const ZodReferentialUnionSchema: z.ZodType<ZodReferentialUnion> = z.object({
   type: z.literal("referentialUnion"),
-  definition: z.lazy(()=>z.array(ZodSimpleObjectSchema))
+  definition: z.lazy(()=>z.array(ZodReferentialElementSchema))
   // definition: withGetType(
   //   z.lazy(
   //     () => z.array(ZodReferentialElementSchema)),
@@ -212,24 +205,11 @@ export const ZodSimpleBootstrapElementSchema = z.object({
 export type ZodSimpleBootstrapElement = z.infer<typeof ZodSimpleBootstrapElementSchema>;
 
 // ##############################################################################################################
-export interface ZodSimpleRecord {
-  type: 'record',
-  // definition: ZodSimpleElement[],
-  definition: ZodSimpleElement,
-}
-
-export const ZodSimpleRecordSchema: z.ZodType<ZodSimpleRecord> = z.object({
-  type: z.literal('record'),
-  definition: z.lazy(()=>ZodSimpleElementSchema)
-  // definition: withGetType(z.lazy(() => ZodSimpleElementSchema),(ts:TsType) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema")))
-})
-
-// ##############################################################################################################
-export interface ZodSimpleObject extends ZodRoot {
-  type: 'object',
-  definition: {[attributeName:string]:ZodSimpleElement},
-  extend?: ZodSimpleObject,
-}
+// export interface ZodSimpleObject extends ZodRoot {
+//   type: 'object',
+//   definition: {[attributeName:string]:ZodSimpleElement},
+//   extend?: ZodSimpleObject,
+// }
 
 export interface ZodObjectWithReferential extends ZodRoot {
   type: 'object',
@@ -237,15 +217,15 @@ export interface ZodObjectWithReferential extends ZodRoot {
   // extend?: ZodSimpleObject | ZodReferentialCoreElement,
 }
 
-// export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = ZodRootSchema.extend({
-export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = z.object({ // issue with JsonSchema conversion when using extend from ZodRootSchema, although the 2 are functionnaly equivalent
-  optional: z.boolean().optional(),
-  type: z.literal('object'),
-  // extend: z.string().optional(),
-  // extend: ZodSimpleObjectSchema.optional(),
-  // definition: z.record(z.string(),withGetType(z.lazy(() => ZodSimpleElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))))
-  definition: z.lazy(()=>z.record(z.string(),ZodSimpleElementSchema))
-})
+// // export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = ZodRootSchema.extend({
+// export const ZodSimpleObjectSchema: z.ZodType<ZodSimpleObject> = z.object({ // issue with JsonSchema conversion when using extend from ZodRootSchema, although the 2 are functionnaly equivalent
+//   optional: z.boolean().optional(),
+//   type: z.literal('object'),
+//   // extend: z.string().optional(),
+//   // extend: ZodSimpleObjectSchema.optional(),
+//   // definition: z.record(z.string(),withGetType(z.lazy(() => ZodSimpleElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))))
+//   definition: z.lazy(()=>z.record(z.string(),ZodSimpleElementSchema))
+// })
 
 // export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential> = ZodRootSchema.extend({
 export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential> = z.object({
@@ -259,24 +239,26 @@ export const ZodObjectWithReferentialSchema: z.ZodType<ZodObjectWithReferential>
 })
 
 // ##############################################################################################################
-export interface ZodSimpleArray extends ZodRoot {
-  type: 'simpleArray',
-  definition: ZodSimpleElement
-}
-export const ZodSimpleArraySchema: z.ZodType<ZodSimpleArray> = ZodRootSchema.extend({
-  // optional: z.boolean().optional(),
-  type: z.literal('simpleArray'),
-  definition: z.lazy(()=>ZodSimpleElementSchema)
-  // definition: withGetType(z.lazy(() => ZodSimpleElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))), // TODO:keep Schemas clean!!!
-});
+// export interface ZodSimpleArray extends ZodRoot {
+//   type: 'simpleArray',
+//   definition: ZodSimpleElement
+// }
+// // export const ZodSimpleArraySchema: z.ZodType<ZodSimpleArray> = ZodRootSchema.extend({
+// export const ZodSimpleArraySchema: z.ZodType<ZodSimpleArray> = z.object({ // issue with JsonSchema conversion when using extend from ZodRootSchema, although the 2 are functionnaly equivalent
+//   optional: z.boolean().optional(),
+//   type: z.literal('simpleArray'),
+//   definition: z.lazy(()=>ZodSimpleElementSchema)
+//   // definition: withGetType(z.lazy(() => ZodSimpleElementSchema),(ts) => ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("ZodSimpleElementSchema"))), // TODO:keep Schemas clean!!!
+// });
 
 export interface ZodReferentialElementArray extends ZodRoot {
-  type: 'simpleArray',
+  type: 'array',
   definition: ZodReferentialElement
 }
-export const ZodReferentialElementArraySchema: z.ZodType<ZodReferentialElementArray> = ZodRootSchema.extend({
-  // optional: z.boolean().optional(),
-  type: z.literal('simpleArray'),
+// export const ZodReferentialElementArraySchema: z.ZodType<ZodReferentialElementArray> = ZodRootSchema.extend({
+export const ZodReferentialElementArraySchema: z.ZodType<ZodReferentialElementArray> = z.object({ // issue with JsonSchema conversion when using extend from ZodRootSchema, although the 2 are functionnaly equivalent
+  optional: z.boolean().optional(),
+  type: z.literal('array'),
   definition: z.lazy(()=>ZodReferentialElementSchema)
 })
 
@@ -291,7 +273,7 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
     type: "object",
     definition: {
       "type": { type: "literal", definition: "enum" },
-      "definition": { type: "simpleArray", definition: { type: "simpleType", definition: "string" } },
+      "definition": { type: "array", definition: { type: "simpleType", definition: "string" } },
     },
   },
   ZodFunctionSchema: {
@@ -299,17 +281,17 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
     definition: {
       type: { type: "literal", definition: "function" },
       args: {
-        type: "simpleArray",
-        definition: { type: "referentialElement", definition: "ZodSimpleAttributeSchema" },
+        type: "array",
+        definition: { type: "schemaReference", definition: "ZodSimpleAttributeSchema" },
       },
-      returns: { type: "referentialElement", definition: "ZodSimpleAttributeSchema", optional: true },
+      returns: { type: "schemaReference", definition: "ZodSimpleAttributeSchema", optional: true },
     },
   },
   ZodLazySchema: {
     type: "object",
     definition: {
       type: { type: "literal", definition: "lazy" },
-      definition: { type: "referentialElement", definition: "ZodFunctionSchema" },
+      definition: { type: "schemaReference", definition: "ZodFunctionSchema" },
     },
   },
   ZodLiteralSchema: {
@@ -326,13 +308,6 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       "type": { type: "literal", definition: "referentialElement" },
       "definition": { type: "simpleType", definition: "string" },
     },
-  },
-  ZodReferentialElementSchema: {
-    type: "referentialUnion",
-    definition: [
-      { type: "referentialElement", definition: "ZodSimpleElementSchema" },
-      { type: "referentialElement", definition: "ZodReferentialCoreElementSchema" },
-    ]
   },
   // // ZodSimpleRecordSchema: {
   // //   type: "object",
@@ -398,33 +373,33 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
       "definition": { type: "enum", definition: ['any','boolean','string','number',] },
     },
   },
-  ZodSimpleBootstrapElementSchema: { type: "simpleBootstrapElement" },
-  // ZodSimpleArraySchema: {
-  //   type: "object",
-  //   // extend: {type:"referentialElement", definition:"ZodRootSchema"},
-  //   definition: {
-  //     "optional": { type: "simpleType", definition: "boolean", optional: true },
-  //     "type": { type: "literal", definition: "simpleArray" },
-  //     // "definition": { type: "referentialElement", definition: "ZodSimpleElementSchema" },
-  //     "definition": { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema" },
-  //   },
-  // },
+  ZodSimpleArraySchema: { // before ZodSimpleElementSchema
+    type: "object",
+    // extend: {type:"referentialElement", definition:"ZodRootSchema"},
+    definition: {
+      "optional": { type: "simpleType", definition: "boolean", optional: true },
+      "type": { type: "literal", definition: "simpleArray" },
+      // "definition": { type: "referentialElement", definition: "ZodSimpleAttributeSchema" },
+      "definition": { type: "schemaReference", definition: "ZodSimpleElementSchema" },
+    },
+  },
   ZodSimpleElementSchema: {
     type: "referentialUnion",
     definition: [
-      { type: "referentialElement", definition: "ZodEnumSchema"},
-      { type: "referentialElement", definition: "ZodFunctionSchema"},
-      { type: "referentialElement", definition: "ZodLazySchema"},
-      { type: "referentialElement", definition: "ZodLiteralSchema"},
-      { type: "referentialElement", definition: "ZodSimpleAttributeSchema"},
-      // { type: "referentialElement", definition: "ZodSimpleArraySchema"},
-      { type: "referentialElement", definition: "ZodSimpleBootstrapElementSchema"},
-      { type: "referentialElement", definition: "ZodSimpleObjectSchema"},
+      { type: "schemaReference", definition: "ZodEnumSchema"},
+      { type: "schemaReference", definition: "ZodFunctionSchema"},
+      { type: "schemaReference", definition: "ZodLazySchema"},
+      { type: "schemaReference", definition: "ZodLiteralSchema"},
+      { type: "schemaReference", definition: "ZodSimpleAttributeSchema"},
+      { type: "schemaReference", definition: "ZodSimpleArraySchema"},
+      { type: "schemaReference", definition: "ZodSimpleBootstrapElementSchema"},
+      { type: "schemaReference", definition: "ZodSimpleObjectSchema"},
       // { type: "referentialElement", definition: "ZodSimpleRecordSchema"},
       // { type: "referentialElement", definition: "ZodSimpleUnionSchema"},
       // { type: "referentialElement", definition: "ZodRootSchema"},
     ]
   },
+  ZodSimpleBootstrapElementSchema: { type: "simpleBootstrapElement" }, // must be after ZodSimpleElementSchema, and before ZodSimpleObjectSchema
   ZodSimpleObjectSchema: {
     type: "object",
     definition: {
@@ -435,6 +410,13 @@ export const zodJsonBootstrapSchema: ZodReferentialElementSet = {
         definition: { type: "simpleBootstrapElement" },
       },
     },
+  },
+  ZodReferentialElementSchema: {
+    type: "referentialUnion",
+    definition: [
+      { type: "schemaReference", definition: "ZodSimpleElementSchema" },
+      { type: "schemaReference", definition: "ZodReferentialCoreElementSchema" },
+    ]
   },
   // // ZodSimpleObjectSchema: {
   // //   type: "object",
