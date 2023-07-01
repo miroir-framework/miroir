@@ -1,6 +1,15 @@
 import { AnyZodObject, ZodLazy, ZodObject, ZodTypeAny, optional, z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
-import { ResType, ZodReferentialElement, ZodReferentialElementSet, ZodSchemaAndDescription, ZodSimpleElement, zodJsonBootstrapSchema, ZodReferentialElementSchema, ZodReferentialUnion } from "../0_interfaces/1_core/IZodSchema";
+import {
+  ResType,
+  ZodReferentialElement,
+  ZodReferentialElementSet,
+  ZodSchemaAndDescription,
+  // ZodSimpleElement,
+  zodJsonBootstrapSchema,
+  ZodReferentialElementSchema,
+  ZodUnion,
+} from "../0_interfaces/1_core/IZodSchema";
 
 const serialize = require('serialize-javascript');
 
@@ -30,11 +39,11 @@ export function getZodSchemaFromJsonZodSchemaSet(elementSet:ZodReferentialElemen
 export function getZodSchemaFromJsonZodSchema(name:string, element:ZodReferentialElement,getSchemaReferences:()=>ResType,generateForTs?: boolean):ZodSchemaAndDescription {
   console.log("getZodSchemaFromJsonZodSchema",name,"converting",element.type,(['referentialElement','simpleType','literal'].includes(element.type)?'definition ' + (element as any)['definition']:''));
   switch (element.type) {
-    case "simpleBootstrapElement": {
-      // return z.lazy(()=>getZodSchemaFromJsonZodSchema(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
-      return getZodSchemaFromJsonZodSchema(name, {type:"schemaReference", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
-      // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
-    }
+    // case "simpleBootstrapElement": {
+    //   // return z.lazy(()=>getZodSchemaFromJsonZodSchema(name, {type:"referentialElement", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs));
+    //   return getZodSchemaFromJsonZodSchema(name, {type:"schemaReference", definition:"ZodSimpleElementSchema"},getSchemaReferences,generateForTs);
+    //   // return z.lazy(()=>getSchemaReferences()["ZodSimpleElementSchema"]);
+    // }
     case "literal": {
       return {
         zodSchema:z.literal(element.definition),
@@ -187,8 +196,8 @@ export function getZodSchemaFromJsonZodSchema(name:string, element:ZodReferentia
     //   // return z.union(element.definition.map(e=>getZodSchemaFromJsonZodSchema(name, e, getSchemaReferences, generateForTs)) as any)
     //   break;
     // }
-    case "referentialUnion": {
-      const sub = (element as ZodReferentialUnion).definition.map(e=>getZodSchemaFromJsonZodSchema(name, e, getSchemaReferences, generateForTs))
+    case "union": {
+      const sub = (element as ZodUnion).definition.map(e=>getZodSchemaFromJsonZodSchema(name, e, getSchemaReferences, generateForTs))
       return {
         zodSchema:z.union( sub.map(s=>s.zodSchema)as any),
         description:`z.union(${JSON.stringify(sub.map(s=>s.description))})`
@@ -205,7 +214,8 @@ export function getZodSchemaFromJsonZodSchema(name:string, element:ZodReferentia
       // return z.record(z.string(),getZodSchemaFromJsonZodSchema(name, element.definition, getSchemaReferences, generateForTs));
     }
     default:
-      return {zodSchema:z.any(),description:"z.any()"}
+      throw new Error("could not convert given json Zod schema, unknown type:" + element["type"])
+      // return {zodSchema:z.any(),description:"z.any()"}
       break;
   }
 }
@@ -215,7 +225,7 @@ export function getZodSchemaFromJsonZodSchema(name:string, element:ZodReferentia
 // }
 
 
-export function referentialElementDependencies(element:ZodSimpleElement | ZodReferentialElement):string[] {
+export function referentialElementDependencies(element:ZodReferentialElement | ZodReferentialElement):string[] {
   console.log("referentialElementDependencies called for",element.type);
   let result: string[]
   switch (element.type) {
@@ -240,14 +250,8 @@ export function referentialElementDependencies(element:ZodSimpleElement | ZodRef
       result = referentialElementDependencies(element.definition)
       break;
     }
-    case "referentialUnion":{ // definition is an array of ZodReferentialElement
-      result = element.definition.reduce((acc:string[],curr:ZodSimpleElement | ZodReferentialElement)=>acc.concat(referentialElementDependencies(curr)),[]);
-      // return element.definition.reduce((acc:string[],curr:any):string[]=>{return [] as string[]},[] as string[]);
-      // return []
-      break;
-    }
-    case "referentialUnion": { // definition is an array of ZodReferentialElement
-      result = element.definition.reduce((acc:string[],curr:ZodSimpleElement)=>acc.concat(referentialElementDependencies(curr)),[]);
+    case "union":{ // definition is an array of ZodReferentialElement
+      result = element.definition.reduce((acc:string[],curr:ZodReferentialElement)=>acc.concat(referentialElementDependencies(curr)),[]);
       // return element.definition.reduce((acc:string[],curr:any):string[]=>{return [] as string[]},[] as string[]);
       // return []
       break;
@@ -280,58 +284,7 @@ export function _zodToJsonSchema(referentialSet:ResType, dependencies:{[k:string
     console.log('_zodToJsonSchema',name,'converted',convertedCurrent);
     result[entry[0]] = convertedCurrent;
   }
-  // const result = {
-  //   node: Object.fromEntries(
-  //     referentialSetEntries.map(
-  //       (e:[string,any])=> {
-  //         console.log('_zodToJsonSchema',name,'calling zodToJsonSchema on',e[0]);
-  //         const result:[string,any] = [e[0], zodToJsonSchema(e[1], {definitions:referentialSet})];
-  //         console.log('_zodToJsonSchema',name,'return',result);
-  //         return result
-  //       }
-  //     )
-  //   )
-  // } as any;
-  // console.log('_zodToJsonSchema return',result);
   return result;
 }
-
-// // ######################################################################################################
-// // export function _zodToTs(referentialSet:ResType, name: string):{node:{[k:string]:{tsType:any /*ZodToTsReturn*/,reference:any}}} {
-// export function _zodToTs(referentialSet:ResType, name: string):{node:{[k:string]:any /*ZodToTsReturn*/}} {
-//   // console.log('_zodToTs referentialSet called',referentialSet);
-//   const result = {
-//     node: Object.fromEntries(
-//       Object.entries(referentialSet).map(
-//         (e:[string,any])=> {
-//           // console.log('_zodToTs called for',name,'calling zodToTs on',e[0]);
-//           const tsType = zodToTs(e[1],e[0]).node
-//           // const reference = withGetType(z.instanceof(Date),(ts) => ts.factory.createIdentifier(e[0]),)
-//           // const result:[string,any] = [e[0], {tsType,ref: reference}];
-//           const result:[string,any] = [e[0], tsType];
-//           // console.log('_zodToTs zodToTs return',result);
-//           return result
-//         }
-//       )
-//     )
-//   } as any;
-//   // console.log('_zodToTs zodToTs return',result);
-//   return result;
-// }
-
-
-// // ######################################################################################################
-// export function _printNode(node:{[k:string]:any /*ZodToTsReturn*/}, withName?:boolean):string {
-//   // console.log('_printNode called on',node);
-//   const entries = Object.entries(node);
-//   return (`${entries.length > 1?'{':''}${
-//     entries.map((e:[string,any],i)=> {
-//       // console.log('_printNode index',i,e);
-//       const currentNode = '' + (withName?e[0] + ':':'') + printNode(e[1]) //+ ((i<entries.length-1)?',':'')
-//       // console.log('_printNode index',i,currentNode);
-      
-//       return currentNode
-//     })}${entries.length > 1?'}':''}`)
-// }
 
 
