@@ -258,6 +258,13 @@ describe(
               returns: { type: "schemaReference", definition: "ZodSimpleAttributeSchema", optional: true },
             },
           },
+          ZodLazySchema: {
+            type: "object",
+            definition: {
+              type: { type: "literal", definition: "lazy" },
+              definition: { type: "schemaReference", definition: "ZodFunctionSchema" },
+            },
+          },
           ZodLiteralSchema: {
             type: "object",
             definition: {
@@ -289,7 +296,7 @@ describe(
             definition: [
               { type: "schemaReference", definition: "ZodEnumSchema"},
               { type: "schemaReference", definition: "ZodFunctionSchema"},
-              // { type: "schemaReference", definition: "ZodLazySchema"},
+              { type: "schemaReference", definition: "ZodLazySchema"},
               { type: "schemaReference", definition: "ZodLiteralSchema"},
               // { type: "schemaReference", definition: "ZodSimpleArraySchema"},
               // { type: "schemaReference", definition: "ZodSimpleBootstrapElementSchema"},
@@ -322,6 +329,10 @@ describe(
             "zodSchema": ZodFunctionSchema,
             description:""
           },
+          "ZodLazySchema": {
+            "zodSchema": ZodLazySchema,
+            description:""
+          },
           "ZodLiteralSchema": {
             "zodSchema": ZodLiteralSchema,
             description:""
@@ -342,7 +353,7 @@ describe(
             "zodSchema": z.union([
               z.lazy(()=>test2ZodSchema.ZodEnumSchema.zodSchema),
               z.lazy(()=>test2ZodSchema.ZodFunctionSchema.zodSchema),
-              // z.lazy(()=>ZodLazySchema),
+              z.lazy(()=>test2ZodSchema.ZodLazySchema.zodSchema),
               z.lazy(()=>test2ZodSchema.ZodLiteralSchema.zodSchema),
               // z.lazy(()=>ZodSimpleArraySchema),
               // z.lazy(()=>ZodSimpleBootstrapElementSchema),
