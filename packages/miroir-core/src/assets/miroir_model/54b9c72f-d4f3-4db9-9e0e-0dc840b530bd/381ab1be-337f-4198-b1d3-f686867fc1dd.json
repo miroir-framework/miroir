@@ -6,33 +6,6 @@
   "name":"Entity",
   "conceptLevel":"MetaModel",
   "description": "Entities",
-  "instanceValidationJsonSchema": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "additionalProperties": false,
-    "if": {"properties": {"entityUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd"}},
-    "then": { "required": ["uuid","entityUuid","name","instanceValidationJsonSchema"]},
-    "else": { "required": ["uuid","entityUuid","name"]},
-    "properties": {
-      "uuid": {
-        "title": "Uuid",
-        "type": "string"
-      },
-      "parentName": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "entityUuid": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "name": {
-        "title": "Name",
-        "type": "string"
-      },
-      "instanceValidationJsonSchema":{"type":"object"}
-    }
-  },
   "attributes": [
     {
       "id": 1,

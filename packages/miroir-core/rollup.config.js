@@ -10,8 +10,8 @@ export default [
       'uuid',
       'msw',
       'zod',
-      'zod-to-ts',
       'zod-to-json-schema',
+      '@miroir-framework/jzod',
     ],
     output: [
         {

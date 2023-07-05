@@ -5,8 +5,7 @@
       "runner": "nx/tasks-runners/default",
       "options": {
         "parallel": 5,
-        "cacheableOperations": [
-        ]
+        "cacheableOperations": []
       }
     }
   },
@@ -16,6 +15,9 @@
     ],
     "prod": [
       "!{projectRoot}/**/*.spec.tsx"
+    ],
+    "production": [
+      "default"
     ]
   },
   "targetDefaults": {

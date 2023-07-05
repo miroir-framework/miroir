@@ -6,7 +6,6 @@
   "conceptLevel":"Model",
   "name":"ApplicationDeployment",
   "icon": "Interests",
-  "instanceValidationJsonSchema": {},
   "attributes":
   [
     {

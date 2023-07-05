@@ -6,29 +6,6 @@
   "conceptLevel":"Model",
   "name":"Report",
   "icon": "Interests",
-  "instanceValidationJsonSchema": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "type": "object",
-    "required": ["uuid","entityUuid","name"],
-    "properties": {
-      "uuid": {
-        "title": "Uuid",
-        "type": "string"
-      },
-      "entityUuid": {
-        "title": "Entity",
-        "type": "string"
-      },
-      "name": {
-        "title": "Name",
-        "type": "string"
-      },
-      "definition": {
-        "title": "Definition",
-        "type": "object"
-      }
-    }
-  },
   "attributes":
   [
     {

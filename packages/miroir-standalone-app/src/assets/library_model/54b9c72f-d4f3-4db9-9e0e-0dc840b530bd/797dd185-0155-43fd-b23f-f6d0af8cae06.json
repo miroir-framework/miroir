@@ -6,8 +6,6 @@
   "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",
-  "instanceValidationJsonSchema": {
-  },
   "attributes":
   [
     {

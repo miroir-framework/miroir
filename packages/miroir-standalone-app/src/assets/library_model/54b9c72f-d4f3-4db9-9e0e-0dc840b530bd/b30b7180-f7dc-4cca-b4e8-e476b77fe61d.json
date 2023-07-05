@@ -7,9 +7,6 @@
   "name":"Author",
   "description": "author",
   "icon": "Person",
-  "instanceValidationJsonSchema": {
-    
-  },
   "attributes": [
     {
         "id": 1,
