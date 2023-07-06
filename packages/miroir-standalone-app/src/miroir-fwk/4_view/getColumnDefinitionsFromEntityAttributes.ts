@@ -1,26 +1,12 @@
-import { ZodType, ZodTypeAny, z } from "zod";
-import { printNode, zodToTs } from "zod-to-ts";
 import { ColDef } from "ag-grid-community";
 
-import { EntityAttribute, entityDefinitionEntityDefinition } from "miroir-core";
-import GenderCellRenderer from "./GenderCellRenderer";
+import entityPublisher from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
+import entityAuthor from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
+import { EntityAttribute, entityDefinitionEntityDefinitionAttributes2Type } from "miroir-core";
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
 import { DefaultCellRenderer, EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
-import entityAuthor from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
-import entityPublisher from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
-import {
-  JzodElement,
-  JzodToZodResult,
-  ZodSchemaAndDescription,
-  jzodBootstrapSchema,
-  jzodSchemaSetToZodSchemaSet,
-  jzodSchemaToZodSchema,
-} from "@miroir-framework/jzod";
-import { entityDefinitionEntityDefinitionZodSchema } from "../convertedJzodSchemas";
+import GenderCellRenderer from "./GenderCellRenderer";
 
-// // ##########################################################################################
-const entityDefinitionEntityDefinitionAttributes2Schema = entityDefinitionEntityDefinitionZodSchema.shape.attributesNew.unwrap().element;
-export type entityDefinitionEntityDefinitionAttributes2Type = z.infer<typeof entityDefinitionEntityDefinitionAttributes2Schema>
 
 export function getColumnDefinitionsFromEntityAttributesNew(attributes:entityDefinitionEntityDefinitionAttributes2Type[]):ColDef<any>[] {
   return attributes?.map(

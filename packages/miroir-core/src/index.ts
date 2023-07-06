@@ -3,6 +3,8 @@ export {
   ApplicationSchema,
 } from './0_interfaces/1_core/Application.js';
 export {
+  entityDefinitionEntityDefinitionAttributes2Type,
+  entityDefinitionEntityDefinitionAttributes2Schema,
   EntityAttributeCoreSchema,
   EntityAttributeCore,
   EntityAttributeUntypedCoreSchema,
@@ -44,11 +46,6 @@ export {
   ClientServerDistributionModeSchema,
 } from './0_interfaces/1_core/StorageConfiguration.js';
 export {
-  HttpMethod,
-  HttpMethodsArray,
-  HttpMethodsObject,
-} from './0_interfaces/1_core/Http.js';
-export {
   ApplicationConceptLevelSchema,
   ApplicationConceptLevel,
   ApplicationSectionSchema,
@@ -62,12 +59,10 @@ export {
   EntityInstanceWithName,
 } from './0_interfaces/1_core/Instance.js';
 export {
-  MiroirMetaModelSchema,
-  MiroirMetaModel,
-} from './0_interfaces/1_core/Model.js';
-export {
-  MiroirApplicationVersion,
-} from './0_interfaces/1_core/ModelVersion.js';
+  HttpMethod,
+  HttpMethodsArray,
+  HttpMethodsObject,
+} from './0_interfaces/1_core/Http.js';
 export {
 } from './0_interfaces/1_core/IZodSchema.js';
 export {
@@ -84,6 +79,13 @@ export {
   StoreBasedConfigurationSchema,
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
+export {
+  MiroirMetaModelSchema,
+  MiroirMetaModel,
+} from './0_interfaces/1_core/Model.js';
+export {
+  MiroirApplicationVersion,
+} from './0_interfaces/1_core/ModelVersion.js';
 export {
   ReportSchema,
   Report,
@@ -328,6 +330,8 @@ import reportReportList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f
 // import applicationVersionInitialMiroirVersion from './assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 // import instanceConfigurationReference from './assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
+import { entityDefinitionEntityDefinitionZodSchema } from "./0_interfaces/1_core/preprocessor-generated/convertedJzodSchemas.js";
+
 
 export {
   applicationMiroir,
@@ -348,17 +352,15 @@ export {
   reportApplicationModelBranchList,
   entityDefinitionEntity,
 
+  entityDefinitionEntityDefinitionZodSchema,
+
   entityDefinitionEntityDefinition,
   entityDefinitionStoreBasedConfiguration,
-  // entityDefinitionModelVersion,
   EntityDefinitionReport,
-  // entityModelVersion,
   entityReport,
   entityEntity,
   entityEntityDefinition,
   entityStoreBasedConfiguration,
-  // instanceConfigurationReference,
-  // applicationVersionInitialMiroirVersion,
   reportConfigurationList,
   reportEntityList,
   reportEntityDefinitionList,

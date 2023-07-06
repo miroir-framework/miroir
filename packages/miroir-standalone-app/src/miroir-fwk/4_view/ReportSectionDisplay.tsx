@@ -23,7 +23,7 @@ import {
   useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
 
-import { getColumnDefinitionsFromEntityAttributes } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
+import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntityAttributesNew } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -154,7 +154,12 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
 
   if (props.tableComponentReportType == "EntityInstance") {
     const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
-    columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
+    if (props.currentMiroirEntityDefinition?.attributesNew) {
+      // console.log('using getColumnDefinitionsFromEntityAttributesNew!!!');
+      columnDefs=getColumnDefinitionsFromEntityAttributesNew(props.currentMiroirEntityDefinition?.attributesNew);
+    } else {
+      columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
+    }
 
     // const instancesWithStringifiedJsonAttributes: EntityInstance[] = instancesToDisplay.map(
     const instancesWithStringifiedJsonAttributes: any[] = instancesToDisplay.map(
