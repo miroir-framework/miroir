@@ -1,6 +1,11 @@
 import { Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { MiroirMetaModel } from '../../1_core/Model.js';
-import { DomainAncillaryOrReplayableAction, DomainDataAction, DomainTransactionalAncillaryOrReplayableAction, DomainTransactionalReplayableAction } from '../../2_domain/DomainControllerInterface.js';
+import {
+  DomainAncillaryOrReplayableAction,
+  DomainDataAction,
+  DomainTransactionalAncillaryOrReplayableAction,
+  DomainTransactionalReplayableAction,
+} from "../../2_domain/DomainControllerInterface.js";
 
 export default {}
 

@@ -1,34 +1,12 @@
-import Box from '@mui/material/Box';
-import { Params, useNavigate, useParams } from 'react-router-dom';
 import {
   ApplicationDeployment,
   ApplicationSection,
-  ConfigurationService,
-  DomainControllerInterface,
-  EntityDefinition,
-  MetaEntity,
-  MiroirMetaModel,
-  Report,
-  Uuid,
-  applicationDeploymentMiroir,
-  defaultMiroirMetaModel
+  Uuid
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import {
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheInstancesForEntity,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
-  useLocalCacheTransactions
-} from "miroir-fwk/4_view/hooks";
-import { ReduxStateChanges } from "miroir-redux";
+import { useNavigate } from 'react-router-dom';
 
 
-import { ReportSectionDisplay } from './ReportSectionDisplay';
-import { Button, List, ListItem, ListItemButton } from '@mui/material';
-import { getColumnDefinitions } from './EntityViewer';
 
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {

@@ -64,7 +64,9 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 })
 
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
-  console.log('DefaultCellRenderer',props.value,props.value && props.value["value"],(props.value && props.value["value"]?props.value["value"]:props.value),props);
+  const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
+
+  console.log('DefaultCellRenderer',props.value && props.value["value"],valueToDisplay,props);
   // const deploymentUuid = useMiroirContextDeploymentUuid();
   // // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
   // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
@@ -73,12 +75,20 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   // const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
   // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
 
-  return (
-    <span>
-      {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
-      {props.value?props.value:'null value'}
-    </span>
-  );
+  if (Array.isArray(valueToDisplay)) {
+    return (
+      <span>
+        {JSON.stringify(valueToDisplay)}
+      </span>
+    )
+  } else {
+    return (
+      <span>
+        {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
+        {props.value?props.value:'null value'}
+      </span>
+    );
+  }
 })
 
 

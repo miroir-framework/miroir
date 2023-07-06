@@ -23,7 +23,7 @@ import {
   useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
 
-import { getColumnDefinitions } from "miroir-fwk/4_view/EntityViewer";
+import { getColumnDefinitionsFromEntityAttributes } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -154,6 +154,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
 
   if (props.tableComponentReportType == "EntityInstance") {
     const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
+    columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
 
     // const instancesWithStringifiedJsonAttributes: EntityInstance[] = instancesToDisplay.map(
     const instancesWithStringifiedJsonAttributes: any[] = instancesToDisplay.map(
@@ -170,10 +171,6 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
         )
     );
   
-    columnDefs=getColumnDefinitions(currentEntityAttributes);
-    
-  
-
     console.log("ReportComponent instancesToDisplay",instancesToDisplay);
     console.log("ReportComponent props.currentMiroirEntity",props?.currentMiroirEntity);
     console.log("ReportComponent columnDefs",columnDefs);

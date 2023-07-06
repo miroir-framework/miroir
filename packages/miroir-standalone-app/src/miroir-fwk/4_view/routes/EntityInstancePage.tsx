@@ -26,7 +26,7 @@ import { ReduxStateChanges } from "miroir-redux";
 
 import { ReportSectionDisplay } from '../ReportSectionDisplay';
 import { List, ListItem, ListItemButton } from '@mui/material';
-import { getColumnDefinitions } from '../EntityViewer';
+import { getColumnDefinitionsFromEntityAttributes } from '../getColumnDefinitionsFromEntityAttributes';
 
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { EntityInstanceLink } from '../EntityInstanceLink';
@@ -171,7 +171,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                       (entityAttribute) => {
                         switch (entityAttribute.type) {
                           case "ARRAY": {
-                            const columnDefs:any[]=getColumnDefinitions(entityAttribute.lineFormat);
+                            const columnDefs:any[]=getColumnDefinitionsFromEntityAttributes(entityAttribute.lineFormat);
                             return (
                               <ListItem disableGutters key={entityAttribute.name}>
                                 <span>

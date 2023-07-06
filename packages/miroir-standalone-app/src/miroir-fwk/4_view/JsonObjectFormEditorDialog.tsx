@@ -12,7 +12,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { EntityAttribute } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { getColumnDefinitions } from './EntityViewer';
+import { getColumnDefinitionsFromEntityAttributes } from './getColumnDefinitionsFromEntityAttributes';
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { useState } from "react";
 import { useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -141,7 +141,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                   props?.entityAttributes?.map(
                     (entityAttribute) => {
                       if (entityAttribute.type == "ARRAY") {
-                        const columnDefs:any[]=getColumnDefinitions(entityAttribute.lineFormat);
+                        const columnDefs:any[]=getColumnDefinitionsFromEntityAttributes(entityAttribute.lineFormat);
                         return (
                           <ListItem disableGutters key={entityAttribute.name}>
                             <span>

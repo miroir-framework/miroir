@@ -16,7 +16,6 @@
   "license": "MIT",
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@miroir-framework/jzod": "^0.1.1",
     "level": "^8.0.0",
     "msw": "^0.49.1",
     "zod": "^3.21.4"

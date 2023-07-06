@@ -6,8 +6,131 @@
   "name":"EntityDefinition",
   "conceptLevel":"MetaModel",
   "description": "definition of an entity",
-  "instanceValidationJsonSchema": {
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "parentName": { "type": "simpleType", "definition": "string"},
+      "parentUuid": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "name": { "type": "simpleType", "definition": "string"},
+      "conceptLevel": { "type": "enum", "definition": ["MetaModel","Model","Data"], "optional": true},
+      "description": { "type": "simpleType", "definition": "string"},
+      "jzodSchema": { "type": "schemaReference", "definition": "jzodObjectSchema"},
+      "attributes": { 
+        "type":"array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "id": {"type": "simpleType", "definition": "number"},
+            "name": { "type": "simpleType", "definition": "string"},
+            "defaultLabel": { "type": "simpleType", "definition": "string"},
+            "type": { "type": "simpleType", "definition": "string"},
+            "nullable": { "type": "simpleType", "definition": "boolean"},
+            "editable": { "type": "simpleType", "definition": "boolean"},
+            "lineFormat": { "type": "simpleType", "definition": "any", "optional": true}
+          }
+        }
+      },
+      "attributesNew": { 
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "object",
+          "definition": {
+            "id": { "type": "simpleType", "definition": "number" },
+            "name": { "type": "simpleType", "definition": "string" },
+            "defaultLabel": { "type": "simpleType", "definition": "string" },
+            "jzodSchema": { "type": "schemaReference", "definition": "jzodElementSchema" },
+            "entityUuid": { "type": "simpleType", "definition": "string", "optional": true, "validations":[{"type":"uuid"}] },
+            "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
+          }
+        }
+      }
+    }
   },
+  "attributesNew": [
+    {
+      "id": 1,
+      "name": "uuid",
+      "defaultLabel": "Uuid",
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "nullable": false,
+      "editable": false
+    },
+    {
+      "id": 2,
+      "name": "parentUuid",
+      "defaultLabel": "Parent Class",
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "nullable": false,
+      "editable": false
+    },
+    {
+      "id": 3,
+      "name": "parentName",
+      "defaultLabel": "Parent MetaClass Name",
+      "jzodSchema": { "type": "simpleType", "definition": "string", "optional": true },
+      "nullable": true,
+      "editable": true
+    },
+    {
+      "id": 4,
+      "name": "conceptLevel",
+      "defaultLabel": "Concept Level",
+      "jzodSchema": { "type": "enum", "definition": ["MetaModel","Model","Data"], "optional": true},
+      "nullable": true,
+      "editable": false
+    },
+    {
+      "id": 5,
+      "name": "entityUuid",
+      "defaultLabel": "Entity of the definition",
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "nullable": false,
+      "editable": false
+    },
+    {
+      "id": 6,
+      "name": "name",
+      "defaultLabel": "Name",
+      "jzodSchema": { "type": "simpleType", "definition": "string"},
+      "nullable": false,
+      "editable": true
+    },
+    {
+      "id": 7,
+      "name": "description",
+      "defaultLabel": "Description",
+      "jzodSchema": { "type": "simpleType", "definition": "string" },
+      "nullable": true,
+      "editable": true
+    },
+    {
+      "id": 8,
+      "name": "attributesNew",
+      "optional": true,
+      "defaultLabel": "Entity Definition Attributes",
+      "jzodSchema": { 
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "id": {"type": "simpleType", "definition": "number"},
+            "name": { "type": "simpleType", "definition": "string"},
+            "defaultLabel": { "type": "simpleType", "definition": "string"},
+            "type": { "type": "schemaReference", "definition": "JzodElementSchema"},
+            "entityUuid": { "type": "simpleType", "definition": "string", "optional": true, "validations":[{"type":"uuid"}]},
+            "nullable": { "type": "simpleType", "definition": "boolean", "optional": true},
+            "editable": { "type": "simpleType", "definition": "boolean", "optional": true}
+          }
+        }
+      },
+      "nullable": false,
+      "editable": true
+    }
+  ],
   "attributes": [
     {
       "id": 1,

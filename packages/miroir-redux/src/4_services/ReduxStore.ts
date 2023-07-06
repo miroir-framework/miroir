@@ -1,4 +1,4 @@
-import { combineReducers, configureStore, PayloadAction } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
@@ -10,7 +10,6 @@ import {
   applicationDeploymentMiroir,
   ApplicationSection,
   DomainAncillaryOrReplayableAction,
-  DomainAncillaryOrReplayableActionWithDeployment,
   DomainDataAction,
   DomainTransactionalAncillaryOrReplayableAction,
   DomainTransactionalReplayableAction,
@@ -25,11 +24,11 @@ import {
   MetaEntity,
   MiroirApplicationVersion,
   MiroirMetaModel,
-  Report,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
+  Report,
   StoreBasedConfiguration,
   Uuid
 } from "miroir-core";
@@ -37,16 +36,15 @@ import {
   getLocalCacheSliceIndex,
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
-  localCacheSliceInputActionNamesObject
 } from "../4_services/localStore/LocalCacheSlice";
 import {
   createUndoRedoReducer,
-  ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo
 } from "../4_services/localStore/UndoRedoReducer";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
   RemoteStoreRestSagaInputActionNamesArray
 } from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localStore/localStoreInterface';
 
 
 function roughSizeOfObject( object: any ) {

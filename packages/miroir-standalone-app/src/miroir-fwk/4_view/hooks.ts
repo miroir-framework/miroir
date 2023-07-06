@@ -20,9 +20,9 @@ import {
 } from "miroir-core";
 import {
   ReduxStateChanges,
-  selectCurrentTransaction,
   selectInstancesForSectionEntity,
   applySelectorToDomainStateSection,
+  selectCurrentTransaction,
 } from "miroir-redux";
 import { useSelector } from "react-redux";
 
