@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MailIcon from '@mui/icons-material/Mail';
@@ -245,6 +246,11 @@ export const RootComponent = (props: RootComponentProps) => {
         <DrawerHeader />
         <Table>
           <TableBody>
+            <TableRow>
+              <TableCell>
+                new uuid: {uuidv4()}
+              </TableCell>
+            </TableRow>
             <TableRow>
               <TableCell>
                 <Link to={`/home`}>Home</Link>

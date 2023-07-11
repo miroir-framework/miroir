@@ -6,31 +6,50 @@ export const entityDefinitionEntityDefinitionZodSchema = z.object({
   parentName: z.string(),
   parentUuid: z.string().uuid(),
   name: z.string(),
-  conceptLevel: z.enum(["MetaModel", "Model", "Data"] as any),
+  conceptLevel: z.enum(["MetaModel", "Model", "Data"] as any).optional(),
   description: z.string(),
-  jzodSchema: z.lazy(() => jzodObjectSchema),
+  // jzodSchema: z.lazy(() => undefined.optional()),
   attributes: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-      defaultLabel: z.string(),
-      type: z.string(),
-      nullable: z.boolean(),
-      editable: z.boolean(),
-      lineFormat: z.any().optional(),
-    })
-  ),
-  attributesNew: z
-    .array(
-      z.object({
+    z
+      .object({
         id: z.number(),
         name: z.string(),
         defaultLabel: z.string(),
-        jzodSchema: z.lazy(() => jzodElementSchema),
-        entityUuid: z.string().uuid().optional(),
-        nullable: z.boolean().optional(),
-        editable: z.boolean().optional(),
+        type: z.string(),
+        nullable: z.boolean(),
+        editable: z.boolean(),
+        lineFormat: z.any().optional(),
       })
+      .strict()
+  ),
+  attributesNew: z
+    .array(
+      z
+        .object({
+          id: z.number(),
+          name: z.string(),
+          defaultLabel: z.string(),
+          jzodSchema: z.lazy(() => jzodElementSchema),
+          entityUuid: z.string().uuid().optional(),
+          nullable: z.boolean().optional(),
+          editable: z.boolean().optional(),
+          lineFormat: z
+            .array(
+              z
+                .object({
+                  id: z.number(),
+                  name: z.string(),
+                  defaultLabel: z.string(),
+                  jzodSchema: z.lazy(() => jzodElementSchema),
+                  entityUuid: z.string().uuid().optional(),
+                  nullable: z.boolean().optional(),
+                  editable: z.boolean().optional(),
+                })
+                .strict()
+            )
+            .optional(),
+        })
+        .strict()
     )
     .optional(),
 });

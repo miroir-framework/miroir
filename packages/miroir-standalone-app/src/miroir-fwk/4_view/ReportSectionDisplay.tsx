@@ -12,18 +12,19 @@ import {
   DomainDataAction,
   EntityArrayAttribute,
   EntityAttribute,
+  EntityDefinitionEntityDefinitionAttributeNew,
   EntityDefinitionSchema,
   MetaEntity,
   MetaEntitySchema,
   ReportSchema,
   ReportSectionListDefinitionSchema,
-  entityDefinitionEntityDefinition
+  entityDefinitionEntityDefinition,
 } from "miroir-core";
 import {
   useLocalCacheInstancesForEntity
 } from "miroir-fwk/4_view/hooks";
 
-import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntityAttributesNew } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
+import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntityDefinitionJzodSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -154,9 +155,11 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
 
   if (props.tableComponentReportType == "EntityInstance") {
     const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
-    if (props.currentMiroirEntityDefinition?.attributesNew) {
+    const currentEntityAttributesNew: EntityDefinitionEntityDefinitionAttributeNew[] = props.currentMiroirEntityDefinition?.attributesNew?props.currentMiroirEntityDefinition?.attributesNew:[];
+    // if (props.currentMiroirEntityDefinition?.attributesNew) {
+    if (props.currentMiroirEntityDefinition?.jzodSchema) {
       // console.log('using getColumnDefinitionsFromEntityAttributesNew!!!');
-      columnDefs=getColumnDefinitionsFromEntityAttributesNew(props.currentMiroirEntityDefinition?.attributesNew);
+      columnDefs=getColumnDefinitionsFromEntityDefinitionJzodSchema(props.currentMiroirEntityDefinition?.jzodSchema);
     } else {
       columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
     }
@@ -308,6 +311,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
                     isAttributes={true}
                     label={props.currentMiroirEntityDefinition.name}
                     entityAttributes={currentEntityAttributes}
+                    entityAttributesNew={currentEntityAttributesNew}
                     formObject={defaultFormValues(props.tableComponentReportType, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
                     onSubmit={onSubmitOuterDialog}
                   />
@@ -350,6 +354,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
         <JsonObjectFormEditorDialog
           showButton={true}
           entityAttributes={entityDefinitionAttribute.lineFormat}
+          entityAttributesNew={[]}
           formObject={defaultFormValues(props.tableComponentReportType, entityDefinitionAttribute.lineFormat, existingRows)}
           label='InnerDialog'
           onSubmit={onSubmitInnerFormDialog}

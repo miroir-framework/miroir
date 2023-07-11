@@ -12,6 +12,7 @@ export default [
       'zod',
       'zod-to-json-schema',
       '@miroir-framework/jzod',
+      'lodash'
     ],
     output: [
         {

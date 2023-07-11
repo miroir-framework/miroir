@@ -10,12 +10,13 @@ import {
 } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { EntityAttribute } from "miroir-core";
+import { EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { getColumnDefinitionsFromEntityAttributes } from './getColumnDefinitionsFromEntityAttributes';
+import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntityAttributesNew, getColumnDefinitionsFromEntityDefinitionJzodSchema } from './getColumnDefinitionsFromEntityAttributes';
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { useState } from "react";
 import { useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
+import { JzodObject } from '@miroir-framework/jzod';
 
 export type JsonObjectFormEditorDialogInputs = {[a:string]:any}
 
@@ -28,6 +29,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   label: string;
   isAttributes?:boolean;
   entityAttributes: EntityAttribute[];
+  entityAttributesNew: EntityDefinitionEntityDefinitionAttributeNew[];
   formObject:any;
   onSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs>;
 }
@@ -138,36 +140,75 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             <Item>
               <List sx={{ pt: 0}}>
                 {
-                  props?.entityAttributes?.map(
-                    (entityAttribute) => {
-                      if (entityAttribute.type == "ARRAY") {
-                        const columnDefs:any[]=getColumnDefinitionsFromEntityAttributes(entityAttribute.lineFormat);
-                        return (
-                          <ListItem disableGutters key={entityAttribute.name}>
-                            <span>
-                              <ReportSectionDisplay
-                                tableComponentReportType="JSON_ARRAY"
-                                label={"JSON_ARRAY-"+entityAttribute.name}
-                                columnDefs={columnDefs}
-                                rowData={props?.formObject[entityAttribute.name]}
-                                styles={
-                                  {
-                                    width: '50vw',
-                                    height: '22vw',
+                  props?.entityAttributesNew.length > 0? (
+                    props?.entityAttributesNew?.map(
+                      (entityAttributeNew) => {
+                        if (entityAttributeNew.jzodSchema.type == "array") {
+                          // const columnDefs:any[]=getColumnDefinitionsFromEntityAttributesNew(entityAttributeNew.lineFormat?entityAttributeNew.lineFormat:[]);
+                          const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema((entityAttributeNew.jzodSchema.definition?entityAttributeNew.jzodSchema.definition:{}) as JzodObject);
+
+                          return (
+                            <ListItem disableGutters key={entityAttributeNew.name}>
+                              <span>
+                                <ReportSectionDisplay
+                                  tableComponentReportType="JSON_ARRAY"
+                                  label={"JSON_ARRAY-"+entityAttributeNew.name}
+                                  columnDefs={columnDefs}
+                                  rowData={props?.formObject[entityAttributeNew.name]}
+                                  styles={
+                                    {
+                                      width: '50vw',
+                                      height: '22vw',
+                                    }
                                   }
-                                }
-                              ></ReportSectionDisplay>
-                            </span>
-                          </ListItem>
-                        )
-                      } else {
-                        return (
-                          <ListItem disableGutters key={entityAttribute.name}>
-                            {entityAttribute.name}: <input form={'form.'+props.label} defaultValue={props.formObject[entityAttribute.name]} {...register(entityAttribute.name)}/>
-                          </ListItem>
-                        )
+                                ></ReportSectionDisplay>
+                              </span>
+                            </ListItem>
+                          )
+                        } else {
+                          return (
+                            <ListItem disableGutters key={entityAttributeNew.name}>
+                              {entityAttributeNew.name}: <input form={'form.'+props.label} defaultValue={props.formObject[entityAttributeNew.name]} {...register(entityAttributeNew.name)}/>
+                            </ListItem>
+                          )
+                        }
                       }
-                    }
+                    )
+  
+                  )
+                  :
+                  (
+                    props?.entityAttributes?.map(
+                      (entityAttribute) => {
+                        if (entityAttribute.type == "ARRAY") {
+                          const columnDefs:any[]=getColumnDefinitionsFromEntityAttributes(entityAttribute.lineFormat);
+                          return (
+                            <ListItem disableGutters key={entityAttribute.name}>
+                              <span>
+                                <ReportSectionDisplay
+                                  tableComponentReportType="JSON_ARRAY"
+                                  label={"JSON_ARRAY-"+entityAttribute.name}
+                                  columnDefs={columnDefs}
+                                  rowData={props?.formObject[entityAttribute.name]}
+                                  styles={
+                                    {
+                                      width: '50vw',
+                                      height: '22vw',
+                                    }
+                                  }
+                                ></ReportSectionDisplay>
+                              </span>
+                            </ListItem>
+                          )
+                        } else {
+                          return (
+                            <ListItem disableGutters key={entityAttribute.name}>
+                              {entityAttribute.name}: <input form={'form.'+props.label} defaultValue={props.formObject[entityAttribute.name]} {...register(entityAttribute.name)}/>
+                            </ListItem>
+                          )
+                        }
+                      }
+                    )
                   )
                 }
               </List>

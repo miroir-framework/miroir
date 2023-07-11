@@ -1,37 +1,42 @@
 {
-  "uuid":"bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "uuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  "name":"EntityDefinition",
-  "conceptLevel":"MetaModel",
+  "name": "EntityDefinition",
+  "conceptLevel": "MetaModel",
   "description": "definition of an entity",
   "jzodSchema": {
     "type": "object",
     "definition": {
-      "uuid": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
-      "parentName": { "type": "simpleType", "definition": "string"},
-      "parentUuid": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
-      "name": { "type": "simpleType", "definition": "string"},
-      "conceptLevel": { "type": "enum", "definition": ["MetaModel","Model","Data"], "optional": true},
-      "description": { "type": "simpleType", "definition": "string"},
-      "jzodSchema": { "type": "schemaReference", "definition": "jzodObjectSchema"},
-      "attributes": { 
-        "type":"array",
+      "uuid": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }], "extra": { "id":1, "defaultLabel": "Uuid", "editable": false } },
+      "parentName": { "type": "simpleType", "definition": "string", "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false } },
+      "parentUuid": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }], "extra": { "id":1, "defaultLabel": "Entity Uuid", "editable": false } },
+      "name": { "type": "simpleType", "definition": "string", "extra": { "id":1, "defaultLabel": "Name", "editable": false } },
+      "conceptLevel": { "type": "enum", "definition": ["MetaModel", "Model", "Data"], "optional": true, "extra": { "id":1, "defaultLabel": "Concept Level", "editable": false } },
+      "description": { "type": "simpleType", "definition": "string", "optional":true, "extra": { "id":1, "defaultLabel": "Description", "editable": true } },
+      "jzodSchema": {
+        "type": "schemaReference",
+        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+        "relativePath": "jzodObjectSchema",
+        "optional": true
+      },
+      "attributes": {
+        "type": "array",
         "definition": {
           "type": "object",
           "definition": {
-            "id": {"type": "simpleType", "definition": "number"},
-            "name": { "type": "simpleType", "definition": "string"},
-            "defaultLabel": { "type": "simpleType", "definition": "string"},
-            "type": { "type": "simpleType", "definition": "string"},
-            "nullable": { "type": "simpleType", "definition": "boolean"},
-            "editable": { "type": "simpleType", "definition": "boolean"},
-            "lineFormat": { "type": "simpleType", "definition": "any", "optional": true}
+            "id": { "type": "simpleType", "definition": "number" },
+            "name": { "type": "simpleType", "definition": "string" },
+            "defaultLabel": { "type": "simpleType", "definition": "string" },
+            "type": { "type": "simpleType", "definition": "string" },
+            "nullable": { "type": "simpleType", "definition": "boolean" },
+            "editable": { "type": "simpleType", "definition": "boolean" },
+            "lineFormat": { "type": "simpleType", "definition": "any", "optional": true }
           }
         }
       },
-      "attributesNew": { 
+      "attributesNew": {
         "type": "array",
         "optional": true,
         "definition": {
@@ -41,9 +46,35 @@
             "name": { "type": "simpleType", "definition": "string" },
             "defaultLabel": { "type": "simpleType", "definition": "string" },
             "jzodSchema": { "type": "schemaReference", "definition": "jzodElementSchema" },
-            "entityUuid": { "type": "simpleType", "definition": "string", "optional": true, "validations":[{"type":"uuid"}] },
+            "entityUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }]
+            },
             "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
-            "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
+            "editable": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "lineFormat": {
+              "type": "array",
+              "optional": true,
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "id": { "type": "simpleType", "definition": "number" },
+                  "name": { "type": "simpleType", "definition": "string" },
+                  "defaultLabel": { "type": "simpleType", "definition": "string" },
+                  "jzodSchema": { "type": "schemaReference", "definition": "jzodElementSchema" },
+                  "entityUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "validations": [{ "type": "uuid" }]
+                  },
+                  "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
+                  "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
+                }
+              }
+            }
           }
         }
       }
@@ -54,7 +85,7 @@
       "id": 1,
       "name": "uuid",
       "defaultLabel": "Uuid",
-      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
       "nullable": false,
       "editable": false
     },
@@ -62,7 +93,7 @@
       "id": 2,
       "name": "parentUuid",
       "defaultLabel": "Parent Class",
-      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
       "nullable": false,
       "editable": false
     },
@@ -78,7 +109,7 @@
       "id": 4,
       "name": "conceptLevel",
       "defaultLabel": "Concept Level",
-      "jzodSchema": { "type": "enum", "definition": ["MetaModel","Model","Data"], "optional": true},
+      "jzodSchema": { "type": "enum", "definition": ["MetaModel", "Model", "Data"], "optional": true },
       "nullable": true,
       "editable": false
     },
@@ -86,7 +117,7 @@
       "id": 5,
       "name": "entityUuid",
       "defaultLabel": "Entity of the definition",
-      "jzodSchema": { "type": "simpleType", "definition": "string", "validations":[{"type":"uuid"}]},
+      "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
       "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "nullable": false,
       "editable": false
@@ -95,7 +126,7 @@
       "id": 6,
       "name": "name",
       "defaultLabel": "Name",
-      "jzodSchema": { "type": "simpleType", "definition": "string"},
+      "jzodSchema": { "type": "simpleType", "definition": "string" },
       "nullable": false,
       "editable": true
     },
@@ -112,21 +143,113 @@
       "name": "attributesNew",
       "optional": true,
       "defaultLabel": "Entity Definition Attributes",
-      "jzodSchema": { 
+      "jzodSchema": {
         "type": "array",
         "definition": {
           "type": "object",
           "definition": {
-            "id": {"type": "simpleType", "definition": "number"},
-            "name": { "type": "simpleType", "definition": "string"},
-            "defaultLabel": { "type": "simpleType", "definition": "string"},
-            "type": { "type": "schemaReference", "definition": "JzodElementSchema"},
-            "entityUuid": { "type": "simpleType", "definition": "string", "optional": true, "validations":[{"type":"uuid"}]},
-            "nullable": { "type": "simpleType", "definition": "boolean", "optional": true},
-            "editable": { "type": "simpleType", "definition": "boolean", "optional": true}
+            "id": { "type": "simpleType", "definition": "number" },
+            "name": { "type": "simpleType", "definition": "string" },
+            "defaultLabel": { "type": "simpleType", "definition": "string" },
+            "jzodSchema": { "type": "schemaReference", "definition": "JzodElementSchema" },
+            "entityUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }]
+            },
+            "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
+            "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
           }
         }
       },
+      "lineFormat": [
+        {
+          "id": 1,
+          "name": "uuid",
+          "defaultLabel": "Uuid",
+          "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
+          "nullable": false,
+          "editable": false
+        },
+        {
+          "id": 2,
+          "name": "parentUuid",
+          "defaultLabel": "Parent Class",
+          "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
+          "nullable": false,
+          "editable": false
+        },
+        {
+          "id": 3,
+          "name": "parentName",
+          "defaultLabel": "Parent MetaClass Name",
+          "jzodSchema": { "type": "simpleType", "definition": "string", "optional": true },
+          "nullable": true,
+          "editable": true
+        },
+        {
+          "id": 4,
+          "name": "conceptLevel",
+          "defaultLabel": "Concept Level",
+          "jzodSchema": { "type": "enum", "definition": ["MetaModel", "Model", "Data"], "optional": true },
+          "nullable": true,
+          "editable": false
+        },
+        {
+          "id": 5,
+          "name": "entityUuid",
+          "defaultLabel": "Entity of the definition",
+          "jzodSchema": { "type": "simpleType", "definition": "string", "validations": [{ "type": "uuid" }] },
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "nullable": false,
+          "editable": false
+        },
+        {
+          "id": 6,
+          "name": "name",
+          "defaultLabel": "Name",
+          "jzodSchema": { "type": "simpleType", "definition": "string" },
+          "nullable": false,
+          "editable": true
+        },
+        {
+          "id": 7,
+          "name": "description",
+          "defaultLabel": "Description",
+          "jzodSchema": { "type": "simpleType", "definition": "string" },
+          "nullable": true,
+          "editable": true
+        },
+        {
+          "id": 8,
+          "name": "attributesNew",
+          "optional": true,
+          "defaultLabel": "Entity Definition Attributes",
+          "jzodSchema": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "id": { "type": "simpleType", "definition": "number" },
+                "name": { "type": "simpleType", "definition": "string" },
+                "defaultLabel": { "type": "simpleType", "definition": "string" },
+                "jzodSchema": { "type": "schemaReference", "definition": "JzodElementSchema" },
+                "entityUuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "optional": true,
+                  "validations": [{ "type": "uuid" }]
+                },
+                "nullable": { "type": "simpleType", "definition": "boolean", "optional": true },
+                "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
+              }
+            }
+          },
+          "nullable": false,
+          "editable": true
+        }
+      ],
       "nullable": false,
       "editable": true
     }

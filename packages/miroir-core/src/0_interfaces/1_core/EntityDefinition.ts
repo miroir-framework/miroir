@@ -1,8 +1,11 @@
-import { jzodObjectSchema } from "@miroir-framework/jzod";
-import { z } from "zod";
-import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "./Instance.js";
+import { ZodTypeAny, z } from "zod";
+// import { transform as _transform, isObject as _isObject, isUndefined as _isUndefined } from "lodash";
+import _ from "lodash";
+const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
-import { entityDefinitionEntityDefinitionZodSchema } from "./preprocessor-generated/convertedJzodSchemas.js";
+import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "./Instance.js";
+import { JzodObject, JzodToZodResult, jzodBootstrapSetSchema, jzodObjectSchema, jzodSchemaSetToZodSchemaSet } from "@miroir-framework/jzod";
+import { entityDefinitionEntityDefinitionAttributeNewSchema } from "./writtenByHandSchema.js";
 
 
 // ##########################################################################################
@@ -87,8 +90,8 @@ export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 
 
 // // ##########################################################################################
-export const entityDefinitionEntityDefinitionAttributes2Schema = entityDefinitionEntityDefinitionZodSchema.shape.attributesNew.unwrap().element;
-export type entityDefinitionEntityDefinitionAttributes2Type = z.infer<typeof entityDefinitionEntityDefinitionAttributes2Schema>
+// export const entityDefinitionEntityDefinitionAttributes2Schema = entityDefinitionEntityDefinitionZodSchema.shape.attributesNew.unwrap().element;
+// export type entityDefinitionEntityDefinitionAttributes2Type = z.infer<typeof entityDefinitionEntityDefinitionAttributes2Schema>
 
 // #################################################################################################
 export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
@@ -97,7 +100,7 @@ export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   jzodSchema: jzodObjectSchema.optional(),
   // jzodSchema: z.any().optional(),
   attributes: z.array(EntityAttributeSchema),
-  attributesNew: z.array(entityDefinitionEntityDefinitionAttributes2Schema).optional()
+  attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;
 
@@ -116,5 +119,41 @@ export interface InstanceDictionaryNum<T> {
 export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;
 }
+
+// #################################################################################################
+const miroirJzodExtraPropertiesSchema: JzodObject = {
+  "type": "object",
+  "definition": {
+    "id": {"type":"simpleType", "definition": "number"},
+    "defaultLabel": {"type":"simpleType", "definition": "string"},
+    "editable": {"type":"simpleType", "definition": "boolean"},
+  }
+}
+
+// const { transform, isObject, isUndefined } = _
+
+const deepTransform = (obj:any, iterator:(key:any,value:any)=>[any,any]) => _transform(obj, (acc:any, val, key) => {
+  const [k, v] = iterator(key, val) // use the iterator and get a pair of key and value
+  
+  if(_isUndefined(k)) return // skip if no updated key
+  
+  // set the updated key and value, and if the value is an object iterate it as well
+  acc[k] = _isObject(v) ? deepTransform(v, iterator) : v 
+})
+
+// const obj = {"this":{"is_not":{"something":"we want to keep"},"is":{"a":{"good_idea":22},"b":{"bad_idea":67},"c":[{"meh_idea":22}]}}}
+
+const miroirJzodExtraPropertiesSchemaTransform = (key:any, value:any):[any,any] => {
+  if (String(key) == 'extra') return [key, miroirJzodExtraPropertiesSchema]
+  
+  return [key, value]
+}
+
+
+export const miroirJzodSchemaBootstrap = deepTransform(jzodBootstrapSetSchema,miroirJzodExtraPropertiesSchemaTransform)
+
+console.log("miroirJzodBootstrapSchema",miroirJzodSchemaBootstrap);
+
+export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(miroirJzodSchemaBootstrap);
 
 export default {}

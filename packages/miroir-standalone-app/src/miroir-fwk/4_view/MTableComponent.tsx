@@ -276,6 +276,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             // label='OuterDialog'
             label={props.currentMiroirEntityDefinition.name}
             entityAttributes={props.currentMiroirEntityDefinition.attributes}
+            entityAttributesNew={props.currentMiroirEntityDefinition.attributesNew?props.currentMiroirEntityDefinition.attributesNew:[]}
             formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
             onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}

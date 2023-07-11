@@ -1,3 +1,6 @@
+import _ from "lodash";
+const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
+
 import { Autocomplete, Box, TextField } from '@mui/material';
 import {
   ICellEditorParams,
@@ -75,7 +78,7 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   // const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
   // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
 
-  if (Array.isArray(valueToDisplay)) {
+  if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
       <span>
         {JSON.stringify(valueToDisplay)}

@@ -7,5 +7,5 @@
     // "traceResolution": true,
   },
   "exclude": ["./node_modules/**","./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx"],
-  "include": ["./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx", "../miroir-core/src/0_interfaces/1_core/preprocessor-generated/convertedJzodSchemas.ts"]
+  "include": ["./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
 }
