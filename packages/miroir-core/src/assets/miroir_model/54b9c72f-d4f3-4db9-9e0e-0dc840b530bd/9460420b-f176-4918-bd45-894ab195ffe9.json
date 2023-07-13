@@ -6,47 +6,43 @@
   "conceptLevel":"Model",
   "name":"Application",
   "icon": "Interests",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "defaultLabel": "Entity",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 4,
-      "name": "defaultLabel",
-      "defaultLabel": "Default Label",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 5,
-      "name": "description",
-      "defaultLabel": "Description",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":6, "defaultLabel": "Description", "editable": true }
+      }
     }
-  ]
+  }
 }

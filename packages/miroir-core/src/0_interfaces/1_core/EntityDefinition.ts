@@ -99,7 +99,7 @@ export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   description: z.string().optional(),
   jzodSchema: jzodObjectSchema.optional(),
   // jzodSchema: z.any().optional(),
-  attributes: z.array(EntityAttributeSchema),
+  attributes: z.array(EntityAttributeSchema).optional(),
   attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;

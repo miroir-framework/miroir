@@ -6,68 +6,61 @@
   "conceptLevel":"Model",
   "name":"ApplicationDeployment",
   "icon": "Interests",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "UUID",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "defaultLabel": "Entity",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 4,
-      "name": "defaultLabel",
-      "defaultLabel": "Default Label",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 5,
-      "name": "application",
-      "defaultLabel": "Application",
-      "description": "The Application of the Branch.",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 6,
-      "name": "model",
-      "defaultLabel": "Application Deployment Model",
-      "description": "The location where the model used for this Application Deployment can be found.",
-      "type": "OBJECT",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 7,
-      "name": "data",
-      "defaultLabel": "Application Deployment Data",
-      "description": "The location where the data used for this Application Deployment can be found.",
-      "type": "OBJECT",
-      "nullable": false,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":6, "defaultLabel": "Description", "editable": true }
+      },
+      "application": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":7, "defaultLabel": "Application", "description": "The Application of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+      },
+      "model": {
+        "type": "schemaReference",
+        "optional": true,
+        "extra": { "id":8, "defaultLabel": "Application Deployment Model", "editable": true },
+        "relativePath": "jzodObjectSchema"
+      },
+      "data": {
+        "type": "schemaReference",
+        "optional": true,
+        "extra": { "id":9, "defaultLabel": "Application Deployment Data", "editable": true },
+        "relativePath": "jzodObjectSchema"
+      }
     }
-  ]
+  }
 }

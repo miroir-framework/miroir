@@ -6,55 +6,61 @@
   "conceptLevel":"Model",
   "name":"Report",
   "icon": "Interests",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "defaultLabel": "Parent",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 4,
-      "name": "defaultLabel",
-      "defaultLabel": "Default Label",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 5,
-      "name": "type",
-      "defaultLabel": "Type of Report",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 6,
-      "name": "definition",
-      "defaultLabel": "Definition",
-      "type": "OBJECT",
-      "nullable": true,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": ["MetaModel", "Model", "Data"],
+        "optional": true,
+        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+      },
+      "type": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":7, "defaultLabel": "Type of Report", "editable": true }
+      },
+      "application": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "optional": true,
+        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
+      },
+      "definition": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
+      }
     }
-  ]
+  }
 }

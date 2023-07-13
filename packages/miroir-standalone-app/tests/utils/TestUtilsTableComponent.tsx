@@ -19,6 +19,7 @@ import {
   useLocalCacheSectionEntityDefinitions
 } from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
 import { applicationDeploymentLibrary } from "./tests-utils";
+import { JzodElement } from "@miroir-framework/jzod";
 
 export interface MiroirReportComponentProps {
   entityName?: string;
@@ -59,14 +60,17 @@ export const TestUtilsTableComponent = (
   } else {
     currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid) as MetaEntity;
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
-    console.log("TestUtilsTableComponent currentMiroirEntity",currentMiroirEntity);
     instancesToDisplay = useLocalCacheInstancesForEntity(props.deploymentUuid,props.instancesApplicationSection?props.instancesApplicationSection:'data',currentMiroirEntity?.uuid);
   }
+  console.log("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
+  console.log("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
   
   // const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(props.entityUuid);
   console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
-
-  const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
+  
+  // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
+  const currentAttributes = currentMiroirEntityDefinition?.jzodSchema ? Object.entries(currentMiroirEntityDefinition?.jzodSchema.definition)?.filter(a=>a[0]!=='parentUuid'):[];
+  console.log("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>
       {/* <span>
@@ -85,8 +89,8 @@ export const TestUtilsTableComponent = (
               <tr>
                 {
                   currentAttributes.map(
-                    (a:any, key:any) => (
-                      <th  key={a.name}>{a.name}</th>
+                    (a:[string,JzodElement], key:any) => (
+                      <th  key={a[0]}>{a[0]}</th>
                     )
                   )
                 }
@@ -100,7 +104,7 @@ export const TestUtilsTableComponent = (
                       {
                         currentAttributes.map(
                           (a,k) => (
-                            <td key={a['name']} role='gridcell'>{JSON.stringify(e[a['name']])}</td>
+                            <td key={a[0]} role='gridcell'>{JSON.stringify(e[a[0]])}</td>
                           )
                         )
                       }

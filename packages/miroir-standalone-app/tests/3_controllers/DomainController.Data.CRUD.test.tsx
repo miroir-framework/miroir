@@ -213,7 +213,7 @@ describe(
           );
           console.log('add Book step 1: done replace.')
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -242,7 +242,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           // data operations are not transactional
@@ -270,7 +270,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -341,7 +341,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -372,7 +372,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           // data operations are not transactional
@@ -399,7 +399,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -471,7 +471,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
 
           await waitFor(
             () => {
@@ -518,7 +518,7 @@ describe(
           // update does not generate any redo / undo
           expect(domainController.currentTransaction().length).toEqual(0);
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -538,7 +538,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {

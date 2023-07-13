@@ -21,7 +21,7 @@ export const entityDefinitionEntityDefinitionZodSchema = z.object({
         lineFormat: z.any().optional(),
       })
       .strict()
-  ),
+  ).optional(),
   attributesNew: z
     .array(
       z
@@ -53,4 +53,4 @@ export const entityDefinitionEntityDefinitionZodSchema = z.object({
     )
     .optional(),
 });
-export type entityDefinitionEntityDefinition = z.infer<typeof entityDefinitionEntityDefinitionZodSchema>;
+// export type entityDefinitionEntityDefinition = z.infer<typeof entityDefinitionEntityDefinitionZodSchema>;

@@ -13,7 +13,7 @@ import entityDefinitionApplication from '../assets/miroir_model/54b9c72f-d4f3-4d
 import entityDefinitionApplicationDeployment from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
 import entityDefinitionApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
-import EntityDefinitionReport from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
+import entityDefinitionReport from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
 // import entityDefinitionModelVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionStoreBasedConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
 import reportApplicationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json';
@@ -100,7 +100,7 @@ export async function modelInitialize(
     console.log(logHeader, 'created entity EntityStoreBasedConfiguration',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
-    await storeController.createEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
+    await storeController.createEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
     console.log(logHeader, 'created entity EntityReport',storeController.getEntityUuids());
     
     await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
@@ -150,7 +150,7 @@ export async function modelInitialize(
     console.log(logHeader, 'app initialized entity EntityStoreBasedConfiguration',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
-    await storeController.createModelStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, EntityDefinitionReport as EntityDefinition);
+    await storeController.createModelStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
     console.log(logHeader, 'app initialized entity EntityReport',storeController.getEntityUuids());
     
     await storeController.upsertInstance('model', application);

@@ -6,62 +6,51 @@
   "name":"Entity",
   "conceptLevel":"MetaModel",
   "description": "Entities",
-  "attributes": [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "Uuid",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "parentName",
-      "defaultLabel": "Parent Entity Name",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "defaultLabel": "Parent Entity",
-      "type": "STRING",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 4,
-      "name": "conceptLevel",
-      "defaultLabel": "Concept Level",
-      "type": "STRING",
-      "nullable": true,
-      "editable": false
-    },
-    {
-      "id": 5,
-      "name": "application",
-      "defaultLabel": "Application",
-      "type": "STRING",
-      "nullable": true,
-      "editable": false
-    },
-    {
-      "id": 6,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 7,
-      "name": "description",
-      "defaultLabel": "Description",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": ["MetaModel", "Model", "Data"],
+        "optional": true,
+        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+      },
+      "author": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "optional": true,
+        "extra": { "id":6, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+      }
     }
-  ]
+  }
 }

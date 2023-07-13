@@ -56,7 +56,7 @@ export type EntityDefinitionEntityDefinition = {
   conceptLevel?: "MetaModel" | "Model" | "Data",
   description: string,
   jzodSchema: JzodObject, 
-  attributes: EntityDefinitionEntityDefinitionAttribute[],
+  attributes?: EntityDefinitionEntityDefinitionAttribute[],
   attributesNew?: EntityDefinitionEntityDefinitionAttributeNew[],
 }
 
@@ -69,7 +69,7 @@ export const entityDefinitionEntityDefinitionSchema:ZodType<EntityDefinitionEnti
   conceptLevel: z.enum(["MetaModel", "Model", "Data"] as any).optional(),
   description: z.string(),
   jzodSchema: z.lazy(() => jzodObjectSchema),
-  attributes: z.array(entityDefinitionEntityDefinitionAttributeSchema),
+  attributes: z.array(entityDefinitionEntityDefinitionAttributeSchema).optional(),
   attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional(),
 });
 // export type entityDefinitionEntityDefinition = z.infer<typeof entityDefinitionEntityDefinitionZodSchema>;

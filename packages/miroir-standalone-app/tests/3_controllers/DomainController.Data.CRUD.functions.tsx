@@ -98,7 +98,7 @@ export async function refreshAllInstancesTest(
       });
     });
 
-    await user.click(screen.getByRole("button"));
+    await act(()=>user.click(screen.getByRole("button")));
 
     await waitFor(() => {
       getAllByRole(/step:1/);

@@ -6,60 +6,62 @@
   "conceptLevel":"Model",
   "name":"ApplicationModelBranch",
   "icon": "Interests",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "UUID",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "defaultLabel": "Entity",
-      "applicationSection": "model",
-      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 4,
-      "name": "defaultLabel",
-      "defaultLabel": "Default Label",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 5,
-      "name": "application",
-      "defaultLabel": "Application",
-      "description": "The Application of the Branch.",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 6,
-      "name": "headVersion",
-      "defaultLabel": "Head Version",
-      "description": "The Head Application Version of the Branch.",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-      "nullable": false,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "targetEntityApplicationSection":"model", "targetEntity":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }
+      },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": ["MetaModel", "Model", "Data"],
+        "optional": true,
+        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
+      },
+      "application": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":7, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+      },
+      "headVersion": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "optional": true,
+        "extra": { "id":8, "defaultLabel": "Head Version", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
+      }
     }
-  ]
+  }
 }

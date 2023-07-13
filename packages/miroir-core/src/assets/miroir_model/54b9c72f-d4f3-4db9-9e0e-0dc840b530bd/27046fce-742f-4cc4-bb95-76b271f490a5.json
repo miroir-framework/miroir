@@ -6,83 +6,79 @@
   "conceptLevel":"Model",
   "name":"ApplicationVersion",
   "icon": "Interests",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "UUID",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "name",
-      "defaultLabel": "Name",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 3,
-      "name": "parentUuid",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 4,
-      "name": "description",
-      "defaultLabel": "Description",
-      "type": "STRING",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 5,
-      "name": "application",
-      "defaultLabel": "Model",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 6,
-      "name": "branch",
-      "defaultLabel": "Branch",
-      "description": "The Branch of this Application Version",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 7,
-      "name": "previousVersion",
-      "defaultLabel": "Previous version of the application on this Branch.",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-      "nullable": true,
-      "editable": false
-    },
-    {
-      "id": 8,
-      "name": "modelStructureMigration",
-      "defaultLabel": "Structure Migration from Previous Version",
-      "type": "OBJECT",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 9,
-      "name": "modelCUDMigration",
-      "defaultLabel": "Create-Update-Delete Migration from Previous Version",
-      "type": "OBJECT",
-      "nullable": true,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+      },
+      "defaultLabel": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":6, "defaultLabel": "Description", "editable": true }
+      },
+      "type": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":7, "defaultLabel": "Type of Report", "editable": true }
+      },
+      "application": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+      },
+      "branch": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":9, "defaultLabel": "Branch", "description":"The Branch of this Application Version", "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1", "editable": false }
+      },
+      "previousVersion": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":10, "defaultLabel": "Previous Application Version", "description":"Previous version of the application on this Branch.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }
+      },
+      "modelStructureMigration": {
+        "type": "schemaReference",
+        "optional": true,
+        "extra": { "id":11, "defaultLabel": "Structure Migration from Previous Version", "editable": true },
+        "relativePath": "jzodObjectSchema"
+      },
+      "modelCUDMigration": {
+        "type": "schemaReference",
+        "optional": true,
+        "extra": { "id":12, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true },
+        "relativePath": "jzodObjectSchema"
+      }
     }
-  ]
+  }
 }

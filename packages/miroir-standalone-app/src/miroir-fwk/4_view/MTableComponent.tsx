@@ -43,6 +43,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { defaultFormValues } from './ReportSectionDisplay';
+import { JzodObject } from '@miroir-framework/jzod';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -232,7 +233,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
     if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
       const columDefinitionDetails=props?.columnDefs?.find(c=>c.name == e.colDef.field);
-      const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes.find((a:any)=>a.name == e.colDef.field);
+      const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes?.find((a:any)=>a.name == e.colDef.field);
       if (columnDefinitionAttribute?.type == 'ENTITY_INSTANCE_UUID') {
         const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
         // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
@@ -266,8 +267,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   
   return (
     <div>
-      {
-        props.type == 'EntityInstance'?
+      {props.type == "EntityInstance" ? (
         <div>
           <JsonObjectFormEditorDialog
             showButton={false}
@@ -275,21 +275,31 @@ export const MTableComponent = (props: TableComponentProps) => {
             isAttributes={true}
             // label='OuterDialog'
             label={props.currentMiroirEntityDefinition.name}
-            entityAttributes={props.currentMiroirEntityDefinition.attributes}
-            entityAttributesNew={props.currentMiroirEntityDefinition.attributesNew?props.currentMiroirEntityDefinition.attributesNew:[]}
-            formObject={dialogFormObject?dialogFormObject:defaultFormValues(props.type,props.currentMiroirEntityDefinition.attributes,[], props.currentMiroirEntity,props.displayedDeploymentDefinition)}
+            entityAttributes={props.currentMiroirEntityDefinition.attributes?props.currentMiroirEntityDefinition.attributes:[]}
+            entityAttributesNew={
+              props.currentMiroirEntityDefinition.attributesNew ? props.currentMiroirEntityDefinition.attributesNew : []
+            }
+            jzodSchema={props.currentMiroirEntityDefinition.jzodSchema as JzodObject}
+            formObject={
+              dialogFormObject
+                ? dialogFormObject
+                : defaultFormValues(
+                    props.type,
+                    props.currentMiroirEntityDefinition.jzodSchema as JzodObject,
+                    props.currentMiroirEntityDefinition.attributes?props.currentMiroirEntityDefinition.attributes:[],
+                    [],
+                    props.currentMiroirEntity,
+                    props.displayedDeploymentDefinition
+                  )
+            }
             onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}
           />
         </div>
-        :
+      ) : (
         <div></div>
-      }
-      <div
-        id="tata"
-        className="ag-theme-alpine"
-        style={props.styles}
-      >
+      )}
+      <div id="tata" className="ag-theme-alpine" style={props.styles}>
         <AgGridReact
           columnDefs={columnDefs}
           // rowData={props.rowData.map((v:TableComponentRow)=>Object.fromEntries(Object.entries(v).map((e)=>[e[0],e[1].value])))}
@@ -301,18 +311,15 @@ export const MTableComponent = (props: TableComponentProps) => {
           onRowDataUpdated={onRowDataUpdated}
           onCellDoubleClicked={onCellDoubleClicked}
           onRowValueChanged={onRowValueChanged}
-          getRowId={params=>params.data.uuid?params.data.uuid:params.data.id}
-          defaultColDef={
-            {
-              editable: true,
-              sortable: true,
-              filter: true,
-              resizable: true,
-              cellEditor: EntityEditor,
-            }
-          }
-        >
-        </AgGridReact>
+          getRowId={(params) => (params.data.uuid ? params.data.uuid : params.data.id)}
+          defaultColDef={{
+            editable: true,
+            sortable: true,
+            filter: true,
+            resizable: true,
+            cellEditor: EntityEditor,
+          }}
+        ></AgGridReact>
       </div>
     </div>
   );

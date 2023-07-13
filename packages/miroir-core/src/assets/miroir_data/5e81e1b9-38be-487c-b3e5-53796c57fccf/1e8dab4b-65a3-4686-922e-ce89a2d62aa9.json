@@ -7,19 +7,20 @@
   "definition": {
     "type": "object",
     "definition": {
+      "jzodBasicExtraSchema": {
+        "optional": true,
+        "type": "object",
+        "definition": {
+          "id": { "type": "simpleType", "definition": "number" },
+          "defaultLabel": { "type": "simpleType", "definition": "string" },
+          "editable": { "type": "simpleType", "definition": "boolean" }
+        }
+      },
       "jzodArraySchema": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
-          "extra": {
-            "optional": true,
-            "type": "object",
-            "definition": {
-              "id": { "type": "simpleType", "definition": "number" },
-              "defaultLabel": { "type": "simpleType", "definition": "string" },
-              "editable": { "type": "simpleType", "definition": "boolean" }
-            }
-          },
+          "extra": { "type": "schemaReference", "relativePath": "jzodBasicExtraSchema" },
           "type": { "type": "literal", "definition": "array" },
           "definition": { "type": "schemaReference", "relativePath": "jzodElementSchema" }
         }
@@ -34,7 +35,19 @@
             "definition": {
               "id": { "type": "simpleType", "definition": "number" },
               "defaultLabel": { "type": "simpleType", "definition": "string" },
-              "editable": { "type": "simpleType", "definition": "boolean" }
+              "description": { "type": "simpleType", "definition": "string", "optional": true },
+              "editable": { "type": "simpleType", "definition": "boolean" },
+              "targetEntityApplicationSection": {
+                "type": "enum",
+                "definition": ["model", "data"],
+                "optional": true
+              },
+              "targetEntity": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "optional": true
+              }
             }
           },
           "type": { "type": "literal", "definition": "simpleType" },
@@ -51,7 +64,12 @@
             "definition": {
               "id": { "type": "simpleType", "definition": "number" },
               "defaultLabel": { "type": "simpleType", "definition": "string" },
-              "editable": { "type": "simpleType", "definition": "boolean" }
+              "editable": { "type": "simpleType", "definition": "boolean" },
+              "targetEntity": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }]
+              }
             }
           },
           "type": { "type": "literal", "definition": "simpleType" },

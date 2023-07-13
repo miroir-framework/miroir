@@ -6,59 +6,46 @@
   "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",
-  "attributes":
-  [
-    {
-      "id": 1,
-      "name": "uuid",
-      "defaultLabel": "uuid",
-      "type": "UUID",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 2,
-      "name": "parentUuid",
-      "defaultLabel": "Entity",
-      "type": "ENTITY_INSTANCE_UUID",
-      "applicationSection": "model",
-      "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      "nullable": false,
-      "editable": false
-    },
-    {
-      "id": 3,
-      "name": "conceptLevel",
-      "defaultLabel": "Concept Level",
-      "type": "STRING",
-      "nullable": true,
-      "editable": false
-    },
-    {
-      "id": 4,
-      "name": "name",
-      "defaultLabel": "title",
-      "type": "STRING",
-      "nullable": false,
-      "editable": true
-    },
-    {
-      "id": 5,
-      "name": "author",
-      "defaultLabel": "Author",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-      "nullable": true,
-      "editable": true
-    },
-    {
-      "id": 6,
-      "name": "publisher",
-      "defaultLabel": "Publisher",
-      "type": "ENTITY_INSTANCE_UUID",
-      "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-      "nullable": true,
-      "editable": true
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+      },
+      "author": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "optional": true,
+        "extra": { "id":5, "defaultLabel": "Author", "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733", "editable": true }
+      },
+      "publisher": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "optional": true,
+        "extra": { "id":5, "defaultLabel": "Publisher", "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab", "editable": true }
+      }
     }
-  ]
+  }
 }

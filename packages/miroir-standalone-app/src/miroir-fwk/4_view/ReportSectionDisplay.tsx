@@ -28,6 +28,7 @@ import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntit
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
+import { JzodObject } from "@miroir-framework/jzod";
 
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
@@ -62,12 +63,13 @@ export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchem
 
 export function defaultFormValues(
   tableComponentType: TableComponentType,
+  currentEntityJzodSchema: JzodObject,
   currentEntityAttributes:EntityAttribute[],
   idList?:{id:number}[],
   currentMiroirEntity?: MetaEntity,
   displayedDeploymentDefinition?: ApplicationDeployment,
 ):any {
-  // console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityAttributes',currentEntityAttributes);
+  console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityJzodSchema',currentEntityJzodSchema);
   
   if (tableComponentType == "EntityInstance") {
     const attributeDefaultValue:any = {
@@ -79,16 +81,28 @@ export function defaultFormValues(
       'application': displayedDeploymentDefinition?.application,
       'attributes': [],
     }
-    const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+    console.log();
+    
+    const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,a)=>{
       let result
-      if (Object.keys(attributeDefaultValue).includes(a.name)) {
-        result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+      if (Object.keys(attributeDefaultValue).includes(a[1].name)) {
+        result = Object.assign({},acc,{[a[1].name]:attributeDefaultValue[a[1].name]})
       } else {
-        result = Object.assign({},acc,{[a.name]:''})
+        result = Object.assign({},acc,{[a[1].name]:''})
       }
       // console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
       return result;
     },{});
+    // const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+    //   let result
+    //   if (Object.keys(attributeDefaultValue).includes(a.name)) {
+    //     result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+    //   } else {
+    //     result = Object.assign({},acc,{[a.name]:''})
+    //   }
+    //   // console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
+    //   return result;
+    // },{});
     // console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
@@ -100,16 +114,26 @@ export function defaultFormValues(
       'conceptLevel':'Model',
       // 'attributes': [],
     }
-    const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+    const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,a)=>{
       let result
-      if (Object.keys(attributeDefaultValue).includes(a.name)) {
-        result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+      if (Object.keys(attributeDefaultValue).includes(a[1].name)) {
+        result = Object.assign({},acc,{[a[1].name]:attributeDefaultValue[a[1].name]})
       } else {
-        result = Object.assign({},acc,{[a.name]:''})
+        result = Object.assign({},acc,{[a[1].name]:''})
       }
-      console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a.name,':',result);
+      console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a[1].name,':',result);
       return result;
     },{});
+    // const currentEditorAttributes = currentEntityAttributes.reduce((acc,a)=>{
+    //   let result
+    //   if (Object.keys(attributeDefaultValue).includes(a.name)) {
+    //     result = Object.assign({},acc,{[a.name]:attributeDefaultValue[a.name]})
+    //   } else {
+    //     result = Object.assign({},acc,{[a.name]:''})
+    //   }
+    //   console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a.name,':',result);
+    //   return result;
+    // },{});
     // console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
@@ -312,7 +336,8 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
                     label={props.currentMiroirEntityDefinition.name}
                     entityAttributes={currentEntityAttributes}
                     entityAttributesNew={currentEntityAttributesNew}
-                    formObject={defaultFormValues(props.tableComponentReportType, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
+                    jzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
+                    formObject={defaultFormValues(props.tableComponentReportType, props.currentMiroirEntityDefinition?.jzodSchema as JzodObject, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
                     onSubmit={onSubmitOuterDialog}
                   />
                   {
@@ -343,7 +368,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
       </div>
     );
   } else { // props.tableComponentReportType == "JSON_ARRAY"
-    const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;// assumption: the only JSON_ARRAY ReportComponent instance displays the list of attributes of an Entity
+    // const entityDefinitionAttribute:EntityArrayAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityArrayAttribute;// assumption: the only JSON_ARRAY ReportComponent instance displays the list of attributes of an Entity
     const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
     // const entityDefinitionAttribute:EntityAttribute = entityDefinitionEntityDefinition.attributes[7] as EntityAttribute;
 
@@ -353,9 +378,10 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
       <div>
         <JsonObjectFormEditorDialog
           showButton={true}
-          entityAttributes={entityDefinitionAttribute.lineFormat}
+          entityAttributes={[]}
           entityAttributesNew={[]}
-          formObject={defaultFormValues(props.tableComponentReportType, entityDefinitionAttribute.lineFormat, existingRows)}
+          jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
+          formObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}
           label='InnerDialog'
           onSubmit={onSubmitInnerFormDialog}
         />

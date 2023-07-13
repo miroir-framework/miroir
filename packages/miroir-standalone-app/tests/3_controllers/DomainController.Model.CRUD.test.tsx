@@ -189,7 +189,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -245,7 +245,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
 
           await waitFor(
             () => {
@@ -283,7 +283,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           console.log("createAction", createAction);
@@ -310,7 +310,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -370,7 +370,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -409,7 +409,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
@@ -437,7 +437,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -461,7 +461,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -555,7 +555,7 @@ describe(
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -591,7 +591,7 @@ describe(
             }
           );
           
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
           await waitFor(
             () => {
               getAllByText(container,/step:2/)
@@ -609,7 +609,7 @@ describe(
               await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
           await waitFor(
             () => {
               getAllByText(container,/step:3/)
@@ -628,7 +628,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
@@ -735,7 +735,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -777,7 +777,7 @@ describe(
           expect(domainController.currentTransaction().length).toEqual(1);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -797,7 +797,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           await waitFor(
             () => {
@@ -817,7 +817,7 @@ describe(
             }
           );
   
-          await user.click(screen.getByRole('button'))
+          await act(()=>user.click(screen.getByRole('button')));
   
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);

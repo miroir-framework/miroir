@@ -69,7 +69,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
 
-  console.log('DefaultCellRenderer',props.value && props.value["value"],valueToDisplay,props);
+  // console.log('DefaultCellRenderer',props.value && props.value["value"],valueToDisplay,props);
   // const deploymentUuid = useMiroirContextDeploymentUuid();
   // // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
   // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
