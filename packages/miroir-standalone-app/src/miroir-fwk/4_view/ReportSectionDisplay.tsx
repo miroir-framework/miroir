@@ -64,7 +64,7 @@ export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchem
 export function defaultFormValues(
   tableComponentType: TableComponentType,
   currentEntityJzodSchema: JzodObject,
-  currentEntityAttributes:EntityAttribute[],
+  // currentEntityAttributes:EntityAttribute[],
   idList?:{id:number}[],
   currentMiroirEntity?: MetaEntity,
   displayedDeploymentDefinition?: ApplicationDeployment,
@@ -178,28 +178,32 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
 
 
   if (props.tableComponentReportType == "EntityInstance") {
-    const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
-    const currentEntityAttributesNew: EntityDefinitionEntityDefinitionAttributeNew[] = props.currentMiroirEntityDefinition?.attributesNew?props.currentMiroirEntityDefinition?.attributesNew:[];
+    // const currentEntityAttributes: EntityAttribute[] = props.currentMiroirEntityDefinition?.attributes?props.currentMiroirEntityDefinition?.attributes:[];
+    // const currentEntityAttributesNew: EntityDefinitionEntityDefinitionAttributeNew[] = props.currentMiroirEntityDefinition?.attributesNew?props.currentMiroirEntityDefinition?.attributesNew:[];
     // if (props.currentMiroirEntityDefinition?.attributesNew) {
-    if (props.currentMiroirEntityDefinition?.jzodSchema) {
+
+
+    // if (props.currentMiroirEntityDefinition?.jzodSchema) {
       // console.log('using getColumnDefinitionsFromEntityAttributesNew!!!');
       columnDefs=getColumnDefinitionsFromEntityDefinitionJzodSchema(props.currentMiroirEntityDefinition?.jzodSchema);
-    } else {
-      columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
-    }
+    // } else {
+    //   columnDefs=getColumnDefinitionsFromEntityAttributes(currentEntityAttributes);
+    // }
 
     // const instancesWithStringifiedJsonAttributes: EntityInstance[] = instancesToDisplay.map(
     const instancesWithStringifiedJsonAttributes: any[] = instancesToDisplay.map(
       (i) =>
         Object.fromEntries(
-          Object.entries(i).map((e) => [
+          Object.entries(i).map((e) => {
+            const currentAttributeDefinition = Object.entries(props.currentMiroirEntityDefinition?.jzodSchema.definition).find((a) => a[0] == e[0]);
+            return [
             e[0],
-            props.currentMiroirEntityDefinition?.attributes?.find((a) => a.name == e[0])?.type == "OBJECT"
+            currentAttributeDefinition && currentAttributeDefinition[1].type == "object"
               ? JSON.stringify(e[1])
               : e[1],
               // ? {value:JSON.stringify(e[1])}
               // : {value:e[1]},
-          ])
+          ]})
         )
     );
   
@@ -334,10 +338,10 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
                     showButton={true}
                     isAttributes={true}
                     label={props.currentMiroirEntityDefinition.name}
-                    entityAttributes={currentEntityAttributes}
-                    entityAttributesNew={currentEntityAttributesNew}
+                    // entityAttributes={currentEntityAttributes}
+                    // entityAttributesNew={currentEntityAttributesNew}
                     jzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
-                    formObject={defaultFormValues(props.tableComponentReportType, props.currentMiroirEntityDefinition?.jzodSchema as JzodObject, currentEntityAttributes, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
+                    formObject={defaultFormValues(props.tableComponentReportType, props.currentMiroirEntityDefinition?.jzodSchema as JzodObject, [], props.currentMiroirEntity, props.displayedDeploymentDefinition)}
                     onSubmit={onSubmitOuterDialog}
                   />
                   {
@@ -378,8 +382,8 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
       <div>
         <JsonObjectFormEditorDialog
           showButton={true}
-          entityAttributes={[]}
-          entityAttributesNew={[]}
+          // entityAttributes={[]}
+          // entityAttributesNew={[]}
           jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
           formObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}
           label='InnerDialog'

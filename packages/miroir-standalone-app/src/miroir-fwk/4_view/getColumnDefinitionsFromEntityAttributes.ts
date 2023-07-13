@@ -6,11 +6,12 @@ import { EntityDefinitionEntityDefinitionAttributeNew, EntityAttribute } from "m
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
 import { DefaultCellRenderer, EntityInstanceCellRenderer, SelectEntityInstanceEditor } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
-import { JzodObject } from "@miroir-framework/jzod";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod";
 
 
-export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema:JzodObject):ColDef<any>[] {
-  return Object.entries(jzodSchema.definition)?.map(
+// export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema:JzodObject):ColDef<any>[] {
+export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema:JzodElement):ColDef<any>[] {
+  return Object.entries(jzodSchema.definition?jzodSchema.definition:{})?.map(
     (e: [string,any])=>{
       switch (e[0]) {
         case 'gender':{

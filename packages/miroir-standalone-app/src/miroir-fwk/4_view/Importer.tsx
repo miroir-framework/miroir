@@ -20,6 +20,7 @@ import {
   Report,
 } from "miroir-core";
 import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
+import { JzodObject } from "@miroir-framework/jzod";
 // import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
 
@@ -96,25 +97,51 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       description: "",
       name: "test",
     }
-    const attributes: EntityAttribute[] = [
-      {
-        id:0,
-        type:'STRING',
-        name: 'uuid',
-        defaultLabel:'Uuid',
-        description: '',
-        editable: false,
-        nullable: false,
-      } as EntityAttribute
-    ].concat(Object.values(fileData[0]).map((a:string,index)=>({
-      id:index + 1,
-      type:'STRING',
-      name: a,
-      defaultLabel:a,
-      description: '',
-      editable: true,
-      nullable: true,
-    })));
+    // const attributes: EntityAttribute[] = [
+    //   {
+    //     id:0,
+    //     type:'STRING',
+    //     name: 'uuid',
+    //     defaultLabel:'Uuid',
+    //     description: '',
+    //     editable: false,
+    //     nullable: false,
+    //   } as EntityAttribute
+    // ].concat(Object.values(fileData[0]).map((a:string,index)=>({
+    //   id:index + 1,
+    //   type:'STRING',
+    //   name: a,
+    //   defaultLabel:a,
+    //   description: '',
+    //   editable: true,
+    //   nullable: true,
+    // })));
+    const jzodSchema:JzodObject = {
+      type: "object",
+      definition: Object.assign(
+        {},
+        {
+          uuid: {
+            type: "simpleType",
+            definition: "string",
+            validations: [{ type: "uuid" }],
+            extra: { id: 1, defaultLabel: "Uuid", editable: false },
+          },
+        },
+        ...Object.values(fileData[0]).map(
+          (a: string, index) => (
+            {
+              [a]: {
+                type: "simpleType",
+                definition: "string",
+                optional: true,
+                extra: { id: index + 1, defaultLabel: a, editable: true },
+              },
+            }
+          )
+        )
+      ),
+    };
     const newEntityDefinition:EntityDefinition = {
       name: "Fountain",
       uuid: uuidv4(),
@@ -122,7 +149,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       parentUuid: entityEntityDefinition.uuid,
       entityUuid: newEntity.uuid,
       conceptLevel: "Model",
-      attributes: attributes,
+      jzodSchema: jzodSchema,
     }
     const createEntityAction: DomainAction = {
       actionType:"DomainTransactionalAction",
@@ -184,7 +211,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         (r:any) => {
           return Object.fromEntries(
             [
-              ...Object.entries(r).map((e,index)=>([[attributes[index].name],e[1]])),
+              ...Object.entries(r).map((e,index)=>([[Object.keys(jzodSchema.definition)[index]],e[1]])),
               ['uuid',uuidv4()],
               ['parentName',newEntity.name],
               ['parentUuid',newEntity.uuid],

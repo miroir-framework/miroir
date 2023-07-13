@@ -97,10 +97,10 @@ export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   entityUuid: UuidSchema,
   description: z.string().optional(),
-  jzodSchema: jzodObjectSchema.optional(),
+  jzodSchema: jzodObjectSchema,
   // jzodSchema: z.any().optional(),
-  attributes: z.array(EntityAttributeSchema).optional(),
-  attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()
+  // attributes: z.array(EntityAttributeSchema).optional(),
+  // attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;
 
