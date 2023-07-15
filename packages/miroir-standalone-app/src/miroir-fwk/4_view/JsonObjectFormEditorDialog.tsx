@@ -4,15 +4,11 @@ import Grid from "@mui/material/Unstable_Grid2";
 
 import { EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  getColumnDefinitionsFromEntityAttributes,
-  getColumnDefinitionsFromEntityAttributesNew,
-  getColumnDefinitionsFromEntityDefinitionJzodSchema,
-} from "./getColumnDefinitionsFromEntityAttributes";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { useState } from "react";
 import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
 import { JzodArray, JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -24,8 +20,6 @@ export interface EditorAttribute {
 export interface JsonObjectFormEditorCoreDialogProps {
   label: string;
   isAttributes?: boolean;
-  // entityAttributes: EntityAttribute[];
-  // entityAttributesNew: EntityDefinitionEntityDefinitionAttributeNew[];
   jzodSchema: JzodObject;
   formObject: any;
   onSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs>;
@@ -179,11 +173,12 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                 {
                   // Object.entries(props?.jzodSchema.definition).length > 0? 
                   Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                      if (schemaAttribute[1].type == "array") {
-                        // const columnDefs:any[]=getColumnDefinitionsFromEntityAttributesNew(entityAttributeNew.lineFormat?entityAttributeNew.lineFormat:[]);
+                    const currentAttributeDefinition = schemaAttribute[1];
+                    switch (currentAttributeDefinition.type) {
+                      case "array":{
                         const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
-                          ((schemaAttribute[1] as JzodArray).definition
-                            ? (schemaAttribute[1] as JzodArray).definition
+                          ((currentAttributeDefinition as JzodArray).definition
+                            ? (currentAttributeDefinition as JzodArray).definition
                             : {}) as JzodObject
                         );
 
@@ -192,7 +187,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                             <span>
                               <ReportSectionDisplay
                                 tableComponentReportType="JSON_ARRAY"
-                                label={"JSON_ARRAY-" + schemaAttribute[1].extra?.defaultLabel}
+                                label={"JSON_ARRAY-" + currentAttributeDefinition.extra?.defaultLabel}
                                 columnDefs={columnDefs}
                                 rowData={props?.formObject[schemaAttribute[0]]}
                                 styles={{
@@ -203,51 +198,32 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                             </span>
                           </ListItem>
                         );
-                      } else {
+                        break;
+                      }
+                      case "object": {
+                        // no break
+                      }
+                      default:{
                         return (
                           <ListItem disableGutters key={schemaAttribute[0]}>
-                            {(schemaAttribute[1] as any).extra?.defaultLabel}:{" "}
+                            on est la!!!!{currentAttributeDefinition?.extra?.defaultLabel}:{" "}
                             <input
                               form={"form." + props.label}
                               defaultValue={props.formObject[schemaAttribute[0]]}
-                              {...register(schemaAttribute[0])}
+                              {...register(schemaAttribute[0],{
+                                onChange: (e) => console.log("onChange!",e),
+                                onBlur: (e) => console.log("onBlur!",e),
+                              })}
+                              // onClick={()=>{console.log("onClick!");}}
+                              // onFocus={()=>{console.log("onFocus!");}}
+                              // onChange={()=>{console.log("onChange!");}}
                             />
                           </ListItem>
                         );
                       }
-                    })
-                  // : props?.entityAttributes?.map((entityAttribute) => {
-                  //     if (entityAttribute.type == "ARRAY") {
-                  //       const columnDefs: any[] = getColumnDefinitionsFromEntityAttributes(entityAttribute.lineFormat);
-                  //       return (
-                  //         <ListItem disableGutters key={entityAttribute.name}>
-                  //           <span>
-                  //             <ReportSectionDisplay
-                  //               tableComponentReportType="JSON_ARRAY"
-                  //               label={"JSON_ARRAY-" + entityAttribute.name}
-                  //               columnDefs={columnDefs}
-                  //               rowData={props?.formObject[entityAttribute.name]}
-                  //               styles={{
-                  //                 width: "50vw",
-                  //                 height: "22vw",
-                  //               }}
-                  //             ></ReportSectionDisplay>
-                  //           </span>
-                  //         </ListItem>
-                  //       );
-                  //     } else {
-                  //       return (
-                  //         <ListItem disableGutters key={entityAttribute.name}>
-                  //           {entityAttribute.name}:{" "}
-                  //           <input
-                  //             form={"form." + props.label}
-                  //             defaultValue={props.formObject[entityAttribute.name]}
-                  //             {...register(entityAttribute.name)}
-                  //           />
-                  //         </ListItem>
-                  //       );
-                  //     }
-                  //   })
+                      break;
+                    }
+                  })
                 }
               </List>
             </Item>

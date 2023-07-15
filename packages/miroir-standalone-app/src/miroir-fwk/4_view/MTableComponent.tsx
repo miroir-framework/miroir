@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { SubmitHandler } from 'react-hook-form';
 
+import { JzodObject } from '@miroir-framework/jzod';
 import {
   ApplicationDeploymentSchema,
   DomainControllerInterface,
@@ -26,7 +27,6 @@ import {
   MiroirApplicationVersion,
   MiroirMetaModel,
   Report,
-  ReportSchema,
   ReportSectionListDefinitionSchema,
   StoreBasedConfiguration
 } from "miroir-core";
@@ -43,7 +43,6 @@ import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { defaultFormValues } from './ReportSectionDisplay';
-import { JzodObject } from '@miroir-framework/jzod';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -232,15 +231,11 @@ export const MTableComponent = (props: TableComponentProps) => {
     console.warn("onCellClicked",e)
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
     if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
-      console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
-      // const columDefinitionDetails=props?.columnDefs?.find(c=>c.name == e.colDef.field);
-      // const columnDefinitionAttribute = props.currentMiroirEntityDefinition.attributes?.find((a:any)=>a.name == e.colDef.field);
+      // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
       const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == e.colDef.field);
       if (columnDefinitionAttributeEntry && columnDefinitionAttributeEntry[1].type == "simpleType" && columnDefinitionAttributeEntry[1].extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
-        // const targetEntity = currentMiroirEntities.find(e=>e.name == columnDefinitionAttribute?.defaultLabel);
         const targetEntity = currentMiroirEntities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
-        // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
         navigate(
           `/instance/${contextDeploymentUuid}/${
             columnDefinitionAttribute?.extra?.targetEntityApplicationSection
@@ -285,10 +280,6 @@ export const MTableComponent = (props: TableComponentProps) => {
             isAttributes={true}
             // label='OuterDialog'
             label={props.currentMiroirEntityDefinition.name}
-            // entityAttributes={props.currentMiroirEntityDefinition.attributes?props.currentMiroirEntityDefinition.attributes:[]}
-            // entityAttributesNew={
-            //   props.currentMiroirEntityDefinition.attributesNew ? props.currentMiroirEntityDefinition.attributesNew : []
-            // }
             jzodSchema={props.currentMiroirEntityDefinition.jzodSchema as JzodObject}
             formObject={
               dialogFormObject
@@ -296,7 +287,6 @@ export const MTableComponent = (props: TableComponentProps) => {
                 : defaultFormValues(
                     props.type,
                     props.currentMiroirEntityDefinition.jzodSchema as JzodObject,
-                    // props.currentMiroirEntityDefinition.attributes?props.currentMiroirEntityDefinition.attributes:[],
                     [],
                     props.currentMiroirEntity,
                     props.displayedDeploymentDefinition
@@ -312,7 +302,6 @@ export const MTableComponent = (props: TableComponentProps) => {
       <div id="tata" className="ag-theme-alpine" style={props.styles}>
         <AgGridReact
           columnDefs={columnDefs}
-          // rowData={props.rowData.map((v:TableComponentRow)=>Object.fromEntries(Object.entries(v).map((e)=>[e[0],e[1].value])))}
           rowData={props.rowData}
           onCellClicked={onCellClicked}
           onCellEditingStarted={onCellEditingStarted}

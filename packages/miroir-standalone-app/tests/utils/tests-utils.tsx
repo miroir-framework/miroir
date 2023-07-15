@@ -58,7 +58,7 @@ export const applicationDeploymentLibrary: ApplicationDeployment = {
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  store: ReduxStoreWithUndoRedo,
+  store: ReduxStoreWithUndoRedo | undefined,
 }
 
 export function renderWithProviders(
@@ -69,7 +69,7 @@ export function renderWithProviders(
   }: ExtendedRenderOptions
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
-    return <Provider store={store}>{children}</Provider>
+    return store?<Provider store={store}>{children}</Provider>:<div>{children}</div>
   }
 
   // Return an object with the store and all of RTL's query functions

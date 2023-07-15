@@ -76,6 +76,7 @@ import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
 import { ReportSectionDisplay } from './ReportSectionDisplay';
+import { JzodObjectFormEditor } from "./JzodObjectFormEditor";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -305,324 +306,332 @@ export const HomePage = (props: RootComponentProps) => {
     <div> 
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex' }}> */}
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "undo",
+            });
+          }}
+        >
+          undo
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "redo",
+            });
+          }}
+        >
+          Redo
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentMiroir.uuid,
+              {
                 actionType: "DomainTransactionalAction",
-                actionName: "undo",
-              });
-            }}
-          >
-            undo
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+                actionName: "commit",
+              },
+              defaultMiroirMetaModel
+            );
+          }}
+        >
+          Commit Miroir
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentLibrary.uuid,
+              {
                 actionType: "DomainTransactionalAction",
-                actionName: "redo",
-              });
-            }}
-          >
-            Redo
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "commit",
-                },
-                defaultMiroirMetaModel
-              );
-            }}
-          >
-            Commit Miroir
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "commit",
-                },
-                defaultMiroirMetaModel
-              );
-            }}
-          >
-            Commit Library app
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
+                actionName: "commit",
+              },
+              defaultMiroirMetaModel
+            );
+          }}
+        >
+          Commit Library app
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+          }}
+        >
+          Rollback
+        </button>
+      </span>
+      <p />
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "resetModel",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "resetModel",
+              }
+            );
+            console.log(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+          }}
+        >
+          Reset Application database
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "resetData",
+              }
+            );
+            console.log(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+          }}
+        >
+          Reset Library Application Data
+        </button>
+      </span>
+      <p />
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "initModel",
+                params: {
+                  dataStoreType:'miroir',
+                  metaModel: defaultMiroirMetaModel,
+                  application: applicationMiroir,
+                  applicationDeployment: applicationDeploymentMiroir,
+                  applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+                  applicationVersion:applicationVersionInitialMiroirVersion,
                 }
-              );
-            }}
-          >
-            Rollback
-          </button>
-        </span>
-        <p />
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "resetModel",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "initModel",
+                params: {
+                  dataStoreType:'app',
+                  metaModel: defaultMiroirMetaModel,
+                  application: applicationLibrary,
+                  applicationDeployment: applicationDeploymentLibrary,
+                  applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+                  applicationVersion:applicationVersionLibraryInitialVersion,
                 }
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "resetModel",
-                }
-              );
-              console.log(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-            }}
-          >
-            Reset Application database
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "resetData",
-                }
-              );
-              console.log(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-            }}
-          >
-            Reset Library Application Data
-          </button>
-        </span>
-        <p />
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "initModel",
-                  params: {
-                    dataStoreType:'miroir',
-                    metaModel: defaultMiroirMetaModel,
-                    application: applicationMiroir,
-                    applicationDeployment: applicationDeploymentMiroir,
-                    applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                    applicationVersion:applicationVersionInitialMiroirVersion,
-                  }
-                }
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "initModel",
-                  params: {
-                    dataStoreType:'app',
-                    metaModel: defaultMiroirMetaModel,
-                    application: applicationLibrary,
-                    applicationDeployment: applicationDeploymentLibrary,
-                    applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-                    applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-                    applicationVersion:applicationVersionLibraryInitialVersion,
-                  }
-                }
-              );
-              // TODO: transactional action must not autocommit! initModel neither?!
-              // .then(
-              // async () => {
-              console.log(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-              // }
-              // );
-            }}
-          >
-            Init database
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-              await domainController.handleDomainAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "rollback",
-                }
-              );
-            }
+              }
+            );
+            // TODO: transactional action must not autocommit! initModel neither?!
+            // .then(
+            // async () => {
+            console.log(
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+            // }
+            // );
+          }}
+        >
+          Init database
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+            await domainController.handleDomainAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
+            await domainController.handleDomainAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback",
+              }
+            );
           }
-          >
-            fetch Miroir & App configurations from database
-          </button>
-        </span>
-        <p />
-        <span>
-          <button
-            onClick={async () => {
-              await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
-            }}
-          >
-            upload App configuration to database
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "updateEntity",
-                  update: {
-                    updateActionName: "WrappedTransactionalEntityUpdate",
-                    modelEntityUpdate: {
-                      updateActionType: "ModelEntityUpdate",
-                      updateActionName: "renameEntity",
-                      entityName: entityBook.name,
-                      entityUuid: entityBook.uuid,
-                      targetValue: "Bookss",
+        }
+        >
+          fetch Miroir & App configurations from database
+        </button>
+      </span>
+      <p />
+      <span>
+        <button
+          onClick={async () => {
+            await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+          }}
+        >
+          upload App configuration to database
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "updateEntity",
+                update: {
+                  updateActionName: "WrappedTransactionalEntityUpdate",
+                  modelEntityUpdate: {
+                    updateActionType: "ModelEntityUpdate",
+                    updateActionName: "renameEntity",
+                    entityName: entityBook.name,
+                    entityUuid: entityBook.uuid,
+                    targetValue: "Bookss",
+                  },
+                },
+              },
+              libraryAppModel
+            );
+          }}
+        >
+          Modify Book entity name
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentMiroir.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "UpdateMetaModelInstance",
+                update: {
+                  updateActionType: "ModelCUDInstanceUpdate",
+                  updateActionName: "update",
+                  objects: [
+                    {
+                      parentName: reportReportList.parentName,
+                      parentUuid: reportReportList.parentUuid,
+                      applicationSection:'data',
+                      instances: [
+                        Object.assign({}, reportReportList, {
+                          name: "Report2List",
+                          defaultLabel: "Modified List of Reports",
+                        }) as EntityInstance,
+                      ],
                     },
+                  ],
+                },
+              },
+              defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
+            );
+          }}
+        >
+          Modify Report List name
+        </button>
+      </span>
+      <span>
+        <button
+          onClick={async () => {
+            await domainController.handleDomainTransactionalAction(
+              applicationDeploymentLibrary.uuid,
+              {
+                actionType: "DomainTransactionalAction",
+                actionName: "updateEntity",
+                update: {
+                  updateActionName: "WrappedTransactionalEntityUpdate",
+                  modelEntityUpdate: {
+                    updateActionType: "ModelEntityUpdate",
+                    updateActionName: "DeleteEntity",
+                    entityName: entityAuthor.name,
+                    entityUuid: entityAuthor.uuid,
+                    // instanceUuid:entityAuthor.uuid,
                   },
                 },
-                libraryAppModel
-              );
-            }}
-          >
-            Modify Book entity name
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentMiroir.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "UpdateMetaModelInstance",
-                  update: {
-                    updateActionType: "ModelCUDInstanceUpdate",
-                    updateActionName: "update",
-                    objects: [
-                      {
-                        parentName: reportReportList.parentName,
-                        parentUuid: reportReportList.parentUuid,
-                        applicationSection:'data',
-                        instances: [
-                          Object.assign({}, reportReportList, {
-                            name: "Report2List",
-                            defaultLabel: "Modified List of Reports",
-                          }) as EntityInstance,
-                        ],
-                      },
-                    ],
-                  },
-                },
-                defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
-              );
-            }}
-          >
-            Modify Report List name
-          </button>
-        </span>
-        <span>
-          <button
-            onClick={async () => {
-              await domainController.handleDomainTransactionalAction(
-                applicationDeploymentLibrary.uuid,
-                {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "updateEntity",
-                  update: {
-                    updateActionName: "WrappedTransactionalEntityUpdate",
-                    modelEntityUpdate: {
-                      updateActionType: "ModelEntityUpdate",
-                      updateActionName: "DeleteEntity",
-                      entityName: entityAuthor.name,
-                      entityUuid: entityAuthor.uuid,
-                      // instanceUuid:entityAuthor.uuid,
-                    },
-                  },
-                },
-                libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
-              );
-            }}
-          >
-            Remove Author entity
-          </button>
-        </span>
+              },
+              libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
+            );
+          }}
+        >
+          Remove Author entity
+        </button>
+      </span>
+      <p />
+      <JzodObjectFormEditor
+        label="toto"
+        initialValuesObject={{a:"tata"}}
+        showButton={true}
+        jzodSchema={{type:"object", definition:{"a":{type:"simpleType", definition:"string"}}}}
+        onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
+      ></JzodObjectFormEditor>
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />

@@ -26,7 +26,7 @@ import { ReduxStateChanges } from "miroir-redux";
 
 import { ReportSectionDisplay } from '../ReportSectionDisplay';
 import { List, ListItem, ListItemButton } from '@mui/material';
-import { getColumnDefinitionsFromEntityAttributes, getColumnDefinitionsFromEntityDefinitionJzodSchema } from '../getColumnDefinitionsFromEntityAttributes';
+import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from '../getColumnDefinitionsFromEntityAttributes';
 
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { EntityInstanceLink } from '../EntityInstanceLink';
@@ -170,9 +170,10 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                   {
                     Object.entries(entityAttributes?entityAttributes:{})?.map(
                       (entityAttribute:[string,JzodElement]) => {
-                        switch (entityAttribute[1].type) {
+                        const currentAttributeDefinition = entityAttribute[1];
+                        switch (currentAttributeDefinition.type) {
                           case "array": {
-                            const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema(entityAttribute[1].definition);
+                            const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema(currentAttributeDefinition.definition);
                             return (
                               <ListItem disableGutters key={entityAttribute[0]}>
                                 <span>
@@ -193,9 +194,31 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                             )
                             break;
                           }
+                          // case "object": {
+                          //   const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema(currentAttributeDefinition.definition);
+                          //   return (
+                          //     <ListItem disableGutters key={entityAttribute[0]}>
+                          //       <span>
+                          //         <ReportSectionDisplay
+                          //           tableComponentReportType="JSON_ARRAY"
+                          //           label={"JSON_ARRAY-"+entityAttribute[0]}
+                          //           columnDefs={columnDefs}
+                          //           rowData={instance[entityAttribute[0]]}
+                          //           styles={
+                          //             {
+                          //               width: '50vw',
+                          //               height: '22vw',
+                          //             }
+                          //           }
+                          //         ></ReportSectionDisplay>
+                          //       </span>
+                          //     </ListItem>
+                          //   )
+                          //   break;
+                          // }
                           case "simpleType": {
                             // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
-                            const targetEntityUuid = entityAttribute[1].extra?.targetEntity
+                            const targetEntityUuid = currentAttributeDefinition.extra?.targetEntity
                             if (entityAttribute[1].definition == "string" && targetEntityUuid) {
                               const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.uuid == targetEntityUuid) 
                               return (
