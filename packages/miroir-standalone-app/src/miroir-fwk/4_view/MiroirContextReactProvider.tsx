@@ -54,14 +54,6 @@ export function MiroirContextReactProvider(
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
 }
 
-// export function useMiroirContextDeploymentUuid() {
-//   return useContext(miroirReactContext)?.deploymentUuid;
-// }
-
-// export function useMiroirContextSetDeploymentUuid() {
-//   return useContext(miroirReactContext).setDeploymentUuid;
-// }
-
 export function useMiroirContextInnerFormOutput() {
   return [useContext(miroirReactContext)?.innerFormOutput,useContext(miroirReactContext)?.setInnerFormOutput];
 }
@@ -71,11 +63,9 @@ export function useMiroirContextServiceHook() {
 }
 
 export const useErrorLogServiceHook = () => {
-  // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
   return useContext(miroirReactContext)?.miroirContext.errorLogService.getErrorLog();
 }
 
 export const useDomainControllerServiceHook = () => {
-  // return React.useContext(miroirReactContext).miroirContext.errorLogService.errorLog;
   return useContext(miroirReactContext)?.domainController;
 }

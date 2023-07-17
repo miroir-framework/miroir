@@ -59,7 +59,7 @@ import {
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
-import { JzodObjectFormEditor, JzodObjectFormEditorProps } from "../../src/miroir-fwk/4_view/JzodObjectFormEditor";
+import { JzodElementFormEditor, JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementFormEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -69,6 +69,7 @@ import { miroirStorePostgresStartup } from "miroir-store-postgres";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
 import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+import { JzodAttributeStringValidations } from "@miroir-framework/jzod";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
@@ -146,18 +147,19 @@ afterEach(
   }
 )
 
-function JzodObjectFormEditorWrapper(props: JzodObjectFormEditorProps) {
+function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
   const [result, setResult] = useState(undefined);
 
   return (
     <div>
-    <JzodObjectFormEditor
+    <JzodElementFormEditor
       label={props.label}
       initialValuesObject={props.initialValuesObject}
       showButton={props.showButton}
       jzodSchema={props.jzodSchema}
-      onSubmit={(data:any,event:any)=>{console.log("JzodObjectFormEditorWrapper onSubmit!");setResult(data); return props.onSubmit(data,event)}}
-    ></JzodObjectFormEditor>
+      getData={props.getData}
+      onSubmit={(data:any,event:any,error:any)=>{console.log("JzodObjectFormEditorWrapper onSubmit!");setResult(data); return props.onSubmit(data,event,error)}}
+    ></JzodElementFormEditor>
     {
       result?<div>received result: {JSON.stringify(result)}</div>:<div>no result yet</div>
     }
@@ -167,291 +169,161 @@ function JzodObjectFormEditorWrapper(props: JzodObjectFormEditorProps) {
 describe(
   'JzodObjectFormEditor',
   () => {
+    // // ###########################################################################################
+    // it(
+    //   'edit simpleType string form',
+    //   async () => {
+    //     try {
+    //       console.log('edit string attribute');
+    //       const user = userEvent.setup()
+
+    //       const label = 'simpleElementString' 
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <JzodObjectFormEditorWrapper
+    //           label={label}
+    //           initialValuesObject={""}
+    //           showButton={true}
+    //           jzodSchema={{type:"simpleType", definition:"string"}}
+    //            getData={()=>undefined}
+    //           onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
+    //         ></JzodObjectFormEditorWrapper>,
+    //         {store:undefined}
+    //       );
+  
+    //       // ##########################################################################################################
+    //       const formInput = screen.getByRole('textbox', {name:""})
+
+    //       console.log('selecting input field');
+          
+    //       await act(()=>user.click(formInput));
+    //       await act(()=>user.keyboard('b'));
+    //       await act(()=>user.click(screen.getByRole('button', {name:"Submit"})));
+          
+    //       await act(
+    //         async () =>
+    //           await waitFor(() => {
+    //             getByText(new RegExp(`received result`, "i"));
+    //           }).then(() => {
+    //             expect(screen.queryByText(new RegExp(`received result: {"${label}":"b"}`, "i"))).toBeTruthy(); // Book entity
+    //           })
+    //       );
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
     // ###########################################################################################
     it(
-      'edit simpleType string form',
+      'edit simpleType string form with validation',
       async () => {
         try {
-          console.log('edit string attribute');
-  
-          const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
+          console.log('edit simpleType string form with validation');
           const user = userEvent.setup()
 
-          // await localDataStore.clear();
-          // await localDataStore.initModel();
-
+          const label = 'simpleElementString' 
           const {
             getByText,
             getAllByRole,
             container
           } = renderWithProviders(
             <JzodObjectFormEditorWrapper
-              label="toto"
-              initialValuesObject={{a:"tata"}}
+              label={label}
+              initialValuesObject={""}
               showButton={true}
-              jzodSchema={{type:"object", definition:{"a":{type:"simpleType", definition:"string"}}}}
-              onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
+              jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
+              getData={()=>undefined}
+              // jzodSchema={{type:"simpleType", definition:"string"}}
+              onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
             ></JzodObjectFormEditorWrapper>,
             {store:undefined}
           );
   
           // ##########################################################################################################
-          console.log('string edition.')
-          // await act(
-          //   async () => {
-          //     await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-          //     await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-          //   }
-          // );
-
-          // await act(()=>user.click(screen.getByRole('button')));
- 
           const formInput = screen.getByRole('textbox', {name:""})
+          await act(async ()=>user.click(formInput));
+          await act(async ()=>user.keyboard('abcdef'));
 
-          console.log('selecting input field');
-          
-          await act(()=>user.click(formInput));
-          console.log('using keyboard');
-          await act(()=>user.keyboard('b'));
-          // await act(()=>fireEvent.change(formInput,'bbbbbbbbbbbb'));
-          
-          console.log('submitting');
-          await act(()=>user.click(screen.getByRole('button', {name:"Submit"})));
-          
+          try {
+          await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
+          } catch (error) {
+            console.error('caught expected validation error during test',expect.getState().currentTestName,error);
+          }
+
           await act(
             async () =>
               await waitFor(() => {
-                // getAllByRole(/toto/)
-                // screen.queryByText(new RegExp(`toto`,'i'))
-                getByText(new RegExp(`received result`, "i"));
+                getByText(new RegExp(/(received result)|(received error)/, "i"));
               }).then(() => {
-                expect(screen.queryByText(new RegExp(`received result: {"a":"tatab"}`, "i"))).toBeTruthy(); // Book entity
-                // expect(screen.queryByText(new RegExp(`tata`,'i'))).toBeNull() // Author entity
+                // expect(screen.queryByText(new RegExp(`received result: {"${label}":"abcdef"}`, "i"))).toBeFalsy(); // Book entity
+                expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
+                expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
               })
           );
-  
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
-      //     const createAuthorAction: DomainAction = {
-      //       actionType:"DomainTransactionalAction",
-      //       actionName: "updateEntity",
-      //       update: {
-      //         updateActionName:"WrappedTransactionalEntityUpdate",
-      //         modelEntityUpdate: {
-      //           updateActionType: "ModelEntityUpdate",
-      //           updateActionName: "createEntity",
-      //           entities: [
-      //             {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-      //           ],
-      //         },
-      //       }
-      //     };
-      //     const createBookAction: DomainAction = {
-      //       actionType:"DomainTransactionalAction",
-      //       actionName: "updateEntity",
-      //       update: {
-      //         updateActionName:"WrappedTransactionalEntityUpdate",
-      //         modelEntityUpdate: {
-      //           updateActionType: "ModelEntityUpdate",
-      //           updateActionName: "createEntity",
-      //           entities: [
-      //             {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-      //           ],
-      //         },
-      //       }
-      //     };
-  
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,createAuthorAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,createBookAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-      //       }
-      //     );
-  
-      //     await act(()=>user.click(screen.getByRole('button')));
-  
-      //     // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(2);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-      //     expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
-  
-      //     await waitFor(
-      //       () => {
-      //         // getAllByText(container,/finished/)
-      //         getAllByText(container,/step:2/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-      //         expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy();
-      //       }
-      //     );
-  
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-  
-      //     await act(()=>user.click(screen.getByRole('button')));
-  
-      //     // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(1);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-  
-      //     await waitFor(
-      //       () => {
-      //         getAllByText(container,/step:3/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-      //         expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
-      //       }
-      //     );
 
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-  
-      //     await act(()=>user.click(screen.getByRole('button')));
-  
-      //     console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(2);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-      //     expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
-  
-      //     await waitFor(
-      //       () => {
-      //         getAllByText(container,/step:4/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-      //         expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Book Entity
-      //       }
-      //     );
-  
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-      
-      //     await act(()=>user.click(screen.getByRole('button')));
-      
-      //     // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(1);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-      
-      //     await waitFor(
-      //       () => {
-      //         getAllByText(container,/step:5/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-      //         expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
-      //       }
-      //     );
-      //     // putting state back to where it was when test section started
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-  
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-      
-      //     await act(()=>user.click(screen.getByRole('button')));
-      
-      //     // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(1);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-      
-      //     await waitFor(
-      //       () => {
-      //         getAllByText(container,/step:6/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-      //         expect(screen.queryByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeNull() // Book entity
-      //       }
-      //     );
-      //     // putting state back to where it was when test section started
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-  
-      //     // ##########################################################################################################
-      //     console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
-      //       }
-      //     );
-      
-      //     await act(()=>user.click(screen.getByRole('button')));
-      
-      //     // console.log("domainController.currentTransaction()", domainController.currentTransaction());
-      //     expect(domainController.currentTransaction().length).toEqual(2);
-      //     // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-      //     // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-      //     expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-      //     expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
-  
-      //     await act(
-      //       async () => {
-      //         await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid,{actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-      //       }
-      //     );
-  
-      //     expect(domainController.currentTransaction().length).toEqual(0);
-  
-      //     await waitFor(
-      //       () => {
-      //         getAllByText(container,/step:7/)
-      //       },
-      //     ).then(
-      //       ()=> {
-      //         expect(getByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() // Author Entity
-      //         expect(getByText(new RegExp(`${entityBook.uuid}`,'i'))).toBeTruthy() // Book Entity
-      //       }
-      //     );
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
     )
+
+    // // ###########################################################################################
+    // it(
+    //   'edit simpleType uuid string as foreign key',
+    //   async () => {
+    //     try {
+    //       console.log(expect.getState().currentTestName);
+    //       const user = userEvent.setup()
+
+    //       const label = 'simpleElementString' 
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <JzodObjectFormEditorWrapper
+    //           label={label}
+    //           initialValuesObject={""}
+    //           showButton={true}
+    //           jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
+    //           // jzodSchema={{type:"simpleType", definition:"string"}}
+    //           onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
+    //         ></JzodObjectFormEditorWrapper>,
+    //         {store:undefined}
+    //       );
+  
+    //       // ##########################################################################################################
+    //       const formInput = screen.getByRole('textbox', {name:""})
+    //       await act(async ()=>user.click(formInput));
+    //       await act(async ()=>user.keyboard('abcdef'));
+
+    //       try {
+    //       await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
+    //       } catch (error) {
+    //         console.error('caught expected validation error during test',expect.getState().currentTestName,error);
+    //       }
+
+    //       await act(
+    //         async () =>
+    //           await waitFor(() => {
+    //             getByText(new RegExp(/(received result)|(received error)/, "i"));
+    //           }).then(() => {
+    //             // expect(screen.queryByText(new RegExp(`received result: {"${label}":"abcdef"}`, "i"))).toBeFalsy(); // Book entity
+    //             expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
+    //             expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
+    //           })
+    //       );
+
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
   }
 )

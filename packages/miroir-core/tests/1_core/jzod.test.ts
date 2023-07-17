@@ -10,7 +10,7 @@ import {
   jzodSchemaObjectToZodSchemaAndDescription,
   jzodSchemaObjectToZodSchemaSet,
   jzodSchemaSetToZodSchemaSet,
-  jzodSchemaToZodSchema
+  jzodElementSchemaToZodSchemaAndDescription
 } from "@miroir-framework/jzod";
 
 // import { miroirJzodSchemaBootstrapZodSchema } from "../../src/0_interfaces/1_core/EntityDefinition";
@@ -54,7 +54,7 @@ describe(
     //     // const attributesNewType = entityDefinitionEntityDefinition.attributesNew.find((e:any)=>e.name == "attributesNew").type;
     //     console.log("attributesNewAttribute",JSON.stringify(attributesNewAttribute));
 
-    //     const convertedAttributesNewJzodZodSchema:ZodSchemaAndDescription<ZodTypeAny> = jzodSchemaToZodSchema("attributesNew",attributesNewAttribute.type,()=>jzodBootstrapZodSchema);
+    //     const convertedAttributesNewJzodZodSchema:ZodSchemaAndDescription<ZodTypeAny> = jzodElementSchemaToZodSchemaAndDescription("attributesNew",attributesNewAttribute.type,()=>jzodBootstrapZodSchema);
     //     console.log("convertedAttributesNewJzodZodSchema",convertedAttributesNewJzodZodSchema.description);
 
     //     expect(convertedAttributesNewJzodZodSchema.zodSchema.parse(entityDefinitionEntityDefinition.attributesNew)).toBeTruthy();
@@ -108,7 +108,7 @@ describe(
         // // const attributesNewType = entityDefinitionEntityDefinition.attributesNew.find((e:any)=>e.name == "attributesNew").type;
         // console.log("attributesNewAttribute",JSON.stringify(attributesNewAttribute));
 
-        // const convertedAttributesNewJzodZodSchema:ZodSchemaAndDescription<ZodTypeAny> = jzodSchemaToZodSchema("attributesNew",attributesNewAttribute.type,()=>jzodBootstrapZodSchema);
+        // const convertedAttributesNewJzodZodSchema:ZodSchemaAndDescription<ZodTypeAny> = jzodElementSchemaToZodSchemaAndDescription("attributesNew",attributesNewAttribute.type,()=>jzodBootstrapZodSchema);
         // console.log("convertedAttributesNewJzodZodSchema",convertedAttributesNewJzodZodSchema.description);
 
         // expect(convertedAttributesNewJzodZodSchema.zodSchema.parse(entityDefinitionEntityDefinition.attributesNew)).toBeTruthy();

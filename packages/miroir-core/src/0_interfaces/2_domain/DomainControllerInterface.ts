@@ -250,4 +250,13 @@ export interface DomainControllerInterface {
   handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MiroirMetaModel): Promise<void>;
   currentTransaction(): DomainTransactionalReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
+  /**
+   * data access
+   * returns either: react hook, angular Service, Rxjs Observable
+   * => compile-time dependency on types in miroir-core? Or use "any"?
+   * output of first function: function producing object producing data? function producing function producing data?
+   * first function / DomainController factory: takes concrete implementation (Redux, Angular Service...) as input?
+   * input of second function, producing data: jzod schema, context (deployment uuid, application section...)
+   * 
+   */
 }

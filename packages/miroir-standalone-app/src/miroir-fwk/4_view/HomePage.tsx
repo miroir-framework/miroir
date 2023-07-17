@@ -14,6 +14,7 @@ import {
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
+  EntityInstanceWithName,
   MetaEntity,
   MiroirMetaModel,
   Report,
@@ -34,6 +35,7 @@ import {
 import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
   useLocalCacheDeploymentSectionReports,
+  useLocalCacheInstancesForEntity,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheTransactions
@@ -76,7 +78,7 @@ import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
 import { ReportSectionDisplay } from './ReportSectionDisplay';
-import { JzodObjectFormEditor } from "./JzodObjectFormEditor";
+import { JzodElementFormEditor } from "./JzodElementFormEditor";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -216,16 +218,10 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedDeploymentUuid = context.deploymentUuid;
   const setDisplayedDeploymentUuid = context.setDeploymentUuid;
 
-  // component state
-  // const [displayedReportUuid, setDisplayedReportUuid] = useState("");
-  // // const [displayedApplicationSection, setDisplayedApplicationSection] = useState<ApplicationSection | undefined>('' as ApplicationSection);
   const displayedReportUuid = context.reportUuid;
   const setDisplayedReportUuid = context.setReportUuid;
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
-
-  // const libraryAppEntities:MetaEntity [] = useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model');
-  // const libraryAppEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model');
 
   const libraryAppModel: MiroirMetaModel =  {
     entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
@@ -252,7 +248,6 @@ export const HomePage = (props: RootComponentProps) => {
   ;
   console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  // const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(displayedDeploymentUuid,displayedApplicationSection?displayedApplicationSection:'data');
   const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
   const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
     deploymentReports.filter(r=>(
@@ -267,8 +262,6 @@ export const HomePage = (props: RootComponentProps) => {
 
   console.log("RootComponent deploymentReports",deploymentReports);
 
-  // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
-  
   const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
     currentMiroirReport?.type == "list" &&
@@ -301,6 +294,13 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedApplicationSection('data');
     setDisplayedReportUuid("");
   };
+
+  const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForEntity(
+    currentReportDefinitionDeployment?.uuid,
+    'data',
+    "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  ) as EntityInstanceWithName[];
+
 
   return (
     <div> 
@@ -625,13 +625,17 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      <JzodObjectFormEditor
-        label="toto"
-        initialValuesObject={{a:"tata"}}
+      <JzodElementFormEditor
+        label="simpleElementString"
+        initialValuesObject={"tata"}
         showButton={true}
-        jzodSchema={{type:"object", definition:{"a":{type:"simpleType", definition:"string"}}}}
+        // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
+        jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:"d7a144ff-d1b9-4135-800c-a7cfc1f38733"}}}
+        getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
+        // getData={()=>[]}
         onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
-      ></JzodObjectFormEditor>
+        // selectValue={selectList.map(e=>({value:e.uuid, label:e.name}))}
+      ></JzodElementFormEditor>
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />

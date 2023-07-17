@@ -57,7 +57,7 @@ export function getLocalCacheSliceIndex(
 // INTERFACE
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
-// TODO: should it really memoize? Doen't this imply caching the whole value, which can be really large? Or is it juste the selector?
+// TODO: should it memoize? Doen't this imply caching the whole value, which can be really large? Or is it just the selector?
 export const selectInstancesForSectionEntity = (
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined,

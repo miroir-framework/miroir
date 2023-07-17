@@ -1,4 +1,5 @@
 import { EntityState } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
 import {
   applicationDeploymentMiroir,
   EntityDefinition,
@@ -24,7 +25,6 @@ import {
   applySelectorToDomainStateSection,
   selectCurrentTransaction,
 } from "miroir-redux";
-import { useSelector } from "react-redux";
 
 //#########################################################################################
 export function useLocalCacheTransactions(): ReduxStateChanges[] {
@@ -104,6 +104,5 @@ export function useLocalCacheInstancesForReport(deploymentUuid:string, section: 
 //#########################################################################################
 export function useLocalCacheInstancesForEntity(deploymentUuid:string | undefined, section: ApplicationSection | undefined, entityUuid: string | undefined): EntityInstance[] {
   // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  
   return useSelector(applySelectorToDomainStateSection(deploymentUuid,section,selectEntityInstances(entityUuid)));
 }

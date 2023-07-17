@@ -1,5 +1,6 @@
 node_modules*/
 node_modules/.cache*/
+package-lock.json
 packages/miroir-core/node_modules*/
 packages/miroir-core/dist*/
 packages/miroir-core/dist/index.js
