@@ -6,7 +6,6 @@ import {
   SelectChangeEvent
 } from "@mui/material";
 import Box from '@mui/material/Box';
-import { isEqual as _isEqual } from "lodash";
 
 import {
   ApplicationDeployment,
@@ -18,7 +17,6 @@ import {
   MetaEntity,
   MiroirMetaModel,
   Report,
-  ReportSchema,
   ReportSectionList,
   ReportSectionListDefinition,
   applicationDeploymentMiroir,
@@ -30,18 +28,18 @@ import {
   entityReport,
   reportEntityDefinitionList,
   reportEntityList,
-  reportReportList,
+  reportReportList
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
+  useDomainControllerServiceHook, useErrorLogServiceHook,
   useLocalCacheDeploymentSectionReports,
   useLocalCacheInstancesForEntity,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
-  useLocalCacheTransactions
-} from "miroir-fwk/4_view/hooks";
+  useLocalCacheTransactions,
+  useMiroirContextServiceHook
+} from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
-import { useState } from 'react';
 
 
 
@@ -77,8 +75,8 @@ import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97b
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
-import { ReportSectionDisplay } from './ReportSectionDisplay';
 import { JzodElementFormEditor } from "./JzodElementFormEditor";
+import { ReportSectionDisplay } from './ReportSectionDisplay';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -204,6 +202,9 @@ async function uploadBooksAndReports(
   });
 }
 
+// ###################################################################################
+// ###################################################################################
+// ###################################################################################
 export const HomePage = (props: RootComponentProps) => {
   const context = useMiroirContextServiceHook();
 
@@ -294,12 +295,6 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedApplicationSection('data');
     setDisplayedReportUuid("");
   };
-
-  const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForEntity(
-    currentReportDefinitionDeployment?.uuid,
-    'data',
-    "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  ) as EntityInstanceWithName[];
 
 
   return (
@@ -629,9 +624,11 @@ export const HomePage = (props: RootComponentProps) => {
         label="simpleElementString"
         initialValuesObject={"tata"}
         showButton={true}
+        currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
+        currentApplicationSection="data"
         // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
         jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:"d7a144ff-d1b9-4135-800c-a7cfc1f38733"}}}
-        getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
+        // getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
         // getData={()=>[]}
         onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
         // selectValue={selectList.map(e=>({value:e.uuid, label:e.name}))}

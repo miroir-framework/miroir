@@ -12,13 +12,14 @@ import {
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import {
+  useDomainControllerServiceHook, useErrorLogServiceHook,
   useLocalCacheDeploymentSectionReports,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
-  useLocalCacheTransactions
-} from "miroir-fwk/4_view/hooks";
+  useLocalCacheTransactions,
+  useMiroirContextServiceHook
+} from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 

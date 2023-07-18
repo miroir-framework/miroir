@@ -22,10 +22,9 @@ import { EntityDefinition, EntityInstanceWithName, MetaEntity } from 'miroir-cor
 import {
   useLocalCacheInstancesForEntity,
   useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions
-} from "miroir-fwk/4_view/hooks";
-import { Link } from 'react-router-dom';
-import { useMiroirContextServiceHook } from './MiroirContextReactProvider';
+  useLocalCacheSectionEntityDefinitions,
+  useMiroirContextServiceHook
+} from './MiroirContextReactProvider';
 
 
 // backspace starts the editor on Windows

@@ -55,7 +55,7 @@ import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d30
 import book3 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book4 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
 
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";

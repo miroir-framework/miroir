@@ -1,17 +1,17 @@
 import { z } from "zod";
-import { ElementRef, FC, useMemo, useState } from "react";
-import Select from 'react-select'
-import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo, useState } from "react";
+import { FieldErrors, FormState, SubmitHandler, UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
+import Select from 'react-select';
 
-import { Button, Dialog, DialogTitle, List, ListItem, Paper, styled } from "@mui/material";
+import { Button, List, ListItem, Paper, styled } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew } from "miroir-core";
+import { JzodArray, JzodAttribute, JzodElement, JzodObject, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
+import { ApplicationSection, EntityAttribute, EntityInstanceWithName, Uuid } from "miroir-core";
+import { useLocalCacheInstancesForEntity, useLocalCacheInstancesForJzodAttribute, useMiroirContextInnerFormOutput, useMiroirContextServiceHook } from "./MiroirContextReactProvider";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
-import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
-import { JzodArray, JzodElement, JzodObject, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
 export type JzodObjectFormEditorInputs = { [a: string]: any };
@@ -24,8 +24,10 @@ export interface EditorAttribute {
 export interface JzodElementFormEditorCoreProps {
   label: string;
   jzodSchema: JzodElement;
-  getData:(jzodSchema:JzodElement) => any;
+  // getData:(jzodSchema:JzodElement) => any;
   initialValuesObject: any;
+  currentDeploymentUuid: Uuid | undefined;
+  currentApplicationSection: ApplicationSection;
   // onSubmit: SubmitHandler<JzodObjectFormEditorInputs>;
   onSubmit: (data:any,event:any,error:any)=>void;
   // selectValue?: { value: string, label: string }[];
@@ -54,6 +56,81 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+
+// #####################################################################################################
+const getCurrentElementEditor = (
+  props: JzodElementFormEditorProps,
+  selectList:EntityInstanceWithName[],
+  register: UseFormRegister<any>,
+  errors: FieldErrors<any>,
+  formState: FormState<any>,
+  setValue: UseFormSetValue<any>,
+): JSX.Element => {
+  const {label, jzodSchema, initialValuesObject} = props;
+  switch (jzodSchema?.type) {
+    case "array":{
+      const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
+        ((jzodSchema as JzodArray).definition
+          ? (jzodSchema as JzodArray).definition
+          : {}) as JzodObject
+      );
+
+      return (
+        <ListItem disableGutters key={props.label}>
+          <span>
+            <ReportSectionDisplay
+              tableComponentReportType="JSON_ARRAY"
+              label={"JSON_ARRAY-" + label}
+              columnDefs={columnDefs}
+              rowData={initialValuesObject[label]}
+              styles={{
+                width: "50vw",
+                height: "22vw",
+              }}
+            ></ReportSectionDisplay>
+          </span>
+        </ListItem>
+      );
+      break;
+    }
+    case "object": {
+      // no break
+    }
+    default:{
+      if (jzodSchema.type=="simpleType" && jzodSchema.definition == "uuid" && jzodSchema.extra?.targetEntity) {
+        return (
+          <ListItem disableGutters key={label}>
+            {label}:{" "}
+            <p>{JSON.stringify(errors[label]?.message?`received error: ${errors[label]?.message}`:"no error")}</p>
+            <Select options={selectList.map(e=>({value:e.uuid, label:e.name}))} />
+          </ListItem>
+        );
+      } else {
+        return (
+          <ListItem disableGutters key={label}>
+            {label}:{" "}
+            {/* {errors.name?.message && <p>{JSON.stringify(errors)}</p>} */}
+            <p>
+              isValid:{JSON.stringify(formState.isValid)}
+            </p>
+            <p>{JSON.stringify(errors[label]?.message?`received error: ${errors[label]?.message}`:"no error")}</p>
+            <input
+              form={"form." + label}
+              {...register(label, {required:true})}
+              defaultValue={props.initialValuesObject[label]}
+              name={label}
+              // onClick={(e)=>{console.log("onClick!");}}
+              onChange={(e)=>{console.log("onChange!");setValue(label,e.target.value)}}
+            />
+          </ListItem>
+        );
+      }
+    }
+    break;
+  }
+}
+
+
 // #####################################################################################################
 /**
  * react hook form generator, takes jzodSchema as input, and produces react component as output
@@ -63,6 +140,23 @@ const Item = styled(Paper)(({ theme }) => ({
 // export const JzodElementFormEditor:FC<JzodElementFormEditorProps> = (props: JzodElementFormEditorProps) =>{
 export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
   const logHeader = "JsonElementEditorDialog " + (props.label ? props.label + " " : "");
+  const context = useMiroirContextServiceHook();
+
+  // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForEntity(
+  //   props.currentDeploymentUuid,
+  //   props.currentApplicationSection,
+  //   "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  // ) as EntityInstanceWithName[];
+
+  const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
+    props.currentDeploymentUuid,
+    props.currentApplicationSection,
+    props.jzodSchema as JzodAttribute
+  ) as EntityInstanceWithName[];
+
+  console.log("selectList",selectList);
+  
+
   // const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [result, setResult] = useState(undefined);
@@ -73,8 +167,8 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
 
   
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } =
-    // useForm<JzodObjectFormEditorInputs>({ 
-    useForm<any>({ 
+    useForm<JzodObjectFormEditorInputs>({ 
+    // useForm<any>({ 
       defaultValues: props.initialValuesObject,
       resolver: zodResolver(z.object({[props.label]:zodSchemaResolver.zodSchema}))
     });
@@ -141,69 +235,6 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
     reset(props.initialValuesObject);
   }
 
-  const getCurrentElementEditor = (): JSX.Element => {
-    switch (props?.jzodSchema.type) {
-      case "array":{
-        const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
-          ((props?.jzodSchema as JzodArray).definition
-            ? (props?.jzodSchema as JzodArray).definition
-            : {}) as JzodObject
-        );
-
-        return (
-          <ListItem disableGutters key={props.label}>
-            <span>
-              <ReportSectionDisplay
-                tableComponentReportType="JSON_ARRAY"
-                label={"JSON_ARRAY-" + props.label}
-                columnDefs={columnDefs}
-                rowData={props?.initialValuesObject[props.label]}
-                styles={{
-                  width: "50vw",
-                  height: "22vw",
-                }}
-              ></ReportSectionDisplay>
-            </span>
-          </ListItem>
-        );
-        break;
-      }
-      case "object": {
-        // no break
-      }
-      default:{
-        if (props.jzodSchema.type=="simpleType" && props.jzodSchema.definition == "uuid" && props.jzodSchema.extra?.targetEntity) {
-          return (
-            <ListItem disableGutters key={props.label}>
-              {props.label}:{" "}
-              <p>{JSON.stringify(errors[props.label]?.message?`received error: ${errors[props.label]?.message}`:"no error")}</p>
-              <Select options={props.getData(props.jzodSchema)} />
-            </ListItem>
-          );
-        } else {
-          return (
-            <ListItem disableGutters key={props.label}>
-              {props.label}:{" "}
-              {/* {errors.name?.message && <p>{JSON.stringify(errors)}</p>} */}
-              <p>
-                isValid:{JSON.stringify(formState.isValid)}
-              </p>
-              <p>{JSON.stringify(errors[props.label]?.message?`received error: ${errors[props.label]?.message}`:"no error")}</p>
-              <input
-                form={"form." + props.label}
-                {...register(props.label, {required:true})}
-                defaultValue={props.initialValuesObject[props.label]}
-                name={props.label}
-                // onClick={(e)=>{console.log("onClick!");}}
-                onChange={(e)=>{console.log("onChange!");setValue(props.label,e.target.value)}}
-              />
-            </ListItem>
-          );
-        }
-      }
-      break;
-    }
-  }
 
   return (
     <div className="JzodObjectFormEditor">
@@ -232,10 +263,10 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
           <Item>
             <List sx={{ pt: 0 }}>
               {
-                getCurrentElementEditor()
-                // Object.entries(props?.jzodSchema.definition).length > 0? 
+                getCurrentElementEditor(props, selectList, register, errors, formState, setValue)
+                // Object.entries(props?.jzodSchema.definition).length > 0?
                 // Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                  // const currentAttributeDefinition = schemaAttribute[1];
+                // const currentAttributeDefinition = schemaAttribute[1];
                 // })
               }
             </List>

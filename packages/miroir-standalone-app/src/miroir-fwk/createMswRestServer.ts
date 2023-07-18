@@ -23,44 +23,7 @@ import {
 const browserInfo = detect();
 console.log('browserInfo',browserInfo);
 
-export function createReduxStoreAndRestClient(
-  miroirConfig: MiroirConfig,
-  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-):{
-  miroirContext:MiroirContext,
-  reduxStore: ReduxStore,
-  localAndRemoteController:LocalAndRemoteControllerInterface,
-  domainController: DomainControllerInterface,
-} {
-  const miroirContext = new MiroirContext();
-
-  const rootApiUrl: string = miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl;
-    
-  const client: RestClient = new RestClient(fetch);
-  const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
-    miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
-    client
-  );
-
-  const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(
-    rootApiUrl,
-    remoteStoreNetworkRestClient
-  );
-
-  const reduxStore: ReduxStore = new ReduxStore(instanceSagas);
-  reduxStore.run();
-
-  const localAndRemoteController: LocalAndRemoteControllerInterface = new LocalAndRemoteController(
-    miroirContext,
-    reduxStore,
-    reduxStore
-  );
-  const domainController: DomainControllerInterface = new DomainController(localAndRemoteController);
-
-  return {miroirContext, reduxStore, localAndRemoteController,domainController}
-  
-}
-
+// #############################################################################################
 export interface CreateMswRestServerReturnType {
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,

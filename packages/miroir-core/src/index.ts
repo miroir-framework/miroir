@@ -111,6 +111,7 @@ export {
   entityDefinitionEntityDefinitionSchema
 } from './0_interfaces/1_core/writtenByHandSchema.js';
 export {
+  LocalCacheInfo,
   CRUDActionNameSchema,
   CRUDActionName,
   CRUDActionNamesArray,
@@ -208,7 +209,8 @@ export {
 export {
   selectReportSectionInstances,
   selectEntityInstances,
-} from './2_domain/ReportDisplay';
+  selectEntityInstancesFromJzodAttribute,
+} from './2_domain/DomainDataAccess.js';
 export {
   ModelEntityUpdateConverter
 } from './2_domain/ModelUpdateConverter.js';
@@ -223,7 +225,6 @@ export {
 } from './0_interfaces/3_controllers/MiroirContextInterface';
 export {
   LocalCacheInterface,
-  LocalCacheInfo,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
   RemoteDataStoreInterface,

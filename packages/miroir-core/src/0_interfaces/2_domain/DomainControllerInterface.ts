@@ -8,12 +8,16 @@ import {
   WrappedTransactionalEntityUpdateSchema,
   WrappedTransactionalEntityUpdateWithCUDUpdateSchema
 } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { LocalCacheInfo } from "../../0_interfaces/4-services/localCache/LocalCacheInterface.js";
+
+
 import { ApplicationSchema } from "../1_core/Application.js";
 import { EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
 import { MiroirMetaModel, MiroirMetaModelSchema } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
+export interface LocalCacheInfo {
+  localCacheSize: number;
+}
 
 
 export const CRUDActionNamesArray = [
@@ -228,18 +232,22 @@ export const DomainAncillaryOrReplayableActionWithDeploymentSchema = z.object({
 export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof DomainAncillaryOrReplayableActionWithDeploymentSchema>;
 
 
+// ###################################################################################
 export interface DomainInstancesUuidIndex {
   [uuid: string]: EntityInstance;
 }
+// ###################################################################################
 export interface EntitiesDomainState {
   // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
   [entityUuid: string]: DomainInstancesUuidIndex;
 }
 
+// ###################################################################################
 export type DomainStateTransformer = (domainState: EntitiesDomainState) => EntitiesDomainState;
 export type DomainStateSelector = (domainState: EntitiesDomainState) => EntityInstance[];
 export type DomainStateReducer = (domainState: EntitiesDomainState) => any;
 
+// ###################################################################################
 export interface DomainControllerInterface {
   handleDomainNonTransactionalAction(deploymentUuid: Uuid, action: DomainDataAction): Promise<void>;
   handleDomainTransactionalAction(
@@ -248,15 +256,31 @@ export interface DomainControllerInterface {
     currentModel?: MiroirMetaModel
   ): Promise<void>;
   handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MiroirMetaModel): Promise<void>;
+  /**
+   * data access must accomodate different styles of access
+   * => compile-time dependency on types in miroir-core? Or use "any"?
+   * There must be a two-phase process to access data (?)
+   * first step: getting one's preferred way of getting data, depending on chosen implementation
+   * What does it perform concretely?
+   * first function / DomainController factory: takes concrete implementation (Redux, Angular Service...) as input?
+   * first function returns either: (a set of) react hooks, an angular Service, an Rxjs Observable?
+   * output of first function: function producing object producing data? function producing function producing data?
+   * is it possible to have a common interface for these very different implementations?
+   * 
+   * second step: accessing data
+   * input of second function, producing data: jzod schema, context (deployment uuid, application section...)
+   * output of second function: 
+   * 
+   * have a Query interface for a facade to the data-access operations provided by DomainController?
+   * - to accomodate for "elaborate" cache-management (performs a remote access in the case the desired data is absent from the cache )
+   * - to perform "complex" queries (interpretation required)
+   * operations can be asynchronous. 
+   * 
+   * react hooks wrapping miroir-core functions
+   * angular services returning rxjs observables wrapping miroir-core functions
+   * 
+   * use of Redux + Angular?
+   */
   currentTransaction(): DomainTransactionalReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
-  /**
-   * data access
-   * returns either: react hook, angular Service, Rxjs Observable
-   * => compile-time dependency on types in miroir-core? Or use "any"?
-   * output of first function: function producing object producing data? function producing function producing data?
-   * first function / DomainController factory: takes concrete implementation (Redux, Angular Service...) as input?
-   * input of second function, producing data: jzod schema, context (deployment uuid, application section...)
-   * 
-   */
 }

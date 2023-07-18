@@ -10,7 +10,7 @@ import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } fro
 
 import { blue, red } from "@mui/material/colors";
 import miroirConfig from "assets/miroirConfig.json";
-import { createReduxStoreAndRestClient } from "miroir-fwk/createMswRestServer";
+import { createReduxStoreAndRestClient } from "miroir-fwk/createReduxStoreAndRestClient";
 import { StrictMode } from "react";
 import { miroirAppStartup } from "startup";
 import ErrorPage from "./miroir-fwk/4_view/ErrorPage";
@@ -64,7 +64,6 @@ async function start(root:Root) {
 
     const {
       reduxStore: mReduxStore,
-      localAndRemoteController,
       domainController,
       miroirContext: myMiroirContext,
     } = await createReduxStoreAndRestClient(miroirConfig as MiroirConfig, window.fetch.bind(window));

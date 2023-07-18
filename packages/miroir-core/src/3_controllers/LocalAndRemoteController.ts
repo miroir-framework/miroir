@@ -5,11 +5,11 @@ import {
   DomainDataAction,
   DomainTransactionalAncillaryOrReplayableAction,
   DomainTransactionalReplayableAction,
+  LocalCacheInfo,
 } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface.js";
 import {
-  LocalCacheInfo,
   LocalCacheInterface
 } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import {

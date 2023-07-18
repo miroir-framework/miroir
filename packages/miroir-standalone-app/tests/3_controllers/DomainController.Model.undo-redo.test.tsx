@@ -58,7 +58,7 @@ import {
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { SetupWorkerApi } from "msw";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";

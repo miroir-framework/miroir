@@ -22,7 +22,7 @@ import {
 } from "miroir-core";
 import {
   useLocalCacheInstancesForEntity
-} from "miroir-fwk/4_view/hooks";
+} from "miroir-fwk/4_view/MiroirContextReactProvider";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
@@ -61,6 +61,7 @@ export const ReportSectionDisplayPropsSchema = z.union([
 ]);
 export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchema>;
 
+// ##########################################################################################
 export function defaultFormValues(
   tableComponentType: TableComponentType,
   currentEntityJzodSchema: JzodObject,

@@ -31,14 +31,15 @@ import {
   StoreBasedConfiguration
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
-import { useDomainControllerServiceHook, useErrorLogServiceHook, useMiroirContextServiceHook } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import {
+  useDomainControllerServiceHook, useErrorLogServiceHook,
   useLocalCacheModelVersion,
   useLocalCacheReports,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
-  useLocalCacheStoreBasedConfiguration
-} from "miroir-fwk/4_view/hooks";
+  useLocalCacheStoreBasedConfiguration,
+  useMiroirContextServiceHook
+} from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';

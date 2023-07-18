@@ -17,7 +17,7 @@ import {
   useLocalCacheInstancesForEntity,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions
-} from "miroir-standalone-app/src/miroir-fwk/4_view/hooks";
+} from "miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { applicationDeploymentLibrary } from "./tests-utils";
 import { JzodElement } from "@miroir-framework/jzod";
 

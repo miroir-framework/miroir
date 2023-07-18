@@ -49,7 +49,7 @@ import {
   miroirBeforeEach,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createMswRestServer";
+import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 
 import entityAuthor from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
