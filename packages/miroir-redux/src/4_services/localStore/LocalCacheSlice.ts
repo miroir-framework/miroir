@@ -14,6 +14,7 @@ import {
   DomainAction,
   DomainActionWithDeployment,
   DomainDataAction,
+  DomainStateInstanceSelector,
   DomainStateSelector,
   DomainTransactionalAction,
   DomainTransactionalReplaceLocalCacheAction,
@@ -46,12 +47,23 @@ export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNa
 
 
 export function getLocalCacheSliceIndex(
-  deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
-  entityUuid: Uuid
+  deploymentUuid: Uuid | undefined,
+  applicationSection: ApplicationSection | undefined,
+  entityUuid: Uuid | undefined
 ): string {
-  return deploymentUuid + "_" + applicationSection + "_" + entityUuid;
+  return "" + deploymentUuid + "_" + applicationSection + "_" + entityUuid;
 }
+
+// //#########################################################################################
+// export function entitiesDomainState_getEntityInstances(
+//   deploymentUuid: string | undefined,
+//   applicationSection: ApplicationSection | undefined,
+//   entityUuid: Uuid | undefined,
+// ) {
+//   const index = getLocalCacheSliceIndex(deploymentUuid, applicationSection, entityUuid);
+//   return 
+// }
+
 
 //#########################################################################################
 // INTERFACE
@@ -86,8 +98,7 @@ export const selectInstancesForSectionEntity = (
 // )
 
 //#########################################################################################
-export const applySelectorToDomainStateSection =
-  // :(deploymentUuid:string|undefined, section:ApplicationSection|undefined) => (selector: DomainStateSelector) => (state: ReduxStateWithUndoRedo) => EntityInstance[]
+export const applyAllEntityInstancesSelectorToDomainStateSection =
   (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateSelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
@@ -102,13 +113,88 @@ export const applySelectorToDomainStateSection =
               return [entityUuid ? entityUuid[1] : "", e[1].entities];
             })
         ) as EntitiesDomainState;
-        console.log("applySelectorToDomainStateSection domainState", domainState);
+        console.log("applyDeploymentSectionEntitiesSelectorToDomainStateSection domainState", domainState);
         return selector(domainState);
       },
       (items: EntityInstance[]) => items
     );
   };
 
+//#########################################################################################
+export const applyDeploymentSectionEntitiesSelectorToDomainStateSection =
+  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateSelector) => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        const deployments = state?.presentModelSnapshot;
+        const domainState: EntitiesDomainState = Object.fromEntries(
+          Object.entries(deployments)
+            .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
+            .map((e) => {
+              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+              return [entityUuid ? entityUuid[1] : "", e[1].entities];
+            })
+        ) as EntitiesDomainState;
+        console.log("applyDeploymentSectionEntitiesSelectorToDomainStateSection domainState", domainState);
+        return selector(domainState);
+      },
+      (items: EntityInstance[]) => items
+    );
+  };
+
+//#########################################################################################
+export const applyDeploymentEntitiesSelectorToDomainStateSection =
+  (deploymentUuid: string | undefined, selector: DomainStateSelector) => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        const deployments = state?.presentModelSnapshot;
+        const domainState: EntitiesDomainState = Object.fromEntries(
+          Object.entries(deployments)
+            .filter((e) => new RegExp(deploymentUuid + "_" + "(model|data)" + "_").test(e[0]))
+            .map((e) => {
+              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+              return [entityUuid ? entityUuid[1] : "", e[1].entities];
+            })
+        ) as EntitiesDomainState;
+        console.log("applyDeploymentEntitiesSelectorToDomainStateSection domainState", domainState);
+        return selector(domainState);
+      },
+      (items: EntityInstance[]) => items
+    );
+  };
+
+//#########################################################################################
+export const applyDeploymentSectionEntitySelectorToDomainStateSection =
+  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateInstanceSelector) => {
+    return createSelector(
+      (state: ReduxStateWithUndoRedo) => {
+        const deployments = state?.presentModelSnapshot;
+        const domainState: EntitiesDomainState = Object.fromEntries(
+          Object.entries(deployments)
+            .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
+            .map((e) => {
+              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+              return [entityUuid ? entityUuid[1] : "", e[1].entities];
+            })
+        ) as EntitiesDomainState;
+        console.log("applyDeploymentSectionEntitySelectorToDomainStateSection domainState", domainState);
+        return selector(domainState);
+      },
+      (items: EntityInstance) => items
+    );
+  };
+
+
+//#########################################################################################
+//#########################################################################################
+//#########################################################################################
+//#########################################################################################
+//#########################################################################################
 //#########################################################################################
 // IMPLEMENTATION
 //#########################################################################################

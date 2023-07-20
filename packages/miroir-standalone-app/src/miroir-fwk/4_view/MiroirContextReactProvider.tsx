@@ -24,15 +24,18 @@ import {
   entityStoreBasedConfiguration,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
+  selectEntityInstancesForReportSection,
   selectReportSectionInstances,
 } from "miroir-core";
 import {
   ReduxStateChanges,
-  applySelectorToDomainStateSection,
+  applyDeploymentSectionEntitySelectorToDomainStateSection,
+  applyDeploymentSectionEntitiesSelectorToDomainStateSection,
   selectCurrentTransaction,
   selectInstancesForSectionEntity,
+  applyDeploymentEntitiesSelectorToDomainStateSection,
 } from "miroir-redux";
-import { JzodAttribute, JzodElement } from "@miroir-framework/jzod";
+import { JzodAttribute, JzodElement, JzodObject } from "@miroir-framework/jzod";
 
 export interface MiroirReactContext {
   miroirContext: MiroirContextInterface;
@@ -194,37 +197,49 @@ export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForReport(
-  deploymentUuid: string,
-  section: ApplicationSection,
-  reportSectionListDefinition: ReportSectionListDefinition
-): EntityInstance[] {
-  return useSelector(
-    applySelectorToDomainStateSection(
-      deploymentUuid,
-      section,
-      selectReportSectionInstances(reportSectionListDefinition)
-    )
-  );
-}
-
-//#########################################################################################
 export function useLocalCacheInstancesForEntity(
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined,
   entityUuid: string | undefined
 ): EntityInstance[] {
   // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applySelectorToDomainStateSection(deploymentUuid, section, selectEntityInstances(entityUuid)));
+  return useSelector(applyDeploymentSectionEntitiesSelectorToDomainStateSection(deploymentUuid, section, selectEntityInstances(entityUuid)));
 }
 
 //#########################################################################################
 export function useLocalCacheInstancesForJzodAttribute(
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined,
-  // jzodSchema: JzodElement | undefined
   jzodSchema: JzodAttribute | undefined
 ): EntityInstance[] {
   // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applySelectorToDomainStateSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
+  return useSelector(applyDeploymentSectionEntitiesSelectorToDomainStateSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
 }
+
+//#########################################################################################
+export function useLocalCacheEntityInstancesForListReportSection(
+  deploymentUuid: string | undefined,
+  section: ApplicationSection | undefined,
+  reportUuid: string | undefined
+): EntityInstance[]{
+  console.log('useLocalCacheEntityInstancesForListReportSection',deploymentUuid,section,reportUuid);
+  // const reportDefinitions = useSelector(applyDeploymentSectionEntitySelectorToDomainStateSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)))
+  
+  return useSelector(applyDeploymentEntitiesSelectorToDomainStateSection(deploymentUuid, selectEntityInstancesForReportSection(reportUuid,0)));
+}
+
+// //#########################################################################################
+// export function useLocalCacheInstancesForReport(
+//   deploymentUuid: string,
+//   section: ApplicationSection,
+//   reportSectionListDefinition: ReportSectionListDefinition
+// ): EntityInstance[] {
+//   return useSelector(
+//     applyDeploymentSectionEntitiesSelectorToDomainStateSection(
+//       deploymentUuid,
+//       section,
+//       selectReportSectionInstances(reportSectionListDefinition)
+//     )
+//   );
+// }
+

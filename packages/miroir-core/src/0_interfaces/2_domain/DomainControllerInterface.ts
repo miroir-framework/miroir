@@ -11,7 +11,7 @@ import {
 
 
 import { ApplicationSchema } from "../1_core/Application.js";
-import { EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
+import { ApplicationSection, EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
 import { MiroirMetaModel, MiroirMetaModelSchema } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
@@ -245,6 +245,7 @@ export interface EntitiesDomainState {
 // ###################################################################################
 export type DomainStateTransformer = (domainState: EntitiesDomainState) => EntitiesDomainState;
 export type DomainStateSelector = (domainState: EntitiesDomainState) => EntityInstance[];
+export type DomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
 export type DomainStateReducer = (domainState: EntitiesDomainState) => any;
 
 // ###################################################################################
@@ -283,4 +284,6 @@ export interface DomainControllerInterface {
    */
   currentTransaction(): DomainTransactionalReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
+
+  
 }

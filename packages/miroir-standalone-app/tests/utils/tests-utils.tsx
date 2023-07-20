@@ -103,24 +103,6 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 // ############################################################################################################
-
-// export type IndexedDbStoreControllerFactory = (
-//   appName: string,
-//   dataStoreApplicationType: DataStoreApplicationType,
-//   config: EmulatedServerConfigIndexedDb,
-// ) => IStoreController
-
-// export const indexedDbStoreControllerFactory = (
-//   appName: string,
-//   dataStoreApplicationType: DataStoreApplicationType,
-//   config: EmulatedServerConfigIndexedDb,
-// )=>{
-//   const dataStore = new IndexedDbDataSectionStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-data'));
-//   const modelStore = new IndexedDbModelSectionStore(appName,dataStoreApplicationType,new IndexedDb(config.indexedDbName + '-model'),dataStore);
-//   return new StoreController(appName, dataStoreApplicationType,modelStore,dataStore);
-// }
-
-// #################################################################################################################
 export async function miroirBeforeAll(
   miroirConfig: MiroirConfig,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,

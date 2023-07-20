@@ -2,13 +2,14 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, List, ListItem, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew } from "miroir-core";
+import { ApplicationSection, EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew, EntityInstanceWithName, Uuid } from "miroir-core";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { useState } from "react";
-import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
-import { JzodArray, JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { useLocalCacheInstancesForJzodAttribute, useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
+import { JzodArray, JzodAttribute, JzodElement, JzodObject } from "@miroir-framework/jzod";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { InnerElementEditor } from "./JzodElementFormEditor";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -21,7 +22,9 @@ export interface JsonObjectFormEditorCoreDialogProps {
   label: string;
   isAttributes?: boolean;
   jzodSchema: JzodObject;
-  formObject: any;
+  initialValuesObject: any;
+  // currentDeploymentUuid: Uuid | undefined;
+  // currentApplicationSection: ApplicationSection;
   onSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs>;
 }
 
@@ -58,7 +61,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } =
-    useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.formObject });
+    useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
   const { errors } = formState;
   console.log(
     logHeader,
@@ -84,13 +87,13 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       "handleAddObjectDialogFormOpen",
       label,
       "called, props.formObject",
-      props.formObject,
+      props.initialValuesObject,
       "passed value",
       a
     );
 
     setAddObjectdialogFormIsOpen(true);
-    reset(props.formObject);
+    reset(props.initialValuesObject);
     setdialogOuterFormObject(a);
   };
 
@@ -130,10 +133,17 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     return result;
   };
 
+  // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
+  //   props.currentDeploymentUuid,
+  //   props.currentApplicationSection,
+  //   props.jzodSchema as JzodAttribute
+  // ) as EntityInstanceWithName[];
+  // console.log("selectList",selectList);
+
   // if (dialogFormIsOpen && getValues()['uuid'] != props.formObject['uuid']) {
-  if (formIsOpen && getValues()["uuid"] != props.formObject["uuid"]) {
+  if (formIsOpen && getValues()["uuid"] != props.initialValuesObject["uuid"]) {
     console.log(logHeader, "reset form!");
-    reset(props.formObject);
+    reset(props.initialValuesObject);
   }
 
   return (
@@ -144,7 +154,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             {props.label}
             <Button
               variant="outlined"
-              onClick={() => handleAddObjectDialogFormButtonClick(props?.label, props?.formObject)}
+              onClick={() => handleAddObjectDialogFormButtonClick(props?.label, props?.initialValuesObject)}
             >
               <AddBoxIcon />
             </Button>
@@ -167,9 +177,15 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           {/* include validation with required or other standard HTML validation rules */}
           {/* <input {...register("exampleRequired", { required: true })} /> */}
           <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
-            <Item>formObject: {JSON.stringify(props.formObject)}</Item>
+            <Item>formObject: {JSON.stringify(props.initialValuesObject)}</Item>
             <Item>
               <List sx={{ pt: 0 }}>
+                {/* {
+                  Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+                    const currentAttributeDefinition = schemaAttribute[1];
+                    return InnerElementEditor(props, selectList, register, errors, formState, setValue)
+                  }
+                } */}
                 {
                   // Object.entries(props?.jzodSchema.definition).length > 0? 
                   Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
@@ -189,7 +205,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                                 tableComponentReportType="JSON_ARRAY"
                                 label={"JSON_ARRAY-" + currentAttributeDefinition.extra?.defaultLabel}
                                 columnDefs={columnDefs}
-                                rowData={props?.formObject[schemaAttribute[0]]}
+                                rowData={props?.initialValuesObject[schemaAttribute[0]]}
                                 styles={{
                                   width: "50vw",
                                   height: "22vw",
@@ -209,7 +225,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                             on est la!!!!{currentAttributeDefinition?.extra?.defaultLabel}:{" "}
                             <input
                               form={"form." + props.label}
-                              defaultValue={props.formObject[schemaAttribute[0]]}
+                              defaultValue={props.initialValuesObject[schemaAttribute[0]]}
                               {...register(schemaAttribute[0],{
                                 onChange: (e) => console.log("onChange!",e),
                                 onBlur: (e) => console.log("onBlur!",e),

@@ -25,6 +25,8 @@ import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 
+
+
 /**
  * domain level contains "business" logic related to concepts defined whithin the
  * application: entities, reports, reducers, users, etc.

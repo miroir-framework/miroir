@@ -16,7 +16,7 @@ export type ReportSectionList = z.infer<typeof ReportSectionListSchema>;
 
 export const ReportSectionObjectDetailsSchema = z.object({
   type: z.literal("objectDetails"),
-  // definition: ReportListDefinitionSchema,
+  definition: z.any(),
 })
 export type ReportSectionObjectDetails = z.infer<typeof ReportSectionObjectDetailsSchema>;
 

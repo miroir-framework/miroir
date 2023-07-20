@@ -147,6 +147,7 @@ afterEach(
   }
 )
 
+// ################################################################################################
 function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
   const [result, setResult] = useState(undefined);
 
@@ -157,7 +158,7 @@ function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
       initialValuesObject={props.initialValuesObject}
       showButton={props.showButton}
       jzodSchema={props.jzodSchema}
-      getData={props.getData}
+      // getData={props.getData}
       onSubmit={(data:any,event:any,error:any)=>{console.log("JzodObjectFormEditorWrapper onSubmit!");setResult(data); return props.onSubmit(data,event,error)}}
     ></JzodElementFormEditor>
     {
@@ -236,7 +237,7 @@ describe(
               initialValuesObject={""}
               showButton={true}
               jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
-              getData={()=>undefined}
+              // getData={()=>undefined}
               // jzodSchema={{type:"simpleType", definition:"string"}}
               onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
             ></JzodObjectFormEditorWrapper>,

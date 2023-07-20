@@ -282,7 +282,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             // label='OuterDialog'
             label={props.currentMiroirEntityDefinition.name}
             jzodSchema={props.currentMiroirEntityDefinition.jzodSchema as JzodObject}
-            formObject={
+            initialValuesObject={
               dialogFormObject
                 ? dialogFormObject
                 : defaultFormValues(

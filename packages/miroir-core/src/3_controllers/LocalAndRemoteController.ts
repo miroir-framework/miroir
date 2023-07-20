@@ -31,9 +31,12 @@ import { throwExceptionIfError } from "./ErrorUtils.js";
 export default {};
 
 /**
- * controller should allow configuration of local storage / external storage balance.
+ * controller should allow configuration of local storage / external storage balance
  * when data is fetched / purged from local storage.
  * allow monitoring of local storage resources.
+ * 
+ * Problem: it is servicing the DomainController, should'nt it be the other way around?
+ * For now, it only allows loading the current meta-model.
  */
 export class LocalAndRemoteController implements LocalAndRemoteControllerInterface {
   constructor(

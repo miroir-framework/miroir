@@ -624,8 +624,8 @@ export const HomePage = (props: RootComponentProps) => {
         label="simpleElementString"
         initialValuesObject={"tata"}
         showButton={true}
-        currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
-        currentApplicationSection="data"
+        // currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
+        // currentApplicationSection="data"
         // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
         jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:"d7a144ff-d1b9-4135-800c-a7cfc1f38733"}}}
         // getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
@@ -726,6 +726,7 @@ export const HomePage = (props: RootComponentProps) => {
                     width: '90vw',
                   }
                 }
+              currentReportUuid=""
               chosenApplicationSection={displayedApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
               currentModel={currentModel}

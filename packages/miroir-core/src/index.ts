@@ -159,6 +159,7 @@ export {
   DomainTransactionalRollbackAction,
   DomainTransactionalUndoRedoAction,
   EntitiesDomainState,
+  DomainStateInstanceSelector,
   DomainStateReducer,
   DomainStateSelector,
   DomainStateTransformer,
@@ -210,6 +211,8 @@ export {
   selectReportSectionInstances,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
+  selectEntityInstancesForReportSection,
+  selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
   ModelEntityUpdateConverter

@@ -14,6 +14,21 @@ import { useLocalCacheInstancesForEntity, useLocalCacheInstancesForJzodAttribute
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
+
+// #####################################################################################################
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "left",
+  display: "flex",
+  maxHeight: "50vh",
+  // height: '80vh',
+  color: theme.palette.text.secondary,
+}));
+
+
+// #####################################################################################################
 export type JzodObjectFormEditorInputs = { [a: string]: any };
 
 export interface EditorAttribute {
@@ -26,8 +41,8 @@ export interface JzodElementFormEditorCoreProps {
   jzodSchema: JzodElement;
   // getData:(jzodSchema:JzodElement) => any;
   initialValuesObject: any;
-  currentDeploymentUuid: Uuid | undefined;
-  currentApplicationSection: ApplicationSection;
+  // currentDeploymentUuid: Uuid | undefined;
+  // currentApplicationSection: ApplicationSection;
   // onSubmit: SubmitHandler<JzodObjectFormEditorInputs>;
   onSubmit: (data:any,event:any,error:any)=>void;
   // selectValue?: { value: string, label: string }[];
@@ -45,20 +60,9 @@ export type JzodElementFormEditorProps =
   | JzodObjectFormEditorWithButtonProps
   | JzodElementFormEditorWithoutButtonProps;
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "left",
-  display: "flex",
-  maxHeight: "50vh",
-  // height: '80vh',
-  color: theme.palette.text.secondary,
-}));
-
 
 // #####################################################################################################
-const getCurrentElementEditor = (
+export const InnerElementEditor = (
   props: JzodElementFormEditorProps,
   selectList:EntityInstanceWithName[],
   register: UseFormRegister<any>,
@@ -138,7 +142,7 @@ const getCurrentElementEditor = (
  * @returns 
  */
 // export const JzodElementFormEditor:FC<JzodElementFormEditorProps> = (props: JzodElementFormEditorProps) =>{
-export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
+export function JzodElementFormEditor(props: JzodElementFormEditorProps): JSX.Element {
   const logHeader = "JsonElementEditorDialog " + (props.label ? props.label + " " : "");
   const context = useMiroirContextServiceHook();
 
@@ -148,11 +152,12 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
   //   "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
   // ) as EntityInstanceWithName[];
 
-  const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
-    props.currentDeploymentUuid,
-    props.currentApplicationSection,
-    props.jzodSchema as JzodAttribute
-  ) as EntityInstanceWithName[];
+  const selectList:EntityInstanceWithName[] = []
+  // useLocalCacheInstancesForJzodAttribute(
+  //   props.currentDeploymentUuid,
+  //   props.currentApplicationSection,
+  //   props.jzodSchema as JzodAttribute
+  // ) as EntityInstanceWithName[];
 
   console.log("selectList",selectList);
   
@@ -167,8 +172,7 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
 
   
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } =
-    useForm<JzodObjectFormEditorInputs>({ 
-    // useForm<any>({ 
+    useForm<JzodObjectFormEditorInputs>({
       defaultValues: props.initialValuesObject,
       resolver: zodResolver(z.object({[props.label]:zodSchemaResolver.zodSchema}))
     });
@@ -263,7 +267,7 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps) {
           <Item>
             <List sx={{ pt: 0 }}>
               {
-                getCurrentElementEditor(props, selectList, register, errors, formState, setValue)
+                InnerElementEditor(props, selectList, register, errors, formState, setValue)
                 // Object.entries(props?.jzodSchema.definition).length > 0?
                 // Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
                 // const currentAttributeDefinition = schemaAttribute[1];
