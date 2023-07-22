@@ -15,7 +15,7 @@ import {
   DomainActionWithDeployment,
   DomainDataAction,
   DomainStateInstanceSelector,
-  DomainStateSelector,
+  DomainStateEntityInstanceArraySelector,
   DomainTransactionalAction,
   DomainTransactionalReplaceLocalCacheAction,
   EntitiesDomainState,
@@ -99,7 +99,7 @@ export const selectInstancesForSectionEntity = (
 
 //#########################################################################################
 export const applyAllEntityInstancesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateSelector) => {
+  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateEntityInstanceArraySelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         const deployments = state?.presentModelSnapshot;
@@ -122,7 +122,7 @@ export const applyAllEntityInstancesSelectorToDomainStateSection =
 
 //#########################################################################################
 export const applyDeploymentSectionEntitiesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateSelector) => {
+  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateEntityInstanceArraySelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         const deployments = state?.presentModelSnapshot;
@@ -145,7 +145,7 @@ export const applyDeploymentSectionEntitiesSelectorToDomainStateSection =
 
 //#########################################################################################
 export const applyDeploymentEntitiesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, selector: DomainStateSelector) => {
+  (deploymentUuid: string | undefined, selector: DomainStateEntityInstanceArraySelector) => {
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         const deployments = state?.presentModelSnapshot;

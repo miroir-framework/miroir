@@ -244,7 +244,7 @@ export interface EntitiesDomainState {
 
 // ###################################################################################
 export type DomainStateTransformer = (domainState: EntitiesDomainState) => EntitiesDomainState;
-export type DomainStateSelector = (domainState: EntitiesDomainState) => EntityInstance[];
+export type DomainStateEntityInstanceArraySelector = (domainState: EntitiesDomainState) => EntityInstance[];
 export type DomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
 export type DomainStateReducer = (domainState: EntitiesDomainState) => any;
 
@@ -281,6 +281,22 @@ export interface DomainControllerInterface {
    * angular services returning rxjs observables wrapping miroir-core functions
    * 
    * use of Redux + Angular?
+   * 
+   * 
+   * OR:
+   * - write "standard" set of functions for each local store implementation providing EntitiesDomainState (or other) to the local data computation function
+   * 
+   * each computation is split into several parts with asynchronous return of result:
+   * estimate if all needed data is present in the local storage
+   * - if yes apply computation function directly
+   * - if no ask server to perform needed task, wait for results on convened reception point
+   * => need to have a standard mechanism for spawning / collecting task results
+   * 
+   * steps:
+   * - collect / compute on server / database, using data from server cache (?)
+   * - receive reduced data or Entity instances from server, with residual finishing / consolidation step on client side
+   * 
+   * 
    */
   currentTransaction(): DomainTransactionalReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;

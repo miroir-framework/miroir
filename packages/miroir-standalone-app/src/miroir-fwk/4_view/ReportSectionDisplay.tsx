@@ -10,27 +10,24 @@ import {
   ApplicationSectionSchema,
   DomainControllerInterface,
   DomainDataAction,
-  EntityArrayAttribute,
   EntityAttribute,
-  EntityDefinitionEntityDefinitionAttributeNew,
   EntityDefinitionSchema,
   MetaEntity,
   MetaEntitySchema,
-  ReportSchema,
   ReportSectionListDefinitionSchema,
   UuidSchema,
-  entityDefinitionEntityDefinition,
+  entityDefinitionEntityDefinition
 } from "miroir-core";
 import {
-  useLocalCacheInstancesForEntity, useLocalCacheEntityInstancesForListReportSection
+  useLocalCacheEntityInstancesForListReportSection
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 
+import { JzodObject } from "@miroir-framework/jzod";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-import { JzodObject } from "@miroir-framework/jzod";
-import { useState } from "react";
+import { useCallback } from "react";
 
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
@@ -136,24 +133,144 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
   // setCount(count + 1);
   count++;
 
-  const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
-    const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-    console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
-    if (props.tableComponentReportType == 'JSON_ARRAY') {
-      if (buttonType == 'InnerDialog') {
-        const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
-        const newAttributesValue = previousValue.slice();
-        newAttributesValue.push(data as EntityAttribute);
-        const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
-        setdialogOuterFormObject(newObject); // TODO use Zod parse!
-        console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
+  const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
+    async (data,event) => {
+      const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
+      console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
+      if (props.tableComponentReportType == 'JSON_ARRAY') {
+        if (buttonType == 'InnerDialog') {
+          const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
+          const newAttributesValue = previousValue.slice();
+          newAttributesValue.push(data as EntityAttribute);
+          const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
+          setdialogOuterFormObject(newObject); // TODO use Zod parse!
+          console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
+        } else {
+          console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
+        }
       } else {
-        console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
+        console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
       }
-    } else {
-      console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
-    }
-  }
+    },[dialogOuterFormObject]
+  ) 
+
+  const onCreateFormObject = useCallback(
+    async (data:any) => {
+      console.log('ReportComponent onEditFormObject called with new object value',data);
+      
+      if (props.displayedDeploymentDefinition) {
+        if (props.chosenApplicationSection == 'model') {
+          await domainController.handleDomainAction(
+            props.displayedDeploymentDefinition?.uuid,
+            {
+              actionType: "DomainTransactionalAction",
+              actionName: "UpdateMetaModelInstance",
+              update: {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: "create",
+                objects: [
+                  {
+                    parentName: data.name,
+                    parentUuid: data.parentUuid,
+                    applicationSection:'model',
+                    instances: [
+                      // newEntity 
+                      data
+                    ]
+                  }
+                ],
+              }
+            },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
+          );
+        } else {
+          const createAction: DomainDataAction = {
+            actionName: "create",
+            actionType:"DomainDataAction",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                instances: [
+                  data 
+                ],
+              },
+            ],
+          };
+          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, createAction);
+        }
+      } else {
+        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      }
+    },
+    []
+  )
+
+  const onEditFormObject = useCallback(
+    async (data:any) => {
+      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
+      console.log('ReportComponent onEditFormObject called with new object value',data);
+      
+      if (props.displayedDeploymentDefinition) {
+        if (props.chosenApplicationSection == 'model') {
+          await domainController.handleDomainAction(
+            props.displayedDeploymentDefinition?.uuid,
+            {
+              actionType: "DomainTransactionalAction",
+              actionName: "UpdateMetaModelInstance",
+              update: {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: "update",
+                objects: [
+                  {
+                    parentName: data.name,
+                    parentUuid: data.parentUuid,
+                    applicationSection:props.chosenApplicationSection,
+                    instances: [
+                      data 
+                    ]
+                  }
+                ],
+              }
+            },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
+          );
+        } else {
+          const updateAction: DomainDataAction = {
+            actionName: "update",
+            actionType:"DomainDataAction",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                instances: [
+                  data 
+                ],
+              },
+            ],
+          };
+          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, updateAction);
+        }
+      } else {
+        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+      }
+    },
+    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection]
+  )
+
+  const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
+    async (data,event) => {
+      const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
+      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
+      if (buttonType == 'OuterDialog') {
+        await onCreateFormObject(data);
+      } else {
+        console.log('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
+        
+      }
+    },
+    []
+  )
 
   // const instancesToDisplay = useLocalCacheInstancesForEntity(
   //   props.displayedDeploymentDefinition?.uuid,
@@ -194,114 +311,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
     console.log("ReportComponent props.currentMiroirEntity",props?.currentMiroirEntity);
     console.log("ReportComponent columnDefs",columnDefs);
 
-    const onCreateFormObject = async (data:any) => {
-      console.log('ReportComponent onEditFormObject called with new object value',data);
-      
-      if (props.displayedDeploymentDefinition) {
-        if (props.chosenApplicationSection == 'model') {
-          await domainController.handleDomainAction(
-            props.displayedDeploymentDefinition?.uuid,
-            {
-              actionType: "DomainTransactionalAction",
-              actionName: "UpdateMetaModelInstance",
-              update: {
-                updateActionType: "ModelCUDInstanceUpdate",
-                updateActionName: "create",
-                objects: [
-                  {
-                    parentName: data.name,
-                    parentUuid: data.parentUuid,
-                    applicationSection:'model',
-                    instances: [
-                      // newEntity 
-                      data
-                    ]
-                  }
-                ],
-              }
-            },props.currentModel
-          );
-        } else {
-          const createAction: DomainDataAction = {
-            actionName: "create",
-            actionType:"DomainDataAction",
-            objects: [
-              {
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection:props.chosenApplicationSection,
-                instances: [
-                  data 
-                ],
-              },
-            ],
-          };
-          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, createAction);
-        }
-      } else {
-        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
-      }
-    }
 
-    const onEditFormObject = async (data:any) => {
-      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      console.log('ReportComponent onEditFormObject called with new object value',data);
-      
-      if (props.displayedDeploymentDefinition) {
-        if (props.chosenApplicationSection == 'model') {
-          await domainController.handleDomainAction(
-            props.displayedDeploymentDefinition?.uuid,
-            {
-              actionType: "DomainTransactionalAction",
-              actionName: "UpdateMetaModelInstance",
-              update: {
-                updateActionType: "ModelCUDInstanceUpdate",
-                updateActionName: "update",
-                objects: [
-                  {
-                    parentName: data.name,
-                    parentUuid: data.parentUuid,
-                    applicationSection:props.chosenApplicationSection,
-                    instances: [
-                      data 
-                    ]
-                  }
-                ],
-              }
-            },props.currentModel
-          );
-        } else {
-          const updateAction: DomainDataAction = {
-            actionName: "update",
-            actionType:"DomainDataAction",
-            objects: [
-              {
-                parentName: data.name,
-                parentUuid: data.parentUuid,
-                applicationSection:props.chosenApplicationSection,
-                instances: [
-                  data 
-                ],
-              },
-            ],
-          };
-          await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, updateAction);
-        }
-      } else {
-        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
-      }
-    }
-
-    const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
-      const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
-      if (buttonType == 'OuterDialog') {
-        await onCreateFormObject(data);
-      } else {
-        console.log('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
-        
-      }
-    }
   
     return (
       <div className="MiroirReport-global" style={{ display: "flex" }}>

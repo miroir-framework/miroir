@@ -161,7 +161,7 @@ export {
   EntitiesDomainState,
   DomainStateInstanceSelector,
   DomainStateReducer,
-  DomainStateSelector,
+  DomainStateEntityInstanceArraySelector,
   DomainStateTransformer,
   DomainInstancesUuidIndex,
   UndoRedoActionNamesSchema,
