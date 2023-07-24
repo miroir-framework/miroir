@@ -152,7 +152,7 @@ const miroirJzodExtraPropertiesSchemaTransform = (key:any, value:any):[any,any] 
 
 export const miroirJzodSchemaBootstrap = deepTransform(jzodBootstrapSetSchema,miroirJzodExtraPropertiesSchemaTransform)
 
-console.log("miroirJzodBootstrapSchema",miroirJzodSchemaBootstrap);
+// console.log("miroirJzodBootstrapSchema",miroirJzodSchemaBootstrap);
 
 export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(miroirJzodSchemaBootstrap);
 

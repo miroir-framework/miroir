@@ -1,16 +1,47 @@
 import { JzodAttribute } from "@miroir-framework/jzod";
 import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/Instance";
 import { Report, ReportSectionListDefinition } from "../0_interfaces/1_core/Report";
-import { DomainStateInstanceSelector, DomainStateEntityInstanceArraySelector, EntitiesDomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { EntitiesDomainStateInstanceSelector, EntitiesDomainStateEntityInstanceArraySelector, EntitiesDomainState, DomainState, DomainStateMetaModelSelector } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration";
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+import { defaultMiroirMetaModel } from "../1_core/Model";
+import { EntityDefinition, MetaEntity, entityEntity } from "..";
+
+// duplicated from server!!!!!!!!
+const applicationDeploymentLibrary: ApplicationDeployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"ApplicationDeployment",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationPostgresDeployment",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for Application Library",
+  "applicationModelLevel": "model",
+  "model": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "data": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  }
+}
 
 
-export function selectReportSectionInstances(reportSectionListDefinition:ReportSectionListDefinition):DomainStateEntityInstanceArraySelector{
+export function selectReportSectionInstances(reportSectionListDefinition:ReportSectionListDefinition):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectReportSectionInstances', reportUuid, domainState)
     // const currentReport: Report = DomainInstanceUuidIndexToArray(domainState[entityReport.uuid])?.find(e=>e['uuid'] === reportSectionListDefinition.parentUuid) as Report;
@@ -22,18 +53,9 @@ export function selectReportSectionInstances(reportSectionListDefinition:ReportS
   }
 }
 
-// export function selectDeploymentReportInstances(deploymentUuid:string, reportUuid:string):DomainStateEntityInstanceArraySelector{
-//   return (domainState:EntitiesDomainState):EntityInstance[] => {
-//     // console.log('selectReportSectionInstances', reportName, currentReport, domainState[currentReport.definition.parentName])
-//     // const currentReport: Report = DomainInstanceUuidIndexToArray(domainState[entityDefinitionReport.uuid])?.find(e=>e['uuid'] === reportUuid) as Report;
-//     const currentReport: Report = DomainInstanceUuidIndexToArray(domainState[entityReport.uuid])?.find(e=>e['uuid'] === reportUuid) as Report;
-//     return currentReport?.definition?.parentName?DomainInstanceUuidIndexToArray(domainState[currentReport.definition.parentUuid]):[];
-//   }
-// }
-
 // ################################################################################################
-// export function selectEntityInstances(deploymentUuid:string,parentUuid:string):DomainStateEntityInstanceArraySelector{
-export function selectEntityInstances(parentUuid:string | undefined):DomainStateEntityInstanceArraySelector{
+// export function selectEntityInstances(deploymentUuid:string,parentUuid:string):EntitiesDomainStateEntityInstanceArraySelector{
+export function selectEntityInstances(parentUuid:string | undefined):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (parentUuid && domainState[parentUuid]) {
@@ -46,7 +68,50 @@ export function selectEntityInstances(parentUuid:string | undefined):DomainState
 }
 
 // ################################################################################################
-export function selectEntityInstancesFromJzodAttribute(jzodSchema:JzodAttribute | undefined):DomainStateEntityInstanceArraySelector{
+// export function selectEntityInstances(deploymentUuid:string,parentUuid:string):EntitiesDomainStateEntityInstanceArraySelector{
+export function selectCurrentDeploymentModel(
+  deploymentUuid:string | undefined
+):DomainStateMetaModelSelector {
+  return (domainState:DomainState):MiroirMetaModel => {
+    console.log('selectEntityInstances for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
+    if (deploymentUuid == applicationDeploymentLibrary.uuid) {
+      // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
+      return ({
+        entities: (
+          domainState &&
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityEntity.uuid]?
+          Object.values(domainState[deploymentUuid]["model"][entityEntity.uuid]) as MetaEntity[]:[]
+        ),
+        entityDefinitions: (
+          domainState &&
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?
+          Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
+          : []
+        ),
+        reports: (
+          domainState &&
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityReport.uuid]?
+            Object.values(domainState[deploymentUuid]["model"][entityReport.uuid]) as Report[]
+          : []
+        ),
+        configuration: [],
+        applicationVersions: [],
+        applicationVersionCrossEntityDefinition: [],
+      })
+    } else {
+      return defaultMiroirMetaModel;
+    }
+  }
+}
+
+// ################################################################################################
+export function selectEntityInstancesFromJzodAttribute(jzodSchema:JzodAttribute | undefined):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (jzodSchema?.extra?.targetEntity && domainState[jzodSchema?.extra?.targetEntity]) {
@@ -63,7 +128,7 @@ export function selectReportDefinitionFromReportUuid(
   // deploymentUuid: string | undefined,
   // section: ApplicationSection | undefined,
   reportUuid: string | undefined
-):DomainStateInstanceSelector{
+):EntitiesDomainStateInstanceSelector{
   return (domainState:EntitiesDomainState):Report | undefined => {
     // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (reportUuid && domainState[entityReport.uuid] && domainState[entityReport.uuid][reportUuid]) {
@@ -80,7 +145,7 @@ export function selectReportDefinitionFromReportUuid(
 export function selectEntityInstancesForReportSection(
   reportUuid: string | undefined,
   reportSectionIndex: number,
-):DomainStateEntityInstanceArraySelector{
+):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     console.log('selectEntityInstancesForReportSection for reportUuid', reportUuid, 'reportSectionIndex:', reportSectionIndex,'domainState',domainState)
     const reportDefinition:Report | undefined = selectReportDefinitionFromReportUuid(reportUuid)(domainState) as Report | undefined;
@@ -100,6 +165,9 @@ export function selectEntityInstancesForReportSection(
     }
   }
 }
+
+// ################################################################################################
+
 
 // // ################################################################################################
 // // duplicated from server!!!!!!!!
@@ -135,7 +203,7 @@ export function selectEntityInstancesForReportSection(
 // export function selectEntityInstancesForReport(
 //   // deploymentUuid: string | undefined, applicationSection: ApplicationSection | undefined,
 //   reportUuid: string | undefined,
-// ):DomainStateEntityInstanceArraySelector{
+// ):EntitiesDomainStateEntityInstanceArraySelector{
 //   return (domainState:EntitiesDomainState):EntityInstance[] => {
 
 //     const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(

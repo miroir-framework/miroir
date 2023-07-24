@@ -26,14 +26,17 @@ import {
   selectEntityInstancesFromJzodAttribute,
   selectEntityInstancesForReportSection,
   selectReportSectionInstances,
+  selectCurrentDeploymentModel,
+  MiroirMetaModel,
 } from "miroir-core";
 import {
   ReduxStateChanges,
-  applyDeploymentSectionEntitySelectorToDomainStateSection,
-  applyDeploymentSectionEntitiesSelectorToDomainStateSection,
+  applyEntityInstanceSelectorToDomainStateDeploymentSection,
+  applyEntityInstanceArraySelectorToDomainStateDeploymentSection,
   selectCurrentTransaction,
   selectInstancesForSectionEntity,
-  applyDeploymentEntitiesSelectorToDomainStateSection,
+  applyEntityInstancesArraySelectorToDomainStateDeployment,
+  applyMetaModelSelectorToDomainState,
 } from "miroir-redux";
 import { JzodAttribute, JzodElement, JzodObject } from "@miroir-framework/jzod";
 
@@ -203,7 +206,7 @@ export function useLocalCacheInstancesForEntity(
   entityUuid: string | undefined
 ): EntityInstance[] {
   // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applyDeploymentSectionEntitiesSelectorToDomainStateSection(deploymentUuid, section, selectEntityInstances(entityUuid)));
+  return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstances(entityUuid)));
 }
 
 //#########################################################################################
@@ -213,7 +216,7 @@ export function useLocalCacheInstancesForJzodAttribute(
   jzodSchema: JzodAttribute | undefined
 ): EntityInstance[] {
   // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applyDeploymentSectionEntitiesSelectorToDomainStateSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
+  return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
 }
 
 //#########################################################################################
@@ -223,9 +226,21 @@ export function useLocalCacheEntityInstancesForListReportSection(
   reportUuid: string | undefined
 ): EntityInstance[]{
   console.log('useLocalCacheEntityInstancesForListReportSection',deploymentUuid,section,reportUuid);
-  // const reportDefinitions = useSelector(applyDeploymentSectionEntitySelectorToDomainStateSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)))
+  // const reportDefinitions = useSelector(applyEntityInstanceSelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)))
   
-  return useSelector(applyDeploymentEntitiesSelectorToDomainStateSection(deploymentUuid, selectEntityInstancesForReportSection(reportUuid,0)));
+  return useSelector(applyEntityInstancesArraySelectorToDomainStateDeployment(deploymentUuid, selectEntityInstancesForReportSection(reportUuid,0)));
+}
+
+//#########################################################################################
+export function useLocalCacheMetaModel(
+  deploymentUuid: string | undefined,
+  // section: ApplicationSection | undefined,
+  // reportUuid: string | undefined
+): MiroirMetaModel{
+  console.log('useLocalCacheMetaModel',deploymentUuid);
+  // const reportDefinitions = useSelector(applyEntityInstanceSelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)))
+  
+  return useSelector(applyMetaModelSelectorToDomainState(selectCurrentDeploymentModel(deploymentUuid)));
 }
 
 // //#########################################################################################
@@ -235,7 +250,7 @@ export function useLocalCacheEntityInstancesForListReportSection(
 //   reportSectionListDefinition: ReportSectionListDefinition
 // ): EntityInstance[] {
 //   return useSelector(
-//     applyDeploymentSectionEntitiesSelectorToDomainStateSection(
+//     applyEntityInstanceArraySelectorToDomainStateDeploymentSection(
 //       deploymentUuid,
 //       section,
 //       selectReportSectionInstances(reportSectionListDefinition)

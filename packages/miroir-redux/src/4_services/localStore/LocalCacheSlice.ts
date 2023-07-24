@@ -14,8 +14,8 @@ import {
   DomainAction,
   DomainActionWithDeployment,
   DomainDataAction,
-  DomainStateInstanceSelector,
-  DomainStateEntityInstanceArraySelector,
+  EntitiesDomainStateInstanceSelector,
+  EntitiesDomainStateEntityInstanceArraySelector,
   DomainTransactionalAction,
   DomainTransactionalReplaceLocalCacheAction,
   EntitiesDomainState,
@@ -27,10 +27,15 @@ import {
   Uuid,
   entityDefinitionEntityDefinition,
   entityEntity,
-  entityEntityDefinition
+  entityEntityDefinition,
+  DomainStateMetaModelSelector,
+  DomainState,
+  EntityInstancesUuidIndex,
+  MiroirMetaModel
 } from "miroir-core";
 import {
-  NewLocalCacheSliceState,
+  LocalCacheDeploymentSectionEntitySliceState,
+  LocalCacheSliceState,
   ReduxStateWithUndoRedo,
   localCacheSliceInputActionNames,
   localCacheSliceInputActionNamesObject,
@@ -46,6 +51,7 @@ export function getPromiseActionStoreActionNames(promiseActionNames: string[]): 
 export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNames(localCacheSliceInputActionNames);
 
 
+//#########################################################################################
 export function getLocalCacheSliceIndex(
   deploymentUuid: Uuid | undefined,
   applicationSection: ApplicationSection | undefined,
@@ -54,7 +60,146 @@ export function getLocalCacheSliceIndex(
   return "" + deploymentUuid + "_" + applicationSection + "_" + entityUuid;
 }
 
+//#########################################################################################
+export function getLocalCacheIndexEntityUuid(localCacheIndex:string): Uuid {
+  const entityUuid = new RegExp(/\_([0-9a-fA-F\-]+)$/).exec(localCacheIndex)
+  if (entityUuid) {
+    // console.log('found entityUuid',entityUuid);
+    return entityUuid[1];
+  } else {
+    throw new Error("unknown entity in local cache index: " + localCacheIndex);
+  }
+}
+//#########################################################################################
+export function getLocalCacheIndexDeploymentUuid(localCacheIndex:string): Uuid {
+  const deploymentUuid = new RegExp(/^([0-9a-fA-F\-]+)\_/).exec(localCacheIndex)
+  if (deploymentUuid) {
+    // console.log('found deploymentUuid',deploymentUuid);
+    return deploymentUuid[1];
+  } else {
+    throw new Error("unknown deployment in local cache index: " + localCacheIndex);
+  }
+}
+//#########################################################################################
+export function getLocalCacheIndexDeploymentSection(localCacheIndex:string): Uuid {
+  const deploymentSection = new RegExp(/^[0-9a-fA-F\-]+_([^_]+)_[0-9a-fA-F\-]+$/).exec(localCacheIndex)
+  if (deploymentSection) {
+    // console.log('getLocalCacheIndexDeploymentSection found deploymentSection',deploymentSection);
+    return deploymentSection[1];
+  } else {
+    throw new Error("getLocalCacheIndexDeploymentSection unknown deployment section in local cache index: " + localCacheIndex + ' found deploymentSection is undefined');
+  }
+  // return deploymentSection?deploymentSection[1]:undefined;
+}
+
+//#########################################################################################
+export function getLocalCacheKeysForDeploymentUuid(localCacheKeys:string[], deploymentUuid: Uuid): string[] {
+  return localCacheKeys.filter(k=>k.match(new RegExp(`^${deploymentUuid}_`)))
+}
+
+//#########################################################################################
+export function getLocalCacheKeysForDeploymentSection(localCacheKeys:string[], section: string): string[] {
+  return localCacheKeys.filter(k=>k.match(new RegExp(`_${section}_`)))
+}
+
 // //#########################################################################################
+// export function getLocalCacheKeysForDeploymentUuid(localCache:LocalCacheDeploymentSectionEntitySliceState, deploymentUuid: Uuid): string[] {
+//   return Object.keys(localCache).filter(k=>k.match(new RegExp(`/^${deploymentUuid}_/`)))
+// }
+
+//#########################################################################################
+export function getLocalCacheKeysDeploymentUuidList(localCacheKeys:string[]): Uuid[] {
+  const resultSet = new Set<Uuid>();
+  localCacheKeys.forEach(k=>{const deploymentUuid = getLocalCacheIndexDeploymentUuid(k); if (deploymentUuid) resultSet.add(deploymentUuid)})
+  return Array.from(resultSet.keys());
+}
+
+// //#########################################################################################
+// export function getLocalCacheDeploymentUuidList(localCache:LocalCacheDeploymentSectionEntitySliceState): Uuid[] {
+//   const resultSet = new Set<Uuid>();
+//   Object.keys(localCache).forEach(k=>{const uuid = getLocalCacheIndexDeploymentUuid(k); if (uuid) resultSet.add(uuid)})
+//   return Array.from(resultSet.keys());
+// }
+
+//#########################################################################################
+export function getLocalCacheKeysDeploymentSectionList(localCacheKeys:string[],deploymentUuid:Uuid): string[] {
+  const resultSet = new Set<string>();
+  getLocalCacheKeysForDeploymentUuid(localCacheKeys, deploymentUuid)
+  .forEach(k=>{const section = getLocalCacheIndexDeploymentSection(k); if (section) resultSet.add(section)})
+  return Array.from(resultSet.keys());
+}
+
+// //#########################################################################################
+// export function getLocalCacheDeploymentSectionList(localCache:LocalCacheDeploymentSectionEntitySliceState,DeploymentUuid:Uuid): Uuid[] {
+//   const resultSet = new Set<string>();
+//   Object.keys(localCache)
+//   .filter(k=>k.match(new RegExp(`/^${DeploymentUuid}_/`)))
+//   .forEach(k=>{const uuid = getLocalCacheIndexDeploymentSection(k); if (uuid) resultSet.add(uuid)})
+//   return Array.from(resultSet.keys());
+// }
+
+//#########################################################################################
+export function getLocalCacheKeysDeploymentSectionEntitiesList(localCacheKeys:string[],deploymentUuid:Uuid,section:string): Uuid[] {
+  const deploymentKeys = getLocalCacheKeysForDeploymentUuid(localCacheKeys,deploymentUuid);
+  const sectionKeys = getLocalCacheKeysForDeploymentSection(deploymentKeys,section);
+  return sectionKeys.map(k=>getLocalCacheIndexEntityUuid(k));
+}
+
+//#########################################################################################
+export function localCacheStateToDomainState(localCache:LocalCacheDeploymentSectionEntitySliceState):DomainState {
+  const localCacheKeys = Object.keys(localCache);
+  const deployments = getLocalCacheKeysDeploymentUuidList(localCacheKeys);
+  return Object.fromEntries(
+    deployments.map(
+      deploymentUuid=>{
+        const deploymentLocalCacheKeys = getLocalCacheKeysForDeploymentUuid(localCacheKeys,deploymentUuid);
+        const sections = getLocalCacheKeysDeploymentSectionList(deploymentLocalCacheKeys,deploymentUuid);
+        return [
+          deploymentUuid,
+          Object.fromEntries(
+            sections.map(
+              section=> {
+                const sectionLocalCacheKeys = getLocalCacheKeysForDeploymentSection(deploymentLocalCacheKeys,section)
+                return [
+                  section,
+                  Object.fromEntries(
+                    sectionLocalCacheKeys.map(
+                      k=>[
+                        getLocalCacheIndexEntityUuid(k),
+                        // Object.fromEntries(
+                          localCache[k] && localCache[k].entities?
+                            localCache[k].entities  as EntityInstancesUuidIndex: {}
+                            // .map(
+                            //   (instance:EntityInstance) => [
+                            //     instance.uuid,instance
+                            //   ]
+                            // )
+                        //   : []
+                        // )
+                      ]
+                    )
+                  )
+                ]
+              }
+            )
+          )
+        ]
+      }
+    )
+  )
+  // const sections = getLocalCacheKeysDeploymentSectionList()
+
+}
+// //#########################################################################################
+// export function getLocalCacheDeploymentSectionEntitiesList(localCache:LocalCacheDeploymentSectionEntitySliceState,deploymentUuid:Uuid,section:string): Uuid[] {
+//   const resultSet = new Set<string>();
+//   const deploymentKeys = getLocalCacheKeysForDeploymentUuid(localCache,deploymentUuid);
+//   // Object.keys(localCache)
+//   deploymentKeys
+//   .forEach(k=>{const uuid = getLocalCacheIndexDeploymentSection(k); if (uuid) resultSet.add(uuid)})
+//   return Array.from(resultSet.keys());
+// }
+
 // export function entitiesDomainState_getEntityInstances(
 //   deploymentUuid: string | undefined,
 //   applicationSection: ApplicationSection | undefined,
@@ -97,97 +242,124 @@ export const selectInstancesForSectionEntity = (
 };
 // )
 
-//#########################################################################################
-export const applyAllEntityInstancesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateEntityInstanceArraySelector) => {
-    return createSelector(
-      (state: ReduxStateWithUndoRedo) => {
-        const deployments = state?.presentModelSnapshot;
-        const domainState: EntitiesDomainState = Object.fromEntries(
-          Object.entries(deployments)
-            .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
-            .map((e) => {
-              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-              return [entityUuid ? entityUuid[1] : "", e[1].entities];
-            })
-        ) as EntitiesDomainState;
-        console.log("applyDeploymentSectionEntitiesSelectorToDomainStateSection domainState", domainState);
-        return selector(domainState);
-      },
-      (items: EntityInstance[]) => items
-    );
-  };
+// //#########################################################################################
+// export const applyEntityInstanceArraySelectorToDomainStateDeployment = (
+//   deploymentUuid: string | undefined,
+//   // section: ApplicationSection | undefined,
+//   selector: EntitiesDomainStateEntityInstanceArraySelector
+// ) => {
+//   return createSelector(
+//     (state: ReduxStateWithUndoRedo) => {
+//       const deployments = state?.presentModelSnapshot;
+//       const domainState: EntitiesDomainState = Object.fromEntries(
+//         Object.entries(deployments)
+//           .filter((e) => new RegExp('^' + deploymentUuid + "_").test(e[0]))
+//           .map((e) => {
+//             // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+//             // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+//             const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+//             return [entityUuid ? entityUuid[1] : "", e[1].entities];
+//           })
+//       ) as EntitiesDomainState;
+//       console.log("applyEntityInstanceArraySelectorToDomainStateDeployment domainState", domainState);
+//       return selector(domainState);
+//     },
+//     (items: EntityInstance[]) => items
+//   );
+// };
 
 //#########################################################################################
-export const applyDeploymentSectionEntitiesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateEntityInstanceArraySelector) => {
-    return createSelector(
-      (state: ReduxStateWithUndoRedo) => {
-        const deployments = state?.presentModelSnapshot;
-        const domainState: EntitiesDomainState = Object.fromEntries(
-          Object.entries(deployments)
-            .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
-            .map((e) => {
-              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-              return [entityUuid ? entityUuid[1] : "", e[1].entities];
-            })
-        ) as EntitiesDomainState;
-        console.log("applyDeploymentSectionEntitiesSelectorToDomainStateSection domainState", domainState);
-        return selector(domainState);
-      },
-      (items: EntityInstance[]) => items
-    );
-  };
+export const applyEntityInstanceArraySelectorToDomainStateDeploymentSection = (
+  deploymentUuid: string | undefined,
+  section: ApplicationSection | undefined,
+  selector: EntitiesDomainStateEntityInstanceArraySelector
+) => {
+  return createSelector(
+    (state: ReduxStateWithUndoRedo) => {
+      const deployments = state?.presentModelSnapshot;
+      const domainState: EntitiesDomainState = Object.fromEntries(
+        Object.entries(deployments)
+          .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
+          .map((e) => {
+            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+            return [entityUuid ? entityUuid[1] : "", e[1].entities];
+          })
+      ) as EntitiesDomainState;
+      console.log("applyEntityInstanceArraySelectorToDomainStateDeploymentSection domainState", domainState);
+      return selector(domainState);
+    },
+    (items: EntityInstance[]) => items
+  );
+};
 
 //#########################################################################################
-export const applyDeploymentEntitiesSelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, selector: DomainStateEntityInstanceArraySelector) => {
-    return createSelector(
-      (state: ReduxStateWithUndoRedo) => {
-        const deployments = state?.presentModelSnapshot;
-        const domainState: EntitiesDomainState = Object.fromEntries(
-          Object.entries(deployments)
-            .filter((e) => new RegExp(deploymentUuid + "_" + "(model|data)" + "_").test(e[0]))
-            .map((e) => {
-              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-              return [entityUuid ? entityUuid[1] : "", e[1].entities];
-            })
-        ) as EntitiesDomainState;
-        console.log("applyDeploymentEntitiesSelectorToDomainStateSection domainState", domainState);
-        return selector(domainState);
-      },
-      (items: EntityInstance[]) => items
-    );
-  };
+export const applyMetaModelSelectorToDomainState = (
+  selector: DomainStateMetaModelSelector
+) => {
+  return createSelector(
+    (state: ReduxStateWithUndoRedo) => {
+      const deployments = state?.presentModelSnapshot;
+      const domainState: DomainState = localCacheStateToDomainState(deployments);
+      console.log("applyMetaModelSelectorToDomainState domainState", domainState);
+      return selector(domainState);
+    },
+    (items: MiroirMetaModel) => items
+  );
+};
 
 //#########################################################################################
-export const applyDeploymentSectionEntitySelectorToDomainStateSection =
-  (deploymentUuid: string | undefined, section: ApplicationSection | undefined, selector: DomainStateInstanceSelector) => {
-    return createSelector(
-      (state: ReduxStateWithUndoRedo) => {
-        const deployments = state?.presentModelSnapshot;
-        const domainState: EntitiesDomainState = Object.fromEntries(
-          Object.entries(deployments)
-            .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
-            .map((e) => {
-              // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-              // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-              const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-              return [entityUuid ? entityUuid[1] : "", e[1].entities];
-            })
-        ) as EntitiesDomainState;
-        console.log("applyDeploymentSectionEntitySelectorToDomainStateSection domainState", domainState);
-        return selector(domainState);
-      },
-      (items: EntityInstance) => items
-    );
-  };
+export const applyEntityInstancesArraySelectorToDomainStateDeployment = (
+  deploymentUuid: string | undefined,
+  selector: EntitiesDomainStateEntityInstanceArraySelector
+) => {
+  return createSelector(
+    (state: ReduxStateWithUndoRedo) => {
+      const deployments = state?.presentModelSnapshot;
+      const domainState: EntitiesDomainState = Object.fromEntries(
+        Object.entries(deployments)
+          // .filter((e) => new RegExp(deploymentUuid + "_" + "(model|data)" + "_").test(e[0]))
+          .filter((e) => new RegExp('^' + deploymentUuid + "_").test(e[0]))
+          .map((e) => {
+            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+            return [entityUuid ? entityUuid[1] : "", e[1].entities];
+          })
+      ) as EntitiesDomainState;
+      console.log("applyEntityInstancesArraySelectorToDomainStateDeployment domainState", domainState);
+      return selector(domainState);
+    },
+    (items: EntityInstance[]) => items
+  );
+};
+
+//#########################################################################################
+export const applyEntityInstanceSelectorToDomainStateDeploymentSection = (
+  deploymentUuid: string | undefined,
+  section: ApplicationSection | undefined,
+  selector: EntitiesDomainStateInstanceSelector
+) => {
+  return createSelector(
+    (state: ReduxStateWithUndoRedo) => {
+      const deployments = state?.presentModelSnapshot;
+      const domainState: EntitiesDomainState = Object.fromEntries(
+        Object.entries(deployments)
+          .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
+          .map((e) => {
+            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
+            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
+            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
+            return [entityUuid ? entityUuid[1] : "", e[1].entities];
+          })
+      ) as EntitiesDomainState;
+      console.log("applyEntityInstanceSelectorToDomainStateDeploymentSection domainState", domainState);
+      return selector(domainState);
+    },
+    (items: EntityInstance) => items
+  );
+};
 
 
 //#########################################################################################
@@ -220,14 +392,14 @@ function getInitializedSectionEntityAdapter(
   deploymentUuid: string,
   section: ApplicationSection,
   entityUuid: string,
-  state: NewLocalCacheSliceState
+  state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
   if (!state) {
     // console.log('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
-    state = { [index]: sliceEntityAdapter.getInitialState() } as NewLocalCacheSliceState;
+    state = { [index]: sliceEntityAdapter.getInitialState() } as LocalCacheSliceState;
   } else {
     if (!state[index]) {
       state[index] = sliceEntityAdapter.getInitialState();
@@ -240,11 +412,11 @@ function getInitializedSectionEntityAdapter(
 //#########################################################################################
 //# REDUCER FUNCTION
 //#########################################################################################
-// function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: NewLocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
+// function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
 function ReplaceInstancesForSectionEntity(
   deploymentUuid: string,
   section: ApplicationSection,
-  state: NewLocalCacheSliceState,
+  state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
   // console.log('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
@@ -273,7 +445,7 @@ function ReplaceInstancesForSectionEntity(
 
 //#########################################################################################
 function handleLocalCacheNonTransactionalAction(
-  state: NewLocalCacheSliceState,
+  state: LocalCacheSliceState,
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   action: DomainDataAction
@@ -386,7 +558,7 @@ function handleLocalCacheNonTransactionalAction(
 
 //#########################################################################################
 function handleLocalCacheModelAction(
-  state: NewLocalCacheSliceState,
+  state: LocalCacheSliceState,
   deploymentUuid: Uuid,
   action: DomainTransactionalAction
 ) {
@@ -478,7 +650,7 @@ function handleLocalCacheModelAction(
 }
 
 //#########################################################################################
-function handleLocalCacheAction(state: NewLocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
+function handleLocalCacheAction(state: LocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
   console.log(
     "localCacheSliceObject handleLocalCacheAction deploymentUuid",
     deploymentUuid,
@@ -507,12 +679,12 @@ function handleLocalCacheAction(state: NewLocalCacheSliceState, deploymentUuid: 
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export const localCacheSliceObject: Slice<NewLocalCacheSliceState> = createSlice({
+export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
-  initialState: {} as NewLocalCacheSliceState,
+  initialState: {} as LocalCacheSliceState,
   reducers: {
     [localCacheSliceInputActionNamesObject.handleLocalCacheAction](
-      state: NewLocalCacheSliceState,
+      state: LocalCacheSliceState,
       action: PayloadAction<DomainActionWithDeployment>
     ) {
       handleLocalCacheAction(state, action.payload.deploymentUuid, action.payload.domainAction);

@@ -15,6 +15,7 @@ import {
 import {
   useDomainControllerServiceHook, useErrorLogServiceHook,
   useLocalCacheDeploymentSectionReports,
+  useLocalCacheMetaModel,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions,
   useLocalCacheTransactions,
@@ -73,20 +74,11 @@ export const ReportPage = (props: ReportPageProps) => {
   const setDeploymentUuid = context.setDeploymentUuid;
   useEffect(()=>setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
-  const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
+  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogServiceHook();
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  // const domainController: DomainControllerInterface = useDomainControllerServiceHook();
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-
-  const libraryAppModel: MiroirMetaModel = {
-    entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid, "model"),
-    entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid, "model"),
-    reports: useLocalCacheDeploymentSectionReports(applicationDeploymentLibrary.uuid, "model"),
-    configuration: [],
-    applicationVersions: [],
-    applicationVersionCrossEntityDefinition: [],
-  };
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
@@ -97,8 +89,12 @@ export const ReportPage = (props: ReportPageProps) => {
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || params.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeployment)
       : displayedDeploymentDefinition;
-  const currentModel =
-    params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+  // const currentModel =
+  // params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+  const currentModel = useLocalCacheMetaModel(params.deploymentUuid);
+
+  console.log("ReportPage currentModel", currentModel);
+
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   console.log(

@@ -10,7 +10,7 @@ import {
 import { RemoteStoreRestSagaInputActionNamesObject } from "../../4_services/remoteStore/RemoteStoreRestAccessSaga";
 import {
   InnerReducerInterface,
-  NewLocalCacheSliceState,
+  LocalCacheSliceState,
   ReduxReducerWithUndoRedoInterface,
   ReduxStateChanges,
   ReduxStateWithUndoRedo,
@@ -36,7 +36,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
 
 export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWithUndoRedo {
   return {
-    previousModelSnapshot: {} as NewLocalCacheSliceState,
+    previousModelSnapshot: {} as LocalCacheSliceState,
     pastModelPatches: [],
     presentModelSnapshot: reducer(undefined, {type:undefined, payload: undefined}),
     futureModelPatches: []
@@ -46,15 +46,15 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
 // ####################################################################################################
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
-  state:NewLocalCacheSliceState,
+  state:LocalCacheSliceState,
   action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
-):{newSnapshot:NewLocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
+):{newSnapshot:LocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
   console.log('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
   let inverseChanges:Patch[] = [];
-  const newPresentModelSnapshot:NewLocalCacheSliceState = produce(
+  const newPresentModelSnapshot:LocalCacheSliceState = produce(
     state,
-    (draftState:NewLocalCacheSliceState)=>reducer(draftState, action),
+    (draftState:LocalCacheSliceState)=>reducer(draftState, action),
     (patches, inversePatches) => {
       // side effect, for scope extrusion :-/
       changes.push(...patches)
@@ -111,9 +111,9 @@ function callNextReducer(
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
 
-  const newPresentModelSnapshot:NewLocalCacheSliceState = produce(
+  const newPresentModelSnapshot:LocalCacheSliceState = produce(
     state.presentModelSnapshot,
-    (draftState:NewLocalCacheSliceState)=>innerReducer(draftState, action),
+    (draftState:LocalCacheSliceState)=>innerReducer(draftState, action),
   );
   return {
     previousModelSnapshot,

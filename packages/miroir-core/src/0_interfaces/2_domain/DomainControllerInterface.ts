@@ -233,20 +233,36 @@ export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof Dom
 
 
 // ###################################################################################
-export interface DomainInstancesUuidIndex {
+export interface EntityInstancesUuidIndex {
   [uuid: string]: EntityInstance;
-}
-// ###################################################################################
-export interface EntitiesDomainState {
-  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
-  [entityUuid: string]: DomainInstancesUuidIndex;
 }
 
 // ###################################################################################
-export type DomainStateTransformer = (domainState: EntitiesDomainState) => EntitiesDomainState;
-export type DomainStateEntityInstanceArraySelector = (domainState: EntitiesDomainState) => EntityInstance[];
-export type DomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
-export type DomainStateReducer = (domainState: EntitiesDomainState) => any;
+export interface EntitiesDomainState {
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  [entityUuid: string]: EntityInstancesUuidIndex;
+}
+
+// ###################################################################################
+export interface DeploymentSectionDomainState {
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  [section: string]: EntitiesDomainState;
+}
+
+// ###################################################################################
+export interface DomainState {
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  [deploymentUuid: string]: DeploymentSectionDomainState;
+}
+
+// ###################################################################################
+export type EntitiesDomainStateTransformer = (domainState: EntitiesDomainState) => EntitiesDomainState;
+export type EntitiesDomainStateEntityInstanceArraySelector = (domainState: EntitiesDomainState) => EntityInstance[];
+export type EntitiesDomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
+export type EntitiesDomainStateReducer = (domainState: EntitiesDomainState) => any;
+
+export type DomainStateMetaModelSelector = (domainState: DomainState) => MiroirMetaModel | undefined;
+
 
 // ###################################################################################
 export interface DomainControllerInterface {

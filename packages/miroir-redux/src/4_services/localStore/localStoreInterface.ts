@@ -7,6 +7,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   EntityInstanceSchema,
+  EntityInstanceWithName,
   Uuid,
 } from "miroir-core";
 import { z } from "zod";
@@ -41,13 +42,13 @@ export interface ReduxStateChanges {
  */
 export interface ReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
-  previousModelSnapshot: NewLocalCacheSliceState, // state recorded on the previous commit.
+  previousModelSnapshot: LocalCacheSliceState, // state recorded on the previous commit.
   pastModelPatches: ReduxStateChanges[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
-  presentModelSnapshot: NewLocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history
+  presentModelSnapshot: LocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
 }
 
-export type InnerReducerInterface = (state: NewLocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => NewLocalCacheSliceState;
+export type InnerReducerInterface = (state: LocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => LocalCacheSliceState;
 
 // TODO: make action type explicit!
 export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => ReduxStateWithUndoRedo
@@ -69,15 +70,15 @@ export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: ZEntityIdSchema, entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-// export type LocalCacheEntitySliceState = {[entityUuid: Uuid]:EntityState<EntityInstance>};
-export type LocalCacheEntitySliceState = { [DeploymentUuidSectionEntityUuid: Uuid]: EntityState<EntityInstance> };
-export type LocalCacheSectionSliceState = {
-  model: LocalCacheEntitySliceState;
-  data: LocalCacheEntitySliceState;
-};
+// export type LocalCacheDeploymentSectionEntitySliceState = {[entityUuid: Uuid]:EntityState<EntityInstance>};
+// export type LocalCacheSectionSliceState = {
+//   model: LocalCacheDeploymentSectionEntitySliceState;
+//   data: LocalCacheDeploymentSectionEntitySliceState;
+// };
+export type LocalCacheDeploymentSectionEntitySliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 
-// export type NewLocalCacheSliceState = {[deploymentUuid: Uuid]: LocalCacheSectionSliceState};
-export type NewLocalCacheSliceState = LocalCacheEntitySliceState;
+// export type LocalCacheSliceState = {[deploymentUuid: Uuid]: LocalCacheSectionSliceState};
+export type LocalCacheSliceState = LocalCacheDeploymentSectionEntitySliceState;
 
 export const localCacheSliceName: string = "localCache";
 
