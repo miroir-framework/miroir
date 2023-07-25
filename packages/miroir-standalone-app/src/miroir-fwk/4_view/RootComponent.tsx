@@ -29,7 +29,7 @@ import {
 
 import { ApplicationDeployment, applicationDeploymentMiroir, DomainControllerInterface } from 'miroir-core';
 import { Outlet } from 'react-router-dom';
-import { useDomainControllerServiceHook } from './MiroirContextReactProvider';
+import { useDomainControllerService } from './MiroirContextReactProvider';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
@@ -171,7 +171,7 @@ export const RootComponent = (props: RootComponentProps) => {
     setOpen(false);
   };
 
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const domainController: DomainControllerInterface = useDomainControllerService();
 
   return (
     <div> 

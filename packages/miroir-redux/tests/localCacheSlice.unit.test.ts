@@ -5373,7 +5373,7 @@ const domainStateForSliceState = {
 };
 
 describe(
-  'LocalCacheSlice',
+  'LocalCacheSlice implementation',
   () => {
     it(
       "getLocalCacheIndexEntityUuid",

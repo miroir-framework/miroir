@@ -11,11 +11,7 @@ import {
   defaultMiroirMetaModel
 } from "miroir-core";
 import {
-  useDomainControllerServiceHook, useErrorLogServiceHook,
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheInstancesForEntity,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
+  useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
@@ -29,6 +25,7 @@ import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from '../getColumn
 import { JzodElement } from '@miroir-framework/jzod';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { EntityInstanceLink } from '../EntityInstanceLink';
+import { useLocalCacheDeploymentSectionReports, useLocalCacheInstancesForEntity, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from '../ReduxHooks';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -74,8 +71,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   console.log('ReportPage params',params);
   
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const errorLog = useErrorLogServiceHook();
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const errorLog = useErrorLogService();
+  const domainController: DomainControllerInterface = useDomainControllerService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 

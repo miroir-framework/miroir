@@ -13,20 +13,17 @@ import {
   defaultMiroirMetaModel
 } from "miroir-core";
 import {
-  useDomainControllerServiceHook, useErrorLogServiceHook,
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheMetaModel,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
+  useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions,
-  useMiroirContextServiceHook
+  useMiroirContextService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 
 
 import { ReportSectionDisplay } from '../ReportSectionDisplay';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useLocalCacheDeploymentSectionReports, useLocalCacheMetaModel, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from '../ReduxHooks';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -68,15 +65,15 @@ export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'repo
 // ###############################################################################################################
 export const ReportPage = (props: ReportPageProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
-  const context = useMiroirContextServiceHook();
+  const context = useMiroirContextService();
 
   console.log("ReportPage params", params);
   const setDeploymentUuid = context.setDeploymentUuid;
   useEffect(()=>setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const errorLog = useErrorLogServiceHook();
-  // const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const errorLog = useErrorLogService();
+  // const domainController: DomainControllerInterface = useDomainControllerService();
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
@@ -91,6 +88,7 @@ export const ReportPage = (props: ReportPageProps) => {
       : displayedDeploymentDefinition;
   // const currentModel =
   // params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+  // const currentModel = useCallback(()=>useLocalCacheMetaModel(params.deploymentUuid),[params.deploymentUuid]);
   const currentModel = useLocalCacheMetaModel(params.deploymentUuid);
 
   console.log("ReportPage currentModel", currentModel);

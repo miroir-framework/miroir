@@ -1,16 +1,16 @@
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { FieldErrors, FormState, SubmitHandler, UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
 import Select from 'react-select';
+import { z } from "zod";
 
-import { Button, List, ListItem, Paper, styled } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import { Button, List, ListItem, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { JzodArray, JzodAttribute, JzodElement, JzodObject, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
-import { ApplicationSection, EntityAttribute, EntityInstanceWithName, Uuid } from "miroir-core";
-import { useLocalCacheInstancesForEntity, useLocalCacheInstancesForJzodAttribute, useMiroirContextInnerFormOutput, useMiroirContextServiceHook } from "./MiroirContextReactProvider";
+import { JzodArray, JzodElement, JzodObject, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
+import { EntityAttribute, EntityInstanceWithName } from "miroir-core";
+import { useMiroirContextInnerFormOutput, useMiroirContextService } from "./MiroirContextReactProvider";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
@@ -144,7 +144,7 @@ export const InnerElementEditor = (
 // export const JzodElementFormEditor:FC<JzodElementFormEditorProps> = (props: JzodElementFormEditorProps) =>{
 export function JzodElementFormEditor(props: JzodElementFormEditorProps): JSX.Element {
   const logHeader = "JsonElementEditorDialog " + (props.label ? props.label + " " : "");
-  const context = useMiroirContextServiceHook();
+  const context = useMiroirContextService();
 
   // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForEntity(
   //   props.currentDeploymentUuid,

@@ -2,14 +2,13 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, List, ListItem, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { ApplicationSection, EntityAttribute, EntityDefinitionEntityDefinitionAttributeNew, EntityInstanceWithName, Uuid } from "miroir-core";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { ReportSectionDisplay } from "./ReportSectionDisplay";
+import { JzodArray, JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { EntityAttribute } from "miroir-core";
 import { useState } from "react";
-import { useLocalCacheInstancesForJzodAttribute, useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
-import { JzodArray, JzodAttribute, JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
+import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
-import { InnerElementEditor } from "./JzodElementFormEditor";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 

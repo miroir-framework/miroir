@@ -19,7 +19,7 @@ import {
   EntityInstance,
   Report,
 } from "miroir-core";
-import { useDomainControllerServiceHook } from "./MiroirContextReactProvider";
+import { useDomainControllerService } from "./MiroirContextReactProvider";
 import { JzodObject } from "@miroir-framework/jzod";
 // import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
@@ -42,7 +42,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   const [fileData, setFileData] = useState<any[]>([]);
   const [currentWorkSheet, setCurrentWorkSheet] = useState<XLSX.WorkSheet | undefined>(undefined);
 
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const domainController: DomainControllerInterface = useDomainControllerService();
 
   const changeHandler = (e:any) => {
     const file = e.target.files[0];

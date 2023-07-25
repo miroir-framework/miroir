@@ -31,13 +31,9 @@ import {
   reportReportList
 } from "miroir-core";
 import {
-  useDomainControllerServiceHook, useErrorLogServiceHook,
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheInstancesForEntity,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
+  useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions,
-  useMiroirContextServiceHook
+  useMiroirContextService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 import { ReduxStateChanges } from "miroir-redux";
 
@@ -77,6 +73,7 @@ import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e
 import { Importer } from './Importer';
 import { JzodElementFormEditor } from "./JzodElementFormEditor";
 import { ReportSectionDisplay } from './ReportSectionDisplay';
+import { useLocalCacheDeploymentSectionReports, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -206,11 +203,11 @@ async function uploadBooksAndReports(
 // ###################################################################################
 // ###################################################################################
 export const HomePage = (props: RootComponentProps) => {
-  const context = useMiroirContextServiceHook();
+  const context = useMiroirContextService();
 
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const errorLog = useErrorLogServiceHook();
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const errorLog = useErrorLogService();
+  const domainController: DomainControllerInterface = useDomainControllerService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
   // console.log("RootComponent deployments",deployments);

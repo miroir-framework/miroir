@@ -32,18 +32,14 @@ import {
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import {
-  useDomainControllerServiceHook, useErrorLogServiceHook,
-  useLocalCacheModelVersion,
-  useLocalCacheReports,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
-  useLocalCacheStoreBasedConfiguration,
-  useMiroirContextServiceHook
+  useDomainControllerService, useErrorLogService,
+  useMiroirContextService
 } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { defaultFormValues } from './ReportSectionDisplay';
+import { useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions, useLocalCacheStoreBasedConfiguration } from './ReduxHooks';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -101,7 +97,7 @@ export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
 export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
-  const context = useMiroirContextServiceHook();
+  const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
   const miroirReports: Report[] = useLocalCacheReports();
   const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
@@ -109,8 +105,8 @@ export const MTableComponent = (props: TableComponentProps) => {
   const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
   const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  const errorLog = useErrorLogServiceHook();
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const errorLog = useErrorLogService();
+  const domainController: DomainControllerInterface = useDomainControllerService();
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);

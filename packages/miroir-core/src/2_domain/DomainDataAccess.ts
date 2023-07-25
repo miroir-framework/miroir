@@ -41,6 +41,7 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
 }
 
 
+// ################################################################################################
 export function selectReportSectionInstances(reportSectionListDefinition:ReportSectionListDefinition):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectReportSectionInstances', reportUuid, domainState)
@@ -73,31 +74,23 @@ export function selectCurrentDeploymentModel(
   deploymentUuid:string | undefined
 ):DomainStateMetaModelSelector {
   return (domainState:DomainState):MiroirMetaModel => {
-    console.log('selectEntityInstances for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
+    console.log('selectCurrentDeploymentModel for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
     if (deploymentUuid == applicationDeploymentLibrary.uuid) {
       // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
       return ({
         entities: (
-          domainState &&
-          domainState[deploymentUuid] &&
-          domainState[deploymentUuid]["model"] &&
-          domainState[deploymentUuid]["model"][entityEntity.uuid]?
-          Object.values(domainState[deploymentUuid]["model"][entityEntity.uuid]) as MetaEntity[]:[]
+          domainState?.deploymentUuid?.model?.entityEntity.uuid
+          ? Object.values(domainState[deploymentUuid]["model"][entityEntity.uuid]) as MetaEntity[]
+          : []
         ),
         entityDefinitions: (
-          domainState &&
-          domainState[deploymentUuid] &&
-          domainState[deploymentUuid]["model"] &&
-          domainState[deploymentUuid]["model"][entityEntityDefinition.uuid] ?
-          Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
+          domainState?.deploymentUuid?.model?.entityEntityDefinition.uuid 
+          ? Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
           : []
         ),
         reports: (
-          domainState &&
-          domainState[deploymentUuid] &&
-          domainState[deploymentUuid]["model"] &&
-          domainState[deploymentUuid]["model"][entityReport.uuid]?
-            Object.values(domainState[deploymentUuid]["model"][entityReport.uuid]) as Report[]
+          domainState?.deploymentUuid?.model?.entityReport.uuid
+          ? Object.values(domainState[deploymentUuid]["model"][entityReport.uuid]) as Report[]
           : []
         ),
         configuration: [],

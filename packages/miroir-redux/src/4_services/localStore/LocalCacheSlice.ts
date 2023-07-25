@@ -301,22 +301,28 @@ export const applyMetaModelSelectorToDomainState = (
   return createSelector(
     (state: ReduxStateWithUndoRedo) => {
       const deployments = state?.presentModelSnapshot;
+      // console.log("applyMetaModelSelectorToDomainState state?.presentModelSnapshot", state?.presentModelSnapshot);
+      
       const domainState: DomainState = localCacheStateToDomainState(deployments);
-      console.log("applyMetaModelSelectorToDomainState domainState", domainState);
+      // console.log("applyMetaModelSelectorToDomainState domainState", domainState);
       return selector(domainState);
     },
     (items: MiroirMetaModel) => items
   );
 };
 
+
+const reduxStateInputSelectorForPresentModelSnapshot = (state:ReduxStateWithUndoRedo) => state?.presentModelSnapshot;
 //#########################################################################################
 export const applyEntityInstancesArraySelectorToDomainStateDeployment = (
   deploymentUuid: string | undefined,
   selector: EntitiesDomainStateEntityInstanceArraySelector
 ) => {
   return createSelector(
-    (state: ReduxStateWithUndoRedo) => {
-      const deployments = state?.presentModelSnapshot;
+    reduxStateInputSelectorForPresentModelSnapshot,
+    // (state: ReduxStateWithUndoRedo) => {
+    (deployments: LocalCacheDeploymentSectionEntitySliceState) => {
+      // const deployments = state?.presentModelSnapshot;
       const domainState: EntitiesDomainState = Object.fromEntries(
         Object.entries(deployments)
           // .filter((e) => new RegExp(deploymentUuid + "_" + "(model|data)" + "_").test(e[0]))
@@ -330,8 +336,8 @@ export const applyEntityInstancesArraySelectorToDomainStateDeployment = (
       ) as EntitiesDomainState;
       console.log("applyEntityInstancesArraySelectorToDomainStateDeployment domainState", domainState);
       return selector(domainState);
-    },
-    (items: EntityInstance[]) => items
+    }
+    // (items: EntityInstance[]) => items
   );
 };
 

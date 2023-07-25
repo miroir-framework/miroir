@@ -18,16 +18,14 @@ import {
   UuidSchema,
   entityDefinitionEntityDefinition
 } from "miroir-core";
-import {
-  useLocalCacheEntityInstancesForListReportSection
-} from "miroir-fwk/4_view/MiroirContextReactProvider";
 
 import { JzodObject } from "@miroir-framework/jzod";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
-import { useDomainControllerServiceHook, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
+import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 import { useCallback } from "react";
+import { useLocalCacheEntityInstancesForListReportSection } from "./ReduxHooks";
 
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
@@ -127,7 +125,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   // const [count, setCount] = useState(0);
-  const domainController: DomainControllerInterface = useDomainControllerServiceHook();
+  const domainController: DomainControllerInterface = useDomainControllerService();
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
   // setCount(count + 1);

@@ -20,11 +20,9 @@ import ReactDOM from 'react-dom';
 
 import { EntityDefinition, EntityInstanceWithName, MetaEntity } from 'miroir-core';
 import {
-  useLocalCacheInstancesForEntity,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
-  useMiroirContextServiceHook
+  useMiroirContextService
 } from './MiroirContextReactProvider';
+import { useLocalCacheInstancesForEntity, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
 
 
 // backspace starts the editor on Windows
@@ -36,7 +34,7 @@ const KEY_TAB = 'Tab';
 
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
   console.log('EntityInstanceCellRenderer',props);
-  const context = useMiroirContextServiceHook();
+  const context = useMiroirContextService();
 
   const deploymentUuid = context.deploymentUuid;
   // const deploymentUuid = (props as any)('deploymentUuid');
@@ -97,7 +95,7 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
-    const context = useMiroirContextServiceHook();
+    const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
     const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');

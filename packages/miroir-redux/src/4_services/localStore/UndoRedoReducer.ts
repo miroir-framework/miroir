@@ -264,6 +264,7 @@ export function createUndoRedoReducer(
 export const selectCurrentTransaction: () => (state: ReduxStateWithUndoRedo) => ReduxStateChanges[] =
   // _memoize(
   () => {
+    // return createSelector(
     return createSelector(
       (state: ReduxStateWithUndoRedo) => {
         return state.pastModelPatches;
