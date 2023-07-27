@@ -1,12 +1,11 @@
 import {
   ActionCreatorWithPayload,
   EntityAdapter,
-  EntityState,
   PayloadAction,
   Slice,
   createEntityAdapter,
   createSelector,
-  createSlice,
+  createSlice
 } from "@reduxjs/toolkit";
 import { memoize as _memoize } from "lodash";
 import {
@@ -14,24 +13,32 @@ import {
   DomainAction,
   DomainActionWithDeployment,
   DomainDataAction,
-  EntitiesDomainStateInstanceSelector,
-  EntitiesDomainStateEntityInstanceArraySelector,
+  DomainState,
+  DomainStateMetaModelSelector,
   DomainTransactionalAction,
   DomainTransactionalReplaceLocalCacheAction,
   EntitiesDomainState,
+  EntitiesDomainStateEntityInstanceArraySelector,
+  EntitiesDomainStateInstanceSelector,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  EntityInstancesUuidIndex,
+  EntityInstancesUuidIndexEntityInstanceArraySelector,
   MetaEntity,
+  MiroirApplicationVersion,
+  MiroirMetaModel,
   ModelEntityUpdateConverter,
+  Report,
+  StoreBasedConfiguration,
   Uuid,
+  applicationDeploymentMiroir,
+  entityApplicationVersion,
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
-  DomainStateMetaModelSelector,
-  DomainState,
-  EntityInstancesUuidIndex,
-  MiroirMetaModel
+  entityReport,
+  entityStoreBasedConfiguration
 } from "miroir-core";
 import {
   LocalCacheDeploymentSectionEntitySliceState,
@@ -102,24 +109,12 @@ export function getLocalCacheKeysForDeploymentSection(localCacheKeys:string[], s
   return localCacheKeys.filter(k=>k.match(new RegExp(`_${section}_`)))
 }
 
-// //#########################################################################################
-// export function getLocalCacheKeysForDeploymentUuid(localCache:LocalCacheDeploymentSectionEntitySliceState, deploymentUuid: Uuid): string[] {
-//   return Object.keys(localCache).filter(k=>k.match(new RegExp(`/^${deploymentUuid}_/`)))
-// }
-
 //#########################################################################################
 export function getLocalCacheKeysDeploymentUuidList(localCacheKeys:string[]): Uuid[] {
   const resultSet = new Set<Uuid>();
   localCacheKeys.forEach(k=>{const deploymentUuid = getLocalCacheIndexDeploymentUuid(k); if (deploymentUuid) resultSet.add(deploymentUuid)})
   return Array.from(resultSet.keys());
 }
-
-// //#########################################################################################
-// export function getLocalCacheDeploymentUuidList(localCache:LocalCacheDeploymentSectionEntitySliceState): Uuid[] {
-//   const resultSet = new Set<Uuid>();
-//   Object.keys(localCache).forEach(k=>{const uuid = getLocalCacheIndexDeploymentUuid(k); if (uuid) resultSet.add(uuid)})
-//   return Array.from(resultSet.keys());
-// }
 
 //#########################################################################################
 export function getLocalCacheKeysDeploymentSectionList(localCacheKeys:string[],deploymentUuid:Uuid): string[] {
@@ -128,15 +123,6 @@ export function getLocalCacheKeysDeploymentSectionList(localCacheKeys:string[],d
   .forEach(k=>{const section = getLocalCacheIndexDeploymentSection(k); if (section) resultSet.add(section)})
   return Array.from(resultSet.keys());
 }
-
-// //#########################################################################################
-// export function getLocalCacheDeploymentSectionList(localCache:LocalCacheDeploymentSectionEntitySliceState,DeploymentUuid:Uuid): Uuid[] {
-//   const resultSet = new Set<string>();
-//   Object.keys(localCache)
-//   .filter(k=>k.match(new RegExp(`/^${DeploymentUuid}_/`)))
-//   .forEach(k=>{const uuid = getLocalCacheIndexDeploymentSection(k); if (uuid) resultSet.add(uuid)})
-//   return Array.from(resultSet.keys());
-// }
 
 //#########################################################################################
 export function getLocalCacheKeysDeploymentSectionEntitiesList(localCacheKeys:string[],deploymentUuid:Uuid,section:string): Uuid[] {
@@ -166,16 +152,8 @@ export function localCacheStateToDomainState(localCache:LocalCacheDeploymentSect
                     sectionLocalCacheKeys.map(
                       k=>[
                         getLocalCacheIndexEntityUuid(k),
-                        // Object.fromEntries(
                           localCache[k] && localCache[k].entities?
                             localCache[k].entities  as EntityInstancesUuidIndex: {}
-                            // .map(
-                            //   (instance:EntityInstance) => [
-                            //     instance.uuid,instance
-                            //   ]
-                            // )
-                        //   : []
-                        // )
                       ]
                     )
                   )
@@ -187,86 +165,167 @@ export function localCacheStateToDomainState(localCache:LocalCacheDeploymentSect
       }
     )
   )
-  // const sections = getLocalCacheKeysDeploymentSectionList()
-
 }
-// //#########################################################################################
-// export function getLocalCacheDeploymentSectionEntitiesList(localCache:LocalCacheDeploymentSectionEntitySliceState,deploymentUuid:Uuid,section:string): Uuid[] {
-//   const resultSet = new Set<string>();
-//   const deploymentKeys = getLocalCacheKeysForDeploymentUuid(localCache,deploymentUuid);
-//   // Object.keys(localCache)
-//   deploymentKeys
-//   .forEach(k=>{const uuid = getLocalCacheIndexDeploymentSection(k); if (uuid) resultSet.add(uuid)})
-//   return Array.from(resultSet.keys());
-// }
-
-// export function entitiesDomainState_getEntityInstances(
-//   deploymentUuid: string | undefined,
-//   applicationSection: ApplicationSection | undefined,
-//   entityUuid: Uuid | undefined,
-// ) {
-//   const index = getLocalCacheSliceIndex(deploymentUuid, applicationSection, entityUuid);
-//   return 
-// }
-
 
 //#########################################################################################
 // INTERFACE
 //#########################################################################################
 // TODO: precise type for return value of selectInstancesForEntity. This is a Selector, which reselect considers a Dictionnary...
 // TODO: should it memoize? Doen't this imply caching the whole value, which can be really large? Or is it just the selector?
-export const selectInstancesForSectionEntity = (
-  deploymentUuid: string | undefined,
-  section: ApplicationSection | undefined,
-  entityUuid: string | undefined
-) => {
-  return createSelector(
-    (state: ReduxStateWithUndoRedo) => {
-      // console.log('selectInstancesForSectionEntity',deploymentUuid,section,entityUuid);
+export interface LocalCacheInputSelectorParams {
+  deploymentUuid: Uuid | undefined,
+  applicationSection: ApplicationSection | undefined,
+  entityUuid: Uuid | undefined
+}
 
-      if (deploymentUuid && section && entityUuid) {
-        const innerState = state.presentModelSnapshot;
-        const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
-        const instances: EntityState<EntityInstance> =
-          innerState && deploymentUuid && section && entityUuid && innerState[index]
-            ? innerState[index]
-            : { ids: [], entities: {} };
-        // console.log('selectInstancesForDeploymentEntity deploymentUuid',deploymentUuid,'entityUuid', entityUuid,'state',state,'instances',instances);
-        return instances;
-      } else {
-        return { ids: [], entities: {} };
-      }
-    },
-    (items: any) => items
-  );
+// ################################################################################################
+const selectEntityInstanceUuidIndexFromLocalCache = (state: ReduxStateWithUndoRedo, params: LocalCacheInputSelectorParams): EntityInstancesUuidIndex => {
+  const localEntityIndex = getLocalCacheSliceIndex(params.deploymentUuid, params.applicationSection, params.entityUuid);
+  const result =
+    params.deploymentUuid &&
+    params.applicationSection &&
+    params.entityUuid &&
+    state.presentModelSnapshot[localEntityIndex]
+      ? (state.presentModelSnapshot[localEntityIndex].entities as EntityInstancesUuidIndex)
+      : {}
+  ;
+  // if (params.entityUuid == entityReport.uuid) {
+    console.log('selectInstanceUuidIndexForDeploymentSectionEntity','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+  // }
+  return result;
 };
-// )
 
-// //#########################################################################################
-// export const applyEntityInstanceArraySelectorToDomainStateDeployment = (
-//   deploymentUuid: string | undefined,
-//   // section: ApplicationSection | undefined,
-//   selector: EntitiesDomainStateEntityInstanceArraySelector
-// ) => {
-//   return createSelector(
-//     (state: ReduxStateWithUndoRedo) => {
-//       const deployments = state?.presentModelSnapshot;
-//       const domainState: EntitiesDomainState = Object.fromEntries(
-//         Object.entries(deployments)
-//           .filter((e) => new RegExp('^' + deploymentUuid + "_").test(e[0]))
-//           .map((e) => {
-//             // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-//             // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-//             const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-//             return [entityUuid ? entityUuid[1] : "", e[1].entities];
-//           })
-//       ) as EntitiesDomainState;
-//       console.log("applyEntityInstanceArraySelectorToDomainStateDeployment domainState", domainState);
-//       return selector(domainState);
-//     },
-//     (items: EntityInstance[]) => items
-//   );
+// // ################################################################################################
+// const selectModelEntityInstanceUuidIndexFromLocalCache = (state: ReduxStateWithUndoRedo, params: LocalCacheInputSelectorParams): EntityInstancesUuidIndex => {
+//   const localEntityIndex = getLocalCacheSliceIndex(params.deploymentUuid, params.applicationSection, params.entityUuid);
+//   const result =
+//     params.deploymentUuid &&
+//     params.applicationSection &&
+//     params.entityUuid &&
+//     state.presentModelSnapshot[localEntityIndex]
+//       ? (state.presentModelSnapshot[localEntityIndex].entities as EntityInstancesUuidIndex)
+//       : {}
+//   ;
+//   // if (params.entityUuid == entityReport.uuid) {
+//     console.log('selectInstanceUuidIndexForDeploymentSectionEntity','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+//   // }
+//   return result;
 // };
+
+const selectSelectorParams = (state: ReduxStateWithUndoRedo,params:LocalCacheInputSelectorParams) => {
+  return params;
+}
+
+//#########################################################################################
+export const selectInstanceUuidIndexForDeploymentSectionEntity = createSelector(
+  [selectEntityInstanceUuidIndexFromLocalCache,selectSelectorParams],
+  (state: EntityInstancesUuidIndex,params:LocalCacheInputSelectorParams) => {
+    return state;
+  }
+);
+
+// ################################################################################################
+const selectEntities = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  return selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: "model",
+    entityUuid: entityEntity.uuid,
+  });
+}
+// ################################################################################################
+const selectEntityDefinitions = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  return selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: "model",
+    entityUuid: entityEntityDefinition.uuid,
+  });
+}
+// ################################################################################################
+const selectReports = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  return selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
+    entityUuid: entityReport.uuid,
+  });
+}
+// ################################################################################################
+const selectConfigurations = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  return selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
+    entityUuid: entityStoreBasedConfiguration.uuid,
+  });
+}
+// ################################################################################################
+const selectApplicationVersions = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  return selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
+    entityUuid: entityApplicationVersion.uuid,
+  });
+}
+
+
+//#########################################################################################
+export const selectModelForDeployment = createSelector(
+  [
+    selectEntities,
+    selectEntityDefinitions,
+    selectReports,
+    selectConfigurations,
+    selectApplicationVersions,
+    selectSelectorParams,
+  ],
+  (
+    entities: EntityInstancesUuidIndex,
+    entityDefinitions: EntityInstancesUuidIndex,
+    reports: EntityInstancesUuidIndex,
+    configurations: EntityInstancesUuidIndex,
+    applicationVersions: EntityInstancesUuidIndex,
+    params: LocalCacheInputSelectorParams
+  ) => {
+    return {
+      entities:Object.values(entities) as MetaEntity[],
+      entityDefinitions:Object.values(entityDefinitions) as EntityDefinition[],
+      reports:Object.values(reports) as Report[],
+      applicationVersions:Object.values(applicationVersions) as MiroirApplicationVersion[],
+      applicationVersionCrossEntityDefinition: [],
+      configuration:Object.values(configurations) as StoreBasedConfiguration[],
+    } as MiroirMetaModel
+  }
+);
+
+
+//#########################################################################################
+export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
+  [selectEntityInstanceUuidIndexFromLocalCache,selectSelectorParams],
+  (state: EntityInstancesUuidIndex,params:LocalCacheInputSelectorParams) => {
+    return Object.values(state);
+  }
+);
+
+
+//#########################################################################################
+export const applyEntityInstanceArraySelectorToEntityInstancesUuidIndex = (
+  selector: EntityInstancesUuidIndexEntityInstanceArraySelector,
+  params:LocalCacheInputSelectorParams
+) => {
+  return (state: ReduxStateWithUndoRedo) => {
+    return createSelector(
+      [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
+      (state: EntityInstancesUuidIndex, params: LocalCacheInputSelectorParams) => {
+        if (params.deploymentUuid && params.applicationSection && params.entityUuid) {
+          // if (params.entityUuid == '3f2baa83-3ef7-45ce-82ea-6a43f7a8c916') {
+          //   console.log('selectInstanceUuidIndexForDeploymentSectionEntity','params',params,'state',state);
+          // }
+          return selector(state);
+        } else {
+          return [];
+        }
+      }
+    )(state,params);
+  };
+};
 
 //#########################################################################################
 export const applyEntityInstanceArraySelectorToDomainStateDeploymentSection = (

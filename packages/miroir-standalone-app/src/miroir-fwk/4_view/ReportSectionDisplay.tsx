@@ -30,7 +30,7 @@ import { useLocalCacheEntityInstancesForListReportSection } from "./ReduxHooks";
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
-  chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks (eg useLocalCacheInstancesForEntity) in the same order, irrelevant of tableComponentReportType
+  chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks (eg useLocalCacheInstancesForEntityTOREFACTOR) in the same order, irrelevant of tableComponentReportType
   label:z.string(),
 });
 
@@ -270,7 +270,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  // const instancesToDisplay = useLocalCacheInstancesForEntity(
+  // const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(
   //   props.displayedDeploymentDefinition?.uuid,
   //   props.chosenApplicationSection,
   //   // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""

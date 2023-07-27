@@ -263,6 +263,7 @@ export type EntitiesDomainStateReducer = (domainState: EntitiesDomainState) => a
 
 export type DomainStateMetaModelSelector = (domainState: DomainState) => MiroirMetaModel | undefined;
 
+export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstancesUuidIndex: EntityInstancesUuidIndex) => EntityInstance[];
 
 // ###################################################################################
 export interface DomainControllerInterface {

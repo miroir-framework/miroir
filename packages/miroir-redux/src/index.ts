@@ -1,10 +1,14 @@
 export {
   getPromiseActionStoreActionNames,
-  selectInstancesForSectionEntity,
+  selectInstanceUuidIndexForDeploymentSectionEntity,
+  selectInstanceArrayForDeploymentSectionEntity,
+  selectModelForDeployment,
   applyEntityInstanceArraySelectorToDomainStateDeploymentSection,
+  applyEntityInstanceArraySelectorToEntityInstancesUuidIndex,
   applyEntityInstanceSelectorToDomainStateDeploymentSection,
   applyEntityInstancesArraySelectorToDomainStateDeployment,
   applyMetaModelSelectorToDomainState,
+  LocalCacheInputSelectorParams,
   LocalCacheSlice,
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";

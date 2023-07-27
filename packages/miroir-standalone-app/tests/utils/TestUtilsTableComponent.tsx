@@ -13,8 +13,8 @@ import {
   entityEntityDefinition 
 } from 'miroir-core';
 import {
-  useLocalCacheDeploymentSectionReports,
-  useLocalCacheInstancesForEntity,
+  useLocalCacheDeploymentSectionReportsTOREFACTOR,
+  useLocalCacheInstancesForEntityTOREFACTOR,
   useLocalCacheSectionEntities,
   useLocalCacheSectionEntityDefinitions
 } from "miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider";
@@ -37,9 +37,8 @@ export const TestUtilsTableComponent = (
   const entitiesOfDataSection:MetaEntity [] = useLocalCacheSectionEntities(props.deploymentUuid,'model');
   const entityDefinitionsOfDataSection:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(props.deploymentUuid,'model');
 
-  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(props.deploymentUuid,'model');
+  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(props.deploymentUuid,'model');
 
-  // const miroirReports:Report[] = useLocalCacheReports();
   const entityInstances = {
     Entity: entitiesOfDataSection,
     Report:deploymentReports,
@@ -60,12 +59,12 @@ export const TestUtilsTableComponent = (
   } else {
     currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid) as MetaEntity;
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
-    instancesToDisplay = useLocalCacheInstancesForEntity(props.deploymentUuid,props.instancesApplicationSection?props.instancesApplicationSection:'data',currentMiroirEntity?.uuid);
+    instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(props.deploymentUuid,props.instancesApplicationSection?props.instancesApplicationSection:'data',currentMiroirEntity?.uuid);
   }
   console.log("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
   console.log("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
   
-  // const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntity(props.entityUuid);
+  // const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntityTOREFACTOR(props.entityUuid);
   console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
   // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];

@@ -8,6 +8,7 @@ import {
   ApplicationSection,
   EntityDefinition,
   EntityInstance,
+  EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationVersion,
   Report,
@@ -21,13 +22,19 @@ import {
   selectCurrentDeploymentModel,
   selectEntityInstances,
   selectEntityInstancesForReportSection,
-  selectEntityInstancesFromJzodAttribute
+  selectEntityInstancesFromJzodAttribute,
+  selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
+  LocalCacheSliceState,
+  ReduxReducerWithUndoRedoInterface,
+  ReduxStateWithUndoRedo,
   applyEntityInstanceArraySelectorToDomainStateDeploymentSection,
+  applyEntityInstanceArraySelectorToEntityInstancesUuidIndex,
   applyEntityInstancesArraySelectorToDomainStateDeployment,
   applyMetaModelSelectorToDomainState,
-  selectInstancesForSectionEntity
+  selectInstanceArrayForDeploymentSectionEntity,
+  selectInstanceUuidIndexForDeploymentSectionEntity
 } from "miroir-redux";
 
 
@@ -36,18 +43,30 @@ export function useLocalCacheSectionEntities(
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined
 ): MetaEntity[] {
-  const miroirEntitiesState: EntityState<MetaEntity> = useSelector(
-    selectInstancesForSectionEntity(deploymentUuid, section, entityEntity.uuid)
+  const miroirEntitiesState = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceUuidIndexForDeploymentSectionEntity(state, {
+      deploymentUuid,
+      applicationSection: section,
+      entityUuid: entityEntity.uuid,
+    })
   );
-  return miroirEntitiesState?.entities ? (Object.values(miroirEntitiesState.entities) as MetaEntity[]) : [];
+  return Object.values(miroirEntitiesState) as MetaEntity[];
+  // return miroirEntitiesState?.entities ? (Object.values(miroirEntitiesState.entities) as MetaEntity[]) : [];
 }
 
 //#########################################################################################
 export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
-  const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
-    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid, "model", entityEntityDefinition.uuid)
+  const miroirEntitiesState = useSelector((state: ReduxStateWithUndoRedo) =>
+  selectInstanceArrayForDeploymentSectionEntity(
+      state, 
+      {
+        deploymentUuid:applicationDeploymentMiroir.uuid,
+        applicationSection: "model",
+        entityUuid: entityEntityDefinition.uuid
+      }
+    )
   );
-  return miroirEntitiesState?.entities ? (Object.values(miroirEntitiesState.entities) as EntityDefinition[]) : [];
+  return miroirEntitiesState as EntityDefinition[];
 }
 
 //#########################################################################################
@@ -55,79 +74,86 @@ export function useLocalCacheSectionEntityDefinitions(
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined
 ): EntityDefinition[] {
-  const miroirEntitiesState: EntityState<EntityDefinition> = useSelector(
-    selectInstancesForSectionEntity(deploymentUuid, section, entityEntityDefinition.uuid)
+  const miroirEntitiesState = useSelector((state: ReduxStateWithUndoRedo) =>
+  selectInstanceArrayForDeploymentSectionEntity(
+      state, 
+      {
+        deploymentUuid,
+        applicationSection: section,
+        entityUuid: entityEntityDefinition.uuid
+      }
+    )
   );
-  return miroirEntitiesState?.entities ? (Object.values(miroirEntitiesState.entities) as EntityDefinition[]) : [];
+  return miroirEntitiesState as EntityDefinition[];
 }
 
 //#########################################################################################
-export function useLocalCacheReports(): Report[] {
-  const miroirReportsState: EntityState<Report> = useSelector(
-    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid, "model", entityReport.uuid)
-  );
-  const miroirReports: Report[] = miroirReportsState?.entities
-    ? (Object.values(miroirReportsState.entities) as Report[])
-    : [];
-  return miroirReports;
+function entityInstancesUuidIndexToEntityInstanceArraySelector(
+  state: EntityInstancesUuidIndex
+) {
+  return Object.values(state);
 }
 
-//#########################################################################################
-export function useLocalCacheDeploymentSectionReports(
+// #########################################################################################
+export function useLocalCacheDeploymentSectionReportsTOREFACTOR(
   deploymentUuid: string | undefined,
   section: ApplicationSection | undefined
 ): Report[] {
-  const miroirReportsState: EntityState<Report> = useSelector(
-    selectInstancesForSectionEntity(deploymentUuid, section, entityReport.uuid)
+  const miroirReportsState = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(
+      state,
+      {
+        deploymentUuid:deploymentUuid,
+        applicationSection: section,
+        entityUuid: entityReport.uuid
+      }
+    )
   );
-  console.log("useLocalCacheDeploymentSectionReports", deploymentUuid, section, "state", miroirReportsState);
-
-  const miroirReports: Report[] = miroirReportsState?.entities
-    ? (Object.values(miroirReportsState.entities) as Report[])
-    : [];
-  return miroirReports;
+  // console.log("useLocalCacheDeploymentSectionReportsTOREFACTOR", 'deployment',deploymentUuid, 'section',section, 'entity', entityReport.uuid, "state", miroirReportsState);
+  // return Object.values(miroirReportsState) as Report[];
+  return miroirReportsState as Report[];
 }
 
 //#########################################################################################
-export function useLocalCacheStoreBasedConfiguration(): StoreBasedConfiguration[] {
-  const miroirStoreBasedConfigurationState: EntityState<StoreBasedConfiguration> = useSelector(
-    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid, "data", entityStoreBasedConfiguration.uuid)
-  );
-  const miroirStoreBasedConfigurations: StoreBasedConfiguration[] = miroirStoreBasedConfigurationState?.entities
-    ? (Object.values(miroirStoreBasedConfigurationState.entities) as StoreBasedConfiguration[])
-    : [];
-  return miroirStoreBasedConfigurations;
-}
-
-//#########################################################################################
-export function useLocalCacheModelVersion(): MiroirApplicationVersion[] {
-  const miroirModelVersionState: EntityState<MiroirApplicationVersion> = useSelector(
-    selectInstancesForSectionEntity(applicationDeploymentMiroir.uuid, "model", entityApplicationVersion.uuid)
-  );
-  const miroirModelVersions: MiroirApplicationVersion[] = miroirModelVersionState?.entities
-    ? (Object.values(miroirModelVersionState.entities) as MiroirApplicationVersion[])
-    : [];
-  return miroirModelVersions;
-}
-
-//#########################################################################################
-export function useLocalCacheInstancesForEntity(
+export function useLocalCacheInstancesForEntityTOREFACTOR(
   deploymentUuid: string | undefined,
-  section: ApplicationSection | undefined,
+  applicationSection: ApplicationSection | undefined,
   entityUuid: string | undefined
 ): EntityInstance[] {
-  // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstances(entityUuid)));
+  const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(
+      state,
+      {
+        deploymentUuid,
+        applicationSection,
+        entityUuid,
+      }
+    )
+  );
+  return miroirEntities as EntityInstance[];
 }
 
 //#########################################################################################
 export function useLocalCacheInstancesForJzodAttribute(
   deploymentUuid: string | undefined,
-  section: ApplicationSection | undefined,
+  applicationSection: ApplicationSection | undefined,
   jzodSchema: JzodAttribute | undefined
 ): EntityInstance[] {
-  // console.log('useLocalCacheInstancesForEntity',deploymentUuid,section,entityUuid);
-  return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
+  // return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
+  const entityUuid = selectEntityUuidFromJzodAttribute(jzodSchema)
+  const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(
+      state,
+      {
+        deploymentUuid,
+        applicationSection,
+        entityUuid,
+      }
+    )
+  );
+  console.log('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
+  // return Object.values(miroirEntities) as EntityInstance[];
+  return miroirEntities as EntityInstance[];
 }
 
 //#########################################################################################
@@ -145,15 +171,14 @@ export function useLocalCacheEntityInstancesForListReportSection(
 //#########################################################################################
 export function useLocalCacheMetaModel(
   deploymentUuid: string | undefined,
-  // section: ApplicationSection | undefined,
-  // reportUuid: string | undefined
-// ): MiroirMetaModel{
 ) {
   console.log('useLocalCacheMetaModel',deploymentUuid);
-  // const reportDefinitions = useSelector(applyEntityInstanceSelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)))
   
   // return useSelector(applyMetaModelSelectorToDomainState(selectCurrentDeploymentModel(deploymentUuid)));
-  return useCallback(()=>useSelector(applyMetaModelSelectorToDomainState(selectCurrentDeploymentModel(deploymentUuid))),[deploymentUuid]);
+  return useCallback(
+    () => useSelector(applyMetaModelSelectorToDomainState(selectCurrentDeploymentModel(deploymentUuid))),
+    [deploymentUuid]
+  );
 }
 
 // //#########################################################################################

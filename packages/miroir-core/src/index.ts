@@ -129,7 +129,6 @@ export {
   DomainModelInitActionSchema,
   DomainState,
   DomainStateMetaModelSelector,
-
   DomainTransactionalActionSchema,
   DomainTransactionalAncillaryOrReplayableActionSchema,
   DomainTransactionalCUDActionSchema,
@@ -142,6 +141,7 @@ export {
   DomainTransactionalResetDataActionSchema,
   DomainTransactionalRollbackActionSchema,
   DomainTransactionalUndoRedoActionSchema,
+  EntityInstancesUuidIndexEntityInstanceArraySelector,
   ModelEntityUpdateActionNameSchema,
   remoteStoreActionNamesSchema,
   DomainAction,
@@ -215,6 +215,7 @@ export {
   selectReportSectionInstances,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
+  selectEntityUuidFromJzodAttribute,
   selectCurrentDeploymentModel,
   selectEntityInstancesForReportSection,
   selectReportDefinitionFromReportUuid,

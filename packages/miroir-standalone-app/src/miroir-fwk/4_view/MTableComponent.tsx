@@ -7,7 +7,7 @@ import {
   RowDataUpdatedEvent
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -20,15 +20,11 @@ import { JzodObject } from '@miroir-framework/jzod';
 import {
   ApplicationDeploymentSchema,
   DomainControllerInterface,
-  EntityDefinition,
   EntityDefinitionSchema,
-  MetaEntity,
   MetaEntitySchema,
-  MiroirApplicationVersion,
   MiroirMetaModel,
-  Report,
   ReportSectionListDefinitionSchema,
-  StoreBasedConfiguration
+  entityEntity
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import {
@@ -38,8 +34,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
+import { useLocalCacheMetaModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionDisplay';
-import { useLocalCacheModelVersion, useLocalCacheReports, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions, useLocalCacheStoreBasedConfiguration } from './ReduxHooks';
+import { useSelector } from 'react-redux';
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from 'miroir-redux';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -61,8 +59,6 @@ export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 export const TableComponentCorePropsSchema = z.object({
   columnDefs:z.array(z.any()),
   rowData: z.array(z.any()),
-  // rowData: TableComponentCellSchema,
-  // rowData: z.array(TableComponentRowSchema),
   styles:z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
@@ -73,7 +69,6 @@ export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSc
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentMiroirEntity: MetaEntitySchema,
   currentMiroirEntityDefinition: EntityDefinitionSchema,
-  // reportDefinition: ReportSchema,
   reportSectionListDefinition: ReportSectionListDefinitionSchema,
   onRowEdit: z.function().args(z.any()).returns(z.void()),
 });
@@ -92,39 +87,40 @@ export const TableComponentPropsSchema = z.union([
 
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
-
-
-
+// ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
+  console.log('MTableComponent started with props',props);
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
-  const miroirReports: Report[] = useLocalCacheReports();
-  const currentMiroirEntities:MetaEntity [] = useLocalCacheSectionEntities(contextDeploymentUuid,'model');
-  const currentMiroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(contextDeploymentUuid,'model');
-  const miroirApplicationVersions: MiroirApplicationVersion[] = useLocalCacheModelVersion();
-  const storeBasedConfigurations: StoreBasedConfiguration[] = useLocalCacheStoreBasedConfiguration();
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogService();
+  console.log('MTableComponent 5');
   const domainController: DomainControllerInterface = useDomainControllerService();
+  console.log('MTableComponent 6');
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
+  console.log('MTableComponent 7');
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
+  console.log('MTableComponent 8');
 
 
-  console.log('MTableComponent started with props',props);
   
+  console.log('MTableComponent 9');
+  // const currentModel = useLocalCacheMetaModel(context.deploymentUuid)();
+  const selectorParams:LocalCacheInputSelectorParams = useMemo(
+    () => ({
+      deploymentUuid: context.deploymentUuid,
+      applicationSection: "data",
+      entityUuid: entityEntity.uuid,
+    } as LocalCacheInputSelectorParams),
+    [context]
+  );
 
-  const currentModel: MiroirMetaModel =  {
-    entities: currentMiroirEntities,
-    entityDefinitions: currentMiroirEntityDefinitions,
-    reports: miroirReports,
-    configuration: storeBasedConfigurations,
-    applicationVersions: miroirApplicationVersions,
-    applicationVersionCrossEntityDefinition: [],
-  };
-
-  // console.log("MTableComponent miroirReports", currentModel);
+  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectModelForDeployment(state, selectorParams)
+  ) as MiroirMetaModel
+  console.log('MTableComponent 10');
+  console.log("ReportPage currentModel", currentModel);
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
     console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
@@ -232,7 +228,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == e.colDef.field);
       if (columnDefinitionAttributeEntry && columnDefinitionAttributeEntry[1].type == "simpleType" && columnDefinitionAttributeEntry[1].extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
-        const targetEntity = currentMiroirEntities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
+        const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
         navigate(
           `/instance/${contextDeploymentUuid}/${
             columnDefinitionAttribute?.extra?.targetEntityApplicationSection

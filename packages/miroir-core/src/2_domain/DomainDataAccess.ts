@@ -10,7 +10,7 @@ import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
 import { defaultMiroirMetaModel } from "../1_core/Model";
-import { EntityDefinition, MetaEntity, entityEntity } from "..";
+import { EntityDefinition, MetaEntity, MiroirApplicationVersion, StoreBasedConfiguration, Uuid, entityApplicationVersion, entityEntity, entityStoreBasedConfiguration } from "..";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -79,22 +79,40 @@ export function selectCurrentDeploymentModel(
       // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
       return ({
         entities: (
-          domainState?.deploymentUuid?.model?.entityEntity.uuid
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityEntity.uuid]
           ? Object.values(domainState[deploymentUuid]["model"][entityEntity.uuid]) as MetaEntity[]
           : []
         ),
         entityDefinitions: (
-          domainState?.deploymentUuid?.model?.entityEntityDefinition.uuid 
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
           ? Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
           : []
         ),
         reports: (
-          domainState?.deploymentUuid?.model?.entityReport.uuid
-          ? Object.values(domainState[deploymentUuid]["model"][entityReport.uuid]) as Report[]
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]) as Report[]
           : []
         ),
-        configuration: [],
-        applicationVersions: [],
+        configuration: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityStoreBasedConfiguration.uuid]) as StoreBasedConfiguration[]
+          : []
+        ),
+        applicationVersions: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersion[]
+          : []
+        ),
         applicationVersionCrossEntityDefinition: [],
       })
     } else {
@@ -114,6 +132,11 @@ export function selectEntityInstancesFromJzodAttribute(jzodSchema:JzodAttribute 
       return [];
     }
   }
+}
+
+// ################################################################################################
+export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodAttribute | undefined):Uuid | undefined{
+  return jzodSchema?.extra?.targetEntity;
 }
 
 // ################################################################################################
@@ -216,7 +239,7 @@ export function selectEntityInstancesForReportSection(
 //       currentReportDefinitionApplicationSection
 //     );
   
-//     const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(
+//     const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(
 //       currentReportDefinitionDeployment?.uuid,
 //       currentReportDefinitionApplicationSection
 //     );

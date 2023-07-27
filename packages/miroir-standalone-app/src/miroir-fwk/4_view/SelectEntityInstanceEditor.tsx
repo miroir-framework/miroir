@@ -11,8 +11,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import {
   forwardRef,
   memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -22,7 +24,9 @@ import { EntityDefinition, EntityInstanceWithName, MetaEntity } from 'miroir-cor
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
-import { useLocalCacheInstancesForEntity, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
+import { useLocalCacheInstancesForEntityTOREFACTOR, useLocalCacheMetaModel, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity } from "miroir-redux";
+import { useSelector } from "react-redux";
 
 
 // backspace starts the editor on Windows
@@ -31,19 +35,41 @@ const KEY_F2 = 'F2';
 const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
-
+// ################################################################################################
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
-  console.log('EntityInstanceCellRenderer',props);
+  // console.log('EntityInstanceCellRenderer',props);
   const context = useMiroirContextService();
 
   const deploymentUuid = context.deploymentUuid;
   // const deploymentUuid = (props as any)('deploymentUuid');
   const entityUuid = (props as any)['entityUuid'];
   // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-  const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-  const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === entityUuid);
+  console.log('EntityInstanceCellRenderer 1');
+  
+  const currentModel = useLocalCacheMetaModel(context.deploymentUuid)();
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
+  console.log('EntityInstanceCellRenderer 2');
+  
+  // const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
+  const selectorParams:LocalCacheInputSelectorParams = useMemo(
+    () => ({
+      deploymentUuid,
+      applicationSection: "data",
+      entityUuid: entityUuid,
+    } as LocalCacheInputSelectorParams),
+    [deploymentUuid, entityUuid]
+  );
+  const localSelector = useCallback((state: ReduxStateWithUndoRedo) =>
+  selectInstanceArrayForDeploymentSectionEntity(
+    state,
+    selectorParams
+  ),[selectorParams])
 
-  const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
+  // const instancesToDisplay:EntityInstanceWithName[] = useSelector(localSelector) as EntityInstanceWithName[];
+  const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
+  ) as EntityInstanceWithName[];
+  console.log('EntityInstanceCellRenderer 3');
   // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
 
@@ -57,23 +83,20 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   // } else {
     return (
       <span>
-        {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'}
+        {instanceToDisplay
+          ? instanceToDisplay["name"]
+          : (currentMiroirEntityDefinition ? currentMiroirEntityDefinition["name"] : "entity definition not found") +
+            " " +
+            props.value +
+            " not known."}
       </span>
     );
   // }
 })
 
+// ################################################################################################
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
-
-  // console.log('DefaultCellRenderer',props.value && props.value["value"],valueToDisplay,props);
-  // const deploymentUuid = useMiroirContextDeploymentUuid();
-  // // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
-  // const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
-
-  // const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
-  // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -101,7 +124,7 @@ export const SelectEntityInstanceEditor = memo(
     const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
     const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   
-    const instancesToDisplay = useLocalCacheInstancesForEntity(deploymentUuid,(props as any)['entityUuid'],'data') as EntityInstanceWithName[];
+    const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(deploymentUuid,(props as any)['entityUuid'],'data') as EntityInstanceWithName[];
     const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);
@@ -110,33 +133,12 @@ export const SelectEntityInstanceEditor = memo(
     const [selectedElement, setSelectedElement] = useState<any>(null);
     const refContainer = useRef(null);
 
-    // const checkAndToggleMoodIfLeftRight = (event: any) => {
-    //   if (ready) {
-    //     if (['ArrowLeft', 'ArrowRight'].indexOf(event.key) > -1) {
-    //       // left and right
-    //       setInterimValue(!interimValue);
-    //       event.stopPropagation();
-    //     } else if (event.key === KEY_ENTER) {
-    //       setFemale(interimValue);
-    //       event.stopPropagation();
-    //     }
-    //   }
-    // };
-
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
       console.log('SelectEntityInstanceEditor ready for edit',props,ref);
 
       setReady(true);
     }, []);
-
-    // useEffect(() => {
-    //   window.addEventListener('keydown', checkAndToggleMoodIfLeftRight);
-
-    //   return () => {
-    //     window.removeEventListener('keydown', checkAndToggleMoodIfLeftRight);
-    //   };
-    // }, [checkAndToggleMoodIfLeftRight, ready]);
 
     useEffect(() => {
       if (selectedElement !== null) {
@@ -191,26 +193,6 @@ export const SelectEntityInstanceEditor = memo(
         }
       )
     );
-    // const selectData = [
-    //   {
-    //     key:'female',
-    //     label:'female',
-    //     src:"https://www.ag-grid.com/example-assets/genders/female.png",
-    //     onClick:() => {
-    //       setFemale(true);
-    //     },
-    //     style:femaleStyle
-    //   },
-    //   {
-    //     key:'male',
-    //     label:'male',
-    //     src:"https://www.ag-grid.com/example-assets/genders/male.png",
-    //     onClick:() => {
-    //       setFemale(false);
-    //     },
-    //     style:maleStyle
-    //   },
-    // ]
 
     return (
       <div

@@ -13,7 +13,6 @@ import {
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
-  EntityInstanceWithName,
   MetaEntity,
   MiroirMetaModel,
   Report,
@@ -72,8 +71,8 @@ import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
 import { JzodElementFormEditor } from "./JzodElementFormEditor";
+import { useLocalCacheDeploymentSectionReportsTOREFACTOR, useLocalCacheMetaModel, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
 import { ReportSectionDisplay } from './ReportSectionDisplay';
-import { useLocalCacheDeploymentSectionReports, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -221,14 +220,16 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const libraryAppModel: MiroirMetaModel =  {
-    entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
-    entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model') as EntityDefinition[],
-    reports: useLocalCacheDeploymentSectionReports(applicationDeploymentLibrary.uuid,'model'),
-    configuration: [],
-    applicationVersions: [],
-    applicationVersionCrossEntityDefinition: [],
-  };
+  const libraryAppModel: MiroirMetaModel = useLocalCacheMetaModel(applicationDeploymentLibrary.uuid)();
+
+  // const libraryAppModel: MiroirMetaModel =  {
+  //   entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
+  //   entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model') as EntityDefinition[],
+  //   reports: useLocalCacheDeploymentSectionReportsTOREFACTOR(applicationDeploymentLibrary.uuid,'model'),
+  //   configuration: [],
+  //   applicationVersions: [],
+  //   applicationVersionCrossEntityDefinition: [],
+  // };
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
@@ -246,7 +247,7 @@ export const HomePage = (props: RootComponentProps) => {
   ;
   console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReports(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
+  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
   const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
     deploymentReports.filter(r=>(
         ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
