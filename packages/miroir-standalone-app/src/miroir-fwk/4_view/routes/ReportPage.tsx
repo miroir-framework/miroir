@@ -4,6 +4,7 @@ import {
   ApplicationSection,
   EntityDefinition,
   MetaEntity,
+  MiroirMetaModel,
   Report,
   ReportSectionList,
   ReportSectionListDefinition,
@@ -16,8 +17,10 @@ import {
 import { Params, useParams } from 'react-router-dom';
 
 
-import { useEffect } from 'react';
-import { useLocalCacheMetaModel } from '../ReduxHooks';
+import { useEffect, useMemo } from 'react';
+
+
+import { useCurrentModel } from '../ReduxHooks';
 import { ReportSectionDisplay } from '../ReportSectionDisplay';
 
 // duplicated from server!!!!!!!!
@@ -57,67 +60,35 @@ export interface ReportPageProps {
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid';
 
 
+let count = 0;
 // ###############################################################################################################
 export const ReportPage = (props: ReportPageProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
+  // const [count,setCount] = useState(0)
   const context = useMiroirContextService();
 
-  console.log("ReportPage params", params);
-  const setDeploymentUuid = context.setDeploymentUuid;
-  useEffect(()=>setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
+  count++;
+  // useEffect(()=>setCount(count+1));
+  console.log("ReportPage count",count,"params", params,);
+  // const setDeploymentUuid = context.setDeploymentUuid;
+  useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogService();
-  // const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  const deployments = useMemo(()=>[applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[],[]);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
     (d) => d.uuid == params.deploymentUuid
   );
-  console.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || params.applicationSection == "model"
-      ? (applicationDeploymentMiroir as ApplicationDeployment)
-      : displayedDeploymentDefinition;
-  // const currentModel =
-  // params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
-  // const currentModel = useCallback(()=>useLocalCacheMetaModel(params.deploymentUuid),[params.deploymentUuid]);
 
-  const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
-    currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
-  console.log(
-    "ReportPage currentReportDefinitionDeployment",
-    currentReportDefinitionDeployment,
-    "currentReportDefinitionApplicationSection",
-    currentReportDefinitionApplicationSection
-  );
+  const currentModel: MiroirMetaModel = useCurrentModel(params.deploymentUuid);
 
-  // const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(
-  //   currentReportDefinitionDeployment?.uuid,
-  //   currentReportDefinitionApplicationSection
-  // );
-  // console.log('deploymentReports2',deploymentReports);
-  
-  // const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(
-  //   currentReportDefinitionDeployment?.uuid,
-  //   "model"
-  // ); // Entities are always defined in the 'model' section
-  // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(
-  //   currentReportDefinitionDeployment?.uuid,
-  //   "model"
-  // ); // EntityDefinitions are always defined in the 'model' section
-
-  // console.log("ReportPage deploymentReports", deploymentReports);
-
-  // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
-  const currentModel = useLocalCacheMetaModel(params.deploymentUuid)();
 
   console.log("ReportPage currentModel", currentModel);
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
-  // const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === currentMiroirReport?.definition?.parentUuid);
+
   const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
     currentMiroirReport?.type == "list" &&
     currentMiroirReport.definition.length > 0 &&
@@ -132,41 +103,44 @@ export const ReportPage = (props: ReportPageProps) => {
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentModel.entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
+  const styles = useMemo(()=>({
+    height: "20vw",
+    width: "90vw",
+  }),[])
+
   if (params.applicationSection) {
+    console.log("ReportPage rendering count",count,"params", params,);
     return (
       <div>
-        {/* params:{JSON.stringify(params)}
-        <p /> */}
-        {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
-        <p /> */}
         <Box>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </Box>
-        {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
-        {currentMiroirReport &&
-        currentMiroirReportSectionListDefinition &&
-        currentReportTargetEntity &&
-        currentReportTargetEntityDefinition &&
-        params.deploymentUuid &&
-        params.applicationSection ? (
-          <ReportSectionDisplay
-            tableComponentReportType="EntityInstance"
-            label={"EntityInstance-" + currentReportTargetEntity?.name}
-            currentReportUuid={params.reportUuid?params.reportUuid:""}
-            styles={{
-              height: "20vw",
-              width: "90vw",
-            }}
-            chosenApplicationSection={params.applicationSection as ApplicationSection}
-            displayedDeploymentDefinition={displayedDeploymentDefinition}
-            currentModel={currentModel}
-            currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
-            currentMiroirEntity={currentReportTargetEntity}
-            currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-          />
-        ) : (
-          <div>Oops.</div>
-        )}
+        <span>ReportPage displayed:{count}</span>
+        {
+          // currentMiroirReport &&
+          currentMiroirReportSectionListDefinition &&
+          currentReportTargetEntity &&
+          currentReportTargetEntityDefinition &&
+          params.deploymentUuid &&
+          params.applicationSection 
+          ? (
+            // <span>Voila! {JSON.stringify(currentMiroirReport)}</span>
+            <ReportSectionDisplay
+              tableComponentReportType="EntityInstance"
+              label={"EntityInstance-" + currentReportTargetEntity?.name}
+              currentReportUuid={params.reportUuid?params.reportUuid:""}
+              styles={styles}
+              chosenApplicationSection={params.applicationSection as ApplicationSection}
+              displayedDeploymentDefinition={displayedDeploymentDefinition}
+              currentModel={currentModel}
+              currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+              currentMiroirEntity={currentReportTargetEntity}
+              currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+            />
+          ) : (
+            <div>Oops.</div>
+          )
+        }
       </div>
     );
   } else {

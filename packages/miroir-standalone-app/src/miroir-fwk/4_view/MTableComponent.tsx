@@ -7,17 +7,20 @@ import {
   RowDataUpdatedEvent
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { z } from "zod";
+import equal from "fast-deep-equal";
+
 
 import { SubmitHandler } from 'react-hook-form';
 
 import { JzodObject } from '@miroir-framework/jzod';
 import {
+  ApplicationDeployment,
   ApplicationDeploymentSchema,
   DomainControllerInterface,
   EntityDefinitionSchema,
@@ -34,7 +37,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
-import { useLocalCacheMetaModel } from './ReduxHooks';
+import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionDisplay';
 import { useSelector } from 'react-redux';
 import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from 'miroir-redux';
@@ -57,8 +60,8 @@ export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 
 export const TableComponentCorePropsSchema = z.object({
-  columnDefs:z.array(z.any()),
-  rowData: z.array(z.any()),
+  columnDefs:z.object({columnDefs:z.array(z.any())}),
+  rowData: z.object({instancesWithStringifiedJsonAttributes:z.array(z.any())}),
   styles:z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
@@ -70,7 +73,7 @@ export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSc
   currentMiroirEntity: MetaEntitySchema,
   currentMiroirEntityDefinition: EntityDefinitionSchema,
   reportSectionListDefinition: ReportSectionListDefinitionSchema,
-  onRowEdit: z.function().args(z.any()).returns(z.void()),
+  onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEntityInstancePropsSchema>;
 
@@ -87,40 +90,58 @@ export const TableComponentPropsSchema = z.union([
 
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 
+
+const applicationDeploymentLibrary: ApplicationDeployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"ApplicationDeployment",
+  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  "type":"singleNode",
+  "name":"LibraryApplicationPostgresDeployment",
+  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Postgres Deployment for Application Library",
+  "applicationModelLevel": "model",
+  "model": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  },
+  "data": {
+    "location": {
+      "type": "sql",
+      "side":"server",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "library"
+    }
+  }
+}
+
+let count=0
+let prevProps:TableComponentProps;
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-  console.log('MTableComponent started with props',props);
+
+
+  const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
   const errorLog = useErrorLogService();
-  console.log('MTableComponent 5');
+  // console.log('MTableComponent 5');
   const domainController: DomainControllerInterface = useDomainControllerService();
-  console.log('MTableComponent 6');
+  // console.log('MTableComponent 6');
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  console.log('MTableComponent 7');
+  // console.log('MTableComponent 7');
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  console.log('MTableComponent 8');
+  // console.log('MTableComponent 8');
 
 
   
-  console.log('MTableComponent 9');
-  // const currentModel = useLocalCacheMetaModel(context.deploymentUuid)();
-  const selectorParams:LocalCacheInputSelectorParams = useMemo(
-    () => ({
-      deploymentUuid: context.deploymentUuid,
-      applicationSection: "data",
-      entityUuid: entityEntity.uuid,
-    } as LocalCacheInputSelectorParams),
-    [context]
-  );
-
-  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    selectModelForDeployment(state, selectorParams)
-  ) as MiroirMetaModel
-  console.log('MTableComponent 10');
-  console.log("ReportPage currentModel", currentModel);
+  const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  console.log("MTableComponent currentModel", currentModel);
 
   const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
     console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
@@ -170,19 +191,18 @@ export const MTableComponent = (props: TableComponentProps) => {
     // }
   },[props,currentModel,])
 
-  const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data,event) => {
+  const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
     console.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
-    if (props.type == 'EntityInstance') {
+    if (props.type == 'EntityInstance' && props?.onRowEdit) {
       await props.onRowEdit(data);
     } else {
       console.error('MTableComponent onSubmitTableRowFormDialog called for not EntityInstance');
     }
     handleDialogTableRowFormClose('');
-  }
+  },[props])
 
-  // const handleDialogFormOpen = (label:string,a:any) => {
-  const handleDialogTableRowFormOpen = (a:any) => {
+  const handleDialogTableRowFormOpen = useCallback((a:any) => {
     console.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
@@ -195,15 +215,24 @@ export const MTableComponent = (props: TableComponentProps) => {
       console.log('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
-  };
+  },[]);
 
-  const handleDialogTableRowFormClose = (value: string) => {
+  const handleDialogTableRowFormClose = useCallback((value: string) => {
     console.log('ReportComponent handleDialogTableRowFormClose',value);
     
     setdialogFormIsOpen(false);
-  };
+  },[]);
 
-  const columnDefs = [
+  const defaultColDef=useMemo(()=>({
+    editable: true,
+    sortable: true,
+    filter: true,
+    resizable: true,
+    cellEditor: EntityEditor,
+  }),[]);
+
+
+  const columnDefs = useMemo(()=>[
     {
       field: 'tools',
       cellRenderer: ToolsCellRenderer,
@@ -213,14 +242,15 @@ export const MTableComponent = (props: TableComponentProps) => {
       //   entityUuid: entityPublisher.uuid
       // },
       cellRendererParams: {
-        // entityUuid: ''
         onClick:handleDialogTableRowFormOpen
       },
     }
-  ].concat(props.columnDefs);
+  ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
   
-  // const rowData = props.rowData.concat({})
-  function onCellClicked(e:CellClickedEvent) {
+  console.log('MTableComponent started count',count++,'with props',props,props === prevProps, "columnDefs",columnDefs, "rowData changed:", props?.rowData === prevProps?.rowData);
+  prevProps = props;
+
+  const onCellClicked = useCallback((e:CellClickedEvent)=> {
     console.warn("onCellClicked",e)
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
     if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
@@ -228,7 +258,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == e.colDef.field);
       if (columnDefinitionAttributeEntry && columnDefinitionAttributeEntry[1].type == "simpleType" && columnDefinitionAttributeEntry[1].extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
-        const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
+        // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
         navigate(
           `/instance/${contextDeploymentUuid}/${
             columnDefinitionAttribute?.extra?.targetEntityApplicationSection
@@ -240,31 +270,36 @@ export const MTableComponent = (props: TableComponentProps) => {
         console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
       }
     }
-  }
+  },[props,])
   
   
-  function onCellDoubleClicked(e:CellDoubleClickedEvent) {
-    console.warn("onCellDoubleClicked",e)
-  }
+  // function onCellDoubleClicked(e:CellDoubleClickedEvent) {
+  //   console.warn("onCellDoubleClicked",e)
+  // }
   
-  function onCellEditingStarted(e:CellEditingStartedEvent) {
-    console.warn("onCellEditingStarted",e)
-  }
+  // function onCellEditingStarted(e:CellEditingStartedEvent) {
+  //   console.warn("onCellEditingStarted",e)
+  // }
   
-  function onCellEditingStopped(e:CellEditingStoppedEvent) {
-    console.warn("onCellEditingStarted",e)
-  }
+  // function onCellEditingStopped(e:CellEditingStoppedEvent) {
+  //   console.warn("onCellEditingStarted",e)
+  // }
   
-  function onRowDataUpdated(e:RowDataUpdatedEvent) {
-    console.warn("onRowDataUpdated",e)
-  }
+  // function onRowDataUpdated(e:RowDataUpdatedEvent) {
+  //   console.warn("onRowDataUpdated",e)
+  // }
   
-  function onRowValueChanged(e:RowDataUpdatedEvent) {
-    console.warn("onRowValueChanged",e)
-  }
-  
+  // function onRowValueChanged(e:RowDataUpdatedEvent) {
+  //   console.warn("onRowValueChanged",e)
+  // }
+
   return (
     <div>
+      <span>MtableComponent count {count}</span>
+      <br />
+      <span>{props.type}</span>
+      <br />
+      <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span>
       {props.type == "EntityInstance" ? (
         <div>
           <JsonObjectFormEditorDialog
@@ -293,25 +328,25 @@ export const MTableComponent = (props: TableComponentProps) => {
         <div></div>
       )}
       <div id="tata" className="ag-theme-alpine" style={props.styles}>
+        {/* <div id="tata" className="ag-theme-alpine"> */}
         <AgGridReact
-          columnDefs={columnDefs}
-          rowData={props.rowData}
-          onCellClicked={onCellClicked}
-          onCellEditingStarted={onCellEditingStarted}
-          onCellEditingStopped={onCellEditingStopped}
-          onCellValueChanged={onCellValueChanged}
-          onRowDataUpdated={onRowDataUpdated}
-          onCellDoubleClicked={onCellDoubleClicked}
-          onRowValueChanged={onRowValueChanged}
-          getRowId={(params) => (params.data.uuid ? params.data.uuid : params.data.id)}
-          defaultColDef={{
-            editable: true,
-            sortable: true,
-            filter: true,
-            resizable: true,
-            cellEditor: EntityEditor,
-          }}
-        ></AgGridReact>
+            columnDefs={columnDefs}
+            rowData={props.rowData.instancesWithStringifiedJsonAttributes}
+            // rowData={gridData}
+            getRowId={(params) => {
+              // console.log("MtableComponent getRowId", params);
+              return params.data?.uuid ? params.data?.uuid : params.data?.id;
+            }}
+            defaultColDef={defaultColDef}
+            onCellClicked={onCellClicked}
+            onCellValueChanged={onCellValueChanged}
+            //
+            // onCellEditingStarted={onCellEditingStarted}
+            // onCellEditingStopped={onCellEditingStopped}
+            // onRowDataUpdated={onRowDataUpdated}
+            // onCellDoubleClicked={onCellDoubleClicked}
+            // onRowValueChanged={onRowValueChanged}
+          ></AgGridReact>
       </div>
     </div>
   );

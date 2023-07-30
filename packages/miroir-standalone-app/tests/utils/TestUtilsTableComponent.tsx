@@ -4,7 +4,9 @@ import {
   ApplicationSection, 
   EntityDefinition, 
   EntityInstance, 
+  EntityInstanceWithName, 
   MetaEntity, 
+  MiroirMetaModel, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -12,14 +14,10 @@ import {
   entityEntity, 
   entityEntityDefinition 
 } from 'miroir-core';
-import {
-  useLocalCacheDeploymentSectionReportsTOREFACTOR,
-  useLocalCacheInstancesForEntityTOREFACTOR,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions
-} from "miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { applicationDeploymentLibrary } from "./tests-utils";
 import { JzodElement } from "@miroir-framework/jzod";
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
+import { useSelector } from "react-redux";
 
 export interface MiroirReportComponentProps {
   entityName?: string;
@@ -32,12 +30,22 @@ export interface MiroirReportComponentProps {
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
-  // const miroirEntities:MetaEntity [] = useLocalCacheEntities();
-  // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheEntityDefinitions();
-  const entitiesOfDataSection:MetaEntity [] = useLocalCacheSectionEntities(props.deploymentUuid,'model');
-  const entityDefinitionsOfDataSection:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(props.deploymentUuid,'model');
+  const currentModelSelectorParams:LocalCacheInputSelectorParams = React.useMemo(
+    () => ({
+      deploymentUuid: props.deploymentUuid,
+    } as LocalCacheInputSelectorParams),
+    [props.deploymentUuid]
+  );
 
-  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(props.deploymentUuid,'model');
+  const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
+  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+    localSelectModelForDeployment(state, currentModelSelectorParams)
+  ) as MiroirMetaModel
+
+  const entitiesOfDataSection:MetaEntity [] = currentModel.entities;
+  const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;
+
+  const deploymentReports: Report[] = currentModel.reports;
 
   const entityInstances = {
     Entity: entitiesOfDataSection,
@@ -59,12 +67,24 @@ export const TestUtilsTableComponent = (
   } else {
     currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid) as MetaEntity;
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
-    instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(props.deploymentUuid,props.instancesApplicationSection?props.instancesApplicationSection:'data',currentMiroirEntity?.uuid);
+
+    selectInstanceArrayForDeploymentSectionEntity
+    const instancesToDisplaySelectorParams:LocalCacheInputSelectorParams = React.useMemo(
+      () => ({
+        deploymentUuid:props.deploymentUuid,
+        applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
+        entityUuid: currentMiroirEntity?.uuid,
+      } as LocalCacheInputSelectorParams),
+      [props.deploymentUuid, props.instancesApplicationSection,currentMiroirEntity]
+    );
+  
+    instancesToDisplay = useSelector((state: ReduxStateWithUndoRedo) =>
+      selectInstanceArrayForDeploymentSectionEntity(state, instancesToDisplaySelectorParams)
+    ) as EntityInstanceWithName[];
   }
   console.log("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
   console.log("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
   
-  // const instancesToDisplay:EntityInstance[] = useLocalCacheInstancesForEntityTOREFACTOR(props.entityUuid);
   console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
   // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];

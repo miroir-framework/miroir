@@ -4,6 +4,7 @@ import {
   ApplicationSection,
   DomainControllerInterface,
   EntityDefinition,
+  EntityInstancesUuidIndex,
   MetaEntity,
   MiroirMetaModel,
   Report,
@@ -14,7 +15,7 @@ import {
   useDomainControllerService, useErrorLogService,
   useLocalCacheTransactions
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { ReduxStateChanges } from "miroir-redux";
+import { LocalCacheInputSelectorParams, ReduxStateChanges, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 
 
@@ -26,12 +27,10 @@ import { JzodElement } from '@miroir-framework/jzod';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { EntityInstanceLink } from '../EntityInstanceLink';
 import {
-  useLocalCacheDeploymentSectionReportsTOREFACTOR,
-  useLocalCacheInstancesForEntityTOREFACTOR,
-  useLocalCacheMetaModel,
-  useLocalCacheSectionEntities,
-  useLocalCacheSectionEntityDefinitions,
+  useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
+import { useSelector } from 'react-redux';
+import { useCallback, useMemo, useState } from 'react';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -83,17 +82,17 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
+  const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+    () => ({
+      deploymentUuid: applicationDeploymentLibrary.uuid,
+    } as LocalCacheInputSelectorParams),
+    [applicationDeploymentLibrary.uuid]
+  );
 
-  const libraryAppModel: MiroirMetaModel = useLocalCacheMetaModel(applicationDeploymentLibrary.uuid)();
-
-  // const libraryAppModel: MiroirMetaModel =  {
-  //   entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
-  //   entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model'),
-  //   reports: useLocalCacheDeploymentSectionReportsTOREFACTOR(applicationDeploymentLibrary.uuid,'model'),
-  //   configuration: [],
-  //   applicationVersions: [],
-  //   applicationVersionCrossEntityDefinition: [],
-  // };
+  const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  const libraryAppModel: MiroirMetaModel = useSelector((state: ReduxStateWithUndoRedo) =>
+    localSelectModelForDeployment(state, currentModelSelectorParams)
+  ) as MiroirMetaModel;
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == params.deploymentUuid);
@@ -111,45 +110,37 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   ;
   console.log("ReportPage currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
-  const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
+  const deploymentReports: Report[] = currentModel.reports;
+  const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   console.log("EntityInstancePage currentReportDeploymentSectionEntities",currentReportDeploymentSectionEntities);
 
-  // const currentReportInstancesApplicationSection:ApplicationSection = currentDeploymentDefinition?.applicationModelLevel == "metamodel"? 'data':'model';
-  
-  // const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === params.reportUuid);
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(e=>e?.uuid === params.entityUuid);
   const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const entityAttributes:{[attributeName: string]: JzodElement} | undefined = currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(
-    params.deploymentUuid,
-    params.applicationSection as ApplicationSection,
-    params.entityUuid,
+  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+    {
+      deploymentUuid: params.deploymentUuid,
+      applicationSection: params.applicationSection as ApplicationSection,
+      entityUuid: params.entityUuid,
+    }
   );
 
-  const instance:any = instancesToDisplay.find(i=>i.uuid == params.instanceUuid)
-  const publisherBooks = useLocalCacheInstancesForEntityTOREFACTOR(
-    // props.displayedDeploymentDefinition?.uuid,
-    params.deploymentUuid,
-    // 'data',
-    params.applicationSection as ApplicationSection,
-    entityBook.uuid,
-    // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
-  ).filter((b:any)=>b['publisher'] == instance.uuid);
+  const instance:any = instancesToDisplayUuidIndex && params.instanceUuid?instancesToDisplayUuidIndex[params.instanceUuid]:undefined;
 
-  const authorBooks = useLocalCacheInstancesForEntityTOREFACTOR(
-    // props.displayedDeploymentDefinition?.uuid,
-    params.deploymentUuid,
-    // 'data',
-    params.applicationSection as ApplicationSection,
-    entityBook.uuid,
-    // props.tableComponentReportType == "EntityInstance" && props.currentMiroirReport?.definition.parentUuid ? props.currentMiroirReport?.definition.parentUuid : ""
-  ).filter((b:any)=>b['author'] == instance.uuid);
-  
+  const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+    {
+      deploymentUuid: params.deploymentUuid,
+      applicationSection: params.applicationSection as ApplicationSection,
+      entityUuid: entityBook.uuid,
+    }
+  );
+  const publisherBooks = useMemo(()=>(booksUuidIndex?Object.values(booksUuidIndex):[]).filter((b:any)=>b['publisher'] == (instance['publisher']?instance['publisher']:instance.uuid)),[instance,booksUuidIndex]);
+  const authorBooks = useMemo(()=>(booksUuidIndex?Object.values(booksUuidIndex):[]).filter((b:any)=>b['author'] == (instance['author']?instance['author']:instance.uuid)),[instance,booksUuidIndex]);
+
   console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
   
   if (params.applicationSection && instance) {

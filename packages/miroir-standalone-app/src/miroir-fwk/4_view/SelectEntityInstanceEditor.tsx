@@ -20,13 +20,12 @@ import {
 } from 'react';
 import ReactDOM from 'react-dom';
 
-import { EntityDefinition, EntityInstanceWithName, MetaEntity } from 'miroir-core';
+import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirMetaModel } from 'miroir-core';
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
+import { useSelector } from "react-redux";
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
-import { useLocalCacheInstancesForEntityTOREFACTOR, useLocalCacheMetaModel, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity } from "miroir-redux";
-import { useSelector } from "react-redux";
 
 
 // backspace starts the editor on Windows
@@ -37,20 +36,25 @@ const KEY_TAB = 'Tab';
 
 // ################################################################################################
 export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
-  // console.log('EntityInstanceCellRenderer',props);
   const context = useMiroirContextService();
 
   const deploymentUuid = context.deploymentUuid;
-  // const deploymentUuid = (props as any)('deploymentUuid');
   const entityUuid = (props as any)['entityUuid'];
-  // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-  console.log('EntityInstanceCellRenderer 1');
   
-  const currentModel = useLocalCacheMetaModel(context.deploymentUuid)();
+  const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+    () => ({
+      deploymentUuid: context.deploymentUuid,
+    } as LocalCacheInputSelectorParams),
+    [context]
+  );
+
+  const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+    localSelectModelForDeployment(state, currentModelSelectorParams)
+  ) as MiroirMetaModel
+
   const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
-  console.log('EntityInstanceCellRenderer 2');
   
-  // const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(deploymentUuid,'data',(props as any)['entityUuid']) as EntityInstanceWithName[];
   const selectorParams:LocalCacheInputSelectorParams = useMemo(
     () => ({
       deploymentUuid,
@@ -59,28 +63,11 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
     } as LocalCacheInputSelectorParams),
     [deploymentUuid, entityUuid]
   );
-  const localSelector = useCallback((state: ReduxStateWithUndoRedo) =>
-  selectInstanceArrayForDeploymentSectionEntity(
-    state,
-    selectorParams
-  ),[selectorParams])
-
-  // const instancesToDisplay:EntityInstanceWithName[] = useSelector(localSelector) as EntityInstanceWithName[];
   const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
   ) as EntityInstanceWithName[];
-  console.log('EntityInstanceCellRenderer 3');
-  // const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value["value"]);
   const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
 
-  // if (entityUuid) {
-  //   return (
-  //     <span>
-  //       {/* {instanceToDisplay?instanceToDisplay['name']:(currentMiroirEntityDefinition?currentMiroirEntityDefinition['name']:'entity definition not found') + ' ' + props.value + ' not known.'} */}
-  //       <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
-  //     </span>
-  //   );
-  // } else {
     return (
       <span>
         {instanceToDisplay
@@ -114,17 +101,42 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   }
 })
 
-
+// ################################################################################################
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
-    const miroirEntities:MetaEntity [] = useLocalCacheSectionEntities(deploymentUuid,'model');
-    const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
+
+    const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+      () => ({
+        deploymentUuid: context.deploymentUuid,
+      } as LocalCacheInputSelectorParams),
+      [context]
+    );
+  
+    const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+    const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
+      localSelectModelForDeployment(state, currentModelSelectorParams)
+    ) as MiroirMetaModel
+  
+    const miroirEntities:MetaEntity [] = currentModel.entities;
+    // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntitiesTOREMOVE(deploymentUuid,'model');
+    const miroirEntityDefinitions:EntityDefinition[] = currentModel.entityDefinitions;
+    // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');
     const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   
-    const instancesToDisplay = useLocalCacheInstancesForEntityTOREFACTOR(deploymentUuid,(props as any)['entityUuid'],'data') as EntityInstanceWithName[];
+    const selectorParams:LocalCacheInputSelectorParams = useMemo(
+      () => ({
+        deploymentUuid,
+        applicationSection: "data",
+        entityUuid: (props as any).entityUuid,
+      } as LocalCacheInputSelectorParams),
+      [deploymentUuid, (props as any).entityUuid]
+    );
+    const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
+      selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
+    ) as EntityInstanceWithName[];
     const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
       
     const [ready, setReady] = useState(false);

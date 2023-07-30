@@ -1,7 +1,7 @@
 export {
   getPromiseActionStoreActionNames,
-  selectInstanceUuidIndexForDeploymentSectionEntity,
   selectInstanceArrayForDeploymentSectionEntity,
+  selectEntityInstanceUuidIndexFromLocalCache,
   selectModelForDeployment,
   applyEntityInstanceArraySelectorToDomainStateDeploymentSection,
   applyEntityInstanceArraySelectorToEntityInstancesUuidIndex,

@@ -261,7 +261,10 @@ export {
   defaultMiroirMetaModel,
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
- export {
+export {
+  getReportSectionTargetEntityUuid,
+ } from './1_core/Report.js';
+export {
 } from './1_core/ZodSchema.js';
 export {
   cacheFetchPolicy,

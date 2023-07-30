@@ -34,7 +34,7 @@ import {
   useLocalCacheTransactions,
   useMiroirContextService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { ReduxStateChanges } from "miroir-redux";
+import { LocalCacheInputSelectorParams, ReduxStateChanges, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 
 
@@ -69,10 +69,12 @@ import book4 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fef
 import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
+import { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { Importer } from './Importer';
 import { JzodElementFormEditor } from "./JzodElementFormEditor";
-import { useLocalCacheDeploymentSectionReportsTOREFACTOR, useLocalCacheMetaModel, useLocalCacheSectionEntities, useLocalCacheSectionEntityDefinitions } from "./ReduxHooks";
 import { ReportSectionDisplay } from './ReportSectionDisplay';
+import { useCurrentModel } from "./ReduxHooks";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -220,16 +222,7 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const libraryAppModel: MiroirMetaModel = useLocalCacheMetaModel(applicationDeploymentLibrary.uuid)();
-
-  // const libraryAppModel: MiroirMetaModel =  {
-  //   entities: useLocalCacheSectionEntities(applicationDeploymentLibrary.uuid,'model'),
-  //   entityDefinitions: useLocalCacheSectionEntityDefinitions(applicationDeploymentLibrary.uuid,'model') as EntityDefinition[],
-  //   reports: useLocalCacheDeploymentSectionReportsTOREFACTOR(applicationDeploymentLibrary.uuid,'model'),
-  //   configuration: [],
-  //   applicationVersions: [],
-  //   applicationVersionCrossEntityDefinition: [],
-  // };
+  const libraryAppModel: MiroirMetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
@@ -247,7 +240,7 @@ export const HomePage = (props: RootComponentProps) => {
   ;
   console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  const deploymentReports: Report[] = useLocalCacheDeploymentSectionReportsTOREFACTOR(currentReportDefinitionDeployment?.uuid,currentReportDefinitionApplicationSection);
+  const deploymentReports: Report[] = currentModel.reports;
   const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
     deploymentReports.filter(r=>(
         ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
@@ -256,8 +249,10 @@ export const HomePage = (props: RootComponentProps) => {
       )
     )
   ):deploymentReports;
-  const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntities(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
+  const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities;
+  // const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntitiesTOREMOVE(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions;
+  // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
 
   console.log("RootComponent deploymentReports",deploymentReports);
 
@@ -274,7 +269,8 @@ export const HomePage = (props: RootComponentProps) => {
         (e) => e?.uuid === currentMiroirReportSectionListDefinition.parentUuid
       )
     : undefined;
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined = currentReportDeploymentSectionEntityDefinitions?.find(e=>e?.entityUuid === currentReportTargetEntity?.uuid);
+  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+    currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     const reportUuid = defaultToEntityList(event.target.value, deploymentReports);
@@ -622,8 +618,8 @@ export const HomePage = (props: RootComponentProps) => {
         label="simpleElementString"
         initialValuesObject={"tata"}
         showButton={true}
-        // currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
-        // currentApplicationSection="data"
+        currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
+        currentApplicationSection="data"
         // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
         jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:"d7a144ff-d1b9-4135-800c-a7cfc1f38733"}}}
         // getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}

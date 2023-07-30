@@ -9,10 +9,11 @@ import { Button, List, ListItem, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { JzodArray, JzodElement, JzodObject, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
-import { EntityAttribute, EntityInstanceWithName } from "miroir-core";
+import { ApplicationSection, EntityAttribute, EntityInstanceWithName, EntityInstancesUuidIndex, Uuid } from "miroir-core";
 import { useMiroirContextInnerFormOutput, useMiroirContextService } from "./MiroirContextReactProvider";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
 
 // #####################################################################################################
@@ -41,8 +42,8 @@ export interface JzodElementFormEditorCoreProps {
   jzodSchema: JzodElement;
   // getData:(jzodSchema:JzodElement) => any;
   initialValuesObject: any;
-  // currentDeploymentUuid: Uuid | undefined;
-  // currentApplicationSection: ApplicationSection;
+  currentDeploymentUuid: Uuid | undefined;
+  currentApplicationSection: ApplicationSection;
   // onSubmit: SubmitHandler<JzodObjectFormEditorInputs>;
   onSubmit: (data:any,event:any,error:any)=>void;
   // selectValue?: { value: string, label: string }[];
@@ -146,18 +147,18 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps): JSX.El
   const logHeader = "JsonElementEditorDialog " + (props.label ? props.label + " " : "");
   const context = useMiroirContextService();
 
-  // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForEntityTOREFACTOR(
-  //   props.currentDeploymentUuid,
-  //   props.currentApplicationSection,
-  //   "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  // ) as EntityInstanceWithName[];
+  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+    {
+      deploymentUuid: props.currentDeploymentUuid,
+      applicationSection: props.currentApplicationSection,
+      entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    }
+  );
 
-  const selectList:EntityInstanceWithName[] = []
-  // useLocalCacheInstancesForJzodAttribute(
-  //   props.currentDeploymentUuid,
-  //   props.currentApplicationSection,
-  //   props.jzodSchema as JzodAttribute
-  // ) as EntityInstanceWithName[];
+  const selectList: EntityInstanceWithName[] = useMemo(
+    () => (instancesToDisplayUuidIndex ? Object.values(instancesToDisplayUuidIndex) : []) as EntityInstanceWithName[],
+    [instancesToDisplayUuidIndex]
+  );
 
   console.log("selectList",selectList);
   

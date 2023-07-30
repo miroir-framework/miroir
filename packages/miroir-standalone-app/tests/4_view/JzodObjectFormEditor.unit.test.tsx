@@ -156,6 +156,8 @@ function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
     <JzodElementFormEditor
       label={props.label}
       initialValuesObject={props.initialValuesObject}
+      currentDeploymentUuid={props.currentDeploymentUuid}
+      currentApplicationSection={props.currentApplicationSection}
       showButton={props.showButton}
       jzodSchema={props.jzodSchema}
       // getData={props.getData}
@@ -236,6 +238,8 @@ describe(
               label={label}
               initialValuesObject={""}
               showButton={true}
+              currentDeploymentUuid={undefined}
+              currentApplicationSection="data"
               jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
               // getData={()=>undefined}
               // jzodSchema={{type:"simpleType", definition:"string"}}
