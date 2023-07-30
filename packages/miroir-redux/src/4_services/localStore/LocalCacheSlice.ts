@@ -490,6 +490,7 @@ function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Dictionary<Entity
   }
   return true;
 }
+// ################################################################################################
 function ReplaceInstancesForSectionEntity(
   deploymentUuid: string,
   section: ApplicationSection,
@@ -513,7 +514,7 @@ function ReplaceInstancesForSectionEntity(
     state
   );
 
-  if (equalEntityInstances(instanceCollection.instances,state[instanceCollectionEntityIndex].entities)) {
+  if (Object.keys(instanceCollection.instances).length > 0 && equalEntityInstances(instanceCollection.instances,state[instanceCollectionEntityIndex].entities)) {
     console.log(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
