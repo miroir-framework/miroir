@@ -295,11 +295,11 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   return (
     <div>
-      <span>MtableComponent count {count}</span>
-      <br />
-      <span>{props.type}</span>
-      <br />
-      <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span>
+      {/* <span>MtableComponent count {count}</span>
+      <br /> */}
+      {/* <span>{props.type}</span>
+      <br /> */}
+      {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
       {props.type == "EntityInstance" ? (
         <div>
           <JsonObjectFormEditorDialog

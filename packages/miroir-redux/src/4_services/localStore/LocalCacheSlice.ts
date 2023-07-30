@@ -8,25 +8,20 @@ import {
   createSelector,
   createSlice
 } from "@reduxjs/toolkit";
+import equal from "fast-deep-equal";
 import { memoize as _memoize } from "lodash";
-import equal from "fast-deep-equal"
 import {
   ApplicationSection,
   DomainAction,
   DomainActionWithDeployment,
   DomainDataAction,
   DomainState,
-  DomainStateMetaModelSelector,
   DomainTransactionalAction,
   DomainTransactionalReplaceLocalCacheAction,
-  EntitiesDomainState,
-  EntitiesDomainStateEntityInstanceArraySelector,
-  EntitiesDomainStateInstanceSelector,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
-  EntityInstancesUuidIndexEntityInstanceArraySelector,
   MetaEntity,
   MiroirApplicationVersion,
   MiroirMetaModel,
@@ -308,127 +303,8 @@ export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
 );
 
 
-//#########################################################################################
-export const applyEntityInstanceArraySelectorToEntityInstancesUuidIndex = (
-  selector: EntityInstancesUuidIndexEntityInstanceArraySelector,
-  params:LocalCacheInputSelectorParams
-) => {
-  return (state: ReduxStateWithUndoRedo) => {
-    return createSelector(
-      [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
-      (state: EntityInstancesUuidIndex, params: LocalCacheInputSelectorParams) => {
-        if (params.deploymentUuid && params.applicationSection && params.entityUuid) {
-          // if (params.entityUuid == '3f2baa83-3ef7-45ce-82ea-6a43f7a8c916') {
-          //   console.log('selectInstanceUuidIndexForDeploymentSectionEntityTOREMOVE','params',params,'state',state);
-          // }
-          return selector(state);
-        } else {
-          return [];
-        }
-      }
-    )(state,params);
-  };
-};
-
-//#########################################################################################
-export const applyEntityInstanceArraySelectorToDomainStateDeploymentSection = (
-  deploymentUuid: string | undefined,
-  section: ApplicationSection | undefined,
-  selector: EntitiesDomainStateEntityInstanceArraySelector
-) => {
-  return createSelector(
-    (state: ReduxStateWithUndoRedo) => {
-      const deployments = state?.presentModelSnapshot;
-      const domainState: EntitiesDomainState = Object.fromEntries(
-        Object.entries(deployments)
-          .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
-          .map((e) => {
-            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-            return [entityUuid ? entityUuid[1] : "", e[1].entities];
-          })
-      ) as EntitiesDomainState;
-      console.log("applyEntityInstanceArraySelectorToDomainStateDeploymentSection domainState", domainState);
-      return selector(domainState);
-    },
-    (items: EntityInstance[]) => items
-  );
-};
-
-//#########################################################################################
-export const applyMetaModelSelectorToDomainState = (
-  selector: DomainStateMetaModelSelector
-) => {
-  return createSelector(
-    (state: ReduxStateWithUndoRedo) => {
-      const deployments = state?.presentModelSnapshot;
-      // console.log("applyMetaModelSelectorToDomainState state?.presentModelSnapshot", state?.presentModelSnapshot);
-      
-      const domainState: DomainState = localCacheStateToDomainState(deployments);
-      // console.log("applyMetaModelSelectorToDomainState domainState", domainState);
-      return selector(domainState);
-    },
-    (items: MiroirMetaModel) => items
-  );
-};
-
 
 const reduxStateInputSelectorForPresentModelSnapshot = (state:ReduxStateWithUndoRedo) => state?.presentModelSnapshot;
-//#########################################################################################
-export const applyEntityInstancesArraySelectorToDomainStateDeployment = (
-  deploymentUuid: string | undefined,
-  selector: EntitiesDomainStateEntityInstanceArraySelector
-) => {
-  return createSelector(
-    reduxStateInputSelectorForPresentModelSnapshot,
-    // (state: ReduxStateWithUndoRedo) => {
-    (deployments: LocalCacheDeploymentSectionEntitySliceState) => {
-      // const deployments = state?.presentModelSnapshot;
-      const domainState: EntitiesDomainState = Object.fromEntries(
-        Object.entries(deployments)
-          // .filter((e) => new RegExp(deploymentUuid + "_" + "(model|data)" + "_").test(e[0]))
-          .filter((e) => new RegExp('^' + deploymentUuid + "_").test(e[0]))
-          .map((e) => {
-            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-            return [entityUuid ? entityUuid[1] : "", e[1].entities];
-          })
-      ) as EntitiesDomainState;
-      console.log("applyEntityInstancesArraySelectorToDomainStateDeployment domainState", domainState);
-      return selector(domainState);
-    }
-    // (items: EntityInstance[]) => items
-  );
-};
-
-//#########################################################################################
-export const applyEntityInstanceSelectorToDomainStateDeploymentSection = (
-  deploymentUuid: string | undefined,
-  section: ApplicationSection | undefined,
-  selector: EntitiesDomainStateInstanceSelector
-) => {
-  return createSelector(
-    (state: ReduxStateWithUndoRedo) => {
-      const deployments = state?.presentModelSnapshot;
-      const domainState: EntitiesDomainState = Object.fromEntries(
-        Object.entries(deployments)
-          .filter((e) => new RegExp(deploymentUuid + "_" + section + "_").test(e[0]))
-          .map((e) => {
-            // console.log("selectInstancesFromDomainSelector miroirInstances", e);
-            // removes the e[1].ids, that is imposed by the use of Redux's EntityAdapter
-            const entityUuid = new RegExp(/_([0-9a-fA-F\-]+)$/).exec(e[0] ? e[0] : "");
-            return [entityUuid ? entityUuid[1] : "", e[1].entities];
-          })
-      ) as EntitiesDomainState;
-      console.log("applyEntityInstanceSelectorToDomainStateDeploymentSection domainState", domainState);
-      return selector(domainState);
-    },
-    (items: EntityInstance) => items
-  );
-};
-
 
 //#########################################################################################
 //#########################################################################################

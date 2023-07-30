@@ -3,11 +3,6 @@ export {
   selectInstanceArrayForDeploymentSectionEntity,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectModelForDeployment,
-  applyEntityInstanceArraySelectorToDomainStateDeploymentSection,
-  applyEntityInstanceArraySelectorToEntityInstancesUuidIndex,
-  applyEntityInstanceSelectorToDomainStateDeploymentSection,
-  applyEntityInstancesArraySelectorToDomainStateDeployment,
-  applyMetaModelSelectorToDomainState,
   LocalCacheInputSelectorParams,
   LocalCacheSlice,
 } from "./4_services/localStore/LocalCacheSlice";

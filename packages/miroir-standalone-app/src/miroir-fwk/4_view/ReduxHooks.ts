@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 import { useSelector } from "react-redux";
 
@@ -9,20 +9,14 @@ import {
   EntityInstance,
   EntityInstancesUuidIndex,
   MiroirMetaModel,
-  Report,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
-  entityReport,
-  selectCurrentDeploymentModel,
-  selectEntityInstancesForReportSection,
   selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
   LocalCacheInputSelectorParams,
   ReduxStateWithUndoRedo,
-  applyEntityInstancesArraySelectorToDomainStateDeployment,
-  applyMetaModelSelectorToDomainState,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -104,7 +98,6 @@ export function useLocalCacheInstancesForJzodAttribute(
   applicationSection: ApplicationSection | undefined,
   jzodSchema: JzodAttribute | undefined
 ): EntityInstance[] {
-  // return useSelector(applyEntityInstanceArraySelectorToDomainStateDeploymentSection(deploymentUuid, section, selectEntityInstancesFromJzodAttribute(jzodSchema)));
   const entityUuid = selectEntityUuidFromJzodAttribute(jzodSchema)
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(

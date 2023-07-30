@@ -221,7 +221,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                       default:{
                         return (
                           <ListItem disableGutters key={schemaAttribute[0]}>
-                            on est la!!!!{currentAttributeDefinition?.extra?.defaultLabel}:{" "}
+                            {currentAttributeDefinition?.extra?.defaultLabel}:{" "}
                             <input
                               form={"form." + props.label}
                               defaultValue={props.initialValuesObject[schemaAttribute[0]]}

@@ -338,12 +338,9 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
             ? (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <div>
-                  colonnes: {JSON.stringify(columnDefs)}
-                  {/* <p/>
-                        deployment: {JSON.stringify(props.displayedDeploymentDefinition?.uuid)}
-                        <p/> */}
+                  {/* colonnes: {JSON.stringify(columnDefs)} */}
                 </div>
-                {/* <JsonObjectFormEditorDialog
+                <JsonObjectFormEditorDialog
                   showButton={true}
                   isAttributes={true}
                   label={props.currentMiroirEntityDefinition.name}
@@ -358,7 +355,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
                     )
                   }
                   onSubmit={onSubmitOuterDialog}
-                /> */}
+                />
                 {
                   props.displayedDeploymentDefinition ? (
                     <MTableComponent
