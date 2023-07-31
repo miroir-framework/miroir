@@ -42,8 +42,8 @@ export interface JzodElementFormEditorCoreProps {
   jzodSchema: JzodElement;
   // getData:(jzodSchema:JzodElement) => any;
   initialValuesObject: any;
-  currentDeploymentUuid: Uuid | undefined;
-  currentApplicationSection: ApplicationSection;
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
   // onSubmit: SubmitHandler<JzodObjectFormEditorInputs>;
   onSubmit: (data:any,event:any,error:any)=>void;
   // selectValue?: { value: string, label: string }[];
@@ -61,17 +61,41 @@ export type JzodElementFormEditorProps =
   | JzodObjectFormEditorWithButtonProps
   | JzodElementFormEditorWithoutButtonProps;
 
-
-// #####################################################################################################
-export const InnerElementEditor = (
-  props: JzodElementFormEditorProps,
-  selectList:EntityInstanceWithName[],
+export interface JzodElementEditorProps {
+  name: string,
+  innerProps: JzodElementFormEditorProps,
   register: UseFormRegister<any>,
   errors: FieldErrors<any>,
   formState: FormState<any>,
   setValue: UseFormSetValue<any>,
+}
+
+// #####################################################################################################
+export const JzodElementEditor = (
+  props: JzodElementEditorProps
 ): JSX.Element => {
-  const {label, jzodSchema, initialValuesObject} = props;
+  const {label, jzodSchema, initialValuesObject} = props.innerProps;
+  // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.innerProps.initialValuesObject});
+
+  // console.log("JzodElementEditor",props);
+  
+  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
+    deploymentUuid: props.innerProps.currentDeploymentUuid,
+    applicationSection: props.innerProps.currentApplicationSection,
+    entityUuid:
+      jzodSchema.type == "simpleType" && jzodSchema.definition == "string" && jzodSchema.extra?.targetEntity
+        ? jzodSchema.extra?.targetEntity
+        : "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  });
+
+  const selectList: EntityInstanceWithName[] = useMemo(
+    () => (instancesToDisplayUuidIndex ? Object.values(instancesToDisplayUuidIndex) : []) as EntityInstanceWithName[],
+    [instancesToDisplayUuidIndex]
+  );
+
+  // console.log("JzodElementEditor selectList",selectList);
+  
+
   switch (jzodSchema?.type) {
     case "array":{
       const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
@@ -81,13 +105,13 @@ export const InnerElementEditor = (
       );
 
       return (
-        <ListItem disableGutters key={props.label}>
+        <ListItem disableGutters key={props.name}>
           <span>
             <ReportSectionDisplay
               tableComponentReportType="JSON_ARRAY"
-              label={"JSON_ARRAY-" + label}
+              label={"JSON_ARRAY-" + props.name}
               columnDefs={columnDefs}
-              rowData={initialValuesObject[label]}
+              rowData={initialValuesObject[props.name]}
               styles={{
                 width: "50vw",
                 height: "22vw",
@@ -102,36 +126,51 @@ export const InnerElementEditor = (
       // no break
     }
     default:{
-      if (jzodSchema.type=="simpleType" && jzodSchema.definition == "uuid" && jzodSchema.extra?.targetEntity) {
+      if (jzodSchema.type=="simpleType" && jzodSchema.definition == "string" && jzodSchema.extra?.targetEntity) {
         return (
           <ListItem disableGutters key={label}>
-            {label}:{" "}
-            <p>{JSON.stringify(errors[label]?.message?`received error: ${errors[label]?.message}`:"no error")}</p>
+            {props.name}-{label}:{" "}
+            {/* <p>defaultValue:{JSON.stringify({label:props.name,value:props.innerProps.initialValuesObject})}</p> */}
+            {/* <p>{JSON.stringify(props.errors[label]?.message?`received error: ${props.errors[label]?.message}`:"no error")}</p> */}
             <Select 
-              {...register(label, {required:true})}
-              options={selectList.map(e=>({value:e.uuid, label:e.name}))} 
-              onChange={(e)=>{console.log("onChange!",e);setValue(label,e?.value)}}
+              {...props.register(props.name, {required:true})}
+              options={selectList.map(e=>({label:e.name,value:e.uuid}))} 
+              name={props.name}
+              value={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.name]}:{label:props.name,value:'no value found!'}}
+              defaultValue={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.name]}:{label:props.name,value:'no value found!'}}
+              // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
+              onChange={(e)=>{console.log("JzodElementEditor onChange!",e);props.setValue(props.name,e?.value);}}
             />
           </ListItem>
         );
       } else {
+        const defaultValue=props.formState.defaultValues?props.formState.defaultValues[props.name]:'no value found!'
         return (
-          <ListItem disableGutters key={label}>
-            {label}:{" "}
-            {/* {errors.name?.message && <p>{JSON.stringify(errors)}</p>} */}
-            <p>
-              isValid:{JSON.stringify(formState.isValid)}
-            </p>
-            <p>{JSON.stringify(errors[label]?.message?`received error: ${errors[label]?.message}`:"no error")}</p>
-            <input
-              form={"form." + label}
-              {...register(label, {required:true})}
-              defaultValue={props.initialValuesObject[label]}
-              name={label}
-              // onClick={(e)=>{console.log("onClick!");}}
-              onChange={(e)=>{console.log("onChange!");setValue(label,e.target.value)}}
-            />
-          </ListItem>
+          <>
+            {/* <ListItem>
+              name: {props.name}, default value:{defaultValue}
+            </ListItem> */}
+            <ListItem disableGutters key={label}>
+              {props.name}-{label}:{" "}
+              {/* {errors.name?.message && <p>{JSON.stringify(errors)}</p>} */}
+              <p>
+                {/* isValid:{JSON.stringify(props.formState.isValid)} */}
+                {/* val:{props.innerProps.initialValuesObject} */}
+                {/* schema:{JSON.stringify(jzodSchema)} */}
+                {/* name: {props.name} */}
+              </p>
+              {/* <p>{JSON.stringify(props.errors[label]?.message?`received error: ${props.errors[label]?.message}`:"no error")}</p> */}
+              <input
+                {...props.register(props.name, {required:true})}
+                form={"form." + props.name}
+                name={props.name}
+                onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);props.setValue(props.name,e.target.value)}}
+                defaultValue={defaultValue}
+                // defaultValue={props.innerProps.initialValuesObject[label]}
+                // onClick={(e)=>{console.log("onClick!");}}
+              />
+            </ListItem>
+          </>
         );
       }
     }
@@ -151,20 +190,20 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps): JSX.El
   const logHeader = "JsonElementEditorDialog " + (props.label ? props.label + " " : "");
   const context = useMiroirContextService();
 
-  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-    {
-      deploymentUuid: props.currentDeploymentUuid,
-      applicationSection: props.currentApplicationSection,
-      entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-    }
-  );
+  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+  //   {
+  //     deploymentUuid: props.currentDeploymentUuid,
+  //     applicationSection: props.currentApplicationSection,
+  //     entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  //   }
+  // );
 
-  const selectList: EntityInstanceWithName[] = useMemo(
-    () => (instancesToDisplayUuidIndex ? Object.values(instancesToDisplayUuidIndex) : []) as EntityInstanceWithName[],
-    [instancesToDisplayUuidIndex]
-  );
+  // const selectList: EntityInstanceWithName[] = useMemo(
+  //   () => (instancesToDisplayUuidIndex ? Object.values(instancesToDisplayUuidIndex) : []) as EntityInstanceWithName[],
+  //   [instancesToDisplayUuidIndex]
+  // );
 
-  console.log("selectList",selectList);
+  // console.log("selectList",selectList);
   
 
   // const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
@@ -271,13 +310,14 @@ export function JzodElementFormEditor(props: JzodElementFormEditorProps): JSX.El
           <Item>formObject: {JSON.stringify(props.initialValuesObject)}</Item>
           <Item>
             <List sx={{ pt: 0 }}>
-              {
-                InnerElementEditor(props, selectList, register, errors, formState, setValue)
-                // Object.entries(props?.jzodSchema.definition).length > 0?
-                // Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                // const currentAttributeDefinition = schemaAttribute[1];
-                // })
-              }
+              <JzodElementEditor
+                name={props.label}
+                innerProps={props}
+                register={register}
+                errors={errors}
+                formState={formState}
+                setValue={setValue}
+              />
             </List>
           </Item>
         </Grid>

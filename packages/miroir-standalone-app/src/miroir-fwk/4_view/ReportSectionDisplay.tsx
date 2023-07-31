@@ -87,17 +87,17 @@ export function defaultFormValues(
     }
     console.log();
     
-    const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,a)=>{
+    const currentEditorAttributes = Object.entries(currentEntityJzodSchema.definition).reduce((acc,a)=>{
       let result
-      if (Object.keys(attributeDefaultValue).includes(a[1].name)) {
-        result = Object.assign({},acc,{[a[1].name]:attributeDefaultValue[a[1].name]})
+      if (Object.keys(attributeDefaultValue).includes(a[0])) {
+        result = Object.assign({},acc,{[a[0]]:attributeDefaultValue[a[0]]})
       } else {
-        result = Object.assign({},acc,{[a[1].name]:''})
+        result = Object.assign({},acc,{[a[0]]:''})
       }
       // console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
       return result;
     },{});
-    // console.log('defaultFormValues return',currentEditorAttributes);
+    console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
   if (tableComponentType == "JSON_ARRAY") {
@@ -108,6 +108,7 @@ export function defaultFormValues(
       'conceptLevel':'Model',
       // 'attributes': [],
     }
+    // TODO: CORRECT THIS IT DOES NOT WORK!!!
     const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,a)=>{
       let result
       if (Object.keys(attributeDefaultValue).includes(a[1].name)) {
@@ -118,7 +119,7 @@ export function defaultFormValues(
       console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a[1].name,':',result);
       return result;
     },{});
-    // console.log('defaultFormValues return',currentEditorAttributes);
+    console.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
 }
@@ -345,6 +346,8 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
                   isAttributes={true}
                   label={props.currentMiroirEntityDefinition.name}
                   jzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
+                  currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
+                  currentApplicationSection={props.chosenApplicationSection}
                   initialValuesObject={
                     defaultFormValues(
                       props.tableComponentReportType,

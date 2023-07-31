@@ -3,12 +3,13 @@ import { Button, Dialog, DialogTitle, List, ListItem, Paper, styled } from "@mui
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { JzodArray, JzodElement, JzodObject } from "@miroir-framework/jzod";
-import { EntityAttribute } from "miroir-core";
+import { ApplicationSection, EntityAttribute, Uuid } from "miroir-core";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
 import { ReportSectionDisplay } from "./ReportSectionDisplay";
 import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { JzodElementEditor } from "./JzodElementFormEditor";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -22,8 +23,8 @@ export interface JsonObjectFormEditorCoreDialogProps {
   isAttributes?: boolean;
   jzodSchema: JzodObject;
   initialValuesObject: any;
-  // currentDeploymentUuid: Uuid | undefined;
-  // currentApplicationSection: ApplicationSection;
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
   onSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs>;
 }
 
@@ -55,7 +56,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 // #####################################################################################################
 export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProps) {
-  const logHeader = "JsonObjectEditorDialog " + (props.label ? props.label + " " : "");
+  const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
@@ -162,92 +163,115 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           <div></div>
         )}
       </span>
-      <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
-        {/* <DialogTitle>add Entity</DialogTitle> */}
-        <DialogTitle>{props.label} add Element</DialogTitle>
-        {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
-        <form
-          id={"form." + props.label}
-          onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-          style={{ display: "inline-flex" }}
-        >
-          {/* register your input into the hook by invoking the "register" function */}
-          {/* <input defaultValue="test" {...register("example")} /> */}
-          {/* include validation with required or other standard HTML validation rules */}
-          {/* <input {...register("exampleRequired", { required: true })} /> */}
-          <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
-            <Item>formObject: {JSON.stringify(props.initialValuesObject)}</Item>
-            <Item>
-              <List sx={{ pt: 0 }}>
-                {/* {
-                  Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                    const currentAttributeDefinition = schemaAttribute[1];
-                    return InnerElementEditor(props, selectList, register, errors, formState, setValue)
-                  }
-                } */}
-                {
-                  // Object.entries(props?.jzodSchema.definition).length > 0? 
-                  Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                    const currentAttributeDefinition = schemaAttribute[1];
-                    switch (currentAttributeDefinition.type) {
-                      case "array":{
-                        const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
-                          ((currentAttributeDefinition as JzodArray).definition
-                            ? (currentAttributeDefinition as JzodArray).definition
-                            : {}) as JzodObject
-                        );
-
-                        return (
-                          <ListItem disableGutters key={schemaAttribute[0]}>
-                            <span>
-                              <ReportSectionDisplay
-                                tableComponentReportType="JSON_ARRAY"
-                                label={"JSON_ARRAY-" + currentAttributeDefinition.extra?.defaultLabel}
-                                columnDefs={columnDefs}
-                                rowData={props?.initialValuesObject[schemaAttribute[0]]}
-                                styles={{
-                                  width: "50vw",
-                                  height: "22vw",
-                                }}
-                              ></ReportSectionDisplay>
-                            </span>
-                          </ListItem>
-                        );
-                        break;
-                      }
-                      case "object": {
-                        // no break
-                      }
-                      default:{
-                        return (
-                          <ListItem disableGutters key={schemaAttribute[0]}>
-                            {currentAttributeDefinition?.extra?.defaultLabel}:{" "}
-                            <input
-                              form={"form." + props.label}
-                              defaultValue={props.initialValuesObject[schemaAttribute[0]]}
-                              {...register(schemaAttribute[0],{
-                                onChange: (e) => console.log("onChange!",e),
-                                onBlur: (e) => console.log("onBlur!",e),
-                              })}
-                              // onClick={()=>{console.log("onClick!");}}
-                              // onFocus={()=>{console.log("onFocus!");}}
-                              // onChange={()=>{console.log("onChange!");}}
-                            />
-                          </ListItem>
-                        );
-                      }
-                      break;
+      {
+        props.currentDeploymentUuid && props.currentApplicationSection
+        ?
+        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
+          {/* <DialogTitle>add Entity</DialogTitle> */}
+          <DialogTitle>{props.label} add / edit Element</DialogTitle>
+          {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
+          <form
+            id={"form." + props.label}
+            onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
+            style={{ display: "inline-flex" }}
+          >
+            <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
+              <Item>formObject: {JSON.stringify(props.initialValuesObject)}</Item>
+              <Item>
+                <List sx={{ pt: 0 }}>
+                  {/* {
+                    Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+                      const currentAttributeDefinition = schemaAttribute[1];
+                      return JzodElementEditor(props, selectList, register, errors, formState, setValue)
                     }
-                  })
-                }
-              </List>
-            </Item>
-          </Grid>
-          {/* errors will return when field validation fails  */}
-          {errors.exampleRequired && <span>This field is required</span>}
-          <input type="submit" id={props.label} name={props.label} form={"form." + props.label} />
-        </form>
-      </Dialog>
+                  } */}
+                  {
+                    // Object.entries(props?.jzodSchema.definition).length > 0? 
+                    Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+                      const currentAttributeDefinition = schemaAttribute[1];
+                      return (
+                        <>
+                        <JzodElementEditor
+                          name={schemaAttribute[0]}
+                          innerProps={{
+                            label:currentAttributeDefinition.extra?.defaultLabel,
+                            initialValuesObject:props.initialValuesObject[schemaAttribute[0]],
+                            showButton:true,
+                            currentDeploymentUuid:props.currentDeploymentUuid,
+                            currentApplicationSection:props.currentApplicationSection,
+                            jzodSchema:currentAttributeDefinition,
+                            onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
+                          }}
+                          register={register}
+                          errors={errors}
+                          formState={formState}
+                          setValue={setValue}
+                        />
+                        </>
+                      );
+
+                      // switch (currentAttributeDefinition.type) {
+                      //   case "array":{
+                      //     const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
+                      //       ((currentAttributeDefinition as JzodArray).definition
+                      //         ? (currentAttributeDefinition as JzodArray).definition
+                      //         : {}) as JzodObject
+                      //     );
+
+                      //     return (
+                      //       <ListItem disableGutters key={schemaAttribute[0]}>
+                      //         <span>
+                      //           <ReportSectionDisplay
+                      //             tableComponentReportType="JSON_ARRAY"
+                      //             label={"JSON_ARRAY-" + currentAttributeDefinition.extra?.defaultLabel}
+                      //             columnDefs={columnDefs}
+                      //             rowData={props?.initialValuesObject[schemaAttribute[0]]}
+                      //             styles={{
+                      //               width: "50vw",
+                      //               height: "22vw",
+                      //             }}
+                      //           ></ReportSectionDisplay>
+                      //         </span>
+                      //       </ListItem>
+                      //     );
+                      //     break;
+                      //   }
+                      //   case "object": {
+                      //     // no break
+                      //   }
+                      //   default:{
+                      //     return (
+                      //       <ListItem disableGutters key={schemaAttribute[0]}>
+                      //         {currentAttributeDefinition?.extra?.defaultLabel}:{" "}
+                      //         <input
+                      //           form={"form." + props.label}
+                      //           defaultValue={props.initialValuesObject[schemaAttribute[0]]}
+                      //           {...register(schemaAttribute[0],{
+                      //             onChange: (e) => console.log("onChange!",e),
+                      //             onBlur: (e) => console.log("onBlur!",e),
+                      //           })}
+                      //           // onClick={()=>{console.log("onClick!");}}
+                      //           // onFocus={()=>{console.log("onFocus!");}}
+                      //           // onChange={()=>{console.log("onChange!");}}
+                      //         />
+                      //       </ListItem>
+                      //     );
+                      //   }
+                      //   break;
+                      // }
+                    })
+                  }
+                </List>
+              </Item>
+            </Grid>
+            {/* errors will return when field validation fails  */}
+            {errors.exampleRequired && <span>This field is required</span>}
+            <input type="submit" id={props.label} name={props.label} form={"form." + props.label} />
+          </form>
+        </Dialog>
+        :
+        <span>No form to display!</span>
+      }
       {/* <span>
       JsonObjectFormEditorDialog end {props.label}
       </span> */}

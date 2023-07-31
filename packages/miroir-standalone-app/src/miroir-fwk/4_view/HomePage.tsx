@@ -620,12 +620,8 @@ export const HomePage = (props: RootComponentProps) => {
         showButton={true}
         currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
         currentApplicationSection="data"
-        // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
-        jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
-        // getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
-        // getData={()=>[]}
+        jzodSchema={{type:"simpleType", definition:"string", extra:{targetEntity:entityAuthor.uuid}}}
         onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
-        // selectValue={selectList.map(e=>({value:e.uuid, label:e.name}))}
       ></JzodElementFormEditor>
       <p />
       <span>transactions: {JSON.stringify(transactions)}</span>
