@@ -7,8 +7,13 @@ import { Provider } from 'react-redux';
 // As a basic setup, import your same slice reducers
 import {
   ApplicationDeployment,
+  ConfigurationService,
+  DomainControllerInterface,
   IStoreController,
+  LocalAndRemoteControllerInterface,
   MiroirConfig,
+  MiroirContext,
+  StoreControllerFactory,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -16,9 +21,9 @@ import {
   applicationVersionInitialMiroirVersion,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { ReduxStoreWithUndoRedo } from 'miroir-redux';
-import { RequestHandler } from 'msw';
-import { SetupServerApi } from 'msw/lib/node';
+import { ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-redux';
+import { RequestHandler, SetupWorkerApi } from 'msw';
+import { SetupServerApi, setupServer } from 'msw/node';
 import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
 
@@ -27,6 +32,7 @@ import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da
 import applicationStoreBasedConfigurationLibrary from "../../src/assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 import applicationVersionLibraryInitialVersion from "../../src/assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -55,6 +61,21 @@ export const applicationDeploymentLibrary: ApplicationDeployment = {
     }
   }
 }
+
+// ################################################################################################
+export interface MiroirIntegrationTestEnvironment {
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
+  localDataStoreWorker?: SetupWorkerApi,
+  localDataStoreServer?: SetupServerApi,
+  reduxStore: ReduxStore,
+  localAndRemoteController: LocalAndRemoteControllerInterface,
+  domainController: DomainControllerInterface,
+  miroirContext: MiroirContext,
+}
+
+
+// ################################################################################################
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
@@ -103,6 +124,47 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 // ############################################################################################################
+const fetch = require('node-fetch');
+
+export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: MiroirConfig) {
+  let result:MiroirIntegrationTestEnvironment = {} as MiroirIntegrationTestEnvironment;
+
+  const wrappedReduxStore = createReduxStoreAndRestClient(
+    miroirConfig as MiroirConfig,
+    fetch,
+  );
+
+  const {
+    localMiroirStoreController:a,localAppStoreController:b
+  } = await StoreControllerFactory(
+    ConfigurationService.storeFactoryRegister,
+    miroirConfig,
+    // sqlDbStoreControllerFactory,
+  );
+  result.localMiroirStoreController = a;
+  result.localAppStoreController = b;
+
+  // Establish requests interception layer before all tests.
+  const wrapped = await miroirBeforeAll(
+    miroirConfig as MiroirConfig,
+    setupServer,
+    result.localMiroirStoreController,
+    result.localAppStoreController,
+  );
+
+  if (wrappedReduxStore && wrapped) {
+    // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
+    // localAppStoreController = wrapped.localAppStoreController as IStoreController;
+    result.localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+    result.localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    result.reduxStore = wrappedReduxStore.reduxStore;
+    result.domainController = wrappedReduxStore.domainController;
+    result.miroirContext = wrappedReduxStore.miroirContext;
+  }
+  return result;
+}
+
+// ################################################################################################
 export async function miroirBeforeAll(
   miroirConfig: MiroirConfig,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,
