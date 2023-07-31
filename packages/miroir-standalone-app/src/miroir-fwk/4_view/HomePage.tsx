@@ -621,7 +621,7 @@ export const HomePage = (props: RootComponentProps) => {
         currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
         currentApplicationSection="data"
         // jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:5}]}}
-        jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:"d7a144ff-d1b9-4135-800c-a7cfc1f38733"}}}
+        jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
         // getData={()=>selectList.map(e=>({value:e.uuid, label:e.name}))}
         // getData={()=>[]}
         onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}

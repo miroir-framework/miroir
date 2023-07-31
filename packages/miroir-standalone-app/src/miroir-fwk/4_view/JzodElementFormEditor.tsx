@@ -107,7 +107,11 @@ export const InnerElementEditor = (
           <ListItem disableGutters key={label}>
             {label}:{" "}
             <p>{JSON.stringify(errors[label]?.message?`received error: ${errors[label]?.message}`:"no error")}</p>
-            <Select options={selectList.map(e=>({value:e.uuid, label:e.name}))} />
+            <Select 
+              {...register(label, {required:true})}
+              options={selectList.map(e=>({value:e.uuid, label:e.name}))} 
+              onChange={(e)=>{console.log("onChange!",e);setValue(label,e?.value)}}
+            />
           </ListItem>
         );
       } else {

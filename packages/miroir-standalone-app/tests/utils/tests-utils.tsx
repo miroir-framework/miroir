@@ -227,7 +227,7 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
-  localDataStoreServer: SetupServerApi,
+  localDataStoreServer?: SetupServerApi,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {
