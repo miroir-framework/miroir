@@ -35,7 +35,7 @@ export interface JsonObjectFormEditorWithButtonDialogProps extends JsonObjectFor
 export interface JsonObjectFormEditorDialogWithoutButtonProps extends JsonObjectFormEditorCoreDialogProps {
   showButton: false;
   isOpen: boolean;
-  onClose: (a?: any) => void;
+  onClose: (a?: any,event?:any) => void;
   // onClose: z.function().args(z.any()).returns(z.void()),
 }
 
@@ -107,6 +107,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   };
 
   const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data, event) => {
+    event?.stopPropagation();
     const result = props.onSubmit(data, event);
     const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
     console.log(
@@ -154,7 +155,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             {props.label}
             <Button
               variant="outlined"
-              onClick={() => handleAddObjectDialogFormButtonClick(props?.label, props?.initialValuesObject)}
+              onClick={(event) => {event?.stopPropagation(); handleAddObjectDialogFormButtonClick(props?.label, props?.initialValuesObject)}}
             >
               <AddBoxIcon />
             </Button>
@@ -209,56 +210,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                         />
                         </>
                       );
-
-                      // switch (currentAttributeDefinition.type) {
-                      //   case "array":{
-                      //     const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
-                      //       ((currentAttributeDefinition as JzodArray).definition
-                      //         ? (currentAttributeDefinition as JzodArray).definition
-                      //         : {}) as JzodObject
-                      //     );
-
-                      //     return (
-                      //       <ListItem disableGutters key={schemaAttribute[0]}>
-                      //         <span>
-                      //           <ReportSectionDisplay
-                      //             tableComponentReportType="JSON_ARRAY"
-                      //             label={"JSON_ARRAY-" + currentAttributeDefinition.extra?.defaultLabel}
-                      //             columnDefs={columnDefs}
-                      //             rowData={props?.initialValuesObject[schemaAttribute[0]]}
-                      //             styles={{
-                      //               width: "50vw",
-                      //               height: "22vw",
-                      //             }}
-                      //           ></ReportSectionDisplay>
-                      //         </span>
-                      //       </ListItem>
-                      //     );
-                      //     break;
-                      //   }
-                      //   case "object": {
-                      //     // no break
-                      //   }
-                      //   default:{
-                      //     return (
-                      //       <ListItem disableGutters key={schemaAttribute[0]}>
-                      //         {currentAttributeDefinition?.extra?.defaultLabel}:{" "}
-                      //         <input
-                      //           form={"form." + props.label}
-                      //           defaultValue={props.initialValuesObject[schemaAttribute[0]]}
-                      //           {...register(schemaAttribute[0],{
-                      //             onChange: (e) => console.log("onChange!",e),
-                      //             onBlur: (e) => console.log("onBlur!",e),
-                      //           })}
-                      //           // onClick={()=>{console.log("onClick!");}}
-                      //           // onFocus={()=>{console.log("onFocus!");}}
-                      //           // onChange={()=>{console.log("onChange!");}}
-                      //         />
-                      //       </ListItem>
-                      //     );
-                      //   }
-                      //   break;
-                      // }
                     })
                   }
                 </List>

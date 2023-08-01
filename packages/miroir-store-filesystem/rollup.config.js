@@ -32,7 +32,6 @@ export default [
     external: [
       'miroir-core',
       'sequelize',
-      'detect-browser'
     ],
     output: [
       {

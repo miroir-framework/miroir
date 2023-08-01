@@ -1,4 +1,3 @@
-import { detect } from "detect-browser";
 import { RequestHandler, SetupWorkerApi } from "msw";
 import { SetupServerApi } from "msw/node";
 import process from "process";
@@ -19,9 +18,6 @@ import {
   RemoteStoreAccessReduxSaga,
   RemoteStoreNetworkRestClient,
 } from "miroir-redux";
-
-const browserInfo = detect();
-console.log('browserInfo',browserInfo);
 
   // #############################################################################################
   export function createReduxStoreAndRestClient(

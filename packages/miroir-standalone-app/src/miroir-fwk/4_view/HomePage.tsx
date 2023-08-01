@@ -273,16 +273,19 @@ export const HomePage = (props: RootComponentProps) => {
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
+    event.stopPropagation();
     const reportUuid = defaultToEntityList(event.target.value, deploymentReports);
     setDisplayedReportUuid(reportUuid?reportUuid:'');
   };
 
   const handleChangeDisplayedApplicationSection = (event: SelectChangeEvent) => {
+    event.stopPropagation();
     setDisplayedApplicationSection(event.target.value as ApplicationSection|undefined);
     setDisplayedReportUuid("");
   };
 
   const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
+    event.stopPropagation();
     console.log('handleChangeDisplayedDeployment',event);
     setDisplayedDeploymentUuid(event.target.value);
     console.log('handleChangeDisplayedDeployment',displayedDeploymentUuid);

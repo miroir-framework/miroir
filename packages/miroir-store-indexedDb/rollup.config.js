@@ -11,7 +11,6 @@ export default [
     external: [
       'miroir-core',
       'level',
-      'detect-browser'
     ],
     output: [
       {

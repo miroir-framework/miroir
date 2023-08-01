@@ -143,8 +143,9 @@ export const MTableComponent = (props: TableComponentProps) => {
   const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
   console.log("MTableComponent currentModel", currentModel);
 
-  const onCellValueChanged = useCallback(async (e:CellValueChangedEvent) => {
-    console.warn("onCellValueChanged",e, 'contextDeploymentUuid',contextDeploymentUuid)
+  const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
+    // event?.stopPropagation();
+    console.warn("onCellValueChanged",event, 'contextDeploymentUuid',contextDeploymentUuid)
     // if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
     //   const entity = e.data as MetaEntity;
     //   // sending ModelUpdates
@@ -192,6 +193,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   },[props,currentModel,])
 
   const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
+    event?.stopPropagation();
     console.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
     if (props.type == 'EntityInstance' && props?.onRowEdit) {
@@ -202,7 +204,8 @@ export const MTableComponent = (props: TableComponentProps) => {
     handleDialogTableRowFormClose('');
   },[props])
 
-  const handleDialogTableRowFormOpen = useCallback((a:any) => {
+  const handleDialogTableRowFormOpen = useCallback((a?:any,event?:any) => {
+    event?.stopPropagation();
     console.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
@@ -217,7 +220,8 @@ export const MTableComponent = (props: TableComponentProps) => {
     setdialogFormIsOpen(true);
   },[]);
 
-  const handleDialogTableRowFormClose = useCallback((value: string) => {
+  const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
+    event?.stopPropagation();
     console.log('ReportComponent handleDialogTableRowFormClose',value);
     
     setdialogFormIsOpen(false);
@@ -250,12 +254,13 @@ export const MTableComponent = (props: TableComponentProps) => {
   console.log('MTableComponent started count',count++,'with props',props,props === prevProps, "columnDefs",columnDefs, "rowData changed:", props?.rowData === prevProps?.rowData);
   prevProps = props;
 
-  const onCellClicked = useCallback((e:CellClickedEvent)=> {
-    console.warn("onCellClicked",e)
+  const onCellClicked = useCallback((event:CellClickedEvent)=> {
+    // event.stopPropagation();
+    console.warn("onCellClicked",event)
     // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
-    if (props.type == 'EntityInstance' && e.colDef.field && e.colDef.field != 'tools') {
+    if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
       // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
-      const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == e.colDef.field);
+      const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == event.colDef.field);
       if (columnDefinitionAttributeEntry && columnDefinitionAttributeEntry[1].type == "simpleType" && columnDefinitionAttributeEntry[1].extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
         // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
@@ -264,7 +269,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             columnDefinitionAttribute?.extra?.targetEntityApplicationSection
               ? columnDefinitionAttribute?.extra.targetEntityApplicationSection
               : context.applicationSection
-          }/${columnDefinitionAttribute?.extra?.targetEntity}/${e.data[e.colDef.field]}`
+          }/${columnDefinitionAttribute?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
         console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);

@@ -9,7 +9,6 @@
   "browser": "dist/bundle-browser.esm.js",
   "type": "module",
   "dependencies": {
-    "detect-browser": "^5.3.0",
     "miroir-core": "*",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
