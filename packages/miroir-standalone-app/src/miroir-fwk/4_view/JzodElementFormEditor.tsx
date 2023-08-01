@@ -105,7 +105,7 @@ export const JzodElementEditor = (
       );
 
       return (
-        <ListItem disableGutters key={props.name}>
+        // <ListItem disableGutters key={props.name}>
           <span>
             <ReportSectionDisplay
               tableComponentReportType="JSON_ARRAY"
@@ -118,17 +118,55 @@ export const JzodElementEditor = (
               }}
             ></ReportSectionDisplay>
           </span>
-        </ListItem>
+        // </ListItem>
       );
       break;
     }
     case "object": {
       // no break
+      return (
+        <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
+        <Item>JzodElementFormEditor</Item>
+        <Item>formObject: {JSON.stringify(props.innerProps.initialValuesObject)}</Item>
+        <Item>json object form jzod schema: {JSON.stringify(props.innerProps.jzodSchema)}</Item>
+        <Item>
+          <List sx={{ pt: 0 }}>
+            {
+              // Object.entries(props?.jzodSchema.definition).length > 0? 
+              Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+                const currentAttributeDefinition = schemaAttribute[1];
+                return (
+                  <ListItem disableGutters key={schemaAttribute[0]}>
+                    <JzodElementEditor
+                      name={schemaAttribute[0]}
+                      innerProps={{
+                        label:currentAttributeDefinition.extra?.defaultLabel,
+                        initialValuesObject:props.innerProps.initialValuesObject[schemaAttribute[0]],
+                        showButton:true,
+                        currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
+                        currentApplicationSection:props.innerProps.currentApplicationSection,
+                        jzodSchema:currentAttributeDefinition,
+                        onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
+                      }}
+                      register={props.register}
+                      errors={props.errors}
+                      formState={props.formState}
+                      setValue={props.setValue}
+                    />
+                  </ListItem>
+                );
+              })
+            }
+          </List>
+        </Item>
+      </Grid>
+      )
     }
     default:{
       if (jzodSchema.type=="simpleType" && jzodSchema.definition == "string" && jzodSchema.extra?.targetEntity) {
         return (
-          <ListItem disableGutters key={label}>
+          // <ListItem disableGutters key={label}>
+          <>
             {props.name}-{label}:{" "}
             {/* <p>defaultValue:{JSON.stringify({label:props.name,value:props.innerProps.initialValuesObject})}</p> */}
             {/* <p>{JSON.stringify(props.errors[label]?.message?`received error: ${props.errors[label]?.message}`:"no error")}</p> */}
@@ -141,7 +179,8 @@ export const JzodElementEditor = (
               // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
               onChange={(e)=>{console.log("JzodElementEditor onChange!",e);props.setValue(props.name,e?.value);}}
             />
-          </ListItem>
+          </>
+          // </ListItem>
         );
       } else {
         const defaultValue=props.formState.defaultValues?props.formState.defaultValues[props.name]:'no value found!'
@@ -150,7 +189,7 @@ export const JzodElementEditor = (
             {/* <ListItem>
               name: {props.name}, default value:{defaultValue}
             </ListItem> */}
-            <ListItem disableGutters key={label}>
+            {/* <ListItem disableGutters key={label}> */}
               {props.name}-{label}:{" "}
               {/* {errors.name?.message && <p>{JSON.stringify(errors)}</p>} */}
               <p>
@@ -169,7 +208,7 @@ export const JzodElementEditor = (
                 // defaultValue={props.innerProps.initialValuesObject[label]}
                 // onClick={(e)=>{console.log("onClick!");}}
               />
-            </ListItem>
+            {/* </ListItem> */}
           </>
         );
       }

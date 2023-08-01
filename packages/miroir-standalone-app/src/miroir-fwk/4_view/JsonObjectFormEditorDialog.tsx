@@ -1,15 +1,12 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import { Button, Dialog, DialogTitle, List, ListItem, Paper, styled } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
 
-import { JzodArray, JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { JzodObject } from "@miroir-framework/jzod";
 import { ApplicationSection, EntityAttribute, Uuid } from "miroir-core";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
-import { ReportSectionDisplay } from "./ReportSectionDisplay";
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 import { JzodElementEditor } from "./JzodElementFormEditor";
+import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -155,7 +152,10 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             {props.label}
             <Button
               variant="outlined"
-              onClick={(event) => {event?.stopPropagation(); handleAddObjectDialogFormButtonClick(props?.label, props?.initialValuesObject)}}
+              onClick={(event) => {
+                event?.stopPropagation();
+                handleAddObjectDialogFormButtonClick(props?.label, props?.initialValuesObject);
+              }}
             >
               <AddBoxIcon />
             </Button>
@@ -164,9 +164,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           <div></div>
         )}
       </span>
-      {
-        props.currentDeploymentUuid && props.currentApplicationSection
-        ?
+      {props.currentDeploymentUuid && props.currentApplicationSection ? (
         <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
           {/* <DialogTitle>add Entity</DialogTitle> */}
           <DialogTitle>{props.label} add / edit Element</DialogTitle>
@@ -176,53 +174,32 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
             style={{ display: "inline-flex" }}
           >
-            <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
-              <Item>formObject: {JSON.stringify(props.initialValuesObject)}</Item>
-              <Item>
-                <List sx={{ pt: 0 }}>
-                  {/* {
-                    Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                      const currentAttributeDefinition = schemaAttribute[1];
-                      return JzodElementEditor(props, selectList, register, errors, formState, setValue)
-                    }
-                  } */}
-                  {
-                    // Object.entries(props?.jzodSchema.definition).length > 0? 
-                    Object.entries(props?.jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                      const currentAttributeDefinition = schemaAttribute[1];
-                      return (
-                        <>
-                        <JzodElementEditor
-                          name={schemaAttribute[0]}
-                          innerProps={{
-                            label:currentAttributeDefinition.extra?.defaultLabel,
-                            initialValuesObject:props.initialValuesObject[schemaAttribute[0]],
-                            showButton:true,
-                            currentDeploymentUuid:props.currentDeploymentUuid,
-                            currentApplicationSection:props.currentApplicationSection,
-                            jzodSchema:currentAttributeDefinition,
-                            onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
-                          }}
-                          register={register}
-                          errors={errors}
-                          formState={formState}
-                          setValue={setValue}
-                        />
-                        </>
-                      );
-                    })
-                  }
-                </List>
-              </Item>
-            </Grid>
+            <JzodElementEditor
+              name={'ROOT'}
+              innerProps={{
+                label: props.label,
+                initialValuesObject: props.initialValuesObject,
+                showButton: true,
+                currentDeploymentUuid: props.currentDeploymentUuid,
+                currentApplicationSection: props.currentApplicationSection,
+                jzodSchema:props.jzodSchema,
+                onSubmit: (data: any, event: any) => {
+                  console.log("onSubmit called", data, event);
+                },
+              }}
+              register={register}
+              errors={errors}
+              formState={formState}
+              setValue={setValue}
+            />
             {/* errors will return when field validation fails  */}
             {errors.exampleRequired && <span>This field is required</span>}
             <input type="submit" id={props.label} name={props.label} form={"form." + props.label} />
           </form>
         </Dialog>
-        :
+      ) : (
         <span>No form to display!</span>
-      }
+      )}
       {/* <span>
       JsonObjectFormEditorDialog end {props.label}
       </span> */}
