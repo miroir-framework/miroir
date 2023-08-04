@@ -2,7 +2,7 @@
 // import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
 // import { Report } from '../0_interfaces/1_core/Report.js';
 
-import { Report } from "../0_interfaces/1_core/Report";
+import { Report } from "../0_interfaces/1_core/Report.js";
 
 export function getReportSectionTargetEntityUuid(
   reportDefinition:Report, reportSectionIndex: number,

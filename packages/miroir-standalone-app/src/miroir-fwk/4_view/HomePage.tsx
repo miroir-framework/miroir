@@ -34,7 +34,7 @@ import {
   useLocalCacheTransactions,
   useMiroirContextService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { LocalCacheInputSelectorParams, ReduxStateChanges, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateChanges } from "miroir-redux";
 
 
 
@@ -69,12 +69,9 @@ import book4 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fef
 import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
-import { useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
 import { Importer } from './Importer';
-import { JzodElementFormEditor } from "./JzodElementFormEditor";
-import { ReportSectionDisplay } from './ReportSectionDisplay';
 import { useCurrentModel } from "./ReduxHooks";
+import { ReportSectionDisplay } from './ReportSectionDisplay';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -222,7 +219,8 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const libraryAppModel: MiroirMetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  // const libraryAppModel: MiroirMetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const libraryAppModel: MiroirMetaModel = useCurrentModel(displayedDeploymentUuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
@@ -234,11 +232,14 @@ export const HomePage = (props: RootComponentProps) => {
       displayedDeploymentDefinition
   ;
 
-  const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
+  // const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
+  const currentModel = libraryAppModel;
+  console.log("HomePage currentModel",currentModel);
+
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
-  console.log("RootComponent currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
+  console.log("HomePage currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
   const deploymentReports: Report[] = currentModel.reports;
   const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
@@ -254,7 +255,7 @@ export const HomePage = (props: RootComponentProps) => {
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions;
   // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
 
-  console.log("RootComponent deploymentReports",deploymentReports);
+  console.log("HomePage deploymentReports",deploymentReports);
 
   const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
@@ -617,16 +618,17 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      <JzodElementFormEditor
+      {/* <JzodElementFormEditor
         label="simpleElementString"
         initialValuesObject={"tata"}
         showButton={true}
         currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
         currentApplicationSection="data"
-        jzodSchema={{type:"simpleType", definition:"string", extra:{targetEntity:entityAuthor.uuid}}}
+        elementJzodSchema={{type:"simpleType", definition:"string", extra:{targetEntity:entityAuthor.uuid}}}
+        rootJzodSchema={{type:"object", definition:{}}}
         onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
       ></JzodElementFormEditor>
-      <p />
+      <p /> */}
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
@@ -715,7 +717,7 @@ export const HomePage = (props: RootComponentProps) => {
               label={"EntityInstance-"+currentReportTargetEntity?.name}
               styles={
                 {
-                    height: '20vw',
+                    height: '20vh',
                     width: '90vw',
                   }
                 }

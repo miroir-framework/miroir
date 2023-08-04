@@ -155,7 +155,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodElementSchema'
+                    "definition": { relativePath: 'jzodElementSchema' }
                   }
                 }
               },
@@ -181,7 +181,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumTypesSchema'
+                    "definition": { relativePath: 'jzodEnumAttributeTypesSchema' }
                   }
                 }
               },
@@ -213,7 +213,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeStringValidationsSchema'
+                      "definition": { relativePath: 'jzodAttributeStringValidationsSchema' }
                     }
                   }
                 }
@@ -271,47 +271,47 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 definition: [
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodArraySchema'
+                    "definition": { relativePath: 'jzodArraySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema'
+                    "definition": { relativePath: 'jzodAttributeSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeStringWithValidationsSchema'
+                    "definition": { relativePath: 'jzodAttributeStringWithValidationsSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumSchema'
+                    "definition": { relativePath: 'jzodEnumSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    "definition": { relativePath: 'jzodFunctionSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLazySchema'
+                    "definition": { relativePath: 'jzodLazySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLiteralSchema'
+                    "definition": { relativePath: 'jzodLiteralSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodObjectSchema'
+                    "definition": { relativePath: 'jzodObjectSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodRecordSchema'
+                    "definition": { relativePath: 'jzodRecordSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodReferenceSchema'
+                    "definition": { relativePath: 'jzodReferenceSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodUnionSchema'
+                    "definition": { relativePath: 'jzodUnionSchema' }
                   }
                 ]
               },
@@ -319,7 +319,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 type: 'record',
                 definition: {
                   type: 'schemaReference',
-                  relativePath: 'jzodElementSchema'
+                  "definition": { relativePath: 'jzodElementSchema' }
                 }
               },
               jzodEnumSchema: {
@@ -351,7 +351,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   }
                 }
               },
-              jzodEnumTypesSchema: {
+              jzodEnumAttributeTypesSchema: {
                 type: 'enum',
                 definition: [
                   'any',
@@ -372,12 +372,12 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeSchema'
+                      "definition": { relativePath: 'jzodAttributeSchema' }
                     }
                   },
                   returns: {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema',
+                    "definition": { relativePath: 'jzodAttributeSchema' },
                     optional: true
                   }
                 }
@@ -391,7 +391,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    "definition": { relativePath: 'jzodFunctionSchema' }
                   }
                 }
               },
@@ -445,7 +445,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'record',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      "definition": { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -472,7 +472,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodElementSchema'
+                    "definition": { relativePath: 'jzodElementSchema' }
                   }
                 }
               },
@@ -494,7 +494,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   type: {
                     type: 'literal',
-                    definition: 'schemaReference'
+                    "definition": { definition: 'schemaReference' }
                   },
                   definition: {
                     type: 'simpleType',
@@ -537,7 +537,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      "definition": { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -561,7 +561,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
               defaultLabel: 'Jzod Schema',
               jzodSchema: {
                 type: 'schemaReference',
-                definition: 'jzodObjectSchema'
+                "definition": { definition: 'jzodObjectSchema' }
               },
               nullable: false,
               editable: false
@@ -710,7 +710,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   defaultLabel: 'Structure Migration from Previous Version',
                   editable: true
                 },
-                relativePath: 'jzodObjectSchema'
+                "definition": { relativePath: 'jzodObjectSchema' }
               },
               modelCUDMigration: {
                 type: 'schemaReference',
@@ -720,7 +720,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   defaultLabel: 'Create-Update-Delete Migration from Previous Version',
                   editable: true
                 },
-                relativePath: 'jzodObjectSchema'
+                "definition": { relativePath: 'jzodObjectSchema' }
               }
             }
           }
@@ -1253,7 +1253,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   defaultLabel: 'Application Deployment Model',
                   editable: true
                 },
-                relativePath: 'jzodObjectSchema'
+                "definition": { relativePath: 'jzodObjectSchema' }
               },
               data: {
                 type: 'schemaReference',
@@ -1263,7 +1263,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   defaultLabel: 'Application Deployment Data',
                   editable: true
                 },
-                relativePath: 'jzodObjectSchema'
+                "definition": { relativePath: 'jzodObjectSchema' }
               }
             }
           }
@@ -1351,8 +1351,10 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
               },
               jzodSchema: {
                 type: 'schemaReference',
-                absolutePath: '1e8dab4b-65a3-4686-922e-ce89a2d62aa9',
-                relativePath: 'jzodObjectSchema',
+                "definition": { 
+                  absolutePath: '1e8dab4b-65a3-4686-922e-ce89a2d62aa9',
+                  relativePath: 'jzodObjectSchema'
+                },
                 optional: true
               }
             }
@@ -1564,7 +1566,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   defaultLabel: 'The configuration itself',
                   editable: true
                 },
-                relativePath: 'jzodObjectSchema'
+                "definition": { relativePath: 'jzodObjectSchema' }
               }
             }
           }
@@ -1808,7 +1810,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodElementSchema'
+                    "definition": { relativePath: 'jzodElementSchema' }
                   }
                 }
               },
@@ -1834,7 +1836,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumTypesSchema'
+                    "definition": { relativePath: 'jzodEnumAttributeTypesSchema' }
                   }
                 }
               },
@@ -1866,7 +1868,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeStringValidationsSchema'
+                      "definition": { relativePath: 'jzodAttributeStringValidationsSchema' }
                     }
                   }
                 }
@@ -1914,47 +1916,47 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 definition: [
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodArraySchema'
+                    "definition": { relativePath: 'jzodArraySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema'
+                    "definition": { relativePath: 'jzodAttributeSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeStringWithValidationsSchema'
+                    "definition": { relativePath: 'jzodAttributeStringWithValidationsSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumSchema'
+                    "definition": { relativePath: 'jzodEnumSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    "definition": { relativePath: 'jzodFunctionSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLazySchema'
+                    "definition": { relativePath: 'jzodLazySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLiteralSchema'
+                    "definition": { relativePath: 'jzodLiteralSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodObjectSchema'
+                    "definition": { relativePath: 'jzodObjectSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodRecordSchema'
+                    "definition": { relativePath: 'jzodRecordSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodReferenceSchema'
+                    "definition": { relativePath: 'jzodReferenceSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodUnionSchema'
+                    "definition": { relativePath: 'jzodUnionSchema' }
                   }
                 ]
               },
@@ -1962,7 +1964,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 type: 'record',
                 definition: {
                   type: 'schemaReference',
-                  relativePath: 'jzodElementSchema'
+                  "definition": { relativePath: 'jzodElementSchema' }
                 }
               },
               jzodEnumSchema: {
@@ -1994,7 +1996,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   }
                 }
               },
-              jzodEnumTypesSchema: {
+              jzodEnumAttributeTypesSchema: {
                 type: 'enum',
                 definition: [
                   'any',
@@ -2015,12 +2017,12 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeSchema'
+                      "definition": { relativePath: 'jzodAttributeSchema' }
                     }
                   },
                   returns: {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema',
+                    "definition": { relativePath: 'jzodAttributeSchema' }, 
                     optional: true
                   }
                 }
@@ -2034,7 +2036,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    "definition": { relativePath: 'jzodFunctionSchema' }
                   }
                 }
               },
@@ -2088,7 +2090,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'record',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      "definition": { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -2140,8 +2142,11 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     definition: 'schemaReference'
                   },
                   definition: {
-                    type: 'simpleType',
-                    definition: 'string'
+                    type: 'object',
+                    definition: {
+                      "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
+                      "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+                    }
                   }
                 }
               },
@@ -2169,7 +2174,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      definition: { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -2214,7 +2219,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   extra: {
                     type: 'schemaReference',
-                    relativePath: 'jzodBasicExtraSchema'
+                    definition: { relativePath: 'jzodBasicExtraSchema' }
                   },
                   type: {
                     type: 'literal',
@@ -2222,7 +2227,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodElementSchema'
+                    definition: { relativePath: 'jzodElementSchema' }
                   }
                 }
               },
@@ -2281,7 +2286,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumTypesSchema'
+                    definition: { relativePath: 'jzodEnumAttributeTypesSchema' }
                   }
                 }
               },
@@ -2332,7 +2337,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeStringValidationsSchema'
+                      definition: { relativePath: 'jzodAttributeStringValidationsSchema' }
                     }
                   }
                 }
@@ -2390,47 +2395,47 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 definition: [
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodArraySchema'
+                    definition: { relativePath: 'jzodArraySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema'
+                    definition: { relativePath: 'jzodAttributeSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeStringWithValidationsSchema'
+                    definition: { relativePath: 'jzodAttributeStringWithValidationsSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodEnumSchema'
+                    definition: { relativePath: 'jzodEnumSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    definition: { relativePath: 'jzodFunctionSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLazySchema'
+                    definition: { relativePath: 'jzodLazySchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodLiteralSchema'
+                    definition: { relativePath: 'jzodLiteralSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodObjectSchema'
+                    definition: { relativePath: 'jzodObjectSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodRecordSchema'
+                    definition: { relativePath: 'jzodRecordSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodReferenceSchema'
+                    definition: { relativePath: 'jzodReferenceSchema' }
                   },
                   {
                     type: 'schemaReference',
-                    relativePath: 'jzodUnionSchema'
+                    definition: { relativePath: 'jzodUnionSchema' }
                   }
                 ]
               },
@@ -2438,7 +2443,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                 type: 'record',
                 definition: {
                   type: 'schemaReference',
-                  relativePath: 'jzodElementSchema'
+                  definition: { relativePath: 'jzodElementSchema' }
                 }
               },
               jzodEnumSchema: {
@@ -2480,7 +2485,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   }
                 }
               },
-              jzodEnumTypesSchema: {
+              jzodEnumAttributeTypesSchema: {
                 type: 'enum',
                 definition: [
                   'any',
@@ -2501,12 +2506,12 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodAttributeSchema'
+                      definition: { relativePath: 'jzodAttributeSchema' }
                     }
                   },
                   returns: {
                     type: 'schemaReference',
-                    relativePath: 'jzodAttributeSchema',
+                    definition: { relativePath: 'jzodAttributeSchema' },
                     optional: true
                   }
                 }
@@ -2520,7 +2525,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodFunctionSchema'
+                    definition: { relativePath: 'jzodFunctionSchema' }
                   }
                 }
               },
@@ -2594,7 +2599,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'record',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      definition: { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -2631,7 +2636,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   definition: {
                     type: 'schemaReference',
-                    relativePath: 'jzodElementSchema'
+                    definition: { relativePath: 'jzodElementSchema' }
                   }
                 }
               },
@@ -2663,7 +2668,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                   },
                   type: {
                     type: 'literal',
-                    definition: 'schemaReference'
+                    definition: { definition: 'schemaReference' }
                   },
                   definition: {
                     type: 'simpleType',
@@ -2716,7 +2721,7 @@ const exampleSliceState:LocalCacheDeploymentSectionEntitySliceState = {
                     type: 'array',
                     definition: {
                       type: 'schemaReference',
-                      relativePath: 'jzodElementSchema'
+                      definition: { relativePath: 'jzodElementSchema' }
                     }
                   }
                 }
@@ -3510,7 +3515,7 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "simpleType" },
-                  definition: { type: "schemaReference", relativePath: "jzodEnumTypesSchema" },
+                  definition: { type: "schemaReference", relativePath: "jzodEnumAttributeTypesSchema" },
                 },
               },
               jzodAttributeStringWithValidationsSchema: {
@@ -3565,22 +3570,22 @@ const domainStateForSliceState = {
               jzodElementSchema: {
                 type: "union",
                 definition: [
-                  { type: "schemaReference", relativePath: "jzodArraySchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeSchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeStringWithValidationsSchema" },
-                  { type: "schemaReference", relativePath: "jzodEnumSchema" },
-                  { type: "schemaReference", relativePath: "jzodFunctionSchema" },
-                  { type: "schemaReference", relativePath: "jzodLazySchema" },
-                  { type: "schemaReference", relativePath: "jzodLiteralSchema" },
-                  { type: "schemaReference", relativePath: "jzodObjectSchema" },
-                  { type: "schemaReference", relativePath: "jzodRecordSchema" },
-                  { type: "schemaReference", relativePath: "jzodReferenceSchema" },
-                  { type: "schemaReference", relativePath: "jzodUnionSchema" },
+                  { type: "schemaReference", definition: { relativePath: "jzodArraySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeStringWithValidationsSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodEnumSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLazySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLiteralSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodObjectSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodRecordSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodReferenceSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodUnionSchema" } },
                 ],
               },
               jzodElementSetSchema: {
                 type: "record",
-                definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
               },
               jzodEnumSchema: {
                 type: "object",
@@ -3591,20 +3596,20 @@ const domainStateForSliceState = {
                   definition: { type: "array", definition: { type: "simpleType", definition: "string" } },
                 },
               },
-              jzodEnumTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
+              jzodEnumAttributeTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
               jzodFunctionSchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "function" },
-                  args: { type: "array", definition: { type: "schemaReference", relativePath: "jzodAttributeSchema" } },
-                  returns: { type: "schemaReference", relativePath: "jzodAttributeSchema", optional: true },
+                  args: { type: "array", definition: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } } },
+                  returns: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" }, optional: true },
                 },
               },
               jzodLazySchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "lazy" },
-                  definition: { type: "schemaReference", relativePath: "jzodFunctionSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
                 },
               },
               jzodLiteralSchema: {
@@ -3624,7 +3629,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "object" },
                   definition: {
                     type: "record",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },
@@ -3634,7 +3639,7 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "record" },
-                  definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                 },
               },
               jzodReferenceSchema: {
@@ -3643,9 +3648,13 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "schemaReference" },
-                  definition: { type: "simpleType", definition: "string", optional: true },
-                  relativePath: { type: "simpleType", definition: "string", optional: true },
-                  absolutePath: { type: "simpleType", definition: "string", optional: true },
+                  definition: { 
+                    type: "object", 
+                    definition: {
+                      relativePath: { type: "simpleType", definition: "string", optional: true },
+                      absolutePath: { type: "simpleType", definition: "string", optional: true },
+                    }
+                  },
                 },
               },
               jzodUnionSchema: {
@@ -3656,7 +3665,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "union" },
                   definition: {
                     type: "array",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },
@@ -3773,13 +3782,13 @@ const domainStateForSliceState = {
                 type: "schemaReference",
                 optional: true,
                 extra: { id: 11, defaultLabel: "Structure Migration from Previous Version", editable: true },
-                relativePath: "jzodObjectSchema",
+                definition: { relativePath: "jzodObjectSchema" },
               },
               modelCUDMigration: {
                 type: "schemaReference",
                 optional: true,
                 extra: { id: 12, defaultLabel: "Create-Update-Delete Migration from Previous Version", editable: true },
-                relativePath: "jzodObjectSchema",
+                definition: { relativePath: "jzodObjectSchema" },
               },
             },
           },
@@ -4108,13 +4117,13 @@ const domainStateForSliceState = {
                 type: "schemaReference",
                 optional: true,
                 extra: { id: 8, defaultLabel: "Application Deployment Model", editable: true },
-                relativePath: "jzodObjectSchema",
+                definition: { relativePath: "jzodObjectSchema" },
               },
               data: {
                 type: "schemaReference",
                 optional: true,
                 extra: { id: 9, defaultLabel: "Application Deployment Data", editable: true },
-                relativePath: "jzodObjectSchema",
+                definition: { relativePath: "jzodObjectSchema" },
               },
             },
           },
@@ -4166,8 +4175,10 @@ const domainStateForSliceState = {
               },
               jzodSchema: {
                 type: "schemaReference",
-                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                relativePath: "jzodObjectSchema",
+                definition: { 
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "jzodObjectSchema"
+                },
                 optional: true,
               },
             },
@@ -4307,7 +4318,7 @@ const domainStateForSliceState = {
                 type: "schemaReference",
                 optional: true,
                 extra: { id: 8, defaultLabel: "The configuration itself", editable: true },
-                relativePath: "jzodObjectSchema",
+                definition: { relativePath: "jzodObjectSchema" },
               },
             },
           },
@@ -4487,7 +4498,7 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "array" },
-                  definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                 },
               },
               jzodAttributeSchema: {
@@ -4496,7 +4507,7 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "simpleType" },
-                  definition: { type: "schemaReference", relativePath: "jzodEnumTypesSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodEnumAttributeTypesSchema" } },
                 },
               },
               jzodAttributeStringWithValidationsSchema: {
@@ -4508,7 +4519,7 @@ const domainStateForSliceState = {
                   definition: { type: "literal", definition: "string" },
                   validations: {
                     type: "array",
-                    definition: { type: "schemaReference", relativePath: "jzodAttributeStringValidationsSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodAttributeStringValidationsSchema" } },
                   },
                 },
               },
@@ -4543,22 +4554,22 @@ const domainStateForSliceState = {
               jzodElementSchema: {
                 type: "union",
                 definition: [
-                  { type: "schemaReference", relativePath: "jzodArraySchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeSchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeStringWithValidationsSchema" },
-                  { type: "schemaReference", relativePath: "jzodEnumSchema" },
-                  { type: "schemaReference", relativePath: "jzodFunctionSchema" },
-                  { type: "schemaReference", relativePath: "jzodLazySchema" },
-                  { type: "schemaReference", relativePath: "jzodLiteralSchema" },
-                  { type: "schemaReference", relativePath: "jzodObjectSchema" },
-                  { type: "schemaReference", relativePath: "jzodRecordSchema" },
-                  { type: "schemaReference", relativePath: "jzodReferenceSchema" },
-                  { type: "schemaReference", relativePath: "jzodUnionSchema" },
+                  { type: "schemaReference", definition: { relativePath: "jzodArraySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeStringWithValidationsSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodEnumSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLazySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLiteralSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodObjectSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodRecordSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodReferenceSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodUnionSchema" } },
                 ],
               },
               jzodElementSetSchema: {
                 type: "record",
-                definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
               },
               jzodEnumSchema: {
                 type: "object",
@@ -4569,20 +4580,20 @@ const domainStateForSliceState = {
                   definition: { type: "array", definition: { type: "simpleType", definition: "string" } },
                 },
               },
-              jzodEnumTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
+              jzodEnumAttributeTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
               jzodFunctionSchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "function" },
-                  args: { type: "array", definition: { type: "schemaReference", relativePath: "jzodAttributeSchema" } },
-                  returns: { type: "schemaReference", relativePath: "jzodAttributeSchema", optional: true },
+                  args: { type: "array", definition: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } } },
+                  returns: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" }, optional: true },
                 },
               },
               jzodLazySchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "lazy" },
-                  definition: { type: "schemaReference", relativePath: "jzodFunctionSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
                 },
               },
               jzodLiteralSchema: {
@@ -4602,7 +4613,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "object" },
                   definition: {
                     type: "record",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },
@@ -4612,7 +4623,7 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "record" },
-                  definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                 },
               },
               jzodReferenceSchema: {
@@ -4621,7 +4632,13 @@ const domainStateForSliceState = {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
                   extra: { type: "record", definition: { type: "simpleType", definition: "any" }, optional: true },
                   type: { type: "literal", definition: "schemaReference" },
-                  definition: { type: "simpleType", definition: "string" },
+                  definition: {
+                    type: "object", 
+                    definition: {
+                      "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
+                      "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+                    }
+                  },
                 },
               },
               jzodUnionSchema: {
@@ -4632,7 +4649,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "union" },
                   definition: {
                     type: "array",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },
@@ -4661,9 +4678,9 @@ const domainStateForSliceState = {
                 type: "object",
                 definition: {
                   optional: { type: "simpleType", definition: "boolean", optional: true },
-                  extra: { type: "schemaReference", relativePath: "jzodBasicExtraSchema" },
+                  extra: { type: "schemaReference", definition: { relativePath: "jzodBasicExtraSchema" } },
                   type: { type: "literal", definition: "array" },
-                  definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                 },
               },
               jzodAttributeSchema: {
@@ -4688,7 +4705,7 @@ const domainStateForSliceState = {
                     },
                   },
                   type: { type: "literal", definition: "simpleType" },
-                  definition: { type: "schemaReference", relativePath: "jzodEnumTypesSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodEnumAttributeTypesSchema" } },
                 },
               },
               jzodAttributeStringWithValidationsSchema: {
@@ -4709,7 +4726,7 @@ const domainStateForSliceState = {
                   definition: { type: "literal", definition: "string" },
                   validations: {
                     type: "array",
-                    definition: { type: "schemaReference", relativePath: "jzodAttributeStringValidationsSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodAttributeStringValidationsSchema" } },
                   },
                 },
               },
@@ -4752,22 +4769,22 @@ const domainStateForSliceState = {
               jzodElementSchema: {
                 type: "union",
                 definition: [
-                  { type: "schemaReference", relativePath: "jzodArraySchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeSchema" },
-                  { type: "schemaReference", relativePath: "jzodAttributeStringWithValidationsSchema" },
-                  { type: "schemaReference", relativePath: "jzodEnumSchema" },
-                  { type: "schemaReference", relativePath: "jzodFunctionSchema" },
-                  { type: "schemaReference", relativePath: "jzodLazySchema" },
-                  { type: "schemaReference", relativePath: "jzodLiteralSchema" },
-                  { type: "schemaReference", relativePath: "jzodObjectSchema" },
-                  { type: "schemaReference", relativePath: "jzodRecordSchema" },
-                  { type: "schemaReference", relativePath: "jzodReferenceSchema" },
-                  { type: "schemaReference", relativePath: "jzodUnionSchema" },
+                  { type: "schemaReference", definition: { relativePath: "jzodArraySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodAttributeStringWithValidationsSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodEnumSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLazySchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodLiteralSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodObjectSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodRecordSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodReferenceSchema" } },
+                  { type: "schemaReference", definition: { relativePath: "jzodUnionSchema" } },
                 ],
               },
               jzodElementSetSchema: {
                 type: "record",
-                definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
               },
               jzodEnumSchema: {
                 type: "object",
@@ -4786,20 +4803,20 @@ const domainStateForSliceState = {
                   definition: { type: "array", definition: { type: "simpleType", definition: "string" } },
                 },
               },
-              jzodEnumTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
+              jzodEnumAttributeTypesSchema: { type: "enum", definition: ["any", "boolean", "number", "string", "uuid"] },
               jzodFunctionSchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "function" },
-                  args: { type: "array", definition: { type: "schemaReference", relativePath: "jzodAttributeSchema" } },
-                  returns: { type: "schemaReference", relativePath: "jzodAttributeSchema", optional: true },
+                  args: { type: "array", definition: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" } } },
+                  returns: { type: "schemaReference", definition: { relativePath: "jzodAttributeSchema" }, optional: true },
                 },
               },
               jzodLazySchema: {
                 type: "object",
                 definition: {
                   type: { type: "literal", definition: "lazy" },
-                  definition: { type: "schemaReference", relativePath: "jzodFunctionSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodFunctionSchema" } },
                 },
               },
               jzodLiteralSchema: {
@@ -4835,7 +4852,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "object" },
                   definition: {
                     type: "record",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },
@@ -4853,7 +4870,7 @@ const domainStateForSliceState = {
                     },
                   },
                   type: { type: "literal", definition: "record" },
-                  definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                  definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                 },
               },
               jzodReferenceSchema: {
@@ -4870,9 +4887,11 @@ const domainStateForSliceState = {
                     },
                   },
                   type: { type: "literal", definition: "schemaReference" },
-                  definition: { type: "simpleType", definition: "string", optional: true },
-                  relativePath: { type: "simpleType", definition: "string", optional: true },
-                  absolutePath: { type: "simpleType", definition: "string", optional: true },
+                  definition: { type: "object", definition: {
+                    relativePath: { type: "simpleType", definition: "string", optional: true },
+                    absolutePath: { type: "simpleType", definition: "string", optional: true },
+                  }
+                  , optional: true },
                 },
               },
               jzodUnionSchema: {
@@ -4891,7 +4910,7 @@ const domainStateForSliceState = {
                   type: { type: "literal", definition: "union" },
                   definition: {
                     type: "array",
-                    definition: { type: "schemaReference", relativePath: "jzodElementSchema" },
+                    definition: { type: "schemaReference", definition: { relativePath: "jzodElementSchema" } },
                   },
                 },
               },

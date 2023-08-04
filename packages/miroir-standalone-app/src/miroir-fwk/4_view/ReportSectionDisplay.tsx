@@ -101,7 +101,7 @@ export function defaultFormValues(
     return currentEditorAttributes;
   }
   if (tableComponentType == "JSON_ARRAY") {
-    const newId = idList? idList?.reduce((acc:number,curr:{id:number}) => Math.max(curr.id,acc),0) + 1 : 1;
+    const newId = idList? idList?.reduce((acc:number,curr:{id:number}) => Math.max(curr?.id,acc),0) + 1 : 1;
     const attributeDefaultValue:any = {
       'uuid': uuidv4(),
       'id': newId,

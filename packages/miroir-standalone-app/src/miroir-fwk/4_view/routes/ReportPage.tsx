@@ -104,7 +104,7 @@ export const ReportPage = (props: ReportPageProps) => {
     currentModel.entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   const styles = useMemo(()=>({
-    height: "20vw",
+    height: "80vh",
     width: "90vw",
   }),[])
 

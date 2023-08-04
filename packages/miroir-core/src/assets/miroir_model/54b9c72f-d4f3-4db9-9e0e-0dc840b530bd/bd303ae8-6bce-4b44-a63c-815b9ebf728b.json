@@ -53,13 +53,13 @@
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":8, "defaultLabel": "Application Deployment Model", "editable": true },
-        "relativePath": "jzodObjectSchema"
+        "definition": { "relativePath": "jzodObjectSchema" }
       },
       "data": {
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":9, "defaultLabel": "Application Deployment Data", "editable": true },
-        "relativePath": "jzodObjectSchema"
+        "definition": { "relativePath": "jzodObjectSchema" }
       }
     }
   }

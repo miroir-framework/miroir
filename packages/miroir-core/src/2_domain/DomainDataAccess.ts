@@ -1,16 +1,35 @@
 import { JzodAttribute } from "@miroir-framework/jzod";
-import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/Instance";
-import { Report, ReportSectionListDefinition } from "../0_interfaces/1_core/Report";
-import { EntitiesDomainStateInstanceSelector, EntitiesDomainStateEntityInstanceArraySelector, EntitiesDomainState, DomainState, DomainStateMetaModelSelector } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
-import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration";
 
-import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
-import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
-import { defaultMiroirMetaModel } from "../1_core/Model";
-import { EntityDefinition, MetaEntity, MiroirApplicationVersion, StoreBasedConfiguration, Uuid, entityApplicationVersion, entityEntity, entityStoreBasedConfiguration } from "..";
+import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
+import { Report, ReportSectionListDefinition } from "../0_interfaces/1_core/Report.js";
+import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
+import {
+  DomainState,
+  DomainStateMetaModelSelector,
+  EntitiesDomainState,
+  EntitiesDomainStateEntityInstanceArraySelector,
+  EntitiesDomainStateInstanceSelector,
+} from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
+
+import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
+import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
+import { StoreBasedConfiguration } from "../0_interfaces/1_core/MiroirConfig.js";
+
+import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import entityReport from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json";
+import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
+import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
+import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
+import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
+
+
+
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -90,6 +109,13 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid]["model"] &&
           domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]
           ? Object.values(domainState[deploymentUuid]["model"][entityEntityDefinition.uuid]) as EntityDefinition[]
+          : []
+        ),
+        jzodSchemas: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid]["model"] &&
+          domainState[deploymentUuid]["model"][entityJzodSchema.uuid]
+          ? Object.values(domainState[deploymentUuid]["model"][entityJzodSchema.uuid]) as JzodSchemaDefinition[]
           : []
         ),
         reports: (

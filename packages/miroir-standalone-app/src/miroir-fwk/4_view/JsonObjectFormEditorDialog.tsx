@@ -1,12 +1,14 @@
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 
 import { JzodObject } from "@miroir-framework/jzod";
-import { ApplicationSection, EntityAttribute, Uuid } from "miroir-core";
-import { useState } from "react";
+import { ApplicationSection, EntityAttribute, Uuid, applicationDeploymentMiroir } from "miroir-core";
+import { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { JzodElementEditor } from "./JzodElementFormEditor";
+import { JzodElementEditor, resolveJzodSchemaReference } from "./JzodElementFormEditor";
 import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
+import { useCurrentModel } from "./ReduxHooks";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -17,6 +19,7 @@ export interface EditorAttribute {
 
 export interface JsonObjectFormEditorCoreDialogProps {
   label: string;
+  // name: string;
   isAttributes?: boolean;
   jzodSchema: JzodObject;
   initialValuesObject: any;
@@ -56,6 +59,21 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
+
+  const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+
+  const currentEnumJzodSchemaResolver:{[k:string]:JzodObject} = useMemo(()=>({
+    "array": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodArraySchema"} },props.jzodSchema,currentMiroirModel),
+    "simpleType": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodAttributeSchema"} },props.jzodSchema,currentMiroirModel),
+    "enum": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodEnumSchema"}},props.jzodSchema,currentMiroirModel),
+    "union": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodUnionSchema"}},props.jzodSchema,currentMiroirModel),
+    "record": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodRecordSchema"}},props.jzodSchema,currentMiroirModel),
+    "object": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodObjectSchema"}},props.jzodSchema,currentMiroirModel),
+    "function": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodFunctionSchema"}},props.jzodSchema,currentMiroirModel),
+    "lazy": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLazySchema"}},props.jzodSchema,currentMiroirModel),
+    "literal": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLiteralSchema"}},props.jzodSchema,currentMiroirModel),
+    "schemaReference": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodReferenceSchema"}},props.jzodSchema,currentMiroirModel),
+  }),[currentMiroirModel])
 
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } =
     useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
@@ -144,6 +162,12 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     reset(props.initialValuesObject);
   }
 
+  const dialogStyle = useMemo(()=>({
+    height: "90vh",
+    width: "200vw",
+    display: "flex",
+  }),[])
+
   return (
     <div className="JsonObjectFormEditorDialog">
       <span>
@@ -165,24 +189,32 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         )}
       </span>
       {props.currentDeploymentUuid && props.currentApplicationSection ? (
-        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen}>
+        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
           {/* <DialogTitle>add Entity</DialogTitle> */}
           <DialogTitle>{props.label} add / edit Element</DialogTitle>
           {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
           <form
             id={"form." + props.label}
             onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-            style={{ display: "inline-flex" }}
+            // style={{ display: "inline-flex" }}()
           >
+            {/* <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
+            {/* <Item>formObject: {JSON.stringify(props.innerProps.initialValuesObject)}</Item> */}
+            {/* <Item>json object form jzod schema: {JSON.stringify(props.innerProps.jzodSchema)}</Item> */}
+            {/* <Item key={'ROOT_NOT_USED'}> } */}
+
             <JzodElementEditor
               name={'ROOT'}
+              listKey={'ROOT'}
+              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
               innerProps={{
                 label: props.label,
                 initialValuesObject: props.initialValuesObject,
                 showButton: true,
                 currentDeploymentUuid: props.currentDeploymentUuid,
                 currentApplicationSection: props.currentApplicationSection,
-                jzodSchema:props.jzodSchema,
+                elementJzodSchema:props.jzodSchema,
+                rootJzodSchema:props.jzodSchema,
                 onSubmit: (data: any, event: any) => {
                   console.log("onSubmit called", data, event);
                 },
@@ -195,6 +227,8 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             {/* errors will return when field validation fails  */}
             {errors.exampleRequired && <span>This field is required</span>}
             <input type="submit" id={props.label} name={props.label} form={"form." + props.label} />
+            {/* </Item>
+            </Grid> */}
           </form>
         </Dialog>
       ) : (

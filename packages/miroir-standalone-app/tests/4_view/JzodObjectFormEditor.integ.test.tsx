@@ -45,7 +45,7 @@ import {
   miroirIntegrationTestEnvironmentFactory,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { JzodElementFormEditor, JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementFormEditor";
+import { JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementFormEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -54,6 +54,7 @@ import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
 import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+import { JzodObject } from "@miroir-framework/jzod";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
@@ -105,7 +106,7 @@ function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
 
   return (
     <div>
-    <JzodElementFormEditor
+    {/* <JzodElementFormEditor
       label={props.label}
       initialValuesObject={props.initialValuesObject}
       currentDeploymentUuid={props.currentDeploymentUuid}
@@ -114,7 +115,7 @@ function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
       jzodSchema={props.jzodSchema}
       // getData={props.getData}
       onSubmit={(data:any,event:any,error:any)=>{console.log("JzodObjectFormEditorWrapper onSubmit!");setResult(data); return props.onSubmit(data,event,error)}}
-    ></JzodElementFormEditor>
+    ></JzodElementFormEditor> */}
     {
       result?<div>received result: {JSON.stringify(result)}</div>:<div>no result yet</div>
     }
@@ -144,7 +145,8 @@ describe(
               showButton={true}
               currentDeploymentUuid={undefined}
               currentApplicationSection="data"
-              jzodSchema={{type:"simpleType", definition:"string"}}
+              elementJzodSchema={{type:"simpleType", definition:"string"}}
+              rootJzodSchema={{} as JzodObject}
               //  getData={()=>undefined}
               onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
             ></JzodObjectFormEditorWrapper>,
@@ -195,7 +197,8 @@ describe(
               showButton={true}
               currentDeploymentUuid={undefined}
               currentApplicationSection="data"
-              jzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
+              elementJzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
+              rootJzodSchema={{} as JzodObject}
               // getData={()=>undefined}
               // jzodSchema={{type:"simpleType", definition:"string"}}
               onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
@@ -263,7 +266,8 @@ describe(
               showButton={true}
               currentDeploymentUuid={applicationDeploymentLibrary.uuid}
               currentApplicationSection="data"
-              jzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
+              elementJzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
+              rootJzodSchema={{} as JzodObject}
               // jzodSchema={{type:"simpleType", definition:"string"}}
               onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
             ></JzodObjectFormEditorWrapper>,

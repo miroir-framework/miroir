@@ -22,6 +22,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
+  JzodSchemaDefinition,
   MetaEntity,
   MiroirApplicationVersion,
   MiroirMetaModel,
@@ -34,6 +35,7 @@ import {
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
+  entityJzodSchema,
   entityReport,
   entityStoreBasedConfiguration
 } from "miroir-core";
@@ -225,6 +227,17 @@ const selectEntityDefinitions = (domainState: ReduxStateWithUndoRedo,  params:Lo
   return result;
 }
 // ################################################################################################
+const selectJzodSchemas = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
+  const result = selectEntityInstanceUuidIndexFromLocalCache(domainState, {
+    deploymentUuid: params.deploymentUuid,
+    applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
+    entityUuid: entityJzodSchema.uuid,
+  });
+  console.log('selectJzodSchemas',result);
+  
+  return result;
+}
+// ################################################################################################
 const selectReports = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheInputSelectorParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(domainState, {
     deploymentUuid: params.deploymentUuid,
@@ -262,28 +275,31 @@ const selectApplicationVersions = (domainState: ReduxStateWithUndoRedo,  params:
 //#########################################################################################
 export const selectModelForDeployment = ()=>createSelector(
   [
+    selectApplicationVersions,
+    selectConfigurations,
     selectEntities,
     selectEntityDefinitions,
+    selectJzodSchemas,
     selectReports,
-    selectConfigurations,
-    selectApplicationVersions,
     selectSelectorParams,
   ],
   (
+    applicationVersions: EntityInstancesUuidIndex,
+    configurations: EntityInstancesUuidIndex,
     entities: EntityInstancesUuidIndex,
     entityDefinitions: EntityInstancesUuidIndex,
+    jzodSchemas: EntityInstancesUuidIndex,
     reports: EntityInstancesUuidIndex,
-    configurations: EntityInstancesUuidIndex,
-    applicationVersions: EntityInstancesUuidIndex,
     params: LocalCacheInputSelectorParams
   ) => {
     const result = {
-      entities:(entities?Object.values(entities):[]) as MetaEntity[],
-      entityDefinitions:(entityDefinitions?Object.values(entityDefinitions):[]) as EntityDefinition[],
-      reports:(reports?Object.values(reports):[]) as Report[],
       applicationVersions:(applicationVersions?Object.values(applicationVersions):[]) as MiroirApplicationVersion[],
       applicationVersionCrossEntityDefinition: [],
       configuration:(configurations?Object.values(configurations):[]) as StoreBasedConfiguration[],
+      entities:(entities?Object.values(entities):[]) as MetaEntity[],
+      entityDefinitions:(entityDefinitions?Object.values(entityDefinitions):[]) as EntityDefinition[],
+      jzodSchemas:(jzodSchemas?Object.values(jzodSchemas):[]) as JzodSchemaDefinition[],
+      reports:(reports?Object.values(reports):[]) as Report[],
     } as MiroirMetaModel;
     console.log("selectModelForDeployment",params,result);
     

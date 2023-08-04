@@ -24,30 +24,33 @@
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id": 1, "defaultLabel": "Entity Uuid", "editable": false }
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id": 1, "defaultLabel": "Name", "editable": false }
+        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 1, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 1, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
       },
       "jzodSchema": {
         "type": "schemaReference",
-        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-        "relativePath": "jzodObjectSchema",
-        "optional": true
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObjectSchema"
+        },
+        "optional": true,
+        "extra": { "id": 7, "defaultLabel": "Jzod Schema", "editable": true }
       }
     }
   }

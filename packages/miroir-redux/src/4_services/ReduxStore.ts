@@ -17,8 +17,10 @@ import {
   EntityDefinition,
   entityEntity,
   entityEntityDefinition,
+  entityJzodSchema,
   entityReport,
   entityStoreBasedConfiguration,
+  JzodSchemaDefinition,
   LocalCacheInfo,
   LocalCacheInterface,
   MetaEntity,
@@ -159,23 +161,25 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
       if (deploymentUuid == applicationDeploymentMiroir.uuid) {
 
         return {
-          entities: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
-          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
-          reports: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityReport.uuid)].entities) as Report[],
-          configuration: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
           applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
+          configuration: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
+          entities: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
+          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
+          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityJzodSchema.uuid)].entities) as JzodSchemaDefinition[],
+          reports: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityReport.uuid)].entities) as Report[],
         };
       } else {
         // console.log('currentModel reports',reports,getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid));
         
         return {
-          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
-          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
-          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)].entities) as Report[],
-          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
           applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
+          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
+          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
+          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
+          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityJzodSchema.uuid)].entities) as JzodSchemaDefinition[],
+          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)].entities) as Report[],
         };
       }
     }

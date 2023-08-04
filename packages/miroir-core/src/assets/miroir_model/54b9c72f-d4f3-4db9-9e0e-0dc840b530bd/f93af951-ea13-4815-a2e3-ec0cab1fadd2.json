@@ -41,7 +41,7 @@
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":8, "defaultLabel": "The configuration itself", "editable": true },
-        "relativePath": "jzodObjectSchema"
+        "definition": { "relativePath": "jzodObjectSchema" }
       }
     }
   }

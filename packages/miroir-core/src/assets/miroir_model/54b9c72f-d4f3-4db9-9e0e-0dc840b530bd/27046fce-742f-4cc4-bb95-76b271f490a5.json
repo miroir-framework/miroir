@@ -71,13 +71,13 @@
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":11, "defaultLabel": "Structure Migration from Previous Version", "editable": true },
-        "relativePath": "jzodObjectSchema"
+        "definition": { "relativePath": "jzodObjectSchema" }
       },
       "modelCUDMigration": {
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":12, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true },
-        "relativePath": "jzodObjectSchema"
+        "definition": { "relativePath": "jzodObjectSchema" }
       }
     }
   }

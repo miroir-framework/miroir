@@ -3,9 +3,8 @@ import { ZodTypeAny, z } from "zod";
 import _ from "lodash";
 const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
-import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "./Instance.js";
+import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 import { JzodObject, JzodToZodResult, jzodBootstrapSetSchema, jzodObjectSchema, jzodSchemaSetToZodSchemaSet } from "@miroir-framework/jzod";
-import { entityDefinitionEntityDefinitionAttributeNewSchema } from "./writtenByHandSchema.js";
 
 
 // ##########################################################################################
@@ -97,6 +96,7 @@ export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   entityUuid: UuidSchema,
   description: z.string().optional(),
+  defaultLabel: z.string().optional(),
   jzodSchema: jzodObjectSchema,
   // jzodSchema: z.any().optional(),
   // attributes: z.array(EntityAttributeSchema).optional(),

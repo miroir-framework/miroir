@@ -1,4 +1,4 @@
-import { createTheme, StyledEngineProvider } from "@mui/material";
+import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { createRoot, Root } from "react-dom/client";
 import {
   createBrowserRouter,
@@ -125,7 +125,7 @@ async function start(root:Root) {
 
     root.render(
       <StrictMode>
-          {/* <ThemeProvider theme={theme}> */}
+          <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <Provider store={mReduxStore.getInnerStore()}>
             <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
@@ -134,7 +134,7 @@ async function start(root:Root) {
             </MiroirContextReactProvider>
           </Provider>
         </StyledEngineProvider>
-          {/* </ThemeProvider> */}
+          </ThemeProvider>
       </StrictMode>
     );
   } else {
