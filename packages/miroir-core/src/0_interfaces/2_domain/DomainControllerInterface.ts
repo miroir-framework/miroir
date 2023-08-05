@@ -233,9 +233,13 @@ export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof Dom
 
 
 // ###################################################################################
-export interface EntityInstancesUuidIndex {
-  [uuid: string]: EntityInstance;
-}
+export const entityInstancesUuidIndexSchema = z.record(EntityInstanceSchema)
+
+
+export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSchema>;
+// export interface EntityInstancesUuidIndex {
+//   [uuid: string]: EntityInstance;
+// }
 
 // ###################################################################################
 export interface EntitiesDomainState {

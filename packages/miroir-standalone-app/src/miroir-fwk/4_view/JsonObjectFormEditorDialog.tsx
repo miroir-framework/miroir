@@ -1,12 +1,14 @@
+import _ from "lodash";
+
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { JzodObject } from "@miroir-framework/jzod";
 import { ApplicationSection, EntityAttribute, Uuid, applicationDeploymentMiroir } from "miroir-core";
-import { useMemo, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { JzodElementEditor, resolveJzodSchemaReference } from "./JzodElementFormEditor";
+import { useCallback, useMemo, useState } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { JzodElementEditor, resolveJzodSchemaReference } from "./JzodElementEditor";
 import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
 import { useCurrentModel } from "./ReduxHooks";
 
@@ -75,8 +77,9 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     "schemaReference": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodReferenceSchema"}},props.jzodSchema,currentMiroirModel),
   }),[currentMiroirModel])
 
-  const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } =
-    useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
+  const formMethods = useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
+  const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
+
   const { errors } = formState;
   console.log(
     logHeader,
@@ -96,7 +99,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const formIsOpen = addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
-  const handleAddObjectDialogFormButtonClick = (label: string, a: any) => {
+  const handleAddObjectDialogFormButtonClick = useCallback((label: string, a: any) => {
     console.log(
       logHeader,
       "handleAddObjectDialogFormOpen",
@@ -110,20 +113,18 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     setAddObjectdialogFormIsOpen(true);
     reset(props.initialValuesObject);
     setdialogOuterFormObject(a);
-  };
+  },[props]);
 
-  const handleAddObjectDialogFormClose = (value: string) => {
+  const handleAddObjectDialogFormClose = useCallback((value: string) => {
     console.log(logHeader, "handleAddObjectDialogFormClose", value);
 
     setAddObjectdialogFormIsOpen(false);
     if (!props.showButton) {
       props.onClose();
     }
-  };
+  },[props]);
 
-  const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = async (data, event) => {
-    event?.stopPropagation();
-    const result = props.onSubmit(data, event);
+  const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data, event) => {
     const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
     console.log(
       logHeader,
@@ -134,6 +135,11 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       "passed value",
       data
     );
+    // event?.stopPropagation();
+    // let newVersion = {...data,...data['ROOT']};
+    const newVersion = _.merge(data,data["ROOT"]);
+    delete newVersion["ROOT"];
+    const result = props.onSubmit(newVersion, event);
 
     if (buttonType == props.label) {
       handleAddObjectDialogFormClose("");
@@ -147,7 +153,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       );
     }
     return result;
-  };
+  },[props]);
 
   // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
   //   props.currentDeploymentUuid,
@@ -189,48 +195,55 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         )}
       </span>
       {props.currentDeploymentUuid && props.currentApplicationSection ? (
-        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-          {/* <DialogTitle>add Entity</DialogTitle> */}
-          <DialogTitle>{props.label} add / edit Element</DialogTitle>
-          {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
-          <form
-            id={"form." + props.label}
-            onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-            // style={{ display: "inline-flex" }}()
-          >
-            {/* <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
-            {/* <Item>formObject: {JSON.stringify(props.innerProps.initialValuesObject)}</Item> */}
-            {/* <Item>json object form jzod schema: {JSON.stringify(props.innerProps.jzodSchema)}</Item> */}
-            {/* <Item key={'ROOT_NOT_USED'}> } */}
+        <FormProvider {...formMethods}>
+          <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
+            {/* <DialogTitle>add Entity</DialogTitle> */}
+            <DialogTitle>{props.label} add / edit Element</DialogTitle>
+            {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
+            <span>form: {"form." + props.label}</span>
+            <form
+              // id={"form." + props.label}
+              id="toto"
+              onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
+              // onSubmit={handleSubmit(()=>console.log("ICI!!!!!!!!!!"))}
+              
+              // style={{ display: "inline-flex" }}()
+            >
+              {/* <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
+              {/* <Item>formObject: {JSON.stringify(props.innerProps.initialValuesObject)}</Item> */}
+              {/* <Item>json object form jzod schema: {JSON.stringify(props.innerProps.jzodSchema)}</Item> */}
+              {/* <Item key={'ROOT_NOT_USED'}> } */}
 
-            <JzodElementEditor
-              name={'ROOT'}
-              listKey={'ROOT'}
-              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-              innerProps={{
-                label: props.label,
-                initialValuesObject: props.initialValuesObject,
-                showButton: true,
-                currentDeploymentUuid: props.currentDeploymentUuid,
-                currentApplicationSection: props.currentApplicationSection,
-                elementJzodSchema:props.jzodSchema,
-                rootJzodSchema:props.jzodSchema,
-                onSubmit: (data: any, event: any) => {
-                  console.log("onSubmit called", data, event);
-                },
-              }}
-              register={register}
-              errors={errors}
-              formState={formState}
-              setValue={setValue}
-            />
-            {/* errors will return when field validation fails  */}
-            {errors.exampleRequired && <span>This field is required</span>}
-            <input type="submit" id={props.label} name={props.label} form={"form." + props.label} />
-            {/* </Item>
-            </Grid> */}
-          </form>
-        </Dialog>
+
+              <JzodElementEditor
+                name={'ROOT'}
+                listKey={'ROOT'}
+                currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+                innerProps={{
+                  label: props.label,
+                  initialValuesObject: props.initialValuesObject,
+                  showButton: true,
+                  currentDeploymentUuid: props.currentDeploymentUuid,
+                  currentApplicationSection: props.currentApplicationSection,
+                  elementJzodSchema:props.jzodSchema,
+                  rootJzodSchema:props.jzodSchema,
+                  // onSubmit: (data: any, event: any) => {
+                  //   console.log("onSubmit called", data, event);
+                  // },
+                }}
+                // register={register}
+                // errors={errors}
+                // formState={formState}
+                // setValue={setValue}
+              />
+              {/* errors will return when field validation fails  */}
+              {errors.exampleRequired && <span>This field is required</span>}
+              {/* <label htmlFor={props.label}>submit form.{props.label}</label> */}
+              {/* <input type="submit" id={props.label} name={props.label} form={"form." + props.label} value={`submit form.${props.label}`}/> */}
+              <button type="submit" name={props.label} form="toto">submit form.{props.label}</button>
+            </form>
+          </Dialog>
+        </FormProvider>
       ) : (
         <span>No form to display!</span>
       )}

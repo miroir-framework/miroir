@@ -45,7 +45,7 @@ import {
   miroirIntegrationTestEnvironmentFactory,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementFormEditor";
+import { JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -148,7 +148,7 @@ describe(
               elementJzodSchema={{type:"simpleType", definition:"string"}}
               rootJzodSchema={{} as JzodObject}
               //  getData={()=>undefined}
-              onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
+              // onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
             ></JzodObjectFormEditorWrapper>,
             {store:testEnvironment.reduxStore.getInnerStore()}
           );
@@ -201,7 +201,7 @@ describe(
               rootJzodSchema={{} as JzodObject}
               // getData={()=>undefined}
               // jzodSchema={{type:"simpleType", definition:"string"}}
-              onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
+              // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
             ></JzodObjectFormEditorWrapper>,
             {store:testEnvironment.reduxStore.getInnerStore()}
           );
@@ -269,7 +269,7 @@ describe(
               elementJzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
               rootJzodSchema={{} as JzodObject}
               // jzodSchema={{type:"simpleType", definition:"string"}}
-              onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
+              // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
             ></JzodObjectFormEditorWrapper>,
             {store:testEnvironment.reduxStore.getInnerStore()}
           );

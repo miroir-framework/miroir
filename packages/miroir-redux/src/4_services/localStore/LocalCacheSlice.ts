@@ -211,7 +211,7 @@ const selectEntities = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheI
     applicationSection: "model",
     entityUuid: entityEntity.uuid,
   });
-  console.log('selectEntities',result);
+  // console.log('selectEntities',result);
   
   return result;
 }
@@ -222,7 +222,7 @@ const selectEntityDefinitions = (domainState: ReduxStateWithUndoRedo,  params:Lo
     applicationSection: "model",
     entityUuid: entityEntityDefinition.uuid,
   });
-  console.log('selectEntityDefinitions',result);
+  // console.log('selectEntityDselectEntityDefinitionsefinitions',result);
   
   return result;
 }
@@ -233,7 +233,7 @@ const selectJzodSchemas = (domainState: ReduxStateWithUndoRedo,  params:LocalCac
     applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
     entityUuid: entityJzodSchema.uuid,
   });
-  console.log('selectJzodSchemas',result);
+  // console.log('selectJzodSchemas',result);
   
   return result;
 }
@@ -244,7 +244,7 @@ const selectReports = (domainState: ReduxStateWithUndoRedo,  params:LocalCacheIn
     applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
     entityUuid: entityReport.uuid,
   });
-  console.log('selectReports',result);
+  // console.log('selectReports',result);
   
   return result;
 }
@@ -255,7 +255,7 @@ const selectConfigurations = (domainState: ReduxStateWithUndoRedo,  params:Local
     applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
     entityUuid: entityStoreBasedConfiguration.uuid,
   });
-  console.log('selectConfigurations',result);
+  // console.log('selectConfigurations',result);
   
   return result;
 }
@@ -266,7 +266,7 @@ const selectApplicationVersions = (domainState: ReduxStateWithUndoRedo,  params:
     applicationSection: params.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model",
     entityUuid: entityApplicationVersion.uuid,
   });
-  console.log('selectApplicationVersions',result);
+  // console.log('selectApplicationVersions',result);
   
   return result;
 }
@@ -301,7 +301,7 @@ export const selectModelForDeployment = ()=>createSelector(
       jzodSchemas:(jzodSchemas?Object.values(jzodSchemas):[]) as JzodSchemaDefinition[],
       reports:(reports?Object.values(reports):[]) as Report[],
     } as MiroirMetaModel;
-    console.log("selectModelForDeployment",params,result);
+    // console.log("selectModelForDeployment",params,result);
     
     return result;
   }

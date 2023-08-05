@@ -90,7 +90,7 @@ async function start(root:Root) {
     const theme = createTheme({
       palette: {
         primary: {
-          main: red[500],
+          main: blue[500],
         },
       },
       spacing: 2,

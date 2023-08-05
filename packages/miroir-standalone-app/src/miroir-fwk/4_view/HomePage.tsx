@@ -717,7 +717,7 @@ export const HomePage = (props: RootComponentProps) => {
               label={"EntityInstance-"+currentReportTargetEntity?.name}
               styles={
                 {
-                    height: '20vh',
+                    height: '80vh',
                     width: '90vw',
                   }
                 }

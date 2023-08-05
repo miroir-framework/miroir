@@ -169,6 +169,7 @@ export {
   EntitiesDomainStateReducer,
   EntitiesDomainStateEntityInstanceArraySelector,
   EntitiesDomainStateTransformer,
+  entityInstancesUuidIndexSchema,
   EntityInstancesUuidIndex,
   UndoRedoActionNamesSchema,
   UndoRedoActionName,

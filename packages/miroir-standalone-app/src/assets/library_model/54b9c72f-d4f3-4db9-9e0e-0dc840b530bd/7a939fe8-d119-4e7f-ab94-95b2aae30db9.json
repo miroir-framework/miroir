@@ -10,6 +10,26 @@
   "jzodSchema": {
     "type": "object",
     "definition": {
+      "try": {
+        "type": "object",
+        "definition": {
+          "a": {
+            "type": "simpleType",
+            "definition": "string",
+            "extra": { "id":1, "defaultLabel": "A", "editable": true }
+          },
+          "b": {
+            "type": "object",
+            "definition": {
+              "inB": {
+                "type":"simpleType",
+                "definition": "string"
+              }
+            },
+            "extra": { "id":2, "defaultLabel": "B", "editable": true }
+          }
+        }
+      },
       "uuid": {
         "type": "simpleType",
         "definition": "string",
