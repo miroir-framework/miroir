@@ -158,22 +158,73 @@ export const JzodElementEditor = (
           ? (elementJzodSchema as JzodArray).definition
           : {}) as JzodObject
       );
+      const targetJzodSchema =
+      elementJzodSchema.definition.type == "schemaReference"
+        ? resolveJzodSchemaReference(elementJzodSchema.definition, props.innerProps.rootJzodSchema, currentModel)
+        : elementJzodSchema.definition;
 
       return (
-        // <ListItem disableGutters key={props.name}>
-        <>
-          {displayedLabel}
-          <span>
-            <ReportSectionDisplay
-              tableComponentReportType="JSON_ARRAY"
-              label={"JSON_ARRAY-" + props.name}
-              columnDefs={columnDefs}
-              rowData={initialValuesObject[props.name]}
-            ></ReportSectionDisplay>
-          </span>
-        </>
-        // </ListItem>
+        <div style={{ marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
+        {/* {props.listKey}:{'\{'} */}
+          {displayedLabel}:{" \{"} <button onClick={(e)=>{e.stopPropagation();e.preventDefault();setHiddenFormItems({...hiddenFormItems,[props.listKey]:hiddenFormItems[props.listKey]?false:true})}}>{">"}</button>
+          <div id={props.listKey+'.inner'} style={{display:hiddenFormItems[props.listKey]?"none":"block"}}>
+            {
+              // Object.entries(props?.jzodSchema.definition).length > 0? 
+              Object.entries(props.innerProps.initialValuesObject).map(
+                (attribute:[string,JzodElement]) => {
+                  // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+                  // const currentAttributeDefinition = elementJzodSchema.definition;
+                  // {/* <ListItem disableGutters key={props.name+'_'+schemaAttribute[0]+'jzod'}>
+                  //   schema: {JSON.stringify(currentAttributeDefinition)}
+                  // </ListItem> */}
+                  return (
+                    <div key={props.listKey+'.'+attribute[0]} style={{ marginLeft:`calc((${usedIndentLevel} + 1)*(${indentShift}))`}}>
+                      {/* <span>{props.listKey+'.'+attribute[0]}</span> */}
+                      <JzodElementEditor
+                        name={attribute[0]}
+                        listKey={props.listKey+'.'+attribute[0]}
+                        currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                        indentLevel={usedIndentLevel}
+                        innerProps={{
+                          label:targetJzodSchema?.extra?.defaultLabel,
+                          initialValuesObject:props.innerProps.initialValuesObject?props.innerProps.initialValuesObject[attribute[0]]:undefined,
+                          showButton:true,
+                          currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
+                          currentApplicationSection:props.innerProps.currentApplicationSection,
+                          elementJzodSchema:targetJzodSchema,
+                          rootJzodSchema:props.innerProps.rootJzodSchema,
+                          // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
+                        }}
+                        // register={props.register}
+                        // errors={props.errors}
+                        // formState={props.formState}
+                        // setValue={props.setValue}
+                      />
+                    </div>
+                  );
+                }
+              )
+            }
+          </div>
+          {'\}'}
+        </div>
       );
+
+      // return (
+      //   // <ListItem disableGutters key={props.name}>
+      //   <>
+      //     array {displayedLabel}
+      //     <span>
+      //       <ReportSectionDisplay
+      //         tableComponentReportType="JSON_ARRAY"
+      //         label={"JSON_ARRAY-" + props.name}
+      //         columnDefs={columnDefs}
+      //         rowData={initialValuesObject[props.name]}
+      //       ></ReportSectionDisplay>
+      //     </span>
+      //   </>
+      //   // </ListItem>
+      // );
       break;
     }
     case "schemaReference": {
@@ -220,7 +271,7 @@ export const JzodElementEditor = (
       const targetJzodSchema =
         elementJzodSchema.definition.type == "schemaReference"
           ? resolveJzodSchemaReference(elementJzodSchema.definition, props.innerProps.rootJzodSchema, currentModel)
-          : elementJzodSchema;
+          : elementJzodSchema.definition;
       // console.log("JzodElementEditor record targetJzodSchema", targetJzodSchema);
       // const discriminants=getUnionDiscriminantValues(targetJzodSchema, props.innerProps.rootJzodSchema, currentModel)
       return (
@@ -271,8 +322,6 @@ export const JzodElementEditor = (
       break;
     }
     case "object": {
-      // no break
-      
       return (
         <div style={{ marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
         {/* {props.listKey}:{'\{'} */}
