@@ -86,7 +86,7 @@ const targetJzodSchema = jzodSchema.definition.relativePath
     ? (absoluteReferenceTargetJzodSchema?.definition as any)[jzodSchema.definition.relativePath]
     : undefined
   : absoluteReferenceTargetJzodSchema;
-  console.log("JzodElementEditor resolveJzodSchemaReference jzodSchema",jzodSchema, "rootJzodSchema",rootJzodSchema,absoluteReferenceTargetJzodSchema);
+  console.log("JzodElementEditor resolveJzodSchemaReference for jzodSchema",jzodSchema, "result",targetJzodSchema);
   
   return targetJzodSchema;
 }
@@ -228,7 +228,7 @@ export const JzodElementEditor = (
       break;
     }
     case "schemaReference": {
-      const targetJzodSchema = resolveJzodSchemaReference(elementJzodSchema,props.innerProps.rootJzodSchema,currentModel)
+      const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema,props.innerProps.rootJzodSchema,currentModel)
       // console.log(
       //   "JzodElementEditor schemaReference",
       //   props.listKey,
@@ -239,7 +239,7 @@ export const JzodElementEditor = (
       //   "targetJsonSchema",
       //   targetJzodSchema
       // );
-      
+      const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
       return (
         targetJzodSchema?
           <JzodElementEditor
@@ -282,8 +282,9 @@ export const JzodElementEditor = (
               (attribute:[string,JzodElement]) => {
                 // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
                 // const currentAttributeDefinition = (targetJzodSchema as any)[attribute[0]];
-                const currentAttributeJzodSchema = props.currentEnumJzodSchemaResolver[attribute[1].type];
+                const currentAttributeJzodSchema = props.currentEnumJzodSchemaResolver[attribute[1].type]; // Union of jzodElements 
                 // console.log("JzodElementEditor record",attribute[0],"type",attribute[1].type,"discriminants",props.discriminants,"found schema",currentAttributeJzodSchema);
+                console.log("JzodElementEditor record",attribute[0],"type",attribute[1].type,"found schema",currentAttributeJzodSchema.definition?.type?.definition, currentAttributeJzodSchema);
                 return (
                   <div key={props.listKey+'.'+attribute[0]}>
                     {/* <div>{attribute[0]}</div> */}
@@ -329,6 +330,23 @@ export const JzodElementEditor = (
           <div id={props.listKey+'.inner'} style={{display:hiddenFormItems[props.listKey]?"none":"block"}}>
             {
               // Object.entries(props?.jzodSchema.definition).length > 0? 
+              // elementJzodSchema.definition?.type?.definition == "object"
+              // ?
+              // <>
+              //     {/* {props.listKey} - {label}:{" "} */}
+              //     {/* {displayedLabel}:{" "} */}
+              //     {/* <label htmlFor={props.listKey}>{displayedLabel}</label> */}
+              //     <input
+              //       // {...register(props.listKey, {required:true})}
+              //       {...register(props.listKey)}
+              //       form={"form." + props.name}
+              //       id={props.listKey}
+              //       name={props.name}
+              //       onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
+              //       defaultValue={JSON.stringify(props.innerProps.initialValuesObject,null,2)}
+              //     />
+              // </>
+              // :
               Object.entries(props.innerProps.initialValuesObject).map(
                 (attribute:[string,JzodElement]) => {
                   // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
@@ -412,24 +430,26 @@ export const JzodElementEditor = (
         <span>
           {/* {displayedLabel}:{" "} */}
           <table>
-            <tr>
-              <td>
-                <label htmlFor={props.listKey}>{displayedLabel}: </label>
-              </td>
-              <td>
-                <Select 
-                  // {...register(props.listKey, {required:true})}
-                  {...register(props.listKey)}
-                  options={elementJzodSchema.definition.map(v=>({label:v,value:v}))}
-                  id={props.listKey}
-                  name={props.name}
-                  value={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
-                  defaultValue={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
-                  // onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",props.formState.defaultValues,e);props.setValue(props.listKey,e?.value);}}
-                  onChange={(event,value) => {console.log("JzodElementEditor onChange",event,value);setValue(props.listKey,value)}}
-                />
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>
+                  <label htmlFor={props.listKey}>{displayedLabel}: </label>
+                </td>
+                <td>
+                  <Select 
+                    // {...register(props.listKey, {required:true})}
+                    {...register(props.listKey)}
+                    options={elementJzodSchema.definition.map(v=>({label:v,value:v}))}
+                    id={props.listKey}
+                    name={props.name}
+                    value={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
+                    defaultValue={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
+                    // onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",props.formState.defaultValues,e);props.setValue(props.listKey,e?.value);}}
+                    onChange={(event,value) => {console.log("JzodElementEditor onChange",event,value);setValue(props.listKey,value)}}
+                  />
+                </td>
+              </tr>
+            </tbody>
           </table>
         </span>
       );
@@ -465,7 +485,7 @@ export const JzodElementEditor = (
               <>
                   {/* {props.listKey} - {label}:{" "} */}
                   {/* {displayedLabel}:{" "} */}
-                  <label htmlFor={props.listKey}>{displayedLabel}</label>
+                  <label htmlFor={props.listKey}>{displayedLabel} </label>
                   <input
                     // {...register(props.listKey, {required:true})}
                     {...register(props.listKey)}
@@ -487,24 +507,26 @@ export const JzodElementEditor = (
                 // TODO: replace by checkbox!
             <>
             <table>
-              <tr>
-                <td>
-                {displayedLabel}:{" "} 
-                </td>
-                <td>
-                  <Select 
-                    // {...register(props.listKey, {required:true})}
-                    {...register(props.listKey)}
-                    options={[{label:'true', value:true},{label:'false', value:false}]} 
-                    name={props.name}
-                    // value={props.formState.defaultValues?props.formState.defaultValues[props.listKey]:{label:props.name,value:'no value found!'}}
-                    value={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
-                    defaultValue={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
-                    // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
-                    onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
-                  />
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                  {displayedLabel}:{" "} 
+                  </td>
+                  <td>
+                    <Select 
+                      // {...register(props.listKey, {required:true})}
+                      {...register(props.listKey)}
+                      options={[{label:'true', value:true},{label:'false', value:false}]} 
+                      name={props.name}
+                      // value={props.formState.defaultValues?props.formState.defaultValues[props.listKey]:{label:props.name,value:'no value found!'}}
+                      value={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
+                      defaultValue={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
+                      // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
+                      onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
+                    />
+                  </td>
+                </tr>
+              </tbody>
             </table>
             </>
           );
@@ -553,6 +575,60 @@ export const JzodElementEditor = (
           break;
         }
       }
+      break;
+    }
+    case "union": {
+      // const defaultValue=JSON.stringify(formState.defaultValues)
+      const defaultValue=JSON.stringify(props.innerProps.initialValuesObject)
+
+              //     {/* Object.entries(props.innerProps.initialValuesObject).map(
+              //   (attribute:[string,JzodElement]) => {
+              //     // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
+              //     const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
+              //     return (
+              //       <div key={props.listKey+'.'+attribute[0]} style={{ marginLeft:`calc((${usedIndentLevel} + 1)*(${indentShift}))`}}>
+              //         <JzodElementEditor
+              //           name={attribute[0]}
+              //           listKey={props.listKey+'.'+attribute[0]}
+              //           currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+              //           indentLevel={usedIndentLevel}
+              //           innerProps={{
+              //             label:currentAttributeDefinition?.extra?.defaultLabel,
+              //             initialValuesObject:props.innerProps.initialValuesObject?props.innerProps.initialValuesObject[attribute[0]]:undefined,
+              //             showButton:true,
+              //             currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
+              //             currentApplicationSection:props.innerProps.currentApplicationSection,
+              //             elementJzodSchema:currentAttributeDefinition,
+              //             rootJzodSchema:props.innerProps.rootJzodSchema,
+              //             // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
+              //           }}
+              //           // register={props.register}
+              //           // errors={props.errors}
+              //           // formState={props.formState}
+              //           // setValue={props.setValue}
+              //         />
+              //       </div>
+              //     );
+              //   } */
+              // }
+
+      return (
+        <>
+            <label htmlFor={props.listKey}>union!!! {props.listKey}: {displayedLabel}</label>
+            <div>a</div>
+            <input
+              {...register(props.listKey)}
+              form={"form." + props.name}
+              id={props.listKey}
+              name={props.name}
+              onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
+              defaultValue={defaultValue}
+            />
+            <div>b</div>
+        </>
+      );
+
+      break;
     }
     default:{
       // if (elementJzodSchema.type=="simpleType" && elementJzodSchema.definition == "string" && elementJzodSchema.extra?.targetEntity) {

@@ -69,7 +69,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema: J
         console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column conceptLevel", e);
         return {
           field: e[1].name,
-          headerName: e[1].defaultLabel,
+          headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
         };
       }
       default: {
@@ -80,7 +80,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema: J
           cellRendererParams: {
             columnName: e[0],
           },
-          headerName: e[1].defaultLabel,
+          headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
           // "sort":'asc'
         };
         break;
