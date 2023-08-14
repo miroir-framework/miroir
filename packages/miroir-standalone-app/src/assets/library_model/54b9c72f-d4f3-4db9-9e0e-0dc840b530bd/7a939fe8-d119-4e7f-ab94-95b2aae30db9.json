@@ -21,7 +21,11 @@
           "b": {
             "type": "object",
             "definition": {
-              "inB": {
+              "inB1": {
+                "type":"simpleType",
+                "definition": "string"
+              },
+              "inB2": {
                 "type":"simpleType",
                 "definition": "string"
               }

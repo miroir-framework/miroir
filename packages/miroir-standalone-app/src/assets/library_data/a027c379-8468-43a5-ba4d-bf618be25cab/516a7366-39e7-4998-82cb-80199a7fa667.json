@@ -6,7 +6,8 @@
   "try": {
     "a": "on a réussi!",
     "b": {
-      "inB": "on a encore réussi!"
+      "inB1": "on a encore réussi!",
+      "inB2": "on a encore réussi 2!"
     },
     "c": [
       "a",
