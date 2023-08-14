@@ -158,11 +158,16 @@ export const JzodElementEditor = (
           ? (elementJzodSchema as JzodArray).definition
           : {}) as JzodObject
       );
-      const targetJzodSchema =
-      elementJzodSchema.definition.type == "schemaReference"
-        ? resolveJzodSchemaReference(elementJzodSchema.definition, props.innerProps.rootJzodSchema, currentModel)
-        : elementJzodSchema.definition;
+      const resolvedJzodSchema =
+        elementJzodSchema.definition.type == "schemaReference"
+          ? resolveJzodSchemaReference(elementJzodSchema.definition, props.innerProps.rootJzodSchema, currentModel)
+          : elementJzodSchema.definition;
 
+      const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
+
+      console.log("JzodElementEditor array","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
+
+      
       return (
         <div style={{ marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
         {/* {props.listKey}:{'\{'} */}
@@ -170,29 +175,56 @@ export const JzodElementEditor = (
           <div id={props.listKey+'.inner'} style={{display:hiddenFormItems[props.listKey]?"none":"block"}}>
             {
               // Object.entries(props?.jzodSchema.definition).length > 0? 
-              Object.entries(props.innerProps.initialValuesObject).map(
-                (attribute:[string,JzodElement]) => {
+              props.innerProps.initialValuesObject.map(
+                (attribute:JzodElement,index:number) => {
                   // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
                   // const currentAttributeDefinition = elementJzodSchema.definition;
+
+                  // HACK HACK HACK
+                  // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElementSchema definition.
+                  // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
+                  // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
+                  const currentAttributeJzodSchema =
+                    resolvedJzodSchema.type == "union" && attribute.type
+                      ? props.currentEnumJzodSchemaResolver[attribute.type]
+                      : targetJzodSchema; // Union of jzodElements
+                  console.log(
+                    "JzodElementEditor array [",
+                    index,
+                    "]",
+                    attribute,
+                    "type",
+                    attribute.type,
+                    "found schema",
+                    // currentAttributeJzodSchema?.definition?.type?.definition,
+                    currentAttributeJzodSchema
+                  );
                   // {/* <ListItem disableGutters key={props.name+'_'+schemaAttribute[0]+'jzod'}>
                   //   schema: {JSON.stringify(currentAttributeDefinition)}
                   // </ListItem> */}
                   return (
-                    <div key={props.listKey+'.'+attribute[0]} style={{ marginLeft:`calc((${usedIndentLevel} + 1)*(${indentShift}))`}}>
+                    <div
+                      key={props.listKey + "." + index}
+                      style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
+                    >
                       {/* <span>{props.listKey+'.'+attribute[0]}</span> */}
                       <JzodElementEditor
-                        name={attribute[0]}
-                        listKey={props.listKey+'.'+attribute[0]}
+                        name={"" + index}
+                        listKey={props.listKey + "." + index}
                         currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                         indentLevel={usedIndentLevel}
                         innerProps={{
-                          label:targetJzodSchema?.extra?.defaultLabel,
-                          initialValuesObject:props.innerProps.initialValuesObject?props.innerProps.initialValuesObject[attribute[0]]:undefined,
-                          showButton:true,
-                          currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
-                          currentApplicationSection:props.innerProps.currentApplicationSection,
-                          elementJzodSchema:targetJzodSchema,
-                          rootJzodSchema:props.innerProps.rootJzodSchema,
+                          // label:targetJzodSchema?.extra?.defaultLabel,
+                          label: currentAttributeJzodSchema?.extra?.defaultLabel,
+                          initialValuesObject: props.innerProps.initialValuesObject
+                            ? props.innerProps.initialValuesObject[index]
+                            : undefined,
+                          showButton: true,
+                          currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
+                          currentApplicationSection: props.innerProps.currentApplicationSection,
+                          // elementJzodSchema:targetJzodSchema,
+                          elementJzodSchema: currentAttributeJzodSchema,
+                          rootJzodSchema: props.innerProps.rootJzodSchema,
                           // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
                         }}
                         // register={props.register}
@@ -240,6 +272,8 @@ export const JzodElementEditor = (
       //   targetJzodSchema
       // );
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
+      console.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
+
       return (
         targetJzodSchema?
           <JzodElementEditor
@@ -485,15 +519,17 @@ export const JzodElementEditor = (
               <>
                   {/* {props.listKey} - {label}:{" "} */}
                   {/* {displayedLabel}:{" "} */}
-                  <label htmlFor={props.listKey}>{displayedLabel} </label>
+                  <label htmlFor={props.listKey}>{displayedLabel}</label>
                   <input
                     // {...register(props.listKey, {required:true})}
                     {...register(props.listKey)}
+                    key={props.listKey}
                     form={"form." + props.name}
                     id={props.listKey}
                     name={props.name}
                     onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
-                    defaultValue={props.innerProps.initialValuesObject}
+                    value={props.innerProps.initialValuesObject}
+                    // defaultValue={props.innerProps.initialValuesObject}
                   />
               </>
             );

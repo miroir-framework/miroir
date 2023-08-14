@@ -202,8 +202,8 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
             <span>form: {"form." + props.label}</span>
             <form
-              // id={"form." + props.label}
-              id="toto"
+              id={"form." + props.label}
+              // id="toto"
               onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
               // onSubmit={handleSubmit(()=>console.log("ICI!!!!!!!!!!"))}
               
@@ -240,7 +240,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
               {errors.exampleRequired && <span>This field is required</span>}
               {/* <label htmlFor={props.label}>submit form.{props.label}</label> */}
               {/* <input type="submit" id={props.label} name={props.label} form={"form." + props.label} value={`submit form.${props.label}`}/> */}
-              <button type="submit" name={props.label} form="toto">submit form.{props.label}</button>
+              <button type="submit" name={props.label} form="props.label">submit form.{props.label}</button>
             </form>
           </Dialog>
         </FormProvider>
