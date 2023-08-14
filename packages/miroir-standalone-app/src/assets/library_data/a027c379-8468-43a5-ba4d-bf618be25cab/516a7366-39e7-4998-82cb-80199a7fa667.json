@@ -10,26 +10,48 @@
     },
     "c": [
       "a",
-      "bbb",
+      "bbbb",
       "c"
     ],
     "d": {
       "type": "object",
       "definition": {
-        "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
+        "optional": {
+          "type": "simpleType",
+          "definition": "boolean",
+          "optional": false
+        },
         "extra": {
           "optional": true,
           "type": "object",
           "definition": {
-            "id": { "type": "simpleType", "definition": "number" },
-            "defaultLabel": { "type": "simpleType", "definition": "string" },
-            "editable": { "type": "simpleType", "definition": "boolean" }
+            "id": {
+              "type": "simpleType",
+              "definition": "number"
+            },
+            "defaultLabel": {
+              "type": "simpleType",
+              "definition": "string"
+            },
+            "editable": {
+              "type": "simpleType",
+              "definition": "boolean"
+            }
           }
         },
-        "type": { "type": "literal", "definition": "object" },
+        "type": {
+          "type": "literal",
+          "definition": "object"
+        },
         "definition": {
           "type": "record",
-          "definition": { "type": "schemaReference",  "definition": { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodElementSchema" } }
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodElementSchema"
+            }
+          }
         }
       }
     },
@@ -49,7 +71,11 @@
     "f": {
       "type": "array",
       "definition": {
-        "type": "schemaReference",  "definition": { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath": "jzodElementSchema" }
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodElementSchema"
+        }
       }
     }
   }

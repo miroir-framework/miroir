@@ -7,7 +7,7 @@ import Select from 'react-select';
 import { FieldErrors, FormState, SubmitHandler, UseFormRegister, UseFormSetValue, useForm, useFormContext } from "react-hook-form";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import { Autocomplete, Box, Button, List, ListItem, Paper, TextField, styled } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, List, ListItem, Paper, TextField, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { JzodArray, JzodElement, JzodObject, JzodReference, JzodUnion, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
@@ -528,8 +528,8 @@ export const JzodElementEditor = (
                     id={props.listKey}
                     name={props.name}
                     onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
-                    value={props.innerProps.initialValuesObject}
-                    // defaultValue={props.innerProps.initialValuesObject}
+                    // value={props.innerProps.initialValuesObject}
+                    defaultValue={props.innerProps.initialValuesObject}
                   />
               </>
             );
@@ -549,16 +549,14 @@ export const JzodElementEditor = (
                   {displayedLabel}:{" "} 
                   </td>
                   <td>
-                    <Select 
+                    <Checkbox 
                       // {...register(props.listKey, {required:true})}
                       {...register(props.listKey)}
-                      options={[{label:'true', value:true},{label:'false', value:false}]} 
-                      name={props.name}
-                      // value={props.formState.defaultValues?props.formState.defaultValues[props.listKey]:{label:props.name,value:'no value found!'}}
-                      value={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
-                      defaultValue={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject?"true":"false",value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
-                      // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
-                      onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
+                      // options={[{label:'true', value:true},{label:'false', value:false}]} 
+                      name={props.listKey}
+                      // value={props.innerProps.initialValuesObject}
+                      defaultChecked={props.innerProps.initialValuesObject}
+                      // onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
                     />
                   </td>
                 </tr>

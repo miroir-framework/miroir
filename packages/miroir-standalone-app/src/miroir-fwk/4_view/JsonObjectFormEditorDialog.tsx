@@ -240,7 +240,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
               {errors.exampleRequired && <span>This field is required</span>}
               {/* <label htmlFor={props.label}>submit form.{props.label}</label> */}
               {/* <input type="submit" id={props.label} name={props.label} form={"form." + props.label} value={`submit form.${props.label}`}/> */}
-              <button type="submit" name={props.label} form="props.label">submit form.{props.label}</button>
+              <button type="submit" name={props.label} form={"form." + props.label}>submit form.{props.label}</button>
             </form>
           </Dialog>
         </FormProvider>
