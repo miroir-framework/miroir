@@ -1,9 +1,11 @@
 import {
   ApplicationDeployment,
   ApplicationSection,
+  EntityInstancesUuidIndex,
   Uuid
 } from "miroir-core";
 import { useNavigate } from 'react-router-dom';
+import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
 
 
@@ -58,6 +60,16 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
   
   const navigate = useNavigate();
 
+  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+    {
+      deploymentUuid: props.deploymentUuid,
+      applicationSection: props.applicationSection as ApplicationSection,
+      entityUuid: props.entityUuid,
+    }
+  );
+
+  const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
+
   if (props.applicationSection && props.instanceUuid) {
     return (
       <>
@@ -66,7 +78,7 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
               navigate(`/instance/${props.deploymentUuid}/${props.applicationSection}/${props?.entityUuid}/${props.instanceUuid}`);
             }}
           >
-            {props.label}
+            {instance?.name}
           </button>
       </>
     );
