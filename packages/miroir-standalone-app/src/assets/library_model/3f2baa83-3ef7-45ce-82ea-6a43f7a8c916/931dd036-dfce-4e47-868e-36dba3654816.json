@@ -1,0 +1,18 @@
+{
+  "uuid": "931dd036-dfce-4e47-868e-36dba3654816",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"TestList",
+  "defaultLabel": "List of Library Tests Instances",
+  "type": "list",
+  "definition": [
+    {
+      "type":"objectList",
+      "definition": {
+        "parentName": "Test",
+        "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
+      }
+    }
+  ]
+}

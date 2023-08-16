@@ -1,0 +1,8 @@
+{
+  "uuid":"9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name":"Test",
+  "conceptLevel":"Model",
+  "description": "Test Entity."
+}

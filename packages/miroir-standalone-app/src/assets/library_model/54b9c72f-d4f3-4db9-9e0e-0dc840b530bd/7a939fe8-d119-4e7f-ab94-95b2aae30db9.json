@@ -10,65 +10,6 @@
   "jzodSchema": {
     "type": "object",
     "definition": {
-      "try": {
-        "type": "object",
-        "definition": {
-          "a": {
-            "type": "simpleType",
-            "definition": "string",
-            "extra": { "id":1, "defaultLabel": "A", "editable": true }
-          },
-          "b": {
-            "type": "object",
-            "definition": {
-              "inB1": {
-                "type":"simpleType",
-                "definition": "string"
-              },
-              "inB2": {
-                "type":"simpleType",
-                "definition": "string"
-              }
-            },
-            "extra": { "id":2, "defaultLabel": "B", "editable": true }
-          },
-          "c": {
-            "type": "array",
-            "definition": {
-              "type":"simpleType",
-              "definition": "string"
-            },
-            "extra": { "id":3, "defaultLabel": "C", "editable": true }
-          },
-          "d": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObjectSchema"
-            },
-            "optional": true,
-            "extra": { "id": 4, "defaultLabel": "D", "editable": true }
-          },
-          "e": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodReferenceSchema"
-            },
-            "optional": true,
-            "extra": { "id": 5, "defaultLabel": "E", "editable": true }
-          },
-          "f": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodArraySchema"
-            },
-            "optional": true,
-            "extra": { "id": 6, "defaultLabel": "F", "editable": true }
-          }
-        }
-      },
       "uuid": {
         "type": "simpleType",
         "definition": "string",
