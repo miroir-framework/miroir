@@ -25,6 +25,8 @@ export interface MiroirReactContext {
   setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection | undefined>>;
   innerFormOutput: any;
   setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
+  formHelperState: any;
+  setformHelperState: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
@@ -46,6 +48,7 @@ export function MiroirContextReactProvider(props: {
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
+  const [formHelperState, setformHelperState] = useState<any>({});
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -61,10 +64,17 @@ export function MiroirContextReactProvider(props: {
       setApplicationSection,
       innerFormOutput,
       setInnerFormOutput,
+      formHelperState,
+      setformHelperState,
     }),
     [deploymentUuid, reportUuid, applicationSection, innerFormOutput, props.miroirContext, props.domainController]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
+}
+
+// #############################################################################################
+export function useMiroirContextformHelperState() {
+  return [useContext(miroirReactContext)?.formHelperState, useContext(miroirReactContext)?.setformHelperState];
 }
 
 // #############################################################################################

@@ -1,21 +1,18 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useMemo, useState } from "react";
 import Select from 'react-select';
 
-import { FieldErrors, FormState, SubmitHandler, UseFormRegister, UseFormSetValue, useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { Autocomplete, Box, Button, Checkbox, List, ListItem, Paper, TextField, styled } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Checkbox } from "@mui/material";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
-import { JzodArray, JzodElement, JzodObject, JzodReference, JzodUnion, jzodElementSchemaToZodSchemaAndDescription } from "@miroir-framework/jzod";
+import { JzodArray, JzodElement, JzodObject, JzodReference, JzodUnion } from "@miroir-framework/jzod";
 import { ApplicationSection, EntityAttribute, EntityInstanceWithName, EntityInstancesUuidIndex, MiroirMetaModel, Uuid, applicationDeploymentMiroir } from "miroir-core";
-import { useMiroirContextInnerFormOutput, useMiroirContextService } from "./MiroirContextReactProvider";
-import { ReportSectionDisplay } from "./ReportSectionDisplay";
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 
 
 // #####################################################################################################
@@ -42,14 +39,11 @@ export interface EditorAttribute {
 
 export interface JzodElementFormEditorCoreProps {
   label: string;
-  // rootJzodSchema: JzodElement;
   rootJzodSchema: JzodObject;
   elementJzodSchema: JzodElement;
-  // getData:(jzodSchema:JzodElement) => any;
   initialValuesObject: any;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
-  // onSubmit: (data:any,event:any,error:any)=>void;
 }
 
 export interface JzodObjectFormEditorWithButtonProps extends JzodElementFormEditorCoreProps {
@@ -71,10 +65,6 @@ export interface JzodElementEditorProps {
   discriminants?:{[k:string]:string[]},
   indentLevel?:number,
   innerProps: JzodElementFormEditorProps,
-  // register: UseFormRegister<any>,
-  // errors: FieldErrors<any>,
-  // formState: FormState<any>,
-  // setValue: UseFormSetValue<any>,
 }
 
 export function resolveJzodSchemaReference(jzodSchema:JzodReference, rootJzodSchema:JzodObject, currentModel:MiroirMetaModel) {
@@ -105,6 +95,38 @@ export function getUnionDiscriminantValues(jzodUnionSchema:JzodUnion, rootJzodSc
     : {};
 }
 
+// ################################################################################################
+export const ExpandOrFold = (
+  props: {
+    hiddenFormItems: {[k: string]: boolean},
+    // setHiddenFormItems: any,
+    setHiddenFormItems: React.Dispatch<
+      React.SetStateAction<{
+        [k: string]: boolean;
+      }>
+    >,
+    listKey: string,
+  }
+): JSX.Element => {
+  return (
+    <button
+      // style={{maxHeight:"20px",maxWidth:"20px"}}
+      // style={{display:"inline-flex"}}
+      style={{border:0, backgroundColor:"transparent"}}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        props.setHiddenFormItems({
+          ...props.hiddenFormItems,
+          [props.listKey]: props.hiddenFormItems[props.listKey] ? false : true,
+        });
+      }}
+    >
+      {props.hiddenFormItems[props.listKey]?<ExpandMore sx={{maxWidth:"15px",maxHeight:"15px"}}/>:<ExpandLess sx={{maxWidth:"15px",maxHeight:"15px"}}/>}
+    </button>
+  );
+}
+
 // #####################################################################################################
 export const JzodElementEditor = (
   props: JzodElementEditorProps
@@ -113,7 +135,18 @@ export const JzodElementEditor = (
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.innerProps.initialValuesObject});
   const formMethods = useFormContext();
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
+  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+
   const [hiddenFormItems,setHiddenFormItems] = useState<{[k:string]:boolean}>({})
+  const [itemsOrder, setItemsOrder] = useState<any[]>(
+    Array.isArray(props.innerProps.initialValuesObject)
+      ? props.innerProps.initialValuesObject.map((e, k) => k)
+      : (
+        typeof(props.innerProps.initialValuesObject) == "object" && props.innerProps.initialValuesObject !== null
+        ? Object.keys(props.innerProps.initialValuesObject)
+        : []
+      )
+  );
   
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
     deploymentUuid: props.innerProps.currentDeploymentUuid,
@@ -144,6 +177,7 @@ export const JzodElementEditor = (
     elementJzodSchema,
     "initialValue=",
     props.innerProps.initialValuesObject,
+    "itemsOrder", itemsOrder,
     "props=",
     props
   );
@@ -169,108 +203,107 @@ export const JzodElementEditor = (
 
       
       return (
-        <div style={{ marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
-        {/* {props.listKey}:{'\{'} */}
-          {displayedLabel}:{" \{"} <button onClick={(e)=>{e.stopPropagation();e.preventDefault();setHiddenFormItems({...hiddenFormItems,[props.listKey]:hiddenFormItems[props.listKey]?false:true})}}>{">"}</button>
-          <div id={props.listKey+'.inner'} style={{display:hiddenFormItems[props.listKey]?"none":"block"}}>
-            {
-              // Object.entries(props?.jzodSchema.definition).length > 0? 
-              props.innerProps.initialValuesObject.map(
-                (attribute:JzodElement,index:number) => {
-                  // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                  // const currentAttributeDefinition = elementJzodSchema.definition;
-
-                  // HACK HACK HACK
-                  // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElementSchema definition.
-                  // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
-                  // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
-                  const currentAttributeJzodSchema =
-                    resolvedJzodSchema.type == "union" && attribute.type
-                      ? props.currentEnumJzodSchemaResolver[attribute.type]
-                      : targetJzodSchema; // Union of jzodElements
-                  console.log(
-                    "JzodElementEditor array [",
-                    index,
-                    "]",
-                    attribute,
-                    "type",
-                    attribute.type,
-                    "found schema",
-                    // currentAttributeJzodSchema?.definition?.type?.definition,
-                    currentAttributeJzodSchema
-                  );
-                  // {/* <ListItem disableGutters key={props.name+'_'+schemaAttribute[0]+'jzod'}>
-                  //   schema: {JSON.stringify(currentAttributeDefinition)}
-                  // </ListItem> */}
-                  return (
-                    <div
-                      key={props.listKey + "." + index}
-                      style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
-                    >
-                      {/* <span>{props.listKey+'.'+attribute[0]}</span> */}
-                      <JzodElementEditor
-                        name={"" + index}
-                        listKey={props.listKey + "." + index}
-                        currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-                        indentLevel={usedIndentLevel}
-                        innerProps={{
-                          // label:targetJzodSchema?.extra?.defaultLabel,
-                          label: currentAttributeJzodSchema?.extra?.defaultLabel,
-                          initialValuesObject: props.innerProps.initialValuesObject
-                            ? props.innerProps.initialValuesObject[index]
-                            : undefined,
-                          showButton: true,
-                          currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
-                          currentApplicationSection: props.innerProps.currentApplicationSection,
-                          // elementJzodSchema:targetJzodSchema,
-                          elementJzodSchema: currentAttributeJzodSchema,
-                          rootJzodSchema: props.innerProps.rootJzodSchema,
-                          // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
-                        }}
-                        // register={props.register}
-                        // errors={props.errors}
-                        // formState={props.formState}
-                        // setValue={props.setValue}
-                      />
-                    </div>
-                  );
-                }
-              )
-            }
+        <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
+          {displayedLabel}:{" {"}{" "}
+          <ExpandOrFold 
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
+            listKey={props.listKey}
+          ></ExpandOrFold>
+          {JSON.stringify(itemsOrder)}
+          <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
+            {/* {props.innerProps.initialValuesObject.map((attribute: JzodElement, index: number) => { */}
+            {(itemsOrder as number[]).map(((i:number)=>[i,props.innerProps.initialValuesObject[i]])).map((attributeParam: [number, JzodElement]) => {
+              const index:number = attributeParam[0];
+              const attribute = attributeParam[1];
+              // HACK HACK HACK
+              // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElementSchema definition.
+              // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
+              // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
+              const currentAttributeJzodSchema =
+                resolvedJzodSchema.type == "union" && attribute.type
+                  ? props.currentEnumJzodSchemaResolver[attribute.type]
+                  : targetJzodSchema; // Union of jzodElements
+              console.log(
+                "JzodElementEditor array [",
+                index,
+                "]",
+                attribute,
+                "type",
+                attribute.type,
+                "found schema",
+                currentAttributeJzodSchema
+              );
+              return (
+                <div
+                  key={props.listKey + "." + index}
+                  style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
+                >
+                  <button
+                    style={{ border: 0, backgroundColor: "transparent" }}
+                    disabled={index == itemsOrder.length - 1}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      
+                      const currentItemIndex:number = index;
+                      let newItemsOrder = itemsOrder.slice();
+                      const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
+                      newItemsOrder.splice(currentItemIndex+1, 0, cutOut);
+                      setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
+                      console.log("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
+                      setItemsOrder(newItemsOrder);
+                    }}
+                  >
+                    {"v"}
+                  </button>
+                  <button
+                    style={{ border: 0, backgroundColor: "transparent" }}
+                    disabled={index == 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      
+                      const currentItemIndex:number = index;
+                      let newItemsOrder = itemsOrder.slice();
+                      const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
+                      newItemsOrder.splice(currentItemIndex-1, 0, cutOut);
+                      setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
+                      console.log("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
+                      setItemsOrder(newItemsOrder);
+                    }}
+                  >
+                    {"^"}
+                  </button>
+                  <JzodElementEditor
+                    name={"" + index}
+                    listKey={props.listKey + "." + index}
+                    currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                    indentLevel={usedIndentLevel}
+                    innerProps={{
+                      // label:targetJzodSchema?.extra?.defaultLabel,
+                      label: currentAttributeJzodSchema?.extra?.defaultLabel,
+                      initialValuesObject: props.innerProps.initialValuesObject
+                        ? props.innerProps.initialValuesObject[index]
+                        : undefined,
+                      showButton: true,
+                      currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
+                      currentApplicationSection: props.innerProps.currentApplicationSection,
+                      elementJzodSchema: currentAttributeJzodSchema,
+                      rootJzodSchema: props.innerProps.rootJzodSchema,
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
-          {'\}'}
+          {"}"}
         </div>
       );
-
-      // return (
-      //   // <ListItem disableGutters key={props.name}>
-      //   <>
-      //     array {displayedLabel}
-      //     <span>
-      //       <ReportSectionDisplay
-      //         tableComponentReportType="JSON_ARRAY"
-      //         label={"JSON_ARRAY-" + props.name}
-      //         columnDefs={columnDefs}
-      //         rowData={initialValuesObject[props.name]}
-      //       ></ReportSectionDisplay>
-      //     </span>
-      //   </>
-      //   // </ListItem>
-      // );
       break;
     }
     case "schemaReference": {
       const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema,props.innerProps.rootJzodSchema,currentModel)
-      // console.log(
-      //   "JzodElementEditor schemaReference",
-      //   props.listKey,
-      //   "from elementJzodSchema",
-      //   elementJzodSchema,
-      //   "pointing to",
-      //   targetJzodSchema,
-      //   "targetJsonSchema",
-      //   targetJzodSchema
-      // );
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
       console.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 
@@ -288,12 +321,7 @@ export const JzodElementEditor = (
               currentApplicationSection:props.innerProps.currentApplicationSection,
               elementJzodSchema:targetJzodSchema,
               rootJzodSchema:props.innerProps.rootJzodSchema,
-              // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
             }}
-            // register={props.register}
-            // errors={props.errors}
-            // formState={props.formState}
-            // setValue={props.setValue}
           />
         :
           <span>Schema reference:{elementJzodSchema.definition.absolutePath}.{elementJzodSchema.definition.relativePath} not found!</span>
@@ -311,13 +339,9 @@ export const JzodElementEditor = (
       return (
         <div style={{ display: "inline-flex", flexDirection: "column", marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
           {
-            // Object.entries(props?.jzodSchema.definition).length > 0? 
             Object.entries(props.innerProps.initialValuesObject).map(
               (attribute:[string,JzodElement]) => {
-                // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                // const currentAttributeDefinition = (targetJzodSchema as any)[attribute[0]];
                 const currentAttributeJzodSchema = props.currentEnumJzodSchemaResolver[attribute[1].type]; // Union of jzodElements 
-                // console.log("JzodElementEditor record",attribute[0],"type",attribute[1].type,"discriminants",props.discriminants,"found schema",currentAttributeJzodSchema);
                 console.log("JzodElementEditor record",attribute[0],"type",attribute[1].type,"found schema",currentAttributeJzodSchema.definition?.type?.definition, currentAttributeJzodSchema);
                 return (
                   <div key={props.listKey+'.'+attribute[0]}>
@@ -340,10 +364,6 @@ export const JzodElementEditor = (
                             rootJzodSchema:props.innerProps.rootJzodSchema,
                             // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
                           }}
-                          // register={props.register}
-                          // errors={props.errors}
-                          // formState={props.formState}
-                          // setValue={props.setValue}
                         />
                       </div>
                     </div>
@@ -358,66 +378,45 @@ export const JzodElementEditor = (
     }
     case "object": {
       return (
-        <div style={{ marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
-        {/* {props.listKey}:{'\{'} */}
-          {displayedLabel}:{" \{"} <button onClick={(e)=>{e.stopPropagation();e.preventDefault();setHiddenFormItems({...hiddenFormItems,[props.listKey]:hiddenFormItems[props.listKey]?false:true})}}>{">"}</button>
-          <div id={props.listKey+'.inner'} style={{display:hiddenFormItems[props.listKey]?"none":"block"}}>
-            {
-              // Object.entries(props?.jzodSchema.definition).length > 0? 
-              // elementJzodSchema.definition?.type?.definition == "object"
-              // ?
-              // <>
-              //     {/* {props.listKey} - {label}:{" "} */}
-              //     {/* {displayedLabel}:{" "} */}
-              //     {/* <label htmlFor={props.listKey}>{displayedLabel}</label> */}
-              //     <input
-              //       // {...register(props.listKey, {required:true})}
-              //       {...register(props.listKey)}
-              //       form={"form." + props.name}
-              //       id={props.listKey}
-              //       name={props.name}
-              //       onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
-              //       defaultValue={JSON.stringify(props.innerProps.initialValuesObject,null,2)}
-              //     />
-              // </>
-              // :
-              Object.entries(props.innerProps.initialValuesObject).map(
-                (attribute:[string,JzodElement]) => {
-                  // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-                  const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
-                  // {/* <ListItem disableGutters key={props.name+'_'+schemaAttribute[0]+'jzod'}>
-                  //   schema: {JSON.stringify(currentAttributeDefinition)}
-                  // </ListItem> */}
-                  return (
-                    <div key={props.listKey+'.'+attribute[0]} style={{ marginLeft:`calc((${usedIndentLevel} + 1)*(${indentShift}))`}}>
-                      {/* <span>{props.listKey+'.'+attribute[0]}</span> */}
-                      <JzodElementEditor
-                        name={attribute[0]}
-                        listKey={props.listKey+'.'+attribute[0]}
-                        currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-                        indentLevel={usedIndentLevel}
-                        innerProps={{
-                          label:currentAttributeDefinition?.extra?.defaultLabel,
-                          initialValuesObject:props.innerProps.initialValuesObject?props.innerProps.initialValuesObject[attribute[0]]:undefined,
-                          showButton:true,
-                          currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
-                          currentApplicationSection:props.innerProps.currentApplicationSection,
-                          elementJzodSchema:currentAttributeDefinition,
-                          rootJzodSchema:props.innerProps.rootJzodSchema,
-                          // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
-                        }}
-                        // register={props.register}
-                        // errors={props.errors}
-                        // formState={props.formState}
-                        // setValue={props.setValue}
-                      />
-                    </div>
-                  );
-                }
-              )
-            }
+        <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
+          {/* {props.listKey}:{'\{'} */}
+          {displayedLabel}:{" {"}{" "}
+          <ExpandOrFold 
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
+            listKey={props.listKey}
+          ></ExpandOrFold>
+          <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
+            {/* {Object.entries(props.innerProps.initialValuesObject).map((attribute: [string, JzodElement]) => { */}
+            {itemsOrder.map((i=>[i,props.innerProps.initialValuesObject[i]])).map((attribute: [string, JzodElement]) => {
+              const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
+              return (
+                <div
+                  key={props.listKey + "." + attribute[0]}
+                  style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
+                >
+                  <JzodElementEditor
+                    name={attribute[0]}
+                    listKey={props.listKey + "." + attribute[0]}
+                    currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                    indentLevel={usedIndentLevel}
+                    innerProps={{
+                      label: currentAttributeDefinition?.extra?.defaultLabel,
+                      initialValuesObject: props.innerProps.initialValuesObject
+                        ? props.innerProps.initialValuesObject[attribute[0]]
+                        : undefined,
+                      showButton: true,
+                      currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
+                      currentApplicationSection: props.innerProps.currentApplicationSection,
+                      elementJzodSchema: currentAttributeDefinition,
+                      rootJzodSchema: props.innerProps.rootJzodSchema,
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
-          {'\}'}
+          {"}"}
         </div>
       );
       break;
@@ -492,55 +491,30 @@ export const JzodElementEditor = (
     case "simpleType": {
       switch (elementJzodSchema.definition) {
         case "string":{
-          // if (elementJzodSchema.extra?.targetEntity) {
-          //   return (
-          //     // <ListItem disableGutters key={label}>
-          //     <>
-          //       {/* {props.listKey} - {label}:{" "} */}
-          //       {displayedLabel}:{" "}
-          //       {/* <p>defaultValue:{JSON.stringify({label:props.name,value:props.innerProps.initialValuesObject})}</p> */}
-          //       {/* <p>{JSON.stringify(props.errors[label]?.message?`received error: ${props.errors[label]?.message}`:"no error")}</p> */}
-          //       <Select 
-          //         {...props.register(props.listKey, {required:true})}
-          //         options={selectList.map(e=>({label:e.name,value:e.uuid}))} 
-          //         name={props.name}
-          //         value={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.listKey]}:{label:props.name,value:'no value found!'}}
-          //         defaultValue={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.listKey]}:{label:props.name,value:'no value found!'}}
-          //         // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
-          //         onChange={(e)=>{console.log("JzodElementEditor onChange!",e);props.setValue(props.listKey,e?.value);}}
-          //       />
-          //     </>
-          //     // </ListItem>
-          //   );
-          // } else {
-            // const defaultValue=props.formState.defaultValues?props.formState.defaultValues[props.name]:'no value found!'
-            const defaultValue=formState.defaultValues
-            return (
-              <>
-                  {/* {props.listKey} - {label}:{" "} */}
-                  {/* {displayedLabel}:{" "} */}
-                  <label htmlFor={props.listKey}>{displayedLabel}</label>
-                  <input
-                    // {...register(props.listKey, {required:true})}
-                    {...register(props.listKey)}
-                    key={props.listKey}
-                    form={"form." + props.name}
-                    id={props.listKey}
-                    name={props.name}
-                    onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
-                    // value={props.innerProps.initialValuesObject}
-                    defaultValue={props.innerProps.initialValuesObject}
-                  />
-              </>
-            );
-          // }
+          const defaultValue=formState.defaultValues
+          return (
+            <>
+                {/* {props.listKey} - {label}:{" "} */}
+                {/* {displayedLabel}:{" "} */}
+                <label htmlFor={props.listKey}>{displayedLabel}</label>
+                <input
+                  // {...register(props.listKey, {required:true})}
+                  {...register(props.listKey)}
+                  key={props.listKey}
+                  form={"form." + props.name}
+                  id={props.listKey}
+                  name={props.name}
+                  onChange={(e)=>{console.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
+                  // value={props.innerProps.initialValuesObject}
+                  defaultValue={props.innerProps.initialValuesObject}
+                />
+            </>
+          );
           break;
         }
         case "boolean":{
-          // const defaultValue=props.formState.defaultValues?props.formState.defaultValues[props.name]:'no value found!'
           // console.log("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
           return (
-                // TODO: replace by checkbox!
             <>
             <table>
               <tbody>
@@ -550,13 +524,9 @@ export const JzodElementEditor = (
                   </td>
                   <td>
                     <Checkbox 
-                      // {...register(props.listKey, {required:true})}
                       {...register(props.listKey)}
-                      // options={[{label:'true', value:true},{label:'false', value:false}]} 
                       name={props.listKey}
-                      // value={props.innerProps.initialValuesObject}
                       defaultChecked={props.innerProps.initialValuesObject}
-                      // onChange={(e)=>{console.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
                     />
                   </td>
                 </tr>
@@ -614,38 +584,6 @@ export const JzodElementEditor = (
     case "union": {
       // const defaultValue=JSON.stringify(formState.defaultValues)
       const defaultValue=JSON.stringify(props.innerProps.initialValuesObject)
-
-              //     {/* Object.entries(props.innerProps.initialValuesObject).map(
-              //   (attribute:[string,JzodElement]) => {
-              //     // Object.entries(jzodSchema.definition).map((schemaAttribute:[string,JzodElement]) => {
-              //     const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
-              //     return (
-              //       <div key={props.listKey+'.'+attribute[0]} style={{ marginLeft:`calc((${usedIndentLevel} + 1)*(${indentShift}))`}}>
-              //         <JzodElementEditor
-              //           name={attribute[0]}
-              //           listKey={props.listKey+'.'+attribute[0]}
-              //           currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-              //           indentLevel={usedIndentLevel}
-              //           innerProps={{
-              //             label:currentAttributeDefinition?.extra?.defaultLabel,
-              //             initialValuesObject:props.innerProps.initialValuesObject?props.innerProps.initialValuesObject[attribute[0]]:undefined,
-              //             showButton:true,
-              //             currentDeploymentUuid:props.innerProps.currentDeploymentUuid,
-              //             currentApplicationSection:props.innerProps.currentApplicationSection,
-              //             elementJzodSchema:currentAttributeDefinition,
-              //             rootJzodSchema:props.innerProps.rootJzodSchema,
-              //             // onSubmit:(data:any,event:any)=>{console.log("onSubmit called", data, event)},
-              //           }}
-              //           // register={props.register}
-              //           // errors={props.errors}
-              //           // formState={props.formState}
-              //           // setValue={props.setValue}
-              //         />
-              //       </div>
-              //     );
-              //   } */
-              // }
-
       return (
         <>
             <label htmlFor={props.listKey}>union!!! {props.listKey}: {displayedLabel}</label>
@@ -665,27 +603,6 @@ export const JzodElementEditor = (
       break;
     }
     default:{
-      // if (elementJzodSchema.type=="simpleType" && elementJzodSchema.definition == "string" && elementJzodSchema.extra?.targetEntity) {
-      //   return (
-      //     // <ListItem disableGutters key={label}>
-      //     <>
-      //       {/* {props.listKey} - {label}:{" "} */}
-      //       {label}:{" "}
-      //       {/* <p>defaultValue:{JSON.stringify({label:props.name,value:props.innerProps.initialValuesObject})}</p> */}
-      //       {/* <p>{JSON.stringify(props.errors[label]?.message?`received error: ${props.errors[label]?.message}`:"no error")}</p> */}
-      //       <Select 
-      //         {...props.register(props.listKey, {required:true})}
-      //         options={selectList.map(e=>({label:e.name,value:e.uuid}))} 
-      //         name={props.name}
-      //         value={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.listKey]}:{label:props.name,value:'no value found!'}}
-      //         defaultValue={props.formState.defaultValues?{label:props.name,value:props.formState.defaultValues[props.listKey]}:{label:props.name,value:'no value found!'}}
-      //         // onChange={(e)=>{console.log("onChange!",e);props.setValue(label,e?.value)}}
-      //         onChange={(e)=>{console.log("JzodElementEditor onChange!",e);props.setValue(props.listKey,e?.value);}}
-      //       />
-      //     </>
-      //     // </ListItem>
-      //   );
-      // } else {
         const defaultValue=formState.defaultValues?formState.defaultValues[props.name]:'no value found!'
         return (
           <>

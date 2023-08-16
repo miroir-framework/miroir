@@ -9,7 +9,7 @@ import { ApplicationSection, EntityAttribute, Uuid, applicationDeploymentMiroir 
 import { useCallback, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { JzodElementEditor, resolveJzodSchemaReference } from "./JzodElementEditor";
-import { useMiroirContextInnerFormOutput } from "./MiroirContextReactProvider";
+import { useMiroirContextInnerFormOutput, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { useCurrentModel } from "./ReduxHooks";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
@@ -56,11 +56,103 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+// not used
+const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
+  console.log(
+    logHeader,
+    "handleAddObjectDialogFormSubmit reorderField",
+    orderUpdatePathParam.length,
+    "path",
+    orderUpdatePathParam,
+    "orderUpdatePathParam[0]",
+    orderUpdatePathParam[0],
+    "dataParam",
+    dataParam
+  );
+
+  // return dataParam;
+  if (orderUpdatePathParam.length == 1) {
+    const newFieldValue = newOrder.reduce((acc,curr)=>({...acc,[curr]:dataParam[orderUpdatePathParam[0]][curr]}),{})
+    const result = {[orderUpdatePathParam[0]]:newFieldValue}
+    console.log(logHeader,"handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
+    return result;
+  } else {
+    if (orderUpdatePathParam.length == 0) {
+      return undefined
+    } else {
+      const recursiveReorder = reorderObjectField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
+      const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
+      console.log(
+        logHeader,
+        "handleAddObjectDialogFormSubmit reorderField",
+        orderUpdatePathParam.length,
+        "path",
+        orderUpdatePathParam,
+        "orderUpdatePathParam[0]",
+        orderUpdatePathParam[0],
+        "recursiveReorder",
+        recursiveReorder,
+        "dataParam",
+        dataParam,
+        "result",
+        result
+      );
+      return result;
+    }
+  }
+}
+
+const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam:string[], newOrder:number[]):any=>{
+  console.log(
+    logHeader,
+    "handleAddObjectDialogFormSubmit reorderField",
+    orderUpdatePathParam.length,
+    "path",
+    orderUpdatePathParam,
+    "orderUpdatePathParam[0]",
+    orderUpdatePathParam[0],
+    "dataParam",
+    dataParam
+  );
+
+  // return dataParam;
+  if (orderUpdatePathParam.length == 1) {
+    const newFieldValue = newOrder.reduce((acc,curr)=>([...acc,dataParam[orderUpdatePathParam[0]][curr]]),[])
+    const result = {...dataParam,[orderUpdatePathParam[0]]:newFieldValue}
+    console.log(logHeader,"handleAddObjectDialogFormSubmit reorderArrayField final",newFieldValue,"result",result);
+    return result;
+  } else {
+    if (orderUpdatePathParam.length == 0) {
+      return undefined
+    } else {
+      const recursiveReorder = reorderArrayField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
+      const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
+      console.log(
+        logHeader,
+        "handleAddObjectDialogFormSubmit reorderField",
+        orderUpdatePathParam.length,
+        "path",
+        orderUpdatePathParam,
+        "orderUpdatePathParam[0]",
+        orderUpdatePathParam[0],
+        "recursiveReorder",
+        recursiveReorder,
+        "dataParam",
+        dataParam,
+        "result",
+        result
+      );
+      return result;
+    }
+  }
+}
+
 // #####################################################################################################
 export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProps) {
   const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
+  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
@@ -128,25 +220,61 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
     console.log(
       logHeader,
-      "handleAddObjectDialogFormSubmit buttonType",
+      "handleAddObjectDialogFormSubmit called for buttonType",
       buttonType,
       "props",
       props,
       "passed value",
-      data
+      data,
+      "formHelperState",
+      formHelperState
     );
     // event?.stopPropagation();
     // let newVersion = {...data,...data['ROOT']};
-    const newVersion = _.merge(data,data["ROOT"]);
-    delete newVersion["ROOT"];
-    const result = props.onSubmit(newVersion, event);
+    let reorderedDataValue: any;
+    let result:any;
+    if (formHelperState && Object.keys(formHelperState).length > 0) {
+      const orderUpdate:string = Object.keys(formHelperState)[0];
+      // const orderUpdateFields = orderUpdate.split(".").splice(0,1);
+      const orderUpdatePath = orderUpdate.split(".").slice(1);
+      const newOrder:number[] = Object.values(formHelperState)[0] as number[];
+
+      console.log(logHeader,"handleAddObjectDialogFormSubmit calling reorderField",data);
+      
+      const reorderedDataValue = reorderArrayField(logHeader, data, orderUpdatePath, newOrder);
+      // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
+      // reorderedDataValue = {...data,reorderedField}
+      delete reorderedDataValue["ROOT"]; // WHY HAS ROOT BEEN ADDED???? BUG?
+      const newVersion = structuredClone(reorderedDataValue)
+      console.log(
+        logHeader,
+        "handleAddObjectDialogFormSubmit after reorderArrayField",
+        "newOrder",
+        newOrder,
+        "reorderedDataValue",
+        reorderedDataValue,
+        "newVersion",
+        newVersion
+        // "data",data
+      );
+      // const newDataValue = orderUpdateFields.slice(1).r
+      result = props.onSubmit(newVersion, event);
+    } else {
+      const newVersion = _.merge(data,data["ROOT"]);
+      result = props.onSubmit(newVersion, event);
+    }
+    // const newVersion = _.merge(reorderedDataValue,data["ROOT"]);
+    // const newVersion = Object.assign({},reorderedDataValue);
+    // // delete newVersion["ROOT"];
+    // console.log(logHeader,"handleAddObjectDialogFormSubmit","newVersion",newVersion);
+    
 
     if (buttonType == props.label) {
       handleAddObjectDialogFormClose("");
     } else {
       console.warn(
         logHeader,
-        "handleAddObjectDialogFormSubmit nog closing dialog form",
+        "handleAddObjectDialogFormSubmit now closing dialog form",
         props.label,
         "buttonType",
         buttonType
@@ -197,24 +325,12 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       {props.currentDeploymentUuid && props.currentApplicationSection ? (
         <FormProvider {...formMethods}>
           <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-            {/* <DialogTitle>add Entity</DialogTitle> */}
             <DialogTitle>{props.label} add / edit Element</DialogTitle>
-            {/* <form id={'form.'+props.label} onSubmit={handleSubmit(props.onSubmit)} style={{display:"inline-flex"}}> */}
             <span>form: {"form." + props.label}</span>
             <form
               id={"form." + props.label}
-              // id="toto"
               onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-              // onSubmit={handleSubmit(()=>console.log("ICI!!!!!!!!!!"))}
-              
-              // style={{ display: "inline-flex" }}()
             >
-              {/* <Grid sx={{ display: "inline-flex", flexDirection: "column" }}>
-              {/* <Item>formObject: {JSON.stringify(props.innerProps.initialValuesObject)}</Item> */}
-              {/* <Item>json object form jzod schema: {JSON.stringify(props.innerProps.jzodSchema)}</Item> */}
-              {/* <Item key={'ROOT_NOT_USED'}> } */}
-
-
               <JzodElementEditor
                 name={'ROOT'}
                 listKey={'ROOT'}
@@ -227,19 +343,9 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                   currentApplicationSection: props.currentApplicationSection,
                   elementJzodSchema:props.jzodSchema,
                   rootJzodSchema:props.jzodSchema,
-                  // onSubmit: (data: any, event: any) => {
-                  //   console.log("onSubmit called", data, event);
-                  // },
                 }}
-                // register={register}
-                // errors={errors}
-                // formState={formState}
-                // setValue={setValue}
               />
-              {/* errors will return when field validation fails  */}
               {errors.exampleRequired && <span>This field is required</span>}
-              {/* <label htmlFor={props.label}>submit form.{props.label}</label> */}
-              {/* <input type="submit" id={props.label} name={props.label} form={"form." + props.label} value={`submit form.${props.label}`}/> */}
               <button type="submit" name={props.label} form={"form." + props.label}>submit form.{props.label}</button>
             </form>
           </Dialog>
@@ -247,9 +353,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       ) : (
         <span>No form to display!</span>
       )}
-      {/* <span>
-      JsonObjectFormEditorDialog end {props.label}
-      </span> */}
     </div>
   );
 }
