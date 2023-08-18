@@ -22,7 +22,7 @@ import {
 } from "miroir-core";
 
 import { JzodObject } from "@miroir-framework/jzod";
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
@@ -294,7 +294,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
   if (props.tableComponentReportType == "EntityInstance") {
     // const columnDefs:ColDef<any>[] = useMemo(()=>[],[]);
     const columnDefs:{columnDefs: ColDef<any>[]} = useMemo(
-      () => ({columnDefs:getColumnDefinitionsFromEntityDefinitionJzodSchema(props.currentMiroirEntityDefinition?.jzodSchema)}),
+      () => ({columnDefs:getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(props.currentMiroirEntityDefinition?.jzodSchema)}),
       [props.currentMiroirEntityDefinition?.jzodSchema]
     );
     console.log('ReportSectionDisplay',count,"props.currentMiroirEntityDefinition?.jzodSchema",props.currentMiroirEntityDefinition?.jzodSchema,"columnDefs",columnDefs, prevColumnDefs === columnDefs, equal(prevColumnDefs,columnDefs));

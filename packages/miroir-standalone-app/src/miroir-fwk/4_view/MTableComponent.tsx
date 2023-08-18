@@ -1,19 +1,14 @@
 import {
   CellClickedEvent,
-  CellDoubleClickedEvent,
-  CellEditingStartedEvent,
-  CellEditingStoppedEvent,
-  CellValueChangedEvent,
-  RowDataUpdatedEvent
+  CellValueChangedEvent
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { FC, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { z } from "zod";
-import equal from "fast-deep-equal";
 
 
 import { SubmitHandler } from 'react-hook-form';
@@ -22,17 +17,14 @@ import { JzodObject } from '@miroir-framework/jzod';
 import {
   ApplicationDeployment,
   ApplicationDeploymentSchema,
-  DomainControllerInterface,
   EntityDefinitionSchema,
   MetaEntitySchema,
-  MiroirMetaModel,
   ReportSectionListDefinitionSchema,
-  entityEntity,
   entityInstancesUuidIndexSchema
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import {
-  useDomainControllerService, useErrorLogService,
+  useErrorLogService,
   useMiroirContextService
 } from 'miroir-fwk/4_view/MiroirContextReactProvider';
 import { useNavigate } from 'react-router-dom';
@@ -40,8 +32,6 @@ import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionDisplay';
-import { useSelector } from 'react-redux';
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from 'miroir-redux';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",
@@ -62,7 +52,7 @@ export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 export const TableComponentCorePropsSchema = z.object({
   columnDefs:z.object({columnDefs:z.array(z.any())}),
-  instancesToDisplay: entityInstancesUuidIndexSchema.optional(),
+  instancesToDisplay: entityInstancesUuidIndexSchema.optional(),// TODO: lower it down to TableCompnentEntityInstancePropsSchema, this should not appear in TableComponentJsonArrayPropsSchema
   styles:z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
@@ -80,6 +70,7 @@ export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEnt
 
 export const TableComponentJsonArrayPropsSchema = TableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
+  rowData: z.array(z.any())
 });
 export type TableComponentJsonArrayProps = z.infer<typeof TableComponentJsonArrayPropsSchema>;
 
@@ -123,7 +114,8 @@ let count=0
 let prevProps:TableComponentProps;
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-
+  console.log("MTableComponent",props);
+  
 
   // const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
   const navigate = useNavigate();
@@ -157,7 +149,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         )
       ),
     }),
-    [props.instancesToDisplay]
+    [props?.instancesToDisplay]
   );
 
   
@@ -318,6 +310,17 @@ export const MTableComponent = (props: TableComponentProps) => {
   // function onRowValueChanged(e:RowDataUpdatedEvent) {
   //   console.warn("onRowValueChanged",e)
   // }
+    const [dummyRowData] = useState([
+      {make: "Toyota", model: "Celica", price: 35000},
+      {make: "Ford", model: "Mondeo", price: 32000},
+      {make: "Porsche", model: "Boxster", price: 72000}
+  ]);
+
+  const [dummyColumnDefs] = useState([
+      { field: 'make' },
+      { field: 'model' },
+      { field: 'price' }
+  ]);
 
   return (
     <div>
@@ -351,23 +354,47 @@ export const MTableComponent = (props: TableComponentProps) => {
             onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}
           />
+          <div id="tata" className="ag-theme-alpine" style={props.styles}>
+            {/* <div id="tata" className="ag-theme-alpine"> */}
+            <AgGridReact
+                columnDefs={columnDefs}
+                rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+                // rowData={gridData}
+                getRowId={(params) => {
+                  // console.log("MtableComponent getRowId", params);
+                  return params.data?.uuid ? params.data?.uuid : params.data?.id;
+                }}
+                defaultColDef={defaultColDef}
+                onCellClicked={onCellClicked}
+                onCellValueChanged={onCellValueChanged}
+                //
+                // onCellEditingStarted={onCellEditingStarted}
+                // onCellEditingStopped={onCellEditingStopped}
+                // onRowDataUpdated={onRowDataUpdated}
+                // onCellDoubleClicked={onCellDoubleClicked}
+                // onRowValueChanged={onRowValueChanged}
+              ></AgGridReact>
+          </div>
         </div>
       ) : (
-        <div></div>
-      )}
-      <div id="tata" className="ag-theme-alpine" style={props.styles}>
-        {/* <div id="tata" className="ag-theme-alpine"> */}
-        <AgGridReact
-            columnDefs={columnDefs}
-            rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+        <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
+          {/* MtableComponent {props.type} {JSON.stringify(props.columnDefs.columnDefs)} {JSON.stringify(props.rowData)} */}
+          {/* <AgGridReact
+            columnDefs={dummyColumnDefs}
+            rowData={dummyRowData}
+          ></AgGridReact> */}
+          <AgGridReact
+            columnDefs={props.columnDefs.columnDefs}
+            rowData={props.rowData}
+            // rowData={props.rowData}
             // rowData={gridData}
-            getRowId={(params) => {
-              // console.log("MtableComponent getRowId", params);
-              return params.data?.uuid ? params.data?.uuid : params.data?.id;
+            getRowId={(params:any) => {
+              console.log("MtableComponent getRowId", params);
+              return params?.data["uuid"] ? params?.data["uuid"] : params.data["id"]?params.data["id"]:typeof(params.data) == "object"?JSON.stringify(params.data):params.data;
             }}
             defaultColDef={defaultColDef}
             onCellClicked={onCellClicked}
-            onCellValueChanged={onCellValueChanged}
+            // onCellValueChanged={onCellValueChanged}
             //
             // onCellEditingStarted={onCellEditingStarted}
             // onCellEditingStopped={onCellEditingStopped}
@@ -375,7 +402,9 @@ export const MTableComponent = (props: TableComponentProps) => {
             // onCellDoubleClicked={onCellDoubleClicked}
             // onRowValueChanged={onRowValueChanged}
           ></AgGridReact>
-      </div>
+
+        </div>
+      )}
     </div>
   );
 }

@@ -21,17 +21,19 @@ import { Params, useParams } from 'react-router-dom';
 
 import { List, ListItem } from '@mui/material';
 import { ReportSectionDisplay } from '../ReportSectionDisplay';
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from '../getColumnDefinitionsFromEntityAttributes';
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from '../getColumnDefinitionsFromEntityAttributes';
 
 import { JzodElement, JzodObject } from '@miroir-framework/jzod';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { EntityInstanceLink } from '../EntityInstanceLink';
 import {
+  useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
 import { useSelector } from 'react-redux';
 import { useCallback, useMemo, useState } from 'react';
 import { JzodObjectDisplay } from '../JzodElementDisplay';
+import { resolveJzodSchemaReference } from '../JzodElementEditor';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -127,7 +129,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
-  const entityJzodSchema: { [attributeName: string]: JzodElement } | undefined =
+  const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
@@ -147,6 +149,23 @@ export const EntityInstancePage = (props: ReportPageProps) => {
       entityUuid: entityBook.uuid,
     }
   );
+
+  const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+
+  const currentEnumJzodSchemaResolver:{[k:string]:JzodObject} = useMemo(()=>({
+    "array": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodArraySchema"} },currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "simpleType": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodAttributeSchema"} },currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "enum": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodEnumSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "union": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodUnionSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "record": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodRecordSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "object": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodObjectSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "function": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodFunctionSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "lazy": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLazySchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "literal": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLiteralSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+    "schemaReference": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodReferenceSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
+  }),[currentMiroirModel])
+
+
   const publisherBooks = useMemo(
     () =>
       (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
@@ -164,7 +183,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
 
   console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
 
-  console.log('EntityInstancePage entityJzodSchema',entityJzodSchema);
+  console.log('EntityInstancePage instance',instance);
+  console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
   
   if (params.applicationSection && instance) {
     return (
@@ -186,12 +206,17 @@ export const EntityInstancePage = (props: ReportPageProps) => {
             currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
               <div>
                 <JzodObjectDisplay
+                  path={instance?.name}
+                  name={instance?.name}
                   deploymentUuid={params.deploymentUuid}
                   applicationSection={params.applicationSection as ApplicationSection}
                   entityUuid={params.entityUuid}
                   instanceUuid={params.instanceUuid}
-                  entityJzodSchema={entityJzodSchema}
+                  element={instance}
+                  rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                  elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
+                  currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                 ></JzodObjectDisplay>
                 <span>
                   Publisher Books:

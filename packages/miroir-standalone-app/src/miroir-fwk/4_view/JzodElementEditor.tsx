@@ -4,15 +4,14 @@ import Select from 'react-select';
 
 import { useFormContext } from "react-hook-form";
 
-import { Checkbox } from "@mui/material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Checkbox } from "@mui/material";
 
-import { JzodArray, JzodElement, JzodObject, JzodReference, JzodUnion } from "@miroir-framework/jzod";
+import { JzodElement, JzodObject, JzodReference, JzodUnion } from "@miroir-framework/jzod";
 import { ApplicationSection, EntityAttribute, EntityInstanceWithName, EntityInstancesUuidIndex, MiroirMetaModel, Uuid, applicationDeploymentMiroir } from "miroir-core";
-import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
 import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
+import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
 
 // #####################################################################################################
@@ -67,17 +66,21 @@ export interface JzodElementEditorProps {
   innerProps: JzodElementFormEditorProps,
 }
 
-export function resolveJzodSchemaReference(jzodSchema:JzodReference, rootJzodSchema:JzodObject, currentModel:MiroirMetaModel) {
-  const absoluteReferenceTargetJzodSchema: JzodElement | undefined = jzodSchema.definition.absolutePath
-  ? currentModel.jzodSchemas.find((s) => s.uuid == jzodSchema.definition.absolutePath)?.definition
-  : rootJzodSchema;
-const targetJzodSchema = jzodSchema.definition.relativePath
-  ? absoluteReferenceTargetJzodSchema?.definition
-    ? (absoluteReferenceTargetJzodSchema?.definition as any)[jzodSchema.definition.relativePath]
-    : undefined
-  : absoluteReferenceTargetJzodSchema;
-  console.log("JzodElementEditor resolveJzodSchemaReference for jzodSchema",jzodSchema, "result",targetJzodSchema);
-  
+export function resolveJzodSchemaReference(
+  jzodSchema?: JzodReference,
+  rootJzodSchema?: JzodObject,
+  currentModel?: MiroirMetaModel
+) {
+  const absoluteReferenceTargetJzodSchema: JzodElement | undefined = jzodSchema?.definition.absolutePath
+    ? currentModel?.jzodSchemas.find((s) => s.uuid == jzodSchema?.definition.absolutePath)?.definition
+    : rootJzodSchema;
+  const targetJzodSchema = jzodSchema?.definition.relativePath
+    ? absoluteReferenceTargetJzodSchema?.definition
+      ? (absoluteReferenceTargetJzodSchema?.definition as any)[jzodSchema?.definition.relativePath]
+      : undefined
+    : absoluteReferenceTargetJzodSchema;
+  console.log("JzodElementEditor resolveJzodSchemaReference for jzodSchema", jzodSchema, "result", targetJzodSchema);
+
   return targetJzodSchema;
 }
 
@@ -187,11 +190,11 @@ export const JzodElementEditor = (
     case "array":{
       console.log();
       
-      const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodSchema(
-        ((elementJzodSchema as JzodArray).definition
-          ? (elementJzodSchema as JzodArray).definition
-          : {}) as JzodObject
-      );
+      // const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+      //   ((elementJzodSchema as JzodArray).definition
+      //     ? (elementJzodSchema as JzodArray).definition
+      //     : {}) as JzodObject
+      // );
       const resolvedJzodSchema =
         elementJzodSchema.definition.type == "schemaReference"
           ? resolveJzodSchemaReference(elementJzodSchema.definition, props.innerProps.rootJzodSchema, currentModel)

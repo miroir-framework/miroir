@@ -240,17 +240,38 @@
             "optional": true,
             "type": "object",
             "definition": {
-              "id": { "type": "simpleType", "definition": "number" },
-              "defaultLabel": { "type": "simpleType", "definition": "string" },
-              "editable": { "type": "simpleType", "definition": "boolean" }
+              "id": { "type": "simpleType", "definition": "number", "optional":true },
+              "defaultLabel": { "type": "simpleType", "definition": "string", "optional":true },
+              "editable": { "type": "simpleType", "definition": "boolean", "optional":true }
             }
           },
           "type": { "type": "literal", "definition": "schemaReference" },
           "definition": { 
             "type": "object", 
             "definition": {
-              "relativePath": { "type": "simpleType", "definition": "string", "optional": true },
-              "absolutePath": { "type": "simpleType", "definition": "string", "optional": true }
+              "absolutePath": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Absolute Path",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntity": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+                  "editable": true
+                }
+              },
+              "relativePath": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": {
+                  "id": 1,
+                  "defaultLabel": "Relative Path",
+                  "editable": true
+                }
+              }
             }
           }
         }

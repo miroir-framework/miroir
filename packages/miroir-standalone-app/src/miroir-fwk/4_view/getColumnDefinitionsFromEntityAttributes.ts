@@ -11,80 +11,168 @@ import {
 import GenderCellRenderer from "./GenderCellRenderer";
 import { JzodElement, JzodObject } from "@miroir-framework/jzod";
 
-// export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema:JzodObject):ColDef<any>[] {
-export function getColumnDefinitionsFromEntityDefinitionJzodSchema(jzodSchema: JzodElement): ColDef<any>[] {
-  return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
-    switch (e[0]) {
-      case "gender": {
-        console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column gender", e);
+// export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema:JzodObject):ColDef<any>[] {
 
-        return {
-          field: "gender",
-          cellRenderer: GenderCellRenderer,
-          cellEditor: GenderCellEditor,
-          cellEditorPopup: true,
-          editable: true,
-        };
-        break;
-      }
-      case "publisher": {
-        console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column publisher", e);
+export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:string,jzodSchema: JzodElement): ColDef<any> {
+  switch (name) {
+    case "gender": {
+      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", name, jzodSchema);
 
-        return {
-          field: "publisher",
-          cellRenderer: EntityInstanceCellRenderer,
-          cellEditor: SelectEntityInstanceEditor,
-          cellEditorPopup: true,
-          editable: true,
-          // sort:'asc',
-          cellEditorParams: {
-            entityUuid: entityPublisher.uuid,
-          },
-          cellRendererParams: {
-            entityUuid: entityPublisher.uuid,
-          },
-        };
-        break;
-      }
-      case "author": {
-        console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column author", e);
-
-        return {
-          field: "author",
-          cellRenderer: EntityInstanceCellRenderer,
-          cellEditor: SelectEntityInstanceEditor,
-          cellEditorPopup: true,
-          editable: true,
-          // sort:'asc',
-          cellEditorParams: {
-            entityUuid: entityAuthor.uuid,
-          },
-          cellRendererParams: {
-            entityUuid: entityAuthor.uuid,
-          },
-        };
-        break;
-      }
-      case "conceptLevel": {
-        console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column conceptLevel", e);
-        return {
-          field: e[1].name,
-          headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
-        };
-      }
-      default: {
-        console.log("getColumnDefinitionsFromEntityDefinitionJzodSchema column default", e);
-        return {
-          field: e[0],
-          cellRenderer: DefaultCellRenderer,
-          cellRendererParams: {
-            columnName: e[0],
-          },
-          headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
-          // "sort":'asc'
-        };
-        break;
-      }
+      return ({
+        field: "gender",
+        cellRenderer: GenderCellRenderer,
+        cellEditor: GenderCellEditor,
+        cellEditorPopup: true,
+        editable: true,
+      });
+      break;
     }
-  });
+    case "publisher": {
+      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", name, jzodSchema);
+
+      return {
+        field: "publisher",
+        cellRenderer: EntityInstanceCellRenderer,
+        cellEditor: SelectEntityInstanceEditor,
+        cellEditorPopup: true,
+        editable: true,
+        // sort:'asc',
+        cellEditorParams: {
+          entityUuid: entityPublisher.uuid,
+        },
+        cellRendererParams: {
+          entityUuid: entityPublisher.uuid,
+        },
+      };
+      break;
+    }
+    case "author": {
+      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", name, jzodSchema);
+
+      return {
+        field: "author",
+        cellRenderer: EntityInstanceCellRenderer,
+        cellEditor: SelectEntityInstanceEditor,
+        cellEditorPopup: true,
+        editable: true,
+        // sort:'asc',
+        cellEditorParams: {
+          entityUuid: entityAuthor.uuid,
+        },
+        cellRendererParams: {
+          entityUuid: entityAuthor.uuid,
+        },
+      };
+      break;
+    }
+    case "conceptLevel": {
+      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", name, jzodSchema);
+      return {
+        field: name,
+        headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
+      };
+    }
+    default: {
+      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", name, jzodSchema);
+      return {
+        field: name,
+        cellRenderer: DefaultCellRenderer,
+        cellRendererParams: {
+          columnName: name,
+        },
+        headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
+        // "sort":'asc'
+      };
+      break;
+    }
+  }
+}
+
+export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema: JzodElement): ColDef<any>[] {
+  switch (jzodSchema.type) {
+    case "object": {
+      return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) =>
+        getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1])
+      );
+    }
+    break;
+  default: {
+    return [];
+    break;
+  }
+}
+  // return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
+  //   switch (e[0]) {
+  //     case "gender": {
+  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
+
+  //       return {
+  //         field: "gender",
+  //         cellRenderer: GenderCellRenderer,
+  //         cellEditor: GenderCellEditor,
+  //         cellEditorPopup: true,
+  //         editable: true,
+  //       };
+  //       break;
+  //     }
+  //     case "publisher": {
+  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
+
+  //       return {
+  //         field: "publisher",
+  //         cellRenderer: EntityInstanceCellRenderer,
+  //         cellEditor: SelectEntityInstanceEditor,
+  //         cellEditorPopup: true,
+  //         editable: true,
+  //         // sort:'asc',
+  //         cellEditorParams: {
+  //           entityUuid: entityPublisher.uuid,
+  //         },
+  //         cellRendererParams: {
+  //           entityUuid: entityPublisher.uuid,
+  //         },
+  //       };
+  //       break;
+  //     }
+  //     case "author": {
+  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
+
+  //       return {
+  //         field: "author",
+  //         cellRenderer: EntityInstanceCellRenderer,
+  //         cellEditor: SelectEntityInstanceEditor,
+  //         cellEditorPopup: true,
+  //         editable: true,
+  //         // sort:'asc',
+  //         cellEditorParams: {
+  //           entityUuid: entityAuthor.uuid,
+  //         },
+  //         cellRendererParams: {
+  //           entityUuid: entityAuthor.uuid,
+  //         },
+  //       };
+  //       break;
+  //     }
+  //     case "conceptLevel": {
+  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
+  //       return {
+  //         field: e[1].name,
+  //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
+  //       };
+  //     }
+  //     default: {
+  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
+  //       return {
+  //         field: e[0],
+  //         cellRenderer: DefaultCellRenderer,
+  //         cellRendererParams: {
+  //           columnName: e[0],
+  //         },
+  //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
+  //         // "sort":'asc'
+  //       };
+  //       break;
+  //     }
+  //   }
+  // });
 }

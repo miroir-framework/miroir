@@ -83,7 +83,9 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 
 // ################################################################################################
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
-  const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
+  // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
+  const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
+  console.log("DefaultCellRenderer",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -93,10 +95,11 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
     )
   } else {
     return (
-      <span>
+      <div>
         {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
-        {props.value?props.value:'null value'}
-      </span>
+        {/* {props.data?props.data:'null value'} */}
+        {valueToDisplay?valueToDisplay:'null value'}
+      </div>
     );
   }
 })

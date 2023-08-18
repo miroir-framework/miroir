@@ -1,19 +1,27 @@
-import { ApplicationSection, EntityInstancesUuidIndex, MetaEntity, Uuid } from "miroir-core";
-import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { JzodElement } from "@miroir-framework/jzod";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod";
 import { List, ListItem } from "@mui/material";
-import { getColumnDefinitionsFromEntityDefinitionJzodSchema } from "./getColumnDefinitionsFromEntityAttributes";
-import { ReportSectionDisplay } from "./ReportSectionDisplay";
+import { ApplicationSection, EntityInstancesUuidIndex, MetaEntity, Uuid, applicationDeploymentMiroir } from "miroir-core";
+import { useMemo } from "react";
 import { EntityInstanceLink } from "./EntityInstanceLink";
+import { resolveJzodSchemaReference } from "./JzodElementEditor";
+import { MTableComponent } from "./MTableComponent";
+import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
 
 export interface JzodObjectDisplayProps {
   // label: string;
+  name: string;
+  path: string;
+  rootJzodSchema: JzodObject;
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
   instanceUuid?: Uuid,
-  entityJzodSchema?: { [attributeName: string]: JzodElement },
+  element: any,
+  // entityJzodSchema?: { [attributeName: string]: JzodElement },
+  elementJzodSchema?: JzodElement,
   currentReportDeploymentSectionEntities?: MetaEntity[],
+  currentEnumJzodSchemaResolver:{[k:string]:JzodObject},
   // currentReportTargetEntityDefinition: Enti
   // store:any;
   // reportName: string;
@@ -32,121 +40,283 @@ export function JzodObjectDisplay(props: JzodObjectDisplayProps){
 
   const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
 
-  return (
-    <List sx={{ pt: 0}}>
-    {
-      Object.entries(props.entityJzodSchema?props.entityJzodSchema:{})?.map(
-        (entityAttribute:[string,JzodElement]) => {
-          const currentAttributeJzodSchema = entityAttribute[1];
-          switch (currentAttributeJzodSchema.type) {
-            case "array": {
-              const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema(currentAttributeJzodSchema.definition);
-              return (
-                <ListItem disableGutters key={entityAttribute[0]}>
-                  <span>
-                    <ReportSectionDisplay
-                      tableComponentReportType="JSON_ARRAY"
-                      label={"JSON_ARRAY-"+entityAttribute[0]}
-                      columnDefs={columnDefs}
-                      rowData={instance[entityAttribute[0]]}
-                      styles={
-                        {
-                          width: '50vw',
-                          height: '22vw',
-                        }
-                      }
-                    ></ReportSectionDisplay>
-                  </span>
-                </ListItem>
-              )
-              break;
-            }
-            // case "object": {
-            //   const columnDefs:any[]=getColumnDefinitionsFromEntityDefinitionJzodSchema((currentAttributeJzodSchema as JzodObject).definition);
-            //   return (
-            //     <ListItem disableGutters key={entityAttribute[0]}>
-            //       <span>
+  // const currentModel = useCurrentModel(props.deploymentUuid);
+  const miroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-            //         {/* <ReportSectionDisplay
-            //           tableComponentReportType="JSON_ARRAY"
-            //           label={"JSON_ARRAY-"+entityAttribute[0]}
-            //           columnDefs={columnDefs}
-            //           rowData={instance[entityAttribute[0]]}
-            //           styles={
-            //             {
-            //               width: '50vw',
-            //               height: '22vw',
-            //             }
-            //           }
-            //         ></ReportSectionDisplay> */}
-            //       </span>
-            //     </ListItem>
-            //   )
-            //   break;
-            // }
-            case "simpleType": {
-              // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
-              const targetEntityUuid = currentAttributeJzodSchema.extra?.targetEntity
-              if (
-                currentAttributeJzodSchema.definition == "string" &&
-                targetEntityUuid
-              ) {
-                const targetEntity: MetaEntity | undefined = props.currentReportDeploymentSectionEntities?.find(
-                  (e) => e.uuid == targetEntityUuid
-                );
-                // const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.uuid == targetEntityUuid) 
-                return (
-                  <ListItem  disableGutters key={entityAttribute[0]}>
-                    {currentAttributeJzodSchema?.extra?.defaultLabel}:
-                    <EntityInstanceLink
-                      deploymentUuid={props.deploymentUuid as string}
-                      applicationSection={props.applicationSection as ApplicationSection}
-                      entityUuid={targetEntity?.uuid as string}
-                      instanceUuid={instance[entityAttribute[0]]}
-                      label={instance[entityAttribute[0]]}
-                      key={instance[entityAttribute[0]]}
-                    />
-                  </ListItem>
-                );
-              } else {
-                return (
-                  <ListItem key={entityAttribute[0]}>
-                    {currentAttributeJzodSchema?.extra?.defaultLabel}: {instance[entityAttribute[0]]}
-                  </ListItem>
-                );
-              }
-              // if (entityAttribute[1].definition == "string" && targetEntityUuid) {
-              //   const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.uuid == targetEntityUuid) 
-              //   return (
-              //     <ListItem  disableGutters key={entityAttribute[0]}>
-              //       {entityAttribute[0]}: 
-              //       <EntityInstanceLink
-              //         deploymentUuid={params.deploymentUuid as string}
-              //         applicationSection={params.applicationSection as ApplicationSection}
-              //         entityUuid={targetEntity?.uuid as string}
-              //         instanceUuid={instance[entityAttribute[0]]}
-              //         label={instance[entityAttribute[0]]}
-              //         key={instance[entityAttribute[0]]}
-              //       />
-              //     </ListItem>
-              //   )
-              // } else {
-              //   return <></>
-              // }
-            }
-            default: {
-              return (
-                <ListItem disableGutters key={entityAttribute[0]}>
-                  {entityAttribute[0]}: {instance[entityAttribute[0]]}
-                </ListItem>
-              )
-              break;
-            }
+  const resolvedJzodSchema =
+    props.elementJzodSchema?.type == "schemaReference"
+      ? resolveJzodSchemaReference(props.elementJzodSchema, {} as JzodObject, miroirModel)
+      : props.elementJzodSchema;
+
+  const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
+    resolvedJzodSchema?.type == "union" && props.element?.type
+      ? props.currentEnumJzodSchemaResolver[props.element?.type]
+      : resolvedJzodSchema;
+
+  const displayName = targetJzodSchema?.extra?.defaultLabel?targetJzodSchema?.extra?.defaultLabel:props.name;
+  const styles = useMemo(
+    () => ({
+      width: "50vw",
+      height: "22vw",
+    }),
+    []
+  );
+  console.log("JzodElementDisplay path",props.path,"props.elementJzodSchema",props.elementJzodSchema,"resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema,"props.element",props.element,"miroirModel",miroirModel);
+
+  switch (targetJzodSchema?.type) {
+    case "array": {
+      const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(props.name,targetJzodSchema.definition)];
+      console.log("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
+      
+      return (
+        <>
+          {/* <List sx={{ pt: 0}}> */}
+            {/* <ListItem disableGutters key={props.name}> */}
+              <MTableComponent
+                type="JSON_ARRAY"
+                styles={styles}
+                // columnDefs={{columnDefs:columnDefs}}
+                columnDefs={{columnDefs:columnDefs}}
+                rowData={props.element}
+                displayTools={true}
+              >
+              </MTableComponent>
+          {/* </ListItem> */}
+        {/* </List> */}
+        </>
+      )
+      break;
+    }
+    case "record": {
+      return (
+        <div>
+          {
+            typeof props.element == "object" && props.element != null?(
+              <>
+                {/* <div>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          record path {props.path}
+                        </td>
+                        <td>
+                          element {JSON.stringify(props.element)}
+                        </td>
+                        <td>
+                          jzodSchema {JSON.stringify(targetJzodSchema)}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> */}
+                {
+                  Object.entries(props.element).map(
+                    (attribute,index) => {
+                      {/* <ListItem key={index}> */}
+                      return (
+                          <div key={index}>
+                            {/* {JSON.stringify(attribute[0])}
+                            {JSON.stringify(targetJzodSchema)} */}
+                          {/* {attribute[0]}:{"{"} */}
+                          <JzodObjectDisplay
+                            name={attribute[0]}
+                            path={props.path+'.'+attribute[0]}
+                            applicationSection={props.applicationSection}
+                            deploymentUuid={props.deploymentUuid}
+                            // elementJzodSchema={(props.elementJzodSchema as JzodObject)?.definition[attribute[0]]}
+                            elementJzodSchema={targetJzodSchema.definition}
+                            // elementJzodSchema={{type:"simpleType",definition:"string"}}
+                            entityUuid={props.entityUuid}
+                            instanceUuid={props.instanceUuid}
+                            rootJzodSchema={props.rootJzodSchema}
+                            currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                            // element={instance[attribute[0]]}
+                            element={attribute[1]}
+                            currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
+                          ></JzodObjectDisplay>
+                        {/* </ListItem> */}
+                        {/* {"}"} */}
+                        </div>
+                      )
+                    }
+                  )
+                }
+              {/* </List> */}
+            </>
+            ): <div>
+              <table>
+              <tbody>
+                <tr>
+                  <td>
+                    path 
+                  </td>
+                  <td>
+                    {props.path}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    declared type 
+                  </td>
+                  <td>
+                    {JSON.stringify(props.elementJzodSchema)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    does not match value
+                  </td>
+                  <td>
+                    {JSON.stringify(props.element)}
+                  </td>
+                </tr>
+              </tbody>
+              </table>
+              </div>
           }
-        }
+          {/* {currentAttributeJzodSchema?.extra?.defaultLabel}: {instance[entityAttribute[0]]} */}
+        </div>
       )
     }
-    </List>
-  )
-7
+    // case "record": 
+    case "object": {
+      return (
+        <div>
+          {/* instance object: {props.name} {JSON.stringify(instance)} */}
+          {
+            typeof props.element == "object" && props.element != null?(
+              <div>
+              {props.name}: {"{"}
+              <List>
+                {
+                  Object.entries(props.element).map(
+                    (attribute) => {
+                      return (
+                        <ListItem key={attribute[0]}>
+                          {/* {attribute[0]}: */}
+                          <JzodObjectDisplay
+                            path={props.path+'.'+attribute[0]}
+                            applicationSection={props.applicationSection}
+                            deploymentUuid={props.deploymentUuid}
+                            // elementJzodSchema={(props.elementJzodSchema as JzodObject)?.definition[attribute[0]]}
+                            elementJzodSchema={(targetJzodSchema as JzodObject)?.definition[attribute[0]]}
+                            entityUuid={props.entityUuid}
+                            instanceUuid={props.instanceUuid}
+                            rootJzodSchema={props.rootJzodSchema}
+                            currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                            // element={instance[attribute[0]]}
+                            element={attribute[1]}
+                            name={attribute[0]}
+                            currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
+                          ></JzodObjectDisplay>
+                        </ListItem>
+                      )
+                    }
+                  )
+                }
+              </List>
+              {"}"}
+              </div>
+            ): <div>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      path 
+                    </td>
+                    <td>
+                      {props.path}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                    declared type 
+                    </td>
+                    <td>
+                    {JSON.stringify(props.elementJzodSchema)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      does not match value
+                    </td>
+                    <td>
+                      {JSON.stringify(props.element)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          }
+          {/* {currentAttributeJzodSchema?.extra?.defaultLabel}: {instance[entityAttribute[0]]} */}
+        </div>
+      )
+    }
+    case "simpleType": {
+      // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
+      // const targetEntityUuid = props.elementJzodSchema.extra?.targetEntity
+      const targetEntityUuid = targetJzodSchema.extra?.targetEntity
+      if (
+        // props.elementJzodSchema.definition == "string" &&
+        targetJzodSchema.definition == "string" &&
+        targetEntityUuid
+      ) {
+        const targetEntity: MetaEntity | undefined = props.currentReportDeploymentSectionEntities?.find(
+          (e) => e.uuid == targetEntityUuid
+        );
+        // const targetEntity:MetaEntity| undefined = currentReportDeploymentSectionEntities.find(e=>e.uuid == targetEntityUuid) 
+        return (
+          <div>
+            {/* simpleType link element {JSON.stringify(props.element)}:
+            simpleType link schema {JSON.stringify(targetJzodSchema)}: */}
+            {displayName}:
+            <EntityInstanceLink
+              deploymentUuid={applicationDeploymentMiroir.uuid}
+              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection}
+              entityUuid={targetJzodSchema?.extra?.targetEntity}
+              // deploymentUuid={props.deploymentUuid as string}
+              // applicationSection={props.applicationSection as ApplicationSection}
+              // entityUuid={targetEntity?.uuid as string}
+              instanceUuid={props.element}
+              label={props.element}
+              key={props.name}
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            {/* {" simpleType else"}: {JSON.stringify(props.elementJzodSchema)} */}
+            {/* {props.element.name} {props.elementJzodSchema?.extra?.defaultLabel}: target {targetEntityUuid} - {JSON.stringify(props.element)} */}
+            {/* {props.elementJzodSchema?.extra?.defaultLabel}: {props.element} */}
+            {displayName}: {props.element}
+          </div>
+        );
+      }
+    }
+    case "enum": 
+    case "literal": {
+      return (
+        <div>
+          {/* {" simpleType else"}: {JSON.stringify(props.elementJzodSchema)} */}
+          {/* {props.element.name} {props.elementJzodSchema?.extra?.defaultLabel}: target {targetEntityUuid} - {JSON.stringify(props.element)} */}
+          {/* {props.elementJzodSchema?.extra?.defaultLabel}: {props.element} */}
+          {displayName}: {props.element}
+        </div>
+      );
+    }
+    default: {
+        return (
+          // <ListItem disableGutters key={props.name}>
+            <div>
+              {""} {" instance default"}: {displayName} 
+              {/* targetJzodSchema={JSON.stringify(targetJzodSchema)} */}
+              {/* {currentAttributeJzodSchema?.extra?.defaultLabel}: {instance[entityAttribute[0]]} */}
+            </div>
+          // </ListItem>
+        )
+        break;
+    }
+  }
 }

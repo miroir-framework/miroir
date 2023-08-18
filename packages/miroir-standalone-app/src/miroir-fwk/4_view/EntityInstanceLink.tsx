@@ -78,7 +78,8 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
               navigate(`/instance/${props.deploymentUuid}/${props.applicationSection}/${props?.entityUuid}/${props.instanceUuid}`);
             }}
           >
-            {instance?.name}
+            {/* {instance?.name} */}
+            {props.label?props.label:instance?.name?instance?.name:"no label for link!"}
           </button>
       </>
     );
