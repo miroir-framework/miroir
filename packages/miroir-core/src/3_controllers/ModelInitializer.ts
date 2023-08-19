@@ -32,7 +32,7 @@ import reportReportList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43
 
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { IStoreController } from '../0_interfaces/4-services/remoteStore/IStoreController.js';
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
@@ -54,7 +54,7 @@ export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter(e=>e.c
 export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(e=>e.conceptLevel != "MetaModel");
 
 export async function modelInitialize(
-  metaModel:MiroirMetaModel,
+  metaModel:MiroirApplicationModel,
   storeController:IStoreController,
   dataStoreType: DataStoreApplicationType,
   application: Application,

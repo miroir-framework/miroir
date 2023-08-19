@@ -4,7 +4,7 @@ import {
   ApplicationSection,
   EntityDefinition,
   MetaEntity,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   Report,
   ReportSectionList,
   ReportSectionListDefinition,
@@ -83,7 +83,7 @@ export const ReportPage = (props: ReportPageProps) => {
     (d) => d.uuid == params.deploymentUuid
   );
 
-  const currentModel: MiroirMetaModel = useCurrentModel(params.deploymentUuid);
+  const currentModel: MiroirApplicationModel = useCurrentModel(params.deploymentUuid);
 
 
   console.log("ReportPage currentModel", currentModel);

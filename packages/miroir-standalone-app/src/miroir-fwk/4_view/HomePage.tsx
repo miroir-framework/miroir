@@ -14,7 +14,7 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   Report,
   ReportSectionList,
   ReportSectionListDefinition,
@@ -113,7 +113,7 @@ function defaultToEntityList(value: string | undefined, miroirReports: Report[])
 // ###################################################################################
 async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
-  currentModel?:MiroirMetaModel
+  currentModel?:MiroirApplicationModel
 ) {
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
@@ -219,8 +219,8 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  // const libraryAppModel: MiroirMetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  const libraryAppModel: MiroirMetaModel = useCurrentModel(displayedDeploymentUuid);
+  // const libraryAppModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const libraryAppModel: MiroirApplicationModel = useCurrentModel(displayedDeploymentUuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);

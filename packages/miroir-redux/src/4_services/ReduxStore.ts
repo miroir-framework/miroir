@@ -25,7 +25,7 @@ import {
   LocalCacheInterface,
   MetaEntity,
   MiroirApplicationVersion,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
@@ -151,7 +151,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
 
   // ###############################################################################
-  public currentModel(deploymentUuid:string):MiroirMetaModel{
+  public currentModel(deploymentUuid:string):MiroirApplicationModel{
     console.log('currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState());
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 

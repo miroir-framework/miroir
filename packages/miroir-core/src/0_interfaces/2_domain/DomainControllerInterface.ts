@@ -12,7 +12,7 @@ import {
 
 import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationSection, EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
-import { MiroirMetaModel, MiroirMetaModelSchema } from "../1_core/Model.js";
+import { MiroirApplicationModel, MiroirMetaModelSchema } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
 export interface LocalCacheInfo {
@@ -265,7 +265,7 @@ export type EntitiesDomainStateEntityInstanceArraySelector = (domainState: Entit
 export type EntitiesDomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
 export type EntitiesDomainStateReducer = (domainState: EntitiesDomainState) => any;
 
-export type DomainStateMetaModelSelector = (domainState: DomainState) => MiroirMetaModel | undefined;
+export type DomainStateMetaModelSelector = (domainState: DomainState) => MiroirApplicationModel | undefined;
 
 export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstancesUuidIndex: EntityInstancesUuidIndex) => EntityInstance[];
 
@@ -275,9 +275,9 @@ export interface DomainControllerInterface {
   handleDomainTransactionalAction(
     deploymentUuid: Uuid,
     action: DomainTransactionalAction,
-    currentModel?: MiroirMetaModel
+    currentModel?: MiroirApplicationModel
   ): Promise<void>;
-  handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MiroirMetaModel): Promise<void>;
+  handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MiroirApplicationModel): Promise<void>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?

@@ -1,6 +1,6 @@
 import { EntityDefinition, MetaEntity, Uuid } from '../../1_core/EntityDefinition.js';
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from '../../1_core/Instance.js';
-import { MiroirMetaModel } from '../../1_core/Model.js';
+import { MiroirApplicationModel } from '../../1_core/Model.js';
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../../2_domain/ModelUpdateInterface.js';
 import { Application } from '../../1_core/Application.js';
 import { DataStoreApplicationType } from '../../3_controllers/ApplicationControllerInterface.js';
@@ -72,7 +72,7 @@ export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler,
 // store Controller
 export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
   initApplication(
-    metaModel:MiroirMetaModel, 
+    metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
     application: Application,
     applicationDeployment: EntityInstance,

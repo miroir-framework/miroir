@@ -6,7 +6,7 @@ import {
   EntityDefinition,
   EntityInstancesUuidIndex,
   MetaEntity,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   Report,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
@@ -93,9 +93,9 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   );
 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const libraryAppModel: MiroirMetaModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  const libraryAppModel: MiroirApplicationModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirMetaModel;
+  ) as MiroirApplicationModel;
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(

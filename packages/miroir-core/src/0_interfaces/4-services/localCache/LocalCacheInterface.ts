@@ -1,5 +1,5 @@
 import { Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
-import { MiroirMetaModel } from '../../1_core/Model.js';
+import { MiroirApplicationModel } from '../../1_core/Model.js';
 import { LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 
 import {
@@ -22,7 +22,7 @@ export declare interface LocalCacheInterface
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
-  currentModel(deploymentUuid:string): MiroirMetaModel;
+  currentModel(deploymentUuid:string): MiroirApplicationModel;
   currentTransaction():DomainTransactionalReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainTransactionalAncillaryOrReplayableAction):void;

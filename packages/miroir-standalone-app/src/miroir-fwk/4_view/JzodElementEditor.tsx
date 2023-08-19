@@ -9,7 +9,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Checkbox } from "@mui/material";
 
 import { JzodElement, JzodObject, JzodReference, JzodUnion } from "@miroir-framework/jzod";
-import { ApplicationSection, EntityAttribute, EntityInstanceWithName, EntityInstancesUuidIndex, MiroirMetaModel, Uuid, applicationDeploymentMiroir } from "miroir-core";
+import { ApplicationSection, EntityAttribute, EntityInstanceWithName, EntityInstancesUuidIndex, MiroirApplicationModel, Uuid, applicationDeploymentMiroir } from "miroir-core";
 import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
@@ -69,7 +69,7 @@ export interface JzodElementEditorProps {
 export function resolveJzodSchemaReference(
   jzodSchema?: JzodReference,
   rootJzodSchema?: JzodObject,
-  currentModel?: MiroirMetaModel
+  currentModel?: MiroirApplicationModel
 ) {
   const absoluteReferenceTargetJzodSchema: JzodElement | undefined = jzodSchema?.definition.absolutePath
     ? currentModel?.jzodSchemas.find((s) => s.uuid == jzodSchema?.definition.absolutePath)?.definition
@@ -84,7 +84,7 @@ export function resolveJzodSchemaReference(
   return targetJzodSchema;
 }
 
-export function getUnionDiscriminantValues(jzodUnionSchema:JzodUnion, rootJzodSchema:JzodObject, currentModel:MiroirMetaModel) {
+export function getUnionDiscriminantValues(jzodUnionSchema:JzodUnion, rootJzodSchema:JzodObject, currentModel:MiroirApplicationModel) {
   return jzodUnionSchema.discriminant
     ? {
         [jzodUnionSchema.discriminant]:jzodUnionSchema.definition.map(

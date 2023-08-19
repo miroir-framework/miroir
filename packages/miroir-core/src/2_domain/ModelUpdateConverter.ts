@@ -1,6 +1,6 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection, EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { CUDActionName, ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 
@@ -100,7 +100,7 @@ export class ModelEntityUpdateConverter{
   // ###################################################################################################
   static modelEntityUpdateToModelCUDUpdate(
     modelUpdate:ModelEntityUpdate,
-    currentModel: MiroirMetaModel,
+    currentModel: MiroirApplicationModel,
   ):ModelCUDInstanceUpdate | undefined {
     const o = ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(
       modelUpdate,

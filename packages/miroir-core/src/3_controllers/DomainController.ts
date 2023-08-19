@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import { ApplicationSection } from '../0_interfaces/1_core/Instance.js';
@@ -49,7 +49,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainTransactionalAction(
     deploymentUuid:Uuid,
     domainModelAction: DomainTransactionalAction,
-    currentModel:MiroirMetaModel,
+    currentModel:MiroirApplicationModel,
   ): Promise<void> {
     console.log(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
@@ -239,7 +239,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(
     deploymentUuid:Uuid,
     domainAction: DomainAction,
-    currentModel:MiroirMetaModel,
+    currentModel:MiroirApplicationModel,
   ): Promise<void> {
     let entityDomainAction:DomainAction | undefined = undefined;
     let otherDomainAction:DomainAction | undefined = undefined;

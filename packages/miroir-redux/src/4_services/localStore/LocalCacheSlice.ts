@@ -25,7 +25,7 @@ import {
   JzodSchemaDefinition,
   MetaEntity,
   MiroirApplicationVersion,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   ModelEntityUpdateConverter,
   Report,
   StoreBasedConfiguration,
@@ -300,7 +300,7 @@ export const selectModelForDeployment = ()=>createSelector(
       entityDefinitions:(entityDefinitions?Object.values(entityDefinitions):[]) as EntityDefinition[],
       jzodSchemas:(jzodSchemas?Object.values(jzodSchemas):[]) as JzodSchemaDefinition[],
       reports:(reports?Object.values(reports):[]) as Report[],
-    } as MiroirMetaModel;
+    } as MiroirApplicationModel;
     // console.log("selectModelForDeployment",params,result);
     
     return result;

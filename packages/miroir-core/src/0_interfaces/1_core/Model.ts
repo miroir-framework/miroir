@@ -34,7 +34,7 @@ export const MiroirMetaModelSchema = z.object({
   reports: z.array(ReportSchema),
 });
 
-export type MiroirMetaModel = z.infer<typeof MiroirMetaModelSchema>
+export type MiroirApplicationModel = z.infer<typeof MiroirMetaModelSchema>
 
 
 

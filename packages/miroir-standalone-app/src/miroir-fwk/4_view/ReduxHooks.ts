@@ -8,7 +8,7 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
-  MiroirMetaModel,
+  MiroirApplicationModel,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -35,7 +35,7 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined) {
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, selectorParams)
-  ) as MiroirMetaModel
+  ) as MiroirApplicationModel
 }
 
 

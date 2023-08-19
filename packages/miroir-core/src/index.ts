@@ -66,7 +66,7 @@ export {
 } from './0_interfaces/1_core/MiroirConfig';
 export {
   MiroirMetaModelSchema,
-  MiroirMetaModel,
+  MiroirApplicationModel,
 } from './0_interfaces/1_core/Model.js';
 export {
   MiroirApplicationVersion,

@@ -3,7 +3,7 @@ import { Application } from "../0_interfaces/1_core/Application.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { IDataSectionStore, IModelSectionStore, IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
@@ -91,7 +91,7 @@ export class StoreController implements IStoreController{
 
   // #############################################################################################
   async initApplication(
-    metaModel:MiroirMetaModel,
+    metaModel:MiroirApplicationModel,
     dataStoreType: DataStoreApplicationType,
     application: Application,
     applicationDeployment: EntityInstance,

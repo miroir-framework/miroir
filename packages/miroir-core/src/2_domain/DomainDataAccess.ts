@@ -13,7 +13,7 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model.js";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
 import { StoreBasedConfiguration } from "../0_interfaces/1_core/MiroirConfig.js";
@@ -92,7 +92,7 @@ export function selectEntityInstances(parentUuid:string | undefined):EntitiesDom
 export function selectCurrentDeploymentModel(
   deploymentUuid:string | undefined
 ):DomainStateMetaModelSelector {
-  return (domainState:DomainState):MiroirMetaModel => {
+  return (domainState:DomainState):MiroirApplicationModel => {
     console.log('selectCurrentDeploymentModel for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
     if (deploymentUuid == applicationDeploymentLibrary.uuid) {
       // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))

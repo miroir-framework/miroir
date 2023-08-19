@@ -6,7 +6,7 @@ import {
   EntityInstance, 
   EntityInstanceWithName, 
   MetaEntity, 
-  MiroirMetaModel, 
+  MiroirApplicationModel, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -40,7 +40,7 @@ export const TestUtilsTableComponent = (
   const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
   const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirMetaModel
+  ) as MiroirApplicationModel
 
   const entitiesOfDataSection:MetaEntity [] = currentModel.entities;
   const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;

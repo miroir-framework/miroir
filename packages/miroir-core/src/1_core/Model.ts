@@ -1,4 +1,4 @@
-import { MiroirMetaModel } from "../0_interfaces/1_core/Model";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityApplicationDeployment from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
@@ -47,7 +47,7 @@ import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
 
 // TODO: define current configuration!
-export const defaultMiroirMetaModel:MiroirMetaModel = {
+export const defaultMiroirMetaModel:MiroirApplicationModel = {
   configuration: [instanceConfigurationReference],
   entities: [
     entityApplication as MetaEntity,
@@ -100,7 +100,7 @@ export const defaultMiroirMetaModel:MiroirMetaModel = {
   ]
 }
 
-// export const nodeConfigurationMetaModel:MiroirMetaModel = {
+// export const nodeConfigurationMetaModel:MiroirApplicationModel = {
 //   applicationVersions:[
 //     applicationVersionInitialMiroirVersion
 //   ],
@@ -151,7 +151,7 @@ export const defaultMiroirMetaModel:MiroirMetaModel = {
 // }
 
 
-export function getCurrentEntityDefinition(metaModel:MiroirMetaModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
+export function getCurrentEntityDefinition(metaModel:MiroirApplicationModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
   const currentApplicationVersionUuid:string = metaModel.configuration[0].definition.currentModelVersion;
   const currentApplicationVersion = metaModel.applicationVersions.find(av=>av.uuid == currentApplicationVersionUuid);
   const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(e=>e.applicationVersion == currentApplicationVersionUuid);

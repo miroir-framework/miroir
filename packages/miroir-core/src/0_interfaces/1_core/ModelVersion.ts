@@ -4,7 +4,7 @@ import { ModelReplayableUpdateSchema } from "../../0_interfaces/2_domain/ModelUp
 
 export const MiroirApplicationVersionSchema = EntityInstanceWithNameSchema.extend({
   description: z.string().optional(),
-  // model?: MiroirMetaModel;
+  // model?: MiroirApplicationModel;
   application: z.string(),
   branch: z.string(),
   previousVersion: z.string(),

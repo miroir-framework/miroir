@@ -20,7 +20,7 @@ import {
 } from 'react';
 import ReactDOM from 'react-dom';
 
-import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirMetaModel } from 'miroir-core';
+import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirApplicationModel } from 'miroir-core';
 import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
 import { useSelector } from "react-redux";
 import {
@@ -51,7 +51,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirMetaModel
+  ) as MiroirApplicationModel
 
   const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
   
@@ -149,7 +149,7 @@ export const SelectEntityInstanceEditor = memo(
     const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
     const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
       localSelectModelForDeployment(state, currentModelSelectorParams)
-    ) as MiroirMetaModel
+    ) as MiroirApplicationModel
   
     const miroirEntities:MetaEntity [] = currentModel.entities;
     // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntitiesTOREMOVE(deploymentUuid,'model');
