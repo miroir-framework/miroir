@@ -261,6 +261,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       result = props.onSubmit(newVersion, event);
     } else {
       const newVersion = _.merge(data,data["ROOT"]);
+      delete newVersion["ROOT"];
       result = props.onSubmit(newVersion, event);
     }
     // const newVersion = _.merge(reorderedDataValue,data["ROOT"]);

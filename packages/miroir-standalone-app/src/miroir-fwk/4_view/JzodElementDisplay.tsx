@@ -179,7 +179,6 @@ export function JzodObjectDisplay(props: JzodObjectDisplayProps){
         </div>
       )
     }
-    // case "record": 
     case "object": {
       return (
         <div>
@@ -272,14 +271,14 @@ export function JzodObjectDisplay(props: JzodObjectDisplayProps){
             simpleType link schema {JSON.stringify(targetJzodSchema)}: */}
             {displayName}:
             <EntityInstanceLink
-              deploymentUuid={applicationDeploymentMiroir.uuid}
-              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection}
+              deploymentUuid={targetJzodSchema.extra?.targetEntityApplication == "metaModel"?applicationDeploymentMiroir.uuid:props.deploymentUuid}
+              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection == "model"?"model":"data"}
               entityUuid={targetJzodSchema?.extra?.targetEntity}
               // deploymentUuid={props.deploymentUuid as string}
               // applicationSection={props.applicationSection as ApplicationSection}
               // entityUuid={targetEntity?.uuid as string}
               instanceUuid={props.element}
-              label={props.element}
+              // label={props.element}
               key={props.name}
             />
           </div>

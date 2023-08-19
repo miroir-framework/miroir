@@ -105,6 +105,34 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
 })
 
 // ################################################################################################
+export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
+  // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
+  // const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
+  const valueToDisplay =
+    props.colDef?.field && props.data && props.data[props.colDef?.field]
+      ? props.data[props.colDef?.field]
+      : `attribute ${props.colDef?.field} does not exist on object`;
+  console.log("DefaultCellRenderer2",valueToDisplay, props);
+
+  if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
+    return (
+      <span>
+        {JSON.stringify(valueToDisplay)}
+      </span>
+    )
+  } else {
+    return (
+      <div>
+        {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
+        {/* {props.data?props.data:'null value'} */}
+        {/* {props.colDef?.field && valueToDisplay[props.colDef?.field]?valueToDisplay[props.colDef?.field]:'null value'} */}
+        {valueToDisplay}
+      </div>
+    );
+  }
+})
+
+// ################################################################################################
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
     console.log('SelectEntityInstanceEditor',props,ref);

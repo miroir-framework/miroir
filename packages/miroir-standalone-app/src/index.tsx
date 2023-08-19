@@ -97,7 +97,8 @@ async function start(root:Root) {
       components: {
         MuiList: {
           defaultProps:{
-            style: {border: `10px dashed ${blue[500]}`,}
+            style: {border: `0`,}
+            // style: {border: `10px dashed ${blue[500]}`,}
           }
         },
         MuiDialog: {

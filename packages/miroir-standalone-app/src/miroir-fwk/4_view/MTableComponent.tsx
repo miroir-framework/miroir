@@ -151,6 +151,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     }),
     [props?.instancesToDisplay]
   );
+  console.log("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
 
   
   const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
@@ -264,7 +265,17 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
   
-  console.log('MTableComponent started count',count++,'with props',props,props === prevProps, "columnDefs",columnDefs, "rowData changed:", props?.instancesToDisplay === prevProps?.instancesToDisplay);
+  console.log(
+    "MTableComponent started count",
+    count++,
+    "with props",
+    props,
+    props === prevProps,
+    "columnDefs",
+    columnDefs,
+    "rowData changed:",
+    props?.instancesToDisplay === prevProps?.instancesToDisplay
+  );
   prevProps = props;
 
   const onCellClicked = useCallback((event:CellClickedEvent)=> {

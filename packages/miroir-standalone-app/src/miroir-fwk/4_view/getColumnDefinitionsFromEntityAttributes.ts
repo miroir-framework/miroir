@@ -5,6 +5,7 @@ import entityAuthor from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a987320
 import { GenderCellEditor } from "miroir-fwk/4_view/GenderCellEditor";
 import {
   DefaultCellRenderer,
+  DefaultCellRenderer2,
   EntityInstanceCellRenderer,
   SelectEntityInstanceEditor,
 } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
@@ -76,7 +77,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", name, jzodSchema);
       return {
         field: name,
-        cellRenderer: DefaultCellRenderer,
+        cellRenderer: DefaultCellRenderer2,
         cellRendererParams: {
           columnName: name,
         },
