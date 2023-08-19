@@ -21,7 +21,8 @@ import { useEffect, useMemo } from 'react';
 
 
 import { useCurrentModel } from '../ReduxHooks';
-import { ReportSectionDisplay } from '../ReportSectionDisplay';
+import { ReportSectionListDisplay } from '../ReportSectionListDisplay';
+import { ReportSectionEntityInstance } from '../ReportSectionEntityInstance';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -57,7 +58,7 @@ export interface ReportPageProps {
   // reportName: string;
 }
 
-export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid';
+export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
 
 let count = 0;
@@ -125,18 +126,36 @@ export const ReportPage = (props: ReportPageProps) => {
           params.applicationSection 
           ? (
             // <span>Voila! {JSON.stringify(currentMiroirReport)}</span>
-            <ReportSectionDisplay
-              tableComponentReportType="EntityInstance"
-              label={"EntityInstance-" + currentReportTargetEntity?.name}
-              currentReportUuid={params.reportUuid?params.reportUuid:""}
-              styles={styles}
-              chosenApplicationSection={params.applicationSection as ApplicationSection}
-              displayedDeploymentDefinition={displayedDeploymentDefinition}
-              currentModel={currentModel}
-              currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
-              currentMiroirEntity={currentReportTargetEntity}
-              currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-            />
+              params.instanceUuid
+              ? <ReportSectionEntityInstance
+                applicationSection={params.applicationSection as ApplicationSection}
+                deploymentUuid={params.deploymentUuid}
+                entityUuid={currentReportTargetEntity.uuid}
+                instanceUuid={params.instanceUuid}
+
+                  // tableComponentReportType="EntityInstance"
+                  // label={"EntityInstance-" + currentReportTargetEntity?.name}
+                  // currentReportUuid={params.reportUuid?params.reportUuid:""}
+                  // styles={styles}
+                  // chosenApplicationSection={params.applicationSection as ApplicationSection}
+                  // displayedDeploymentDefinition={displayedDeploymentDefinition}
+                  // currentModel={currentModel}
+                  // currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+                  // currentMiroirEntity={currentReportTargetEntity}
+                  // currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+                />
+              : <ReportSectionListDisplay
+                  tableComponentReportType="EntityInstance"
+                  label={"EntityInstance-" + currentReportTargetEntity?.name}
+                  currentReportUuid={params.reportUuid?params.reportUuid:""}
+                  styles={styles}
+                  chosenApplicationSection={params.applicationSection as ApplicationSection}
+                  displayedDeploymentDefinition={displayedDeploymentDefinition}
+                  currentModel={currentModel}
+                  currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+                  currentMiroirEntity={currentReportTargetEntity}
+                  currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+                />
           ) : (
             <div>Oops.</div>
           )

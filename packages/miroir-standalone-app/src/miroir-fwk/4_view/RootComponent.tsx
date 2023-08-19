@@ -258,7 +258,8 @@ export const RootComponent = (props: RootComponentProps) => {
               </TableCell>
               <TableCell>
                 {/* <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>Authors</Link> */}
-                <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/74b010b6-afee-44e7-8590-5f0849e4a5c9`}>Books</Link>
+                <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/74b010b6-afee-44e7-8590-5f0849e4a5c9/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Books (intermediate)</Link>
+                {/* <Link to={`/report/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/74b010b6-afee-44e7-8590-5f0849e4a5c9`}>Books (intermediate)</Link> */}
               </TableCell>
               <TableCell>
                 {/* <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Author</Link> */}

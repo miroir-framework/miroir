@@ -31,7 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { useCurrentModel } from './ReduxHooks';
-import { defaultFormValues } from './ReportSectionDisplay';
+import { defaultFormValues } from './ReportSectionListDisplay';
 
 export const TableComponentTypeSchema = z.enum([
   "EntityInstance",

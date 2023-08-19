@@ -132,11 +132,11 @@ let prevInstancesToDisplay:EntityInstancesUuidIndex | undefined;
 let prevInstancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] };
 // ##########################################################################################
 // export const ReportComponent: React.FC<ReportComponentProps> = memo((
-export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
+export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   count++;
-  console.log('ReportSectionDisplay',count,props === prevProps, equal(props,prevProps));
+  console.log('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
 
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -287,7 +287,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
     entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity.uuid:undefined,
   })
 
-  console.log("ReportSectionDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
+  console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
   prevInstancesToDisplay = instancesToDisplay;
 
 
@@ -297,21 +297,21 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
       () => ({columnDefs:getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(props.currentMiroirEntityDefinition?.jzodSchema)}),
       [props.currentMiroirEntityDefinition?.jzodSchema]
     );
-    console.log('ReportSectionDisplay',count,"props.currentMiroirEntityDefinition?.jzodSchema",props.currentMiroirEntityDefinition?.jzodSchema,"columnDefs",columnDefs, prevColumnDefs === columnDefs, equal(prevColumnDefs,columnDefs));
+    console.log('ReportSectionListDisplay',count,"props.currentMiroirEntityDefinition?.jzodSchema",props.currentMiroirEntityDefinition?.jzodSchema,"columnDefs",columnDefs, prevColumnDefs === columnDefs, equal(prevColumnDefs,columnDefs));
     prevColumnDefs = columnDefs;
     prevJzodSchema = props.currentMiroirEntityDefinition?.jzodSchema;
 
   
-    // console.log("ReportSectionDisplay instancesWithStringifiedJsonAttributes",instancesWithStringifiedJsonAttributes,prevInstancesWithStringifiedJsonAttributes, instancesWithStringifiedJsonAttributes === prevInstancesWithStringifiedJsonAttributes);
+    // console.log("ReportSectionListDisplay instancesWithStringifiedJsonAttributes",instancesWithStringifiedJsonAttributes,prevInstancesWithStringifiedJsonAttributes, instancesWithStringifiedJsonAttributes === prevInstancesWithStringifiedJsonAttributes);
     // prevInstancesWithStringifiedJsonAttributes = instancesWithStringifiedJsonAttributes;
-    console.log("ReportSectionDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
-    console.log("ReportSectionDisplay columnDefs",columnDefs);
+    console.log("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
+    console.log("ReportSectionListDisplay columnDefs",columnDefs);
 
 
   
     return (
       <div className="MiroirReport-global" style={{ display: "flex" }}>
-        {/* <span>rendered ReportSectionDisplay: {count} times.</span> */}
+        {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
         {
           props?.currentMiroirReportSectionListDefinition ? (
             !!columnDefs
@@ -373,7 +373,7 @@ export const ReportSectionDisplay: React.FC<ReportComponentProps> = (
     
     return (
       <div>
-        {/* <span>rendered ReportSectionDisplay: {count} times.</span> */}
+        {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
         {/* <JsonObjectFormEditorDialog
           showButton={true}
           jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}

@@ -42,6 +42,11 @@ const router = createBrowserRouter([
         // errorElement: <ErrorPage />,
       },
       {
+        path: "report/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
+        element: <ReportPage />,
+        // errorElement: <ErrorPage />,
+      },
+      {
         path: "instance/:deploymentUuid/:applicationSection/:entityUuid/:instanceUuid",
         element: <EntityInstancePage />,
         // errorElement: <ErrorPage />,

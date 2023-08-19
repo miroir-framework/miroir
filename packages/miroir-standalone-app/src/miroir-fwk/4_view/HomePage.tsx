@@ -71,7 +71,7 @@ import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 import { Importer } from './Importer';
 import { useCurrentModel } from "./ReduxHooks";
-import { ReportSectionDisplay } from './ReportSectionDisplay';
+import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -712,7 +712,7 @@ export const HomePage = (props: RootComponentProps) => {
       </Box>
         {
           currentMiroirReport && currentMiroirReportSectionListDefinition && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
-            <ReportSectionDisplay 
+            <ReportSectionListDisplay 
               tableComponentReportType="EntityInstance"
               label={"EntityInstance-"+currentReportTargetEntity?.name}
               styles={

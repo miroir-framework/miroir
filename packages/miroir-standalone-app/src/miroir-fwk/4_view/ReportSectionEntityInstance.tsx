@@ -2,38 +2,34 @@ import Box from '@mui/material/Box';
 import {
   ApplicationDeployment,
   ApplicationSection,
-  DomainControllerInterface,
   EntityDefinition,
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirMetaModel,
   Report,
+  Uuid,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
 import {
-  useDomainControllerService, useErrorLogService,
-  useLocalCacheTransactions
+  useErrorLogService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { LocalCacheInputSelectorParams, ReduxStateChanges, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
-import { Params, useParams } from 'react-router-dom';
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 
 import { List, ListItem } from '@mui/material';
-import { ReportSectionListDisplay } from '../ReportSectionListDisplay';
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from '../getColumnDefinitionsFromEntityAttributes';
 
 import { JzodElement, JzodObject } from '@miroir-framework/jzod';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import { EntityInstanceLink } from '../EntityInstanceLink';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { EntityInstanceLink } from './EntityInstanceLink';
+import { JzodObjectDisplay } from './JzodElementDisplay';
+import { resolveJzodSchemaReference } from './JzodElementEditor';
 import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
-} from "../ReduxHooks";
-import { useSelector } from 'react-redux';
-import { useCallback, useMemo, useState } from 'react';
-import { JzodObjectDisplay } from '../JzodElementDisplay';
-import { resolveJzodSchemaReference } from '../JzodElementEditor';
+} from "./ReduxHooks";
 
 // duplicated from server!!!!!!!!
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -63,8 +59,11 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
   }
 }
 
-export interface ReportPageProps {
-  // deploymentUuid: Uuid,
+export interface ReportSectionEntityInstanceProps {
+  applicationSection: ApplicationSection,
+  deploymentUuid: Uuid,
+  entityUuid: Uuid,
+  instanceUuid: Uuid,
   // store:any;
   // reportName: string;
 }
@@ -73,10 +72,10 @@ export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection'
 
 
 // ###############################################################################################################
-export const EntityInstancePage = (props: ReportPageProps) => {
-  const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
+export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
+  // const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
   // const params = useParams<ReportUrlParams>();
-  console.log('ReportPage params',params);
+  // console.log('ReportPage params',params);
   
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   // const domainController: DomainControllerInterface = useDomainControllerService();
@@ -99,15 +98,16 @@ export const EntityInstancePage = (props: ReportPageProps) => {
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
-    (d) => d.uuid == params.deploymentUuid
+    (d) => d.uuid == props.deploymentUuid
   );
   console.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || params.applicationSection == "model"
+    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeployment)
       : displayedDeploymentDefinition;
   const currentModel =
-    params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+    props.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+  
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   console.log(
@@ -124,7 +124,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   console.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
-    (e) => e?.uuid === params.entityUuid
+    (e) => e?.uuid === props.entityUuid
   );
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
@@ -134,18 +134,18 @@ export const EntityInstancePage = (props: ReportPageProps) => {
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: params.deploymentUuid,
-      applicationSection: params.applicationSection as ApplicationSection,
-      entityUuid: params.entityUuid,
+      deploymentUuid: props.deploymentUuid,
+      applicationSection: props.applicationSection as ApplicationSection,
+      entityUuid: props.entityUuid,
     }
   );
 
-  const instance:any = instancesToDisplayUuidIndex && params.instanceUuid?instancesToDisplayUuidIndex[params.instanceUuid]:undefined;
+  const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
 
   const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: params.deploymentUuid,
-      applicationSection: params.applicationSection as ApplicationSection,
+      deploymentUuid: props.deploymentUuid,
+      applicationSection: props.applicationSection as ApplicationSection,
       entityUuid: entityBook.uuid,
     }
   );
@@ -186,7 +186,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   console.log('EntityInstancePage instance',instance);
   console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
   
-  if (params.applicationSection && instance) {
+  if (props.applicationSection && instance) {
     return (
       <div> 
         {/* params:{JSON.stringify(params)}
@@ -203,15 +203,15 @@ export const EntityInstancePage = (props: ReportPageProps) => {
           Entity Instance Attribute Values:
         </span>
           {
-            currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
+            currentReportTargetEntity && currentReportTargetEntityDefinition && props.applicationSection?
               <div>
                 <JzodObjectDisplay
                   path={instance?.name}
                   name={instance?.name}
-                  deploymentUuid={params.deploymentUuid}
-                  applicationSection={params.applicationSection as ApplicationSection}
-                  entityUuid={params.entityUuid}
-                  instanceUuid={params.instanceUuid}
+                  deploymentUuid={props.deploymentUuid}
+                  applicationSection={props.applicationSection as ApplicationSection}
+                  entityUuid={props.entityUuid}
+                  instanceUuid={props.instanceUuid}
                   element={instance}
                   rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
@@ -228,8 +228,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                         return (
                           <ListItem disableGutters key={book.name}>
                             <EntityInstanceLink
-                              deploymentUuid={params.deploymentUuid as string}
-                              applicationSection={params.applicationSection as ApplicationSection}
+                              deploymentUuid={props.deploymentUuid as string}
+                              applicationSection={props.applicationSection as ApplicationSection}
                               entityUuid={entityBook.uuid}
                               instanceUuid={book.uuid}
                               label={book.name}
@@ -251,8 +251,8 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                         return (
                           <ListItem disableGutters key={book.name}>
                             <EntityInstanceLink
-                              deploymentUuid={params.deploymentUuid as string}
-                              applicationSection={params.applicationSection as ApplicationSection}
+                              deploymentUuid={props.deploymentUuid as string}
+                              applicationSection={props.applicationSection as ApplicationSection}
                               entityUuid={entityBook.uuid}
                               instanceUuid={book.uuid}
                               label={book.name}
