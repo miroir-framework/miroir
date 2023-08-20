@@ -3,7 +3,6 @@ export {
   ApplicationSchema,
 } from './0_interfaces/1_core/Application.js';
 export {
-  miroirJzodSchemaBootstrap as miroirJzodBootstrapSchema,
   miroirJzodSchemaBootstrapZodSchema,
   EntityAttributeCoreSchema,
   EntityAttributeCore,
@@ -266,7 +265,7 @@ export {
  } from './1_core/Model.js';
 export {
   getReportSectionTargetEntityUuid,
- } from './1_core/Report.js';
+} from './1_core/Report.js';
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
@@ -357,6 +356,7 @@ import entityDefinitionStoreBasedConfiguration from './assets/miroir_model/54b9c
 // import applicationVersionInitialMiroirVersion from './assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json';
 // import instanceConfigurationReference from './assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
+import miroirJzodSchemaBootstrap from '..//src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
 
 export {
   applicationMiroir,
@@ -384,6 +384,8 @@ export {
   entityDefinitionJzodSchema,
   entityDefinitionStoreBasedConfiguration,
   entityDefinitionReport,
+  
+  miroirJzodSchemaBootstrap,
   
   reportApplicationDeploymentList,
   reportApplicationList,

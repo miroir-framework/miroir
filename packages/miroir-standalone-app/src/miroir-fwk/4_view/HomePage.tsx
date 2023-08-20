@@ -219,12 +219,12 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  // const libraryAppModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MiroirApplicationModel = useCurrentModel(displayedDeploymentUuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
-  console.log("RootComponent displayedDeploymentDefinition",displayedDeploymentDefinition);
+  console.log("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
       applicationDeploymentMiroir as ApplicationDeployment
@@ -241,12 +241,12 @@ export const HomePage = (props: RootComponentProps) => {
   ;
   console.log("HomePage currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
 
-  const deploymentReports: Report[] = currentModel.reports;
+  const deploymentReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection == 'data'? currentModel.reports:miroirMetaModel.reports;
   const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
     deploymentReports.filter(r=>(
         ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
         ||
-        (!([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid)) && displayedApplicationSection == 'data')
+        (![reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'data')
       )
     )
   ):deploymentReports;

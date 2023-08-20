@@ -4,7 +4,9 @@ import _ from "lodash";
 const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
 import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
-import { JzodObject, JzodToZodResult, jzodBootstrapSetSchema, jzodObjectSchema, jzodSchemaSetToZodSchemaSet } from "@miroir-framework/jzod";
+import { JzodElementSet, JzodObject, JzodToZodResult, jzodBootstrapSetSchema, jzodObjectSchema, jzodSchemaObjectToZodSchemaSet, jzodSchemaSetToZodSchemaSet } from "@miroir-framework/jzod";
+
+import miroirJzodSchemaBootstrap from '../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
 
 
 // ##########################################################################################
@@ -120,40 +122,43 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;
 }
 
-// #################################################################################################
-const miroirJzodExtraPropertiesSchema: JzodObject = {
-  "type": "object",
-  "definition": {
-    "id": {"type":"simpleType", "definition": "number"},
-    "defaultLabel": {"type":"simpleType", "definition": "string"},
-    "editable": {"type":"simpleType", "definition": "boolean"},
-  }
-}
+// // ################################################################################################
+// //  deducing miroirJzodSchemaBootstrap from jzodBootstrapSetSchema, by adjoining "extra" attribute
+// // ################################################################################################
+// const miroirJzodExtraPropertiesSchema: JzodObject = {
+//   "type": "object",
+//   "definition": {
+//     "id": {"type":"simpleType", "definition": "number"},
+//     "defaultLabel": {"type":"simpleType", "definition": "string"},
+//     "editable": {"type":"simpleType", "definition": "boolean"},
+//   }
+// }
 
-// const { transform, isObject, isUndefined } = _
+// // const { transform, isObject, isUndefined } = _
 
-const deepTransform = (obj:any, iterator:(key:any,value:any)=>[any,any]) => _transform(obj, (acc:any, val, key) => {
-  const [k, v] = iterator(key, val) // use the iterator and get a pair of key and value
+// const deepTransform = (obj:any, iterator:(key:any,value:any)=>[any,any]) => _transform(obj, (acc:any, val, key) => {
+//   const [k, v] = iterator(key, val) // use the iterator and get a pair of key and value
   
-  if(_isUndefined(k)) return // skip if no updated key
+//   if(_isUndefined(k)) return // skip if no updated key
   
-  // set the updated key and value, and if the value is an object iterate it as well
-  acc[k] = _isObject(v) ? deepTransform(v, iterator) : v 
-})
+//   // set the updated key and value, and if the value is an object iterate it as well
+//   acc[k] = _isObject(v) ? deepTransform(v, iterator) : v 
+// })
 
-// const obj = {"this":{"is_not":{"something":"we want to keep"},"is":{"a":{"good_idea":22},"b":{"bad_idea":67},"c":[{"meh_idea":22}]}}}
+// // const obj = {"this":{"is_not":{"something":"we want to keep"},"is":{"a":{"good_idea":22},"b":{"bad_idea":67},"c":[{"meh_idea":22}]}}}
 
-const miroirJzodExtraPropertiesSchemaTransform = (key:any, value:any):[any,any] => {
-  if (String(key) == 'extra') return [key, miroirJzodExtraPropertiesSchema]
+// const miroirJzodExtraPropertiesSchemaTransform = (key:any, value:any):[any,any] => {
+//   if (String(key) == 'extra') return [key, miroirJzodExtraPropertiesSchema]
   
-  return [key, value]
-}
+//   return [key, value]
+// }
 
 
-export const miroirJzodSchemaBootstrap = deepTransform(jzodBootstrapSetSchema,miroirJzodExtraPropertiesSchemaTransform)
+// const miroirJzodSchemaBootstrap = deepTransform(jzodBootstrapSetSchema,miroirJzodExtraPropertiesSchemaTransform)
 
-// console.log("miroirJzodBootstrapSchema",miroirJzodSchemaBootstrap);
+// console.log("miroirJzodSchemaBootstrap",miroirJzodSchemaBootstrap);
 
-export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(miroirJzodSchemaBootstrap);
+// export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(miroirJzodSchemaBootstrap);
+export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaObjectToZodSchemaSet(miroirJzodSchemaBootstrap.definition as JzodObject);
 
 export default {}

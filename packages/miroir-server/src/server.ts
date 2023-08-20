@@ -18,6 +18,7 @@ import {
 import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
+import { generateZodSchemaFileFromJzodSchema } from './utils.js';
 
 // const applicationDeploymentLibrary =await import("./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json", {assert: { type: "json" }});
 // TODO: find a better solution!
@@ -75,7 +76,9 @@ try {
   console.error("failed to initialize app, Entity 'Entity' is likely missing from Database. It can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
 }
 
-
+// ################################################################################################
+await generateZodSchemaFileFromJzodSchema();
+// ################################################################################################
 
 app.use(bodyParser.json({limit:'10mb'}));
 
