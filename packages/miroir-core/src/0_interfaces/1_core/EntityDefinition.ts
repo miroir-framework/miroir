@@ -3,8 +3,17 @@ import { ZodTypeAny, z } from "zod";
 import _ from "lodash";
 const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
+import {
+  JzodObject,
+  // ZodSchemaAndDescriptionRecord,
+  jzodObjectSchema,
+  // jzodSchemaObjectToZodSchemaAndDescriptionRecord
+} from "@miroir-framework/jzod-ts";
+import {
+  ZodSchemaAndDescription, jzodElementSchemaToZodSchemaAndDescription,
+  // jzodSchemaObjectToZodSchemaAndDescriptionRecord
+} from "@miroir-framework/jzod";
 import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
-import { JzodElementSet, JzodObject, JzodToZodResult, jzodBootstrapSetSchema, jzodObjectSchema, jzodSchemaObjectToZodSchemaSet, jzodSchemaSetToZodSchemaSet } from "@miroir-framework/jzod";
 
 import miroirJzodSchemaBootstrap from '../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
 
@@ -158,7 +167,7 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
 
 // console.log("miroirJzodSchemaBootstrap",miroirJzodSchemaBootstrap);
 
-// export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(miroirJzodSchemaBootstrap);
-export const miroirJzodSchemaBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaObjectToZodSchemaSet(miroirJzodSchemaBootstrap.definition as JzodObject);
+// export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(miroirJzodSchemaBootstrap);
+export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(miroirJzodSchemaBootstrap.definition as JzodObject);
 
 export default {}

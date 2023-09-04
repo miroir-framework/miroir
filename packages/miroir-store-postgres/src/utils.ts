@@ -1,6 +1,6 @@
 // ##############################################################################################
 
-import { JzodElement } from "@miroir-framework/jzod";
+import { JzodElement } from "@miroir-framework/jzod-ts";
 import { EntityAttribute, EntityAttributeType, EntityDefinition } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
 

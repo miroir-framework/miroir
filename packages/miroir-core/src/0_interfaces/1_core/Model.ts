@@ -24,7 +24,7 @@ export const ApplicationVersionCrossEntityDefinitionSchema = EntityInstanceSchem
   entityDefinition: z.string().uuid(),
 });
 
-export const MiroirMetaModelSchema = z.object({
+export const ApplicationModelSchema = z.object({
   applicationVersions: z.array(MiroirApplicationVersionSchema),
   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
   configuration: z.array(StoreBasedConfigurationSchema),
@@ -34,7 +34,7 @@ export const MiroirMetaModelSchema = z.object({
   reports: z.array(ReportSchema),
 });
 
-export type MiroirApplicationModel = z.infer<typeof MiroirMetaModelSchema>
+export type MiroirApplicationModel = z.infer<typeof ApplicationModelSchema>
 
 
 

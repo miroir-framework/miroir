@@ -19,7 +19,7 @@ import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDe
 
 import { List, ListItem } from '@mui/material';
 
-import { JzodElement, JzodObject } from '@miroir-framework/jzod';
+import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';

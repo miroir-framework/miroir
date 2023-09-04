@@ -2,16 +2,26 @@ import * as fs from "fs";
 import * as path from "path";
 import { AnyZodObject, ZodTypeAny, z } from "zod";
 import {
-  JzodObject,
-  JzodToZodResult,
-  ZodSchemaAndDescription,
-  getJsCodeCorrespondingToZodSchemaAndDescription,
-  jzodBootstrapSetSchema,
-  jzodSchemaObjectToZodSchemaAndDescription,
-  jzodSchemaObjectToZodSchemaSet,
-  jzodSchemaSetToZodSchemaSet,
-  jzodElementSchemaToZodSchemaAndDescription
+  // ZodSchemaAndDescriptionRecord,
+  ZodSchemaAndDescription, jzodElementSchemaToZodSchemaAndDescription,
+  // getJsCodeCorrespondingToZodSchemaAndDescription,
+  // jzodBootstrapSetSchema,
+  // jzodObjectSchemaToZodSchemaAndDescription,
+  // jzodSchemaObjectToZodSchemaAndDescriptionRecord,
+  // jzodSchemaSetToZodSchemaAndDescriptionRecord,
+  // jzodElementSchemaToZodSchemaAndDescription
 } from "@miroir-framework/jzod";
+import {
+  JzodObject, jzodToTsCode,
+  // ZodSchemaAndDescriptionRecord,
+  // ZodSchemaAndDescription,
+  // getJsCodeCorrespondingToZodSchemaAndDescription,
+  // jzodBootstrapSetSchema,
+  // jzodObjectSchemaToZodSchemaAndDescription,
+  // jzodSchemaObjectToZodSchemaAndDescriptionRecord,
+  // jzodSchemaSetToZodSchemaAndDescriptionRecord,
+  // jzodElementSchemaToZodSchemaAndDescription
+} from "@miroir-framework/jzod-ts";
 
 // import { miroirJzodSchemaBootstrapZodSchema } from "../../src/0_interfaces/1_core/EntityDefinition";
 import { miroirJzodSchemaBootstrapZodSchema } from "miroir-core";
@@ -36,9 +46,9 @@ describe(
     //   'miroir entity definition object format',
     //   () => {
 
-    //     const jzodBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(jzodBootstrapSchema);
+    //     const jzodBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(jzodBootstrapSchema);
 
-    //     const entityDefinitionEntityDefinitionZodSchema: ZodSchemaAndDescription<ZodTypeAny> = jzodSchemaObjectToZodSchemaSet (
+    //     const entityDefinitionEntityDefinitionZodSchema: ZodSchemaAndDescription<ZodTypeAny> = jzodSchemaObjectToZodSchemaAndDescriptionRecord (
     //       // "entityDefinitionEntityDefinitionJzodSchema",
     //       // entityDefinitionEntityDefinition.jzodSchema,
     //       entityDefinitionEntityDefinitionLocal.jzodSchema,
@@ -69,18 +79,20 @@ describe(
       'miroir entity definition TS type generation',
       () => {
 
-        // const jzodBootstrapZodSchema:JzodToZodResult<ZodTypeAny> = jzodSchemaSetToZodSchemaSet(jzodBootstrapSchema);
+        // const jzodBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(jzodBootstrapSchema);
 
-        const globalReferences = {
-          "1e8dab4b-65a3-4686-922e-ce89a2d62aa9":jzodSchemaObjectToZodSchemaAndDescription (
+        // export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaObjectToZodSchemaAndDescriptionRecord(miroirJzodSchemaBootstrap.definition as JzodObject);
+        const globalReferences = ()=>({
+          "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": jzodElementSchemaToZodSchemaAndDescription (
 
             miroirJzodSchemaBootstrap.definition as JzodObject,
             miroirJzodSchemaBootstrapZodSchema,
           )
-        }
+        });
+
         console.log("miroir entity definition TS type generation","globalReferences",globalReferences);
         
-        const entityDefinitionEntityDefinitionZodSchema: ZodSchemaAndDescription<ZodTypeAny> = jzodSchemaObjectToZodSchemaAndDescription (
+        const entityDefinitionEntityDefinitionZodSchema: ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(
           entityDefinitionEntityDefinitionLocal.jzodSchema,
           miroirJzodSchemaBootstrapZodSchema,
           globalReferences
@@ -88,14 +100,23 @@ describe(
 
         console.log("miroir entity definition TS type generation","globalReferences 1e8dab4b-65a3-4686-922e-ce89a2d62aa9",(globalReferences["1e8dab4b-65a3-4686-922e-ce89a2d62aa9"].zodSchema as AnyZodObject).shape);
 
-        console.log("entityDefinitionEntityDefinitionZodSchema",entityDefinitionEntityDefinitionZodSchema.description);
+        console.log("entityDefinitionEntityDefinitionZodSchema",entityDefinitionEntityDefinitionZodSchema.zodText);
 
         const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/convertedJzodSchemas.ts";
 
         if (generatedZodSchemasFile) {
           if (fs.existsSync(generatedZodSchemasFile)) {
             // fs.rmSync(path)
-            fs.writeFileSync(generatedZodSchemasFile,getJsCodeCorrespondingToZodSchemaAndDescription('entityDefinitionEntityDefinition',entityDefinitionEntityDefinitionZodSchema));
+            fs.writeFileSync(
+              generatedZodSchemasFile,
+              jzodToTsCode(
+                miroirJzodSchemaBootstrap.definition as JzodObject,
+                true
+                // "entityDefinitionEntityDefinition",
+                // entityDefinitionEntityDefinitionLocal.jzodSchema,
+                // entityDefinitionEntityDefinitionZodSchema
+              )
+            );
           } else {
             throw new Error("could not find file " + generatedZodSchemasFile);
             

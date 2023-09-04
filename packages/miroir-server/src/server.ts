@@ -8,8 +8,11 @@ import {
   MiroirConfig,
   StoreControllerFactory,
   defaultMiroirMetaModel,
+  entityDefinitionEntityDefinition,
+  entityDefinitionReport,
   getHandler,
   miroirCoreStartup,
+  miroirJzodSchemaBootstrap,
   modelActionRunner,
   postPutDeleteHandler
 } from "miroir-core";
@@ -19,6 +22,7 @@ import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 import { generateZodSchemaFileFromJzodSchema } from './utils.js';
+import { JzodObject } from '@miroir-framework/jzod-ts';
 
 // const applicationDeploymentLibrary =await import("./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json", {assert: { type: "json" }});
 // TODO: find a better solution!
@@ -77,7 +81,31 @@ try {
 }
 
 // ################################################################################################
-await generateZodSchemaFileFromJzodSchema();
+const jzodSchemaConversion: {
+  jzodObject: JzodObject,
+  targetFileName: string,
+  jzodSchemaVariableName:string,
+}[] = [
+  {
+    jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
+    targetFileName: "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
+    jzodSchemaVariableName: "report",
+  },
+  {
+    jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
+    targetFileName: "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
+    jzodSchemaVariableName: "jzodSchema",
+  }
+];
+
+for (const schema of jzodSchemaConversion) {
+  await generateZodSchemaFileFromJzodSchema(schema.jzodObject,schema.targetFileName,schema.jzodSchemaVariableName)
+}
+// await generateZodSchemaFileFromJzodSchema(
+//   entityDefinitionReport.jzodSchema as any as JzodObject,
+//   "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
+//   "report",
+// );
 // ################################################################################################
 
 app.use(bodyParser.json({limit:'10mb'}));

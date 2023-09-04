@@ -21,7 +21,7 @@ import {
   entityDefinitionEntityDefinition
 } from "miroir-core";
 
-import { JzodObject } from "@miroir-framework/jzod";
+import { JzodObject } from "@miroir-framework/jzod-ts";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";

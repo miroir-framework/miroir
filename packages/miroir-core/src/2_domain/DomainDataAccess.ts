@@ -1,4 +1,4 @@
-import { JzodAttribute } from "@miroir-framework/jzod";
+import { JzodAttribute } from "@miroir-framework/jzod-ts";
 
 import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";

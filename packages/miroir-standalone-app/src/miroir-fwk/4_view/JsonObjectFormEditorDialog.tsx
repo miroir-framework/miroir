@@ -4,7 +4,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
-import { JzodObject } from "@miroir-framework/jzod";
+import { JzodObject } from "@miroir-framework/jzod-ts";
 import { ApplicationSection, EntityAttribute, Uuid, applicationDeploymentMiroir } from "miroir-core";
 import { useCallback, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";

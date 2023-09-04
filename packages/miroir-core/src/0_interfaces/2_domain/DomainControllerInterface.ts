@@ -12,7 +12,7 @@ import {
 
 import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationSection, EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
-import { MiroirApplicationModel, MiroirMetaModelSchema } from "../1_core/Model.js";
+import { MiroirApplicationModel, ApplicationModelSchema } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
 export interface LocalCacheInfo {
@@ -145,7 +145,7 @@ export type DomainTransactionalResetDataAction = z.infer<typeof DomainTransactio
 
 // #############################################################################################
 export const DomainModelInitActionParamsSchema = z.object({
-  metaModel: MiroirMetaModelSchema,
+  metaModel: ApplicationModelSchema,
   dataStoreType: DataStoreApplicationTypeSchema,
   application: ApplicationSchema,
   applicationDeployment: EntityInstanceSchema,

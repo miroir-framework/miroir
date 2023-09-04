@@ -10,7 +10,7 @@ import {
   SelectEntityInstanceEditor,
 } from "miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
-import { JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 
 // export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema:JzodObject):ColDef<any>[] {
 

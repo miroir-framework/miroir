@@ -1,4 +1,4 @@
-import { JzodElement, JzodObject } from "@miroir-framework/jzod";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { List, ListItem } from "@mui/material";
 import { ApplicationSection, EntityInstancesUuidIndex, MetaEntity, Uuid, applicationDeploymentMiroir } from "miroir-core";
 import { useMemo } from "react";

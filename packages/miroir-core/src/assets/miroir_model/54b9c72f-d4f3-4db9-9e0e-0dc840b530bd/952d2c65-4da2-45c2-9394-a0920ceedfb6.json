@@ -44,8 +44,8 @@
         "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
       },
       "type": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "enum",
+        "definition": ["list","grid"],
         "optional": true,
         "extra": { "id":7, "defaultLabel": "Type of Report", "editable": true }
       },
@@ -57,8 +57,71 @@
         "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
       },
       "definition": {
-        "type": "simpleType",
-        "definition": "string",
+        "type": "union",
+        "discriminator": "type",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "list"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "parentName": {
+                      "type": "simpleType",
+                      "definition": "string",
+                      "optional": true,
+                      "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                    },
+                    "parentUuid": {
+                      "type": "simpleType",
+                      "definition": "string",
+                      "validations": [{ "type": "uuid" }],
+                      "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "grid"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "parentName": {
+                        "type": "simpleType",
+                        "definition": "string",
+                        "optional": true,
+                        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                      },
+                      "parentUuid": {
+                        "type": "simpleType",
+                        "definition": "string",
+                        "validations": [{ "type": "uuid" }],
+                        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
       }
     }

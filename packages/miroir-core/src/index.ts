@@ -64,7 +64,7 @@ export {
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
 export {
-  MiroirMetaModelSchema,
+  ApplicationModelSchema,
   MiroirApplicationModel,
 } from './0_interfaces/1_core/Model.js';
 export {

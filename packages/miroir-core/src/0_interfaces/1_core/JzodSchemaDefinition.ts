@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { jzodObjectSchema } from "@miroir-framework/jzod";
+import { jzodObjectSchema } from "@miroir-framework/jzod-ts";
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 
 export const jzodSchemaDefinitionSchema = EntityInstanceWithNameSchema.extend({

@@ -13,7 +13,7 @@ import { z } from "zod";
 
 import { SubmitHandler } from 'react-hook-form';
 
-import { JzodObject } from '@miroir-framework/jzod';
+import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationDeploymentSchema,
@@ -141,7 +141,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             ).find((a) => a[0] == e[0]):undefined;
             return [
               e[0],
-              currentAttributeDefinition && currentAttributeDefinition[1].type == "object"
+              Array.isArray(currentAttributeDefinition) && currentAttributeDefinition.length > 1 && (currentAttributeDefinition[1] as any).type == "object"
                 ? JSON.stringify(e[1])
                 : e[1],
             ];
@@ -285,15 +285,15 @@ export const MTableComponent = (props: TableComponentProps) => {
     if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
       // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
       const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == event.colDef.field);
-      if (columnDefinitionAttributeEntry && columnDefinitionAttributeEntry[1].type == "simpleType" && columnDefinitionAttributeEntry[1].extra?.targetEntity) {
+      if (columnDefinitionAttributeEntry && (columnDefinitionAttributeEntry[1] as any).type == "simpleType" && (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
         // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
         navigate(
           `/instance/${contextDeploymentUuid}/${
-            columnDefinitionAttribute?.extra?.targetEntityApplicationSection
-              ? columnDefinitionAttribute?.extra.targetEntityApplicationSection
+            (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
+              ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
               : context.applicationSection
-          }/${columnDefinitionAttribute?.extra?.targetEntity}/${event.data[event.colDef.field]}`
+          }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
         console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);

@@ -9,6 +9,7 @@ export default [
     external: [
       '@reduxjs/toolkit',
       '@teroneko/redux-saga-promise',
+      'fast-deep-equal',
       'immer',
       'lodash',
       'miroir-core',
