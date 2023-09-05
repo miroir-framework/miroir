@@ -11,6 +11,7 @@ module.exports = {
         exclude: /node_modules/,
       },
     ],
+    noParse: [require.resolve('typescript/lib/typescript.js')],
   },
   resolve: {
     roots: [

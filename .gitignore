@@ -11,6 +11,7 @@ packages/miroir-react/dist*/
 packages/miroir-server/node_modules*/
 packages/miroir-server/dist*/
 packages/miroir-server/miroir*/
+packages/miroir-server/library*/
 packages/miroir-server/miroir-db*/
 packages/miroir-server/miroir-indexedDb*/
 packages/miroir-redux/node_modules*/
@@ -25,6 +26,7 @@ packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/dist*/
 packages/miroir-standalone-app/build*/
 packages/miroir-standalone-app/miroir*/
+packages/miroir-standalone-app/indexedDb*/
 packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/dist*/

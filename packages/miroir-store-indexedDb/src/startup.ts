@@ -25,11 +25,13 @@ export function miroirStoreIndexedDbStartup() {
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       
-      return Promise.resolve(
-        config.emulatedServerType == "indexedDb" && dataStore
-          ? new IndexedDbModelSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
-          : new ErrorModelStore()
-      )
+      if (config.emulatedServerType == "indexedDb" && dataStore) {
+        const db = new IndexedDbModelSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
+        // db.open()
+        return db;
+      } else {
+        return new ErrorModelStore()
+      }
     }
   );
   ConfigurationService.registerStoreFactory(
@@ -43,11 +45,13 @@ export function miroirStoreIndexedDbStartup() {
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
-      return Promise.resolve(
-        config.emulatedServerType == "indexedDb"
-          ? new IndexedDbDataSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
-          : new ErrorDataStore()
-      )
+      if (config.emulatedServerType == "indexedDb") {
+        const db = new IndexedDbDataSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
+        // db.open()
+        return db;
+      } else {
+        return new ErrorDataStore()
+      }
     }
   );
 }

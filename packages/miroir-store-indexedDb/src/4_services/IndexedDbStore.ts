@@ -65,6 +65,8 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     console.log(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
+      // "dataStoreType",
+      // this.dataStoreType,
       "input: entity",
       entity,
       "entityDefinition",
@@ -91,6 +93,8 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
         console.log(
           this.logHeader,
           "createStorageSpaceForInstancesOfEntity",
+          "dataStoreType",
+          this.dataStoreType,
           "input: entity",
           entity,
           "entityDefinition",

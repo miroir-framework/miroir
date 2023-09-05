@@ -62,22 +62,14 @@ export type Maction = MinstanceAction | MentityAction;
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
-// export const ZLocalCacheEntitySliceState = z.record(z.string().uuid(),z.ZodType<EntityState<EntityInstance>>);
-
 export const ZEntityIdSchema = z.union([z.number(), z.string()]);
 export const ZDictionarySchema = z.record(z.string().uuid(), EntityInstanceSchema);
 export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: ZEntityIdSchema, entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-// export type LocalCacheDeploymentSectionEntitySliceState = {[entityUuid: Uuid]:EntityState<EntityInstance>};
-// export type LocalCacheSectionSliceState = {
-//   model: LocalCacheDeploymentSectionEntitySliceState;
-//   data: LocalCacheDeploymentSectionEntitySliceState;
-// };
 export type LocalCacheDeploymentSectionEntitySliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 
-// export type LocalCacheSliceState = {[deploymentUuid: Uuid]: LocalCacheSectionSliceState};
 export type LocalCacheSliceState = LocalCacheDeploymentSectionEntitySliceState;
 
 export const localCacheSliceName: string = "localCache";

@@ -49,7 +49,7 @@ function callUndoRedoReducer(
   state:LocalCacheSliceState,
   action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
 ):{newSnapshot:LocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
-  console.log('callUndoRedoReducer called with action', action, 'state', state);
+  // console.log('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
   let inverseChanges:Patch[] = [];
   const newPresentModelSnapshot:LocalCacheSliceState = produce(
@@ -63,7 +63,7 @@ function callUndoRedoReducer(
   );
   if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.domainAction.actionName)) {
     // TODO: test can probably be removed, sorting of undoable actions is done before reaching this point
-    console.log('callUndoRedoReducer undoable action type', action.type, 'action name',action.payload.domainAction.actionName, 'action', action.payload)
+    // console.log('callUndoRedoReducer undoable action type', action.type, 'action name',action.payload.domainAction.actionName, 'action', action.payload)
     return {newSnapshot:newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges};
   } else {
     console.warn('callUndoRedoReducer not undoable action type', action.type, 'action name',action.payload.domainAction.actionName, 'action', action.payload,'changes',changes,'inverseChanges',inverseChanges)
@@ -80,17 +80,17 @@ function callUndoRedoReducer(
     action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
-    console.log('callNextReducerWithUndoRedo called for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction');
+    // console.log('callNextReducerWithUndoRedo called for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction');
 
     const { newSnapshot, changes, inverseChanges } = callUndoRedoReducer(innerReducer, presentModelSnapshot, action);
     if (presentModelSnapshot === newSnapshot) {
-      console.log('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
+      // console.log('callNextReducerWithUndoRedo presentModelSnapshot === newSnapshot, nothing added to current transaction.');
       return state;
     } else { // presentModelSnapshot !== newSnapshot
       const newPatch:ReduxStateChanges = { action:action.payload.domainAction as DomainTransactionalReplayableAction, changes, inverseChanges };
 
 
-      console.log('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
+      // console.log('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
       
       return {
         previousModelSnapshot,
@@ -140,14 +140,13 @@ export function createUndoRedoReducer(
       case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: // TODO: here?
       case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment + '/resolved': // TODO: here?
       case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: {
-        console.log('UndoRedoReducer handleRemoteStoreCRUDAction', action)
+        // console.log('UndoRedoReducer handleRemoteStoreCRUDAction', action)
         return callNextReducer(innerReducer, state, action);
       }
       case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
-        console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction with actionType',action.payload.domainAction.actionType,'for action', action);
+        // console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction with actionType',action.payload.domainAction.actionType,'for action', action);
         switch (action.payload.domainAction.actionType) {
           case "DomainDataAction": {
-            // return callNextLocalCacheDataReducer(innerReducer, state, action as PayloadAction<DomainDataAction>)
             if (CRUDActionNamesArrayString.includes(action.payload.domainAction.actionName)) {
               return callNextReducer(innerReducer, state, {
                 type:action.type,
@@ -169,10 +168,8 @@ export function createUndoRedoReducer(
             switch (action.payload.domainAction.actionName) {
               case 'rollback':
               case 'replaceLocalCache': {
-                // const next = callNextReducer(innerReducer, state, action as PayloadAction<DomainTransactionalAction>)
                 const next = callNextReducer(innerReducer, state, action)
                 return {
-                  // dataCache,
                   previousModelSnapshot, //TODO: effectively set previousModelSnapshot
                   pastModelPatches: [],
                   presentModelSnapshot: next.presentModelSnapshot,
@@ -191,7 +188,6 @@ export function createUndoRedoReducer(
               case 'undo': {
                 if (pastModelPatches.length > 0) {
                   const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1)
-                  // const previousState = newPast.reduce((curr:any,acc:any)=>innerReducer(acc,curr), previousModelSnapshot)
                   const newPresentSnapshot = applyPatches(presentModelSnapshot,pastModelPatches[pastModelPatches.length-1].inverseChanges)
                   console.log('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheModelAction undo patches',pastModelPatches,'undo',pastModelPatches[0],pastModelPatches[1])
                   return {
@@ -242,7 +238,6 @@ export function createUndoRedoReducer(
           }
           default: {
             console.error('UndoRedoReducer handleLocalCacheAction default case for action', action);
-            // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainTransactionalAction>)
             break;
           }
         }

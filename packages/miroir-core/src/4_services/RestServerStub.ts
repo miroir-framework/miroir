@@ -42,6 +42,7 @@ const applicationDeploymentLibrary: ApplicationDeployment = {
   }
 }
 
+// ################################################################################################
 export function getHandler(
   url: string, // log only, to remove?
   localMiroirStoreController: IStoreController,
@@ -60,7 +61,14 @@ export function getHandler(
 
   const targetStoreController = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  console.log("RestServerStub get miroirWithDeployment/ using application",(targetStoreController as any)['applicationName'], "deployment",deploymentUuid,'applicationDeploymentLibrary.uuid',applicationDeploymentLibrary.uuid);
+  console.log(
+    "RestServerStub get miroirWithDeployment/ using application",
+    (targetStoreController as any)["applicationName"],
+    "deployment",
+    deploymentUuid,
+    "applicationDeploymentLibrary.uuid",
+    applicationDeploymentLibrary.uuid
+  );
 
   return generateHandlerBody(
     {section, parentUuid},
@@ -74,6 +82,7 @@ export function getHandler(
 }
 
 
+// ################################################################################################
 export function postPutDeleteHandler(
   url: string, // log only, to remove?
   method: HttpMethod,

@@ -186,6 +186,7 @@ describe(
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
   
@@ -342,10 +343,6 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
 
-          // await localDataStore.clear();
-          // await localDataStore.initModel(defaultMiroirMetaModel);
-  
-  
           const {
             getByText,
             getAllByRole,
@@ -476,6 +473,7 @@ describe(
               // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
             }
           );
+          // #####
         } catch (error) {
           console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
@@ -835,7 +833,8 @@ describe(
           console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
-      }
+      },
+      10000
     )
   }
 )

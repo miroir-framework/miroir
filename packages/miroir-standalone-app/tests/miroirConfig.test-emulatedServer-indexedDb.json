@@ -4,21 +4,21 @@
   "miroirServerConfig": {
     "model": {
       "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-miroir-uuid"
+      "indexedDbName":"indexedDb-miroir"
     },
     "data": {
       "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-miroir-uuid"
+      "indexedDbName":"indexedDb-miroir"
     }
   },
   "appServerConfig": {
     "model": {
       "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-app-uuid"
+      "indexedDbName":"indexedDb-app"
     },
     "data": {
       "emulatedServerType": "indexedDb",
-      "indexedDbName":"indexedDb-app-uuid"
+      "indexedDbName":"indexedDb-app"
     }
   },
   "deploymentMode":"monoUser",

@@ -2,7 +2,10 @@ import { ColDef } from "ag-grid-community";
 import { SubmitHandler } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
+import equal from "fast-deep-equal";
 
+
+import { JzodObject } from "@miroir-framework/jzod-ts";
 
 import {
   ApplicationDeployment,
@@ -12,25 +15,19 @@ import {
   DomainDataAction,
   EntityAttribute,
   EntityDefinitionSchema,
-  EntityInstanceWithName,
   EntityInstancesUuidIndex,
   MetaEntity,
   MetaEntitySchema,
   ReportSectionListDefinitionSchema,
-  UuidSchema,
-  entityDefinitionEntityDefinition
+  UuidSchema
 } from "miroir-core";
 
-import { JzodObject } from "@miroir-framework/jzod-ts";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
+import { useCallback, useMemo } from "react";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-import { useCallback, useMemo } from "react";
 import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectEntityInstanceUuidIndexFromLocalCache, selectInstanceArrayForDeploymentSectionEntity } from "miroir-redux";
-import { useSelector } from "react-redux";
-import equal from "fast-deep-equal";
 
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),

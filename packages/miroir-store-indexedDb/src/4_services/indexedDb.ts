@@ -78,7 +78,7 @@ export class IndexedDb {
             <any>this.db?.sublevel(tableName),
           ];
           console.log(this.logHeader, 'adding sublevel:',tableName);
-          result[1].clear();
+          result[1]?.clear();
           console.log(this.logHeader, 'addSubLevels added and cleared sublevel:',result[0]);
           
           return result;
@@ -142,9 +142,9 @@ export class IndexedDb {
 
   // #############################################################################################
   public async getAllValue(parentUuid: string):Promise<any[]> {
-    console.log(this.logHeader, 'getAllValue', parentUuid);
     const store = this.subLevels.get(parentUuid);
     const result =  store?(await store.values({valueEncoding: 'json'}).all()):[];
+    console.log(this.logHeader, 'getAllValue', parentUuid, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 

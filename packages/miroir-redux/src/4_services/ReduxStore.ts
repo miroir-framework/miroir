@@ -152,7 +152,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   public currentModel(deploymentUuid:string):MiroirApplicationModel{
-    console.log('currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState());
+    console.log('called currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState().presentModelSnapshot);
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
     if (!deploymentUuid) {
@@ -173,13 +173,13 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
         // console.log('currentModel reports',reports,getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid));
         
         return {
-          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
+          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityApplicationVersion.uuid)]?.entities??{}) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
-          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
-          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
-          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
-          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityJzodSchema.uuid)].entities) as JzodSchemaDefinition[],
-          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)].entities) as Report[],
+          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)]?.entities??{}) as StoreBasedConfiguration[],
+          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)]?.entities??{}) as MetaEntity[],
+          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)]?.entities??{}) as EntityDefinition[],
+          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityJzodSchema.uuid)]?.entities??{}) as JzodSchemaDefinition[],
+          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)]?.entities??{}) as Report[],
         };
       }
     }
@@ -190,7 +190,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
       this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDActionWithDeployment.creator({deploymentUuid, section, action})
     )
-    console.log("ReduxStore handleRemoteStoreCRUDActionWithDeployment", action, "returned", result)
+    // console.log("ReduxStore handleRemoteStoreCRUDActionWithDeployment", action, "returned", result)
     return Promise.resolve(result);
   }
 
@@ -199,7 +199,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
       this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelActionWithDeployment.creator({deploymentUuid, action})
     )
-    console.log("ReduxStore handleRemoteStoreModelActionWithDeployment", action, "returned", result)
+    // console.log("ReduxStore handleRemoteStoreModelActionWithDeployment", action, "returned", result)
     return Promise.resolve(result);
   }
 
@@ -226,14 +226,14 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
   // ###############################################################################
   currentTransaction():DomainTransactionalReplayableAction[]{
-    console.log("ReduxStore currentTransaction called");
+    // console.log("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action);
   }
 
   // ###############################################################################
   private *rootSaga(
   ) {
-    console.log("ReduxStore rootSaga running", this.RemoteStoreAccessReduxSaga);
+    // console.log("ReduxStore rootSaga running", this.RemoteStoreAccessReduxSaga);
     yield all([
       this.RemoteStoreAccessReduxSaga.instanceRootSaga.bind(this.RemoteStoreAccessReduxSaga)(),
     ]);

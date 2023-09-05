@@ -231,20 +231,19 @@ export class StoreController implements IStoreController{
   }
   
   // #############################################################################################
-  // async getInstances(parentUuid:string):Promise<any> {
   async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
     // TODO: fix applicationSection!!!
-    const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
-    console.log(this.logHeader,'getInstances','section',section,'entity',entityUuid,'found modelEntities',modelEntitiesUuid);
-
-
-    // if (modelEntitiesUuid.includes(entityUuid)) {
+    // const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+    
+    // const result = Promise.resolve({parentUuid:entityUuid, applicationSection: section, instances: await this.dataSectionStore.getInstances(entityUuid)})
+    let result: EntityInstanceCollection;
     if (section == 'data') {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.dataSectionStore.getInstances(entityUuid)});
+      result = await Promise.resolve({parentUuid:entityUuid, applicationSection:'data', instances: await this.dataSectionStore.getInstances(entityUuid)});
     } else {
-      return Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelSectionStore.getInstances(entityUuid)});
+      result = await Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelSectionStore.getInstances(entityUuid)});
     }
-    // return {parentUuid:entityUuid,applicationSection:'model',instances:await this.localUuidIndexedDb.getAllValue(entityUuid) as EntityInstance[]};
+    console.log(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
+    return result;
   }
   
   // ##############################################################################################
