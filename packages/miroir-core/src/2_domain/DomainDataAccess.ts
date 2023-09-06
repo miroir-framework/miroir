@@ -27,37 +27,9 @@ import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
+import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary.js";
 
 
-
-
-// duplicated from server!!!!!!!!
-const applicationDeploymentLibrary: ApplicationDeployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
 
 
 // ################################################################################################

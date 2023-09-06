@@ -3,6 +3,7 @@ import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
+import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary.js";
 import { generateHandlerBody } from "../RestTools.js";
 import { rest } from "msw";
 
@@ -13,34 +14,6 @@ const serializePost = (post: any) => ({
   ...post,
   user: post.user.id,
 });
-
-// duplicated from server!!!!!!!!
-const applicationDeploymentLibrary: ApplicationDeployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
 
 // ################################################################################################
 export function getHandler(

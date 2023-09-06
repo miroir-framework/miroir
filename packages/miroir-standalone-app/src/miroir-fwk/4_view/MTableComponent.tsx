@@ -281,7 +281,6 @@ export const MTableComponent = (props: TableComponentProps) => {
   const onCellClicked = useCallback((event:CellClickedEvent)=> {
     // event.stopPropagation();
     console.warn("onCellClicked",event,event.colDef.field)
-    // <Link to={`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link>
     if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
       // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
       const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == event.colDef.field);

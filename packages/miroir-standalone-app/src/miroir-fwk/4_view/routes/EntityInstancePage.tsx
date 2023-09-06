@@ -2,66 +2,35 @@ import Box from '@mui/material/Box';
 import {
   ApplicationDeployment,
   ApplicationSection,
-  DomainControllerInterface,
   EntityDefinition,
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
   Report,
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
 import {
-  useDomainControllerService, useErrorLogService,
-  useLocalCacheTransactions
+  useErrorLogService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { LocalCacheInputSelectorParams, ReduxStateChanges, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 
 
 import { List, ListItem } from '@mui/material';
-import { ReportSectionListDisplay } from '../ReportSectionListDisplay';
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from '../getColumnDefinitionsFromEntityAttributes';
 
 import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { EntityInstanceLink } from '../EntityInstanceLink';
+import { JzodObjectDisplay } from '../JzodElementDisplay';
+import { resolveJzodSchemaReference } from '../JzodElementEditor';
 import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
-import { useSelector } from 'react-redux';
-import { useCallback, useMemo, useState } from 'react';
-import { JzodObjectDisplay } from '../JzodElementDisplay';
-import { resolveJzodSchemaReference } from '../JzodElementEditor';
-
-// duplicated from server!!!!!!!!
-const applicationDeploymentLibrary: ApplicationDeployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
 
 export interface ReportPageProps {
   // deploymentUuid: Uuid,

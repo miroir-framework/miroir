@@ -14,6 +14,7 @@ import {
   MiroirConfig,
   MiroirContext,
   StoreControllerFactory,
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationMiroir,
   applicationModelBranchMiroirMasterBranch,
@@ -33,34 +34,6 @@ import applicationStoreBasedConfigurationLibrary from "../../src/assets/library_
 import applicationVersionLibraryInitialVersion from "../../src/assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
-
-// duplicated from server!!!!!!!!
-export const applicationDeploymentLibrary: ApplicationDeployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
 
 // ################################################################################################
 export interface MiroirIntegrationTestEnvironment {

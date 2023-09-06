@@ -253,8 +253,6 @@ export function JzodObjectDisplay(props: JzodObjectDisplayProps){
       )
     }
     case "simpleType": {
-      // navigate(`/instance/f714bb2f-a12d-4e71-a03b-74dcedea6eb4/data/${targetEntity?.uuid}/${e.data[e.colDef.field]}`);
-      // const targetEntityUuid = props.elementJzodSchema.extra?.targetEntity
       const targetEntityUuid = targetJzodSchema.extra?.targetEntity
       if (
         // props.elementJzodSchema.definition == "string" &&

@@ -8,6 +8,12 @@ import {
 import Box from '@mui/material/Box';
 
 import {
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
+  applicationMiroir,
+  applicationModelBranchMiroirMasterBranch,
+  applicationStoreBasedConfigurationMiroir,
+  applicationVersionInitialMiroirVersion,
   ApplicationDeployment,
   ApplicationSection,
   DomainControllerInterface,
@@ -18,11 +24,6 @@ import {
   Report,
   ReportSectionList,
   ReportSectionListDefinition,
-  applicationDeploymentMiroir,
-  applicationMiroir,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
   defaultMiroirMetaModel,
   entityReport,
   reportEntityDefinitionList,
@@ -42,17 +43,18 @@ import { ReduxStateChanges } from "miroir-redux";
 import entityPublisher from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
 import entityAuthor from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
 import entityBook from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
+import entityTest from "assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/9ad64893-5f8f-4eaf-91aa-ffae110f88c8.json";
 // import applicationDeploymentLibraryDeployment from "assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/ab4c13c3-f476-407c-a30c-7cb62275a352.json";
 import reportAuthorList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/66a09068-52c3-48bc-b8dd-76575bbc8e72.json";
 import reportBookList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
 import reportPublisherList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json";
+import reportTestList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/931dd036-dfce-4e47-868e-36dba3654816.json";
 import entityDefinitionBook from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
 import entityDefinitionPubliser from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import entityDefinitionAuthor from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
+import entityDefinitionTest from "assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/83872519-ce34-4a24-b1db-b7bf604ebd3a.json";
 
-// import applicationDeploymentLibrary from 'assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationLibrary from "assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-// import applicationDeploymentLibrary from 'assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationStoreBasedConfigurationLibrary from "assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 import applicationVersionLibraryInitialVersion from "assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
@@ -69,37 +71,11 @@ import book4 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fef
 import book5 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book1 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
+import test1 from "assets/library_data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a.json";
 import { Importer } from './Importer';
 import { useCurrentModel } from "./ReduxHooks";
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 
-// duplicated from server!!!!!!!!
-const applicationDeploymentLibrary: ApplicationDeployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
-  "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  "type":"singleNode",
-  "name":"LibraryApplicationPostgresDeployment",
-  "application":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Postgres Deployment for Application Library",
-  "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
-}
 
 export interface RootComponentProps {
   // store:any;
@@ -129,6 +105,7 @@ async function uploadBooksAndReports(
           {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
           {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
           {entity:entityPublisher as MetaEntity, entityDefinition:entityDefinitionPubliser as EntityDefinition},
+          {entity:entityTest as MetaEntity, entityDefinition:entityDefinitionTest as EntityDefinition},
         ],
       },
     }
@@ -146,7 +123,7 @@ async function uploadBooksAndReports(
         parentUuid: entityReport.uuid,
         applicationSection:'model',
         instances: [
-          reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance
+          reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance, reportTestList as EntityInstance
         ]
       }],
     }
@@ -193,6 +170,14 @@ async function uploadBooksAndReports(
           book5 as EntityInstance,
         ],
       },
+      {
+        parentName: entityTest.name,
+        parentUuid: entityTest.uuid,
+        applicationSection:'data',
+        instances: [
+          test1 as EntityInstance, 
+        ],
+      },
     ],
   });
 }
@@ -225,36 +210,49 @@ export const HomePage = (props: RootComponentProps) => {
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
   console.log("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
-      applicationDeploymentMiroir as ApplicationDeployment
-      :
-      displayedDeploymentDefinition
+  const currentReportDefinitionDeployment: ApplicationDeployment | undefined = displayedDeploymentDefinition
   ;
+  // const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
+  //   displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
+  //     applicationDeploymentMiroir as ApplicationDeployment
+  //     :
+  //     displayedDeploymentDefinition
+  // ;
 
-  // const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
-  const currentModel = libraryAppModel;
+  const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
+  // const currentModel = libraryAppModel;
   console.log("HomePage currentModel",currentModel);
 
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
-  console.log("HomePage currentReportDefinitionDeployment",currentReportDefinitionDeployment,'currentReportDefinitionApplicationSection',currentReportDefinitionApplicationSection);
+  console.log(
+    "HomePage currentReportDefinitionDeployment",
+    currentReportDefinitionDeployment,
+    "currentReportDefinitionApplicationSection",
+    currentReportDefinitionApplicationSection
+  );
 
-  const deploymentReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection == 'data'? currentModel.reports:miroirMetaModel.reports;
-  const availableReports: Report[] = displayedDeploymentDefinition?.applicationModelLevel == "metamodel"?(
-    deploymentReports.filter(r=>(
-        ([reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'model') 
-        ||
-        (![reportEntityList.uuid,reportEntityDefinitionList.uuid].includes(r.uuid) && displayedApplicationSection == 'data')
-      )
-    )
-  ):deploymentReports;
+  const deploymentReports: Report[] =
+    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection == "data"
+      ? currentModel.reports
+      : miroirMetaModel.reports;
+  const availableReports: Report[] =
+    displayedDeploymentDefinition?.applicationModelLevel == "metamodel"
+      ? deploymentReports.filter(
+          (r) =>
+            ([reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid) &&
+              displayedApplicationSection == "model") ||
+            (![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid) &&
+              displayedApplicationSection == "data")
+        )
+      : deploymentReports;
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities;
   // const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntitiesTOREMOVE(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions;
   // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
 
+  console.log("HomePage currentReportDeploymentSectionEntities",currentReportDeploymentSectionEntities);
   console.log("HomePage deploymentReports",deploymentReports);
 
   const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
@@ -296,7 +294,7 @@ export const HomePage = (props: RootComponentProps) => {
 
 
   return (
-    <div> 
+    <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex' }}> */}
       <span>
@@ -358,13 +356,10 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainTransactionalAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
+            await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
           }}
         >
           Rollback
@@ -374,37 +369,25 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "resetModel",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "resetModel",
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "resetModel",
+            });
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "resetModel",
+            });
             console.log(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
           }}
         >
           Reset Application database
@@ -413,23 +396,17 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "resetData",
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "resetData",
+            });
             console.log(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
           }}
         >
           Reset Library Application Data
@@ -439,58 +416,46 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "initModel",
-                params: {
-                  dataStoreType:'miroir',
-                  metaModel: defaultMiroirMetaModel,
-                  application: applicationMiroir,
-                  applicationDeployment: applicationDeploymentMiroir,
-                  applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                  applicationVersion:applicationVersionInitialMiroirVersion,
-                }
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "initModel",
-                params: {
-                  dataStoreType:'app',
-                  metaModel: defaultMiroirMetaModel,
-                  application: applicationLibrary,
-                  applicationDeployment: applicationDeploymentLibrary,
-                  applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-                  applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-                  applicationVersion:applicationVersionLibraryInitialVersion,
-                }
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "initModel",
+              params: {
+                dataStoreType: "miroir",
+                metaModel: defaultMiroirMetaModel,
+                application: applicationMiroir,
+                applicationDeployment: applicationDeploymentMiroir,
+                applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+                applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+                applicationVersion: applicationVersionInitialMiroirVersion,
+              },
+            });
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "initModel",
+              params: {
+                dataStoreType: "app",
+                metaModel: defaultMiroirMetaModel,
+                application: applicationLibrary,
+                applicationDeployment: applicationDeploymentLibrary,
+                applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+                applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+                applicationVersion: applicationVersionLibraryInitialVersion,
+              },
+            });
             // TODO: transactional action must not autocommit! initModel neither?!
             // .then(
             // async () => {
             console.log(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
             // }
             // );
           }}
@@ -501,23 +466,16 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-            await domainController.handleDomainAction(
-              applicationDeploymentMiroir.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
-            await domainController.handleDomainAction(
-              applicationDeploymentLibrary.uuid,
-              {
-                actionType: "DomainTransactionalAction",
-                actionName: "rollback",
-              }
-            );
-          }
-        }
+            console.log("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
+            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              actionType: "DomainTransactionalAction",
+              actionName: "rollback",
+            });
+          }}
         >
           fetch Miroir & App configurations from database
         </button>
@@ -573,7 +531,7 @@ export const HomePage = (props: RootComponentProps) => {
                     {
                       parentName: reportReportList.parentName,
                       parentUuid: reportReportList.parentUuid,
-                      applicationSection:'data',
+                      applicationSection: "data",
                       instances: [
                         Object.assign({}, reportReportList, {
                           name: "Report2List",
@@ -639,13 +597,10 @@ export const HomePage = (props: RootComponentProps) => {
       <span>Applications: {}</span>
       <p />
       <Box>
-        <h3>
-          erreurs: {JSON.stringify(errorLog)}
-        </h3>
-
+        <h3>erreurs: {JSON.stringify(errorLog)}</h3>
       </Box>
       {/* <span>packages: {JSON.stringify(ConfigurationService.packages)}</span> */}
-      <Importer filename='' currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
+      <Importer filename="" currentModel={currentModel} currentDeploymentUuid={displayedDeploymentUuid}></Importer>
       <p />
       <Box sx={{ minWidth: 50 }}>
         <FormControl fullWidth>
@@ -679,7 +634,7 @@ export const HomePage = (props: RootComponentProps) => {
             label="displayedApplicationSection"
             onChange={handleChangeDisplayedApplicationSection}
           >
-            {['model','data'].map((applicationSection) => {
+            {["model", "data"].map((applicationSection) => {
               return (
                 <MenuItem key={applicationSection} value={applicationSection}>
                   {applicationSection}
@@ -710,29 +665,42 @@ export const HomePage = (props: RootComponentProps) => {
           </Select>
         </FormControl>
       </Box>
-        {
-          currentMiroirReport && currentMiroirReportSectionListDefinition && currentReportTargetEntity && currentReportTargetEntityDefinition && displayedApplicationSection?
-            <ReportSectionListDisplay 
-              tableComponentReportType="EntityInstance"
-              label={"EntityInstance-"+currentReportTargetEntity?.name}
-              styles={
-                {
-                    height: '80vh',
-                    width: '90vw',
-                  }
-                }
-              currentReportUuid=""
-              chosenApplicationSection={displayedApplicationSection}
-              displayedDeploymentDefinition={displayedDeploymentDefinition}
-              currentModel={currentModel}
-              currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
-              currentMiroirEntity={currentReportTargetEntity}
-              currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-            />
-          :
-          <div>Oops.</div>
-        }
-    {/* </Box> */}
+      {
+        currentMiroirReport &&
+        currentMiroirReportSectionListDefinition &&
+        currentReportTargetEntity &&
+        currentReportTargetEntityDefinition &&
+        displayedApplicationSection ? (
+          <ReportSectionListDisplay
+            tableComponentReportType="EntityInstance"
+            label={"EntityInstance-" + currentReportTargetEntity?.name}
+            styles={{
+              height: "80vh",
+              width: "90vw",
+            }}
+            currentReportUuid=""
+            chosenApplicationSection={displayedApplicationSection}
+            displayedDeploymentDefinition={displayedDeploymentDefinition}
+            currentModel={currentModel}
+            currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+            currentMiroirEntity={currentReportTargetEntity}
+            currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+          />
+        ) : (
+          <div>Oops.
+            <p>
+              currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
+            </p>
+            <p>
+              report section: {JSON.stringify(currentMiroirReportSectionListDefinition)}
+            </p>
+            <p>
+              currentReportTargetEntity: {currentReportTargetEntity?.name}, {currentReportTargetEntity?.uuid}
+            </p>
+          </div>
+        )
+      }
+      {/* </Box> */}
     </div>
   );
 };

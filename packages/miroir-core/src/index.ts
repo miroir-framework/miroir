@@ -316,6 +316,9 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 
+
+export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
+
 import entityApplication from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityApplicationDeployment from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityApplicationVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
@@ -357,6 +360,7 @@ import entityDefinitionStoreBasedConfiguration from './assets/miroir_model/54b9c
 // import instanceConfigurationReference from './assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
 import miroirJzodSchemaBootstrap from '..//src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
+
 
 export {
   applicationMiroir,

@@ -156,18 +156,91 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  const currentEnumJzodSchemaResolver:{[k:string]:JzodObject} = useMemo(()=>({
-    "array": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodArraySchema"} },props.jzodSchema,currentMiroirModel),
-    "simpleType": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodAttributeSchema"} },props.jzodSchema,currentMiroirModel),
-    "enum": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodEnumSchema"}},props.jzodSchema,currentMiroirModel),
-    "union": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodUnionSchema"}},props.jzodSchema,currentMiroirModel),
-    "record": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodRecordSchema"}},props.jzodSchema,currentMiroirModel),
-    "object": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodObjectSchema"}},props.jzodSchema,currentMiroirModel),
-    "function": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodFunctionSchema"}},props.jzodSchema,currentMiroirModel),
-    "lazy": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLazySchema"}},props.jzodSchema,currentMiroirModel),
-    "literal": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLiteralSchema"}},props.jzodSchema,currentMiroirModel),
-    "schemaReference": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodReferenceSchema"}},props.jzodSchema,currentMiroirModel),
-  }),[currentMiroirModel])
+  const currentEnumJzodSchemaResolver: { [k: string]: JzodObject } = useMemo(
+    () => ({
+      array: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodArraySchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      simpleType: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodAttributeSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      enum: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodEnumSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      union: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodUnionSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      record: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodRecordSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      object: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodObjectSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      function: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodFunctionSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      lazy: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLazySchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      literal: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLiteralSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+      schemaReference: resolveJzodSchemaReference(
+        {
+          type: "schemaReference",
+          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodReferenceSchema" },
+        },
+        props.jzodSchema,
+        currentMiroirModel
+      ),
+    }),
+    [currentMiroirModel]
+  );
 
   const formMethods = useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;

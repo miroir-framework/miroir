@@ -4,6 +4,7 @@ import _ from "lodash";
 const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
 import {
+  JzodElement,
   JzodObject,
   // ZodSchemaAndDescriptionRecord,
   jzodObjectSchema,
@@ -168,6 +169,6 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
 // console.log("miroirJzodSchemaBootstrap",miroirJzodSchemaBootstrap);
 
 // export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(miroirJzodSchemaBootstrap);
-export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(miroirJzodSchemaBootstrap.definition as JzodObject);
+export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(miroirJzodSchemaBootstrap.definition as JzodElement);
 
 export default {}
