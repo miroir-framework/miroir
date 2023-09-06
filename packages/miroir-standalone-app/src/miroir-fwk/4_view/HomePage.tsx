@@ -75,6 +75,7 @@ import test1 from "assets/library_data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150b
 import { Importer } from './Importer';
 import { useCurrentModel } from "./ReduxHooks";
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
+import { useMemo } from "react";
 
 
 export interface RootComponentProps {
@@ -227,35 +228,51 @@ export const HomePage = (props: RootComponentProps) => {
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
   console.log(
-    "HomePage currentReportDefinitionDeployment",
-    currentReportDefinitionDeployment,
-    "currentReportDefinitionApplicationSection",
-    currentReportDefinitionApplicationSection
+    "HomePage displayedDeploymentDefinition",
+    displayedDeploymentDefinition?.uuid,
+    "displayedApplicationSection",
+    displayedApplicationSection
   );
 
-  const deploymentReports: Report[] =
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection == "data"
-      ? currentModel.reports
-      : miroirMetaModel.reports;
-  const availableReports: Report[] =
-    displayedDeploymentDefinition?.applicationModelLevel == "metamodel"
-      ? deploymentReports.filter(
-          (r) =>
-            ([reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid) &&
-              displayedApplicationSection == "model") ||
-            (![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid) &&
-              displayedApplicationSection == "data")
-        )
-      : deploymentReports;
-  const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities;
-  // const currentReportDeploymentSectionEntities: MetaEntity[] = useLocalCacheSectionEntitiesTOREMOVE(currentReportDefinitionDeployment?.uuid,'model'); // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions;
-  // const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = useLocalCacheSectionEntityDefinitions(currentReportDefinitionDeployment?.uuid,'model'); // EntityDefinitions are always defined in the 'model' section
+  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
+    [applicationDeploymentMiroir.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          ),
+          entities: miroirMetaModel.entities,
+          entityDefinitions: miroirMetaModel.entityDefinitions,
+        },
+      "data": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentLibrary.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: libraryAppModel.reports,
+        entities: libraryAppModel.entities,
+        entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+  }), []);
 
-  console.log("HomePage currentReportDeploymentSectionEntities",currentReportDeploymentSectionEntities);
-  console.log("HomePage deploymentReports",deploymentReports);
+  const { availableReports, entities, entityDefinitions } =
+    displayedDeploymentDefinition && displayedApplicationSection
+      ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
+      : { availableReports: [], entities: [], entityDefinitions: [] };
 
-  const currentMiroirReport: Report | undefined = deploymentReports?.find(r=>r.uuid === displayedReportUuid);
+      console.log("HomePage availableReports",availableReports);
+
+  const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
     currentMiroirReport?.type == "list" &&
     currentMiroirReport.definition.length > 0 &&
@@ -264,16 +281,16 @@ export const HomePage = (props: RootComponentProps) => {
       : undefined
   ;
   const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionListDefinition
-    ? currentReportDeploymentSectionEntities?.find(
+    ? entities?.find(
         (e) => e?.uuid === currentMiroirReportSectionListDefinition.parentUuid
       )
     : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
   
   const handleChangeDisplayedReport = (event: SelectChangeEvent) => {
     event.stopPropagation();
-    const reportUuid = defaultToEntityList(event.target.value, deploymentReports);
+    const reportUuid = defaultToEntityList(event.target.value, availableReports);
     setDisplayedReportUuid(reportUuid?reportUuid:'');
   };
 
