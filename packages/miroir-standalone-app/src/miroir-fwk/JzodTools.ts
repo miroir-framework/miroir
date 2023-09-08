@@ -14,7 +14,7 @@ export function resolveJzodSchemaReference(
           currentModel?.jzodSchemas.find((s) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ??
           {},
       }
-    : relativeReferenceJzodContext;
+    : relativeReferenceJzodContext??jzodReference;
   const targetJzodSchema = jzodReference?.definition.relativePath
     ? absoluteReferenceTargetJzodSchema?.type == "object" && absoluteReferenceTargetJzodSchema?.definition
       ? absoluteReferenceTargetJzodSchema?.definition[jzodReference?.definition.relativePath]

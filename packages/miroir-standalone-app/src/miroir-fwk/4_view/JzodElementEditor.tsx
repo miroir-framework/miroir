@@ -70,8 +70,7 @@ export type JzodElementFormEditorProps =
 export interface JzodElementEditorProps {
   name: string,
   listKey: string,
-  // currentEnumJzodSchemaResolver:{[k:string]:JzodObject},
-  // currentEnumJzodSchemaResolver: JzodElementRecord,
+  editReference?: boolean,
   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
   discriminants?:{[k:string]:string[]},
   indentLevel?:number,
@@ -305,11 +304,9 @@ export const JzodElementEditor = (
       break;
     }
     case "schemaReference": {
-      // const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema, currentModel,props.innerProps.rootJzodSchema)
-      const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema, currentModel,{} as JzodObject)
+      const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema, currentModel)
       console.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema);
 
-      // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
       console.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 

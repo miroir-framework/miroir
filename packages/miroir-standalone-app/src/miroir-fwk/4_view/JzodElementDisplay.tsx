@@ -18,15 +18,9 @@ export interface JzodObjectDisplayProps {
   entityUuid?: Uuid,
   instanceUuid?: Uuid,
   element: any,
-  // entityJzodSchema?: { [attributeName: string]: JzodElement },
   elementJzodSchema?: JzodElement,
   currentReportDeploymentSectionEntities?: MetaEntity[],
-  // currentEnumJzodSchemaResolver:{[k:string]:JzodObject},
-  // currentEnumJzodSchemaResolver: JzodElementRecord,
   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
-  // currentReportTargetEntityDefinition: Enti
-  // store:any;
-  // reportName: string;
 }
 
 
