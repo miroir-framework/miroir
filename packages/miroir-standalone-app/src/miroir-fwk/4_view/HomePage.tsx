@@ -211,8 +211,8 @@ export const HomePage = (props: RootComponentProps) => {
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
   console.log("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeployment | undefined = displayedDeploymentDefinition
-  ;
+  // const currentReportDefinitionDeployment: ApplicationDeployment | undefined = displayedDeploymentDefinition
+  // ;
   // const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
   //   displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
   //     applicationDeploymentMiroir as ApplicationDeployment
@@ -224,8 +224,8 @@ export const HomePage = (props: RootComponentProps) => {
   // const currentModel = libraryAppModel;
   console.log("HomePage currentModel",currentModel);
 
-  const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
-    currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
+  // const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
+  //   currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
   console.log(
     "HomePage displayedDeploymentDefinition",
@@ -263,7 +263,7 @@ export const HomePage = (props: RootComponentProps) => {
         entityDefinitions: libraryAppModel.entityDefinitions,
       },
     },
-  }), []);
+  }), [miroirMetaModel, libraryAppModel]);
 
   const { availableReports, entities, entityDefinitions } =
     displayedDeploymentDefinition && displayedApplicationSection

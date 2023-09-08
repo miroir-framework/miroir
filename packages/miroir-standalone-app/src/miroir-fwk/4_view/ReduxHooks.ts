@@ -24,7 +24,7 @@ import {
 
 
 // ################################################################################################
-export function useCurrentModel(deploymentUuid: Uuid | undefined) {
+export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheInputSelectorParams = useMemo(
     () => ({

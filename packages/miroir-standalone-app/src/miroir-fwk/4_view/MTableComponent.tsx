@@ -61,8 +61,8 @@ export const TableComponentCorePropsSchema = z.object({
 export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
-  currentMiroirEntity: MetaEntitySchema,
-  currentMiroirEntityDefinition: EntityDefinitionSchema,
+  currentEntity: MetaEntitySchema,
+  currentEntityDefinition: EntityDefinitionSchema,
   reportSectionListDefinition: ReportSectionListDefinitionSchema,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
@@ -137,7 +137,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         Object.fromEntries(
           Object.entries(i).map((e) => {
             const currentAttributeDefinition = props.type == TableComponentTypeSchema.enum.EntityInstance?Object.entries(
-              props.currentMiroirEntityDefinition?.jzodSchema.definition
+              props.currentEntityDefinition?.jzodSchema.definition
             ).find((a) => a[0] == e[0]):undefined;
             return [
               e[0],
@@ -283,7 +283,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     console.warn("onCellClicked",event,event.colDef.field)
     if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
       // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
-      const columnDefinitionAttributeEntry = Object.entries(props.currentMiroirEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == event.colDef.field);
+      const columnDefinitionAttributeEntry = Object.entries(props.currentEntityDefinition.jzodSchema.definition).find((a:[string,any])=>a[0] == event.colDef.field);
       if (columnDefinitionAttributeEntry && (columnDefinitionAttributeEntry[1] as any).type == "simpleType" && (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
         // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
@@ -346,8 +346,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             isOpen={dialogFormIsOpen}
             isAttributes={true}
             // label='OuterDialog'
-            label={props.currentMiroirEntityDefinition.name}
-            jzodSchema={props.currentMiroirEntityDefinition.jzodSchema as JzodObject}
+            label={props.currentEntityDefinition.name}
+            entityDefinitionJzodSchema={props.currentEntityDefinition.jzodSchema as JzodObject}
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
             initialValuesObject={
@@ -355,9 +355,9 @@ export const MTableComponent = (props: TableComponentProps) => {
                 ? dialogFormObject
                 : defaultFormValues(
                     props.type,
-                    props.currentMiroirEntityDefinition.jzodSchema as JzodObject,
+                    props.currentEntityDefinition.jzodSchema as JzodObject,
                     [],
-                    props.currentMiroirEntity,
+                    props.currentEntity,
                     props.displayedDeploymentDefinition
                   )
             }

@@ -53,13 +53,19 @@
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":8, "defaultLabel": "Application Deployment Model", "editable": true },
-        "definition": { "relativePath": "jzodObjectSchema" }
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObjectSchema" 
+        }
       },
       "data": {
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":9, "defaultLabel": "Application Deployment Data", "editable": true },
-        "definition": { "relativePath": "jzodObjectSchema" }
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObjectSchema"
+        }
       }
     }
   }

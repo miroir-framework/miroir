@@ -26,11 +26,11 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { EntityInstanceLink } from '../EntityInstanceLink';
 import { JzodObjectDisplay } from '../JzodElementDisplay';
-import { resolveJzodSchemaReference } from '../JzodElementEditor';
 import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
+import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 
 export interface ReportPageProps {
   // deploymentUuid: Uuid,
@@ -121,18 +121,15 @@ export const EntityInstancePage = (props: ReportPageProps) => {
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  const currentEnumJzodSchemaResolver:{[k:string]:JzodObject} = useMemo(()=>({
-    "array": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodArraySchema"} },currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "simpleType": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodAttributeSchema"} },currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "enum": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodEnumSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "union": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodUnionSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "record": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodRecordSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "object": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodObjectSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "function": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodFunctionSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "lazy": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLazySchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "literal": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodLiteralSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-    "schemaReference": resolveJzodSchemaReference({ "type": "schemaReference", definition: { "absolutePath":"1e8dab4b-65a3-4686-922e-ce89a2d62aa9", "relativePath":"jzodReferenceSchema"}},currentReportTargetEntityDefinition?.jzodSchema,currentMiroirModel),
-  }),[currentMiroirModel])
+  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
+  //   // () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,currentReportTargetEntityDefinition?.jzodSchema??{type:"object", definition:{}}),
+  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+  //   [currentMiroirModel]
+  // );
+  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
+    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+    [currentMiroirModel]
+  );
 
 
   const publisherBooks = useMemo(

@@ -13,6 +13,7 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
 
 import {
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   DomainControllerInterface,
   EntityDefinition,
@@ -24,7 +25,6 @@ import {
 import { ReduxStore } from "miroir-redux";
 
 import {
-  applicationDeploymentLibrary,
   DisplayLoadingInfo,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";

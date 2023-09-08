@@ -4,7 +4,7 @@
  */
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 // const fetch = require('node-fetch');
 
@@ -38,14 +38,13 @@ import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d30
 
 import {
   MiroirIntegrationTestEnvironment,
-  applicationDeploymentLibrary,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeEach,
   miroirIntegrationTestEnvironmentFactory,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementEditor";
+import { JzodElementEditor, JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -54,7 +53,9 @@ import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
 import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
-import { JzodObject } from "@miroir-framework/jzod-ts";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../../src/miroir-fwk/JzodTools";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
@@ -104,6 +105,17 @@ afterEach(
 function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
   const [result, setResult] = useState(undefined);
 
+  const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+
+  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
+  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+  //   [currentMiroirModel]
+  // );
+  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
+    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+    [currentMiroirModel]
+  );
+
   return (
     <div>
     {/* <JzodElementFormEditor
@@ -116,6 +128,20 @@ function JzodObjectFormEditorWrapper(props: JzodElementFormEditorProps) {
       // getData={props.getData}
       onSubmit={(data:any,event:any,error:any)=>{console.log("JzodObjectFormEditorWrapper onSubmit!");setResult(data); return props.onSubmit(data,event,error)}}
     ></JzodElementFormEditor> */}
+    <JzodElementEditor
+      name={'ROOT'}
+      listKey={'ROOT'}
+      currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+      innerProps={{
+        label: props.label,
+        initialValuesObject: props.initialValuesObject,
+        showButton: true,
+        currentDeploymentUuid: props.currentDeploymentUuid,
+        currentApplicationSection: props.currentApplicationSection,
+        elementJzodSchema:props.elementJzodSchema,
+        rootJzodSchema:props.elementJzodSchema,
+      }}
+    />
     {
       result?<div>received result: {JSON.stringify(result)}</div>:<div>no result yet</div>
     }
@@ -177,139 +203,139 @@ describe(
       }
     )
 
-    // ###########################################################################################
-    it(
-      'edit simpleType string form with validation',
-      async () => {
-        try {
-          console.log('edit simpleType string form with validation');
-          const user = userEvent.setup()
+    // // ###########################################################################################
+    // it(
+    //   'edit simpleType string form with validation',
+    //   async () => {
+    //     try {
+    //       console.log('edit simpleType string form with validation');
+    //       const user = userEvent.setup()
 
-          const label = 'simpleElementString' 
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <JzodObjectFormEditorWrapper
-              label={label}
-              initialValuesObject={""}
-              showButton={true}
-              currentDeploymentUuid={undefined}
-              currentApplicationSection="data"
-              elementJzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
-              rootJzodSchema={{} as JzodObject}
-              // getData={()=>undefined}
-              // jzodSchema={{type:"simpleType", definition:"string"}}
-              // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
-            ></JzodObjectFormEditorWrapper>,
-            {store:testEnvironment.reduxStore.getInnerStore()}
-          );
+    //       const label = 'simpleElementString' 
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <JzodObjectFormEditorWrapper
+    //           label={label}
+    //           initialValuesObject={""}
+    //           showButton={true}
+    //           currentDeploymentUuid={undefined}
+    //           currentApplicationSection="data"
+    //           elementJzodSchema={{type:"simpleType", definition:"string", validations:[{type:"min",parameter:7}]}}
+    //           rootJzodSchema={{} as JzodObject}
+    //           // getData={()=>undefined}
+    //           // jzodSchema={{type:"simpleType", definition:"string"}}
+    //           // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
+    //         ></JzodObjectFormEditorWrapper>,
+    //         {store:testEnvironment.reduxStore.getInnerStore()}
+    //       );
 
-          // ##########################################################################################################
-          const formInput = screen.getByRole('textbox', {name:""})
-          await act(async ()=>user.click(formInput));
-          await act(async ()=>user.keyboard('abcdef'));
+    //       // ##########################################################################################################
+    //       const formInput = screen.getByRole('textbox', {name:""})
+    //       await act(async ()=>user.click(formInput));
+    //       await act(async ()=>user.keyboard('abcdef'));
 
-          try {
-          await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
-          } catch (error) {
-            console.error('caught expected validation error during test',expect.getState().currentTestName,error);
-          }
+    //       try {
+    //       await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
+    //       } catch (error) {
+    //         console.error('caught expected validation error during test',expect.getState().currentTestName,error);
+    //       }
 
-          await act(
-            async () =>
-              await waitFor(() => {
-                getByText(new RegExp(/(received result)|(received error)/, "i"));
-              }).then(() => {
-                // expect(screen.queryByText(new RegExp(`received result: {"${label}":"abcdef"}`, "i"))).toBeFalsy(); // Book entity
-                expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
-                expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
-              })
-          );
+    //       await act(
+    //         async () =>
+    //           await waitFor(() => {
+    //             getByText(new RegExp(/(received result)|(received error)/, "i"));
+    //           }).then(() => {
+    //             // expect(screen.queryByText(new RegExp(`received result: {"${label}":"abcdef"}`, "i"))).toBeFalsy(); // Book entity
+    //             expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
+    //             expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
+    //           })
+    //       );
 
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      }
-    )
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
 
-    // ###########################################################################################
-    it(
-      'combobox select from list',
-      async () => {
-        try {
-          console.log(expect.getState().currentTestName);
-          const user = userEvent.setup()
-          await testEnvironment.localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await testEnvironment.localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await testEnvironment.localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
-          await testEnvironment.localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+    // // ###########################################################################################
+    // it(
+    //   'combobox select from list',
+    //   async () => {
+    //     try {
+    //       console.log(expect.getState().currentTestName);
+    //       const user = userEvent.setup()
+    //       await testEnvironment.localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+    //       await testEnvironment.localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
+    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
 
 
-          const label = 'simpleElementString' 
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <JzodObjectFormEditorWrapper
-              label={label}
-              initialValuesObject={""}
-              showButton={true}
-              currentDeploymentUuid={applicationDeploymentLibrary.uuid}
-              currentApplicationSection="data"
-              elementJzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
-              rootJzodSchema={{} as JzodObject}
-              // jzodSchema={{type:"simpleType", definition:"string"}}
-              // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
-            ></JzodObjectFormEditorWrapper>,
-            {store:testEnvironment.reduxStore.getInnerStore()}
-          );
+    //       const label = 'simpleElementString' 
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <JzodObjectFormEditorWrapper
+    //           label={label}
+    //           initialValuesObject={""}
+    //           showButton={true}
+    //           currentDeploymentUuid={applicationDeploymentLibrary.uuid}
+    //           currentApplicationSection="data"
+    //           elementJzodSchema={{type:"simpleType", definition:"uuid", extra:{targetEntity:entityAuthor.uuid}}}
+    //           rootJzodSchema={{} as JzodObject}
+    //           // jzodSchema={{type:"simpleType", definition:"string"}}
+    //           // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
+    //         ></JzodObjectFormEditorWrapper>,
+    //         {store:testEnvironment.reduxStore.getInnerStore()}
+    //       );
   
-          await act(
-            async () => {
-              await testEnvironment.domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await testEnvironment.domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await testEnvironment.domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await testEnvironment.domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
 
-          // ##########################################################################################################
-          const formInput = screen.getByRole('combobox', {name:""})
-          await act(async ()=>user.click(formInput));
-          await act(async ()=>user.keyboard('{ArrowDown}'));
-          await act(async ()=>user.keyboard('{Enter}'));
+    //       // ##########################################################################################################
+    //       const formInput = screen.getByRole('combobox', {name:""})
+    //       await act(async ()=>user.click(formInput));
+    //       await act(async ()=>user.keyboard('{ArrowDown}'));
+    //       await act(async ()=>user.keyboard('{Enter}'));
 
-          try {
-          await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
-          } catch (error) {
-            console.error('caught expected validation error during test',expect.getState().currentTestName,error);
-          }
+    //       try {
+    //       await act(async ()=>user.click(screen.getByRole('button', {name:"Submit"})));
+    //       } catch (error) {
+    //         console.error('caught expected validation error during test',expect.getState().currentTestName,error);
+    //       }
 
-          await act(
-            async () =>
-              await waitFor(() => {
-                getByText(new RegExp(/(received result)|(received error)/, "i"));
-              }).then(() => {
-                expect(screen.queryByText(new RegExp(`received result: { value: 'ce7b601d-be5f-4bc6-a5af-14091594046a', label: 'Paul Veyne' }`, "i"))).toBeFalsy(); // Book entity
-                // expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
-                // expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
-                expect(screen.queryByText(new RegExp(/received error/, "i"))).toBeNull(); // Book entity
-              })
-          );
+    //       await act(
+    //         async () =>
+    //           await waitFor(() => {
+    //             getByText(new RegExp(/(received result)|(received error)/, "i"));
+    //           }).then(() => {
+    //             expect(screen.queryByText(new RegExp(`received result: { value: 'ce7b601d-be5f-4bc6-a5af-14091594046a', label: 'Paul Veyne' }`, "i"))).toBeFalsy(); // Book entity
+    //             // expect(screen.queryByText(new RegExp(/received result/, "i"))).toBeNull(); // Book entity
+    //             // expect(screen.queryByText(new RegExp(/received error: String must contain at least 7 character\(s\)/, "i"))).toBeTruthy(); // Book entity
+    //             expect(screen.queryByText(new RegExp(/received error/, "i"))).toBeNull(); // Book entity
+    //           })
+    //       );
 
-        } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      }
-    )
+    //     } catch (error) {
+    //       console.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
   }
 )

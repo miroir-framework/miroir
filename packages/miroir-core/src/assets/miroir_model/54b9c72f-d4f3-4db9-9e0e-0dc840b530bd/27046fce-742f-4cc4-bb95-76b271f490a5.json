@@ -71,13 +71,17 @@
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":11, "defaultLabel": "Structure Migration from Previous Version", "editable": true },
-        "definition": { "relativePath": "jzodObjectSchema" }
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObjectSchema" }
       },
       "modelCUDMigration": {
         "type": "schemaReference",
         "optional": true,
         "extra": { "id":12, "defaultLabel": "Create-Update-Delete Migration from Previous Version", "editable": true },
-        "definition": { "relativePath": "jzodObjectSchema" }
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodObjectSchema" }
       }
     }
   }

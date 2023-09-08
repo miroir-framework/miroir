@@ -2,15 +2,20 @@ import _ from "lodash";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
 
-import { JzodObject } from "@miroir-framework/jzod-ts";
-import { ApplicationSection, EntityAttribute, Uuid, applicationDeploymentMiroir } from "miroir-core";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import {
+  ApplicationSection,
+  EntityAttribute,
+  Uuid,
+  applicationDeploymentMiroir
+} from "miroir-core";
 import { useCallback, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { JzodElementEditor, resolveJzodSchemaReference } from "./JzodElementEditor";
+import { JzodElementEditor } from "./JzodElementEditor";
 import { useMiroirContextInnerFormOutput, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { useCurrentModel } from "./ReduxHooks";
+import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../JzodTools";
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -23,7 +28,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   label: string;
   // name: string;
   isAttributes?: boolean;
-  jzodSchema: JzodObject;
+  entityDefinitionJzodSchema: JzodObject;
   initialValuesObject: any;
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
@@ -156,91 +161,14 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  const currentEnumJzodSchemaResolver: { [k: string]: JzodObject } = useMemo(
-    () => ({
-      array: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodArraySchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      simpleType: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodAttributeSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      enum: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodEnumSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      union: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodUnionSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      record: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodRecordSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      object: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodObjectSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      function: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodFunctionSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      lazy: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLazySchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      literal: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLiteralSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-      schemaReference: resolveJzodSchemaReference(
-        {
-          type: "schemaReference",
-          definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodReferenceSchema" },
-        },
-        props.jzodSchema,
-        currentMiroirModel
-      ),
-    }),
+  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
+    () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
     [currentMiroirModel]
   );
+  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
+  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
+  //   [currentMiroirModel]
+  // );
 
   const formMethods = useForm<JsonObjectFormEditorDialogInputs>({ defaultValues: props.initialValuesObject });
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
@@ -415,8 +343,8 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                   showButton: true,
                   currentDeploymentUuid: props.currentDeploymentUuid,
                   currentApplicationSection: props.currentApplicationSection,
-                  elementJzodSchema:props.jzodSchema,
-                  rootJzodSchema:props.jzodSchema,
+                  elementJzodSchema:props.entityDefinitionJzodSchema,
+                  rootJzodSchema:props.entityDefinitionJzodSchema,
                 }}
               />
               {errors.exampleRequired && <span>This field is required</span>}

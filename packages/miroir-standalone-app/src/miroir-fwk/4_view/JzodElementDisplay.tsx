@@ -3,10 +3,10 @@ import { List, ListItem } from "@mui/material";
 import { ApplicationSection, EntityInstancesUuidIndex, MetaEntity, Uuid, applicationDeploymentMiroir } from "miroir-core";
 import { useMemo } from "react";
 import { EntityInstanceLink } from "./EntityInstanceLink";
-import { resolveJzodSchemaReference } from "./JzodElementEditor";
 import { MTableComponent } from "./MTableComponent";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
+import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, resolveJzodSchemaReference } from "../JzodTools";
 
 export interface JzodObjectDisplayProps {
   // label: string;
@@ -21,7 +21,9 @@ export interface JzodObjectDisplayProps {
   // entityJzodSchema?: { [attributeName: string]: JzodElement },
   elementJzodSchema?: JzodElement,
   currentReportDeploymentSectionEntities?: MetaEntity[],
-  currentEnumJzodSchemaResolver:{[k:string]:JzodObject},
+  // currentEnumJzodSchemaResolver:{[k:string]:JzodObject},
+  // currentEnumJzodSchemaResolver: JzodElementRecord,
+  currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
   // currentReportTargetEntityDefinition: Enti
   // store:any;
   // reportName: string;
@@ -45,12 +47,13 @@ export function JzodObjectDisplay(props: JzodObjectDisplayProps){
 
   const resolvedJzodSchema =
     props.elementJzodSchema?.type == "schemaReference"
-      ? resolveJzodSchemaReference(props.elementJzodSchema, {} as JzodObject, miroirModel)
+      ? resolveJzodSchemaReference(props.elementJzodSchema, miroirModel, {} as JzodObject)
       : props.elementJzodSchema;
 
   const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
     resolvedJzodSchema?.type == "union" && props.element?.type
-      ? props.currentEnumJzodSchemaResolver[props.element?.type]
+      // ? props.currentEnumJzodSchemaResolver[props.element?.type]
+      ? props.currentEnumJzodSchemaResolver(props.element?.type,props.element?.definition)
       : resolvedJzodSchema;
 
   const displayName = targetJzodSchema?.extra?.defaultLabel?targetJzodSchema?.extra?.defaultLabel:props.name;
