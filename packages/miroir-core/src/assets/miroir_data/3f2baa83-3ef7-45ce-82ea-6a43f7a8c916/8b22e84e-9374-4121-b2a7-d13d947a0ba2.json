@@ -4,14 +4,11 @@
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name":"JzodSchemaList",
   "defaultLabel": "List of Jzod Schemas",
-  "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "JzodSchema",
-        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "JzodSchema",
+      "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
     }
-  ]
+  }
 }

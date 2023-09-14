@@ -6,13 +6,11 @@
   "name":"TestList",
   "defaultLabel": "List of Library Tests Instances",
   "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "Test",
-        "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "Test",
+      "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
     }
-  ]
+  }
 }

@@ -9,9 +9,9 @@ module.exports = {
         test: /\.tsx?$/,
         use: ["ts-loader"],
         exclude: /node_modules/,
-      },
-    ],
-    noParse: [require.resolve('typescript/lib/typescript.js')],
+      }
+  ],
+    // noParse: [require.resolve('typescript/lib/typescript.js')],
   },
   resolve: {
     roots: [
@@ -28,6 +28,7 @@ module.exports = {
   },
   mode:'development',
   target:'web',
+  // externalsPresets: { node: true },
   externals: [nodeExternals()],
   output: {
     filename: '[name].bundle.js',

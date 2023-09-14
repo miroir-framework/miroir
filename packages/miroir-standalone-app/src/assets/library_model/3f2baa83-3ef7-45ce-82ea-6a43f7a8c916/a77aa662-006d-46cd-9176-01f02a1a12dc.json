@@ -6,13 +6,11 @@
   "name":"PubliserList",
   "defaultLabel": "List of Publishers",
   "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "Book",
-        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "Book",
+      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
     }
-  ]
+  }
 }

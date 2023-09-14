@@ -4,14 +4,11 @@
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name":"ApplicationDeploymentList",
   "defaultLabel": "List of Application Deployments",
-  "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "ApplicationDeployment",
-        "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "ApplicationDeployment",
+      "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
     }
-  ]
+  }
 }

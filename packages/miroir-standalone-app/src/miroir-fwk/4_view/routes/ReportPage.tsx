@@ -5,11 +5,11 @@ import {
   EntityDefinition,
   MetaEntity,
   MiroirApplicationModel,
+  ObjectList,
   Report,
-  ReportSectionList,
-  ReportSectionListDefinition,
   applicationDeploymentLibrary,
-  applicationDeploymentMiroir
+  applicationDeploymentMiroir,
+  report
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -63,15 +63,19 @@ export const ReportPage = (props: ReportPageProps) => {
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
 
-  const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
-    currentMiroirReport?.type == "list" &&
-    currentMiroirReport.definition.length > 0 &&
-    currentMiroirReport?.definition[0].type == "objectList"
-      ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
+  const currentMiroirReportSectionObjectList: ObjectList | undefined =
+    currentMiroirReport?.definition?.type == "objectList"
+      ? currentMiroirReport?.definition
       : undefined;
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionListDefinition
+  // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
+  //   currentMiroirReport?.definition.type == "list" &&
+  //   currentMiroirReport?.definition.definition.length > 0 &&
+  //   currentMiroirReport?.definition[0].type == "objectList"
+  //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
+  //     : undefined;
+  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
     ? currentModel.entities?.find(
-        (e) => e?.uuid === currentMiroirReportSectionListDefinition.parentUuid
+        (e) => e?.uuid === currentMiroirReportSectionObjectList.definition.parentUuid
       )
     : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
@@ -92,7 +96,7 @@ export const ReportPage = (props: ReportPageProps) => {
         <span>ReportPage displayed:{count}</span>
         {
           // currentMiroirReport &&
-          currentMiroirReportSectionListDefinition &&
+          currentMiroirReportSectionObjectList &&
           currentReportTargetEntity &&
           currentReportTargetEntityDefinition &&
           params.deploymentUuid &&
@@ -113,7 +117,7 @@ export const ReportPage = (props: ReportPageProps) => {
                   // chosenApplicationSection={params.applicationSection as ApplicationSection}
                   // displayedDeploymentDefinition={displayedDeploymentDefinition}
                   // currentModel={currentModel}
-                  // currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+                  // currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
                   // currentMiroirEntity={currentReportTargetEntity}
                   // currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
                 />
@@ -125,7 +129,7 @@ export const ReportPage = (props: ReportPageProps) => {
                   chosenApplicationSection={params.applicationSection as ApplicationSection}
                   displayedDeploymentDefinition={displayedDeploymentDefinition}
                   currentModel={currentModel}
-                  currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+                  currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
                   currentMiroirEntity={currentReportTargetEntity}
                   currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
                 />

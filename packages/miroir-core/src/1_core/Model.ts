@@ -43,8 +43,9 @@ import jzodSchemajzodMiroirBootstrapSchema from "../assets/miroir_data/5e81e1b9-
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 
-import { Report, } from "../0_interfaces/1_core/Report.js";
+// import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
+import { Report } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 
 // TODO: define current configuration!
 export const defaultMiroirMetaModel:MiroirApplicationModel = {

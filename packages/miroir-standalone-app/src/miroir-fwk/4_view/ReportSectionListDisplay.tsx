@@ -18,8 +18,8 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MetaEntitySchema,
-  ReportSectionListDefinitionSchema,
-  UuidSchema
+  UuidSchema,
+  objectList
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
@@ -42,7 +42,7 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   currentModel:z.any(),
   // currentMiroirReport: ReportSchema,
   currentReportUuid: UuidSchema,
-  currentMiroirReportSectionListDefinition: ReportSectionListDefinitionSchema,
+  currentMiroirReportSectionObjectList: objectList,
   currentMiroirEntity: MetaEntitySchema,
   currentMiroirEntityDefinition: EntityDefinitionSchema,
 });
@@ -308,9 +308,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
     return (
       <div className="MiroirReport-global" style={{ display: "flex" }}>
-        {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
+        <span>rendered ReportSectionListDisplay: {count} times.</span>
         {
-          props?.currentMiroirReportSectionListDefinition ? (
+          props?.currentMiroirReportSectionObjectList ? (
             !!columnDefs
             // columnDefs?.length > 0 
             ? (
@@ -344,7 +344,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                       styles={props.styles}
                       currentEntity={props.currentMiroirEntity}
                       currentEntityDefinition={props.currentMiroirEntityDefinition}
-                      reportSectionListDefinition={props.currentMiroirReportSectionListDefinition}
+                      reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                       columnDefs={columnDefs}
                       instancesToDisplay={instancesToDisplay}
                       displayTools={true}

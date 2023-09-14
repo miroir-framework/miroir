@@ -57,39 +57,35 @@
         "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
       },
       "definition": {
-        "type": "union",
-        "discriminator": "type",
-        "definition": [
-          {
+        "type": "schemaReference",
+        "context": {
+          "objectList": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
-                "definition": "list"
+                "definition": "objectList"
               },
               "definition": {
-                "type": "array",
+                "type": "object",
                 "definition": {
-                  "type": "object",
-                  "definition": {
-                    "parentName": {
-                      "type": "simpleType",
-                      "definition": "string",
-                      "optional": true,
-                      "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
-                    },
-                    "parentUuid": {
-                      "type": "simpleType",
-                      "definition": "string",
-                      "validations": [{ "type": "uuid" }],
-                      "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
-                    }
+                  "parentName": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                  },
+                  "parentUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [{ "type": "uuid" }],
+                    "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
                   }
                 }
               }
             }
           },
-          {
+          "gridReportSection": {
             "type": "object",
             "definition": {
               "type": {
@@ -101,27 +97,62 @@
                 "definition": {
                   "type": "array",
                   "definition": {
-                    "type": "object",
+                    "type": "schemaReference",
                     "definition": {
-                      "parentName": {
-                        "type": "simpleType",
-                        "definition": "string",
-                        "optional": true,
-                        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
-                      },
-                      "parentUuid": {
-                        "type": "simpleType",
-                        "definition": "string",
-                        "validations": [{ "type": "uuid" }],
-                        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
-                      }
+                      "relativePath": "reportDefinition"
                     }
                   }
                 }
               }
             }
+          },
+          "listReportSection": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "list"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "reportDefinition"
+                  }
+                }
+              }
+            }
+          },
+          "reportDefinition": {
+            "type": "union",
+            "discriminator": "type",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "gridReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "listReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "objectList"
+                }
+              }
+            ]
           }
-        ],
+        },
+        "definition": {
+          "eager": true,
+          "relativePath": "reportDefinition"
+        },
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
       }
     }

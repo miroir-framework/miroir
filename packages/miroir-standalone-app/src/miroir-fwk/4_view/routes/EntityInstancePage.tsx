@@ -182,7 +182,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                   rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-                  currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
+                  currentEnumJzodSchemaResolver={ currentEnumJzodSchemaResolver}
                 ></JzodObjectDisplay>
                 <span>
                   Publisher Books:

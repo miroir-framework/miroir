@@ -162,13 +162,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       <div> 
         {/* params:{JSON.stringify(params)}
         <p /> */}
+        <p>
+        ReportSectionEntityInstance
+        </p>
         <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
         <p />
         <Box>
           <h3>
             erreurs: {JSON.stringify(errorLog)}
           </h3>
-  
         </Box>
         <span>
           Entity Instance Attribute Values:

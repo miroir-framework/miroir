@@ -4,14 +4,11 @@
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name":"ApplicationModelBranchList",
   "defaultLabel": "List of Application Model Branches",
-  "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "ApplicationModelBranch",
-        "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "ApplicationModelBranch",
+      "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
     }
-  ]
+  }
 }

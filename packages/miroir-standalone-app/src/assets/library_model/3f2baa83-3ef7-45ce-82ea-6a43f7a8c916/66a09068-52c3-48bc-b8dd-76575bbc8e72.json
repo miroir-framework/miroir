@@ -5,14 +5,11 @@
   "conceptLevel":"Model",
   "name":"AuthorList",
   "defaultLabel": "List of Authors",
-  "type": "list",
-  "definition": [
-    {
-      "type":"objectList",
-      "definition": {
-        "parentName": "Author",
-        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-      }
+  "definition": {
+    "type":"objectList",
+    "definition": {
+      "parentName": "Author",
+      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
     }
-  ]
+  }
 }

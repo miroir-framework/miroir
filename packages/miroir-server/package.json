@@ -11,7 +11,7 @@
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "copy-config": "copyfiles -u 1 config/**/*.json dist/config",
     "copy-all": "npm run copy-files && npm run copy-config",
-    "dev": "nodemon ./server.ts --experimental-json-modules localhost 3080",
+    "dev": "nodemon -q dist/src/server.js --experimental-json-modules localhost 3080",
     "dev2": "npm run copy-all && concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\""
   },
   "repository": {
@@ -25,8 +25,9 @@
   },
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "dependencies": {
-    "@miroir-framework/jzod-ts": "0.5.0",
-    "@miroir-framework/jzod": "0.5.0",
+    "@miroir-framework/jzod": "^0.5.3",
+    "@miroir-framework/jzod-ts": "^0.5.3",
+    "babel-loader": "^9.1.3",
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.4",
     "isomorphic-git": "^1.23.0",
@@ -41,8 +42,9 @@
     "body-parser": "^1.20.2",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.4",
+    "ts-loader": "^9.4.4",
     "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.5",
-    "webpack": "^4.43.0"
+    "webpack": "^5.88.2"
   }
 }

@@ -22,13 +22,12 @@ import {
   MetaEntity,
   MiroirApplicationModel,
   Report,
-  ReportSectionList,
-  ReportSectionListDefinition,
   defaultMiroirMetaModel,
   entityReport,
   reportEntityDefinitionList,
   reportEntityList,
-  reportReportList
+  reportReportList,
+  ObjectList
 } from "miroir-core";
 import {
   useDomainControllerService, useErrorLogService,
@@ -273,16 +272,19 @@ export const HomePage = (props: RootComponentProps) => {
       console.log("HomePage availableReports",availableReports);
 
   const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
-  const currentMiroirReportSectionListDefinition: ReportSectionListDefinition | undefined =
-    currentMiroirReport?.type == "list" &&
-    currentMiroirReport.definition.length > 0 &&
-    currentMiroirReport?.definition[0].type == "objectList"
-      ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
-      : undefined
+  const currentMiroirReportSectionObjectList: ObjectList | undefined =
+    currentMiroirReport?.definition?.type == "objectList"? currentMiroirReport?.definition: undefined
   ;
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionListDefinition
+  // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
+  //   currentMiroirReport?.type == "list" &&
+  //   currentMiroirReport.definition.length > 0 &&
+  //   currentMiroirReport?.definition[0].type == "objectList"
+  //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
+  //     : undefined
+  // ;
+  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
     ? entities?.find(
-        (e) => e?.uuid === currentMiroirReportSectionListDefinition.parentUuid
+        (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
       )
     : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
@@ -593,17 +595,6 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      {/* <JzodElementFormEditor
-        label="simpleElementString"
-        initialValuesObject={"tata"}
-        showButton={true}
-        currentDeploymentUuid={currentReportDefinitionDeployment?.uuid}
-        currentApplicationSection="data"
-        elementJzodSchema={{type:"simpleType", definition:"string", extra:{targetEntity:entityAuthor.uuid}}}
-        rootJzodSchema={{type:"object", definition:{}}}
-        onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
-      ></JzodElementFormEditor>
-      <p /> */}
       <span>transactions: {JSON.stringify(transactions)}</span>
       <p />
       <span>cache size: {JSON.stringify(domainController.currentLocalCacheInfo())}</span>
@@ -684,7 +675,7 @@ export const HomePage = (props: RootComponentProps) => {
       </Box>
       {
         currentMiroirReport &&
-        currentMiroirReportSectionListDefinition &&
+        currentMiroirReportSectionObjectList &&
         currentReportTargetEntity &&
         currentReportTargetEntityDefinition &&
         displayedApplicationSection ? (
@@ -699,7 +690,7 @@ export const HomePage = (props: RootComponentProps) => {
             chosenApplicationSection={displayedApplicationSection}
             displayedDeploymentDefinition={displayedDeploymentDefinition}
             currentModel={currentModel}
-            currentMiroirReportSectionListDefinition={currentMiroirReportSectionListDefinition}
+            currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
             currentMiroirEntity={currentReportTargetEntity}
             currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
           />
@@ -709,7 +700,7 @@ export const HomePage = (props: RootComponentProps) => {
               currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
             </p>
             <p>
-              report section: {JSON.stringify(currentMiroirReportSectionListDefinition)}
+              report section: {JSON.stringify(currentMiroirReportSectionObjectList)}
             </p>
             <p>
               currentReportTargetEntity: {currentReportTargetEntity?.name}, {currentReportTargetEntity?.uuid}

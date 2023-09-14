@@ -70,22 +70,22 @@ export {
 export {
   MiroirApplicationVersion,
 } from './0_interfaces/1_core/ModelVersion.js';
-export {
-  ReportSchema,
-  Report,
-  ReportGridType,
-  ReportGridTypeSchema,
-  ReportListType,
-  ReportListTypeSchema,
-  ReportSectionObjectDetails,
-  ReportSectionObjectDetailsSchema,
-  ReportSectionListDefinitionSchema,
-  ReportSectionListDefinition,
-  ReportSection,
-  ReportSectionList,
-  ReportSectionListSchema,
-  ReportSectionSchema,
-} from './0_interfaces/1_core/Report.js';
+// export {
+//   ReportSchema,
+//   Report,
+//   ReportGridType,
+//   ReportGridTypeSchema,
+//   ReportListType,
+//   ReportListTypeSchema,
+//   ReportSectionObjectDetails,
+//   ReportSectionObjectDetailsSchema,
+//   ReportSectionListDefinitionSchema,
+//   ReportSectionListDefinition,
+//   ReportSection,
+//   ReportSectionList,
+//   ReportSectionListSchema,
+//   ReportSectionSchema,
+// } from './0_interfaces/1_core/Report.js';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
@@ -214,7 +214,7 @@ export {
   DataStoreApplicationType,
 } from './0_interfaces/3_controllers/ApplicationControllerInterface.js';
 export {
-  selectReportSectionInstances,
+  // selectReportSectionInstances,
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
@@ -316,6 +316,18 @@ export {
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 
+export {
+  GridReportSection,
+  ListReportSection,
+  ObjectList,
+  Report,
+  ReportDefinition,
+  gridReportSection,
+  listReportSection,
+  objectList,
+  report,
+  reportDefinition,
+} from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 
 export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
 

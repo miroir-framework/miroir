@@ -34,6 +34,8 @@ import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 import { EntityInstanceLink } from './EntityInstanceLink';
 
+import reportBookList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
+
 export interface RootComponentProps {
   // store:any;
   // reportName: string;
@@ -230,7 +232,7 @@ export const RootComponent = (props: RootComponentProps) => {
               </TableCell>
               <TableCell>
                 {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>Authors</Link> */}
-                <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/74b010b6-afee-44e7-8590-5f0849e4a5c9/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Books (intermediate)</Link>
+                <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/${reportBookList.uuid}/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Books (intermediate)</Link>
                 {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/74b010b6-afee-44e7-8590-5f0849e4a5c9`}>Books (intermediate)</Link> */}
               </TableCell>
               <TableCell>

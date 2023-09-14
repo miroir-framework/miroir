@@ -19,8 +19,8 @@ import {
   ApplicationDeploymentSchema,
   EntityDefinitionSchema,
   MetaEntitySchema,
-  ReportSectionListDefinitionSchema,
-  entityInstancesUuidIndexSchema
+  entityInstancesUuidIndexSchema,
+  objectList
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import {
@@ -63,7 +63,7 @@ export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSc
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: MetaEntitySchema,
   currentEntityDefinition: EntityDefinitionSchema,
-  reportSectionListDefinition: ReportSectionListDefinitionSchema,
+  reportSectionListDefinition: objectList,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEntityInstancePropsSchema>;

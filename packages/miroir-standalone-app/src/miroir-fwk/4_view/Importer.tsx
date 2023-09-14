@@ -176,15 +176,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       "name":"FountainList",
       "defaultLabel": "List of Fountains",
       "type": "list",
-      "definition": [
-        {
-          "type":"objectList",
-          "definition": {
-            "parentName": "Fountain",
-            "parentUuid": newEntity.uuid
-          }
+      "definition":{
+        "type":"objectList",
+        "definition": {
+          "parentName": "Fountain",
+          "parentUuid": newEntity.uuid
         }
-      ]
+      }
     }
     const createReportAction: DomainAction = {
       actionType: "DomainTransactionalAction",
