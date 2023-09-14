@@ -33,7 +33,8 @@ import {
   applicationDeploymentMiroir,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
+  applicationDeploymentLibrary
 } from "miroir-core";
 import {
   ReduxStore
@@ -42,7 +43,6 @@ import {
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,
-  applicationDeploymentLibrary,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,

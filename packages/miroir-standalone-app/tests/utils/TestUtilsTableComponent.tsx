@@ -14,7 +14,6 @@ import {
   entityEntity, 
   entityEntityDefinition 
 } from 'miroir-core';
-import { applicationDeploymentLibrary } from "./tests-utils";
 import { JzodElement } from "@miroir-framework/jzod-ts";
 import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
 import { useSelector } from "react-redux";

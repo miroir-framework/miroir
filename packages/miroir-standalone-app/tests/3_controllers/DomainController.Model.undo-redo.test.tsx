@@ -27,6 +27,7 @@ import {
   MiroirContext,
   StoreControllerFactory,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   entityEntity,
   entityReport,
@@ -50,7 +51,6 @@ import entityDefinitionAuthor from "miroir-standalone-app/src/assets/library_mod
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,
-  applicationDeploymentLibrary,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,

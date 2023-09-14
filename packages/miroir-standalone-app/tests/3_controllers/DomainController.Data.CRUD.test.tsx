@@ -28,11 +28,11 @@ import {
   StoreControllerFactory,
   IStoreController,
   LocalAndRemoteControllerInterface,
-  MiroirContext
+  MiroirContext,
+  applicationDeploymentLibrary
 } from "miroir-core";
 
 import {
-  applicationDeploymentLibrary,
   DisplayLoadingInfo,
   miroirAfterAll,
   miroirAfterEach,
