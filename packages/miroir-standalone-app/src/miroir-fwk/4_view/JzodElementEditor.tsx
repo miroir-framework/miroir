@@ -46,7 +46,7 @@ export interface EditorAttribute {
 }
 
 export interface JzodElementFormEditorCoreProps {
-  label: string;
+  label?: string;
   // rootJzodSchema: JzodObject;
   rootJzodSchema: JzodElement;
   elementJzodSchema: JzodElement;

@@ -59,6 +59,32 @@
       "definition": {
         "type": "schemaReference",
         "context": {
+          "objectInstance": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "objectInstance"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+                  },
+                  "parentUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [{ "type": "uuid" }],
+                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
+                  }
+                }
+              }
+            }
+          },
           "objectList": {
             "type": "object",
             "definition": {
@@ -73,13 +99,13 @@
                     "type": "simpleType",
                     "definition": "string",
                     "optional": true,
-                    "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                    "extra": { "id":1, "defaultLabel": "Entity Name", "editable": false }
                   },
                   "parentUuid": {
                     "type": "simpleType",
                     "definition": "string",
                     "validations": [{ "type": "uuid" }],
-                    "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
                   }
                 }
               }
@@ -144,6 +170,12 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "objectList"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "objectInstance"
                 }
               }
             ]

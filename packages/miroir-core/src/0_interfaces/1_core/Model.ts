@@ -6,7 +6,7 @@ import { EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_c
 import { jzodSchemaDefinitionSchema } from "../../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { StoreBasedConfigurationSchema } from "../../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationVersionSchema } from "../../0_interfaces/1_core/ModelVersion.js";
-import { ReportSchema } from "../../0_interfaces/1_core/Report.js";
+// import { ReportSchema } from "../../0_interfaces/1_core/Report.js";
 import { report } from "./preprocessor-generated/server-generated";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {

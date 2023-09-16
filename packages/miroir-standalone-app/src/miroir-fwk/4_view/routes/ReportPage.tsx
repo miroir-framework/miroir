@@ -24,6 +24,7 @@ import { useEffect, useMemo } from 'react';
 import { useCurrentModel } from '../ReduxHooks';
 import { ReportSectionListDisplay } from '../ReportSectionListDisplay';
 import { ReportSectionEntityInstance } from '../ReportSectionEntityInstance';
+import { ReportSection } from '../ReportSection';
 
 export interface ReportPageProps {
   // deploymentUuid: Uuid,
@@ -63,76 +64,63 @@ export const ReportPage = (props: ReportPageProps) => {
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
 
-  const currentMiroirReportSectionObjectList: ObjectList | undefined =
-    currentMiroirReport?.definition?.type == "objectList"
-      ? currentMiroirReport?.definition
-      : undefined;
-  // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
-  //   currentMiroirReport?.definition.type == "list" &&
-  //   currentMiroirReport?.definition.definition.length > 0 &&
-  //   currentMiroirReport?.definition[0].type == "objectList"
-  //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
-  //     : undefined;
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
-    ? currentModel.entities?.find(
-        (e) => e?.uuid === currentMiroirReportSectionObjectList.definition.parentUuid
-      )
-    : undefined;
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentModel.entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
-  const styles = useMemo(()=>({
-    height: "280px",
-    width: "90vw",
-  }),[])
+  // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+  //   currentModel.entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+
 
   if (params.applicationSection) {
     console.log("ReportPage rendering count",count,"params", params,);
     return (
       <div>
+                {/* <span>reports: {JSON.stringify(deploymentReports.map((r) => r.name))}</span>
+        <p />
+        <Box>
+          <h3>erreurs: {JSON.stringify(errorLog)}</h3>
+        </Box> */}
+
         <Box>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </Box>
         <span>ReportPage displayed:{count}</span>
         {
           // currentMiroirReport &&
-          currentMiroirReportSectionObjectList &&
-          currentReportTargetEntity &&
-          currentReportTargetEntityDefinition &&
+          // currentMiroirReportSectionObjectList &&
+          // currentReportTargetE(ntity &&
+          // currentReportTargetEnt)ityDefinition &&
           params.deploymentUuid &&
           params.applicationSection 
           ? (
             // <span>Voila! {JSON.stringify(currentMiroirReport)}</span>
-              params.instanceUuid
-              ? <ReportSectionEntityInstance
-                applicationSection={params.applicationSection as ApplicationSection}
-                deploymentUuid={params.deploymentUuid}
-                entityUuid={currentReportTargetEntity.uuid}
-                instanceUuid={params.instanceUuid}
-
-                  // tableComponentReportType="EntityInstance"
-                  // label={"EntityInstance-" + currentReportTargetEntity?.name}
-                  // currentReportUuid={params.reportUuid?params.reportUuid:""}
-                  // styles={styles}
-                  // chosenApplicationSection={params.applicationSection as ApplicationSection}
-                  // displayedDeploymentDefinition={displayedDeploymentDefinition}
-                  // currentModel={currentModel}
-                  // currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
-                  // currentMiroirEntity={currentReportTargetEntity}
-                  // currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+            params.instanceUuid
+              ? <ReportSection
+                  reportDefinition={currentMiroirReport?.definition}
+                  applicationSection={params.applicationSection as ApplicationSection}
+                  deploymentUuid={params.deploymentUuid}
+                  // entityUuid={params.?.uuid}
+                  instanceUuid={params.instanceUuid}
                 />
-              : <ReportSectionListDisplay
-                  tableComponentReportType="EntityInstance"
-                  label={"EntityInstance-" + currentReportTargetEntity?.name}
-                  currentReportUuid={params.reportUuid?params.reportUuid:""}
-                  styles={styles}
-                  chosenApplicationSection={params.applicationSection as ApplicationSection}
-                  displayedDeploymentDefinition={displayedDeploymentDefinition}
-                  currentModel={currentModel}
-                  currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
-                  currentMiroirEntity={currentReportTargetEntity}
-                  currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-                />
+              // ? <ReportSectionEntityInstance
+              //     reportDefinition={currentMiroirReport}
+              //     applicationSection={params.applicationSection as ApplicationSection}
+              //     deploymentUuid={params.deploymentUuid}
+              //     entityUuid={currentReportTargetEntity.uuid}
+              //     instanceUuid={params.instanceUuid}
+              //   />
+              : 
+                <div>No instance</div>
+                // <ReportSectionListDisplay
+                //   tableComponentReportType="EntityInstance"
+                //   label={"EntityInstance-" + currentReportTargetEntity?.name}
+                //   currentReportUuid={params.reportUuid?params.reportUuid:""}
+                //   styles={styles}
+                //   chosenApplicationSection={params.applicationSection as ApplicationSection}
+                //   displayedDeploymentDefinition={displayedDeploymentDefinition}
+                //   currentModel={currentModel}
+                //   currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
+                //   currentMiroirEntity={currentReportTargetEntity}
+                //   currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+                // />
           ) : (
             <div>Oops.</div>
           )
@@ -140,6 +128,6 @@ export const ReportPage = (props: ReportPageProps) => {
       </div>
     );
   } else {
-    return <>Invalid parameters!</>;
+    return <>ReportPage Invalid parameters! {JSON.stringify(params)}</>;
   }
 };

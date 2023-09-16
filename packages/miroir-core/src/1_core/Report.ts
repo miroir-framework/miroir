@@ -2,20 +2,18 @@
 // import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
 // import { Report } from '../0_interfaces/1_core/Report.js';
 
-import { Report } from "../0_interfaces/1_core/Report.js";
+import { Report } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 
 export function getReportSectionTargetEntityUuid(
   reportDefinition:Report, reportSectionIndex: number,
 ) {
   if (
     reportDefinition &&
-    reportDefinition.type === "list" &&
-    reportDefinition.definition.length > reportSectionIndex &&
-    reportDefinition.definition[reportSectionIndex].type === "objectList" &&
-    reportDefinition.definition[reportSectionIndex].definition.parentUuid
+    reportDefinition.definition?.type === "objectList" &&
+    reportDefinition.definition.definition.parentUuid
   ) {
     console.log('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)
-    return reportDefinition.definition[0].definition.parentUuid;
+    return reportDefinition.definition.definition.parentUuid;
   } else {
     return undefined;
   }

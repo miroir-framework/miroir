@@ -41,10 +41,10 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
   // currentMiroirReport: ReportSchema,
-  currentReportUuid: UuidSchema,
-  currentMiroirReportSectionObjectList: objectList,
-  currentMiroirEntity: MetaEntitySchema,
-  currentMiroirEntityDefinition: EntityDefinitionSchema,
+  // currentReportUuid: UuidSchema,
+  currentMiroirReportSectionObjectList: objectList.optional(),
+  currentMiroirEntity: MetaEntitySchema.optional(),
+  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
 });
 
 export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCorePropsSchema.extend({
@@ -121,6 +121,7 @@ export function defaultFormValues(
   }
 }
 
+// ##########################################################################################
 let count = 0
 let prevProps = {};
 let prevColumnDefs:{columnDefs: ColDef<any>[]} = {columnDefs:[]};
@@ -128,7 +129,9 @@ let prevJzodSchema;
 let prevInstancesToDisplay:EntityInstancesUuidIndex | undefined;
 let prevInstancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] };
 // ##########################################################################################
-// export const ReportComponent: React.FC<ReportComponentProps> = memo((
+// ##########################################################################################
+// ##########################################################################################
+// ##########################################################################################
 export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
@@ -281,7 +284,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
     deploymentUuid: props.displayedDeploymentDefinition?.uuid,
     applicationSection: props.chosenApplicationSection,
-    entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity.uuid:undefined,
+    entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity?.uuid:undefined,
   })
 
   console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
@@ -321,7 +324,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 <JsonObjectFormEditorDialog
                   showButton={true}
                   isAttributes={true}
-                  label={props.currentMiroirEntityDefinition.name}
+                  label={props.currentMiroirEntityDefinition?.name}
                   entityDefinitionJzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
                   currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                   currentApplicationSection={props.chosenApplicationSection}

@@ -10,7 +10,9 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
+  ObjectList,
   Report,
+  ReportDefinition,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -34,12 +36,11 @@ import {
 import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 
 export interface ReportSectionEntityInstanceProps {
+  // reportDefinition: ReportDefinition | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
   instanceUuid: Uuid,
-  // store:any;
-  // reportName: string;
 }
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
@@ -97,9 +98,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   console.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
+
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
-    (e) => e?.uuid === props.entityUuid
-  );
+      (e) => e?.uuid === props.entityUuid
+    );
+
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
@@ -126,11 +129,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
-  //   // () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,currentReportTargetEntityDefinition?.jzodSchema??{type:"object", definition:{}}),
-  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
-  //   [currentMiroirModel]
-  // );
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
     () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
     [currentMiroirModel]
@@ -140,14 +138,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const publisherBooks = useMemo(
     () =>
       (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-        (b: any) => b["publisher"] == (instance["publisher"] ? instance["publisher"] : instance.uuid)
+        (b: any) => b["publisher"] == (instance["publisher"] ?? instance.uuid)
       ),
     [instance, booksUuidIndex]
   );
   const authorBooks = useMemo(
     () =>
       (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-        (b: any) => b["author"] == (instance["author"] ? instance["author"] : instance.uuid)
+        (b: any) => b["author"] == (instance["author"] ?? instance.uuid)
       ),
     [instance, booksUuidIndex]
   );
@@ -165,13 +163,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         <p>
         ReportSectionEntityInstance
         </p>
-        <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
+        {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
         <p />
         <Box>
           <h3>
             erreurs: {JSON.stringify(errorLog)}
           </h3>
-        </Box>
+        </Box> */}
         <span>
           Entity Instance Attribute Values:
         </span>

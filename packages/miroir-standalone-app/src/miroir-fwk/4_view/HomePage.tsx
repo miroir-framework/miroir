@@ -686,7 +686,7 @@ export const HomePage = (props: RootComponentProps) => {
               height: "80vh",
               width: "90vw",
             }}
-            currentReportUuid=""
+            // currentReportUuid=""
             chosenApplicationSection={displayedApplicationSection}
             displayedDeploymentDefinition={displayedDeploymentDefinition}
             currentModel={currentModel}

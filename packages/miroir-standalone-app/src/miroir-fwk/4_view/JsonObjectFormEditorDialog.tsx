@@ -25,7 +25,7 @@ export interface EditorAttribute {
 }
 
 export interface JsonObjectFormEditorCoreDialogProps {
-  label: string;
+  label?: string;
   // name: string;
   isAttributes?: boolean;
   entityDefinitionJzodSchema: JzodObject;
@@ -192,7 +192,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const formIsOpen = addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
-  const handleAddObjectDialogFormButtonClick = useCallback((label: string, a: any) => {
+  const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
     console.log(
       logHeader,
       "handleAddObjectDialogFormOpen",
