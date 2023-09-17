@@ -7,12 +7,16 @@ export type ObjectInstance = {
         parentUuid: string;
     };
 };
+export type SelectObjectListQuery = {
+    label?: string | undefined;
+    parentName?: string | undefined;
+    parentUuid: string;
+    rootObjectUuid?: string | undefined;
+    rootObjectAttribute?: string | undefined;
+};
 export type ObjectList = {
     type: "objectList";
-    definition: {
-        parentName?: string | undefined;
-        parentUuid: string;
-    };
+    definition?: SelectObjectListQuery;
 };
 export type GridReportSection = {
     type: "grid";
@@ -36,7 +40,8 @@ export type Report = {
 };
 
 export const objectInstance:z.ZodType<ObjectInstance> = z.object({type:z.literal("objectInstance"),definition:z.object({label:z.string().optional(),parentUuid:z.string().uuid(),}).strict(),}).strict();
-export const objectList:z.ZodType<ObjectList> = z.object({type:z.literal("objectList"),definition:z.object({parentName:z.string().optional(),parentUuid:z.string().uuid(),}).strict(),}).strict();
+export const selectObjectListQuery:z.ZodType<SelectObjectListQuery> = z.object({label:z.string().optional(),parentName:z.string().optional(),parentUuid:z.string().uuid(),rootObjectUuid:z.string().uuid().optional(),rootObjectAttribute:z.string().optional(),}).strict();
+export const objectList:z.ZodType<ObjectList> = z.object({type:z.literal("objectList"),definition:z.lazy(() =>selectObjectListQuery),}).strict();
 export const gridReportSection:z.ZodType<GridReportSection> = z.object({type:z.literal("grid"),definition:z.array(z.array(z.lazy(() =>reportDefinition))),}).strict();
 export const listReportSection:z.ZodType<ListReportSection> = z.object({type:z.literal("list"),definition:z.array(z.lazy(() =>reportDefinition)),}).strict();
 export const reportDefinition:z.ZodType<ReportDefinition> = z.union([z.lazy(() =>gridReportSection),z.lazy(() =>listReportSection),z.lazy(() =>objectList),z.lazy(() =>objectInstance),]);

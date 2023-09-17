@@ -10,7 +10,7 @@ export function getReportSectionTargetEntityUuid(
   if (
     reportDefinition &&
     reportDefinition.definition?.type === "objectList" &&
-    reportDefinition.definition.definition.parentUuid
+    reportDefinition.definition.definition?.parentUuid
   ) {
     console.log('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)
     return reportDefinition.definition.definition.parentUuid;

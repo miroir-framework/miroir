@@ -322,11 +322,13 @@ export {
   ObjectList,
   Report,
   ReportDefinition,
+  SelectObjectListQuery,
   gridReportSection,
   listReportSection,
   objectList,
   report,
   reportDefinition,
+  selectObjectListQuery,
 } from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 
 export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"

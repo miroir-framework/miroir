@@ -178,7 +178,10 @@ export interface LocalCacheInputSelectorParams {
 }
 
 // ################################################################################################
-export const selectEntityInstanceUuidIndexFromLocalCache = (state: ReduxStateWithUndoRedo, params: LocalCacheInputSelectorParams): EntityInstancesUuidIndex | undefined => {
+export const selectEntityInstanceUuidIndexFromLocalCache = (
+  state: ReduxStateWithUndoRedo,
+  params: LocalCacheInputSelectorParams
+): EntityInstancesUuidIndex | undefined => {
   const localEntityIndex = getLocalCacheSliceIndex(params.deploymentUuid, params.applicationSection, params.entityUuid);
   const result =
     params.deploymentUuid &&
@@ -186,8 +189,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = (state: ReduxStateWit
     params.entityUuid &&
     state.presentModelSnapshot[localEntityIndex]
       ? (state.presentModelSnapshot[localEntityIndex].entities as EntityInstancesUuidIndex)
-      : undefined
-  ;
+      : undefined;
   // console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
   return result;
 };

@@ -9,6 +9,7 @@ import {
   EntityInstance,
   EntityInstancesUuidIndex,
   MiroirApplicationModel,
+  SelectObjectListQuery,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -22,6 +23,8 @@ import {
   selectModelForDeployment
 } from "miroir-redux";
 
+export type EntityInstanceUuidIndexSelectorParams = LocalCacheInputSelectorParams;
+export type EntityInstanceQueryParams = {localCacheSelectorParams: LocalCacheInputSelectorParams, query: SelectObjectListQuery};
 
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
@@ -40,7 +43,7 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 
 
 // ################################################################################################
-export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheInputSelectorParams) {
+export function useEntityInstanceUuidIndexFromLocalCache(params:EntityInstanceUuidIndexSelectorParams) {
   // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheInputSelectorParams = useMemo(
     () => ({...params}),
@@ -50,6 +53,45 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheInputS
   return useSelector((state: ReduxStateWithUndoRedo) =>
     selectEntityInstanceUuidIndexFromLocalCache(state, selectorParams)
   )
+}
+
+
+// ################################################################################################
+export const queryEntityInstanceUuidIndexFromLocalCache = (
+  state: ReduxStateWithUndoRedo,
+  params: EntityInstanceQueryParams
+): EntityInstancesUuidIndex | undefined => {
+  const selectedInstances = selectEntityInstanceUuidIndexFromLocalCache(state,params.localCacheSelectorParams)
+  // const result = selectedInstances;
+  const result = Object.fromEntries(
+    Object.entries(selectedInstances ?? {}).filter(
+      (i: [string, EntityInstance]) =>
+        (i[1] as any)[params.query?.rootObjectAttribute ?? "dummy"] == params.query?.rootObjectUuid
+    )
+  );
+  // console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+  return result;
+};
+
+// ################################################################################################
+export function useEntityInstanceQueryFromLocalCache(params:EntityInstanceQueryParams) {
+  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
+  const selectorParams: EntityInstanceQueryParams = useMemo(
+    () => ({ ...params }),
+    [
+      params?.localCacheSelectorParams?.applicationSection,
+      params?.localCacheSelectorParams?.deploymentUuid,
+      params?.localCacheSelectorParams?.entityUuid,
+      params?.query?.rootObjectAttribute,
+      params?.query?.rootObjectUuid,
+    ]
+  );
+
+  const selectedInstances = useSelector((state: ReduxStateWithUndoRedo) =>
+    queryEntityInstanceUuidIndexFromLocalCache(state, selectorParams)
+  );
+
+  return selectedInstances;
 }
 
 //#########################################################################################

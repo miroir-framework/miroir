@@ -18,6 +18,7 @@ import { JzodElement } from "@miroir-framework/jzod-ts";
 import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
 import { useSelector } from "react-redux";
 
+import { EntityInstanceUuidIndexSelectorParams } from "../../src/miroir-fwk/4_view/ReduxHooks";
 export interface MiroirReportComponentProps {
   entityName?: string;
   entityUuid: string;
@@ -29,10 +30,10 @@ export interface MiroirReportComponentProps {
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const currentModelSelectorParams:LocalCacheInputSelectorParams = React.useMemo(
+  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
     () => ({
       deploymentUuid: props.deploymentUuid,
-    } as LocalCacheInputSelectorParams),
+    } as EntityInstanceUuidIndexSelectorParams),
     [props.deploymentUuid]
   );
 

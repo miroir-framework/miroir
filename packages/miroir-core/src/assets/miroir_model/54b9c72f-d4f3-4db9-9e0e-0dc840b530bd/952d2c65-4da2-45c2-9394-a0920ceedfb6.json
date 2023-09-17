@@ -85,6 +85,42 @@
               }
             }
           },
+          "selectObjectListQuery": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":1, "defaultLabel": "Entity Name", "editable": false }
+              },
+              "parentName": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+              },
+              "parentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+              },
+              "rootObjectUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":4, "defaultLabel": "Entity Uuid", "editable": false }
+              },
+              "rootObjectAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 5, "defaultLabel": "Entity Uuid", "editable": false }
+              }
+            }
+          },
           "objectList": {
             "type": "object",
             "definition": {
@@ -93,20 +129,9 @@
                 "definition": "objectList"
               },
               "definition": {
-                "type": "object",
+                "type": "schemaReference",
                 "definition": {
-                  "parentName": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "optional": true,
-                    "extra": { "id":1, "defaultLabel": "Entity Name", "editable": false }
-                  },
-                  "parentUuid": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
-                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
-                  }
+                  "relativePath": "selectObjectListQuery"
                 }
               }
             }

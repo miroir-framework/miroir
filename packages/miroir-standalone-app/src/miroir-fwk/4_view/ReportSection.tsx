@@ -1,40 +1,35 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { List, ListItem } from '@mui/material';
-import Box from '@mui/material/Box';
 
+import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationSection,
   EntityDefinition,
-  EntityInstancesUuidIndex,
-  ListReportSection,
   MetaEntity,
   MiroirApplicationModel,
   ObjectList,
   Report,
   ReportDefinition,
+  SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  selectObjectListQuery
 } from "miroir-core";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
-import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
   useErrorLogService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
-import { EntityInstanceLink } from './EntityInstanceLink';
-import { JzodObjectDisplay } from './JzodElementDisplay';
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 import {
-  useCurrentModel,
-  useEntityInstanceUuidIndexFromLocalCache,
+  EntityInstanceUuidIndexSelectorParams,
+  useCurrentModel
 } from "./ReduxHooks";
-import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 
@@ -42,10 +37,7 @@ export interface ReportSectionEntityInstanceProps {
   reportDefinition: ReportDefinition | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  // entityUuid?: Uuid,
   instanceUuid: Uuid,
-  // store:any;
-  // reportName: string;
 }
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
@@ -53,21 +45,15 @@ export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection'
 
 // ###############################################################################################################
 export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
-  // const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
-  // const params = useParams<ReportUrlParams>();
-  // console.log('ReportPage params',params);
-  
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  // const domainController: DomainControllerInterface = useDomainControllerService();
   const errorLog = useErrorLogService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     () => ({
       deploymentUuid: applicationDeploymentLibrary.uuid,
-    } as LocalCacheInputSelectorParams),
+    } as EntityInstanceUuidIndexSelectorParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -108,19 +94,14 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
       : undefined
   ;
 
-// const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
-//   ? currentModel.entities?.find(
-//       (e) => e?.uuid === currentMiroirReportSectionObjectList.definition.parentUuid
-//     )
-//   : undefined
-// ;
-
   console.log("EntityInstancePage currentMiroirReportSectionObjectList", currentMiroirReportSectionObjectList);
   console.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList?.definition.parentUuid?currentReportDeploymentSectionEntities?.find(
-    (e) => e?.uuid === currentMiroirReportSectionObjectList?.definition.parentUuid
-  ):undefined;
+  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList?.definition?.parentUuid
+    ? currentReportDeploymentSectionEntities?.find(
+        (e) => e?.uuid === currentMiroirReportSectionObjectList?.definition?.parentUuid
+      )
+    : undefined;
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
@@ -128,64 +109,23 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  // const currentMiroirReportSectionObjectList: ObjectList | undefined =
-  //   currentMiroirReport?.definition?.type == "objectList"
-  //     ? currentMiroirReport?.definition
-  //     : undefined
-  // ;
-
-  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-  //   {
-  //     deploymentUuid: props.deploymentUuid,
-  //     applicationSection: props.applicationSection as ApplicationSection,
-  //     entityUuid: props.entityUuid,
-  //   }
-  // );
-
-  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
-
-  // const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-  //   {
-  //     deploymentUuid: props.deploymentUuid,
-  //     applicationSection: props.applicationSection as ApplicationSection,
-  //     entityUuid: entityBook.uuid,
-  //   }
-  // );
-
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
-  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
-  //   // () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,currentReportTargetEntityDefinition?.jzodSchema??{type:"object", definition:{}}),
-  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
-  //   [currentMiroirModel]
-  // );
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
     () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
     [currentMiroirModel]
   );
-
-
-  // const publisherBooks = useMemo(
-  //   () =>
-  //     (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-  //       (b: any) => b["publisher"] == (instance["publisher"] ? instance["publisher"] : instance.uuid)
-  //     ),
-  //   [instance, booksUuidIndex]
-  // );
-  // const authorBooks = useMemo(
-  //   () =>
-  //     (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-  //       (b: any) => b["author"] == (instance["author"] ? instance["author"] : instance.uuid)
-  //     ),
-  //   [instance, booksUuidIndex]
-  // );
-  // console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
 
   const styles = useMemo(()=>({
     height: "280px",
     width: "90vw",
   }),[])
 
+  // const query: SelectObjectListQuery = useMemo(
+  //   () => ({
+  //     label
+  //   })
+  // ) 
   // console.log('EntityInstancePage instance',instance);
   console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
   
@@ -201,6 +141,42 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
           ? (
           <div>
             {
+              props.reportDefinition.type === "grid" ? (
+                <div>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          grid not supported yet!
+                        </td>
+                      </tr>
+                      {/* {
+                        props.reportDefinition.definition.map(
+                          (reportSection, index) => {
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  <ReportSection
+                                    deploymentUuid={props.deploymentUuid}
+                                    applicationSection={props.applicationSection}
+                                    reportDefinition={reportSection}
+                                    instanceUuid={props.instanceUuid}
+                                  />
+                                </td>
+                              </tr>
+                            )
+                          }
+                        )
+                      } */}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                // <div>Not a list!!</div>
+                <div></div>
+              )
+            }
+            {
               props.reportDefinition.type === "list" ? (
                 <div>
                   <table>
@@ -210,9 +186,6 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
                           (reportSection, index) => {
                             return (
                               <tr key={index}>
-                                {/* <td>
-                                  {JSON.stringify({reportSection})}
-                                </td> */}
                                 <td>
                                   <ReportSection
                                     deploymentUuid={props.deploymentUuid}
@@ -240,16 +213,14 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
                   {
                     currentReportTargetEntity &&
                     currentReportTargetEntityDefinition ?
-                      // <div>object List!!</div>
                       <ReportSectionListDisplay
                         tableComponentReportType="EntityInstance"
                         label={"EntityInstance-" + currentReportTargetEntity?.name}
-                        // currentReportUuid={params.reportUuid?params.reportUuid:""}
                         styles={styles}
                         chosenApplicationSection={props.applicationSection as ApplicationSection}
                         displayedDeploymentDefinition={displayedDeploymentDefinition}
+                        select={props.reportDefinition.definition}
                         currentModel={currentModel}
-                        // currentMiroirReportSectionObjectList={props.reportDefinition?.definition[0] as ObjectList}
                         currentMiroirReportSectionObjectList={props.reportDefinition}
                         currentMiroirEntity={currentReportTargetEntity}
                         currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
@@ -258,13 +229,11 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
                     <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>
                   }
                </div>
-              // ) : <div> not an objectList</div>
               ) : <div></div>
             }
             {
               props.reportDefinition.type === "objectInstance" ? (
                 <div>
-                  {/* object instance */}
                   <ReportSectionEntityInstance
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
@@ -272,7 +241,6 @@ export const ReportSection = (props: ReportSectionEntityInstanceProps) => {
                     instanceUuid={props.instanceUuid}
                   />
                </div>
-              // ) : <div> not an objectList</div>
               ) : <div></div>
             }
           </div>

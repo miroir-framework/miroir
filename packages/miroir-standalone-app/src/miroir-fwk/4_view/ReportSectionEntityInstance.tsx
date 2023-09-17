@@ -28,7 +28,7 @@ import {
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
 import { EntityInstanceLink } from './EntityInstanceLink';
-import { JzodObjectDisplay } from './JzodElementDisplay';
+import { JzodElementDisplay } from './JzodElementDisplay';
 import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
@@ -176,7 +176,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {
             currentReportTargetEntity && currentReportTargetEntityDefinition && props.applicationSection?
               <div>
-                <JzodObjectDisplay
+                <JzodElementDisplay
                   path={instance?.name}
                   name={instance?.name}
                   deploymentUuid={props.deploymentUuid}
@@ -188,7 +188,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-                ></JzodObjectDisplay>
+                ></JzodElementDisplay>
                 <span>
                   Publisher Books:
                 </span>

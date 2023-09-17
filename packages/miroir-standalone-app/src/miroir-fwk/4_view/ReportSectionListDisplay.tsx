@@ -18,7 +18,7 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MetaEntitySchema,
-  UuidSchema,
+  selectObjectListQuery,
   objectList
 } from "miroir-core";
 
@@ -27,12 +27,13 @@ import { useCallback, useMemo } from "react";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { useEntityInstanceQueryFromLocalCache, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
-  chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType
+  select: selectObjectListQuery.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   label:z.string(),
 });
 
@@ -40,8 +41,6 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
-  // currentMiroirReport: ReportSchema,
-  // currentReportUuid: UuidSchema,
   currentMiroirReportSectionObjectList: objectList.optional(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
@@ -51,7 +50,6 @@ export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCore
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
   columnDefs: z.array(z.any()),
   rowData: z.array(z.any()),
-  // object: z.any(),
 });
 
 // ##########################################################################################
@@ -128,6 +126,9 @@ let prevColumnDefs:{columnDefs: ColDef<any>[]} = {columnDefs:[]};
 let prevJzodSchema;
 let prevInstancesToDisplay:EntityInstancesUuidIndex | undefined;
 let prevInstancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] };
+
+
+
 // ##########################################################################################
 // ##########################################################################################
 // ##########################################################################################
@@ -287,6 +288,22 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity?.uuid:undefined,
   })
 
+  const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceQueryFromLocalCache(
+    {
+      localCacheSelectorParams: {
+        deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+        applicationSection: props.chosenApplicationSection,
+        entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity?.uuid:undefined,
+      },
+      query: props.select??{
+        parentUuid: '',
+        parentName: undefined,
+        rootObjectAttribute: undefined,
+        rootObjectUuid: undefined
+      }
+    }
+  )
+
   console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
   prevInstancesToDisplay = instancesToDisplay;
 
@@ -297,7 +314,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       () => ({columnDefs:getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(props.currentMiroirEntityDefinition?.jzodSchema)}),
       [props.currentMiroirEntityDefinition?.jzodSchema]
     );
-    console.log('ReportSectionListDisplay',count,"props.currentMiroirEntityDefinition?.jzodSchema",props.currentMiroirEntityDefinition?.jzodSchema,"columnDefs",columnDefs, prevColumnDefs === columnDefs, equal(prevColumnDefs,columnDefs));
+    console.log(
+      "ReportSectionListDisplay",
+      count,
+      "props.currentMiroirEntityDefinition?.jzodSchema",
+      props.currentMiroirEntityDefinition?.jzodSchema,
+      "columnDefs",
+      columnDefs,
+      prevColumnDefs === columnDefs,
+      equal(prevColumnDefs, columnDefs)
+    );
     prevColumnDefs = columnDefs;
     prevJzodSchema = props.currentMiroirEntityDefinition?.jzodSchema;
 
@@ -312,6 +338,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     return (
       <div className="MiroirReport-global" style={{ display: "flex" }}>
         <span>rendered ReportSectionListDisplay: {count} times.</span>
+        {props.select?.label?<span>{props.select?.label}</span>:<></>}
         {
           props?.currentMiroirReportSectionObjectList ? (
             !!columnDefs
@@ -341,18 +368,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 />
                 {
                   props.displayedDeploymentDefinition ? (
-                    <MTableComponent
-                      type={props.tableComponentReportType}
-                      displayedDeploymentDefinition={props.displayedDeploymentDefinition}
-                      styles={props.styles}
-                      currentEntity={props.currentMiroirEntity}
-                      currentEntityDefinition={props.currentMiroirEntityDefinition}
-                      reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
-                      columnDefs={columnDefs}
-                      instancesToDisplay={instancesToDisplay}
-                      displayTools={true}
-                      onRowEdit={onEditFormObject}
-                    ></MTableComponent>
+                    <div>
+                      <span>{JSON.stringify(props.select)}</span>
+                      <MTableComponent
+                        type={props.tableComponentReportType}
+                        displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                        styles={props.styles}
+                        currentEntity={props.currentMiroirEntity}
+                        currentEntityDefinition={props.currentMiroirEntityDefinition}
+                        reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
+                        columnDefs={columnDefs}
+                        instancesToDisplay={selectedInstancesToDisplay??instancesToDisplay}
+                        displayTools={true}
+                        onRowEdit={onEditFormObject}
+                      ></MTableComponent>
+                    </div>
                   ) : (
                     <div></div>
                   )

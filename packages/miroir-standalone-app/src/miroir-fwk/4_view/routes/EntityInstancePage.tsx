@@ -14,35 +14,37 @@ import {
 import {
   useErrorLogService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 import { Params, useParams } from 'react-router-dom';
 
 
 import { List, ListItem } from '@mui/material';
 
-import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
+import { JzodElement } from '@miroir-framework/jzod-ts';
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 import { EntityInstanceLink } from '../EntityInstanceLink';
-import { JzodObjectDisplay } from '../JzodElementDisplay';
+import { JzodElementDisplay } from '../JzodElementDisplay';
 import {
+  EntityInstanceUuidIndexSelectorParams,
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
-import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 
-export interface ReportPageProps {
-  // deploymentUuid: Uuid,
-  // store:any;
-  // reportName: string;
-}
+// export interface ReportPageProps {
+//   // deploymentUuid: Uuid,
+//   // store:any;
+//   // reportName: string;
+// }
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 
 
 // ###############################################################################################################
-export const EntityInstancePage = (props: ReportPageProps) => {
+// export const EntityInstancePage = (props: ReportPageProps) => {
+export const EntityInstancePage = () => {
   const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
   // const params = useParams<ReportUrlParams>();
   console.log('ReportPage params',params);
@@ -54,10 +56,10 @@ export const EntityInstancePage = (props: ReportPageProps) => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     () => ({
       deploymentUuid: applicationDeploymentLibrary.uuid,
-    } as LocalCacheInputSelectorParams),
+    } as EntityInstanceUuidIndexSelectorParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -171,7 +173,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
           {
             currentReportTargetEntity && currentReportTargetEntityDefinition && params.applicationSection?
               <div>
-                <JzodObjectDisplay
+                <JzodElementDisplay
                   path={instance?.name}
                   name={instance?.name}
                   deploymentUuid={params.deploymentUuid}
@@ -183,7 +185,7 @@ export const EntityInstancePage = (props: ReportPageProps) => {
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                   currentEnumJzodSchemaResolver={ currentEnumJzodSchemaResolver}
-                ></JzodObjectDisplay>
+                ></JzodElementDisplay>
                 <span>
                   Publisher Books:
                 </span>
