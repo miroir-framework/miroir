@@ -19,7 +19,8 @@ import {
   MetaEntity,
   MetaEntitySchema,
   selectObjectListQuery,
-  objectList
+  objectList,
+  EntityInstance
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
@@ -27,12 +28,14 @@ import { useCallback, useMemo } from "react";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-import { useEntityInstanceQueryFromLocalCache, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { useEntityInstanceListQueryFromLocalCache, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 
+// ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
   select: selectObjectListQuery.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  fetchedData: z.record(z.any()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   label:z.string(),
 });
@@ -53,10 +56,11 @@ export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCore
 });
 
 // ##########################################################################################
-export const ReportSectionDisplayPropsSchema = z.union([
-  ReportSectionDisplayEntityInstancePropsSchema,
-  ReportSectionDisplayJsonArrayPropsSchema,
-]);
+export const ReportSectionDisplayPropsSchema = ReportSectionDisplayEntityInstancePropsSchema;
+// export const ReportSectionDisplayPropsSchema = z.union([
+//   ReportSectionDisplayEntityInstancePropsSchema,
+//   // ReportSectionDisplayJsonArrayPropsSchema,
+// ]);
 export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchema>;
 
 // ##########################################################################################
@@ -140,6 +144,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   console.log('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
 
+  console.log('ReportSectionListDisplay props.fetchedData',props.fetchedData);
+
   const domainController: DomainControllerInterface = useDomainControllerService();
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
@@ -147,20 +153,20 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     async (data,event) => {
       const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
       console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
-      if (props.tableComponentReportType == 'JSON_ARRAY') {
-        if (buttonType == 'InnerDialog') {
-          const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
-          const newAttributesValue = previousValue.slice();
-          newAttributesValue.push(data as EntityAttribute);
-          const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
-          setdialogOuterFormObject(newObject); // TODO use Zod parse!
-          console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
-        } else {
-          console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
-        }
-      } else {
-        console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
-      }
+      // if (props.tableComponentReportType == 'JSON_ARRAY') {
+      //   if (buttonType == 'InnerDialog') {
+      //     const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
+      //     const newAttributesValue = previousValue.slice();
+      //     newAttributesValue.push(data as EntityAttribute);
+      //     const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
+      //     setdialogOuterFormObject(newObject); // TODO use Zod parse!
+      //     console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
+      //   } else {
+      //     console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
+      //   }
+      // } else {
+      //   console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
+      // }
     },[dialogOuterFormObject]
   ) 
 
@@ -282,36 +288,47 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
-    deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-    applicationSection: props.chosenApplicationSection,
-    entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity?.uuid:undefined,
-  })
+  const instancesToDisplayParams = useMemo(
+    () => ({
+      deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+      applicationSection: props.chosenApplicationSection,
+      entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
+    }),
+    [props]
+  );
+  const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(instancesToDisplayParams)
 
-  const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceQueryFromLocalCache(
-    {
-      localCacheSelectorParams: {
-        deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-        applicationSection: props.chosenApplicationSection,
-        entityUuid: props.tableComponentReportType == "EntityInstance"?props.currentMiroirEntity?.uuid:undefined,
-      },
-      query: props.select??{
-        parentUuid: '',
-        parentName: undefined,
-        rootObjectAttribute: undefined,
-        rootObjectUuid: undefined
-      }
-    }
-  )
+  const selectedInstancesToDisplayParams = useMemo(() => ({
+    localCacheSelectorParams: {
+      deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+      applicationSection: props.chosenApplicationSection,
+      entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
+    },
+    query: props.select ?? {
+      type: "objectListQuery",
+      parentUuid: "",
+      parentName: undefined,
+      rootObjectAttribute: undefined,
+      rootObjectUuid: undefined,
+    },
+  }), [props]);
+  const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = undefined;
+  // const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(selectedInstancesToDisplayParams)
+
+  // const publisher: EntityInstance = selectedInstancesToDisplay[]
 
   console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
   prevInstancesToDisplay = instancesToDisplay;
 
 
-  if (props.tableComponentReportType == "EntityInstance") {
+  // if (props.tableComponentReportType == "EntityInstance") {
     // const columnDefs:ColDef<any>[] = useMemo(()=>[],[]);
-    const columnDefs:{columnDefs: ColDef<any>[]} = useMemo(
-      () => ({columnDefs:getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(props.currentMiroirEntityDefinition?.jzodSchema)}),
+    const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
+      () => ({
+        columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+          props?.currentMiroirEntityDefinition?.jzodSchema
+        ),
+      }),
       [props.currentMiroirEntityDefinition?.jzodSchema]
     );
     console.log(
@@ -378,7 +395,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                         currentEntityDefinition={props.currentMiroirEntityDefinition}
                         reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                         columnDefs={columnDefs}
-                        instancesToDisplay={selectedInstancesToDisplay??instancesToDisplay}
+                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:selectedInstancesToDisplay??instancesToDisplay}
                         displayTools={true}
                         onRowEdit={onEditFormObject}
                       ></MTableComponent>
@@ -397,30 +414,30 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         }
       </div>
     );
-  } else { // props.tableComponentReportType == "JSON_ARRAY"
-    // const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
-    // console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
+  // } else { // props.tableComponentReportType == "JSON_ARRAY"
+  //   // const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
+  //   // console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
     
-    return (
-      <div>
-        {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
-        {/* <JsonObjectFormEditorDialog
-          showButton={true}
-          jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
-          initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}
-          label='InnerDialog'
-          onSubmit={onSubmitInnerFormDialog}
-        />
-        <MTableComponent
-          type="JSON_ARRAY"
-          styles={props.styles}
-          columnDefs={props.columnDefs}
-          rowData={existingRows}
-          displayTools={true}
-        >
-        </MTableComponent> */}
-      </div>
-    );
-  }
+  //   return (
+  //     <div>
+  //       {/* <span>rendered ReportSectionListDisplay: {count} times.</span> */}
+  //       {/* <JsonObjectFormEditorDialog
+  //         showButton={true}
+  //         jzodSchema={entityDefinitionEntityDefinition.jzodSchema as JzodObject}
+  //         initialValuesObject={defaultFormValues(props.tableComponentReportType, entityDefinitionEntityDefinition.jzodSchema as JzodObject, [], existingRows)}
+  //         label='InnerDialog'
+  //         onSubmit={onSubmitInnerFormDialog}
+  //       />
+  //       <MTableComponent
+  //         type="JSON_ARRAY"
+  //         styles={props.styles}
+  //         columnDefs={props.columnDefs}
+  //         rowData={existingRows}
+  //         displayTools={true}
+  //       >
+  //       </MTableComponent> */}
+  //     </div>
+  //   );
+  // }
 
 }

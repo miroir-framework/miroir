@@ -24,7 +24,7 @@ import {
 } from "miroir-redux";
 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheInputSelectorParams;
-export type EntityInstanceQueryParams = {localCacheSelectorParams: LocalCacheInputSelectorParams, query: SelectObjectListQuery};
+export type EntityInstanceListQueryParams = {localCacheSelectorParams: LocalCacheInputSelectorParams, query: SelectObjectListQuery};
 
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
@@ -43,7 +43,7 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 
 
 // ################################################################################################
-export function useEntityInstanceUuidIndexFromLocalCache(params:EntityInstanceUuidIndexSelectorParams) {
+export function useEntityInstanceUuidIndexFromLocalCache(params:EntityInstanceUuidIndexSelectorParams): EntityInstancesUuidIndex | undefined {
   // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheInputSelectorParams = useMemo(
     () => ({...params}),
@@ -56,42 +56,41 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:EntityInstanceUu
 }
 
 
+// // ################################################################################################
+// export const queryEntityInstanceUuidIndexFromLocalCache = (
+//   state: ReduxStateWithUndoRedo,
+//   params: EntityInstanceListQueryParams
+// ): EntityInstancesUuidIndex => {
+//   const selectedInstances: EntityInstancesUuidIndex | undefined = selectEntityInstanceUuidIndexFromLocalCache(state,params.localCacheSelectorParams)
+//   // const result = selectedInstances;
+//   console.log('queryEntityInstanceUuidIndexFromLocalCache','params',params,'selectedInstances',selectedInstances,'state',state);
+//   const result: EntityInstancesUuidIndex = useMemo(()=>Object.fromEntries(
+//     Object.entries(selectedInstances ?? {}).filter(
+//       (i: [string, EntityInstance]) =>
+//         (i[1] as any)[params.query?.rootObjectAttribute ?? "dummy"] == params.query?.rootObjectUuid
+//     )
+//   ), [selectedInstances]);
+//   console.log('queryEntityInstanceUuidIndexFromLocalCache','params',params,'result',result);
+//   return result;
+// };
+
 // ################################################################################################
-export const queryEntityInstanceUuidIndexFromLocalCache = (
-  state: ReduxStateWithUndoRedo,
-  params: EntityInstanceQueryParams
-): EntityInstancesUuidIndex | undefined => {
-  const selectedInstances = selectEntityInstanceUuidIndexFromLocalCache(state,params.localCacheSelectorParams)
-  // const result = selectedInstances;
-  const result = Object.fromEntries(
+export function useEntityInstanceListQueryFromLocalCache(params:EntityInstanceListQueryParams): EntityInstancesUuidIndex {
+
+  const selectedInstances: EntityInstancesUuidIndex | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
+    selectEntityInstanceUuidIndexFromLocalCache(state, params.localCacheSelectorParams)
+  );
+  console.log('useEntityInstanceListQueryFromLocalCache','params',params,'selectedInstances',selectedInstances);
+  const result: EntityInstancesUuidIndex = useMemo(()=>Object.fromEntries(
     Object.entries(selectedInstances ?? {}).filter(
       (i: [string, EntityInstance]) =>
         (i[1] as any)[params.query?.rootObjectAttribute ?? "dummy"] == params.query?.rootObjectUuid
     )
-  );
-  // console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+  ), [selectedInstances]);
+
+  console.log("useEntityInstanceListQueryFromLocalCache", "selectedInstances", selectedInstances, "result", result);
+  
   return result;
-};
-
-// ################################################################################################
-export function useEntityInstanceQueryFromLocalCache(params:EntityInstanceQueryParams) {
-  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const selectorParams: EntityInstanceQueryParams = useMemo(
-    () => ({ ...params }),
-    [
-      params?.localCacheSelectorParams?.applicationSection,
-      params?.localCacheSelectorParams?.deploymentUuid,
-      params?.localCacheSelectorParams?.entityUuid,
-      params?.query?.rootObjectAttribute,
-      params?.query?.rootObjectUuid,
-    ]
-  );
-
-  const selectedInstances = useSelector((state: ReduxStateWithUndoRedo) =>
-    queryEntityInstanceUuidIndexFromLocalCache(state, selectorParams)
-  );
-
-  return selectedInstances;
 }
 
 //#########################################################################################

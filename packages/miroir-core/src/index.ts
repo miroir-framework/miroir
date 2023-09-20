@@ -321,13 +321,13 @@ export {
   ListReportSection,
   ObjectList,
   Report,
-  ReportDefinition,
+  ReportSection,
   SelectObjectListQuery,
   gridReportSection,
   listReportSection,
   objectList,
   report,
-  reportDefinition,
+  reportSection,
   selectObjectListQuery,
 } from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 

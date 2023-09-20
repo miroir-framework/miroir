@@ -59,35 +59,13 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "objectInstance": {
+          "selectObjectInstanceQuery": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
-                "definition": "objectInstance"
+                "definition": "objectQuery"
               },
-              "definition": {
-                "type": "object",
-                "definition": {
-                  "label": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "optional": true,
-                    "extra": { "id":1, "defaultLabel": "Label", "editable": false }
-                  },
-                  "parentUuid": {
-                    "type": "simpleType",
-                    "definition": "string",
-                    "validations": [{ "type": "uuid" }],
-                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
-                  }
-                }
-              }
-            }
-          },
-          "selectObjectListQuery": {
-            "type": "object",
-            "definition": {
               "label": {
                 "type": "simpleType",
                 "definition": "string",
@@ -121,12 +99,125 @@
               }
             }
           },
+          "selectObjectListQuery": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "objectListQuery"
+              },
+              "label": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+              },
+              "parentName": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":2, "defaultLabel": "Parent Name", "editable": false }
+              },
+              "parentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+              },
+              "rootObjectUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":4, "defaultLabel": "Root Object Uuid", "editable": false }
+              },
+              "rootObjectAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 5, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "fetchedDataReference": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 6, "defaultLabel": "Fetched Data Reference", "editable": false }
+              }
+            }
+          },
+          "miroirQuery": {
+            "type": "union",
+            "discriminator": "type",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectListQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectInstanceQuery"
+                }
+              }
+            ]
+          },
+          "miroirQueriesObject": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "miroirQuery"
+              }
+            }
+          },
+          "objectInstance": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "objectInstance"
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueriesObject"
+                }
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+                  },
+                  "parentUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [{ "type": "uuid" }],
+                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
+                  }
+                }
+              }
+            }
+          },
           "objectList": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
                 "definition": "objectList"
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueriesObject"
+                }
               },
               "definition": {
                 "type": "schemaReference",
@@ -143,6 +234,13 @@
                 "type": "literal",
                 "definition": "grid"
               },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueriesObject"
+                }
+              },
               "definition": {
                 "type": "array",
                 "definition": {
@@ -150,7 +248,7 @@
                   "definition": {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "reportDefinition"
+                      "relativePath": "reportSection"
                     }
                   }
                 }
@@ -164,18 +262,25 @@
                 "type": "literal",
                 "definition": "list"
               },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueriesObject"
+                }
+              },
               "definition": {
                 "type": "array",
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "reportDefinition"
+                    "relativePath": "reportSection"
                   }
                 }
               }
             }
           },
-          "reportDefinition": {
+          "reportSection": {
             "type": "union",
             "discriminator": "type",
             "definition": [
@@ -208,7 +313,7 @@
         },
         "definition": {
           "eager": true,
-          "relativePath": "reportDefinition"
+          "relativePath": "reportSection"
         },
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
       }

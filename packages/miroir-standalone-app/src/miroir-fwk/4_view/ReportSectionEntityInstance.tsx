@@ -10,9 +10,7 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
-  ObjectList,
   Report,
-  ReportDefinition,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -36,22 +34,17 @@ import {
 import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 
 export interface ReportSectionEntityInstanceProps {
-  // reportDefinition: ReportDefinition | undefined,
+  // reportSection: ReportDefinition | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
   instanceUuid: Uuid,
 }
 
-export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 
 
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
-  // const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
-  // const params = useParams<ReportUrlParams>();
-  // console.log('ReportPage params',params);
-  
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   // const domainController: DomainControllerInterface = useDomainControllerService();
   const errorLog = useErrorLogService();

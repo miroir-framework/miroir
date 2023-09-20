@@ -33,20 +33,12 @@ import {
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
 
-// export interface ReportPageProps {
-//   // deploymentUuid: Uuid,
-//   // store:any;
-//   // reportName: string;
-// }
-
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 
 
 // ###############################################################################################################
-// export const EntityInstancePage = (props: ReportPageProps) => {
 export const EntityInstancePage = () => {
-  const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
-  // const params = useParams<ReportUrlParams>();
+  const params = useParams<EntityInstanceUrlParamKeys>();
   console.log('ReportPage params',params);
   
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();

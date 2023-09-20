@@ -160,7 +160,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
     // event?.stopPropagation();
     console.warn("onCellValueChanged",event, 'contextDeploymentUuid',contextDeploymentUuid)
-    // if (props.reportDefinition.definition.parentUuid == entityEntity.uuid) {
+    // if (props.reportSection.definition.parentUuid == entityEntity.uuid) {
     //   const entity = e.data as MetaEntity;
     //   // sending ModelUpdates
     //   await domainController.handleDomainTransactionalAction(
@@ -183,7 +183,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //   );
         
     // } else {
-    //   console.log("onCellValueChanged on instance of entity",props.reportDefinition.definition.parentName, props.reportDefinition.definition.parentUuid,'updating object',e.data)
+    //   console.log("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
     //   // sending DataUpdates
     //   await domainController.handleDomainAction(
     //     contextDeploymentUuid,
@@ -192,7 +192,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //       actionName: "update",
     //       objects: [
     //         {
-    //           parentUuid: props.reportDefinition.definition.parentUuid,
+    //           parentUuid: props.reportSection.definition.parentUuid,
     //           applicationSection:'data',
     //           instances:[
     //             // Object.assign({},e.data,{[e.column.getColId()]:e.data.value})

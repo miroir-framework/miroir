@@ -21,13 +21,8 @@ export interface EntityInstanceLinkProps {
   // reportName: string;
 }
 
-// export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
-
-
 // ###############################################################################################################
 export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
-  // const params = useParams<any>() as Readonly<Params<EntityInstanceUrlParamKeys>>;
-  // const params = useParams<ReportUrlParams>();
 
   console.log('EntityInstanceLink props',props);
   

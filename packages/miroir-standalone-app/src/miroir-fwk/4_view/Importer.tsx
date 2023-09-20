@@ -179,6 +179,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       "definition":{
         "type":"objectList",
         "definition": {
+          "type": "objectListQuery",
           "parentName": "Fountain",
           "parentUuid": newEntity.uuid
         }
