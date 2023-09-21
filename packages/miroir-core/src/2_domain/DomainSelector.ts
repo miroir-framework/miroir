@@ -1,5 +1,6 @@
 // 
 
+import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { DomainEntityInstancesSelectorParams, EntityInstanceListQueryParams, MiroirSelectorParams } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
@@ -24,20 +25,30 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
   return result;
 };
 
-// // ################################################################################################
-// export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
-//   domainState: DomainState,
-//   params: EntityInstanceListQueryParams
-// ): EntityInstancesUuidIndex | undefined => {
+// ################################################################################################
+export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
+  domainState: DomainState,
+  selectorParams: MiroirSelectorParams
+): EntityInstancesUuidIndex | undefined => {
 
-//   const instances = selectEntityInstanceUuidIndexFromDomainState(domainState,params.)
-//   const result = 
-//     params.deploymentUuid &&
-//     params.applicationSection &&
-//     params.entityUuid &&
-//     domainState[params.deploymentUuid][params.applicationSection][params.entityUuid]
-//       ? (domainState[params.deploymentUuid][params.applicationSection][params.entityUuid] as EntityInstancesUuidIndex)
-//       : undefined;
-//   // console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
-//   return result;
-// };
+  if (selectorParams.type == "EntityInstanceListQueryParams") {
+    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState,selectorParams)
+    const result = Object.fromEntries(
+      Object.entries(selectedInstances ?? {}).filter(
+        (i: [string, EntityInstance]) =>
+          (i[1] as any)[
+            selectorParams.type == "EntityInstanceListQueryParams"
+              ? selectorParams.definition.query?.rootObjectAttribute ?? "dummy"
+              : "dummy"
+          ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query?.rootObjectUuid:undefined)
+      )
+    );
+    // console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'localEntityIndex',localEntityIndex,'state',state,'result',result);
+    return result;
+      
+  } else {
+    return {}
+  }
+  // const localCacheSelectorParams = params.type == "DomainEntityInstancesSelectorParams"?params.definition:params.definition.localCacheSelectorParams;
+
+};

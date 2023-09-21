@@ -16,7 +16,8 @@ import {
   applicationDeploymentMiroir,
   entityEntityDefinition,
   selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityUuidFromJzodAttribute
+  selectEntityUuidFromJzodAttribute,
+  selectRelatedEntityInstancesUuidIndexFromDomainState
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -49,30 +50,21 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 
 
 // ################################################################################################
-// export function useEntityInstanceUuidIndexFromDomainState(params:EntityInstanceUuidIndexSelectorParams): EntityInstancesUuidIndex | undefined {
 export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorParams): EntityInstancesUuidIndex | undefined {
-  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  // const selectorParams:DomainEntityInstancesSelectorParams = useMemo(
   const selectorParams:MiroirSelectorParams = useMemo(
     () => ({...params}),
-    // [params?.definition?.applicationSection,params?.deploymentUuid,params?.entityUuid]
     [params]
   );
 
   return useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    // selectEntityInstanceUuidIndexFromLocalCache2(state, selectorParams)
     applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState,selectorParams)
   )
 }
 
 // ################################################################################################
-// export function useEntityInstanceUuidIndexFromLocalCache(params:EntityInstanceUuidIndexSelectorParams): EntityInstancesUuidIndex | undefined {
 export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorParams): EntityInstancesUuidIndex | undefined {
-  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  // const selectorParams:DomainEntityInstancesSelectorParams = useMemo(
   const selectorParams:MiroirSelectorParams = useMemo(
     () => ({...params}),
-    // [params?.applicationSection,params?.deploymentUuid,params?.entityUuid]
     [params]
   );
 
@@ -81,53 +73,14 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorPa
   )
 }
 
-
-// // ################################################################################################
-// export const queryEntityInstanceUuidIndexFromLocalCache = (
-//   state: ReduxStateWithUndoRedo,
-//   params: EntityInstanceListQueryParams
-// ): EntityInstancesUuidIndex => {
-//   const selectedInstances: EntityInstancesUuidIndex | undefined = selectEntityInstanceUuidIndexFromLocalCache(state,params.localCacheSelectorParams)
-//   // const result = selectedInstances;
-//   console.log('queryEntityInstanceUuidIndexFromLocalCache','params',params,'selectedInstances',selectedInstances,'state',state);
-//   const result: EntityInstancesUuidIndex = useMemo(()=>Object.fromEntries(
-//     Object.entries(selectedInstances ?? {}).filter(
-//       (i: [string, EntityInstance]) =>
-//         (i[1] as any)[params.query?.rootObjectAttribute ?? "dummy"] == params.query?.rootObjectUuid
-//     )
-//   ), [selectedInstances]);
-//   console.log('queryEntityInstanceUuidIndexFromLocalCache','params',params,'result',result);
-//   return result;
-// };
-
 // ################################################################################################
-// export function useEntityInstanceListQueryFromLocalCache(selectorParams:EntityInstanceListQueryParams): EntityInstancesUuidIndex {
 export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorParams): EntityInstancesUuidIndex {
 
-  const selectedInstances: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    // selectEntityInstanceUuidIndexFromLocalCache(state, params.localCacheSelectorParams)
-    // applyDomainStateSelector(selectEntityInstanceUuidIndexFromDomainState)(reduxState,selectorParams.type== "EntityInstanceListQueryParams"?selectorParams.definition.localCacheSelectorParams:undefined)
-    applyDomainStateSelector(selectEntityInstanceUuidIndexFromDomainState)(reduxState,selectorParams)
+  const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
+    applyDomainStateSelector(selectRelatedEntityInstancesUuidIndexFromDomainState)(reduxState,selectorParams)
   );
-  console.log('useEntityInstanceListQueryFromLocalCache','params',selectorParams,'selectedInstances',selectedInstances);
-  const result: EntityInstancesUuidIndex = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(selectedInstances ?? {}).filter(
-          (i: [string, EntityInstance]) =>
-            (i[1] as any)[
-              selectorParams.type == "EntityInstanceListQueryParams"
-                ? selectorParams.definition.query?.rootObjectAttribute ?? "dummy"
-                : "dummy"
-            ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query?.rootObjectUuid:undefined)
-        )
-      ),
-    [selectedInstances]
-  );
-
-  console.log("useEntityInstanceListQueryFromLocalCache", "selectedInstances", selectedInstances, "result", result);
   
-  return result;
+  return result??{};
 }
 
 //#########################################################################################

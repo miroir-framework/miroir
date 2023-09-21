@@ -273,6 +273,7 @@ export {
 } from './1_core/Report.js';
 export {
   selectEntityInstanceUuidIndexFromDomainState,
+  selectRelatedEntityInstancesUuidIndexFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,
