@@ -6,6 +6,7 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
+  MiroirSelectorParams,
   Report,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -48,10 +49,14 @@ export const EntityInstancePage = () => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
+  // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
+  const currentModelSelectorParams:MiroirSelectorParams = useMemo(
     () => ({
-      deploymentUuid: applicationDeploymentLibrary.uuid,
-    } as EntityInstanceUuidIndexSelectorParams),
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+      }
+    } as MiroirSelectorParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -97,9 +102,12 @@ export const EntityInstancePage = () => {
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: params.deploymentUuid,
-      applicationSection: params.applicationSection as ApplicationSection,
-      entityUuid: params.entityUuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: params.deploymentUuid,
+        applicationSection: params.applicationSection as ApplicationSection,
+        entityUuid: params.entityUuid,
+      }
     }
   );
 
@@ -107,9 +115,12 @@ export const EntityInstancePage = () => {
 
   const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: params.deploymentUuid,
-      applicationSection: params.applicationSection as ApplicationSection,
-      entityUuid: entityBook.uuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: params.deploymentUuid,
+        applicationSection: params.applicationSection as ApplicationSection,
+        entityUuid: entityBook.uuid,
+      }
     }
   );
 

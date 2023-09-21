@@ -27,9 +27,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection as ApplicationSection,
-      entityUuid: props.entityUuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: props.deploymentUuid,
+        applicationSection: props.applicationSection as ApplicationSection,
+        entityUuid: props.entityUuid,
+      }
     }
   );
 

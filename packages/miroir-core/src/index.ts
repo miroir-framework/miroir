@@ -183,6 +183,11 @@ export {
   // remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
+  EntityInstanceListQueryParams,
+  DomainEntityInstancesSelectorParams,
+  MiroirSelectorParams,
+} from './0_interfaces/2_domain/DomainSelectorInterface.js';
+export {
   CUDActionNameSchema,
   CUDActionName,
   CUDActionNamesArray,
@@ -266,6 +271,9 @@ export {
 export {
   getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
+export {
+  selectEntityInstanceUuidIndexFromDomainState,
+} from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,

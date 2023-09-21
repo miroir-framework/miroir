@@ -131,16 +131,16 @@ async function start(root:Root) {
 
     root.render(
       <StrictMode>
-          <ThemeProvider theme={theme}>
-        <StyledEngineProvider injectFirst>
-          <Provider store={mReduxStore.getInnerStore()}>
-            <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
-              <RouterProvider router={router} />
-              {/* <RootComponent/> */}
-            </MiroirContextReactProvider>
-          </Provider>
-        </StyledEngineProvider>
-          </ThemeProvider>
+        <ThemeProvider theme={theme}>
+          <StyledEngineProvider injectFirst>
+            <Provider store={mReduxStore.getInnerStore()}>
+              <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
+                <RouterProvider router={router} />
+                {/* <RootComponent/> */}
+              </MiroirContextReactProvider>
+            </Provider>
+          </StyledEngineProvider>
+        </ThemeProvider>
       </StrictMode>
     );
   } else {

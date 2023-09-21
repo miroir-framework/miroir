@@ -10,6 +10,7 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
+  MiroirSelectorParams,
   ObjectList,
   ReportSection,
   SelectObjectListQuery,
@@ -50,10 +51,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
+  // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
+  const currentModelSelectorParams:MiroirSelectorParams = useMemo(
     () => ({
-      deploymentUuid: applicationDeploymentLibrary.uuid,
-    } as EntityInstanceUuidIndexSelectorParams),
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+      }
+    } as MiroirSelectorParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -123,11 +128,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   props.reportSection?.fetchData
 
-  const booksUuidIndexParams = useMemo(()=>(
+  const booksUuidIndexParams: MiroirSelectorParams = useMemo(()=>(
     {
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection as ApplicationSection,
-      entityUuid: props.reportSection?.fetchData?.books.parentUuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: props.deploymentUuid,
+        applicationSection: props.applicationSection as ApplicationSection,
+        entityUuid: props.reportSection?.fetchData?.books.parentUuid,
+      }
     }
   ),[props]);
 
@@ -136,86 +144,53 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     selectEntityInstanceUuidIndexFromLocalCache(state, booksUuidIndexParams)
   );
 
-  console.log("ReportSectionView", "deploymentUuid", props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData?.books.parentUuid, "booksUuidIndex", booksUuidIndex);
-  
-  const book:EntityInstance | undefined = booksUuidIndex && props.instanceUuid?booksUuidIndex[props.instanceUuid]:undefined;
-  // const instance:any = booksUuidIndex && props.reportSection?.fetchData?.books.rootObjectUuid?booksUuidIndex[props.reportSection?.fetchData?.books.rootObjectUuid]:undefined;
-
-  const publishersParams = useMemo(
-    () => ({
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection,
-      entityUuid: props.reportSection?.fetchData?.publisher.parentUuid,
-    }),
-    [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData?.publisher.parentUuid]
+  console.log(
+    "ReportSectionView",
+    "deploymentUuid",
+    props.deploymentUuid,
+    props.applicationSection,
+    props.reportSection?.fetchData?.books.parentUuid,
+    "booksUuidIndex",
+    booksUuidIndex
   );
 
-  const publishers: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-    publishersParams
-  )
+  // const book:EntityInstance | undefined = booksUuidIndex && props.instanceUuid?booksUuidIndex[props.instanceUuid]:undefined;
+  // // const instance:any = booksUuidIndex && props.reportSection?.fetchData?.books.rootObjectUuid?booksUuidIndex[props.reportSection?.fetchData?.books.rootObjectUuid]:undefined;
 
-  const publisher = book && publishers?publishers[(book as any)["publisher"]??""]:undefined;
+  // const publishersParams: MiroirSelectorParams = useMemo(
+  //   () => ({
+  //     type: "DomainEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: props.deploymentUuid,
+  //       applicationSection: props.applicationSection,
+  //       entityUuid: props.reportSection?.fetchData?.publisher.parentUuid,
+  //     }
+  //   }),
+  //   [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData?.publisher.parentUuid]
+  // );
 
+  // const publishers: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+  //   publishersParams
+  // )
 
+  // const publisher = book && publishers?publishers[(book as any)["publisher"]??""]:undefined;
 
-//   const booksOfPublisher: EntityInstancesUuidIndex | undefined = useSelector((state: ReduxStateWithUndoRedo) => {
-//     const booksUuidIndex = selectEntityInstanceUuidIndexFromLocalCache(state, booksUuidIndexParams)
-
-//     // const result = Object.fromEntries(
-//     //   Object.entries(booksUuidIndex ?? {}).filter(
-//     //     (i: [string, EntityInstance]) =>
-//     //       (i[1] as any)[props.reportSection?.fetchData?.booksOfPublisher?.rootObjectAttribute ?? "dummy"] ==
-//     //       publisher?.uuid
-//     //   )
-//     // );
-//     // const result = useMemo(()=>Object.fromEntries(
-//     //     Object.entries(booksUuidIndex ?? {})
-//     //     // .filter(
-//     //     //   (i: [string, EntityInstance]) =>
-//     //     //     (i[1] as any)[props.reportSection?.fetchData?.booksOfPublisher?.rootObjectAttribute ?? "dummy"] ==
-//     //     //     publisher?.uuid
-//     //     // )
-//     //   ),[booksUuidIndex])
-//     // ;
-//     const result = Object.fromEntries(
-//         Object.entries(booksUuidIndex ?? {})
-//         // .filter(
-//         //   (i: [string, EntityInstance]) =>
-//         //     (i[1] as any)[props.reportSection?.fetchData?.booksOfPublisher?.rootObjectAttribute ?? "dummy"] ==
-//         //     publisher?.uuid
-//         // )
-//       )
-//     ;
-//     // const result = useMemo(
-//     //   () => {
-//     //     return Object.fromEntries(
-//     //       Object.entries(booksUuidIndex ?? {})
-//     //       // .filter(
-//     //       //   (i: [string, EntityInstance]) =>
-//     //       //     (i[1] as any)[props.reportSection?.fetchData?.booksOfPublisher?.rootObjectAttribute ?? "dummy"] ==
-//     //       //     publisher?.uuid
-//     //       // )
-//     //     )
-//     //   },
-//     //   [booksUuidIndexParams]
-//     // );
-//     return result;
-//   }
-// );
-
-  const booksOfPublisherParams = useMemo(() => ({
-    localCacheSelectorParams: {
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection,
-      entityUuid: props.reportSection?.fetchData?.booksOfPublisher?.parentUuid,
-    },
-    query: (props.reportSection?.fetchData?.booksOfPublisher as SelectObjectListQuery) ?? {
-      type: "objectListQuery",
-      parentUuid: "",
-      parentName: undefined,
-      rootObjectAttribute: undefined,
-      rootObjectUuid: undefined,
-    },
+  const booksOfPublisherParams: MiroirSelectorParams = useMemo(() => ({
+    type: "EntityInstanceListQueryParams",
+    definition: {
+      localCacheSelectorParams: {
+        deploymentUuid: props.deploymentUuid,
+        applicationSection: props.applicationSection,
+        entityUuid: props.reportSection?.fetchData?.booksOfPublisher?.parentUuid,
+      },
+      query: (props.reportSection?.fetchData?.booksOfPublisher as SelectObjectListQuery) ?? {
+        type: "objectListQuery",
+        parentUuid: "",
+        parentName: undefined,
+        rootObjectAttribute: undefined,
+        rootObjectUuid: undefined,
+      },
+    }
   }),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData?.booksOfPublisher]);
 
   const booksOfPublisher: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(booksOfPublisherParams);
@@ -230,11 +205,12 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const fetchedData: { [k: string]: any } = useMemo(
     () => ({
       books: booksUuidIndex,
-      publisher,
+      // publisher,
       booksOfPublisher,
     }),
     // [booksUuidIndex, publisher]
-    [booksUuidIndex, publisher, booksOfPublisher]
+    // [booksUuidIndex, publisher, booksOfPublisher]
+    [booksUuidIndex, booksOfPublisher]
   );
       // const publisher = 
   // const publishers: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(

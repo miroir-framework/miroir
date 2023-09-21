@@ -20,7 +20,8 @@ import {
   MetaEntitySchema,
   selectObjectListQuery,
   objectList,
-  EntityInstance
+  EntityInstance,
+  MiroirSelectorParams
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
@@ -28,7 +29,7 @@ import { useCallback, useMemo } from "react";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent, TableComponentType, TableComponentTypeSchema } from "./MTableComponent";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
-import { useEntityInstanceListQueryFromLocalCache, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { useEntityInstanceListQueryFromLocalCache, useEntityInstanceUuidIndexFromLocalCache, useEntityInstanceUuidIndexFromDomainState } from "./ReduxHooks";
 
 // ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({
@@ -288,15 +289,18 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  const instancesToDisplayParams = useMemo(
-    () => ({
-      deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-      applicationSection: props.chosenApplicationSection,
-      entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
-    }),
-    [props]
-  );
-  const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(instancesToDisplayParams)
+  // const instancesToDisplayParams: MiroirSelectorParams = useMemo(
+  //   () => ({
+  //     type: "DomainEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+  //       applicationSection: props.chosenApplicationSection,
+  //       entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
+  //     }
+  //   }),
+  //   [props]
+  // );
+  // const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromDomainState(instancesToDisplayParams)
 
   const selectedInstancesToDisplayParams = useMemo(() => ({
     localCacheSelectorParams: {
@@ -317,8 +321,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // const publisher: EntityInstance = selectedInstancesToDisplay[]
 
-  console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
-  prevInstancesToDisplay = instancesToDisplay;
+  // console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
+  // prevInstancesToDisplay = instancesToDisplay;
 
 
   // if (props.tableComponentReportType == "EntityInstance") {
@@ -395,7 +399,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                         currentEntityDefinition={props.currentMiroirEntityDefinition}
                         reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                         columnDefs={columnDefs}
-                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:selectedInstancesToDisplay??instancesToDisplay}
+                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:selectedInstancesToDisplay??{}}
+                        // instancesToDisplay={instancesToDisplay}
                         displayTools={true}
                         onRowEdit={onEditFormObject}
                       ></MTableComponent>

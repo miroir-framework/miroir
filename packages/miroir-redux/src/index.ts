@@ -1,9 +1,9 @@
 export {
+  applyDomainStateSelector,
   getPromiseActionStoreActionNames,
   selectInstanceArrayForDeploymentSectionEntity,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectModelForDeployment,
-  LocalCacheInputSelectorParams,
   LocalCacheSlice,
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
@@ -21,9 +21,8 @@ export {
   ReduxStateChanges,
   ReduxStateWithUndoRedo,
   ReduxStoreWithUndoRedo,
-  LocalCacheDeploymentSectionEntitySliceState,
+  LocalCacheSliceState,
   MiroirDictionary,
-  LocalCacheSliceState
 } from "./4_services/localStore/localStoreInterface";
 export {
   RemoteStoreRestAccessReduxSaga as RemoteStoreAccessReduxSaga,

@@ -2,11 +2,13 @@ import * as React from "react";
 
 import { 
   ApplicationSection, 
+  DomainEntityInstancesSelectorParams, 
   EntityDefinition, 
   EntityInstance, 
   EntityInstanceWithName, 
   MetaEntity, 
   MiroirApplicationModel, 
+  MiroirSelectorParams, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -15,7 +17,7 @@ import {
   entityEntityDefinition 
 } from 'miroir-core';
 import { JzodElement } from "@miroir-framework/jzod-ts";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
 import { useSelector } from "react-redux";
 
 import { EntityInstanceUuidIndexSelectorParams } from "../../src/miroir-fwk/4_view/ReduxHooks";
@@ -30,10 +32,14 @@ export interface MiroirReportComponentProps {
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
-  const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
+  // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
+  const currentModelSelectorParams:MiroirSelectorParams = React.useMemo(
     () => ({
-      deploymentUuid: props.deploymentUuid,
-    } as EntityInstanceUuidIndexSelectorParams),
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: props.deploymentUuid,
+      }
+    } as MiroirSelectorParams),
     [props.deploymentUuid]
   );
 
@@ -69,12 +75,16 @@ export const TestUtilsTableComponent = (
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
 
     selectInstanceArrayForDeploymentSectionEntity
-    const instancesToDisplaySelectorParams:LocalCacheInputSelectorParams = React.useMemo(
+    // const instancesToDisplaySelectorParams:DomainEntityInstancesSelectorParams = React.useMemo(
+    const instancesToDisplaySelectorParams:MiroirSelectorParams = React.useMemo(
       () => ({
-        deploymentUuid:props.deploymentUuid,
-        applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
-        entityUuid: currentMiroirEntity?.uuid,
-      } as LocalCacheInputSelectorParams),
+        type: "DomainEntityInstancesSelectorParams",
+        definition: {
+          deploymentUuid:props.deploymentUuid,
+          applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
+          entityUuid: currentMiroirEntity?.uuid,
+        }
+      } as MiroirSelectorParams),
       [props.deploymentUuid, props.instancesApplicationSection,currentMiroirEntity]
     );
   

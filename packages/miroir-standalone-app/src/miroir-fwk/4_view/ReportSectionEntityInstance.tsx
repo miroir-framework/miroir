@@ -1,23 +1,24 @@
+import { List, ListItem } from '@mui/material';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { List, ListItem } from '@mui/material';
-import Box from '@mui/material/Box';
 
+import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationSection,
+  DomainEntityInstancesSelectorParams,
   EntityDefinition,
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
+  MiroirSelectorParams,
   Report,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
-import { LocalCacheInputSelectorParams, ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
-import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
   useErrorLogService
@@ -25,13 +26,13 @@ import {
 
 import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 import { EntityInstanceLink } from './EntityInstanceLink';
 import { JzodElementDisplay } from './JzodElementDisplay';
 import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "./ReduxHooks";
-import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 
 export interface ReportSectionEntityInstanceProps {
   // reportSection: ReportDefinition | undefined,
@@ -52,10 +53,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  const currentModelSelectorParams:LocalCacheInputSelectorParams = useMemo(
+  // const currentModelSelectorParams:DomainEntityInstancesSelectorParams = useMemo(
+  const currentModelSelectorParams:MiroirSelectorParams = useMemo(
     () => ({
-      deploymentUuid: applicationDeploymentLibrary.uuid,
-    } as LocalCacheInputSelectorParams),
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+      }
+    // } as DomainEntityInstancesSelectorParams),
+    } as MiroirSelectorParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -104,9 +110,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection as ApplicationSection,
-      entityUuid: props.entityUuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: props.deploymentUuid,
+        applicationSection: props.applicationSection as ApplicationSection,
+        entityUuid: props.entityUuid,
+      }
     }
   );
 
@@ -114,9 +123,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      deploymentUuid: props.deploymentUuid,
-      applicationSection: props.applicationSection as ApplicationSection,
-      entityUuid: entityBook.uuid,
+      type: "DomainEntityInstancesSelectorParams",
+      definition: {
+        deploymentUuid: props.deploymentUuid,
+        applicationSection: props.applicationSection as ApplicationSection,
+        entityUuid: entityBook.uuid,
+      }
     }
   );
 

@@ -1,14 +1,11 @@
-import { EntityState, PayloadAction, Store } from "@reduxjs/toolkit";
+import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   DomainAncillaryOrReplayableActionWithDeployment,
   DomainTransactionalReplayableAction,
   EntityDefinition,
-  EntityInstance,
   EntityInstanceCollection,
-  EntityInstanceSchema,
-  EntityInstanceWithName,
-  Uuid,
+  EntityInstanceSchema
 } from "miroir-core";
 import { z } from "zod";
 
@@ -22,11 +19,10 @@ import { z } from "zod";
  * is deemed inapropriate in the general case.
  * 
  */
-
-
 export interface ReduxStateChanges {
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
+
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.
  * the cache and presentSnapshot then give the local view of the client on the
@@ -63,14 +59,13 @@ export type Maction = MinstanceAction | MentityAction;
 //# DATA TYPES
 //#########################################################################################
 export const ZEntityIdSchema = z.union([z.number(), z.string()]);
-export const ZDictionarySchema = z.record(z.string().uuid(), EntityInstanceSchema);
+export const ZDictionarySchema = z.record(z.string().uuid(), EntityInstanceSchema.optional());
 export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
-export const ZEntityStateSchema = z.object({ ids: ZEntityIdSchema, entities: ZDictionarySchema });
+export const ZEntityStateSchema = z.object({ ids: z.array(ZEntityIdSchema), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-export type LocalCacheDeploymentSectionEntitySliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?
-
-export type LocalCacheSliceState = LocalCacheDeploymentSectionEntitySliceState;
+// export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?
+export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 
 export const localCacheSliceName: string = "localCache";
 

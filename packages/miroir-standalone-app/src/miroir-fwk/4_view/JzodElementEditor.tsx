@@ -147,12 +147,15 @@ export const JzodElementEditor = (
   );
   
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
-    deploymentUuid: props.innerProps.currentDeploymentUuid,
-    applicationSection: props.innerProps.currentApplicationSection,
-    entityUuid:
-      elementJzodSchema?.type == "simpleType" && elementJzodSchema?.definition == "string" && elementJzodSchema.extra?.targetEntity
-        ? elementJzodSchema.extra?.targetEntity
-        : "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    type: "DomainEntityInstancesSelectorParams",
+    definition: {
+      deploymentUuid: props.innerProps.currentDeploymentUuid,
+      applicationSection: props.innerProps.currentApplicationSection,
+      entityUuid:
+        elementJzodSchema?.type == "simpleType" && elementJzodSchema?.definition == "string" && elementJzodSchema.extra?.targetEntity
+          ? elementJzodSchema.extra?.targetEntity
+          : "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    }
   });
 
   const selectList: EntityInstanceWithName[] = useMemo(
