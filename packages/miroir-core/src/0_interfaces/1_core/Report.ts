@@ -10,7 +10,7 @@
 
 // // ################################################################################################
 // export const ReportSectionListSchema = z.object({
-//   type: z.literal("objectList"),
+//   type: z.literal("objectListReportSection"),
 //   definition: ReportSectionListDefinitionSchema,
 // })
 // export type ReportSectionList = z.infer<typeof ReportSectionListSchema>;

@@ -27,7 +27,7 @@ import {
   reportEntityDefinitionList,
   reportEntityList,
   reportReportList,
-  ObjectList
+  ObjectListReportSection
 } from "miroir-core";
 import {
   useDomainControllerService, useErrorLogService,
@@ -274,13 +274,13 @@ export const HomePage = (props: RootComponentProps) => {
       console.log("HomePage availableReports",availableReports);
 
   const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
-  const currentMiroirReportSectionObjectList: ObjectList | undefined =
-    currentMiroirReport?.definition?.type == "objectList"? currentMiroirReport?.definition: undefined
+  const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
+    currentMiroirReport?.definition?.type == "objectListReportSection"? currentMiroirReport?.definition: undefined
   ;
   // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
   //   currentMiroirReport?.type == "list" &&
   //   currentMiroirReport.definition.length > 0 &&
-  //   currentMiroirReport?.definition[0].type == "objectList"
+  //   currentMiroirReport?.definition[0].type == "objectListReportSection"
   //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
   //     : undefined
   // ;

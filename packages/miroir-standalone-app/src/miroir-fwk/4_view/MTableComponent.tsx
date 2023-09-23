@@ -20,7 +20,7 @@ import {
   EntityDefinitionSchema,
   MetaEntitySchema,
   entityInstancesUuidIndexSchema,
-  objectList
+  objectListReportSection
 } from "miroir-core";
 import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
 import {
@@ -50,7 +50,7 @@ export const TableComponentRowSchema = z.record(TableComponentCellSchema);
 export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 
-export const TableComponentCorePropsSchema = z.object({
+export const tableComponentCorePropsSchema = z.object({
   columnDefs:z.object({columnDefs:z.array(z.any())}),
   instancesToDisplay: entityInstancesUuidIndexSchema.optional(),// TODO: lower it down to TableCompnentEntityInstancePropsSchema, this should not appear in TableComponentJsonArrayPropsSchema
   styles:z.any().optional(),
@@ -58,17 +58,17 @@ export const TableComponentCorePropsSchema = z.object({
   displayTools: z.boolean(),
 })
 
-export const TableComponentEntityInstancePropsSchema = TableComponentCorePropsSchema.extend({
+export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: MetaEntitySchema.optional(),
   currentEntityDefinition: EntityDefinitionSchema.optional(),
-  reportSectionListDefinition: objectList,
+  reportSectionListDefinition: objectListReportSection,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
-export type TableComponentEntityInstanceProps = z.infer<typeof TableComponentEntityInstancePropsSchema>;
+export type TableComponentEntityInstanceProps = z.infer<typeof tableComponentEntityInstancePropsSchema>;
 
-export const TableComponentJsonArrayPropsSchema = TableComponentCorePropsSchema.extend({
+export const TableComponentJsonArrayPropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
   rowData: z.array(z.any())
 });
@@ -76,7 +76,7 @@ export type TableComponentJsonArrayProps = z.infer<typeof TableComponentJsonArra
 
 // ##########################################################################################
 export const TableComponentPropsSchema = z.union([
-  TableComponentEntityInstancePropsSchema,
+  tableComponentEntityInstancePropsSchema,
   TableComponentJsonArrayPropsSchema,
 ]);
 
@@ -346,7 +346,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             isOpen={dialogFormIsOpen}
             isAttributes={true}
             // label='OuterDialog'
-            label={props.currentEntityDefinition?.name}
+            // label={props.defaultlabel??props.currentEntityDefinition?.name}
+            label={"TOTO"}
             entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
@@ -400,7 +401,13 @@ export const MTableComponent = (props: TableComponentProps) => {
             // rowData={gridData}
             getRowId={(params:any) => {
               console.log("MtableComponent getRowId", params);
-              return params?.data["uuid"] ? params?.data["uuid"] : params.data["id"]?params.data["id"]:typeof(params.data) == "object"?JSON.stringify(params.data):params.data;
+              return params?.data["uuid"]
+                ? params?.data["uuid"]
+                : params.data["id"]
+                ? params.data["id"]
+                : typeof params.data == "object"
+                ? JSON.stringify(params.data)
+                : params.data;
             }}
             defaultColDef={defaultColDef}
             onCellClicked={onCellClicked}

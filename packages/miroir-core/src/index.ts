@@ -274,6 +274,7 @@ export {
 export {
   selectEntityInstanceUuidIndexFromDomainState,
   selectRelatedEntityInstancesUuidIndexFromDomainState,
+  selectEntityInstanceFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,
@@ -328,13 +329,17 @@ export { stringTuple, circularReplacer } from './tools.js';
 export {
   GridReportSection,
   ListReportSection,
-  ObjectList,
+  MiroirQueriesObject,
+  MiroirQuery,
+  ObjectInstanceReportSection,
+  ObjectListReportSection,
   Report,
   ReportSection,
   SelectObjectListQuery,
+  SelectObjectInstanceQuery,
   gridReportSection,
   listReportSection,
-  objectList,
+  objectListReportSection,
   report,
   reportSection,
   selectObjectListQuery,

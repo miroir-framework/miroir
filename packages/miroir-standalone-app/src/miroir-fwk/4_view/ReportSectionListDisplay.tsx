@@ -19,7 +19,7 @@ import {
   MetaEntity,
   MetaEntitySchema,
   selectObjectListQuery,
-  objectList,
+  objectListReportSection,
   EntityInstance,
   MiroirSelectorParams
 } from "miroir-core";
@@ -34,18 +34,19 @@ import { useEntityInstanceListQueryFromLocalCache, useEntityInstanceUuidIndexFro
 // ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({
   styles:z.any().optional(),
+  label:z.string(),
+  defaultlabel:z.string().optional(),
   displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
   select: selectObjectListQuery.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedData: z.record(z.any()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   chosenApplicationSection: ApplicationSectionSchema.optional(),// ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
-  label:z.string(),
 });
 
 export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel:z.any(),
-  currentMiroirReportSectionObjectList: objectList.optional(),
+  currentMiroirReportSectionObjectList: objectListReportSection.optional(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
 });
@@ -302,21 +303,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // );
   // const instancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromDomainState(instancesToDisplayParams)
 
-  const selectedInstancesToDisplayParams = useMemo(() => ({
-    localCacheSelectorParams: {
-      deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-      applicationSection: props.chosenApplicationSection,
-      entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
-    },
-    query: props.select ?? {
-      type: "objectListQuery",
-      parentUuid: "",
-      parentName: undefined,
-      rootObjectAttribute: undefined,
-      rootObjectUuid: undefined,
-    },
-  }), [props]);
-  const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = undefined;
+  // const selectedInstancesToDisplayParams = useMemo(() => ({
+  //   localCacheSelectorParams: {
+  //     deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+  //     applicationSection: props.chosenApplicationSection,
+  //     entityUuid: props.tableComponentReportType == "EntityInstance" ? props.currentMiroirEntity?.uuid : undefined,
+  //   },
+  //   query: props.select ?? {
+  //     type: "objectListQuery",
+  //     parentUuid: "",
+  //     parentName: undefined,
+  //     rootObjectAttribute: undefined,
+  //     rootObjectUuid: undefined,
+  //   },
+  // }), [props]);
+  // const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = undefined;
   // const selectedInstancesToDisplay: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(selectedInstancesToDisplayParams)
 
   // const publisher: EntityInstance = selectedInstancesToDisplay[]
@@ -359,7 +360,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     return (
       <div className="MiroirReport-global" style={{ display: "flex" }}>
         <span>rendered ReportSectionListDisplay: {count} times.</span>
-        {props.select?.label?<span>{props.select?.label}</span>:<></>}
+        {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
         {
           props?.currentMiroirReportSectionObjectList ? (
             !!columnDefs
@@ -372,7 +373,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 <JsonObjectFormEditorDialog
                   showButton={true}
                   isAttributes={true}
-                  label={props.currentMiroirEntityDefinition?.name}
+                  label={props.defaultlabel??props.currentMiroirEntityDefinition?.name}
                   entityDefinitionJzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
                   currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                   currentApplicationSection={props.chosenApplicationSection}
@@ -390,7 +391,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 {
                   props.displayedDeploymentDefinition ? (
                     <div>
-                      <span>{JSON.stringify(props.select)}</span>
+                      {/* <span>{JSON.stringify(props.select)}</span> */}
                       <MTableComponent
                         type={props.tableComponentReportType}
                         displayedDeploymentDefinition={props.displayedDeploymentDefinition}
@@ -399,7 +400,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                         currentEntityDefinition={props.currentMiroirEntityDefinition}
                         reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                         columnDefs={columnDefs}
-                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:selectedInstancesToDisplay??{}}
+                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:{}}
                         // instancesToDisplay={instancesToDisplay}
                         displayTools={true}
                         onRowEdit={onEditFormObject}

@@ -636,10 +636,10 @@
                     "type": "record",
                     "definition": { "type": "schemaReference", "definition": { "relativePath": "miroirQuery" } }
                   },
-                  "objectInstance": {
+                  "objectInstanceReportSection": {
                     "type": "object",
                     "definition": {
-                      "type": { "type": "literal", "definition": "objectInstance" },
+                      "type": { "type": "literal", "definition": "objectInstanceReportSection" },
                       "fetchData": {
                         "type": "schemaReference",
                         "optional": true,
@@ -664,10 +664,10 @@
                       }
                     }
                   },
-                  "objectList": {
+                  "objectListReportSection": {
                     "type": "object",
                     "definition": {
-                      "type": { "type": "literal", "definition": "objectList" },
+                      "type": { "type": "literal", "definition": "objectListReportSection" },
                       "fetchData": {
                         "type": "schemaReference",
                         "optional": true,
@@ -718,8 +718,8 @@
                     "definition": [
                       { "type": "schemaReference", "definition": { "relativePath": "gridReportSection" } },
                       { "type": "schemaReference", "definition": { "relativePath": "listReportSection" } },
-                      { "type": "schemaReference", "definition": { "relativePath": "objectList" } },
-                      { "type": "schemaReference", "definition": { "relativePath": "objectInstance" } }
+                      { "type": "schemaReference", "definition": { "relativePath": "objectListReportSection" } },
+                      { "type": "schemaReference", "definition": { "relativePath": "objectInstanceReportSection" } }
                     ]
                   }
                 },
@@ -1045,7 +1045,7 @@
           "defaultLabel": "List of Aplication Versions",
           "type": "list",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "ApplicationVersion", "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24" }
           }
         },
@@ -1056,7 +1056,7 @@
           "name": "ApplicationList",
           "defaultLabel": "List of Applications",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Application", "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc" }
           }
         },
@@ -1068,7 +1068,7 @@
           "defaultLabel": "List of Reports",
           "type": "list",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Report", "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916" }
           }
         },
@@ -1079,7 +1079,7 @@
           "name": "StoreBasedConfigurationList",
           "defaultLabel": "Store-based Configuration",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": {
               "parentName": "StoreBasedConfiguration",
               "parentUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7"
@@ -1093,7 +1093,7 @@
           "name": "ApplicationModelBranchList",
           "defaultLabel": "List of Application Model Branches",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": {
               "parentName": "ApplicationModelBranch",
               "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
@@ -1107,7 +1107,7 @@
           "name": "JzodSchemaList",
           "defaultLabel": "List of Jzod Schemas",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "JzodSchema", "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf" }
           }
         },
@@ -1119,7 +1119,7 @@
           "defaultLabel": "List of Entities",
           "type": "list",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Entity", "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" }
           }
         },
@@ -1130,7 +1130,7 @@
           "name": "ApplicationDeploymentList",
           "defaultLabel": "List of Application Deployments",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": {
               "parentName": "ApplicationDeployment",
               "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
@@ -1144,7 +1144,7 @@
           "name": "EntityDefinitionList",
           "defaultLabel": "List of Entity Definitions",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Entity Definition", "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd" }
           }
         }
@@ -2547,7 +2547,7 @@
           "name": "AuthorList",
           "defaultLabel": "List of Authors",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Author", "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733" }
           }
         },
@@ -2562,7 +2562,7 @@
             "type": "list",
             "definition": [
               {
-                "type": "objectList",
+                "type": "objectListReportSection",
                 "fetchData": {
                   "books": {
                     "type": "objectListQuery",
@@ -2604,7 +2604,7 @@
           "defaultLabel": "List of Library Tests Instances",
           "type": "list",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Test", "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8" }
           }
         },
@@ -2617,7 +2617,7 @@
           "defaultLabel": "List of Publishers",
           "type": "list",
           "definition": {
-            "type": "objectList",
+            "type": "objectListReportSection",
             "definition": { "parentName": "Book", "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab" }
           }
         }

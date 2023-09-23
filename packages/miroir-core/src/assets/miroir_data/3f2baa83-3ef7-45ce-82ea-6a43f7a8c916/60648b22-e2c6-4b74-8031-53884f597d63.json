@@ -5,7 +5,7 @@
   "name":"ApplicationModelBranchList",
   "defaultLabel": "List of Application Model Branches",
   "definition": {
-    "type":"objectList",
+    "type":"objectListReportSection",
     "definition": {
       "parentName": "ApplicationModelBranch",
       "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"

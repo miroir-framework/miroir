@@ -13,15 +13,15 @@ import {
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
 import {
-  ObjectList,
+  ObjectListReportSection,
   // GridReportSection,
   // ListReportSection,
-  // ObjectList,
+  // ObjectListReportSection,
   Report,
   // ReportDefinition,
   // gridReportSection,
   // listReportSection,
-  // objectList,
+  // objectListReportSection,
   report,
   // reportDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/server-generated.js";
@@ -181,11 +181,11 @@ export function selectEntityInstancesForReportSection(
       reportDefinition &&
       reportDefinition.definition?.type === "list" &&
       reportDefinition.definition.definition.length > reportSectionIndex &&
-      reportDefinition.definition.definition[currentReportSectionIndex].type === "objectList" &&
-      domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectList)?.definition?.parentUuid??""]
+      reportDefinition.definition.definition[currentReportSectionIndex].type === "objectListReportSection" &&
+      domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]
     ) {
       console.log('selectEntityInstancesForReportSection for entityUuid', reportUuid, 'reportSectionIndex', reportSectionIndex)
-      return DomainInstanceUuidIndexToArray(domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectList)?.definition?.parentUuid??""]);
+      return DomainInstanceUuidIndexToArray(domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]);
     } else {
       return [];
     }

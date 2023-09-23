@@ -36,6 +36,8 @@ import {
 
 export interface ReportSectionEntityInstanceProps {
   // reportSection: ReportDefinition | undefined,
+  instance?: any,
+  fetchedData?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
@@ -108,29 +110,19 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-    {
-      type: "DomainEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: props.deploymentUuid,
-        applicationSection: props.applicationSection as ApplicationSection,
-        entityUuid: props.entityUuid,
-      }
-    }
-  );
+  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+  //   {
+  //     type: "DomainEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: props.deploymentUuid,
+  //       applicationSection: props.applicationSection as ApplicationSection,
+  //       entityUuid: props.entityUuid,
+  //     }
+  //   }
+  // );
 
-  const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
-
-  const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-    {
-      type: "DomainEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: props.deploymentUuid,
-        applicationSection: props.applicationSection as ApplicationSection,
-        entityUuid: entityBook.uuid,
-      }
-    }
-  );
+  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
+  const instance:any = props.instance;
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
 
@@ -139,28 +131,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [currentMiroirModel]
   );
 
-
-  const publisherBooks = useMemo(
-    () =>
-      (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-        (b: any) => b["publisher"] == (instance["publisher"] ?? instance.uuid)
-      ),
-    [instance, booksUuidIndex]
-  );
-  const authorBooks = useMemo(
-    () =>
-      (booksUuidIndex ? Object.values(booksUuidIndex) : []).filter(
-        (b: any) => b["author"] == (instance["author"] ?? instance.uuid)
-      ),
-    [instance, booksUuidIndex]
-  );
-
-  console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
-
   console.log('EntityInstancePage instance',instance);
   console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
   
-  if (props.applicationSection && instance) {
+  if (instance) {
     return (
       <div> 
         {/* params:{JSON.stringify(params)}
@@ -194,7 +168,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                 ></JzodElementDisplay>
-                <span>
+                {/* <span>
                   Publisher Books:
                 </span>
                 <List sx={{ pt: 0}}>
@@ -216,8 +190,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       }
                     )
                   }
-                  </List>
-                <span>
+                  </List> */}
+                {/* <span>
                   Author Books:
                 </span>
                 <List sx={{ pt: 0}}>
@@ -239,7 +213,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       }
                     )
                   }
-                  </List>
+                  </List> */}
               </div>
             :
             <div>Oops.</div>

@@ -177,7 +177,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       "defaultLabel": "List of Fountains",
       "type": "list",
       "definition":{
-        "type":"objectList",
+        "type":"objectListReportSection",
         "definition": {
           "type": "objectListQuery",
           "parentName": "Fountain",

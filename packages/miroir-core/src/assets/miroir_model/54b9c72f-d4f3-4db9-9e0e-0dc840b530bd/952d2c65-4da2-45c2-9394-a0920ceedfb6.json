@@ -70,32 +70,44 @@
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "extra": { "id":1, "defaultLabel": "Entity Name", "editable": false }
+                "extra": { "id":1, "defaultLabel": "Label", "editable": false }
               },
               "parentName": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                "extra": { "id":2, "defaultLabel": "Parent Name", "editable": false }
               },
               "parentUuid": {
                 "type": "simpleType",
                 "definition": "string",
                 "validations": [{ "type": "uuid" }],
-                "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+              },
+              "instanceUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
               },
               "rootObjectUuid": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "extra": { "id":4, "defaultLabel": "Entity Uuid", "editable": false }
+                "extra": { "id":5, "defaultLabel": "Root Object Uuid", "editable": false }
               },
               "rootObjectAttribute": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "extra": { "id": 5, "defaultLabel": "Entity Uuid", "editable": false }
+                "extra": { "id": 6, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "fetchedDataReference": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "optional": true,
+                  "extra": { "id": 7, "defaultLabel": "Fetched Data Reference", "editable": false }
               }
             }
           },
@@ -172,12 +184,12 @@
               }
             }
           },
-          "objectInstance": {
+          "objectInstanceReportSection": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
-                "definition": "objectInstance"
+                "definition": "objectInstanceReportSection"
               },
               "fetchData": {
                 "type": "schemaReference",
@@ -200,17 +212,30 @@
                     "definition": "string",
                     "validations": [{ "type": "uuid" }],
                     "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
+                  },
+                  "fetchedDataReference": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }
+                  },
+                  "query": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "selectObjectInstanceQuery"
+                    }
                   }
                 }
               }
             }
           },
-          "objectList": {
+          "objectListReportSection": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
-                "definition": "objectList"
+                "definition": "objectListReportSection"
               },
               "fetchData": {
                 "type": "schemaReference",
@@ -299,13 +324,13 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "objectList"
+                  "relativePath": "objectListReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "objectInstance"
+                  "relativePath": "objectInstanceReportSection"
                 }
               }
             ]

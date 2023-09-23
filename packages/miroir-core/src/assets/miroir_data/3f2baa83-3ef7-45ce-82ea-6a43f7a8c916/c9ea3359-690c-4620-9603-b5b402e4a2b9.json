@@ -6,7 +6,7 @@
   "defaultLabel": "List of Entities",
   "type": "list",
   "definition": {
-    "type":"objectList",
+    "type":"objectListReportSection",
     "definition": {
       "parentName": "Entity",
       "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"

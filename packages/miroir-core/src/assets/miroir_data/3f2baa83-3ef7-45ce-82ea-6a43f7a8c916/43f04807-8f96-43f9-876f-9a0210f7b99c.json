@@ -5,7 +5,7 @@
   "name":"StoreBasedConfigurationList",
   "defaultLabel": "Store-based Configuration",
   "definition": {
-    "type":"objectList",
+    "type":"objectListReportSection",
     "definition": {
       "parentName": "StoreBasedConfiguration",
       "parentUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7"

@@ -7,29 +7,38 @@
   "defaultLabel": "List of Books",
   "definition": {
     "type": "list",
+    "fetchData": {
+      "book": {
+        "type": "objectQuery",
+        "parentName": "Book",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+      },
+      "publisher": {
+        "type": "objectListQuery",
+        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+        "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667"
+      },
+      "booksOfPublisher": {
+        "type": "objectListQuery",
+        "parentName": "Book",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+        "rootObjectAttribute": "publisher"
+      }
+    },
     "definition": [
       {
-        "type":"objectList",
-        "fetchData": {
-          "books": {
-            "type": "objectListQuery",
-            "parentName": "Book",
-            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-          },
-          "publisher": {
-            "type": "objectListQuery",
-            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667"
-          },
-          "booksOfPublisher": {
-            "type": "objectListQuery",
-            "parentName": "Book",
-            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
-            "rootObjectAttribute": "publisher"
-          }
-        },
+        "type":"objectInstanceReportSection",
+        "definition": {
+          "label": "My Book",
+          "fetchedDataReference": "book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        }
+      },
+      {
+        "type":"objectListReportSection",
         "definition": {
           "label": "Publisher's (${publisher.name}) Books",
           "parentName": "Book",

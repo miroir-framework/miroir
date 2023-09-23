@@ -306,7 +306,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   return (
     <div className="JsonObjectFormEditorDialog">
-      <span>
+      {/* <span> */}
         {props.showButton ? (
           <h3>
             {props.label}
@@ -323,7 +323,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         ) : (
           <div></div>
         )}
-      </span>
+      {/* </span> */}
       {props.currentDeploymentUuid && props.currentApplicationSection ? (
         <FormProvider {...formMethods}>
           <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>

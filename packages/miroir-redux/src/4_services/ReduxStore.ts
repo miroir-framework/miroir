@@ -51,7 +51,7 @@ import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterfac
 
 function roughSizeOfObject( object: any ) {
 
-  const objectList:any[] = [];
+  const objectListReportSection:any[] = [];
   const stack = [ object ];
   let bytes = 0;
 
@@ -70,10 +70,10 @@ function roughSizeOfObject( object: any ) {
       else if
       (
           typeof value === 'object'
-          && objectList.indexOf( value ) === -1
+          && objectListReportSection.indexOf( value ) === -1
       )
       {
-          objectList.push( value );
+          objectListReportSection.push( value );
 
           for( let i in value ) {
               stack.push( value[ i ] );
