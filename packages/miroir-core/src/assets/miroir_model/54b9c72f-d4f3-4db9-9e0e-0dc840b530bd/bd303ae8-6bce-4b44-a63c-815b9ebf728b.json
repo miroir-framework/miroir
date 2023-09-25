@@ -55,7 +55,7 @@
         "extra": { "id":8, "defaultLabel": "Application Deployment Model", "editable": true },
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          "relativePath": "jzodObjectSchema" 
+          "relativePath": "jzodObject" 
         }
       },
       "data": {
@@ -64,7 +64,7 @@
         "extra": { "id":9, "defaultLabel": "Application Deployment Data", "editable": true },
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          "relativePath": "jzodObjectSchema"
+          "relativePath": "jzodObject"
         }
       }
     }

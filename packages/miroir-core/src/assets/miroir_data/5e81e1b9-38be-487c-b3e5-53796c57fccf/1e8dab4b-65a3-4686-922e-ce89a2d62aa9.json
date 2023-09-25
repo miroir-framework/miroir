@@ -7,7 +7,7 @@
   "definition": {
     "type": "schemaReference",
     "context": {
-      "jzodBaseObjectSchema": {
+      "jzodBaseObject": {
         "type": "object",
         "definition": {
           "optional": {
@@ -31,14 +31,14 @@
           }
         }
       },
-      "jzodArraySchema": {
+      "jzodArray": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -50,19 +50,19 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodElementSchema"
+              "relativePath": "jzodElement"
             }
           }
         }
       },
-      "jzodAttributeSchema": {
+      "jzodAttribute": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -79,12 +79,12 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodEnumAttributeTypesSchema"
+              "relativePath": "jzodEnumAttributeTypes"
             }
           }
         }
       },
-      "jzodAttributeDateValidationsSchema": {
+      "jzodAttributeDateValidations": {
         "type": "object",
         "definition": {
           "extra": {
@@ -105,14 +105,14 @@
           }
         }
       },
-      "jzodAttributeDateWithValidationsSchema": {
+      "jzodAttributeDateWithValidations": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -131,13 +131,13 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeDateValidationsSchema"
+                "relativePath": "jzodAttributeDateValidations"
               }
             }
           }
         }
       },
-      "jzodAttributeNumberValidationsSchema": {
+      "jzodAttributeNumberValidations": {
         "type": "object",
         "definition": {
           "extra": {
@@ -171,14 +171,14 @@
           }
         }
       },
-      "jzodAttributeNumberWithValidationsSchema": {
+      "jzodAttributeNumberWithValidations": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -197,13 +197,13 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeNumberValidationsSchema"
+                "relativePath": "jzodAttributeNumberValidations"
               }
             }
           }
         }
       },
-      "jzodAttributeStringValidationsSchema": {
+      "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
           "extra": {
@@ -241,14 +241,14 @@
           }
         }
       },
-      "jzodAttributeStringWithValidationsSchema": {
+      "jzodAttributeStringWithValidations": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -267,13 +267,13 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodAttributeStringValidationsSchema"
+                "relativePath": "jzodAttributeStringValidations"
               }
             }
           }
         }
       },
-      "jzodElementSchema": {
+      "jzodElement": {
         "type": "union",
         "discriminator": "type",
         "definition": [
@@ -281,138 +281,138 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodArraySchema"
+              "relativePath": "jzodArray"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeSchema"
+              "relativePath": "jzodAttribute"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeDateWithValidationsSchema"
+              "relativePath": "jzodAttributeDateWithValidations"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeNumberWithValidationsSchema"
+              "relativePath": "jzodAttributeNumberWithValidations"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodAttributeStringWithValidationsSchema"
+              "relativePath": "jzodAttributeStringWithValidations"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodEnumSchema"
+              "relativePath": "jzodEnum"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodFunctionSchema"
+              "relativePath": "jzodFunction"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodLazySchema"
+              "relativePath": "jzodLazy"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodLiteralSchema"
+              "relativePath": "jzodLiteral"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodIntersectionSchema"
+              "relativePath": "jzodIntersection"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodMapSchema"
+              "relativePath": "jzodMap"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObjectSchema"
+              "relativePath": "jzodObject"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodPromiseSchema"
+              "relativePath": "jzodPromise"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodRecordSchema"
+              "relativePath": "jzodRecord"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodReferenceSchema"
+              "relativePath": "jzodReference"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodSetSchema"
+              "relativePath": "jzodSet"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodTupleSchema"
+              "relativePath": "jzodTuple"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodUnionSchema"
+              "relativePath": "jzodUnion"
             }
           }
         ]
       },
-      "jzodEnumSchema": {
+      "jzodEnum": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -429,7 +429,7 @@
           }
         }
       },
-      "jzodEnumAttributeTypesSchema": {
+      "jzodEnumAttributeTypes": {
         "type": "enum",
         "definition": [
           "any",
@@ -446,7 +446,7 @@
           "void"
         ]
       },
-      "jzodEnumElementTypesSchema": {
+      "jzodEnumElementTypes": {
         "type": "enum",
         "definition": [
           "array",
@@ -466,14 +466,14 @@
           "union"
         ]
       },
-      "jzodFunctionSchema": {
+      "jzodFunction": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -490,7 +490,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodElementSchema"
+                    "relativePath": "jzodElement"
                   }
                 }
               },
@@ -498,7 +498,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodElementSchema"
+                  "relativePath": "jzodElement"
                 },
                 "optional": true
               }
@@ -506,14 +506,14 @@
           }
         }
       },
-      "jzodLazySchema": {
+      "jzodLazy": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -525,19 +525,19 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodFunctionSchema"
+              "relativePath": "jzodFunction"
             }
           }
         }
       },
-      "jzodLiteralSchema": {
+      "jzodLiteral": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -551,14 +551,14 @@
           }
         }
       },
-      "jzodIntersectionSchema": {
+      "jzodIntersection": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -573,28 +573,28 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodElementSchema"
+                  "relativePath": "jzodElement"
                 }
               },
               "right": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodElementSchema"
+                  "relativePath": "jzodElement"
                 }
               }
             }
           }
         }
       },
-      "jzodMapSchema": {
+      "jzodMap": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -609,28 +609,28 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodElementSchema"
+                  "relativePath": "jzodElement"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodElementSchema"
+                  "relativePath": "jzodElement"
                 }
               }
             ]
           }
         }
       },
-      "jzodObjectSchema": {
+      "jzodObject": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -642,14 +642,14 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodReferenceSchema"
+                  "relativePath": "jzodReference"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObjectSchema"
+                  "relativePath": "jzodObject"
                 }
               }
             ]
@@ -669,20 +669,20 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodElementSchema"
+                "relativePath": "jzodElement"
               }
             }
           }
         }
       },
-      "jzodPromiseSchema": {
+      "jzodPromise": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -694,19 +694,19 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodElementSchema"
+              "relativePath": "jzodElement"
             }
           }
         }
       },
-      "jzodRecordSchema": {
+      "jzodRecord": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -718,19 +718,19 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodElementSchema"
+              "relativePath": "jzodElement"
             }
           }
         }
       },
-      "jzodReferenceSchema": {
+      "jzodReference": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -745,7 +745,7 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodElementSchema"
+                "relativePath": "jzodElement"
               }
             }
           },
@@ -771,14 +771,14 @@
           }
         }
       },
-      "jzodSetSchema": {
+      "jzodSet": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -790,19 +790,19 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodElementSchema"
+              "relativePath": "jzodElement"
             }
           }
         }
       },
-      "jzodTupleSchema": {
+      "jzodTuple": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -816,20 +816,20 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodElementSchema"
+                "relativePath": "jzodElement"
               }
             }
           }
         }
       },
-      "jzodUnionSchema": {
+      "jzodUnion": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
           "definition": {
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-            "relativePath": "jzodBaseObjectSchema"
+            "relativePath": "jzodBaseObject"
           }
         },
         "definition": {
@@ -848,7 +848,7 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                "relativePath": "jzodElementSchema"
+                "relativePath": "jzodElement"
               }
             }
           }
@@ -857,7 +857,7 @@
     },
     "definition": {
       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-      "relativePath": "jzodElementSchema"
+      "relativePath": "jzodElement"
     }
   }
 }

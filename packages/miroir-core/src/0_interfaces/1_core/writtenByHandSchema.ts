@@ -1,5 +1,5 @@
 import { ZodType, ZodTypeAny, z } from "zod";
-import { JzodElement, JzodObject, jzodElementSchema, jzodObjectSchema } from "@miroir-framework/jzod-ts";
+import { JzodElement, JzodObject, jzodElement, jzodObject } from "@miroir-framework/jzod-ts";
 
 // enum ConceptLevel {"MetaModel", "Model", "Data"};
 // type ConceptLevel = "MetaModel" | "Model" | "Data";
@@ -40,7 +40,7 @@ export const entityDefinitionEntityDefinitionAttributeNewSchema:ZodType<EntityDe
   name: z.string(),
   defaultLabel: z.string(),
   // type: z.string(),
-  jzodSchema: jzodElementSchema,
+  jzodSchema: jzodElement,
   nullable: z.boolean(),
   editable: z.boolean(),
   lineFormat: z.lazy(()=>z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()),
@@ -68,7 +68,7 @@ export const entityDefinitionEntityDefinitionSchema:ZodType<EntityDefinitionEnti
   name: z.string(),
   conceptLevel: z.enum(["MetaModel", "Model", "Data"] as any).optional(),
   description: z.string(),
-  jzodSchema: z.lazy(() => jzodObjectSchema),
+  jzodSchema: z.lazy(() => jzodObject),
   attributes: z.array(entityDefinitionEntityDefinitionAttributeSchema).optional(),
   attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional(),
 });

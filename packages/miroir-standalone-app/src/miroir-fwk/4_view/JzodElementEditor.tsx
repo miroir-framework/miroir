@@ -79,10 +79,10 @@ export interface JzodElementEditorProps {
 
 
 // ################################################################################################
-export function getUnionDiscriminantValues(jzodUnionSchema:JzodUnion, rootJzodSchema:JzodObject, currentModel:MiroirApplicationModel) {
-  return jzodUnionSchema.discriminator
+export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MiroirApplicationModel) {
+  return jzodUnion.discriminator
     ? {
-        [jzodUnionSchema.discriminator]:jzodUnionSchema.definition.map(
+        [jzodUnion.discriminator]:jzodUnion.definition.map(
           (e) => {
             const resolvedSchema =
               e.type == "schemaReference" ? resolveJzodSchemaReference(e, currentModel, rootJzodSchema) : e;
@@ -220,7 +220,7 @@ export const JzodElementEditor = (
               const index:number = attributeParam[0];
               const attribute = attributeParam[1];
               // HACK HACK HACK
-              // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElementSchema definition.
+              // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElement definition.
               // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
               // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
               const currentAttributeJzodSchema =

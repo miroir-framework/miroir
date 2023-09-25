@@ -116,7 +116,9 @@ export async function generateZodSchemaFileFromJzodSchema(
  
   const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
   // const newFileContents = await prettier.format(newFileContentsNotFormated,{ semi: false, parser: "typescript" })
-  const newFileContents = newFileContentsNotFormated;
+  const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
+${newFileContentsNotFormated}
+`;
 
   if (targetFileName && fs.existsSync(targetFileName)) {
     const oldFileContents = fs.readFileSync(targetFileName).toString()

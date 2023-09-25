@@ -7,7 +7,7 @@ import {
   JzodElement,
   JzodObject,
   // ZodSchemaAndDescriptionRecord,
-  jzodObjectSchema,
+  jzodObject,
   // jzodSchemaObjectToZodSchemaAndDescriptionRecord
 } from "@miroir-framework/jzod-ts";
 import {
@@ -109,7 +109,7 @@ export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   entityUuid: UuidSchema,
   description: z.string().optional(),
   defaultLabel: z.string().optional(),
-  jzodSchema: jzodObjectSchema,
+  jzodSchema: jzodObject,
   // jzodSchema: z.any().optional(),
   // attributes: z.array(EntityAttributeSchema).optional(),
   // attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()

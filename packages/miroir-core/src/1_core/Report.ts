@@ -9,11 +9,11 @@ export function getReportSectionTargetEntityUuid(
 ) {
   if (
     reportDefinition &&
-    reportDefinition.definition?.type === "objectListReportSection" &&
-    reportDefinition.definition.definition?.parentUuid
+    reportDefinition.definition?.section?.type === "objectListReportSection" &&
+    reportDefinition.definition.section?.definition?.parentUuid
   ) {
     console.log('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)
-    return reportDefinition.definition.definition.parentUuid;
+    return reportDefinition.definition.section?.definition.parentUuid;
   } else {
     return undefined;
   }

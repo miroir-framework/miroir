@@ -237,13 +237,6 @@
                 "type": "literal",
                 "definition": "objectListReportSection"
               },
-              "fetchData": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "relativePath": "miroirQueriesObject"
-                }
-              },
               "definition": {
                 "type": "schemaReference",
                 "definition": {
@@ -334,11 +327,37 @@
                 }
               }
             ]
+          },
+          "rootReportSection": {
+            "type": "object",
+            "definition": {
+              "parameters": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  "relativePath": "jzodObject"
+                }
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueriesObject"
+                }
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reportSection"
+                }
+              }
+            }
           }
         },
         "definition": {
           "eager": true,
-          "relativePath": "reportSection"
+          "relativePath": "rootReportSection"
         },
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
       }

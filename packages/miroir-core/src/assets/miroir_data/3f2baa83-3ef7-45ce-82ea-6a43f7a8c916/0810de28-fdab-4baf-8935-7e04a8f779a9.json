@@ -6,10 +6,13 @@
   "defaultLabel": "List of Aplication Versions",
   "type": "list",
   "definition": {
-    "type":"objectListReportSection",
-    "definition": {
-      "parentName": "ApplicationVersion",
-      "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+    "parameters": {},
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "ApplicationVersion",
+        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+      }
     }
   }
 }

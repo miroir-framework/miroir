@@ -5,10 +5,13 @@
   "name":"JzodSchemaList",
   "defaultLabel": "List of Jzod Schemas",
   "definition": {
-    "type":"objectListReportSection",
-    "definition": {
-      "parentName": "JzodSchema",
-      "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+    "parameters": {},
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "JzodSchema",
+        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+      }
     }
   }
 }

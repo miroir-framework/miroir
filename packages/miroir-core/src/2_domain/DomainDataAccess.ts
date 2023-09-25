@@ -179,13 +179,18 @@ export function selectEntityInstancesForReportSection(
     const currentReportSectionIndex = reportSectionIndex;
     if (
       reportDefinition &&
-      reportDefinition.definition?.type === "list" &&
-      reportDefinition.definition.definition.length > reportSectionIndex &&
-      reportDefinition.definition.definition[currentReportSectionIndex].type === "objectListReportSection" &&
-      domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]
+      reportDefinition.definition?.section?.type === "list" &&
+      reportDefinition.definition.section?.definition.length > reportSectionIndex &&
+      reportDefinition.definition.section?.definition[currentReportSectionIndex].type === "objectListReportSection" &&
+      domainState[(reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]
     ) {
       console.log('selectEntityInstancesForReportSection for entityUuid', reportUuid, 'reportSectionIndex', reportSectionIndex)
-      return DomainInstanceUuidIndexToArray(domainState[(reportDefinition.definition?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]);
+      return DomainInstanceUuidIndexToArray(
+        domainState[
+          (reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)
+            ?.definition?.parentUuid ?? ""
+        ]
+      );
     } else {
       return [];
     }

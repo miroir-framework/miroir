@@ -44,7 +44,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObjectSchema"
+              "relativePath": "jzodObject"
             },
             "optional": true,
             "extra": { "id": 4, "defaultLabel": "D", "editable": true }
@@ -53,7 +53,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodReferenceSchema"
+              "relativePath": "jzodReference"
             },
             "optional": true,
             "extra": { "id": 5, "defaultLabel": "E", "editable": true }
@@ -62,7 +62,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodArraySchema"
+              "relativePath": "jzodArray"
             },
             "optional": true,
             "extra": { "id": 6, "defaultLabel": "F", "editable": true }

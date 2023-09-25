@@ -6,10 +6,13 @@
   "name":"AuthorList",
   "defaultLabel": "List of Authors",
   "definition": {
-    "type":"objectListReportSection",
-    "definition": {
-      "parentName": "Author",
-      "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+    "parameters": {},
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "Author",
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+      }
     }
   }
 }

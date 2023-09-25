@@ -61,7 +61,7 @@ export function getCurrentEnumJzodSchemaResolver(
           array: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodArraySchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodArray" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -73,12 +73,12 @@ export function getCurrentEnumJzodSchemaResolver(
                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                 relativePath:
                   definition == "string"
-                    ? "jzodAttributeStringWithValidationsSchema"
+                    ? "jzodAttributeStringWithValidations"
                     : definition == "number"
-                    ? "jzodAttributeNumberWithValidationsSchema"
+                    ? "jzodAttributeNumberWithValidations"
                     : definition == "date"
-                    ? "jzodAttributeDateWithValidationsSchema"
-                    : "jzodAttributeSchema",
+                    ? "jzodAttributeDateWithValidations"
+                    : "jzodAttribute",
               },
             },
             currentMiroirModel
@@ -87,7 +87,7 @@ export function getCurrentEnumJzodSchemaResolver(
           enum: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodEnumSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodEnum" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -95,7 +95,7 @@ export function getCurrentEnumJzodSchemaResolver(
           union: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodUnionSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodUnion" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -103,7 +103,7 @@ export function getCurrentEnumJzodSchemaResolver(
           record: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodRecordSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodRecord" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -111,7 +111,7 @@ export function getCurrentEnumJzodSchemaResolver(
           object: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodObjectSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodObject" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -119,7 +119,7 @@ export function getCurrentEnumJzodSchemaResolver(
           function: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodFunctionSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodFunction" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -127,7 +127,7 @@ export function getCurrentEnumJzodSchemaResolver(
           lazy: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLazySchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLazy" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -135,7 +135,7 @@ export function getCurrentEnumJzodSchemaResolver(
           literal: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLiteralSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLiteral" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,
@@ -143,7 +143,7 @@ export function getCurrentEnumJzodSchemaResolver(
           schemaReference: resolveJzodSchemaReference(
             {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodReferenceSchema" },
+              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodReference" },
             },
             currentMiroirModel
             // relativeReferenceJzodSchema,

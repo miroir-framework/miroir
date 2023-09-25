@@ -1,5 +1,5 @@
 import { ZodType, ZodTypeAny, z } from "zod"
-import { jzodElementSchema, jzodObjectSchema } from "@miroir-framework/jzod-ts"
+import { jzodElement, jzodObject } from "@miroir-framework/jzod-ts"
 
 export const entityDefinitionReportZodSchema = z.object({
   uuid: z.string().uuid(),

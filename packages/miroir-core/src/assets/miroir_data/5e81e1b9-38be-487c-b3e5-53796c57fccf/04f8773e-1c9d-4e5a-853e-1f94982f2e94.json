@@ -7,25 +7,25 @@
   "definition": {
     "type": "object",
     "definition": {
-      "jzodArraySchema": {
+      "jzodArray": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
           "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "array" },
-          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElementSchema" } }
+          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElement" } }
         }
       },
-      "jzodAttributeSchema": {
+      "jzodAttribute": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
           "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "simpleType" },
-          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodEnumAttributeTypesSchema" } }
+          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodEnumAttributeTypes" } }
         }
       },
-      "jzodAttributeStringWithValidationsSchema": {
+      "jzodAttributeStringWithValidations": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -34,11 +34,11 @@
           "definition": { "type": "literal", "definition": "string" },
           "validations": {
             "type": "array",
-            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeStringValidationsSchema" } }
+            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeStringValidations" } }
           }
         }
       },
-      "jzodAttributeStringValidationsSchema": {
+      "jzodAttributeStringValidations": {
         "type": "object",
         "definition": {
           "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
@@ -66,31 +66,31 @@
           "parameter": { "type": "simpleType", "definition": "any" }
         }
       },
-      "jzodElementSchema": {
+      "jzodElement": {
         "type": "union",
         "discriminant": "type",
         "definition": [
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodArraySchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeStringWithValidationsSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodEnumSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodFunctionSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodLazySchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodLiteralSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodObjectSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodRecordSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodReferenceSchema" } },
-          { "type": "schemaReference",  "definition": { "relativePath": "jzodUnionSchema" } }
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodArray" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodAttribute" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeStringWithValidations" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodEnum" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodFunction" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodLazy" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodLiteral" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodObject" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodRecord" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodReference" } },
+          { "type": "schemaReference",  "definition": { "relativePath": "jzodUnion" } }
         ]
       },
       "jzodElementSetSchema": {
         "type": "record",
         "definition": {
           "type": "schemaReference",
-          "definition": { "relativePath": "jzodElementSchema" }
+          "definition": { "relativePath": "jzodElement" }
         }
       },
-      "jzodEnumSchema": {
+      "jzodEnum": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -99,29 +99,29 @@
           "definition": { "type": "array", "definition": { "type": "simpleType", "definition": "string" } }
         }
       },
-      "jzodEnumAttributeTypesSchema": {
+      "jzodEnumAttributeTypes": {
         "type": "enum",
         "definition": ["any", "boolean", "number", "string", "uuid"]
       },
-      "jzodFunctionSchema": {
+      "jzodFunction": {
         "type": "object",
         "definition": {
           "type": { "type": "literal", "definition": "function" },
           "args": {
             "type": "array",
-            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodAttributeSchema" } }
+            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodAttribute" } }
           },
-          "returns": { "type": "schemaReference", "definition": { "relativePath": "jzodAttributeSchema" }, "optional": true }
+          "returns": { "type": "schemaReference", "definition": { "relativePath": "jzodAttribute" }, "optional": true }
         }
       },
-      "jzodLazySchema": {
+      "jzodLazy": {
         "type": "object",
         "definition": {
           "type": { "type": "literal", "definition": "lazy" },
-          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodFunctionSchema" } }
+          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodFunction" } }
         }
       },
-      "jzodLiteralSchema": {
+      "jzodLiteral": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -130,7 +130,7 @@
           "definition": { "type": "simpleType", "definition": "string" }
         }
       },
-      "jzodObjectSchema": {
+      "jzodObject": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -138,20 +138,20 @@
           "type": { "type": "literal", "definition": "object" },
           "definition": {
             "type": "record",
-            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElementSchema" } }
+            "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElement" } }
           }
         }
       },
-      "jzodRecordSchema": {
+      "jzodRecord": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
           "extra": { "type": "record", "definition": { "type": "simpleType", "definition": "any" }, "optional": true },
           "type": { "type": "literal", "definition": "record" },
-          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElementSchema" } }
+          "definition": { "type": "schemaReference",  "definition": { "relativePath": "jzodElement" } }
         }
       },
-      "jzodReferenceSchema": {
+      "jzodReference": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -163,7 +163,7 @@
           } }
         }
       },
-      "jzodUnionSchema": {
+      "jzodUnion": {
         "type": "object",
         "definition": {
           "optional": { "type": "simpleType", "definition": "boolean", "optional": true },
@@ -171,7 +171,7 @@
           "type": { "type": "literal", "definition": "union" },
           "definition": {
             "type": "array",
-            "definition": { "type": "schemaReference", "definition": { "relativePath": "jzodElementSchema" } }
+            "definition": { "type": "schemaReference", "definition": { "relativePath": "jzodElement" } }
           }
         }
       }

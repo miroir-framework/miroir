@@ -1,5 +1,5 @@
 import { ZodType, ZodTypeAny, z } from "zod";
-import { jzodElementSchema, jzodObjectSchema } from "@miroir-framework/jzod-ts";
+import { jzodElement, jzodObject } from "@miroir-framework/jzod-ts";
 
 export const entityDefinitionEntityDefinitionZodSchema = z.object({
   uuid: z.string().uuid(),
@@ -8,6 +8,6 @@ export const entityDefinitionEntityDefinitionZodSchema = z.object({
   name: z.string(),
   conceptLevel: z.enum(["MetaModel", "Model", "Data"] as any).optional(),
   description: z.string().optional(),
-  jzodSchema: z.lazy(() => jzodObjectSchema.optional()),
+  jzodSchema: z.lazy(() => jzodObject.optional()),
 });
 export type entityDefinitionEntityDefinition = z.infer<typeof entityDefinitionEntityDefinitionZodSchema>;
