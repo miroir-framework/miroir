@@ -6,40 +6,30 @@ import {
   ApplicationDeployment,
   ApplicationSection,
   EntityDefinition,
-  EntityInstance,
-  EntityInstancesUuidIndex,
+  FetchedData,
   MetaEntity,
   MiroirApplicationModel,
-  MiroirSelectorParams,
+  MiroirSelectorSingleQueryParams,
   ObjectListReportSection,
   ReportSection,
-  RootReportSection,
-  SelectObjectInstanceQuery,
-  SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel,
-  selectEntityInstanceFromDomainState
+  defaultMiroirMetaModel
 } from "miroir-core";
-import { ReduxStateWithUndoRedo, applyDomainStateSelector, selectEntityInstanceUuidIndexFromLocalCache, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
   useErrorLogService
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 
 
-import {
-  EntityInstanceUuidIndexSelectorParams,
-  useCurrentModel,
-  useEntityInstanceListQueryFromLocalCache,
-  useEntityInstanceUuidIndexFromLocalCache
-} from "./ReduxHooks";
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 
 export interface ReportSectionEntityInstanceProps {
-  fetchedData: Record<string,any>,
+  // fetchedData: Record<string,any>,
+  fetchedData: FetchedData | undefined,
   reportSection: ReportSection | undefined,
   // reportSection: RootReportSection | undefined,
   applicationSection: ApplicationSection,
@@ -57,13 +47,13 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
 
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-  const currentModelSelectorParams:MiroirSelectorParams = useMemo(
+  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
     () => ({
       type: "DomainEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }
-    } as MiroirSelectorParams),
+    } as MiroirSelectorSingleQueryParams),
     [applicationDeploymentLibrary.uuid]
   );
 
@@ -119,44 +109,10 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  // const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-
-  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
-  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
-  //   [currentMiroirModel]
-  // );
-
   const styles = useMemo(()=>({
     height: "280px",
     width: "90vw",
   }),[])
-
-  // props.reportSection?.fetchData
-
-  // const bookParams: MiroirSelectorParams = useMemo(()=>(
-  //   {
-  //     type: "EntityInstanceQueryParams",
-  //     definition: {
-  //       localCacheSelectorParams: {
-  //         deploymentUuid: props.deploymentUuid,
-  //         applicationSection: props.applicationSection as ApplicationSection,
-  //         entityUuid: props.reportSection?.fetchData?.book.parentUuid??"",
-  //         instanceUuid: (props.reportSection?.fetchData?.book as SelectObjectInstanceQuery)?.instanceUuid,
-  //       },
-  //       query: {
-  //         type: "objectQuery",
-  //         deploymentUuid: props.deploymentUuid,
-  //         applicationSection: props.applicationSection as ApplicationSection,
-  //         parentUuid: props.reportSection?.fetchData?.book.parentUuid??"",
-  //         instanceUuid: (props.reportSection?.fetchData?.book as SelectObjectInstanceQuery)?.instanceUuid,
-  //       }
-  //     }
-  //   }
-  // ),[props]);
-
-  // const book: EntityInstance | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   applyDomainStateSelector(selectEntityInstanceFromDomainState)(state, bookParams)
-  // );
 
   console.log(
     "ReportSectionView",
@@ -170,98 +126,15 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     // booksUuidIndex
   );
 
-  // const publisherParams: MiroirSelectorParams = useMemo(()=>(
-  //   {
-  //     type: "EntityInstanceQueryParams",
-  //     definition: {
-  //       localCacheSelectorParams: {
-  //         deploymentUuid: props.deploymentUuid,
-  //         applicationSection: props.applicationSection as ApplicationSection,
-  //         entityUuid: props.reportSection?.fetchData?.publisher.parentUuid??"",
-  //         instanceUuid: (props.reportSection?.fetchData?.publisher as SelectObjectInstanceQuery)?.rootObjectUuid??"",
-  //       },
-  //       query: {
-  //         type: "objectQuery",
-  //         deploymentUuid: props.deploymentUuid,
-  //         applicationSection: props.applicationSection as ApplicationSection,
-  //         parentUuid: props.reportSection?.fetchData?.publisher.parentUuid??"",
-  //         instanceUuid: (props.reportSection?.fetchData?.publisher as SelectObjectInstanceQuery)?.rootObjectUuid??"",
-  //       }
-  //     }
-  //   }
-  // ),[props]);
-
-  // const publisher: EntityInstance | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
-  //   applyDomainStateSelector(selectEntityInstanceFromDomainState)(state, publisherParams)
-  // );
-
-  // const booksOfPublisherParams: MiroirSelectorParams = useMemo(() => ({
-  //   type: "EntityInstanceListQueryParams",
-  //   definition: {
-  //     localCacheSelectorParams: {
-  //       deploymentUuid: props.deploymentUuid,
-  //       applicationSection: props.applicationSection,
-  //       entityUuid: props.reportSection?.fetchData?.booksOfPublisher?.parentUuid,
-  //     },
-  //     query: (props.reportSection?.fetchData?.booksOfPublisher as SelectObjectListQuery) ?? {
-  //       type: "objectListQuery",
-  //       parentUuid: "",
-  //       parentName: undefined,
-  //       rootObjectAttribute: undefined,
-  //       rootObjectUuid: undefined,
-  //     },
-  //   }
-  // }),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData?.booksOfPublisher]);
-
-  // const booksOfPublisher: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(booksOfPublisherParams);
-  
-  // const fetchedData: { [k: string]: any } = useMemo(
-  //   () => ({
-  //     book,
-  //     booksOfPublisher,
-  //     publisher,
-  //     ...props.fetchedData,
-  //   }),
-  //   // [booksUuidIndex, publisher]
-  //   // [booksUuidIndex, publisher, booksOfPublisher]
-  //   // [props.fetchedData, booksUuidIndex, booksOfPublisher]
-  //   // [props.fetchedData, book, booksOfPublisher]
-  //   [props.fetchedData, book, publisher, booksOfPublisher]
-  // );
-      // const publisher = 
-  // const publishers: EntityInstancesUuidIndex | undefined = useEntityInstanceListQueryFromLocalCache(
-  //   {
-  //     localCacheSelectorParams: {
-  //       deploymentUuid: props.deploymentUuid,
-  //       applicationSection: props.applicationSection,
-  //       entityUuid: props.reportSection?.fetchData?.publisher.parentUuid,
-  //     },
-  //     query: (props.reportSection?.fetchData?.publisher as SelectObjectListQuery)??{
-  //       type: "objectListQuery",
-  //       parentUuid: '',
-  //       parentName: undefined,
-  //       rootObjectAttribute: undefined,
-  //       rootObjectUuid: undefined
-  //     }
-  //   }
-  // )
-
   // console.log("ReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "booksOfPublisher", booksOfPublisher);
-  // console.log("ReportSectionView publishers", publishers, "publishersParams", publishersParams, "book", book);
-  
-  // const query: SelectObjectListQuery = useMemo(
-  //   () => ({
-  //     label
-  //   })
-  // ) 
   // console.log('EntityInstancePage instance',instance);
   console.log('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
   console.log('ReportSectionView props.reportSection',props.reportSection);
 
   const evaluateExpression = (expression: string | undefined)=> {
     const parts = expression?.split(".");
-    const object = Array.isArray(parts) && parts.length > 0?props.fetchedData[parts[0]]: undefined;
-    const result = object && Array.isArray(parts) && parts.length > 1?object[parts[1]]: undefined;
+    const object = Array.isArray(parts) && parts.length > 0 && props.fetchedData?props.fetchedData[parts[0]]: undefined;
+    const result = object && Array.isArray(parts) && parts.length > 1?(object as any)[parts[1]]: undefined;
     console.log("evaluateExpression",expression, parts, props.fetchedData, "object", object,"result",result);
     return result;
   }
@@ -383,7 +256,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                 <div>
                   <ReportSectionEntityInstance
                     fetchedData={props.fetchedData}
-                    instance={props.fetchedData[props.reportSection.definition.fetchedDataReference??""]}
+                    instance={props.fetchedData?props.fetchedData[props.reportSection.definition.fetchedDataReference??""]:undefined}
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
                     entityUuid={props.reportSection.definition.parentUuid}

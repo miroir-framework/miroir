@@ -183,9 +183,13 @@ export {
   // remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  EntityInstanceListQueryParams,
   DomainEntityInstancesSelectorParams,
-  MiroirSelectorParams,
+  EntityInstanceQueryParams,
+  EntityInstanceListQueryParams,
+  FetchedData,
+  MiroirSelectorManyQueryParams,
+  MiroirSelectorQueryParams,
+  MiroirSelectorSingleQueryParams,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
 export {
   CUDActionNameSchema,
@@ -273,8 +277,9 @@ export {
 } from './1_core/Report.js';
 export {
   selectEntityInstanceUuidIndexFromDomainState,
-  selectRelatedEntityInstancesUuidIndexFromDomainState,
   selectEntityInstanceFromDomainState,
+  selectFetchedDataFromDomainState,
+  selectRelatedEntityInstancesUuidIndexFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,

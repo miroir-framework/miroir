@@ -11,7 +11,7 @@ import {
   EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
-  MiroirSelectorParams,
+  MiroirSelectorSingleQueryParams,
   Report,
   Uuid,
   applicationDeploymentLibrary,
@@ -56,14 +56,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
 
   // const currentModelSelectorParams:DomainEntityInstancesSelectorParams = useMemo(
-  const currentModelSelectorParams:MiroirSelectorParams = useMemo(
+  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
     () => ({
       type: "DomainEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }
     // } as DomainEntityInstancesSelectorParams),
-    } as MiroirSelectorParams),
+    } as MiroirSelectorSingleQueryParams),
     [applicationDeploymentLibrary.uuid]
   );
 

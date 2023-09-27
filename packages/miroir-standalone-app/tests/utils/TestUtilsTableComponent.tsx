@@ -8,7 +8,7 @@ import {
   EntityInstanceWithName, 
   MetaEntity, 
   MiroirApplicationModel, 
-  MiroirSelectorParams, 
+  MiroirSelectorSingleQueryParams, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -33,13 +33,13 @@ export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
-  const currentModelSelectorParams:MiroirSelectorParams = React.useMemo(
+  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = React.useMemo(
     () => ({
       type: "DomainEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: props.deploymentUuid,
       }
-    } as MiroirSelectorParams),
+    } as MiroirSelectorSingleQueryParams),
     [props.deploymentUuid]
   );
 
@@ -76,7 +76,7 @@ export const TestUtilsTableComponent = (
 
     selectInstanceArrayForDeploymentSectionEntity
     // const instancesToDisplaySelectorParams:DomainEntityInstancesSelectorParams = React.useMemo(
-    const instancesToDisplaySelectorParams:MiroirSelectorParams = React.useMemo(
+    const instancesToDisplaySelectorParams:MiroirSelectorSingleQueryParams = React.useMemo(
       () => ({
         type: "DomainEntityInstancesSelectorParams",
         definition: {
@@ -84,7 +84,7 @@ export const TestUtilsTableComponent = (
           applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
           entityUuid: currentMiroirEntity?.uuid,
         }
-      } as MiroirSelectorParams),
+      } as MiroirSelectorSingleQueryParams),
       [props.deploymentUuid, props.instancesApplicationSection,currentMiroirEntity]
     );
   

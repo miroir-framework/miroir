@@ -14,7 +14,7 @@
         "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
       },
       "publisher": {
-        "type": "objectListQuery",
+        "type": "objectQuery",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
         "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667"
       },
@@ -34,8 +34,8 @@
           "type":"objectInstanceReportSection",
           "definition": {
             "label": "My Book",
-            "fetchedDataReference": "book",
-            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "book"
           }
         },
         {

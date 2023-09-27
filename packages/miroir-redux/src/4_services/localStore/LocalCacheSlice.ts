@@ -40,7 +40,7 @@ import {
   entityStoreBasedConfiguration,
   DomainEntityInstancesSelectorParams,
   selectEntityInstanceUuidIndexFromDomainState,
-  MiroirSelectorParams
+  MiroirSelectorSingleQueryParams
 } from "miroir-core";
 import {
   LocalCacheSliceState,
@@ -179,13 +179,13 @@ export function localCacheStateToDomainState(localCache:LocalCacheSliceState):Do
 
 // ################################################################################################
 // const selectSelectorParams = (reduxState: ReduxStateWithUndoRedo,params:DomainEntityInstancesSelectorParams) => {
-const selectSelectorParams = (reduxState: ReduxStateWithUndoRedo,params:MiroirSelectorParams) => {
+const selectSelectorParams = (reduxState: ReduxStateWithUndoRedo,params:MiroirSelectorSingleQueryParams) => {
   return params;
 }
 
 // ################################################################################################
 // const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = reduxState.presentModelSnapshot
   // console.log('selectEntities',result);
   
@@ -194,9 +194,9 @@ const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:
 
 //#########################################################################################
 // export const selectDomainState: (state: ReduxStateWithUndoRedo, params: DomainEntityInstancesSelectorParams) => DomainState = createSelector(
-export const selectDomainState: (state: ReduxStateWithUndoRedo, params: MiroirSelectorParams) => DomainState = createSelector(
+export const selectDomainState: (state: ReduxStateWithUndoRedo, params: MiroirSelectorSingleQueryParams) => DomainState = createSelector(
   [selectPresentModelSnapshot, selectSelectorParams],
-  (state: LocalCacheSliceState, params: MiroirSelectorParams) => {
+  (state: LocalCacheSliceState, params: MiroirSelectorSingleQueryParams) => {
     // console.log("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
     return state ? localCacheStateToDomainState(state) : {};
@@ -208,13 +208,13 @@ export const applyDomainStateSelector = <T>( // TODO: memoize?
   domainStateSelector: (
     domainState: DomainState,
     // params: DomainEntityInstancesSelectorParams
-    params: MiroirSelectorParams
+    params: MiroirSelectorSingleQueryParams
   ) => T
   // ) => EntityInstancesUuidIndex | undefined
 ) => ( // currified
   reduxState: ReduxStateWithUndoRedo,
   // params: DomainEntityInstancesSelectorParams
-  params: MiroirSelectorParams
+  params: MiroirSelectorSingleQueryParams
 ): T => {
   const domainState = selectDomainState(reduxState,params);
   const result = domainStateSelector(domainState,params);
@@ -227,7 +227,7 @@ export const applyDomainStateSelector = <T>( // TODO: memoize?
 export const selectEntityInstanceUuidIndexFromLocalCache = (
   reduxState: ReduxStateWithUndoRedo,
   // params: DomainEntityInstancesSelectorParams
-  params: MiroirSelectorParams
+  params: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
   if (params.type == "DomainEntityInstancesSelectorParams") {
     const localEntityIndex = getLocalCacheSliceIndex(params.definition.deploymentUuid, params.definition.applicationSection, params.definition.entityUuid);
@@ -247,7 +247,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = (
 
 // ################################################################################################
 // const selectEntities = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectEntities = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectEntities = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -262,7 +262,7 @@ const selectEntities = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelect
 }
 // ################################################################################################
 // const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -277,7 +277,7 @@ const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo,  params:Mir
 }
 // ################################################################################################
 // const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -292,7 +292,7 @@ const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSel
 }
 // ################################################################################################
 // const selectReports = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectReports = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectReports = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -307,7 +307,7 @@ const selectReports = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelecto
 }
 // ################################################################################################
 // const selectConfigurations = (reduxState: ReduxStateWithUndoRedo,  params:DomainEntityInstancesSelectorParams) => {
-const selectConfigurations = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorParams) => {
+const selectConfigurations = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -323,7 +323,7 @@ const selectConfigurations = (reduxState: ReduxStateWithUndoRedo,  params:Miroir
 
 // ################################################################################################
 // const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: DomainEntityInstancesSelectorParams) => {
-const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorParams) => {
+const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorSingleQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
     type: "DomainEntityInstancesSelectorParams",
     definition: {
@@ -360,7 +360,7 @@ export const selectModelForDeployment = ()=>createSelector(
     jzodSchemas: EntityInstancesUuidIndex,
     reports: EntityInstancesUuidIndex,
     // params: DomainEntityInstancesSelectorParams
-    params: MiroirSelectorParams
+    params: MiroirSelectorSingleQueryParams
   ) => {
     const result = {
       applicationVersions:(applicationVersions?Object.values(applicationVersions):[]) as MiroirApplicationVersion[],
@@ -382,7 +382,7 @@ export const selectModelForDeployment = ()=>createSelector(
 export const selectInstanceArrayForDeploymentSectionEntity = createSelector(
   [selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams],
   // (state: EntityInstancesUuidIndex, params: DomainEntityInstancesSelectorParams) => {
-  (state: EntityInstancesUuidIndex, params: MiroirSelectorParams) => {
+  (state: EntityInstancesUuidIndex, params: MiroirSelectorSingleQueryParams) => {
     console.log("selectInstanceArrayForDeploymentSectionEntity called", params, state);
 
     return state ? Object.values(state) : [];
