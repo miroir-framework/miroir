@@ -275,7 +275,7 @@ export const HomePage = (props: RootComponentProps) => {
 
   const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
-    currentMiroirReport?.definition?.type == "objectListReportSection"? currentMiroirReport?.definition: undefined
+    currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
   ;
   // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
   //   currentMiroirReport?.type == "list" &&

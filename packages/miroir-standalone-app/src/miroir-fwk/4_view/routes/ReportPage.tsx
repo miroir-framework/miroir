@@ -13,8 +13,8 @@ import {
 } from "miroir-fwk/4_view/MiroirContextReactProvider";
 
 import { useCurrentModel } from '../ReduxHooks';
-import { ReportSectionView } from '../ReportSectionView';
 import { JzodElement } from '@miroir-framework/jzod-ts';
+import { RootReportSectionView } from '../RootReportSectionView';
 
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
@@ -62,7 +62,7 @@ export const ReportPage = () => {
           params.applicationSection 
           ? (
             params.instanceUuid
-              ? <ReportSectionView
+              ? <RootReportSectionView
                   fetchedData={{}}
                   reportSection={currentMiroirReport?.definition}
                   applicationSection={params.applicationSection as ApplicationSection}

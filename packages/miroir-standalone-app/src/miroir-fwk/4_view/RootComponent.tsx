@@ -35,6 +35,7 @@ import { ReportUrlParamKeys } from './routes/ReportPage';
 import { EntityInstanceLink } from './EntityInstanceLink';
 
 import reportBookList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
+import reportBookInstance from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
 
 export interface RootComponentProps {
   // store:any;
@@ -229,6 +230,11 @@ export const RootComponent = (props: RootComponentProps) => {
             <TableRow>
               <TableCell>
                 <Link to={`/home`}>Home</Link>
+              </TableCell>
+              <TableCell>
+                {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>Authors</Link> */}
+                <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/${reportBookInstance.uuid}/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book Instance (NEW)</Link>
+                {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/74b010b6-afee-44e7-8590-5f0849e4a5c9`}>Books (intermediate)</Link> */}
               </TableCell>
               <TableCell>
                 {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>Authors</Link> */}

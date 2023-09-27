@@ -361,63 +361,60 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       <div className="MiroirReport-global" style={{ display: "flex" }}>
         <span>rendered ReportSectionListDisplay: {count} times.</span>
         {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
-        {
-          props?.currentMiroirReportSectionObjectList ? (
-            !!columnDefs
-            // columnDefs?.length > 0 
-            ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {props?.currentMiroirReportSectionObjectList ? (
+          !!columnDefs ? (
+            // columnDefs?.length > 0
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div>{/* colonnes: {JSON.stringify(columnDefs)} */}</div>
+              <JsonObjectFormEditorDialog
+                showButton={true}
+                isAttributes={true}
+                label={props.defaultlabel ?? props.currentMiroirEntityDefinition?.name}
+                entityDefinitionJzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
+                currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
+                currentApplicationSection={props.chosenApplicationSection}
+                initialValuesObject={defaultFormValues(
+                  props.tableComponentReportType,
+                  props.currentMiroirEntityDefinition?.jzodSchema as JzodObject,
+                  [],
+                  props.currentMiroirEntity,
+                  props.displayedDeploymentDefinition
+                )}
+                onSubmit={onSubmitOuterDialog}
+              />
+              {props.displayedDeploymentDefinition ? (
                 <div>
-                  {/* colonnes: {JSON.stringify(columnDefs)} */}
+                  {/* <span>{JSON.stringify(props.select)}</span> */}
+                  <MTableComponent
+                    type={props.tableComponentReportType}
+                    displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+                    styles={props.styles}
+                    currentEntity={props.currentMiroirEntity}
+                    currentEntityDefinition={props.currentMiroirEntityDefinition}
+                    reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
+                    columnDefs={columnDefs}
+                    instancesToDisplay={
+                      props.fetchedData &&
+                      props.select?.fetchedDataReference &&
+                      props.fetchedData[props.select?.fetchedDataReference]
+                        ? props.fetchedData[props.select?.fetchedDataReference]
+                        : {}
+                    }
+                    // instancesToDisplay={instancesToDisplay}
+                    displayTools={true}
+                    onRowEdit={onEditFormObject}
+                  ></MTableComponent>
                 </div>
-                <JsonObjectFormEditorDialog
-                  showButton={true}
-                  isAttributes={true}
-                  label={props.defaultlabel??props.currentMiroirEntityDefinition?.name}
-                  entityDefinitionJzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
-                  currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
-                  currentApplicationSection={props.chosenApplicationSection}
-                  initialValuesObject={
-                    defaultFormValues(
-                      props.tableComponentReportType,
-                      props.currentMiroirEntityDefinition?.jzodSchema as JzodObject,
-                      [],
-                      props.currentMiroirEntity,
-                      props.displayedDeploymentDefinition
-                    )
-                  }
-                  onSubmit={onSubmitOuterDialog}
-                />
-                {
-                  props.displayedDeploymentDefinition ? (
-                    <div>
-                      {/* <span>{JSON.stringify(props.select)}</span> */}
-                      <MTableComponent
-                        type={props.tableComponentReportType}
-                        displayedDeploymentDefinition={props.displayedDeploymentDefinition}
-                        styles={props.styles}
-                        currentEntity={props.currentMiroirEntity}
-                        currentEntityDefinition={props.currentMiroirEntityDefinition}
-                        reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
-                        columnDefs={columnDefs}
-                        instancesToDisplay={props.fetchedData && props.fetchedData["booksOfPublisher"]?props.fetchedData["booksOfPublisher"]:{}}
-                        // instancesToDisplay={instancesToDisplay}
-                        displayTools={true}
-                        onRowEdit={onEditFormObject}
-                      ></MTableComponent>
-                    </div>
-                  ) : (
-                    <div></div>
-                  )
-                }
-              </div>
-            ) : (
-              <span>No elements in the report</span>
-            )
+              ) : (
+                <div></div>
+              )}
+            </div>
           ) : (
-            <span>no report to display</span>
+            <span>No elements in the report</span>
           )
-        }
+        ) : (
+          <span>no report to display</span>
+        )}
       </div>
     );
   // } else { // props.tableComponentReportType == "JSON_ARRAY"

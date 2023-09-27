@@ -335,6 +335,7 @@ export {
   ObjectListReportSection,
   Report,
   ReportSection,
+  RootReportSection,
   SelectObjectListQuery,
   SelectObjectInstanceQuery,
   gridReportSection,
@@ -342,6 +343,9 @@ export {
   objectListReportSection,
   report,
   reportSection,
+  rootReportSection,
+  miroirQueriesObject,
+  miroirQuery,
   selectObjectListQuery,
 } from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 
