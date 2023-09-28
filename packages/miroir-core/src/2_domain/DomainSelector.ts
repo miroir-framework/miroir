@@ -7,24 +7,30 @@ import { DomainEntityInstancesSelectorParams, EntityInstanceListQueryParams, Fet
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState = (
   domainState: DomainState,
-  // params: DomainEntityInstancesSelectorParams
   params: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
-  const localCacheSelectorParams =
+  const deploymentUuid =
+    params.type == "DomainEntityInstancesSelectorParams" || params.type == "EntityInstanceListQueryParams"
+      ? params.definition.deploymentUuid
+      : undefined;
+  const applicationSection =
+    params.type == "DomainEntityInstancesSelectorParams" || params.type == "EntityInstanceListQueryParams"
+      ? params.definition.applicationSection
+      : undefined;
+  const entityUuid =
     params.type == "DomainEntityInstancesSelectorParams"
-      ? params.definition
+      ? params.definition.entityUuid
       : params.type == "EntityInstanceListQueryParams"
-      ? params.definition.localCacheSelectorParams
+      ? params.definition.query.parentUuid
       : undefined;
 
   const result = 
-    localCacheSelectorParams &&
-    localCacheSelectorParams.deploymentUuid &&
-    localCacheSelectorParams.applicationSection &&
-    localCacheSelectorParams.entityUuid &&
-    domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid]
-      ? (domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid] as EntityInstancesUuidIndex)
+    deploymentUuid &&
+    applicationSection &&
+    entityUuid &&
+    domainState[deploymentUuid][applicationSection][entityUuid]
+      ? domainState[deploymentUuid][applicationSection][entityUuid]
       : undefined;
   console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'domainState',domainState,'result',result);
   return result;
@@ -68,15 +74,21 @@ export const selectEntityInstanceFromDomainState = (
     params.type == "EntityInstanceQueryParams"
       ? params.definition.localCacheSelectorParams
       : undefined;
+  const querySelectorParams =
+    params.type == "EntityInstanceQueryParams"
+      ? params.definition.query
+      : undefined;
+
+  const deploymentUuid = params.type == "EntityInstanceQueryParams"? params.definition.deploymentUuid:undefined;
+  const applicationSection = params.type == "EntityInstanceQueryParams"? params.definition.applicationSection:undefined;
 
   const result = 
-    localCacheSelectorParams &&
-    localCacheSelectorParams.deploymentUuid &&
-    localCacheSelectorParams.applicationSection &&
-    localCacheSelectorParams.entityUuid &&
-    localCacheSelectorParams.instanceUuid &&
-    domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid][localCacheSelectorParams.instanceUuid]
-      ? (domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid][localCacheSelectorParams.instanceUuid] as EntityInstance)
+    deploymentUuid &&
+    applicationSection &&
+    querySelectorParams?.parentUuid &&
+    querySelectorParams?.instanceUuid &&
+    domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][querySelectorParams.instanceUuid]
+      ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][querySelectorParams.instanceUuid]
       : undefined;
   console.log('selectEntityInstanceFromDomainState entityUuid',localCacheSelectorParams?.entityUuid, 'params',params,'domainState',domainState,'result',result);
   return result;
