@@ -2,11 +2,18 @@
 
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { DomainEntityInstancesSelectorParams, EntityInstanceListQueryParams, FetchedData, MiroirSelectorManyQueryParams, MiroirSelectorSingleQueryParams } from "../0_interfaces/2_domain/DomainSelectorInterface";
+import {
+  DomainEntityInstancesSelectorParams,
+  EntityInstanceListQueryParams,
+  FetchedData,
+  MiroirSelectorManyQueryParams,
+  MiroirSelectorSingleQueryParams,
+} from "../0_interfaces/2_domain/DomainSelectorInterface";
 
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState = (
   domainState: DomainState,
+  fetchedData: FetchedData,
   params: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
@@ -32,18 +39,19 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
     domainState[deploymentUuid][applicationSection][entityUuid]
       ? domainState[deploymentUuid][applicationSection][entityUuid]
       : undefined;
-  console.log('selectEntityInstanceUuidIndexFromLocalCache','params',params,'domainState',domainState,'result',result);
+  console.log('DomainSelector selectEntityInstanceUuidIndexFromLocalCache','params',params,'domainState',domainState,'result',result);
   return result;
 };
 
 // ################################################################################################
 export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
   domainState: DomainState,
+  fetchedData: FetchedData,
   selectorParams: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
   if (selectorParams.type == "EntityInstanceListQueryParams") {
-    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState,selectorParams)
+    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, fetchedData, selectorParams)
     const result = Object.fromEntries(
       Object.entries(selectedInstances ?? {}).filter(
         (i: [string, EntityInstance]) =>
@@ -54,9 +62,18 @@ export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
           ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query?.rootObjectUuid:undefined)
       )
     );
-    console.log('selectRelatedEntityInstancesUuidIndexFromDomainState','selectorParams',selectorParams,'selectedInstances',selectedInstances,'domainState',domainState,'result',result);
+    console.log(
+      "DomainSelector selectRelatedEntityInstancesUuidIndexFromDomainState",
+      "selectorParams",
+      selectorParams,
+      "selectedInstances",
+      selectedInstances,
+      "domainState",
+      domainState,
+      "result",
+      result
+    );
     return result;
-      
   } else {
     return {}
   }
@@ -67,37 +84,54 @@ export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
 // ################################################################################################
 export const selectEntityInstanceFromDomainState = (
   domainState: DomainState,
+  fetchedData: FetchedData,
   params: MiroirSelectorSingleQueryParams
 ): EntityInstance | undefined => {
-
   const localCacheSelectorParams =
-    params.type == "EntityInstanceQueryParams"
-      ? params.definition.localCacheSelectorParams
-      : undefined;
-  const querySelectorParams =
-    params.type == "EntityInstanceQueryParams"
-      ? params.definition.query
-      : undefined;
+    params.type == "EntityInstanceQueryParams" ? params.definition.localCacheSelectorParams : undefined;
+  const querySelectorParams = params.type == "EntityInstanceQueryParams" ? params.definition.query : undefined;
 
-  const deploymentUuid = params.type == "EntityInstanceQueryParams"? params.definition.deploymentUuid:undefined;
-  const applicationSection = params.type == "EntityInstanceQueryParams"? params.definition.applicationSection:undefined;
+  const deploymentUuid = params.type == "EntityInstanceQueryParams" ? params.definition.deploymentUuid : undefined;
+  const applicationSection =
+    params.type == "EntityInstanceQueryParams" ? params.definition.applicationSection : undefined;
 
-  const result = 
-    deploymentUuid &&
-    applicationSection &&
-    querySelectorParams?.parentUuid &&
-    querySelectorParams?.instanceUuid &&
-    domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][querySelectorParams.instanceUuid]
-      ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][querySelectorParams.instanceUuid]
+  const result =
+    deploymentUuid && applicationSection
+      ? querySelectorParams?.parentUuid
+        ? querySelectorParams?.fetchedDataReference && querySelectorParams.fetchedDataReferenceAttribute
+          ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+              (fetchedData as any)[querySelectorParams.fetchedDataReference][
+                querySelectorParams.fetchedDataReferenceAttribute
+              ]
+            ]
+          : querySelectorParams?.instanceUuid &&
+            domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+              querySelectorParams.instanceUuid
+            ]
+          ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+              querySelectorParams.instanceUuid
+            ]
+          : undefined
+        : undefined
       : undefined;
-  console.log('selectEntityInstanceFromDomainState entityUuid',localCacheSelectorParams?.entityUuid, 'params',params,'domainState',domainState,'result',result);
+  console.log(
+    "DomainSelector selectEntityInstanceFromDomainState",
+    "fetchedData",
+    fetchedData,
+    "params",
+    params,
+    "domainState",
+    domainState,
+    "result",
+    result
+  );
   return result;
 };
 
 // ################################################################################################
 export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
-  // params: DomainEntityInstancesSelectorParams
+  fetchedData: FetchedData,
   params: MiroirSelectorManyQueryParams
 ): FetchedData | undefined => {
 
@@ -109,34 +143,35 @@ export const selectFetchedDataFromDomainState = (
   //     : undefined;
 
   // const result = undefined;
-  console.log("########## selectFetchedDataFromDomainState begin");
+  console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
   
-  const result = Object.fromEntries(
-    Object.entries(params.definition).map((e: [string, MiroirSelectorSingleQueryParams]) => {
-      let result = undefined;
-      switch (e[1].type) {
-        case "DomainEntityInstancesSelectorParams": {
-          result = selectEntityInstanceUuidIndexFromDomainState(domainState, e[1]);
-          break;
-        }
-        case "EntityInstanceQueryParams": {
-          result = selectEntityInstanceFromDomainState(domainState, e[1]);
-          break;
-        }
-        case "EntityInstanceListQueryParams": {
-          result = selectRelatedEntityInstancesUuidIndexFromDomainState(domainState, e[1]);
-          break;
-        }
-        default: {
-          result = undefined;
-          break;
-        }
-      }
-      return [e[0], result];
-    })
-  );
+  const newFetchedData:FetchedData = fetchedData;
 
-  console.log("########## selectFetchedDataFromDomainState end");
+  for (const entry of Object.entries(params.definition)) {
+    let result = undefined;
+    switch (entry[1].type) {
+      case "DomainEntityInstancesSelectorParams": {
+        result = selectEntityInstanceUuidIndexFromDomainState(domainState, newFetchedData, entry[1]);
+        break;
+      }
+      case "EntityInstanceQueryParams": {
+        result = selectEntityInstanceFromDomainState(domainState, newFetchedData, entry[1]);
+        break;
+      }
+      case "EntityInstanceListQueryParams": {
+        result = selectRelatedEntityInstancesUuidIndexFromDomainState(domainState, newFetchedData, entry[1]);
+        break;
+      }
+      default: {
+        result = undefined;
+        break;
+      }
+    }
+    newFetchedData[entry[0]] = result;
+    console.log("DomainSelector selectFetchedDataFromDomainState set", entry[0], result);
+  } 
+
+  console.log("########## DomainSelector selectFetchedDataFromDomainState end");
 
     // localCacheSelectorParams &&
     // localCacheSelectorParams.deploymentUuid &&
@@ -145,7 +180,15 @@ export const selectFetchedDataFromDomainState = (
     // domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid]
     //   ? (domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid] as EntityInstancesUuidIndex)
     //   : undefined;
-  console.log('selectFetchedDataFromDomainState','params',params,'domainState',domainState,'result',result);
-  return result;
+  console.log(
+    "DomainSelector selectFetchedDataFromDomainState",
+    "params",
+    params,
+    "domainState",
+    domainState,
+    "newFetchedData",
+    newFetchedData
+  );
+  return newFetchedData;
 };
 

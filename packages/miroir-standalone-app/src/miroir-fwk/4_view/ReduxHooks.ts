@@ -57,7 +57,7 @@ export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorS
   );
 
   return useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState,selectorParams)
+    applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState,{}, selectorParams)
   )
 }
 
@@ -77,7 +77,7 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSi
 export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex {
 
   const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector(selectRelatedEntityInstancesUuidIndexFromDomainState)(reduxState,selectorParams)
+    applyDomainStateSelector(selectRelatedEntityInstancesUuidIndexFromDomainState)(reduxState, {}, selectorParams)
   );
   
   return result??{};

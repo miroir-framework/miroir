@@ -40,7 +40,9 @@ import {
   entityStoreBasedConfiguration,
   DomainEntityInstancesSelectorParams,
   selectEntityInstanceUuidIndexFromDomainState,
-  MiroirSelectorSingleQueryParams
+  MiroirSelectorSingleQueryParams,
+  FetchedData,
+  MiroirSelectorQueryParams
 } from "miroir-core";
 import {
   LocalCacheSliceState,
@@ -194,7 +196,10 @@ const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:
 
 //#########################################################################################
 // export const selectDomainState: (state: ReduxStateWithUndoRedo, params: DomainEntityInstancesSelectorParams) => DomainState = createSelector(
-export const selectDomainState: (state: ReduxStateWithUndoRedo, params: MiroirSelectorSingleQueryParams) => DomainState = createSelector(
+export const selectDomainState: (
+  state: ReduxStateWithUndoRedo,
+  params: MiroirSelectorQueryParams
+) => DomainState = createSelector(
   [selectPresentModelSnapshot, selectSelectorParams],
   (state: LocalCacheSliceState, params: MiroirSelectorSingleQueryParams) => {
     // console.log("selectInstanceArrayForDeploymentSectionEntity called", params, state);
@@ -207,17 +212,16 @@ export const selectDomainState: (state: ReduxStateWithUndoRedo, params: MiroirSe
 export const applyDomainStateSelector = <T>( // TODO: memoize?
   domainStateSelector: (
     domainState: DomainState,
-    // params: DomainEntityInstancesSelectorParams
-    params: MiroirSelectorSingleQueryParams
+    fetchedData: FetchedData,
+    params: MiroirSelectorQueryParams
   ) => T
-  // ) => EntityInstancesUuidIndex | undefined
 ) => ( // currified
   reduxState: ReduxStateWithUndoRedo,
-  // params: DomainEntityInstancesSelectorParams
-  params: MiroirSelectorSingleQueryParams
+  fetchedData: FetchedData,
+  params: MiroirSelectorQueryParams
 ): T => {
   const domainState = selectDomainState(reduxState,params);
-  const result = domainStateSelector(domainState,params);
+  const result = domainStateSelector(domainState, fetchedData, params);
   console.log('applyDomainStateSelector','params',params,'domainState',domainState,'result',result);
   return result;
 };

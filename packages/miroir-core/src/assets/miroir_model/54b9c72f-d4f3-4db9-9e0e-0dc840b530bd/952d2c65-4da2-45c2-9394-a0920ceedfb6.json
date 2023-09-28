@@ -108,6 +108,12 @@
                   "definition": "string",
                   "optional": true,
                   "extra": { "id": 7, "defaultLabel": "Fetched Data Reference", "editable": false }
+              },
+              "fetchedDataReferenceAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 8, "defaultLabel": "Root Object Attribute", "editable": false }
               }
             }
           },

@@ -32,11 +32,14 @@ export interface ReportSectionEntityInstanceProps {
   instanceUuid: Uuid,
 }
 
+let count = 0
 // ###############################################################################################################
 export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) => {
+  count++;
+  
   const errorLog = useErrorLogService();
 
-  console.log("########################## RootReportSectionView ReportSection", props.reportSection);
+  console.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
@@ -93,10 +96,10 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
                     deploymentUuid: props.deploymentUuid,
                     applicationSection: props.applicationSection,
                   },
-                  query: {
+                  query: e[1] ?? {
                     type: "objectQuery",
-                    parentUuid: e[1]?.parentUuid??"",
-                    instanceUuid: e[1]?.instanceUuid,
+                    parentUuid: undefined,
+                    instanceUuid: undefined,
                   }
                 }
               };
@@ -115,8 +118,9 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   ),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData?.booksOfPublisher]);
 
 
+  const initFetchedData = useMemo(()=>({}),[])
   const fetchedData: FetchedData | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector(selectFetchedDataFromDomainState)(state, fetchedDataEntriesParams)
+    applyDomainStateSelector(selectFetchedDataFromDomainState)(state, initFetchedData, fetchedDataEntriesParams)
   );
 
   
@@ -126,6 +130,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   if (props.applicationSection) {
     return (
       <div>
+        <div>RootReportSectionView rendered {count}</div>
         <ReportSectionView
           fetchedData={fetchedData}
           reportSection={props.reportSection?.section}
