@@ -28,7 +28,6 @@ import {
 } from "miroir-redux";
 
 export type EntityInstanceUuidIndexSelectorParams = DomainEntityInstancesSelectorParams;
-export type EntityInstanceListQueryParams = {localCacheSelectorParams: DomainEntityInstancesSelectorParams, query: SelectObjectListQuery};
 
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {

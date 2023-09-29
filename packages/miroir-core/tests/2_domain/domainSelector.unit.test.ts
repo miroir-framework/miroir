@@ -23,7 +23,6 @@ describe(
               "definition": {
                 "deploymentUuid": applicationDeploymentLibrary.uuid,
                 "applicationSection": "data",
-                "localCacheSelectorParams": {},
                 "query": {
                   "type": "objectQuery",
                   "parentName": "Book",

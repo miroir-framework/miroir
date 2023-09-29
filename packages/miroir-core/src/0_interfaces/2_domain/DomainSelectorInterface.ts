@@ -18,14 +18,12 @@ export interface DomainEntityInstancesSelectorParams {
 export type EntityInstanceListQueryParams = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
-  localCacheSelectorParams: DomainEntityInstancesSelectorParams;
   query: SelectObjectListQuery;
 };
 
 export type EntityInstanceQueryParams = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
-  localCacheSelectorParams: DomainEntityInstancesSelectorParams;
   query: SelectObjectInstanceQuery;
 };
 

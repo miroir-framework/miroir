@@ -70,11 +70,6 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
                 definition: {
                   deploymentUuid: props.deploymentUuid,
                   applicationSection: props.applicationSection,
-                  localCacheSelectorParams: {
-                    deploymentUuid: props.deploymentUuid,
-                    applicationSection: props.applicationSection,
-                    entityUuid: e[1].parentUuid,
-                  },
                   query: (e[1] as SelectObjectListQuery) ?? {
                     type: "objectListQuery",
                     parentUuid: "",
@@ -92,10 +87,6 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
                 definition: {
                   deploymentUuid: props.deploymentUuid,
                   applicationSection: props.applicationSection,
-                  localCacheSelectorParams: {
-                    deploymentUuid: props.deploymentUuid,
-                    applicationSection: props.applicationSection,
-                  },
                   query: e[1] ?? {
                     type: "objectQuery",
                     parentUuid: undefined,

@@ -3,11 +3,9 @@
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  DomainEntityInstancesSelectorParams,
-  EntityInstanceListQueryParams,
   FetchedData,
   MiroirSelectorManyQueryParams,
-  MiroirSelectorSingleQueryParams,
+  MiroirSelectorSingleQueryParams
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
 // ################################################################################################
@@ -77,8 +75,6 @@ export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
   } else {
     return {}
   }
-  // const localCacheSelectorParams = params.type == "DomainEntityInstancesSelectorParams"?params.definition:params.definition.localCacheSelectorParams;
-
 };
 
 // ################################################################################################
@@ -87,8 +83,6 @@ export const selectEntityInstanceFromDomainState = (
   fetchedData: FetchedData,
   params: MiroirSelectorSingleQueryParams
 ): EntityInstance | undefined => {
-  const localCacheSelectorParams =
-    params.type == "EntityInstanceQueryParams" ? params.definition.localCacheSelectorParams : undefined;
   const querySelectorParams = params.type == "EntityInstanceQueryParams" ? params.definition.query : undefined;
 
   const deploymentUuid = params.type == "EntityInstanceQueryParams" ? params.definition.deploymentUuid : undefined;
@@ -135,14 +129,6 @@ export const selectFetchedDataFromDomainState = (
   params: MiroirSelectorManyQueryParams
 ): FetchedData | undefined => {
 
-  // const localCacheSelectorParams =
-  //   params.type == "DomainEntityInstancesSelectorParams"
-  //     ? params.definition
-  //     : params.type == "EntityInstanceListQueryParams"
-  //     ? params.definition.localCacheSelectorParams
-  //     : undefined;
-
-  // const result = undefined;
   console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
   
   const newFetchedData:FetchedData = fetchedData;
@@ -173,13 +159,6 @@ export const selectFetchedDataFromDomainState = (
 
   console.log("########## DomainSelector selectFetchedDataFromDomainState end");
 
-    // localCacheSelectorParams &&
-    // localCacheSelectorParams.deploymentUuid &&
-    // localCacheSelectorParams.applicationSection &&
-    // localCacheSelectorParams.entityUuid &&
-    // domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid]
-    //   ? (domainState[localCacheSelectorParams.deploymentUuid][localCacheSelectorParams.applicationSection][localCacheSelectorParams.entityUuid] as EntityInstancesUuidIndex)
-    //   : undefined;
   console.log(
     "DomainSelector selectFetchedDataFromDomainState",
     "params",
