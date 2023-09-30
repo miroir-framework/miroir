@@ -87,15 +87,9 @@
               "instanceUuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
-              },
-              "rootObjectUuid": {
-                "type": "simpleType",
-                "definition": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "extra": { "id":5, "defaultLabel": "Root Object Uuid", "editable": false }
+                "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
               },
               "rootObjectAttribute": {
                 "type": "simpleType",

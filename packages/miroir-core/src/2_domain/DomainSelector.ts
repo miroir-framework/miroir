@@ -4,7 +4,7 @@ import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   FetchedData,
-  MiroirSelectorManyQueryParams,
+  MiroirSelectorFetchDataQueryParams,
   MiroirSelectorSingleQueryParams
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
@@ -15,18 +15,20 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
   params: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
+  if (params.type == "DomainEntityInstancesSelectorParams") {
+    throw new Error("selectEntityInstanceUuidIndexFromDomainState can not handle DomainEntityInstancesSelectorParams")
+  }
+
   const deploymentUuid =
-    params.type == "DomainEntityInstancesSelectorParams" || params.type == "EntityInstanceListQueryParams"
+    params.type == "EntityInstanceListQueryParams"
       ? params.definition.deploymentUuid
       : undefined;
   const applicationSection =
-    params.type == "DomainEntityInstancesSelectorParams" || params.type == "EntityInstanceListQueryParams"
+    params.type == "EntityInstanceListQueryParams"
       ? params.definition.applicationSection
       : undefined;
   const entityUuid =
-    params.type == "DomainEntityInstancesSelectorParams"
-      ? params.definition.entityUuid
-      : params.type == "EntityInstanceListQueryParams"
+    params.type == "EntityInstanceListQueryParams"
       ? params.definition.query.parentUuid
       : undefined;
 
@@ -42,7 +44,7 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
 };
 
 // ################################################################################################
-export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
+export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   fetchedData: FetchedData,
   selectorParams: MiroirSelectorSingleQueryParams
@@ -78,7 +80,7 @@ export const selectRelatedEntityInstancesUuidIndexFromDomainState = (
 };
 
 // ################################################################################################
-export const selectEntityInstanceFromDomainState = (
+export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
   fetchedData: FetchedData,
   params: MiroirSelectorSingleQueryParams
@@ -107,7 +109,8 @@ export const selectEntityInstanceFromDomainState = (
             ]
           : undefined
         : undefined
-      : undefined;
+      : undefined
+    ;
   console.log(
     "DomainSelector selectEntityInstanceFromDomainState",
     "fetchedData",
@@ -126,7 +129,7 @@ export const selectEntityInstanceFromDomainState = (
 export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
   fetchedData: FetchedData,
-  params: MiroirSelectorManyQueryParams
+  params: MiroirSelectorFetchDataQueryParams
 ): FetchedData | undefined => {
 
   console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
@@ -135,17 +138,20 @@ export const selectFetchedDataFromDomainState = (
 
   for (const entry of Object.entries(params.definition)) {
     let result = undefined;
+    if (entry[1].type == "DomainEntityInstancesSelectorParams") {
+      throw new Error("selectEntityInstanceUuidIndexFromDomainState can not handle DomainEntityInstancesSelectorParams")
+    }
     switch (entry[1].type) {
-      case "DomainEntityInstancesSelectorParams": {
-        result = selectEntityInstanceUuidIndexFromDomainState(domainState, newFetchedData, entry[1]);
-        break;
-      }
+      // case "DomainEntityInstancesSelectorParams": {
+      //   result = selectEntityInstanceUuidIndexFromDomainState(domainState, newFetchedData, entry[1]);
+      //   break;
+      // }
       case "EntityInstanceQueryParams": {
-        result = selectEntityInstanceFromDomainState(domainState, newFetchedData, entry[1]);
+        result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, newFetchedData, entry[1]);
         break;
       }
       case "EntityInstanceListQueryParams": {
-        result = selectRelatedEntityInstancesUuidIndexFromDomainState(domainState, newFetchedData, entry[1]);
+        result = selectEntityInstancesFromListQueryAndDomainState(domainState, newFetchedData, entry[1]);
         break;
       }
       default: {

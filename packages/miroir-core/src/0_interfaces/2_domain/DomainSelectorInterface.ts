@@ -33,6 +33,6 @@ export type MiroirSelectorSingleQueryParams =
   | { type: "EntityInstanceListQueryParams"; definition: EntityInstanceListQueryParams }
 ;
 
-export type MiroirSelectorManyQueryParams = { type: "ManyQueryParams"; definition: {[k: string]: MiroirSelectorSingleQueryParams} };
+export type MiroirSelectorFetchDataQueryParams = { type: "ManyQueryParams"; definition: {[k: string]: MiroirSelectorSingleQueryParams} };
 
-export type MiroirSelectorQueryParams = MiroirSelectorSingleQueryParams | MiroirSelectorManyQueryParams;
+export type MiroirSelectorQueryParams = MiroirSelectorSingleQueryParams | MiroirSelectorFetchDataQueryParams;

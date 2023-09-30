@@ -187,7 +187,7 @@ export {
   EntityInstanceQueryParams,
   EntityInstanceListQueryParams,
   FetchedData,
-  MiroirSelectorManyQueryParams,
+  MiroirSelectorFetchDataQueryParams,
   MiroirSelectorQueryParams,
   MiroirSelectorSingleQueryParams,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
@@ -277,9 +277,9 @@ export {
 } from './1_core/Report.js';
 export {
   selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceFromDomainState,
+  selectEntityInstanceFromObjectQueryAndDomainState as selectEntityInstanceFromDomainState,
   selectFetchedDataFromDomainState,
-  selectRelatedEntityInstancesUuidIndexFromDomainState,
+  selectEntityInstancesFromListQueryAndDomainState as selectRelatedEntityInstancesUuidIndexFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,

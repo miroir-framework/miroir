@@ -6,7 +6,7 @@ import {
   ApplicationSection,
   FetchedData,
   MiroirQuery,
-  MiroirSelectorManyQueryParams,
+  MiroirSelectorFetchDataQueryParams,
   MiroirSelectorSingleQueryParams,
   RootReportSection,
   SelectObjectListQuery,
@@ -57,7 +57,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.reportSection?.fetchData?.book?.parentUuid,
   );
 
-  const fetchedDataEntriesParams: MiroirSelectorManyQueryParams = useMemo(() => ({
+  const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
     type: "ManyQueryParams",
     definition: Object.fromEntries(
       Object.entries(props.reportSection?.fetchData??{}).map(
