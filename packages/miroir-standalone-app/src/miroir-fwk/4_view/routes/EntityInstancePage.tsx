@@ -1,4 +1,10 @@
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { List, ListItem } from '@mui/material';
 import Box from '@mui/material/Box';
+import { Params, useParams } from 'react-router-dom';
+
+import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationSection,
@@ -12,19 +18,14 @@ import {
   applicationDeploymentMiroir,
   defaultMiroirMetaModel
 } from "miroir-core";
+
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+
 import {
   useErrorLogService
-} from "miroir-fwk/4_view/MiroirContextReactProvider";
-import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
-import { Params, useParams } from 'react-router-dom';
+} from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
-import { List, ListItem } from '@mui/material';
-
-import { JzodElement } from '@miroir-framework/jzod-ts';
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 import { EntityInstanceLink } from '../EntityInstanceLink';
 import { JzodElementDisplay } from '../JzodElementDisplay';
@@ -33,6 +34,8 @@ import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
+
+import entityBook from "../../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 

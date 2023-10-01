@@ -1,4 +1,3 @@
-import { List, ListItem } from '@mui/material';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -6,9 +5,7 @@ import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationSection,
-  DomainEntityInstancesSelectorParams,
   EntityDefinition,
-  EntityInstancesUuidIndex,
   MetaEntity,
   MiroirApplicationModel,
   MiroirSelectorSingleQueryParams,
@@ -22,16 +19,13 @@ import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
   useErrorLogService
-} from "miroir-fwk/4_view/MiroirContextReactProvider";
+} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
-import { EntityInstanceLink } from './EntityInstanceLink';
 import { JzodElementDisplay } from './JzodElementDisplay';
 import {
-  useCurrentModel,
-  useEntityInstanceUuidIndexFromLocalCache,
+  useCurrentModel
 } from "./ReduxHooks";
 
 export interface ReportSectionEntityInstanceProps {

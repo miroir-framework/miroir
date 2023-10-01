@@ -1,25 +1,26 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
+import { blue, red } from "@mui/material/colors";
 import { createRoot, Root } from "react-dom/client";
 import {
   createBrowserRouter,
   Link,
   RouterProvider,
 } from "react-router-dom";
+import { StrictMode } from "react";
+import { Provider } from "react-redux";
 
 import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
 
-import { blue, red } from "@mui/material/colors";
-import miroirConfig from "assets/miroirConfig.json";
-import { createReduxStoreAndRestClient } from "miroir-fwk/createReduxStoreAndRestClient";
-import { StrictMode } from "react";
-import { miroirAppStartup } from "startup";
-import ErrorPage from "./miroir-fwk/4_view/ErrorPage";
-import { Provider } from "react-redux";
+import { createReduxStoreAndRestClient } from "./miroir-fwk/createReduxStoreAndRestClient";
+import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePage";
+import { miroirAppStartup } from "./startup";
+
+import miroirConfig from "./assets/miroirConfig.json";
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");

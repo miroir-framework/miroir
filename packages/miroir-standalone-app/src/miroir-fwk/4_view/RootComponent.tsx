@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MailIcon from '@mui/icons-material/Mail';
@@ -22,20 +21,19 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import { useState } from 'react';
-import {
-  Link, Params, useParams
-} from "react-router-dom";
+import { Link, Outlet, Params, useParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 
-import { ApplicationDeployment, applicationDeploymentLibrary, applicationDeploymentMiroir, DomainControllerInterface } from 'miroir-core';
-import { Outlet } from 'react-router-dom';
+import { applicationDeploymentLibrary, applicationDeploymentMiroir, DomainControllerInterface } from 'miroir-core';
+
+import { EntityInstanceLink } from './EntityInstanceLink';
 import { useDomainControllerService } from './MiroirContextReactProvider';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
-import { EntityInstanceLink } from './EntityInstanceLink';
 
-import reportBookList from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
-import reportBookInstance from "assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
+import reportBookList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
+import reportBookInstance from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
 
 export interface RootComponentProps {
   // store:any;

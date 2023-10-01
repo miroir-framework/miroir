@@ -569,7 +569,7 @@ function handleLocalCacheNonTransactionalAction(
           // TODO: does it work? How?
           // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
 
-          instanceCollection.instances.forEach((i) =>
+          instanceCollection.instances.forEach((i:EntityInstance) =>
             getInitializedSectionEntityAdapter(deploymentUuid, applicationSection, i["uuid"], state)
           );
         }

@@ -1,4 +1,4 @@
-import { ApplicationDeployment } from "miroir-core";
+import { ApplicationDeployment } from "./0_interfaces/1_core/StorageConfiguration";
 
 // duplicated from server!!!!!!!!
 export const applicationDeploymentLibrary: ApplicationDeployment = {

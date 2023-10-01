@@ -41,8 +41,9 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary.js";
+// import { applicationDeploymentLibrary as applicationDeploymentLibraryImp } from "../ApplicationDeploymentLibrary.js";
 
-
+// const applicationDeploymentLibrary: ApplicationDeployment = applicationDeploymentLibraryImp;
 
 
 // // ################################################################################################

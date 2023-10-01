@@ -4,6 +4,7 @@ import {
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -22,12 +23,12 @@ import {
   entityInstancesUuidIndexSchema,
   objectListReportSection
 } from "miroir-core";
-import EntityEditor from 'miroir-fwk/4_view/EntityEditor';
+
+import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
 import {
   useErrorLogService,
   useMiroirContextService
-} from 'miroir-fwk/4_view/MiroirContextReactProvider';
-import { useNavigate } from 'react-router-dom';
+} from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
 import { useCurrentModel } from './ReduxHooks';

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Params, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 
+import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationSection,
   MiroirApplicationModel,
@@ -10,10 +11,9 @@ import {
 import {
   useErrorLogService,
   useMiroirContextService
-} from "miroir-fwk/4_view/MiroirContextReactProvider";
+} from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 import { useCurrentModel } from '../ReduxHooks';
-import { JzodElement } from '@miroir-framework/jzod-ts';
 import { RootReportSectionView } from '../RootReportSectionView';
 
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';

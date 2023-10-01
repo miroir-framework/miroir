@@ -21,7 +21,7 @@ import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
   useErrorLogService
-} from "miroir-fwk/4_view/MiroirContextReactProvider";
+} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';

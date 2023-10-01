@@ -6,6 +6,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
         test: /\.tsx?$/,
         use: ["ts-loader"],
         exclude: /node_modules/,
@@ -17,7 +21,7 @@ module.exports = {
     roots: [
       path.resolve(__dirname, "src"),
    ],
-    extensions: ['.tsx', '.ts', '.js', 'json'],
+    extensions: ['.tsx', '.ts', '.js', '.json'],
     fallback: {
       util: require.resolve("util/"),
       process: require.resolve("process/browser"),
