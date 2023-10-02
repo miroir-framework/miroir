@@ -6,11 +6,19 @@
   "defaultLabel": "List of Jzod Schemas",
   "definition": {
     "parameters": {},
+    "fetchData": {
+      "jzodSchemas": {
+        "type": "objectListQuery",
+        "parentName": "JzodSchema",
+        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+      }
+    },
     "section": {
       "type":"objectListReportSection",
       "definition": {
         "parentName": "JzodSchema",
-        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+        "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+        "fetchedDataReference": "jzodSchemas"
       }
     }
   }

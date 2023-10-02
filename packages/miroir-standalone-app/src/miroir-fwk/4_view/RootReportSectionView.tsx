@@ -29,7 +29,7 @@ export interface ReportSectionEntityInstanceProps {
   reportSection: RootReportSection | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  instanceUuid: Uuid,
+  instanceUuid?: Uuid,
 }
 
 let count = 0
@@ -37,7 +37,7 @@ let count = 0
 export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   count++;
   
-  const errorLog = useErrorLogService();
+  // const errorLog = useErrorLogService();
 
   console.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
@@ -54,7 +54,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    props.reportSection?.fetchData?.book?.parentUuid,
+    props.reportSection?.fetchData
   );
 
   const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
@@ -106,7 +106,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       )
     )
   }
-  ),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData?.booksOfPublisher]);
+  ),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData]);
 
 
   const initFetchedData = useMemo(()=>({}),[])
@@ -127,8 +127,6 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
           reportSection={props.reportSection?.section}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
-          instanceUuid={props.instanceUuid}
-
         />
       </div>
     );

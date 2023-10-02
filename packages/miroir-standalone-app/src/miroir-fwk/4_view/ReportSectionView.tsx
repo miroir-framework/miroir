@@ -28,13 +28,11 @@ import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
 
 export interface ReportSectionEntityInstanceProps {
-  // fetchedData: Record<string,any>,
   fetchedData: FetchedData | undefined,
   reportSection: ReportSection | undefined,
-  // reportSection: RootReportSection | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  instanceUuid: Uuid,
+  // instanceUuid: Uuid,
 }
 
 // ###############################################################################################################
@@ -209,7 +207,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                                     deploymentUuid={props.deploymentUuid}
                                     applicationSection={props.applicationSection}
                                     reportSection={innerReportSection}
-                                    instanceUuid={props.instanceUuid}
+                                    // instanceUuid={props.instanceUuid}
                                   />
                                 </td>
                               </tr>
@@ -260,7 +258,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
                     entityUuid={props.reportSection.definition.parentUuid}
-                    instanceUuid={props.instanceUuid}
                   />
                </div>
               ) : <div></div>

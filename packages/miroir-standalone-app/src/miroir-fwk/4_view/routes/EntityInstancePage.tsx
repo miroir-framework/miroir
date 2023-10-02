@@ -185,7 +185,6 @@ export const EntityInstancePage = () => {
                   deploymentUuid={params.deploymentUuid}
                   applicationSection={params.applicationSection as ApplicationSection}
                   entityUuid={params.entityUuid}
-                  instanceUuid={params.instanceUuid}
                   element={instance}
                   rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}

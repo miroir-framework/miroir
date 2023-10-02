@@ -76,6 +76,7 @@ import book4 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf
 import book5 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book6 from "../../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c6852e89-3c3c-447f-b827-4b5b9d830975.json";
 import test1 from "../../assets/library_data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a.json";
+import { RootReportSectionView } from "./RootReportSectionView";
 
 
 export interface RootComponentProps {
@@ -277,6 +278,8 @@ export const HomePage = (props: RootComponentProps) => {
   const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
     currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
   ;
+  console.log("HomePage currentMiroirReport", currentMiroirReport);
+  
   // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
   //   currentMiroirReport?.type == "list" &&
   //   currentMiroirReport.definition.length > 0 &&
@@ -677,26 +680,19 @@ export const HomePage = (props: RootComponentProps) => {
       </Box>
       {
         currentMiroirReport &&
-        currentMiroirReportSectionObjectList &&
-        currentReportTargetEntity &&
-        currentReportTargetEntityDefinition &&
+        displayedDeploymentUuid &&
         displayedApplicationSection ? (
-          <ReportSectionListDisplay
-            tableComponentReportType="EntityInstance"
-            label={"EntityInstance-" + currentReportTargetEntity?.name}
-            styles={{
-              height: "80vh",
-              width: "90vw",
-            }}
-            // currentReportUuid=""
-            chosenApplicationSection={displayedApplicationSection}
-            displayedDeploymentDefinition={displayedDeploymentDefinition}
-            currentModel={currentModel}
-            currentMiroirReportSectionObjectList={currentMiroirReportSectionObjectList}
-            currentMiroirEntity={currentReportTargetEntity}
-            currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
-          />
-        ) : (
+          <div>
+            <div>reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div>
+            <RootReportSectionView
+              fetchedData={{}}
+              reportSection={currentMiroirReport?.definition}
+              applicationSection={displayedApplicationSection}
+              deploymentUuid={displayedDeploymentUuid}
+            />
+          </div>
+        )
+        : (
           <div>Oops.
             <p>
               currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}

@@ -29,34 +29,28 @@ import {
 } from "./ReduxHooks";
 
 export interface ReportSectionEntityInstanceProps {
-  // reportSection: ReportDefinition | undefined,
   instance?: any,
   fetchedData?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
-  instanceUuid: Uuid,
 }
 
 
 
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
-  // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
-  // const domainController: DomainControllerInterface = useDomainControllerService();
   const errorLog = useErrorLogService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
 
-  // const currentModelSelectorParams:DomainEntityInstancesSelectorParams = useMemo(
   const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
     () => ({
       type: "DomainEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }
-    // } as DomainEntityInstancesSelectorParams),
     } as MiroirSelectorSingleQueryParams),
     [applicationDeploymentLibrary.uuid]
   );
@@ -87,7 +81,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportDefinitionApplicationSection
   );
 
-  const deploymentReports: Report[] = currentModel.reports;
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
@@ -104,18 +97,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;
 
-  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-  //   {
-  //     type: "DomainEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: props.deploymentUuid,
-  //       applicationSection: props.applicationSection as ApplicationSection,
-  //       entityUuid: props.entityUuid,
-  //     }
-  //   }
-  // );
-
-  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
   const instance:any = props.instance;
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
@@ -131,18 +112,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   if (instance) {
     return (
       <div> 
-        {/* params:{JSON.stringify(params)}
-        <p /> */}
         <p>
         ReportSectionEntityInstance
         </p>
-        {/* <span>reports: {JSON.stringify(deploymentReports.map(r=>r.name))}</span>
-        <p />
-        <Box>
-          <h3>
-            erreurs: {JSON.stringify(errorLog)}
-          </h3>
-        </Box> */}
         <span>
           Entity Instance Attribute Values:
         </span>
@@ -155,59 +127,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   deploymentUuid={props.deploymentUuid}
                   applicationSection={props.applicationSection as ApplicationSection}
                   entityUuid={props.entityUuid}
-                  instanceUuid={props.instanceUuid}
                   element={instance}
                   rootJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   elementJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                 ></JzodElementDisplay>
-                {/* <span>
-                  Publisher Books:
-                </span>
-                <List sx={{ pt: 0}}>
-                  {
-                    publisherBooks?.map(
-                      (book:any) => {
-                        return (
-                          <ListItem disableGutters key={book.name}>
-                            <EntityInstanceLink
-                              deploymentUuid={props.deploymentUuid as string}
-                              applicationSection={props.applicationSection as ApplicationSection}
-                              entityUuid={entityBook.uuid}
-                              instanceUuid={book.uuid}
-                              label={book.name}
-                              key={book.uuid}
-                            />
-                          </ListItem>
-                        )
-                      }
-                    )
-                  }
-                  </List> */}
-                {/* <span>
-                  Author Books:
-                </span>
-                <List sx={{ pt: 0}}>
-                  {
-                    authorBooks?.map(
-                      (book:any) => {
-                        return (
-                          <ListItem disableGutters key={book.name}>
-                            <EntityInstanceLink
-                              deploymentUuid={props.deploymentUuid as string}
-                              applicationSection={props.applicationSection as ApplicationSection}
-                              entityUuid={entityBook.uuid}
-                              instanceUuid={book.uuid}
-                              label={book.name}
-                              key={book.uuid}
-                            />
-                          </ListItem>
-                        )
-                      }
-                    )
-                  }
-                  </List> */}
               </div>
             :
             <div>Oops.</div>

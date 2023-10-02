@@ -15,7 +15,7 @@ export interface JzodElementDisplayProps {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
-  instanceUuid?: Uuid,
+  // instanceUuid?: Uuid,
   element: any,
   elementJzodSchema?: JzodElement,
   currentReportDeploymentSectionEntities?: MetaEntity[],
@@ -36,7 +36,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     }
   );
 
-  const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
+  // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
 
   // const currentModel = useCurrentModel(props.deploymentUuid);
   const miroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
@@ -60,7 +60,20 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     }),
     []
   );
-  console.log("JzodElementDisplay path",props.path,"props.elementJzodSchema",props.elementJzodSchema,"resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema,"props.element",props.element,"miroirModel",miroirModel);
+  console.log(
+    "JzodElementDisplay path",
+    props.path,
+    "props.elementJzodSchema",
+    props.elementJzodSchema,
+    "resolvedJzodSchema",
+    resolvedJzodSchema,
+    "targetJzodSchema",
+    targetJzodSchema,
+    "props.element",
+    props.element,
+    "miroirModel",
+    miroirModel
+  );
 
   switch (targetJzodSchema?.type) {
     case "array": {
@@ -99,7 +112,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             deploymentUuid={props.deploymentUuid}
                             elementJzodSchema={targetJzodSchema.definition}
                             entityUuid={props.entityUuid}
-                            instanceUuid={props.instanceUuid}
+                            // instanceUuid={props.instanceUuid}
                             rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                             element={attribute[1]}
@@ -164,7 +177,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                             deploymentUuid={props.deploymentUuid}
                             elementJzodSchema={(targetJzodSchema as JzodObject)?.definition[attribute[0]]}
                             entityUuid={props.entityUuid}
-                            instanceUuid={props.instanceUuid}
+                            // instanceUuid={props.instanceUuid}
                             rootJzodSchema={props.rootJzodSchema}
                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
                             element={attribute[1]}

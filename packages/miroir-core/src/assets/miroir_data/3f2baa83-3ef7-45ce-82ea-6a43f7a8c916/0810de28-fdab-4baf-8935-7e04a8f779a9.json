@@ -7,11 +7,19 @@
   "type": "list",
   "definition": {
     "parameters": {},
+    "fetchData": {
+      "applicationVersions": {
+        "type": "objectListQuery",
+        "parentName": "StoreBasedConfiguration",
+        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+      }
+    },
     "section": {
       "type":"objectListReportSection",
       "definition": {
         "parentName": "ApplicationVersion",
-        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+        "fetchedDataReference": "applicationVersions"
       }
     }
   }
