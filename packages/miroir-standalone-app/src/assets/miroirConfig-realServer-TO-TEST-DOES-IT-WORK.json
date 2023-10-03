@@ -8,7 +8,7 @@
         "location": {
           "side":"server",
           "type": "filesystem",
-          "location":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets"
+          "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
         }
       }
     }

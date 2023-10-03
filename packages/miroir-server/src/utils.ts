@@ -51,8 +51,8 @@
 //   // );
 //   // console.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport",entityDefinitionReport);
  
-//   // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts";
-//   // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/preprocessor-generated/server-generated.ts";
+//   // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts";
+//   // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/src/preprocessor-generated/server-generated.ts";
  
 //   const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
 //   // const newFileContents = await prettier.format(newFileContentsNotFormated,{ semi: false, parser: "typescript" })

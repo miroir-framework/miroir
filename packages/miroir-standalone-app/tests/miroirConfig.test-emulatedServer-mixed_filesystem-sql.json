@@ -4,7 +4,7 @@
   "miroirServerConfig":{
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/tmp/miroir_model"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/miroir_model"
     },
     "data": {
       "emulatedServerType": "sql",
@@ -15,7 +15,7 @@
   "appServerConfig": {
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/tmp/library_model"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/library_model"
     },
     "data": {
       "emulatedServerType": "sql",

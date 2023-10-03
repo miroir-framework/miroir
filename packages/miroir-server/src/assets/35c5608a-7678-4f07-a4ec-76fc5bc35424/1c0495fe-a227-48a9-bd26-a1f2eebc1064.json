@@ -9,14 +9,14 @@
     "location": {
       "type": "filesystem",
       "side":"server",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/assets/app_library"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets/app_library"
     }
   },
   "data": {
     "location": {
       "type": "filesystem",
       "side":"server",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/assets"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/src/assets"
     }
   }
 }

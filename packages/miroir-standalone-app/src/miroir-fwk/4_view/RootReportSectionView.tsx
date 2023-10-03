@@ -41,19 +41,13 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   console.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-
-  // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
-    (d) => d.uuid == props.deploymentUuid
-  );
-  console.log("RootReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
-
+  // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
   console.log(
     "RootReportSectionView",
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
+    "fetchData",
     props.reportSection?.fetchData
   );
 

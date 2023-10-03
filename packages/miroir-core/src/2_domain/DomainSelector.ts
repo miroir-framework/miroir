@@ -39,7 +39,7 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
     domainState[deploymentUuid][applicationSection][entityUuid]
       ? domainState[deploymentUuid][applicationSection][entityUuid]
       : undefined;
-  console.log('DomainSelector selectEntityInstanceUuidIndexFromLocalCache','params',params,'domainState',domainState,'result',result);
+  // console.log('DomainSelector selectEntityInstanceUuidIndexFromDomainState','params',params,'domainState',domainState,'result',result);
   return result;
 };
 
@@ -62,17 +62,17 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
           ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query?.rootObjectUuid:undefined)
       )
     );
-    console.log(
-      "DomainSelector selectRelatedEntityInstancesUuidIndexFromDomainState",
-      "selectorParams",
-      selectorParams,
-      "selectedInstances",
-      selectedInstances,
-      "domainState",
-      domainState,
-      "result",
-      result
-    );
+    // console.log(
+    //   "DomainSelector selectEntityInstancesFromListQueryAndDomainState",
+    //   "selectorParams",
+    //   selectorParams,
+    //   "selectedInstances",
+    //   selectedInstances,
+    //   "domainState",
+    //   domainState,
+    //   "result",
+    //   result
+    // );
     return result;
   } else {
     return {}
@@ -111,17 +111,17 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
         : undefined
       : undefined
     ;
-  console.log(
-    "DomainSelector selectEntityInstanceFromDomainState",
-    "fetchedData",
-    fetchedData,
-    "params",
-    params,
-    "domainState",
-    domainState,
-    "result",
-    result
-  );
+  // console.log(
+  //   "DomainSelector selectEntityInstanceFromDomainState",
+  //   "fetchedData",
+  //   fetchedData,
+  //   "params",
+  //   params,
+  //   "domainState",
+  //   domainState,
+  //   "result",
+  //   result
+  // );
   return result;
 };
 
@@ -132,7 +132,7 @@ export const selectFetchedDataFromDomainState = (
   params: MiroirSelectorFetchDataQueryParams
 ): FetchedData | undefined => {
 
-  console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
+  // console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
   
   const newFetchedData:FetchedData = fetchedData;
 
@@ -163,17 +163,17 @@ export const selectFetchedDataFromDomainState = (
     console.log("DomainSelector selectFetchedDataFromDomainState set", entry[0], result);
   } 
 
-  console.log("########## DomainSelector selectFetchedDataFromDomainState end");
+  // console.log("########## DomainSelector selectFetchedDataFromDomainState end");
 
-  console.log(
-    "DomainSelector selectFetchedDataFromDomainState",
-    "params",
-    params,
-    "domainState",
-    domainState,
-    "newFetchedData",
-    newFetchedData
-  );
+  // console.log(
+  //   "DomainSelector selectFetchedDataFromDomainState",
+  //   "params",
+  //   params,
+  //   "domainState",
+  //   domainState,
+  //   "newFetchedData",
+  //   newFetchedData
+  // );
   return newFetchedData;
 };
 

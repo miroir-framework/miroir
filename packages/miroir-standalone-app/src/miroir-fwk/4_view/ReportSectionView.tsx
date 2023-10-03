@@ -11,21 +11,25 @@ import {
   MiroirApplicationModel,
   MiroirSelectorSingleQueryParams,
   ObjectListReportSection,
+  Report,
   ReportSection,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  reportEntityDefinitionList,
+  reportEntityList
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
-  useErrorLogService
+  useErrorLogService, useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
+import { useCurrentModel } from './ReduxHooks';
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: FetchedData | undefined,
@@ -38,6 +42,10 @@ export interface ReportSectionEntityInstanceProps {
 // ###############################################################################################################
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const errorLog = useErrorLogService();
+  const context = useMiroirContextService();
+
+  const displayedReportUuid = context.reportUuid;
+  const setDisplayedReportUuid = context.setReportUuid;
 
   console.log("########################## ReportSectionView props", props);
 
@@ -56,22 +64,91 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   );
 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const libraryAppModel: MiroirApplicationModel = useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirApplicationModel;
+  // const libraryAppModel: MiroirApplicationModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  //   localSelectModelForDeployment(state, currentModelSelectorParams)
+  // ) as MiroirApplicationModel;
+
+
+  // ##############################################################################################
+  const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
+  console.log("RootReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+
+  // const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
+  const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+
+  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
+    [applicationDeploymentMiroir.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          ),
+          entities: miroirMetaModel.entities,
+          entityDefinitions: miroirMetaModel.entityDefinitions,
+        },
+      "data": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentLibrary.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: libraryAppModel.reports,
+        entities: libraryAppModel.entities,
+        entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+  }), [miroirMetaModel, libraryAppModel]);
+
+  const { availableReports, entities, entityDefinitions } =
+    displayedDeploymentDefinition && props.applicationSection
+      ? mapping[displayedDeploymentDefinition?.uuid][props.applicationSection]
+      : { availableReports: [], entities: [], entityDefinitions: [] };
+
+  console.log("HomePage availableReports",availableReports);
+
+  const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
+  const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
+    currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
+  ;
+
+  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
+    ? entities?.find((e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid)
+    : undefined;
+  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+
+
+
+
+
+  // computing current state #####################################################################
+  // const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
+  //   (d) => d.uuid == props.deploymentUuid
+  // );
   console.log("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeployment)
       : displayedDeploymentDefinition;
-  const currentModel =
-    props.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
+  // const currentModel =
+  //   props.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
   
+  console.log("ReportSectionView currentModel",currentModel);
+    
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   console.log(
@@ -86,23 +163,23 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
 
-  const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
-    props.reportSection?.type == "objectListReportSection"
-      ? props.reportSection
-      : undefined
-  ;
+  // const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
+  //   props.reportSection?.type == "objectListReportSection"
+  //     ? props.reportSection
+  //     : undefined
+  // ;
 
   console.log("ReportSectionView currentMiroirReportSectionObjectList", currentMiroirReportSectionObjectList);
   console.log("ReportSectionView currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList?.definition?.parentUuid
-    ? currentReportDeploymentSectionEntities?.find(
-        (e) => e?.uuid === currentMiroirReportSectionObjectList?.definition?.parentUuid
-      )
-    : undefined;
+  // const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList?.definition?.parentUuid
+  //   ? currentReportDeploymentSectionEntities?.find(
+  //       (e) => e?.uuid === currentMiroirReportSectionObjectList?.definition?.parentUuid
+  //     )
+  //   : undefined;
 
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+  // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+  //   currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
     currentReportTargetEntityDefinition?.jzodSchema.definition;

@@ -111,8 +111,8 @@ export async function generateZodSchemaFileFromJzodSchema(
   // );
   // console.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport",entityDefinitionReport);
  
-  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts";
-  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-standalone-app/src/preprocessor-generated/server-generated.ts";
+  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts";
+  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/src/preprocessor-generated/server-generated.ts";
  
   const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
   // const newFileContents = await prettier.format(newFileContentsNotFormated,{ semi: false, parser: "typescript" })
@@ -199,12 +199,12 @@ const jzodSchemaConversion: {
 }[] = [
   {
     jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
-    targetFileName: "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
+    targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
     jzodSchemaVariableName: "report",
   },
   // {
   //   jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
-  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
+  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
   //   jzodSchemaVariableName: "jzodSchema",
   // }
 ];
