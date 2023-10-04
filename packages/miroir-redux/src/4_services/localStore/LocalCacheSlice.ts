@@ -212,16 +212,18 @@ export const selectDomainState: (
 export const applyDomainStateSelector = <T>( // TODO: memoize?
   domainStateSelector: (
     domainState: DomainState,
+    pageParams: Record<string, any>,
     fetchedData: FetchedData,
     params: MiroirSelectorQueryParams
   ) => T
 ) => ( // currified
   reduxState: ReduxStateWithUndoRedo,
+  pageParams: Record<string, any>,
   fetchedData: FetchedData,
   params: MiroirSelectorQueryParams
 ): T => {
-  const domainState = selectDomainState(reduxState,params);
-  const result = domainStateSelector(domainState, fetchedData, params);
+  const domainState = selectDomainState(reduxState, params);
+  const result = domainStateSelector(domainState, pageParams, fetchedData, params);
   console.log('applyDomainStateSelector','params',params,'domainState',domainState,'result',result);
   return result;
 };

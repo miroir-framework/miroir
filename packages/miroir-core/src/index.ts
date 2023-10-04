@@ -277,9 +277,9 @@ export {
 } from './1_core/Report.js';
 export {
   selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityInstanceFromObjectQueryAndDomainState as selectEntityInstanceFromDomainState,
+  selectEntityInstanceFromObjectQueryAndDomainState,
   selectFetchedDataFromDomainState,
-  selectEntityInstancesFromListQueryAndDomainState as selectRelatedEntityInstancesUuidIndexFromDomainState,
+  selectEntityInstancesFromListQueryAndDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,

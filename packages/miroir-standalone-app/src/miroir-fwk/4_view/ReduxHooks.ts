@@ -17,7 +17,7 @@ import {
   entityEntityDefinition,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityUuidFromJzodAttribute,
-  selectRelatedEntityInstancesUuidIndexFromDomainState
+  selectEntityInstancesFromListQueryAndDomainState
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -56,7 +56,7 @@ export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorS
   );
 
   return useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState,{}, selectorParams)
+    applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState, {}, {}, selectorParams)
   )
 }
 
@@ -76,7 +76,7 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSi
 export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex {
 
   const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector(selectRelatedEntityInstancesUuidIndexFromDomainState)(reduxState, {}, selectorParams)
+    applyDomainStateSelector(selectEntityInstancesFromListQueryAndDomainState)(reduxState, {}, {}, selectorParams)
   );
   
   return result??{};

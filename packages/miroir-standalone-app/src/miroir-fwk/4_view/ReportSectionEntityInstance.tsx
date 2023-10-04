@@ -9,7 +9,6 @@ import {
   MetaEntity,
   MiroirApplicationModel,
   MiroirSelectorSingleQueryParams,
-  Report,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -43,7 +42,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const errorLog = useErrorLogService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-
 
   const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
     () => ({
@@ -84,7 +82,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  console.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
+  console.log("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
 
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
@@ -106,8 +104,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [currentMiroirModel]
   );
 
-  console.log('EntityInstancePage instance',instance);
-  console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
+  console.log('ReportSectionEntityInstance instance',instance);
+  console.log('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
   
   if (instance) {
     return (

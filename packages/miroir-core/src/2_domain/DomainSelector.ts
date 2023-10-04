@@ -11,6 +11,7 @@ import {
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState = (
   domainState: DomainState,
+  pageParams: Record<string, any>,
   fetchedData: FetchedData,
   params: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
@@ -46,12 +47,13 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
 // ################################################################################################
 export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
+  pageParams: Record<string, any>,
   fetchedData: FetchedData,
   selectorParams: MiroirSelectorSingleQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
   if (selectorParams.type == "EntityInstanceListQueryParams") {
-    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, fetchedData, selectorParams)
+    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, pageParams, fetchedData, selectorParams)
     const result = Object.fromEntries(
       Object.entries(selectedInstances ?? {}).filter(
         (i: [string, EntityInstance]) =>
@@ -59,7 +61,7 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
             selectorParams.type == "EntityInstanceListQueryParams"
               ? selectorParams.definition.query?.rootObjectAttribute ?? "dummy"
               : "dummy"
-          ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query?.rootObjectUuid:undefined)
+          ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query.fetchedDataReference?(fetchedData[selectorParams.definition.query.fetchedDataReference] as any)["uuid"]:selectorParams.definition.query?.rootObjectUuid:undefined)
       )
     );
     // console.log(
@@ -82,14 +84,15 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
 // ################################################################################################
 export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
+  pageParams: Record<string, any>,
   fetchedData: FetchedData,
-  params: MiroirSelectorSingleQueryParams
+  query: MiroirSelectorSingleQueryParams
 ): EntityInstance | undefined => {
-  const querySelectorParams = params.type == "EntityInstanceQueryParams" ? params.definition.query : undefined;
+  const querySelectorParams = query.type == "EntityInstanceQueryParams" ? query.definition.query : undefined;
 
-  const deploymentUuid = params.type == "EntityInstanceQueryParams" ? params.definition.deploymentUuid : undefined;
+  const deploymentUuid = query.type == "EntityInstanceQueryParams" ? query.definition.deploymentUuid : undefined;
   const applicationSection =
-    params.type == "EntityInstanceQueryParams" ? params.definition.applicationSection : undefined;
+    query.type == "EntityInstanceQueryParams" ? query.definition.applicationSection : undefined;
 
   const result =
     deploymentUuid && applicationSection
@@ -107,27 +110,41 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
           ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
               querySelectorParams.instanceUuid
             ]
+          : querySelectorParams?.paramReference && pageParams[querySelectorParams?.paramReference]
+          ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+              pageParams[querySelectorParams?.paramReference]
+            ]
           : undefined
         : undefined
-      : undefined
-    ;
-  // console.log(
-  //   "DomainSelector selectEntityInstanceFromDomainState",
-  //   "fetchedData",
-  //   fetchedData,
-  //   "params",
-  //   params,
-  //   "domainState",
-  //   domainState,
-  //   "result",
-  //   result
-  // );
+      : undefined;
+  console.log(
+    "DomainSelector selectEntityInstanceFromDomainState",
+    "query",
+    query,
+    "pageParams",
+    pageParams,
+    "querySelectorParams.parentUuid",
+    querySelectorParams?.parentUuid,
+    "pageParams[querySelectorParams?.paramReference]",
+    pageParams[querySelectorParams?.paramReference??""],
+    "domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][pageParams[querySelectorParams?.paramReference]]",
+    domainState[deploymentUuid??""][applicationSection??"data"][querySelectorParams?.parentUuid??""][
+      pageParams[querySelectorParams?.paramReference??""]
+    ],
+    "fetchedData",
+    fetchedData,
+    "domainState",
+    domainState,
+    "result",
+    result
+  );
   return result;
 };
 
 // ################################################################################################
 export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
+  pageParams: Record<string, any>,
   fetchedData: FetchedData,
   params: MiroirSelectorFetchDataQueryParams
 ): FetchedData | undefined => {
@@ -147,11 +164,11 @@ export const selectFetchedDataFromDomainState = (
       //   break;
       // }
       case "EntityInstanceQueryParams": {
-        result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, newFetchedData, entry[1]);
+        result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, pageParams, newFetchedData, entry[1]);
         break;
       }
       case "EntityInstanceListQueryParams": {
-        result = selectEntityInstancesFromListQueryAndDomainState(domainState, newFetchedData, entry[1]);
+        result = selectEntityInstancesFromListQueryAndDomainState(domainState, pageParams, newFetchedData, entry[1]);
         break;
       }
       default: {

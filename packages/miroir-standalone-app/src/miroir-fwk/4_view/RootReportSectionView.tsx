@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import {
-  ApplicationDeployment,
   ApplicationSection,
   FetchedData,
   MiroirQuery,
@@ -11,15 +10,10 @@ import {
   RootReportSection,
   SelectObjectListQuery,
   Uuid,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
   selectFetchedDataFromDomainState
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, applyDomainStateSelector } from "miroir-redux";
 
-import {
-  useErrorLogService
-} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
 import { ReportSectionView } from './ReportSectionView';
@@ -103,9 +97,18 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   ),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData]);
 
 
-  const initFetchedData = useMemo(()=>({}),[])
+  const initFetchedData = useMemo(()=>({
+    // applicationSection: props.applicationSection,
+    // deploymentUuid: props.deploymentUuid,
+    // instanceUuid: props.instanceUuid,
+  }),[])
+  const pageParams = useMemo(()=>({
+    applicationSection: props.applicationSection,
+    deploymentUuid: props.deploymentUuid,
+    instanceUuid: props.instanceUuid,
+  }),[])
   const fetchedData: FetchedData | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector(selectFetchedDataFromDomainState)(state, initFetchedData, fetchedDataEntriesParams)
+    applyDomainStateSelector(selectFetchedDataFromDomainState)(state, pageParams, initFetchedData, fetchedDataEntriesParams)
   );
 
   

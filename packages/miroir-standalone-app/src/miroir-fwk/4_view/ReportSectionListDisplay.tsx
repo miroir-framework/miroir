@@ -1,8 +1,8 @@
 import { ColDef } from "ag-grid-community";
 import equal from "fast-deep-equal";
+import { useCallback, useMemo } from "react";
 import { SubmitHandler } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { useCallback, useMemo } from "react";
 import { z } from "zod";
 
 
@@ -10,24 +10,18 @@ import { JzodObject } from "@miroir-framework/jzod-ts";
 
 import {
   ApplicationDeployment,
-  ApplicationDeploymentSchema,
-  ApplicationSectionSchema,
   DomainControllerInterface,
   DomainDataAction,
-  EntityDefinitionSchema,
   EntityInstancesUuidIndex,
-  MetaEntity,
-  MetaEntitySchema,
-  objectListReportSection,
-  selectObjectListQuery
+  MetaEntity
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
-import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
-import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 import { ReportSectionDisplayEntityInstancePropsSchema } from "../ReportSectionListInterface";
+import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType } from "./MTableComponentInterface";
+import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 
 
 // ##########################################################################################
@@ -42,12 +36,18 @@ export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchem
 export function defaultFormValues(
   tableComponentType: TableComponentType,
   currentEntityJzodSchema: JzodObject,
-  // currentEntityAttributes:EntityAttribute[],
   idList?:{id:number}[],
   currentMiroirEntity?: MetaEntity,
   displayedDeploymentDefinition?: ApplicationDeployment,
 ):any {
-  console.log('defaultFormValues called TableComponentType',tableComponentType, 'currentMiroirEntity',currentMiroirEntity,'currentEntityJzodSchema',currentEntityJzodSchema);
+  console.log(
+    "defaultFormValues called TableComponentType",
+    tableComponentType,
+    "currentMiroirEntity",
+    currentMiroirEntity,
+    "currentEntityJzodSchema",
+    currentEntityJzodSchema
+  );
   
   if (tableComponentType == "EntityInstance") {
     const attributeDefaultValue:any = {
@@ -61,7 +61,7 @@ export function defaultFormValues(
     }
     console.log();
     
-    const currentEditorAttributes = Object.entries(currentEntityJzodSchema.definition).reduce((acc,a)=>{
+    const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,a)=>{
       let result
       if (Object.keys(attributeDefaultValue).includes(a[0])) {
         result = Object.assign({},acc,{[a[0]]:attributeDefaultValue[a[0]]})
@@ -263,10 +263,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  // console.log("ReportSectionListDisplay instancesToDisplay",instancesToDisplay,instancesToDisplay === prevInstancesToDisplay);
-  // prevInstancesToDisplay = instancesToDisplay;
-
-
   const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
     () => ({
       columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
@@ -289,18 +285,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   prevJzodSchema = props.currentMiroirEntityDefinition?.jzodSchema;
 
 
-  // console.log("ReportSectionListDisplay instancesWithStringifiedJsonAttributes",instancesWithStringifiedJsonAttributes,prevInstancesWithStringifiedJsonAttributes, instancesWithStringifiedJsonAttributes === prevInstancesWithStringifiedJsonAttributes);
-  // prevInstancesWithStringifiedJsonAttributes = instancesWithStringifiedJsonAttributes;
   console.log("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
   console.log("ReportSectionListDisplay columnDefs",columnDefs);
-
-
   
   return (
     <div className="MiroirReport-global" style={{ display: "flex" }}>
       <span>rendered ReportSectionListDisplay: {count} times.</span>
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
-      {props?.currentMiroirReportSectionObjectList ? (
+      {props?.currentMiroirEntity ? (
         !!columnDefs ? (
           // columnDefs?.length > 0
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -330,7 +322,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   styles={props.styles}
                   currentEntity={props.currentMiroirEntity}
                   currentEntityDefinition={props.currentMiroirEntityDefinition}
-                  reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
+                  // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={columnDefs}
                   instancesToDisplay={
                     props.fetchedData &&

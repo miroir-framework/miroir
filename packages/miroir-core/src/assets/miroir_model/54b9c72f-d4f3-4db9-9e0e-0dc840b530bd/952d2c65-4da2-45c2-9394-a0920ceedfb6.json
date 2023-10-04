@@ -98,16 +98,28 @@
                 "extra": { "id": 6, "defaultLabel": "Root Object Attribute", "editable": false }
               },
               "fetchedDataReference": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "optional": true,
-                  "extra": { "id": 7, "defaultLabel": "Fetched Data Reference", "editable": false }
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 7, "defaultLabel": "Fetched Data Reference", "editable": false }
               },
               "fetchedDataReferenceAttribute": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
                 "extra": { "id": 8, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "paramReference": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 9, "defaultLabel": "Param Reference", "editable": false }
+              },
+              "paramReferenceAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 10, "defaultLabel": "Param Attribute", "editable": false }
               }
             }
           },

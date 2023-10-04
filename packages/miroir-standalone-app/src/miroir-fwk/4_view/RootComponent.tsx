@@ -34,6 +34,7 @@ import { ReportUrlParamKeys } from './routes/ReportPage';
 
 import reportBookList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
 import reportBookInstance from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
+import { ReportInstanceLink } from './ReportInstanceLink';
 
 export interface RootComponentProps {
   // store:any;
@@ -243,12 +244,19 @@ export const RootComponent = (props: RootComponentProps) => {
                 {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Author</Link> */}
                 {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link> */}
                 {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667`}>Folio</Link> */}
-                <EntityInstanceLink
+                <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/6d9faa54-643c-4aec-87c3-32635ad95902/ce7b601d-be5f-4bc6-a5af-14091594046a`}>Paul Veyne</Link>
+                {/* <ReportInstanceLink
+                  deploymentUuid={applicationDeploymentLibrary.uuid}
+                  applicationSection="data"
+                  reportUuid="d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                  instanceUuid="ce7b601d-be5f-4bc6-a5af-14091594046a"
+                ></ReportInstanceLink> */}
+                {/* <EntityInstanceLink
                   deploymentUuid={applicationDeploymentLibrary.uuid}
                   applicationSection="data"
                   entityUuid="d7a144ff-d1b9-4135-800c-a7cfc1f38733"
                   instanceUuid="ce7b601d-be5f-4bc6-a5af-14091594046a"
-                ></EntityInstanceLink>
+                ></EntityInstanceLink> */}
               </TableCell>
               <TableCell>
                 {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Author</Link> */}

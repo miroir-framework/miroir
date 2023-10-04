@@ -26,7 +26,7 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel: z.any(),
-  currentMiroirReportSectionObjectList: objectListReportSection.optional(),
+  // currentMiroirReportSectionObjectList: objectListReportSection.optional(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
 });

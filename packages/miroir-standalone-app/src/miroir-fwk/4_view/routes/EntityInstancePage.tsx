@@ -22,7 +22,7 @@ import {
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
 
 import {
-  useErrorLogService
+  useErrorLogService, useMiroirContextService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
@@ -43,13 +43,24 @@ export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection'
 // ###############################################################################################################
 export const EntityInstancePage = () => {
   const params = useParams<EntityInstanceUrlParamKeys>();
-  console.log('ReportPage params',params);
+  console.log('EntityInstancePage params',params);
   
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   // const domainController: DomainControllerInterface = useDomainControllerService();
   const errorLog = useErrorLogService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+
+  // const context = useMiroirContextService();
+
+  // const displayedReportUuid = context.reportUuid;
+  // const setDisplayedReportUuid = context.setReportUuid;
+
+  // if (displayedDeploymentDefinition == ) {
+    
+  // } else {
+    
+  // }
 
 
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
@@ -82,7 +93,7 @@ export const EntityInstancePage = () => {
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   console.log(
-    "ReportPage currentReportDefinitionDeployment",
+    "EntityInstancePage currentReportDefinitionDeployment",
     currentReportDefinitionDeployment,
     "currentReportDefinitionApplicationSection",
     currentReportDefinitionApplicationSection
@@ -128,12 +139,6 @@ export const EntityInstancePage = () => {
   );
 
   const currentMiroirModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-
-  // const currentEnumJzodSchemaResolver: JzodElementRecord = useMemo(
-  //   // () => getCurrentEnumJzodSchemaResolver(currentMiroirModel,currentReportTargetEntityDefinition?.jzodSchema??{type:"object", definition:{}}),
-  //   () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
-  //   [currentMiroirModel]
-  // );
   const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver = useMemo(
     () => getCurrentEnumJzodSchemaResolver(currentMiroirModel),
     [currentMiroirModel]

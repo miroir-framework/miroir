@@ -10,6 +10,8 @@ export type SelectObjectInstanceQuery = {
     rootObjectAttribute?: string | undefined;
     fetchedDataReference?: string | undefined;
     fetchedDataReferenceAttribute?: string | undefined;
+    paramReference?: string | undefined;
+    paramReferenceAttribute?: string | undefined;
 };
 export type SelectObjectListQuery = {
     type: "objectListQuery";
@@ -70,7 +72,7 @@ export type Report = {
     };
 };
 
-export const selectObjectInstanceQuery:z.ZodType<SelectObjectInstanceQuery> = z.object({type:z.literal("objectQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional(), fetchedDataReferenceAttribute:z.string().optional()}).strict();
+export const selectObjectInstanceQuery:z.ZodType<SelectObjectInstanceQuery> = z.object({type:z.literal("objectQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional(), fetchedDataReferenceAttribute:z.string().optional(), paramReference:z.string().optional(), paramReferenceAttribute:z.string().optional()}).strict();
 export const selectObjectListQuery:z.ZodType<SelectObjectListQuery> = z.object({type:z.literal("objectListQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), rootObjectUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional()}).strict();
 export const miroirQuery:z.ZodType<MiroirQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectInstanceQuery)]);
 export const miroirQueriesObject:z.ZodType<MiroirQueriesObject> = z.record(z.string(),z.lazy(() =>miroirQuery));

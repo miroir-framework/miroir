@@ -34,7 +34,7 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: MetaEntitySchema.optional(),
   currentEntityDefinition: EntityDefinitionSchema.optional(),
-  reportSectionListDefinition: objectListReportSection,
+  // reportSectionListDefinition: objectListReportSection,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof tableComponentEntityInstancePropsSchema>;

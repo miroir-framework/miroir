@@ -1,0 +1,48 @@
+{
+  "uuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"AuthorDetails",
+  "defaultLabel": "Detailed information about an Author",
+  "definition": {
+    "fetchData": {
+      "author": {
+        "type": "objectQuery",
+        "parentName": "Author",
+        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+        "paramReference": "instanceUuid"
+      },
+      "booksOfAuthor": {
+        "type": "objectListQuery",
+        "parentName": "Book",
+        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+        "rootObjectAttribute": "author",
+        "fetchedDataReference": "author"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectInstanceReportSection",
+          "definition": {
+            "label": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "fetchedDataReference": "author"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Author's (${author.name}) Books",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "booksOfAuthor"
+          }
+        }
+      ]
+    }
+  }
+}
