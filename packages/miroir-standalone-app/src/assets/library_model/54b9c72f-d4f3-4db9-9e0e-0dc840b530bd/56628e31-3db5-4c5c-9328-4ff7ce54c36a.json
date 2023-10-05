@@ -1,12 +1,12 @@
 {
-  "uuid":"b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-  "conceptLevel":"Model",
-  "name":"Author",
-  "description": "author",
-  "icon": "Person",
+  "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+  "conceptLevel": "Model",
+  "name": "Country",
+  "description": "Country",
+  "icon": "building",
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -33,14 +33,7 @@
         "definition": "string",
         "extra": { "id":4, "defaultLabel": "Name", "editable": true }
       },
-      "country": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "optional": true,
-        "extra": { "id":5, "defaultLabel": "Country", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": true }
-      },
-      "icon": { "id":6, "type": "simpleType", "definition": "string", "extra": { "defaultLabel": "Gender (narrow-minded)", "editable": true } }
+      "icon": { "id":5, "type": "simpleType", "definition": "string", "optional": true, "extra": { "defaultLabel": "Icon", "editable": true } }
     }
   }
 }

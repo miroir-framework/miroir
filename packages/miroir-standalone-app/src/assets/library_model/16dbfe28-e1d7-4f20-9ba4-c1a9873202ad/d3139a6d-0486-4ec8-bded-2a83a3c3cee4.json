@@ -1,0 +1,8 @@
+{
+  "uuid":"d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name":"Country",
+  "conceptLevel":"Model",
+  "description": "Country."
+}

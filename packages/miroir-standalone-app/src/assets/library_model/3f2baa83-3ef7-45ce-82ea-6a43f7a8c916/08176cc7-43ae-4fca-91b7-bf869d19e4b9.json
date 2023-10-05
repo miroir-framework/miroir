@@ -1,0 +1,26 @@
+{
+  "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"CountryList",
+  "defaultLabel": "List of Countries",
+  "definition": {
+    "parameters": {},
+    "fetchData": {
+      "countries": {
+        "type": "objectListQuery",
+        "parentName": "Country",
+        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "Author",
+        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+        "fetchedDataReference": "countries"
+      }
+    }
+  }
+}
