@@ -61,7 +61,12 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
             selectorParams.type == "EntityInstanceListQueryParams"
               ? selectorParams.definition.query?.rootObjectAttribute ?? "dummy"
               : "dummy"
-          ] === (selectorParams.type == "EntityInstanceListQueryParams"?selectorParams.definition.query.fetchedDataReference?(fetchedData[selectorParams.definition.query.fetchedDataReference] as any)["uuid"]:selectorParams.definition.query?.rootObjectUuid:undefined)
+          ] ===
+          (selectorParams.type == "EntityInstanceListQueryParams"
+            ? selectorParams.definition.query.fetchedDataReference
+              ? (fetchedData[selectorParams.definition.query.fetchedDataReference] as any)["uuid"]
+              : selectorParams.definition.query?.rootObjectUuid
+            : undefined)
       )
     );
     // console.log(

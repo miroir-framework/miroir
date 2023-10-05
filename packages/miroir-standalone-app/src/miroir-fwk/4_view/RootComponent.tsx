@@ -269,7 +269,8 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494`}>Penguin</Link>
               </TableCell>
               <TableCell>
-                <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
+                {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link> */}
+                <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/c3503412-3d8a-43ef-a168-aa36e975e606/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
               </TableCell>
               <TableCell>
                 <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a`}>Test Instance</Link>
