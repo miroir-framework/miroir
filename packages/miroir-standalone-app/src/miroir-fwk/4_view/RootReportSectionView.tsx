@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import {
   ApplicationSection,
   FetchedData,
-  MiroirQuery,
+  MiroirSelectQuery,
   MiroirSelectorFetchDataQueryParams,
   MiroirSelectorSingleQueryParams,
   RootReportSection,
@@ -41,15 +41,15 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    "fetchData",
-    props.reportSection?.fetchData
+    "selectData",
+    props.reportSection?.selectData
   );
 
   const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
     type: "ManyQueryParams",
     definition: Object.fromEntries(
-      Object.entries(props.reportSection?.fetchData??{}).map(
-        (e:[string, MiroirQuery])=> {
+      Object.entries(props.reportSection?.selectData??{}).map(
+        (e:[string, MiroirSelectQuery])=> {
           let result;
           switch (e[1].type) {
             case "objectListQuery": {
@@ -94,7 +94,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       )
     )
   }
-  ),[props.deploymentUuid, props.applicationSection,props.reportSection?.fetchData]);
+  ),[props.deploymentUuid, props.applicationSection,props.reportSection?.selectData]);
 
 
   const initFetchedData = useMemo(()=>({
@@ -112,7 +112,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   );
 
   
-  console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
+  console.log("RootReportSectionView props.reportSection?.selectData",props.reportSection?.selectData,"fetchedData", fetchedData);
   console.log('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {

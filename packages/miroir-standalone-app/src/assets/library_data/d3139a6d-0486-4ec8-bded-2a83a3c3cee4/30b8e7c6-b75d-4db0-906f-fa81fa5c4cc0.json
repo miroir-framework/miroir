@@ -2,5 +2,6 @@
   "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
   "parentName":"Country",
   "parentUuid":"d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-  "name":"Germany"
+  "name":"Germany",
+  "iso3166-1Alpha-2": "DE"
 }

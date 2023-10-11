@@ -6,7 +6,7 @@
   "name":"BookDetails",
   "defaultLabel": "Detailed information about a Book",
   "definition": {
-    "fetchData": {
+    "selectData": {
       "book": {
         "type": "objectQuery",
         "parentName": "Book",

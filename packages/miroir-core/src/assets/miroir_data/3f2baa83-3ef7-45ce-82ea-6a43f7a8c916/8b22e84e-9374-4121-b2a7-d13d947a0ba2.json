@@ -6,7 +6,7 @@
   "defaultLabel": "List of Jzod Schemas",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "jzodSchemas": {
         "type": "objectListQuery",
         "parentName": "JzodSchema",

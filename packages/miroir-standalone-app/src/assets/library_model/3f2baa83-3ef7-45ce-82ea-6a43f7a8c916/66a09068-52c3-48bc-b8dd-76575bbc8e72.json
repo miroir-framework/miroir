@@ -7,7 +7,7 @@
   "defaultLabel": "List of Authors",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "authors": {
         "type": "objectListQuery",
         "parentName": "Author",

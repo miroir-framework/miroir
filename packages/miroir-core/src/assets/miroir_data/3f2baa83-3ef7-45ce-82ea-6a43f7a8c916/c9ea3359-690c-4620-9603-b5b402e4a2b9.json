@@ -7,7 +7,7 @@
   "type": "list",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "entities": {
         "type": "objectListQuery",
         "parentName": "StoreBasedConfiguration",

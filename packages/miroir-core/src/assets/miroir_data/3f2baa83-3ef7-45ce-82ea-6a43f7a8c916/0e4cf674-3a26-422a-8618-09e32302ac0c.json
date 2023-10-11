@@ -6,7 +6,7 @@
   "defaultLabel": "List of Applications",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "applications": {
         "type": "objectListQuery",
         "parentName": "Application",

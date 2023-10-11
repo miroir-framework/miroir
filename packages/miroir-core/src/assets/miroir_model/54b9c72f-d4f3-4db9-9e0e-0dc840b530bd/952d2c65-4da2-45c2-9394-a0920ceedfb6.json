@@ -169,7 +169,7 @@
               }
             }
           },
-          "miroirQuery": {
+          "miroirSelectQuery": {
             "type": "union",
             "discriminator": "type",
             "definition": [
@@ -187,13 +187,20 @@
               }
             ]
           },
-          "miroirQueriesObject": {
+          "miroirSelectQueriesRecord": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "miroirQuery"
+                "relativePath": "miroirSelectQuery"
               }
+            }
+          },
+          "miroirCombineQuery": {
+            "type": "object",
+            "definition": {
+              "a": { "type": "simpleType", "definition": "string"},
+              "b": { "type": "simpleType", "definition": "string"}
             }
           },
           "objectInstanceReportSection": {
@@ -203,11 +210,18 @@
                 "type": "literal",
                 "definition": "objectInstanceReportSection"
               },
-              "fetchData": {
+              "selectData": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
-                  "relativePath": "miroirQueriesObject"
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combineData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
                 }
               },
               "definition": {
@@ -264,11 +278,18 @@
                 "type": "literal",
                 "definition": "grid"
               },
-              "fetchData": {
+              "selectData": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
-                  "relativePath": "miroirQueriesObject"
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combineData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
                 }
               },
               "definition": {
@@ -292,11 +313,18 @@
                 "type": "literal",
                 "definition": "list"
               },
-              "fetchData": {
+              "selectData": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
-                  "relativePath": "miroirQueriesObject"
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combineData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
                 }
               },
               "definition": {
@@ -344,18 +372,25 @@
             "type": "object",
             "definition": {
               "parameters": {
-                "type": "schemaReference",
+                "type": "record",
                 "optional": true,
                 "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
+                  "type": "simpleType",
+                  "definition": "any"
                 }
               },
-              "fetchData": {
+              "selectData": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
-                  "relativePath": "miroirQueriesObject"
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combineData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
                 }
               },
               "section": {

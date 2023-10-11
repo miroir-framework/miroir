@@ -8,7 +8,7 @@
   "type": "list",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "publishers": {
         "type": "objectListQuery",
         "parentName": "Publisher",

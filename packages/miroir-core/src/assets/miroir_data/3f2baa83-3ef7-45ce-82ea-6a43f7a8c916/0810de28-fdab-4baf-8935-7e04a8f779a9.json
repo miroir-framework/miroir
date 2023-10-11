@@ -7,7 +7,7 @@
   "type": "list",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "applicationVersions": {
         "type": "objectListQuery",
         "parentName": "ApplicationVersion",

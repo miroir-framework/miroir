@@ -6,7 +6,7 @@
   "defaultLabel": "List of Entity Definitions",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "entityDefinitions": {
         "type": "objectListQuery",
         "parentName": "Entity Definition",

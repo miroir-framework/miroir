@@ -624,7 +624,7 @@
                       }
                     }
                   },
-                  "miroirQuery": {
+                  "miroirSelectQuery": {
                     "type": "union",
                     "discriminator": "type",
                     "definition": [
@@ -632,18 +632,18 @@
                       { "type": "schemaReference", "definition": { "relativePath": "selectObjectInstanceQuery" } }
                     ]
                   },
-                  "miroirQueriesObject": {
+                  "miroirSelectQueriesRecord": {
                     "type": "record",
-                    "definition": { "type": "schemaReference", "definition": { "relativePath": "miroirQuery" } }
+                    "definition": { "type": "schemaReference", "definition": { "relativePath": "miroirSelectQuery" } }
                   },
                   "objectInstanceReportSection": {
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "objectInstanceReportSection" },
-                      "fetchData": {
+                      "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "miroirQueriesObject" }
+                        "definition": { "relativePath": "miroirSelectQueriesRecord" }
                       },
                       "definition": {
                         "type": "object",
@@ -668,10 +668,10 @@
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "objectListReportSection" },
-                      "fetchData": {
+                      "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "miroirQueriesObject" }
+                        "definition": { "relativePath": "miroirSelectQueriesRecord" }
                       },
                       "definition": {
                         "type": "schemaReference",
@@ -683,10 +683,10 @@
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "grid" },
-                      "fetchData": {
+                      "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "miroirQueriesObject" }
+                        "definition": { "relativePath": "miroirSelectQueriesRecord" }
                       },
                       "definition": {
                         "type": "array",
@@ -701,10 +701,10 @@
                     "type": "object",
                     "definition": {
                       "type": { "type": "literal", "definition": "list" },
-                      "fetchData": {
+                      "selectData": {
                         "type": "schemaReference",
                         "optional": true,
-                        "definition": { "relativePath": "miroirQueriesObject" }
+                        "definition": { "relativePath": "miroirSelectQueriesRecord" }
                       },
                       "definition": {
                         "type": "array",
@@ -2563,7 +2563,7 @@
             "definition": [
               {
                 "type": "objectListReportSection",
-                "fetchData": {
+                "selectData": {
                   "books": {
                     "type": "objectListQuery",
                     "parentName": "Book",

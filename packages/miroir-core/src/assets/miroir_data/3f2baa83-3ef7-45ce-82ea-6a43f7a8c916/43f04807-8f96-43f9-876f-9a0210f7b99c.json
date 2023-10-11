@@ -6,7 +6,7 @@
   "defaultLabel": "Store-based Configuration",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "storeBasedConfigurations": {
         "type": "objectListQuery",
         "parentName": "StoreBasedConfiguration",

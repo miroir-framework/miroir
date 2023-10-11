@@ -6,7 +6,7 @@
   "defaultLabel": "List of Application Deployments",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "ApplicationDeployments": {
         "type": "objectListQuery",
         "parentName": "StoreBasedConfiguration",

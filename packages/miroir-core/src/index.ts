@@ -334,8 +334,8 @@ export { stringTuple, circularReplacer } from './tools.js';
 export {
   GridReportSection,
   ListReportSection,
-  MiroirQueriesObject,
-  MiroirQuery,
+  MiroirSelectQueriesRecord,
+  MiroirSelectQuery,
   ObjectInstanceReportSection,
   ObjectListReportSection,
   Report,
@@ -349,8 +349,8 @@ export {
   report,
   reportSection,
   rootReportSection,
-  miroirQueriesObject,
-  miroirQuery,
+  miroirSelectQueriesRecord,
+  miroirSelectQuery,
   selectObjectListQuery,
 } from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 

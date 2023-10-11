@@ -6,7 +6,7 @@
   "defaultLabel": "List of Application Model Branches",
   "definition": {
     "parameters": {},
-    "fetchData": {
+    "selectData": {
       "applicationModelBranches": {
         "type": "objectListQuery",
         "parentName": "StoreBasedConfiguration",

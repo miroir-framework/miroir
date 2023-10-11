@@ -6,7 +6,7 @@
   "name":"AuthorDetails",
   "defaultLabel": "Detailed information about an Author",
   "definition": {
-    "fetchData": {
+    "selectData": {
       "author": {
         "type": "objectQuery",
         "parentName": "Author",

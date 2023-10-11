@@ -33,7 +33,13 @@
         "definition": "string",
         "extra": { "id":4, "defaultLabel": "Name", "editable": true }
       },
-      "icon": { "id":5, "type": "simpleType", "definition": "string", "optional": true, "extra": { "defaultLabel": "Icon", "editable": true } }
+      "iso3166-1Alpha-2": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":5, "defaultLabel": "Country Code", "editable": true }
+      },
+      "icon": { "id":6, "type": "simpleType", "definition": "string", "optional": true, "extra": { "defaultLabel": "Icon", "editable": true } }
     }
   }
 }
