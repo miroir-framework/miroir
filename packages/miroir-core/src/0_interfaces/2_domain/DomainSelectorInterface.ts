@@ -15,22 +15,15 @@ export interface DomainEntityInstancesSelectorParams {
 }
 
 
-export type EntityInstanceListQueryParams = {
+export type ObjectQueryParams = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
-  query: SelectObjectListQuery;
-};
-
-export type EntityInstanceQueryParams = {
-  deploymentUuid?: Uuid,
-  applicationSection?: ApplicationSection,
-  query: SelectObjectInstanceQuery;
+  query: SelectObjectListQuery | SelectObjectInstanceQuery;
 };
 
 export type MiroirSelectorSingleQueryParams =
   | { type: "DomainEntityInstancesSelectorParams"; definition: DomainEntityInstancesSelectorParams }
-  | { type: "EntityInstanceQueryParams"; definition: EntityInstanceQueryParams }
-  | { type: "EntityInstanceListQueryParams"; definition: EntityInstanceListQueryParams }
+  | { type: "ObjectQueryParams"; definition: ObjectQueryParams }
 ;
 
 export type MiroirSelectorFetchDataQueryParams = { type: "ManyQueryParams"; definition: {[k: string]: MiroirSelectorSingleQueryParams} };

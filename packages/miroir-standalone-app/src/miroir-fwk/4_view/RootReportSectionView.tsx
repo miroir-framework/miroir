@@ -50,45 +50,20 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     definition: Object.fromEntries(
       Object.entries(props.reportSection?.selectData??{}).map(
         (e:[string, MiroirSelectQuery])=> {
-          let result;
-          switch (e[1].type) {
-            case "objectListQuery": {
-              result = {
-                type: "EntityInstanceListQueryParams",
-                definition: {
-                  deploymentUuid: props.deploymentUuid,
-                  applicationSection: props.applicationSection,
-                  query: (e[1] as SelectObjectListQuery) ?? {
-                    type: "objectListQuery",
-                    parentUuid: "",
-                    parentName: undefined,
-                    rootObjectAttribute: undefined,
-                    rootObjectUuid: undefined,
-                  },
-                }
-              }
-              break;
+          const result = {
+            type: "ObjectQueryParams",
+            definition: {
+              deploymentUuid: props.deploymentUuid,
+              applicationSection: props.applicationSection,
+              query: e[1] ?? {
+                type: "objectQuery",
+                parentUuid: "",
+                parentName: undefined,
+                instanceUuid: undefined,
+              },
             }
-            case "objectQuery": {
-              result = {
-                type: "EntityInstanceQueryParams",
-                definition: {
-                  deploymentUuid: props.deploymentUuid,
-                  applicationSection: props.applicationSection,
-                  query: e[1] ?? {
-                    type: "objectQuery",
-                    parentUuid: undefined,
-                    instanceUuid: undefined,
-                  }
-                }
-              };
-              break;
-            }
-            default:{
-              result = {} as MiroirSelectorSingleQueryParams;
-              break;
-            }
-          }
+          };
+
           return [e[0], result as MiroirSelectorSingleQueryParams];
         }
       )
@@ -106,7 +81,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     applicationSection: props.applicationSection,
     deploymentUuid: props.deploymentUuid,
     instanceUuid: props.instanceUuid,
-  }),[])
+  }),[props])
   const fetchedData: FetchedData | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     applyDomainStateSelector(selectFetchedDataFromDomainState)(state, pageParams, initFetchedData, fetchedDataEntriesParams)
   );

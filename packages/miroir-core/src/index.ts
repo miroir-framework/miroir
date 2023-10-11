@@ -184,8 +184,7 @@ export {
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
   DomainEntityInstancesSelectorParams,
-  EntityInstanceQueryParams,
-  EntityInstanceListQueryParams,
+  ObjectQueryParams,
   FetchedData,
   MiroirSelectorFetchDataQueryParams,
   MiroirSelectorQueryParams,
