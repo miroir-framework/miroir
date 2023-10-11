@@ -22,16 +22,16 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
   }
 
   const deploymentUuid =
-    params.definition.query.type == "objectListQuery"
+    params.definition.query.select.type == "objectListQuery"
       ? params.definition.deploymentUuid
       : undefined;
   const applicationSection =
-    params.definition.query.type == "objectListQuery"
+    params.definition.query.select.type == "objectListQuery"
       ? params.definition.applicationSection
       : undefined;
   const entityUuid =
-    params.definition.query.type == "objectListQuery"
-      ? params.definition.query.parentUuid
+    params.definition.query.select.type == "objectListQuery"
+      ? params.definition.query.select.parentUuid
       : undefined;
 
   const result = 
@@ -59,16 +59,16 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
       Object.entries(selectedInstances ?? {}).filter(
         (i: [string, EntityInstance]) =>
           (i[1] as any)[
-            selectorParams.definition.query.type == "objectListQuery"
+            selectorParams.definition.query.select.type == "objectListQuery"
             // selectorParams.type == "EntityInstanceListQueryParams"
-              ? selectorParams.definition.query?.rootObjectAttribute ?? "dummy"
+              ? selectorParams.definition.query?.select.rootObjectAttribute ?? "dummy"
               : "dummy"
           ] ===
-          (selectorParams.definition.query.type == "objectListQuery"
+          (selectorParams.definition.query.select.type == "objectListQuery"
           // (selectorParams.type == "EntityInstanceListQueryParams"
-            ? selectorParams.definition.query.fetchedDataReference
-              ? (fetchedData[selectorParams.definition.query.fetchedDataReference] as any)["uuid"]
-              : selectorParams.definition.query?.rootObjectUuid
+            ? selectorParams.definition.query.select.fetchedDataReference
+              ? (fetchedData[selectorParams.definition.query.select.fetchedDataReference] as any)["uuid"]
+              : selectorParams.definition.query?.select.rootObjectUuid
             : undefined)
       )
     );
@@ -98,7 +98,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
 ): EntityInstance | undefined => {
   const querySelectorParams: SelectObjectInstanceQuery | undefined =
     query.type == "ObjectQueryParams"
-      ? (query.definition.query as SelectObjectInstanceQuery)
+      ? (query.definition.query.select as SelectObjectInstanceQuery)
       : undefined;
 
   const deploymentUuid = query.type == "ObjectQueryParams" ? query.definition.deploymentUuid : undefined;
@@ -173,7 +173,7 @@ export const selectFetchedDataFromDomainState = (
       // case "EntityInstanceQueryParams": 
       // case "EntityInstanceListQueryParams": 
       case "ObjectQueryParams": {
-        switch (entry[1].definition.query.type) {
+        switch (entry[1].definition?.query?.select.type) {
           case "objectListQuery": {
             result = selectEntityInstancesFromListQueryAndDomainState(domainState, pageParams, newFetchedData, entry[1]);
             break;
@@ -195,7 +195,7 @@ export const selectFetchedDataFromDomainState = (
       }
     }
     newFetchedData[entry[0]] = result;
-    console.log("DomainSelector selectFetchedDataFromDomainState set", entry[0], result);
+    console.log("DomainSelector selectFetchedDataFromDomainState set", entry[0], "query", entry[1], result);
   } 
 
   // console.log("########## DomainSelector selectFetchedDataFromDomainState end");

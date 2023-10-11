@@ -1,7 +1,6 @@
-import { JzodReference } from "@miroir-framework/jzod-ts";
 import { Uuid } from "../1_core/EntityDefinition";
 import { ApplicationSection, EntityInstance } from "../1_core/Instance";
-import { SelectObjectInstanceQuery, SelectObjectListQuery } from "../1_core/preprocessor-generated/server-generated";
+import { MiroirCombineQuery, SelectObjectInstanceQuery, SelectObjectListQuery } from "../1_core/preprocessor-generated/server-generated";
 import { EntityInstancesUuidIndex } from "./DomainControllerInterface";
 
 
@@ -18,7 +17,10 @@ export interface DomainEntityInstancesSelectorParams {
 export type ObjectQueryParams = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
-  query: SelectObjectListQuery | SelectObjectInstanceQuery;
+  query: {
+    select: SelectObjectListQuery | SelectObjectInstanceQuery,
+    combine?: MiroirCombineQuery
+  };
 };
 
 export type MiroirSelectorSingleQueryParams =

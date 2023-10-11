@@ -203,12 +203,37 @@
               "b": { "type": "simpleType", "definition": "string"}
             }
           },
+          "miroirFetchQuery": {
+            "type": "object",
+            "definition": {
+              "select": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combine": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
+                }
+              }
+            }
+          },
           "objectInstanceReportSection": {
             "type": "object",
             "definition": {
               "type": {
                 "type": "literal",
                 "definition": "objectInstanceReportSection"
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirFetchQuery"
+                }
               },
               "selectData": {
                 "type": "schemaReference",
@@ -278,6 +303,13 @@
                 "type": "literal",
                 "definition": "grid"
               },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirFetchQuery"
+                }
+              },
               "selectData": {
                 "type": "schemaReference",
                 "optional": true,
@@ -312,6 +344,13 @@
               "type": {
                 "type": "literal",
                 "definition": "list"
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirFetchQuery"
+                }
               },
               "selectData": {
                 "type": "schemaReference",
@@ -377,6 +416,13 @@
                 "definition": {
                   "type": "simpleType",
                   "definition": "any"
+                }
+              },
+              "fetchData": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirFetchQuery"
                 }
               },
               "selectData": {

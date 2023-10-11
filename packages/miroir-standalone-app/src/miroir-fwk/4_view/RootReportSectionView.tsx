@@ -41,21 +41,22 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    "selectData",
-    props.reportSection?.selectData
+    "fetchData",
+    props.reportSection?.fetchData
   );
 
   const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
     type: "ManyQueryParams",
     definition: Object.fromEntries(
-      Object.entries(props.reportSection?.selectData??{}).map(
+      Object.entries(props.reportSection?.fetchData?.select??{}).map(
+      // Object.entries(props.reportSection?.selectData??{}).map(
         (e:[string, MiroirSelectQuery])=> {
           const result = {
             type: "ObjectQueryParams",
             definition: {
               deploymentUuid: props.deploymentUuid,
               applicationSection: props.applicationSection,
-              query: e[1] ?? {
+              query: {select:e[1]} ?? {
                 type: "objectQuery",
                 parentUuid: "",
                 parentName: undefined,
@@ -69,7 +70,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       )
     )
   }
-  ),[props.deploymentUuid, props.applicationSection,props.reportSection?.selectData]);
+  ),[props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
 
 
   const initFetchedData = useMemo(()=>({
@@ -87,7 +88,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   );
 
   
-  console.log("RootReportSectionView props.reportSection?.selectData",props.reportSection?.selectData,"fetchedData", fetchedData);
+  console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
   console.log('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {
