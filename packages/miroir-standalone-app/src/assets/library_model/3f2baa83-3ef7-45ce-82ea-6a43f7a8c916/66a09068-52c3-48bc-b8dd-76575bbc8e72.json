@@ -7,11 +7,13 @@
   "defaultLabel": "List of Authors",
   "definition": {
     "parameters": {},
-    "selectData": {
-      "authors": {
-        "type": "objectListQuery",
-        "parentName": "Author",
-        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+    "fetchData": {
+      "select": {
+        "authors": {
+          "type": "objectListQuery",
+          "parentName": "Author",
+          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+        }
       }
     },
     "section": {

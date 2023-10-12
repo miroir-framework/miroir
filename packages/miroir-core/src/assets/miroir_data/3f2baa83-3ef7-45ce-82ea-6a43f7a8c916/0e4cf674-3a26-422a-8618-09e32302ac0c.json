@@ -6,11 +6,13 @@
   "defaultLabel": "List of Applications",
   "definition": {
     "parameters": {},
-    "selectData": {
-      "applications": {
-        "type": "objectListQuery",
-        "parentName": "Application",
-        "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc"
+    "fetchData": {
+      "select": {
+        "applications": {
+          "type": "objectListQuery",
+          "parentName": "Application",
+          "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc"
+        }
       }
     },
     "section": {

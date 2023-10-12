@@ -6,40 +6,42 @@
   "name":"BookDetails",
   "defaultLabel": "Detailed information about a Book",
   "definition": {
-    "selectData": {
-      "book": {
-        "type": "objectQuery",
-        "parentName": "Book",
-        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "paramReference": "instanceUuid"
-      },
-      "publisher": {
-        "type": "objectQuery",
-        "parentName": "Publisher",
-        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-        "fetchedDataReference": "book",
-        "fetchedDataReferenceAttribute": "publisher"
-      },
-      "author": {
-        "type": "objectQuery",
-        "parentName": "Publisher",
-        "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-        "fetchedDataReference": "book",
-        "fetchedDataReferenceAttribute": "author"
-      },
-      "booksOfPublisher": {
-        "type": "objectListQuery",
-        "parentName": "Book",
-        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "fetchedDataReference": "publisher",
-        "rootObjectAttribute": "publisher"
-      },
-      "booksOfAuthor": {
-        "type": "objectListQuery",
-        "parentName": "Book",
-        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-        "fetchedDataReference": "author",
-        "rootObjectAttribute": "author"
+    "fetchData": {
+      "select": {
+        "book": {
+          "type": "objectQuery",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "paramReference": "instanceUuid"
+        },
+        "publisher": {
+          "type": "objectQuery",
+          "parentName": "Publisher",
+          "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "fetchedDataReference": "book",
+          "fetchedDataReferenceAttribute": "publisher"
+        },
+        "author": {
+          "type": "objectQuery",
+          "parentName": "Publisher",
+          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          "fetchedDataReference": "book",
+          "fetchedDataReferenceAttribute": "author"
+        },
+        "booksOfPublisher": {
+          "type": "objectListQuery",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "fetchedDataReference": "publisher",
+          "rootObjectAttribute": "publisher"
+        },
+        "booksOfAuthor": {
+          "type": "objectListQuery",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "fetchedDataReference": "author",
+          "rootObjectAttribute": "author"
+        }
       }
     },
     "section": {

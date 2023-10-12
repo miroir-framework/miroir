@@ -6,11 +6,13 @@
   "defaultLabel": "List of Application Deployments",
   "definition": {
     "parameters": {},
-    "selectData": {
-      "ApplicationDeployments": {
-        "type": "objectListQuery",
-        "parentName": "StoreBasedConfiguration",
-        "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
+    "fetchData": {
+      "select": {
+        "ApplicationDeployments": {
+          "type": "objectListQuery",
+          "parentName": "StoreBasedConfiguration",
+          "parentUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424"
+        }
       }
     },
     "section": {

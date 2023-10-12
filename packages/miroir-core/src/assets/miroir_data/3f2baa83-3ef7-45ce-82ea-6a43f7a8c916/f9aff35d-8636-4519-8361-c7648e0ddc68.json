@@ -6,11 +6,13 @@
   "defaultLabel": "List of Entity Definitions",
   "definition": {
     "parameters": {},
-    "selectData": {
-      "entityDefinitions": {
-        "type": "objectListQuery",
-        "parentName": "Entity Definition",
-        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
+    "fetchData": {
+      "select": {
+        "entityDefinitions": {
+          "type": "objectListQuery",
+          "parentName": "Entity Definition",
+          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
+        }
       }
     },
     "section": {
