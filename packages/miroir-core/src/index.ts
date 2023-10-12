@@ -333,6 +333,8 @@ export { stringTuple, circularReplacer } from './tools.js';
 export {
   GridReportSection,
   ListReportSection,
+  MiroirCombineQuery,
+  MiroirFetchQuery,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
   ObjectInstanceReportSection,
@@ -348,6 +350,8 @@ export {
   report,
   reportSection,
   rootReportSection,
+  miroirFetchQuery,
+  miroirCombineQuery,
   miroirSelectQueriesRecord,
   miroirSelectQuery,
   selectObjectListQuery,

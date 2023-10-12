@@ -48,17 +48,17 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 }
 
 
-// ################################################################################################
-export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex | undefined {
-  const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
-    () => ({...params}),
-    [params]
-  );
+// // ################################################################################################
+// export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex | undefined {
+//   const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+//     () => ({...params}),
+//     [params]
+//   );
 
-  return useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState, {}, {}, selectorParams)
-  )
-}
+//   return useSelector((reduxState: ReduxStateWithUndoRedo) =>
+//     applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState, {}, {}, selectorParams)
+//   )
+// }
 
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex | undefined {
@@ -72,15 +72,15 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSi
   )
 }
 
-// ################################################################################################
-export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex {
+// // ################################################################################################
+// export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex {
 
-  const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
-    applyDomainStateSelector(selectEntityInstancesFromListQueryAndDomainState)(reduxState, {}, {}, selectorParams)
-  );
+//   const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
+//     applyDomainStateSelector(selectEntityInstancesFromListQueryAndDomainState)(reduxState, {}, {}, selectorParams)
+//   );
   
-  return result??{};
-}
+//   return result??{};
+// }
 
 //#########################################################################################
 function entityInstancesUuidIndexToEntityInstanceArraySelector(

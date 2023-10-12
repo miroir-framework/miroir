@@ -1,6 +1,6 @@
 import { Uuid } from "../1_core/EntityDefinition";
 import { ApplicationSection, EntityInstance } from "../1_core/Instance";
-import { MiroirCombineQuery, SelectObjectInstanceQuery, SelectObjectListQuery } from "../1_core/preprocessor-generated/server-generated";
+import { MiroirCombineQuery, MiroirSelectQueriesRecord, MiroirSelectQuery, SelectObjectInstanceQuery, SelectObjectListQuery } from "../1_core/preprocessor-generated/server-generated";
 import { EntityInstancesUuidIndex } from "./DomainControllerInterface";
 
 
@@ -23,11 +23,26 @@ export type ObjectQueryParams = {
   };
 };
 
+export type MiroirSelectorFetchDataQueryParams = {
+  type: "ManyQueryParams";
+  deploymentUuid?: Uuid,
+  applicationSection?: ApplicationSection,
+  // select: { [k: string]: MiroirSelectorSingleQueryParams };
+  select: MiroirSelectQueriesRecord;
+  combine?: MiroirCombineQuery
+};
+
+export type DirectedSelectQuery = {
+  deploymentUuid?: Uuid,
+  applicationSection?: ApplicationSection,
+  select: MiroirSelectQuery;
+}
+
 export type MiroirSelectorSingleQueryParams =
   | { type: "DomainEntityInstancesSelectorParams"; definition: DomainEntityInstancesSelectorParams }
-  | { type: "ObjectQueryParams"; definition: ObjectQueryParams }
+  // | { type: "ObjectQueryParams"; definition: ObjectQueryParams }
+  | { type: "ObjectQueryParams"; definition: MiroirSelectorFetchDataQueryParams }
 ;
 
-export type MiroirSelectorFetchDataQueryParams = { type: "ManyQueryParams"; definition: {[k: string]: MiroirSelectorSingleQueryParams} };
 
 export type MiroirSelectorQueryParams = MiroirSelectorSingleQueryParams | MiroirSelectorFetchDataQueryParams;

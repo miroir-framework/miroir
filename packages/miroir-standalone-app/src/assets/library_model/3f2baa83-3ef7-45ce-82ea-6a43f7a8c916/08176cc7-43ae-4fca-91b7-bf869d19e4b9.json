@@ -7,16 +7,18 @@
   "defaultLabel": "List of Countries",
   "definition": {
     "parameters": {},
-    "selectData": {
-      "countries": {
-        "type": "objectListQuery",
-        "parentName": "Country",
-        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+    "fetchData": {
+      "select": {
+        "countries": {
+          "type": "objectListQuery",
+          "parentName": "Country",
+          "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+        }
+      },
+      "combine": {
+        "a": "countries",
+        "b": "countries"
       }
-    },
-    "combineData": {
-      "a": "countries",
-      "b": "countries"
     },
     "section": {
       "type":"objectListReportSection",

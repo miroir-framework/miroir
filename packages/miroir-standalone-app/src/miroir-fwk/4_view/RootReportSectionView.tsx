@@ -47,28 +47,31 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
     type: "ManyQueryParams",
-    definition: Object.fromEntries(
-      Object.entries(props.reportSection?.fetchData?.select??{}).map(
-      // Object.entries(props.reportSection?.selectData??{}).map(
-        (e:[string, MiroirSelectQuery])=> {
-          const result = {
-            type: "ObjectQueryParams",
-            definition: {
-              deploymentUuid: props.deploymentUuid,
-              applicationSection: props.applicationSection,
-              query: {select:e[1]} ?? {
-                type: "objectQuery",
-                parentUuid: "",
-                parentName: undefined,
-                instanceUuid: undefined,
-              },
-            }
-          };
+    deploymentUuid: props.deploymentUuid,
+    applicationSection: props.applicationSection,
+    select: props.reportSection?.fetchData?.select ?? {}
+    // Object.fromEntries(
+    //   Object.entries(props.reportSection?.fetchData?.select??{}).map(
+    //   // Object.entries(props.reportSection?.selectData??{}).map(
+    //     (e:[string, MiroirSelectQuery])=> {
+    //       const result = {
+    //         type: "ObjectQueryParams",
+    //         definition: {
+    //           deploymentUuid: props.deploymentUuid,
+    //           applicationSection: props.applicationSection,
+    //           query: {select:e[1]} ?? {
+    //             type: "objectQuery",
+    //             parentUuid: "",
+    //             parentName: undefined,
+    //             instanceUuid: undefined,
+    //           },
+    //         }
+    //       };
 
-          return [e[0], result as MiroirSelectorSingleQueryParams];
-        }
-      )
-    )
+    //       return [e[0], result as MiroirSelectorSingleQueryParams];
+    //     }
+    //   )
+    // )
   }
   ),[props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
 
