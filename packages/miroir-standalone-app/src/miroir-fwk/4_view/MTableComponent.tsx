@@ -5,23 +5,15 @@ import {
 import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SubmitHandler } from 'react-hook-form';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-import { z } from "zod";
-
-
-import { SubmitHandler } from 'react-hook-form';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeployment,
-  ApplicationDeploymentSchema,
-  EntityDefinitionSchema,
-  MetaEntitySchema,
-  entityInstancesUuidIndexSchema,
-  objectListReportSection
+  ApplicationDeployment
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -31,9 +23,9 @@ import {
 } from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
+import { TableComponentProps, TableComponentTypeSchema } from './MTableComponentInterface';
 import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionListDisplay';
-import { TableComponentProps, TableComponentTypeSchema } from './MTableComponentInterface';
 
 
 const applicationDeploymentLibrary: ApplicationDeployment = {

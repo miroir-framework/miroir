@@ -5,18 +5,20 @@ import {
   ApplicationSection,
   FetchedData,
   MiroirSelectQuery,
-  MiroirSelectorFetchDataQueryParams,
-  MiroirSelectorSingleQueryParams,
+  DomainFetchQueryParams,
+  LocalCacheQueryParams,
   RootReportSection,
   SelectObjectListQuery,
   Uuid,
-  selectFetchedDataFromDomainState
+  selectFetchedDataFromDomainState,
+  selectFetchedDataJzodSchemaFromDomainState
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, applyDomainStateSelector } from "miroir-redux";
 
 
 
 import { ReportSectionView } from './ReportSectionView';
+import { JzodElement } from '@miroir-framework/jzod-ts';
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: Record<string,any>,
@@ -45,33 +47,12 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.reportSection?.fetchData
   );
 
-  const fetchedDataEntriesParams: MiroirSelectorFetchDataQueryParams = useMemo(() => ({
-    type: "ManyQueryParams",
+  const fetchedDataEntriesParams: DomainFetchQueryParams = useMemo(() => ({
+    type: "DomainManyQueries",
     deploymentUuid: props.deploymentUuid,
     applicationSection: props.applicationSection,
-    select: props.reportSection?.fetchData?.select ?? {}
-    // Object.fromEntries(
-    //   Object.entries(props.reportSection?.fetchData?.select??{}).map(
-    //   // Object.entries(props.reportSection?.selectData??{}).map(
-    //     (e:[string, MiroirSelectQuery])=> {
-    //       const result = {
-    //         type: "ObjectQueryParams",
-    //         definition: {
-    //           deploymentUuid: props.deploymentUuid,
-    //           applicationSection: props.applicationSection,
-    //           query: {select:e[1]} ?? {
-    //             type: "objectQuery",
-    //             parentUuid: "",
-    //             parentName: undefined,
-    //             instanceUuid: undefined,
-    //           },
-    //         }
-    //       };
-
-    //       return [e[0], result as MiroirSelectorSingleQueryParams];
-    //     }
-    //   )
-    // )
+    select: props.reportSection?.fetchData?.select ?? {},
+    combine: props.reportSection?.fetchData?.combine ?? { a: "", b: "" }
   }
   ),[props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
 
@@ -86,10 +67,14 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     deploymentUuid: props.deploymentUuid,
     instanceUuid: props.instanceUuid,
   }),[props])
+
   const fetchedData: FetchedData | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     applyDomainStateSelector(selectFetchedDataFromDomainState)(state, pageParams, initFetchedData, fetchedDataEntriesParams)
   );
 
+  const fetchedDataJzodSchema: JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
+    applyDomainStateSelector(selectFetchedDataJzodSchemaFromDomainState)(state, pageParams, initFetchedData, fetchedDataEntriesParams)
+  );
   
   console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
   console.log('RootReportSectionView props.reportSection',props.reportSection);

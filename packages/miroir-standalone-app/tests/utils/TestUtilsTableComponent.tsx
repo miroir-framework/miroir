@@ -2,13 +2,13 @@ import * as React from "react";
 
 import { 
   ApplicationSection, 
-  DomainEntityInstancesSelectorParams, 
+  LocalCacheEntityInstancesSelectorParams, 
   EntityDefinition, 
   EntityInstance, 
   EntityInstanceWithName, 
   MetaEntity, 
   MiroirApplicationModel, 
-  MiroirSelectorSingleQueryParams, 
+  LocalCacheQueryParams, 
   Report, 
   Uuid, 
   entityDefinitionEntity, 
@@ -33,13 +33,13 @@ export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
 ) => {
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
-  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = React.useMemo(
+  const currentModelSelectorParams:LocalCacheQueryParams = React.useMemo(
     () => ({
-      type: "DomainEntityInstancesSelectorParams",
+      type: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: props.deploymentUuid,
       }
-    } as MiroirSelectorSingleQueryParams),
+    } as LocalCacheQueryParams),
     [props.deploymentUuid]
   );
 
@@ -75,16 +75,16 @@ export const TestUtilsTableComponent = (
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
 
     selectInstanceArrayForDeploymentSectionEntity
-    // const instancesToDisplaySelectorParams:DomainEntityInstancesSelectorParams = React.useMemo(
-    const instancesToDisplaySelectorParams:MiroirSelectorSingleQueryParams = React.useMemo(
+    // const instancesToDisplaySelectorParams:LocalCacheEntityInstancesSelectorParams = React.useMemo(
+    const instancesToDisplaySelectorParams:LocalCacheQueryParams = React.useMemo(
       () => ({
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid:props.deploymentUuid,
           applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',
           entityUuid: currentMiroirEntity?.uuid,
         }
-      } as MiroirSelectorSingleQueryParams),
+      } as LocalCacheQueryParams),
       [props.deploymentUuid, props.instancesApplicationSection,currentMiroirEntity]
     );
   

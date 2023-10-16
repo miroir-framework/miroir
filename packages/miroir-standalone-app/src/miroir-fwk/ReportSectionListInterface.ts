@@ -10,6 +10,7 @@ import {
 } from "miroir-core";
 
 import { TableComponentTypeSchema } from "./4_view/MTableComponentInterface";
+import { jzodObject } from "@miroir-framework/jzod-ts";
 
 // ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({
@@ -27,6 +28,7 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel: z.any(),
   // currentMiroirReportSectionObjectList: objectListReportSection.optional(),
+  currentJzodSchema: jzodObject.optional(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
 });

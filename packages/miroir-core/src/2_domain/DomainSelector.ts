@@ -1,13 +1,14 @@
 // 
 
+import { JzodElement } from "@miroir-framework/jzod-ts";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { SelectObjectInstanceQuery } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  DirectedSelectQuery,
+  DomainSingleSelectQuery,
   FetchedData,
-  MiroirSelectorFetchDataQueryParams,
-  MiroirSelectorSingleQueryParams
+  DomainFetchQueryParams,
+  LocalCacheQueryParams
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
 // ################################################################################################
@@ -15,12 +16,12 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
   domainState: DomainState,
   pageParams: Record<string, any>,
   fetchedData: FetchedData,
-  // params: MiroirSelectorSingleQueryParams
-  selectorParams: DirectedSelectQuery
+  // params: LocalCacheQueryParams
+  selectorParams: DomainSingleSelectQuery
 ): EntityInstancesUuidIndex | undefined => {
 
-  // if (selectorParams.type == "DomainEntityInstancesSelectorParams") {
-  //   throw new Error("selectEntityInstanceUuidIndexFromDomainState can not handle DomainEntityInstancesSelectorParams")
+  // if (selectorParams.type == "LocalCacheEntityInstancesSelectorParams") {
+  //   throw new Error("selectEntityInstanceUuidIndexFromDomainState can not handle LocalCacheEntityInstancesSelectorParams")
   // }
   const deploymentUuid =
     selectorParams.select.type == "objectListQuery"
@@ -51,8 +52,8 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   pageParams: Record<string, any>,
   fetchedData: FetchedData,
-  // selectorParams: MiroirSelectorSingleQueryParams
-  selectorParams: DirectedSelectQuery
+  // selectorParams: LocalCacheQueryParams
+  selectorParams: DomainSingleSelectQuery
 ): EntityInstancesUuidIndex | undefined => {
 
   if (selectorParams.select.type == "objectListQuery") {
@@ -96,8 +97,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
   pageParams: Record<string, any>,
   fetchedData: FetchedData,
-  // query: MiroirSelectorSingleQueryParams
-  query: DirectedSelectQuery
+  // query: LocalCacheQueryParams
+  query: DomainSingleSelectQuery
 ): EntityInstance | undefined => {
   const querySelectorParams: SelectObjectInstanceQuery | undefined =
     query.select.type == "objectQuery" ? query.select : undefined;
@@ -158,7 +159,7 @@ export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
   pageParams: Record<string, any>,
   fetchedData: FetchedData,
-  query: MiroirSelectorFetchDataQueryParams
+  query: DomainFetchQueryParams
 ): FetchedData | undefined => {
 
   // console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
@@ -206,5 +207,71 @@ export const selectFetchedDataFromDomainState = (
   //   newFetchedData
   // );
   return newFetchedData;
+};
+
+// ################################################################################################
+export const selectFetchedDataJzodSchemaFromDomainState = (
+  domainState: DomainState,
+  pageParams: Record<string, any>,
+  fetchedData: FetchedData,
+  query: DomainFetchQueryParams
+): JzodElement | undefined => {
+
+  // // console.log("########## DomainSelector selectFetchedDataJzodSchemaFromDomainState begin");
+  
+  // const newFetchedData:FetchedData = fetchedData;
+
+  // for (const entry of Object.entries(query.select)) {
+  //   let result = undefined;
+  //   switch (entry[1].type) {
+  //     case "objectListQuery": {
+
+  //       const selectorParams: DomainSingleSelectQuery = {
+  //         applicationSection: query.applicationSection,
+  //         deploymentUuid: query.deploymentUuid,
+  //         select: {
+  //           type: "objectListQuery",
+  //           parentUuid: query.select.parentUuid
+  //         }
+  //       }
+  //       const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, pageParams, fetchedData, selectorParams)
+
+  //       result = selectEntityInstancesFromListQueryAndDomainState(domainState, pageParams, newFetchedData, {
+  //         applicationSection: query.applicationSection,
+  //         deploymentUuid: query.deploymentUuid,
+  //         select: entry[1],
+  //       });
+  //       break;
+  //     }
+  //     case "objectQuery": {
+  //       result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, pageParams, newFetchedData, {
+  //         applicationSection: query.applicationSection,
+  //         deploymentUuid: query.deploymentUuid,
+  //         select: entry[1],
+  //       });
+  //       break;
+  //     }
+  //     default: {
+  //       result = undefined;
+  //       break;
+  //     }
+  //   }
+  //   newFetchedData[entry[0]] = result;
+  //   console.log("DomainSelector selectFetchedDataJzodSchemaFromDomainState set", entry[0], "query", entry[1], result);
+  // } 
+
+
+  // // console.log("########## DomainSelector selectFetchedDataJzodSchemaFromDomainState end");
+
+  // // console.log(
+  // //   "DomainSelector selectFetchedDataJzodSchemaFromDomainState",
+  // //   "params",
+  // //   params,
+  // //   "domainState",
+  // //   domainState,
+  // //   "newFetchedData",
+  // //   newFetchedData
+  // // );
+  return { type: "record", definition: { type: "simpleType", definition: "any"}};
 };
 

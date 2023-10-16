@@ -26,10 +26,6 @@ import { useDomainControllerService, useMiroirContextInnerFormOutput } from './M
 
 // ##########################################################################################
 export const ReportSectionDisplayPropsSchema = ReportSectionDisplayEntityInstancePropsSchema;
-// export const ReportSectionDisplayPropsSchema = z.union([
-//   ReportSectionDisplayEntityInstancePropsSchema,
-//   // ReportSectionDisplayJsonArrayPropsSchema,
-// ]);
 export type ReportComponentProps = z.infer<typeof ReportSectionDisplayPropsSchema>;
 
 // ##########################################################################################
@@ -266,7 +262,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
     () => ({
       columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
-        props?.currentMiroirEntityDefinition?.jzodSchema
+        props?.currentJzodSchema??props?.currentMiroirEntityDefinition?.jzodSchema
       ),
     }),
     [props.currentMiroirEntityDefinition?.jzodSchema]

@@ -19,7 +19,7 @@ import {
 } from 'react';
 import ReactDOM from 'react-dom';
 
-import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirApplicationModel, MiroirSelectorSingleQueryParams } from 'miroir-core';
+import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirApplicationModel, LocalCacheQueryParams } from 'miroir-core';
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
 import { useSelector } from "react-redux";
 import {
@@ -42,13 +42,13 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const entityUuid = (props as any)['entityUuid'];
   
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
+  const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "DomainEntityInstancesSelectorParams",
+      type: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: context.deploymentUuid,
       }
-    } as MiroirSelectorSingleQueryParams),
+    } as LocalCacheQueryParams),
     [context]
   );
 
@@ -60,15 +60,15 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
   
   // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-  const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+  const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "DomainEntityInstancesSelectorParams",
+      type: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid,
         applicationSection: "data",
         entityUuid: entityUuid,
       }
-    } as MiroirSelectorSingleQueryParams),
+    } as LocalCacheQueryParams),
     [deploymentUuid, entityUuid]
   );
   const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
@@ -148,13 +148,13 @@ export const SelectEntityInstanceEditor = memo(
     const deploymentUuid = context.deploymentUuid;
 
     // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-    const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
+    const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
       () => ({
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid: context.deploymentUuid,
         }
-      } as MiroirSelectorSingleQueryParams),
+      } as LocalCacheQueryParams),
       [context]
     );
   
@@ -170,15 +170,15 @@ export const SelectEntityInstanceEditor = memo(
     const currentMiroirEntityDefinition: EntityDefinition | undefined = miroirEntityDefinitions?.find(e=>e?.entityUuid === (props as any)['entityUuid']);
   
     // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
-    const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+    const selectorParams:LocalCacheQueryParams = useMemo(
       () => ({
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection: "data",
           entityUuid: (props as any).entityUuid,
         }
-      } as MiroirSelectorSingleQueryParams),
+      } as LocalCacheQueryParams),
       [deploymentUuid, (props as any).entityUuid]
     );
     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>

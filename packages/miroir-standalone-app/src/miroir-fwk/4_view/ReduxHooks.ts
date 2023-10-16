@@ -5,12 +5,12 @@ import { useSelector } from "react-redux";
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
-  DomainEntityInstancesSelectorParams,
+  LocalCacheEntityInstancesSelectorParams,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
   MiroirApplicationModel,
-  MiroirSelectorSingleQueryParams,
+  LocalCacheQueryParams,
   SelectObjectListQuery,
   Uuid,
   applicationDeploymentMiroir,
@@ -27,18 +27,18 @@ import {
   selectModelForDeployment
 } from "miroir-redux";
 
-export type EntityInstanceUuidIndexSelectorParams = DomainEntityInstancesSelectorParams;
+export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+  const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "DomainEntityInstancesSelectorParams",
+      type: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid,
       }
-    } as MiroirSelectorSingleQueryParams),
+    } as LocalCacheQueryParams),
     [deploymentUuid]
   );
 
@@ -49,8 +49,8 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 
 
 // // ################################################################################################
-// export function useEntityInstanceUuidIndexFromDomainState(params:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex | undefined {
-//   const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+// export function useEntityInstanceUuidIndexFromDomainState(params:LocalCacheQueryParams): EntityInstancesUuidIndex | undefined {
+//   const selectorParams:LocalCacheQueryParams = useMemo(
 //     () => ({...params}),
 //     [params]
 //   );
@@ -61,8 +61,8 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 // }
 
 // ################################################################################################
-export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex | undefined {
-  const selectorParams:MiroirSelectorSingleQueryParams = useMemo(
+export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheQueryParams): EntityInstancesUuidIndex | undefined {
+  const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({...params}),
     [params]
   );
@@ -73,7 +73,7 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:MiroirSelectorSi
 }
 
 // // ################################################################################################
-// export function useEntityInstanceListQueryFromLocalCache(selectorParams:MiroirSelectorSingleQueryParams): EntityInstancesUuidIndex {
+// export function useEntityInstanceListQueryFromLocalCache(selectorParams:LocalCacheQueryParams): EntityInstancesUuidIndex {
 
 //   const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
 //     applyDomainStateSelector(selectEntityInstancesFromListQueryAndDomainState)(reduxState, {}, {}, selectorParams)
@@ -95,7 +95,7 @@ export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
   selectInstanceArrayForDeploymentSectionEntity(
       state, 
       {
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid:applicationDeploymentMiroir.uuid,
           applicationSection: "model",
@@ -116,7 +116,7 @@ export function useLocalCacheSectionEntityDefinitions(
   selectInstanceArrayForDeploymentSectionEntity(
       state, 
       {
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection: section,
@@ -139,7 +139,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     selectInstanceArrayForDeploymentSectionEntity(
       state,
       {
-        type: "DomainEntityInstancesSelectorParams",
+        type: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection,

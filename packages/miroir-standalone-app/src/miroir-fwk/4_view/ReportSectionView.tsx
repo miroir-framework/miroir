@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
-import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeployment,
   ApplicationSection,
@@ -9,28 +7,20 @@ import {
   FetchedData,
   MetaEntity,
   MiroirApplicationModel,
-  MiroirSelectorSingleQueryParams,
-  ObjectListReportSection,
-  Report,
   ReportSection,
   SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel,
   reportEntityDefinitionList,
   reportEntityList
 } from "miroir-core";
-import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
-
-import {
-  useErrorLogService, useMiroirContextService
-} from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
+
+import { useCurrentModel } from './ReduxHooks';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
-import { useCurrentModel } from './ReduxHooks';
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: FetchedData | undefined,
@@ -46,19 +36,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   console.log("########################## ReportSectionView props", props);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-
-
-  // const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
-  //   () => ({
-  //     type: "DomainEntityInstancesSelectorParams",
-  //     definition: {
-  //       deploymentUuid: applicationDeploymentLibrary.uuid,
-  //     }
-  //   } as MiroirSelectorSingleQueryParams),
-  //   [applicationDeploymentLibrary.uuid]
-  // );
-
-  // const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
 
   // ##############################################################################################
   const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);

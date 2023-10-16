@@ -1,12 +1,18 @@
 import { Uuid } from "../1_core/EntityDefinition";
 import { ApplicationSection, EntityInstance } from "../1_core/Instance";
-import { MiroirCombineQuery, MiroirSelectQueriesRecord, MiroirSelectQuery, SelectObjectInstanceQuery, SelectObjectListQuery } from "../1_core/preprocessor-generated/server-generated";
+import {
+  MiroirCombineQuery,
+  MiroirSelectQueriesRecord,
+  MiroirSelectQuery,
+  SelectObjectInstanceQuery,
+  SelectObjectListQuery,
+} from "../1_core/preprocessor-generated/server-generated";
 import { EntityInstancesUuidIndex } from "./DomainControllerInterface";
 
 
 export type FetchedData = { [k: string]: EntityInstance | EntityInstancesUuidIndex | undefined };
 
-export interface DomainEntityInstancesSelectorParams {
+export interface LocalCacheEntityInstancesSelectorParams {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
@@ -14,35 +20,33 @@ export interface DomainEntityInstancesSelectorParams {
 }
 
 
-export type ObjectQueryParams = {
+export type DomainFetchQueryParams = {
+  type: "DomainManyQueries";
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
-  query: {
-    select: SelectObjectListQuery | SelectObjectInstanceQuery,
-    combine?: MiroirCombineQuery
-  };
-};
-
-export type MiroirSelectorFetchDataQueryParams = {
-  type: "ManyQueryParams";
-  deploymentUuid?: Uuid,
-  applicationSection?: ApplicationSection,
-  // select: { [k: string]: MiroirSelectorSingleQueryParams };
+  // select: { [k: string]: LocalCacheQueryParams };
   select: MiroirSelectQueriesRecord;
   combine?: MiroirCombineQuery
 };
 
-export type DirectedSelectQuery = {
+export type DomainSingleSelectQuery = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   select: MiroirSelectQuery;
 }
 
-export type MiroirSelectorSingleQueryParams =
-  | { type: "DomainEntityInstancesSelectorParams"; definition: DomainEntityInstancesSelectorParams }
-  // | { type: "ObjectQueryParams"; definition: ObjectQueryParams }
-  | { type: "ObjectQueryParams"; definition: MiroirSelectorFetchDataQueryParams }
+export type LocalCacheQueryParams =
+  | { type: "LocalCacheEntityInstancesSelectorParams"; definition: LocalCacheEntityInstancesSelectorParams }
 ;
 
+export type DomainModelQueryParams = {
+  type: "DomainModelSelectorParams";
+  definition: {
+    type: "getEntityDefinition",
+    deploymentUuid?: Uuid,
+    entityUuid: Uuid,
+  };
+};
 
-export type MiroirSelectorQueryParams = MiroirSelectorSingleQueryParams | MiroirSelectorFetchDataQueryParams;
+
+export type MiroirSelectorQueryParams = LocalCacheQueryParams | DomainFetchQueryParams | DomainModelQueryParams;

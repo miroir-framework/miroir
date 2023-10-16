@@ -147,7 +147,7 @@ export const JzodElementEditor = (
   );
   
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache({
-    type: "DomainEntityInstancesSelectorParams",
+    type: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid: props.innerProps.currentDeploymentUuid,
       applicationSection: props.innerProps.currentApplicationSection,

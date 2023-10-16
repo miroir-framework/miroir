@@ -8,7 +8,7 @@ import {
   EntityDefinition,
   MetaEntity,
   MiroirApplicationModel,
-  MiroirSelectorSingleQueryParams,
+  LocalCacheQueryParams,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -43,13 +43,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
-  const currentModelSelectorParams:MiroirSelectorSingleQueryParams = useMemo(
+  const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "DomainEntityInstancesSelectorParams",
+      type: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }
-    } as MiroirSelectorSingleQueryParams),
+    } as LocalCacheQueryParams),
     [applicationDeploymentLibrary.uuid]
   );
 
