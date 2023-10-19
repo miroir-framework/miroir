@@ -76,7 +76,7 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
           ] ===
           (selectorParams.singleSelectQuery.select.type == "objectListQuery"
           // (selectorParams.type == "EntityInstanceListQueryParams"
-            ? selectorParams.singleSelectQuery.select.fetchedDataReference
+            ? selectorParams.singleSelectQuery.select.fetchedDataReference && (selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""]
               ? ((selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""] as any)["uuid"]
               : selectorParams.singleSelectQuery.select.rootObjectUuid
             : undefined)
@@ -165,15 +165,19 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
   }
 
   console.log(
-    "DomainSelector selectEntityInstanceFromDomainState",
+    "DomainSelector selectEntityInstanceFromObjectQueryAndDomainState",
     "query",
     query,
+    "deploymentUuid",
+    deploymentUuid,
+    "applicationSection",
+    applicationSection,
     "pageParams",
     query.pageParams,
-    "querySelectorParams.parentUuid",
-    querySelectorParams?.parentUuid,
-    "pageParams[querySelectorParams?.paramReference]",
-    (query.pageParams??{})[querySelectorParams?.paramReference??""],
+    "querySelectorParams",
+    querySelectorParams,
+    // "pageParams[querySelectorParams?.paramReference]",
+    // (query.pageParams??{})[querySelectorParams?.paramReference??""],
     // "domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][pageParams[querySelectorParams?.paramReference]]",
     // domainState[deploymentUuid??""][applicationSection??"data"][querySelectorParams?.parentUuid??""][
     //   (query.pageParams??{})[querySelectorParams?.paramReference??""]
@@ -189,16 +193,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
 };
 
 // ################################################################################################
-// let prevDomainStateselectFetchedDataFromDomainState: DomainState | undefined = undefined;
-// let prevQueryselectFetchedDataFromDomainState: DomainFetchQueryParams | undefined = undefined;
-
 export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
   query: DomainFetchQueryParams,
 ): FetchedData | undefined => {
 
   // console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
-  // console.log("selectFetchedDataFromDomainState called", domainState === prevDomainStateselectFetchedDataFromDomainState, query === prevQueryselectFetchedDataFromDomainState);
 
   const newFetchedData:FetchedData = query.fetchedData??{};
 
@@ -267,7 +267,6 @@ export const selectSingleSelectQueryJzodSchemaFromDomainState = (
   })
 }
 
-const dummy: JzodElement = { type: "simpleType", definition: "any"};
 // ################################################################################################
 export const selectEntityJzodSchemaFromDomainState = (
   domainState: DomainState,
@@ -286,7 +285,6 @@ export const selectEntityJzodSchemaFromDomainState = (
     );
 
     const result: JzodElement | undefined = index > -1?values[index].jzodSchema: undefined;
-    // const result: JzodElement | undefined = dummy;
   
     console.log("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
   
@@ -296,9 +294,14 @@ export const selectEntityJzodSchemaFromDomainState = (
   }
 }
 
-// let prevDomainState: DomainState | undefined = undefined;
-// let prevQuery: DomainModelGetFetchParamJzodSchemaQueryParams | undefined = undefined;
 // ################################################################################################
+/**
+ * the FetchData and FetchQueryJzodSchema should depend only on the instance of Report at hand
+ * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
+ * @param domainState 
+ * @param query 
+ * @returns 
+ */
 export const selectFetchQueryJzodSchemaFromDomainState = (
   domainState: DomainState,
   query: DomainModelGetFetchParamJzodSchemaQueryParams
@@ -306,9 +309,6 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   const localFetchParams: DomainFetchQueryParams = query.fetchParams
   // console.log("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
   
-  // prevDomainState = domainState;
-  // prevQuery = query;
-
   return Object.fromEntries(
     Object.entries(localFetchParams?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
       entry[0],
@@ -324,7 +324,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   );
 };
 
-  // ################################################################################################
+// ################################################################################################
 export const selectDomainModelMetaInformationFromDomainState = (
   domainState: DomainState,
   query: DomainModelQueryParams

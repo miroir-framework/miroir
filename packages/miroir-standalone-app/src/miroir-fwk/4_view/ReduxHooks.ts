@@ -29,6 +29,20 @@ import {
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
+export function useDomainStateSelector<T = any>(
+  domainStateSelector:(
+    domainState: DomainState,
+    query: MiroirSelectorQueryParams
+  ) => T,
+  query:MiroirSelectorQueryParams
+): T {
+  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, query)
+  );
+  return result
+}
+// ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheQueryParams = useMemo(
@@ -130,17 +144,3 @@ export function useLocalCacheInstancesForJzodAttribute(
   return miroirEntities as EntityInstance[];
 }
 
-// ################################################################################################
-export function useDomainStateSelector<T extends any>(
-  domainStateSelector:(
-    domainState: DomainState,
-    query: MiroirSelectorQueryParams
-  ) => T,
-  query:MiroirSelectorQueryParams
-): T {
-  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
-  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, query)
-  );
-  return result
-}
