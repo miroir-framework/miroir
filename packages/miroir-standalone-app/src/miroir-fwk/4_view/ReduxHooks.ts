@@ -5,23 +5,19 @@ import { useSelector } from "react-redux";
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
-  LocalCacheEntityInstancesSelectorParams,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
-  MiroirApplicationModel,
+  LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
-  SelectObjectListQuery,
+  MiroirApplicationModel,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
-  selectEntityInstanceUuidIndexFromDomainState,
-  selectEntityUuidFromJzodAttribute,
-  selectEntityInstancesFromListQueryAndDomainState
+  selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDomainStateSelector,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -48,18 +44,6 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 }
 
 
-// // ################################################################################################
-// export function useEntityInstanceUuidIndexFromDomainState(params:LocalCacheQueryParams): EntityInstancesUuidIndex | undefined {
-//   const selectorParams:LocalCacheQueryParams = useMemo(
-//     () => ({...params}),
-//     [params]
-//   );
-
-//   return useSelector((reduxState: ReduxStateWithUndoRedo) =>
-//     applyDomainStateSelector<EntityInstancesUuidIndex | undefined>(selectEntityInstanceUuidIndexFromDomainState)(reduxState, {}, {}, selectorParams)
-//   )
-// }
-
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheQueryParams): EntityInstancesUuidIndex | undefined {
   const selectorParams:LocalCacheQueryParams = useMemo(
@@ -71,16 +55,6 @@ export function useEntityInstanceUuidIndexFromLocalCache(params:LocalCacheQueryP
     selectEntityInstanceUuidIndexFromLocalCache(state, selectorParams)
   )
 }
-
-// // ################################################################################################
-// export function useEntityInstanceListQueryFromLocalCache(selectorParams:LocalCacheQueryParams): EntityInstancesUuidIndex {
-
-//   const result: EntityInstancesUuidIndex | undefined = useSelector((reduxState: ReduxStateWithUndoRedo) =>
-//     applyDomainStateSelector(selectEntityInstancesFromListQueryAndDomainState)(reduxState, {}, {}, selectorParams)
-//   );
-  
-//   return result??{};
-// }
 
 //#########################################################################################
 function entityInstancesUuidIndexToEntityInstanceArraySelector(

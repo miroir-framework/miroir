@@ -187,8 +187,14 @@ export {
   // ObjectQueryParams,
   FetchedData,
   DomainFetchQueryParams,
-  MiroirSelectorQueryParams,
+  DomainModelGetEntityDefinitionQueryParams,
+  DomainModelGetFetchParamJzodSchemaQueryParams,
+  DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
+  DomainModelQueryParams,
+  DomainSingleSelectQuery,
   LocalCacheQueryParams,
+  MiroirSelectorQueryParams,
+  RecordOfJzodElement,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
 export {
   CUDActionNameSchema,
@@ -275,11 +281,14 @@ export {
   getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
+  selectFetchedDataFromDomainState,
+  selectDomainModelMetaInformationFromDomainState,
+  selectEntityJzodSchemaFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
-  selectFetchedDataFromDomainState,
-  selectFetchedDataJzodSchemaFromDomainState,
   selectEntityInstancesFromListQueryAndDomainState,
+  selectFetchQueryJzodSchemaFromDomainState,
+  selectSingleSelectQueryJzodSchemaFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   cacheFetchPolicy,
