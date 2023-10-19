@@ -4,8 +4,6 @@ export {
   selectInstanceArrayForDeploymentSectionEntity,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectModelForDeployment,
-  selectorFetchedDataFromDomainState,
-  selectorFetchQueryJzodSchemaFromDomainState,
   LocalCacheSlice,
 } from "./4_services/localStore/LocalCacheSlice";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";

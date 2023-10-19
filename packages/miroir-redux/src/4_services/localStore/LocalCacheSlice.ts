@@ -257,33 +257,12 @@ export function applyDomainStateSelector<T>( // TODO: memoize?
   return createSelector(
     [selectDomainStatePlain, selectSelectorParams],
     domainStateSelector
-    // (
-    //   domainState: DomainState,
-    //   params: MiroirSelectorQueryParams
-    // ) : T => { return domainStateSelector(domainState,params)}
   )
 }
-
-export const selectorFetchedDataFromDomainState: (
-  state: ReduxStateWithUndoRedo,
-  params: MiroirSelectorQueryParams
-) => FetchedData | undefined = createSelector(
-  [selectDomainStatePlain, selectSelectorParams],
-  selectFetchedDataFromDomainState
-);
-
-export const selectorFetchQueryJzodSchemaFromDomainState: (
-  state: ReduxStateWithUndoRedo,
-  params: MiroirSelectorQueryParams
-) => RecordOfJzodElement | undefined = createSelector(
-  [selectDomainStatePlain, selectSelectorParams],
-  selectFetchQueryJzodSchemaFromDomainState
-);
 
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromLocalCache = (
   reduxState: ReduxStateWithUndoRedo,
-  // params: LocalCacheEntityInstancesSelectorParams
   params: MiroirSelectorQueryParams
 ): EntityInstancesUuidIndex | undefined => {
   if (params.type == "LocalCacheEntityInstancesSelectorParams") {
@@ -412,7 +391,6 @@ export const selectModelForDeployment = ()=>createSelector(
     entityDefinitions: EntityInstancesUuidIndex,
     jzodSchemas: EntityInstancesUuidIndex,
     reports: EntityInstancesUuidIndex,
-    // params: LocalCacheEntityInstancesSelectorParams
     params: MiroirSelectorQueryParams
   ) => {
     const result = {

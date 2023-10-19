@@ -5,12 +5,14 @@ import { useSelector } from "react-redux";
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
+  DomainState,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
   LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   MiroirApplicationModel,
+  MiroirSelectorQueryParams,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -18,6 +20,7 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
+  applyDomainStateSelector,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -125,4 +128,19 @@ export function useLocalCacheInstancesForJzodAttribute(
   console.log('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
   // return Object.values(miroirEntities) as EntityInstance[];
   return miroirEntities as EntityInstance[];
+}
+
+// ################################################################################################
+export function useDomainStateSelector<T extends any>(
+  domainStateSelector:(
+    domainState: DomainState,
+    query: MiroirSelectorQueryParams
+  ) => T,
+  query:MiroirSelectorQueryParams
+): T {
+  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, query)
+  );
+  return result
 }

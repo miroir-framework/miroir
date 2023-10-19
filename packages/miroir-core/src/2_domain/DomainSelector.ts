@@ -163,35 +163,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
       }
     }
   }
-    // deploymentUuid && applicationSection && domainState
-    //   ? querySelectorParams?.parentUuid
-    //     ? querySelectorParams?.fetchedDataReference && querySelectorParams.fetchedDataReferenceAttribute
-    //       ? domainState
-    //         && domainState[deploymentUuid]
-    //         && domainState[deploymentUuid][applicationSection]
-    //         && domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]
-    //         ?
-    //         domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-    //           (query.fetchedData as any)[querySelectorParams.fetchedDataReference][
-    //             querySelectorParams.fetchedDataReferenceAttribute
-    //           ]
-    //         ]
-    //         :
-    //         undefined
-    //       : querySelectorParams?.instanceUuid &&
-    //         domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-    //           querySelectorParams.instanceUuid
-    //         ]
-    //       ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-    //           querySelectorParams.instanceUuid
-    //         ]
-    //       : querySelectorParams?.paramReference && (query.pageParams??{})[querySelectorParams?.paramReference]
-    //       ? domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-    //           (query.pageParams??{})[querySelectorParams?.paramReference]
-    //         ]
-    //       : undefined
-    //     : undefined
-    //   : undefined;
+
   console.log(
     "DomainSelector selectEntityInstanceFromDomainState",
     "query",
@@ -217,8 +189,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
 };
 
 // ################################################################################################
-let prevDomainStateselectFetchedDataFromDomainState: DomainState | undefined = undefined;
-let prevQueryselectFetchedDataFromDomainState: DomainFetchQueryParams | undefined = undefined;
+// let prevDomainStateselectFetchedDataFromDomainState: DomainState | undefined = undefined;
+// let prevQueryselectFetchedDataFromDomainState: DomainFetchQueryParams | undefined = undefined;
 
 export const selectFetchedDataFromDomainState = (
   domainState: DomainState,
@@ -226,7 +198,7 @@ export const selectFetchedDataFromDomainState = (
 ): FetchedData | undefined => {
 
   // console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
-  console.log("selectFetchedDataFromDomainState called", domainState === prevDomainStateselectFetchedDataFromDomainState, query === prevQueryselectFetchedDataFromDomainState);
+  // console.log("selectFetchedDataFromDomainState called", domainState === prevDomainStateselectFetchedDataFromDomainState, query === prevQueryselectFetchedDataFromDomainState);
 
   const newFetchedData:FetchedData = query.fetchedData??{};
 
@@ -324,18 +296,18 @@ export const selectEntityJzodSchemaFromDomainState = (
   }
 }
 
-let prevDomainState: DomainState | undefined = undefined;
-let prevQuery: DomainModelGetFetchParamJzodSchemaQueryParams | undefined = undefined;
+// let prevDomainState: DomainState | undefined = undefined;
+// let prevQuery: DomainModelGetFetchParamJzodSchemaQueryParams | undefined = undefined;
 // ################################################################################################
 export const selectFetchQueryJzodSchemaFromDomainState = (
   domainState: DomainState,
   query: DomainModelGetFetchParamJzodSchemaQueryParams
 ):  RecordOfJzodElement | undefined => {
   const localFetchParams: DomainFetchQueryParams = query.fetchParams
-  console.log("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
+  // console.log("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
   
-  prevDomainState = domainState;
-  prevQuery = query;
+  // prevDomainState = domainState;
+  // prevQuery = query;
 
   return Object.fromEntries(
     Object.entries(localFetchParams?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
