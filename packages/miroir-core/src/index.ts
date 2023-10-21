@@ -195,6 +195,7 @@ export {
   LocalCacheQueryParams,
   MiroirSelectorQueryParams,
   RecordOfJzodElement,
+  RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
 export {
   CUDActionNameSchema,

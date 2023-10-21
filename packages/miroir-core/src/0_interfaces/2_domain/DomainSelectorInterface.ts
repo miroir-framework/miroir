@@ -1,4 +1,4 @@
-import { JzodElement } from "@miroir-framework/jzod-ts";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { Uuid } from "../1_core/EntityDefinition";
 import { ApplicationSection, EntityInstance } from "../1_core/Instance";
 import {
@@ -11,8 +11,9 @@ import {
 import { EntityInstancesUuidIndex } from "./DomainControllerInterface";
 
 export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
+export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
-export type FetchedData = { [k: string]: EntityInstance | EntityInstancesUuidIndex | undefined };
+export type FetchedData = { [k: string]: EntityInstance | EntityInstancesUuidIndex | {[l: string]: any} | undefined };
 
 export interface LocalCacheEntityInstancesSelectorParams {
   deploymentUuid?: Uuid,

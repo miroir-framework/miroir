@@ -115,7 +115,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   console.log('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
 
-  console.log('ReportSectionListDisplay props.fetchedData',props.fetchedData);
+  // console.log('ReportSectionListDisplay props.fetchedData',props.fetchedData);
+  console.log('ReportSectionListDisplay props',props);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
@@ -259,19 +260,33 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
+  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
+    props.fetchedDataJzodSchema &&
+    props.select?.fetchedDataReference &&
+    props.fetchedDataJzodSchema[props.select?.fetchedDataReference]
+      ? props.fetchedDataJzodSchema[props.select?.fetchedDataReference]
+      : props?.currentMiroirEntityDefinition?.jzodSchema
+    ,[props, props.fetchedDataJzodSchema, props.select?.fetchedDataReference]
+  )
   const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
     () => ({
       columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
-        props?.currentJzodSchema??props?.currentMiroirEntityDefinition?.jzodSchema
+        instancesToDisplayJzodSchema??{type:"object", definition:{}}
       ),
     }),
-    [props.currentMiroirEntityDefinition?.jzodSchema]
+    [instancesToDisplayJzodSchema]
   );
   console.log(
     "ReportSectionListDisplay",
     count,
+    "props.fetchedDataJzodSchema",
+    props.fetchedDataJzodSchema,
+    "props.select?.fetchedDataReference",
+    props.select?.fetchedDataReference,
     "props.currentMiroirEntityDefinition?.jzodSchema",
     props.currentMiroirEntityDefinition?.jzodSchema,
+    "instancesToDisplayJzodSchema",
+    instancesToDisplayJzodSchema,
     "columnDefs",
     columnDefs,
     prevColumnDefs === columnDefs,
@@ -280,6 +295,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   prevColumnDefs = columnDefs;
   prevJzodSchema = props.currentMiroirEntityDefinition?.jzodSchema;
 
+
+  const instancesToDisplay: EntityInstancesUuidIndex = useMemo(() =>
+    props.fetchedData &&
+    props.select?.fetchedDataReference &&
+    props.fetchedData[props.select?.fetchedDataReference]
+      ? props.fetchedData[props.select?.fetchedDataReference]
+      : {}
+    ,[props]
+  );
 
   console.log("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
   console.log("ReportSectionListDisplay columnDefs",columnDefs);
@@ -320,13 +344,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   currentEntityDefinition={props.currentMiroirEntityDefinition}
                   // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={columnDefs}
-                  instancesToDisplay={
-                    props.fetchedData &&
-                    props.select?.fetchedDataReference &&
-                    props.fetchedData[props.select?.fetchedDataReference]
-                      ? props.fetchedData[props.select?.fetchedDataReference]
-                      : {}
-                  }
+                  instancesToDisplay={instancesToDisplay??{}}
                   // instancesToDisplay={instancesToDisplay}
                   displayTools={true}
                   onRowEdit={onEditFormObject}

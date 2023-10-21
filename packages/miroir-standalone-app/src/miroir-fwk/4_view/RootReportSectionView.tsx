@@ -6,6 +6,7 @@ import {
   DomainModelGetFetchParamJzodSchemaQueryParams,
   FetchedData,
   RecordOfJzodElement,
+  RecordOfJzodObject,
   RootReportSection,
   Uuid,
   selectFetchQueryJzodSchemaFromDomainState,
@@ -18,6 +19,7 @@ import { useDomainStateSelector } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { Params, useParams } from 'react-router-dom';
 import { ReportUrlParamKeys } from './routes/ReportPage';
+import { JzodObject } from '@miroir-framework/jzod-ts';
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: Record<string,any>,
@@ -60,21 +62,21 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const fetchedData: FetchedData | undefined = useDomainStateSelector(selectFetchedDataFromDomainState, fetchedDataEntriesParams);
 
-  // const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
-  //     type: "getFetchParamsJzodSchema",
-  //     fetchedData: {},
-  //     pageParams: {
-  //       applicationSection: props.applicationSection,
-  //       deploymentUuid: props.deploymentUuid,
-  //       instanceUuid: props.instanceUuid,
-  //     },
-  //     fetchParams: fetchedDataEntriesParams,
-  // }),[fetchedDataEntriesParams])
+  const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
+      type: "getFetchParamsJzodSchema",
+      fetchedData: {},
+      pageParams: {
+        applicationSection: props.applicationSection,
+        deploymentUuid: props.deploymentUuid,
+        instanceUuid: props.instanceUuid,
+      },
+      fetchParams: fetchedDataEntriesParams,
+  }),[fetchedDataEntriesParams])
 
-  // const fetchedDataJzodSchema: RecordOfJzodElement | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
+  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
 
-  // console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
-  console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
+  console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
+  // console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
   console.log('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {
@@ -83,6 +85,8 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
         <div>RootReportSectionView rendered {count}</div>
         <ReportSectionView
           fetchedData={fetchedData}
+          fetchedDataJzodSchema={fetchedDataJzodSchema}
+          currentJzodSchema={props.reportSection?.fetchData?.combine?fetchedDataJzodSchema?.combine as JzodObject:undefined}
           reportSection={props.reportSection?.section}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}

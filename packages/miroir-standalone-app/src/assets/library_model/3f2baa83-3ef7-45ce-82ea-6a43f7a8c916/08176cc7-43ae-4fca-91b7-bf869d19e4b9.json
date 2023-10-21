@@ -21,13 +21,27 @@
       }
     },
     "section": {
-      "type":"objectListReportSection",
-      "definition": {
-        "label": "Countries",
-        "parentName": "Country",
-        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-        "fetchedDataReference": "countries"
-      }
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Countries",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "fetchedDataReference": "countries"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Countries Cross Product",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "fetchedDataReference": "combine"
+          }
+        }
+      ]
     }
   }
 }
