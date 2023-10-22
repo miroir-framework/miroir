@@ -3,9 +3,11 @@ export {
   getPromiseActionStoreActionNames,
   selectInstanceArrayForDeploymentSectionEntity,
   selectEntityInstanceUuidIndexFromLocalCache,
-  selectModelForDeployment,
   LocalCacheSlice,
 } from "./4_services/localStore/LocalCacheSlice";
+export {
+  selectModelForDeployment,
+} from "./4_services/localStore/LocalCacheSliceModelSelector";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
   createUndoRedoReducer,

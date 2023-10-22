@@ -26,9 +26,7 @@ import { JzodObject } from '@miroir-framework/jzod-ts';
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: FetchedData | undefined,
-  // fetchedDataJzodSchema: {[k: string]:JzodObject} | undefined,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
-  currentJzodSchema?: JzodObject,
   reportSection: ReportSection | undefined,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -201,7 +199,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                                   <ReportSectionView
                                     fetchedData={props.fetchedData}
                                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                                    currentJzodSchema={props.currentJzodSchema}
                                     deploymentUuid={props.deploymentUuid}
                                     applicationSection={props.applicationSection}
                                     reportSection={innerReportSection}
@@ -234,7 +231,6 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                         styles={styles}
                         chosenApplicationSection={props.applicationSection as ApplicationSection}
                         displayedDeploymentDefinition={displayedDeploymentDefinition}
-                        currentJzodSchema={props.currentJzodSchema}
                         fetchedData={props.fetchedData}
                         fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                         select={props.reportSection.definition}

@@ -234,7 +234,7 @@ export {
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,
   selectCurrentDeploymentModel,
-  selectEntityInstancesForReportSection,
+  // selectEntityInstancesForReportSection,
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {

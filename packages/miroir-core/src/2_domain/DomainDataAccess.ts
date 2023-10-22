@@ -2,7 +2,6 @@ import { JzodAttribute } from "@miroir-framework/jzod-ts";
 
 import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
-import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
 import {
   DomainState,
   DomainStateMetaModelSelector,
@@ -13,54 +12,26 @@ import {
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
 import {
-  ObjectListReportSection,
-  // GridReportSection,
-  // ListReportSection,
-  // ObjectListReportSection,
-  Report,
-  // ReportDefinition,
-  // gridReportSection,
-  // listReportSection,
-  // objectListReportSection,
-  report,
-  // reportDefinition,
+  Report
 } from "../0_interfaces/1_core/preprocessor-generated/server-generated.js";
 
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
-import { defaultMiroirMetaModel } from "../1_core/Model.js";
-import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
 import { StoreBasedConfiguration } from "../0_interfaces/1_core/MiroirConfig.js";
+import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
+import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
+import { defaultMiroirMetaModel } from "../1_core/Model.js";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import entityReport from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 
-import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
-import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
-import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary.js";
-// import { applicationDeploymentLibrary as applicationDeploymentLibraryImp } from "../ApplicationDeploymentLibrary.js";
-
-// const applicationDeploymentLibrary: ApplicationDeployment = applicationDeploymentLibraryImp;
-
-
-// // ################################################################################################
-// export function selectReportSectionInstances(reportSectionListDefinition:ReportSectionListDefinition):EntitiesDomainStateEntityInstanceArraySelector{
-//   return (domainState:EntitiesDomainState):EntityInstance[] => {
-//     // console.log('selectReportSectionInstances', reportUuid, domainState)
-//     // const currentReport: Report = DomainInstanceUuidIndexToArray(domainState[entityReport.uuid])?.find(e=>e['uuid'] === reportSectionListDefinition.parentUuid) as Report;
-//     if (reportSectionListDefinition && reportSectionListDefinition.parentUuid) {
-//       return DomainInstanceUuidIndexToArray(domainState[reportSectionListDefinition.parentUuid]);
-//     } else {
-//       return []
-//     }
-//   }
-// }
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
+import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
+import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 
 // ################################################################################################
-// export function selectEntityInstances(deploymentUuid:string,parentUuid:string):EntitiesDomainStateEntityInstanceArraySelector{
 export function selectEntityInstances(parentUuid:string | undefined):EntitiesDomainStateEntityInstanceArraySelector{
   return (domainState:EntitiesDomainState):EntityInstance[] => {
     // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
@@ -74,7 +45,6 @@ export function selectEntityInstances(parentUuid:string | undefined):EntitiesDom
 }
 
 // ################################################################################################
-// export function selectEntityInstances(deploymentUuid:string,parentUuid:string):EntitiesDomainStateEntityInstanceArraySelector{
 export function selectCurrentDeploymentModel(
   deploymentUuid:string | undefined
 ):DomainStateMetaModelSelector {
@@ -153,15 +123,12 @@ export function selectEntityUuidFromJzodAttribute(jzodSchema:JzodAttribute | und
 
 // ################################################################################################
 export function selectReportDefinitionFromReportUuid(
-  // deploymentUuid: string | undefined,
-  // section: ApplicationSection | undefined,
   reportUuid: string | undefined
 ):EntitiesDomainStateInstanceSelector{
   return (domainState:EntitiesDomainState):Report | undefined => {
     // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
     if (reportUuid && domainState[entityReport.uuid] && domainState[entityReport.uuid][reportUuid]) {
       // console.log('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
-      // const reportDefinitionUuid = Object.entries(domainState[entityEntityDefinition.uuid]).filter(e:[string,Report]=>e[1].)
       return domainState[entityReport.uuid][reportUuid] as Report;
     } else {
       return undefined;
@@ -169,31 +136,31 @@ export function selectReportDefinitionFromReportUuid(
   }
 }
 
-// ################################################################################################
-export function selectEntityInstancesForReportSection(
-  reportUuid: string | undefined,
-  reportSectionIndex: number,
-):EntitiesDomainStateEntityInstanceArraySelector{
-  return (domainState:EntitiesDomainState):EntityInstance[] => {
-    console.log('selectEntityInstancesForReportSection for reportUuid', reportUuid, 'reportSectionIndex:', reportSectionIndex,'domainState',domainState)
-    const reportDefinition:Report | undefined = selectReportDefinitionFromReportUuid(reportUuid)(domainState) as Report | undefined;
-    const currentReportSectionIndex = reportSectionIndex;
-    if (
-      reportDefinition &&
-      reportDefinition.definition?.section?.type === "list" &&
-      reportDefinition.definition.section?.definition.length > reportSectionIndex &&
-      reportDefinition.definition.section?.definition[currentReportSectionIndex].type === "objectListReportSection" &&
-      domainState[(reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]
-    ) {
-      console.log('selectEntityInstancesForReportSection for entityUuid', reportUuid, 'reportSectionIndex', reportSectionIndex)
-      return DomainInstanceUuidIndexToArray(
-        domainState[
-          (reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)
-            ?.definition?.parentUuid ?? ""
-        ]
-      );
-    } else {
-      return [];
-    }
-  }
-}
+// // ################################################################################################
+// export function selectEntityInstancesForReportSection(
+//   reportUuid: string | undefined,
+//   reportSectionIndex: number,
+// ):EntitiesDomainStateEntityInstanceArraySelector{
+//   return (domainState:EntitiesDomainState):EntityInstance[] => {
+//     console.log('selectEntityInstancesForReportSection for reportUuid', reportUuid, 'reportSectionIndex:', reportSectionIndex,'domainState',domainState)
+//     const reportDefinition:Report | undefined = selectReportDefinitionFromReportUuid(reportUuid)(domainState) as Report | undefined;
+//     const currentReportSectionIndex = reportSectionIndex;
+//     if (
+//       reportDefinition &&
+//       reportDefinition.definition?.section?.type === "list" &&
+//       reportDefinition.definition.section?.definition.length > reportSectionIndex &&
+//       reportDefinition.definition.section?.definition[currentReportSectionIndex].type === "objectListReportSection" &&
+//       domainState[(reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)?.definition?.parentUuid??""]
+//     ) {
+//       console.log('selectEntityInstancesForReportSection for entityUuid', reportUuid, 'reportSectionIndex', reportSectionIndex)
+//       return DomainInstanceUuidIndexToArray(
+//         domainState[
+//           (reportDefinition.definition?.section?.definition[currentReportSectionIndex] as ObjectListReportSection)
+//             ?.definition?.parentUuid ?? ""
+//         ]
+//       );
+//     } else {
+//       return [];
+//     }
+//   }
+// }

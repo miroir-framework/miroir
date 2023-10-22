@@ -28,8 +28,6 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: ApplicationSectionSchema,
   currentModel: z.any(),
-  // currentMiroirReportSectionObjectList: objectListReportSection.optional(),
-  currentJzodSchema: jzodObject.optional(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
 });

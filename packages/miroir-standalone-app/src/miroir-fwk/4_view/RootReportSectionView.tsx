@@ -63,14 +63,14 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   const fetchedData: FetchedData | undefined = useDomainStateSelector(selectFetchedDataFromDomainState, fetchedDataEntriesParams);
 
   const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
-      type: "getFetchParamsJzodSchema",
-      fetchedData: {},
-      pageParams: {
-        applicationSection: props.applicationSection,
-        deploymentUuid: props.deploymentUuid,
-        instanceUuid: props.instanceUuid,
-      },
-      fetchParams: fetchedDataEntriesParams,
+    type: "getFetchParamsJzodSchema",
+    fetchedData: {},
+    pageParams: {
+      applicationSection: props.applicationSection,
+      deploymentUuid: props.deploymentUuid,
+      instanceUuid: props.instanceUuid,
+    },
+    fetchParams: fetchedDataEntriesParams,
   }),[fetchedDataEntriesParams])
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
@@ -86,7 +86,6 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
         <ReportSectionView
           fetchedData={fetchedData}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
-          currentJzodSchema={props.reportSection?.fetchData?.combine?fetchedDataJzodSchema?.combine as JzodObject:undefined}
           reportSection={props.reportSection?.section}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
