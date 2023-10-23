@@ -7,7 +7,7 @@ import {
   DomainAncillaryOrReplayableActionWithDeployment,
   DomainTransactionalReplayableAction
 } from "miroir-core";
-import { RemoteStoreRestSagaInputActionNamesObject } from "../../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { RemoteStoreRestSagaInputActionNamesObject } from "../remoteStore/RemoteStoreRestAccessSaga";
 import {
   InnerReducerInterface,
   LocalCacheSliceState,
@@ -16,7 +16,7 @@ import {
   ReduxStateWithUndoRedo,
   localCacheSliceInputActionNamesObject,
   localCacheSliceName,
-} from "./localStoreInterface";
+} from "./localCacheInterface";
 enablePatches(); // to gather undo/redo operation history
 
 
@@ -39,7 +39,8 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
     previousModelSnapshot: {} as LocalCacheSliceState,
     pastModelPatches: [],
     presentModelSnapshot: reducer(undefined, {type:undefined, payload: undefined}),
-    futureModelPatches: []
+    futureModelPatches: [],
+    queriesResultsCache: {},
   }
 }
 
@@ -98,6 +99,7 @@ function callUndoRedoReducer(
           changes.length > 0 ? [...pastModelPatches, newPatch] : pastModelPatches,
         presentModelSnapshot: newSnapshot,
         futureModelPatches: [],
+        queriesResultsCache: {},
       };
     }
   };
@@ -120,6 +122,7 @@ function callNextReducer(
     pastModelPatches: pastModelPatches,
     presentModelSnapshot: newPresentModelSnapshot,
     futureModelPatches: futureModelPatches,
+    queriesResultsCache: {},
   };
 };
 
@@ -134,7 +137,7 @@ export function createUndoRedoReducer(
     state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
     action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
   ): ReduxStateWithUndoRedo => {
-    const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state
+    const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches,    queriesResultsCache } = state
 
     switch (action.type) {
       case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: // TODO: here?
@@ -173,16 +176,18 @@ export function createUndoRedoReducer(
                   previousModelSnapshot, //TODO: effectively set previousModelSnapshot
                   pastModelPatches: [],
                   presentModelSnapshot: next.presentModelSnapshot,
-                  futureModelPatches: []
+                  futureModelPatches: [],
+                  queriesResultsCache,
                 }
               }
               case 'commit': {
                 // no effect on local storage contents, just clears the present transaction contents.
                 return {
-                  previousModelSnapshot: state.presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+                  previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
                   pastModelPatches: [],
-                  presentModelSnapshot: state.presentModelSnapshot,
-                  futureModelPatches: []
+                  presentModelSnapshot: presentModelSnapshot,
+                  futureModelPatches: [],
+                  queriesResultsCache,
                 }
               }
               case 'undo': {
@@ -194,7 +199,8 @@ export function createUndoRedoReducer(
                     previousModelSnapshot,
                     pastModelPatches: newPast,
                     presentModelSnapshot: newPresentSnapshot,
-                    futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches]
+                    futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
+                    queriesResultsCache,
                   }
                 } else {
                   // do nothing
@@ -203,7 +209,8 @@ export function createUndoRedoReducer(
                     previousModelSnapshot,
                     pastModelPatches,
                     presentModelSnapshot,
-                    futureModelPatches
+                    futureModelPatches,
+                    queriesResultsCache,
                   }
                 }
               }
@@ -217,6 +224,7 @@ export function createUndoRedoReducer(
                     pastModelPatches: [...pastModelPatches, newPastPatches],
                     presentModelSnapshot: newPresentSnapshot,
                     futureModelPatches: newFuturePatches,
+                    queriesResultsCache,
                   };
                 } else {
                   // do nothing
@@ -225,7 +233,8 @@ export function createUndoRedoReducer(
                     previousModelSnapshot,
                     pastModelPatches,
                     presentModelSnapshot,
-                    futureModelPatches
+                    futureModelPatches,
+                    queriesResultsCache,
                   }
                 }
                 break;

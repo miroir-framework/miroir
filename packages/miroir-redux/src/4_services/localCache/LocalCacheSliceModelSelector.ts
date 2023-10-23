@@ -1,24 +1,24 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
+  EntityDefinition,
+  EntityInstancesUuidIndex,
+  JzodSchemaDefinition,
+  MetaEntity,
+  MiroirApplicationModel,
+  MiroirApplicationVersion,
   MiroirSelectorQueryParams,
+  Report,
+  StoreBasedConfiguration,
+  applicationDeploymentMiroir,
+  entityApplicationVersion,
   entityEntity,
   entityEntityDefinition,
-  applicationDeploymentMiroir,
   entityJzodSchema,
   entityReport,
   entityStoreBasedConfiguration,
-  entityApplicationVersion,
-  EntityInstancesUuidIndex,
-  MiroirApplicationVersion,
-  StoreBasedConfiguration,
-  MetaEntity,
-  EntityDefinition,
-  JzodSchemaDefinition,
-  MiroirApplicationModel,
-  Report,
 } from "miroir-core";
-import { selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams } from "./LocalCacheSlice";
-import { ReduxStateWithUndoRedo } from "./localStoreInterface";
+import { ReduxStateWithUndoRedo } from "./localCacheInterface";
+import { selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams } from "./LocalCacheSliceSelectors";
 
 // ################################################################################################
 const selectEntities = (reduxState: ReduxStateWithUndoRedo,  params:MiroirSelectorQueryParams) => {

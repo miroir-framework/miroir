@@ -1,19 +1,24 @@
 export {
-  applyDomainStateSelector,
   getPromiseActionStoreActionNames,
-  selectInstanceArrayForDeploymentSectionEntity,
-  selectEntityInstanceUuidIndexFromLocalCache,
   LocalCacheSlice,
-} from "./4_services/localStore/LocalCacheSlice";
+} from "./4_services/localCache/LocalCacheSlice";
 export {
   selectModelForDeployment,
-} from "./4_services/localStore/LocalCacheSliceModelSelector";
+} from "./4_services/localCache/LocalCacheSliceModelSelector";
+export {
+  applyDomainStateSelector,
+  selectDomainState,
+  selectDomainStatePlain,
+  selectEntityInstanceUuidIndexFromLocalCache,
+  selectInstanceArrayForDeploymentSectionEntity,
+  selectSelectorParams,
+} from "./4_services/localCache/LocalCacheSliceSelectors";
 // export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
   createUndoRedoReducer,
   reduxStoreWithUndoRedoGetInitialState,
   selectCurrentTransaction,
-} from "./4_services/localStore/UndoRedoReducer";
+} from "./4_services/localCache/UndoRedoReducer";
 export {
   InnerReducerInterface,
   Maction,
@@ -25,7 +30,7 @@ export {
   ReduxStoreWithUndoRedo,
   LocalCacheSliceState,
   MiroirDictionary,
-} from "./4_services/localStore/localStoreInterface";
+} from "./4_services/localCache/localCacheInterface";
 export {
   RemoteStoreRestAccessReduxSaga as RemoteStoreAccessReduxSaga,
   RemoteStoreSagaGenReturnType,

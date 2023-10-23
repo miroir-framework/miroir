@@ -8,8 +8,8 @@ import {
   getLocalCacheKeysForDeploymentSection,
   getLocalCacheKeysForDeploymentUuid,
   localCacheStateToDomainState,
-} from "../src/4_services/localStore/LocalCacheSlice";
-import { LocalCacheSliceState } from "../src/4_services/localStore/localStoreInterface";
+} from "../src/4_services/localCache/LocalCacheSlice";
+import { LocalCacheSliceState } from "../src/4_services/localCache/localCacheInterface";
 
 
 // ################################################################################################

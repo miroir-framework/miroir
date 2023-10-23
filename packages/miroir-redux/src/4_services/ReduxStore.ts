@@ -38,15 +38,15 @@ import {
   getLocalCacheSliceIndex,
   LocalCacheSlice,
   localCacheSliceGeneratedActionNames,
-} from "../4_services/localStore/LocalCacheSlice";
+} from "./localCache/LocalCacheSlice";
 import {
   createUndoRedoReducer,
-} from "../4_services/localStore/UndoRedoReducer";
+} from "./localCache/UndoRedoReducer";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
   RemoteStoreRestSagaInputActionNamesArray
 } from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
-import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localStore/localStoreInterface';
+import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localCache/localCacheInterface';
 
 
 function roughSizeOfObject( object: any ) {
@@ -151,6 +151,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
 
 
   // ###############################################################################
+  // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
   public currentModel(deploymentUuid:string):MiroirApplicationModel{
     console.log('called currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState().presentModelSnapshot);
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;

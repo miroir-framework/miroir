@@ -5,7 +5,8 @@ import {
   DomainTransactionalReplayableAction,
   EntityDefinition,
   EntityInstanceCollection,
-  EntityInstanceSchema
+  EntityInstanceSchema,
+  FetchedData
 } from "miroir-core";
 import { z } from "zod";
 
@@ -22,6 +23,8 @@ import { z } from "zod";
 export interface ReduxStateChanges {
   action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
 }
+
+export type QueriesResultsCache = {[k: string]: FetchedData};
 
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.
@@ -42,6 +45,7 @@ export interface ReduxStateWithUndoRedo {
   pastModelPatches: ReduxStateChanges[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
   presentModelSnapshot: LocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history
   futureModelPatches: ReduxStateChanges[], // in case an undo has been performed, the list of effects to be achieved to reach the latest state again
+  queriesResultsCache: QueriesResultsCache,
 }
 
 export type InnerReducerInterface = (state: LocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => LocalCacheSliceState;
