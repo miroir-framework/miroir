@@ -1,7 +1,3 @@
-import { RequestHandler, SetupWorkerApi } from "msw";
-import { SetupServerApi } from "msw/node";
-import process from "process";
-
 import {
   DomainController,
   DomainControllerInterface,
@@ -9,9 +5,7 @@ import {
   LocalAndRemoteControllerInterface,
   MiroirConfig,
   MiroirContext,
-  RestClient,
-  RestServerStub,
-  IStoreController
+  RestClient
 } from "miroir-core";
 import {
   ReduxStore,
@@ -35,6 +29,7 @@ import {
     
   const client: RestClient = new RestClient(fetch);
   const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
+    // rootApiUrl,
     miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
     client
   );
@@ -54,6 +49,6 @@ import {
   );
   const domainController: DomainControllerInterface = new DomainController(localAndRemoteController);
 
-  return {miroirContext, reduxStore, localAndRemoteController,domainController}
+  return {miroirContext, reduxStore, localAndRemoteController, domainController}
   
 }

@@ -23,7 +23,8 @@ import {
   defaultMiroirMetaModel
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-redux';
-import { RequestHandler, SetupWorkerApi } from 'msw';
+import { RequestHandler } from 'msw';
+import { SetupWorkerApi } from 'msw/browser';
 import { SetupServerApi, setupServer } from 'msw/node';
 import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
@@ -36,11 +37,15 @@ import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_
 import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
 
 // ################################################################################################
+const fetch = require('node-fetch');
+
+
+// ################################################################################################
 export interface MiroirIntegrationTestEnvironment {
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   localDataStoreWorker?: SetupWorkerApi,
-  localDataStoreServer?: SetupServerApi,
+  localDataStoreServer?: typeof SetupServerApi,
   reduxStore: ReduxStore,
   localAndRemoteController: LocalAndRemoteControllerInterface,
   domainController: DomainControllerInterface,
@@ -97,8 +102,6 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 // ############################################################################################################
-const fetch = require('node-fetch');
-
 export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: MiroirConfig) {
   let result:MiroirIntegrationTestEnvironment = {} as MiroirIntegrationTestEnvironment;
 
@@ -129,7 +132,7 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
     // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
     // localAppStoreController = wrapped.localAppStoreController as IStoreController;
     result.localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-    result.localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    result.localDataStoreServer = wrapped.localDataStoreServer as typeof SetupServerApi;
     result.reduxStore = wrappedReduxStore.reduxStore;
     result.domainController = wrappedReduxStore.domainController;
     result.miroirContext = wrappedReduxStore.miroirContext;
@@ -262,11 +265,11 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
-  localDataStoreServer?: SetupServerApi,
+  localDataStoreServer?: typeof SetupServerApi,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {
-    await localDataStoreServer?.close();
+    await (localDataStoreServer as any)?.close();
     await localMiroirStoreController.close();
     await localAppStoreController.close();
   } catch (error) {

@@ -76,6 +76,8 @@ export async function StoreControllerFactory(
 }
 
 // #######################################################################################################################
+// MAIN CLASS: StoreController
+// #######################################################################################################################
 export class StoreController implements IStoreController{
   private logHeader: string;
 

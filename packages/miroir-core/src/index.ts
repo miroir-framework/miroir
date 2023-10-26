@@ -331,11 +331,11 @@ export {
   RestClient
 } from './4_services/RestClient.js';
 export {
-  generateHandlerBody
+  generateRestServiceResponse
 } from './RestTools.js';
 export {
   RestServerStub,
-  getHandler,
+  handleRestServiceCallAndGenerateServiceResponse,
   postPutDeleteHandler,
 } from './4_services/RestServerStub.js';
 export { miroirCoreStartup } from './startup.js';

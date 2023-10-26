@@ -8,8 +8,16 @@ import {
 } from "react-router-dom";
 import { StrictMode } from "react";
 import { Provider } from "react-redux";
+import { setupWorker } from 'msw/browser';
 
-import { entityDefinitionEntityDefinition, MiroirConfig, miroirCoreStartup } from "miroir-core";
+import {
+  ConfigurationService,
+  defaultMiroirMetaModel,
+  entityDefinitionEntityDefinition,
+  MiroirConfig,
+  miroirCoreStartup,
+  StoreControllerFactory,
+} from "miroir-core";
 
 import { createReduxStoreAndRestClient } from "./miroir-fwk/createReduxStoreAndRestClient";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
@@ -21,6 +29,10 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { miroirAppStartup } from "./startup";
 
 import miroirConfig from "./assets/miroirConfig.json";
+import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
+import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
+
+const currentMiroirConfig: MiroirConfig = miroirConfig as MiroirConfig;
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
@@ -65,6 +77,8 @@ async function start(root:Root) {
 
   miroirAppStartup();
   miroirCoreStartup();
+  miroirStoreIndexedDbStartup();
+
 
   if (process.env.NODE_ENV === "development") {
 
@@ -72,27 +86,50 @@ async function start(root:Root) {
       reduxStore: mReduxStore,
       domainController,
       miroirContext: myMiroirContext,
-    } = await createReduxStoreAndRestClient(miroirConfig as MiroirConfig, window.fetch.bind(window));
+    } = await createReduxStoreAndRestClient(currentMiroirConfig, window.fetch.bind(window));
 
-    // const {
-    //   localMiroirStoreController,
-    //   localAppStoreController,
-    //   localDataStoreWorker,
-    //   localDataStoreServer,
-    // } = await createMswRestServer(miroirConfig as MiroirConfig, 'browser', setupWorker);
+    if (currentMiroirConfig.emulateServer) {
+      const {
+        localMiroirStoreController,localAppStoreController
+      } = await StoreControllerFactory(
+        ConfigurationService.storeFactoryRegister,
+        currentMiroirConfig,
+      );
+  
+      const {
+        localDataStoreWorker, // browser
+        localDataStoreServer, // nodejs
+      } = await createMswRestServer(
+        currentMiroirConfig,
+        'browser',
+        localMiroirStoreController,
+        localAppStoreController,
+        setupWorker
+      );
+  
+      if (localDataStoreWorker) {
+        console.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
+        localDataStoreWorker?.start();
+      }
+      if (localMiroirStoreController) {
+        // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
+        await localMiroirStoreController?.open();
+        try {
+          await localMiroirStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+        } catch (error) {
+          console.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
+        }
+      }
+      if (localAppStoreController) {
+        await localAppStoreController?.open();
+        try {
+          await localAppStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+        } catch (error) {
+          console.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
+        }
+      }
+    }
 
-    // if (!!localDataStoreWorker) {
-    //   console.log('##############################################');
-    //   localDataStoreWorker.printHandlers(); // Optional: nice for debugging to see all available route handlers that will be intercepted
-    //   console.log('##############################################');
-    //   await localDataStoreWorker.start();
-    // }
-    // if (!!localDataStore) { // datastore is emulated
-    //   await localDataStore.open();
-    //   await localDataStore.bootFromPersistedState(defaultMiroirMetaModel);
-    //   await localDataStore?.clear();
-    //   // console.log('localDataStore.db',localDataStore.getdb());
-    // }
     const theme = createTheme({
       palette: {
         primary: {
@@ -144,7 +181,7 @@ async function start(root:Root) {
         </ThemeProvider>
       </StrictMode>
     );
-  } else {
+  } else { // process.env.NODE_ENV !== "development"
     root.render(
       <span>Production mode not implemented yet!</span>
     )

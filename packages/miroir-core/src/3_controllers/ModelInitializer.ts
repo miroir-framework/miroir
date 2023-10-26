@@ -63,10 +63,11 @@ export async function modelInitialize(
   applicationVersion: EntityInstance,
   applicationStoreBasedConfiguration: EntityInstance,
 ): Promise<void> {
-  const logHeader = 'modelInitialize '+ application.name;
+  console.log("modelInitialize application",application,'dataStoreType',dataStoreType);
+  const logHeader = 'modelInitialize '+ application?.name;
   // TODO: test this.sqlEntities for emptiness, abort if not empty
   // bootstrap MetaClass entity
-  console.log('################################### initApplication',application.name,'dataStoreType',dataStoreType);
+  console.log('################################### modelInitialize',application.name,'dataStoreType',dataStoreType);
   
   const insertReferenceInMetaModel = dataStoreType == 'miroir';
 

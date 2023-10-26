@@ -125,7 +125,7 @@ export class RemoteStoreRestAccessReduxSaga {
       ): RemoteStoreSagaGenReturnType {
         const { deploymentUuid, action } = p.payload;
         try {
-          // console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment",action);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment on action",action);
           const clientResult: {
             status: number;
             data: any;
@@ -135,12 +135,14 @@ export class RemoteStoreRestAccessReduxSaga {
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid, action)
           );
           // } = yield call(() => this.client.handleNetworkAction(action));
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received clientResult", clientResult);
+
           const result = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
-          // console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
           return yield result;
         } catch (e: any) {
           console.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment exception", e);

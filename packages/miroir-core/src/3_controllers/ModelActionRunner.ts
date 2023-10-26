@@ -5,7 +5,7 @@ import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f0
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 
-
+// ################################################################################################
 export async function initApplicationDeployment(
   deploymentUuid: string,
   actionName:string,
@@ -38,6 +38,17 @@ export async function initApplicationDeployment(
   }
   console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntityUuids());
 }
+
+// ################################################################################################
+/**
+ * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * @param deploymentUuid 
+ * @param actionName 
+ * @param miroirDataStoreProxy 
+ * @param appDataStoreProxy 
+ * @param body 
+ * @returns 
+ */
 export async function modelActionRunner(
   deploymentUuid: string,
   actionName:string,
@@ -88,7 +99,14 @@ export async function modelActionRunner(
         switch ((update as any)['action']) {
           default: {
             const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-            console.log('ModelUpdateRunner updateEntity update',(update as any)['action'],'used targetProxy',(targetProxy as any)['applicationName'],deploymentUuid,applicationDeploymentMiroir.uuid);
+            console.log(
+              "ModelUpdateRunner updateEntity update",
+              (update as any)["action"],
+              "used targetProxy",
+              (targetProxy as any)["applicationName"],
+              deploymentUuid,
+              applicationDeploymentMiroir.uuid
+            );
             
             await targetProxy.applyModelEntityUpdate(update);
             console.log('ModelUpdateRunner applyModelEntityUpdate done', update);
@@ -104,6 +122,7 @@ export async function modelActionRunner(
       console.log('ModelUpdateRunner could not handle actionName', actionName)
       break;
   }
+  console.log('ModelUpdateRunner returning empty response.')
   return Promise.resolve(undefined);
 }
 

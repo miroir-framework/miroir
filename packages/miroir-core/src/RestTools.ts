@@ -1,16 +1,26 @@
 import { HttpMethod } from "miroir-core/src/0_interfaces/1_core/Http";
 import { EntityInstance } from "miroir-core/src/0_interfaces/1_core/Instance";
 
-export const generateHandlerBody = async (
+/**
+ * calls the async method {@link method} and returns the result or calls {@link returnJsonResultContinuation} with the result, if a continuation is provided.
+ * @param params 
+ * @param paramNames 
+ * @param instances 
+ * @param HttpMethod 
+ * @param url 
+ * @param method 
+ * @param returnJsonResultContinuation 
+ * @returns 
+ */
+export const generateRestServiceResponse = async (
   params:{[propName: string]: any},
   paramNames:string[],
   instances:EntityInstance[],
   HttpMethod:HttpMethod,
-  url:string,
   method:(...params: any)=>Promise<any>,
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
-  // console.log('generateHandlerBody called with params',params);
+  // console.log('generateRestServiceResponse called with params',params);
   
   let localData;
   let paramVals: string[] = [];
@@ -19,9 +29,9 @@ export const generateHandlerBody = async (
     paramVals = paramNames.map(p=>typeof params[p] == "string" ? params[p] : params[p][0]);
   }
 
-  // console.log('##################################### generateHandlerBody called', HttpMethod, url, "started",'params',paramVals,'instances',instances);
+  // console.log('##################################### generateRestServiceResponse called', HttpMethod, url, "started",'params',paramVals,'instances',instances);
   if (paramNames.length > 0 || instances.length > 0) { // put, post. BAAAAAAAD
-    // console.log("generateHandlerBody execute method for payload instances, named", instances.map((i:any)=>i['name']));
+    // console.log("generateRestServiceResponse execute method for payload instances, named", instances.map((i:any)=>i['name']));
 
     if (instances.length > 0) {
       for (const instance of instances) {
@@ -37,7 +47,7 @@ export const generateHandlerBody = async (
     // localData = instances;
   }
 
-  // console.log("generateHandlerBody received", localData);
+  // console.log("generateRestServiceResponse received", localData);
   // console.log("##################################### end: ",HttpMethod, url);
   return localData?returnJsonResultContinuation(localData):[];
 }

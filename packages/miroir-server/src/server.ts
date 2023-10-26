@@ -4,11 +4,8 @@ import { readFileSync } from 'fs';
 // import * as prettier from "prettier";
 
 import {
-  JzodElement,
   JzodObject,
-  jzodToTsCode,
-  jzodToTsTypeAliasesAndZodText,
-  printTsTypeAliases,
+  jzodToTsCode
 } from "@miroir-framework/jzod-ts";
 
 
@@ -20,62 +17,14 @@ import {
   StoreControllerFactory,
   defaultMiroirMetaModel,
   entityDefinitionReport,
-  getHandler,
+  handleRestServiceCallAndGenerateServiceResponse,
   miroirCoreStartup,
-  miroirJzodSchemaBootstrap,
   modelActionRunner,
   postPutDeleteHandler
 } from "miroir-core";
-// import { SqlStoreFactory } from 'miroir-store-postgres';
-// import { FileSystemEntityDataStore } from './FileSystemModelStore.js';
 import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
-// import { generateZodSchemaFileFromJzodSchema } from './utils';
-
-// // ################################################################################################
-// export function jzodToTsCode (
-//   jzodElement: JzodElement,
-//   exportPrefix: boolean = true,
-//   typeName?: string,
-// ): string {
-//   // console.log(
-//   //   "getTsCodeCorrespondingToZodSchemaAndDescription jzodSchemaZodSchemaAndDescription.contextZodSchema",
-//   //   "jzodElement",
-//   //   JSON.stringify(jzodElement)
-//   // );
-  
-//   const schemaName = typeName?typeName.replace(/^(.)(.*)$/, (a, b, c) => b.toLowerCase() + c):"";
-//   // console.log("getTsCodeCorrespondingToZodSchemaAndDescription convertedJsonZodSchema", bodyJsCode);
-
-//   const header = `import { ZodType, ZodTypeAny, z } from "zod";`;
-
-//   const typeAliasesAndZodText = jzodToTsTypeAliasesAndZodText(jzodElement, typeName);
-
-//   const bodyJsCode = `export const ${schemaName}: z.ZodType<${schemaName}> = ${typeAliasesAndZodText.mainZodText};`;
-
-//   const contextTsTypesString = printTsTypeAliases(typeAliasesAndZodText.contextTsTypeAliases, exportPrefix);
-//   // console.log("getTsCodeCorrespondingToZodSchemaAndDescription !!!!!! contextTsTypesString",contextTsTypesString);
-//   console.log("getTsCodeCorrespondingToZodSchemaAndDescription !!!!!! bodyJsCode",bodyJsCode);
-
-//   const contextJsCode = typeAliasesAndZodText.contextZodText
-//     ? Object.entries(typeAliasesAndZodText.contextZodText).reduce((acc, curr) => {
-//         return `${acc}
-// export const ${curr[0]}: z.ZodType<${curr[0]}> =${curr[1]};`;
-//       }, "")
-//     : ""
-//   ;
-
-//   const tsTypesString = (exportPrefix?"export ":"") + printNode(typeAliasesAndZodText.mainTsTypeAlias);
-//   // console.log("getTsCodeCorrespondingToZodSchemaAndDescription tsTypeString",tsTypesString);
-
-//   return `${header}
-// ${contextTsTypesString}
-// ${tsTypesString}
-// ${contextJsCode}
-// ${bodyJsCode}
-// `;
-// }
 
 
 export async function generateZodSchemaFileFromJzodSchema(
@@ -84,38 +33,8 @@ export async function generateZodSchemaFileFromJzodSchema(
   jzodSchemaVariableName:string,
 ) {
   // console.log("generateZodSchemaFileFromJzodSchema called!");
-  
-  // console.log("generateZodSchemaFileFromJzodSchema miroirJzodSchemaBootstrap",JSON.stringify(miroirJzodSchemaBootstrap,null,2));
-  // console.log("generateZodSchemaFileFromJzodSchema miroirJzodSchemaBootstrapZodSchema",JSON.stringify(miroirJzodSchemaBootstrapZodSchema,null,2));
-
-//   const globalReferences = ()=>({
-//     "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": jzodElementSchemaToZodSchemaAndDescription (
-
-//       miroirJzodSchemaBootstrap.definition as JzodObject,
-//       () => miroirJzodSchemaBootstrapZodSchema,
-//     )
-//   });
-// // console.log("generateZodSchemaFileFromJzodSchema miroir entity definition TS type generation","globalReferences",globalReferences);
-
-//   const jzodObjectZodSchema: ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription (
-//     // entityDefinitionReport.jzodSchema as any as JzodObject,
-//     jzodObject,
-//     miroirJzodSchemaBootstrapZodSchema,
-//     globalReferences
-//   );
-
-  // console.log(
-  //   "generateZodSchemaFileFromJzodSchema miroir entity definition TS type generation",
-  //   "globalReferences 1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-  //   (globalReferences["1e8dab4b-65a3-4686-922e-ce89a2d62aa9"].zodSchema as AnyZodObject).shape
-  // );
-  // console.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport",entityDefinitionReport);
- 
-  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts";
-  // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/src/preprocessor-generated/server-generated.ts";
  
   const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
-  // const newFileContents = await prettier.format(newFileContentsNotFormated,{ semi: false, parser: "typescript" })
   const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
 ${newFileContentsNotFormated}
 `;
@@ -130,9 +49,6 @@ ${newFileContentsNotFormated}
     }
   } else {
     fs.writeFileSync(targetFileName,newFileContents);
-
-    // throw new Error("generateZodSchemaFileFromJzodSchema could not find file " + generatedZodSchemasFile);
-    
   }
 }
 
@@ -233,11 +149,12 @@ app.get("/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
   console.log('get "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all" called, count',count++,'body',body);
 
   console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
-  await getHandler(
+  await handleRestServiceCallAndGenerateServiceResponse(
     "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
     localMiroirStoreController,
     localAppStoreController,
     req,
+    undefined,
     res.json.bind(res)
   )
 });
@@ -257,6 +174,7 @@ app.put("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res
     localMiroirStoreController,
     localAppStoreController,
     req,
+    undefined,
     res.json.bind(res)
   )
 });
@@ -276,6 +194,7 @@ app.post("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, re
     localMiroirStoreController,
     localAppStoreController,
     req,
+    undefined,
     res.json.bind(res)
   )
 });

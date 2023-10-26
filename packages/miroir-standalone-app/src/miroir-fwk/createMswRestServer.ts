@@ -1,29 +1,21 @@
-import { RequestHandler, SetupWorkerApi } from "msw";
+import { RequestHandler } from "msw";
+import { SetupWorkerApi } from "msw/browser";
 import { SetupServerApi } from "msw/node";
 import process from "process";
 
 import {
-  DomainController,
-  DomainControllerInterface,
-  LocalAndRemoteController,
-  LocalAndRemoteControllerInterface,
+  IStoreController,
   MiroirConfig,
-  MiroirContext,
-  RestClient,
-  RestServerStub,
-  IStoreController
+  RestServerStub
 } from "miroir-core";
-import {
-  ReduxStore,
-  RemoteStoreAccessReduxSaga,
-  RemoteStoreNetworkRestClient,
-} from "miroir-redux";
 
-// #############################################################################################
+// ################################################################################################
 export interface CreateMswRestServerReturnType {
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: SetupServerApi | undefined,
 }
+
+// ################################################################################################
 export async function createMswRestServer(
   miroirConfig: MiroirConfig,
   platformType: "browser" | "nodejs",
@@ -36,7 +28,7 @@ export async function createMswRestServer(
 
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
-    console.warn("createMswRestServer emulating server on", miroirConfig.rootApiUrl);
+    console.warn("######################### createMswRestServer emulating server on", miroirConfig.rootApiUrl, "##########################################");
     const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
     let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
