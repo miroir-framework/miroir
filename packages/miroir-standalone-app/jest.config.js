@@ -9,10 +9,6 @@ const esModules = ['uuid'].join('|');
 
 export default (path, options) =>({
   "verbose": true,
-  setupFiles: ["./jest.polyfills.js"],
-  testEnvironmentOptions: {
-    customExportConditions: [''],
-  },
   // "verbose": false,
   "rootDir": ".",
   "moduleDirectories": [
