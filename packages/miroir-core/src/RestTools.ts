@@ -1,5 +1,6 @@
 import { HttpMethod } from "miroir-core/src/0_interfaces/1_core/Http";
 import { EntityInstance } from "miroir-core/src/0_interfaces/1_core/Instance";
+import { HttpResponseBodyFormat } from "./4_services/RestServerStub";
 
 /**
  * calls the async method {@link method} and returns the result or calls {@link returnJsonResultContinuation} with the result, if a continuation is provided.
@@ -17,12 +18,14 @@ export const generateRestServiceResponse = async (
   paramNames:string[],
   instances:EntityInstance[],
   HttpMethod:HttpMethod,
-  method:(...params: any)=>Promise<any>,
+  // method:(...params: any)=>Promise<any>,
+  method:(...params: any)=>Promise<HttpResponseBodyFormat>,
+  // returnJsonResultContinuation:(a:any)=>StrictResponse<HttpResponseBodyFormat>,
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
   // console.log('generateRestServiceResponse called with params',params);
   
-  let localData;
+  let localData: HttpResponseBodyFormat = {instances:[]};
   let paramVals: string[] = [];
   if (paramNames.length > 0) {// get BAAAAAAAD
     // assuming first param is always entityUuid of instances

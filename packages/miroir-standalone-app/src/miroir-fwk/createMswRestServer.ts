@@ -1,6 +1,6 @@
 import { RequestHandler } from "msw";
 import { SetupWorkerApi } from "msw/browser";
-import { SetupServerApi } from "msw/node";
+// import { SetupServerApi } from "msw/lib/node";
 import process from "process";
 
 import {
@@ -12,7 +12,7 @@ import {
 // ################################################################################################
 export interface CreateMswRestServerReturnType {
   localDataStoreWorker: SetupWorkerApi | undefined,
-  localDataStoreServer: SetupServerApi | undefined,
+  localDataStoreServer: any /**SetupServerApi*/ | undefined,
 }
 
 // ################################################################################################
@@ -32,7 +32,7 @@ export async function createMswRestServer(
     const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
 
     let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
-    let localDataStoreServer: SetupServerApi | undefined = undefined;
+    let localDataStoreServer: any /*SetupServerApi*/ | undefined = undefined;
     if (platformType == "browser") {
       localDataStoreWorker = createRestServiceFromHandlers(...restServerStub.handlers);
     }

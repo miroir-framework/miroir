@@ -135,11 +135,6 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         :
         dataEntitiesFromModelSection.instances
       ; // hack, hack, hack
-      // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
-      const toFetchEntities: { section: ApplicationSection; entity: MetaEntity }[] = [
-        ...modelEntitiesToFetch.map((e) => ({ section: "model" as ApplicationSection, entity: e })),
-        ...dataEntitiesToFetch.map((e) => ({ section: "data" as ApplicationSection, entity: e as MetaEntity })),
-      ];
 
       console.log(
         "LocalAndRemoteController loadConfigurationFromRemoteDataStore for deployment",
@@ -149,6 +144,13 @@ export class LocalAndRemoteController implements LocalAndRemoteControllerInterfa
         "model entities to fetch",
         modelEntitiesToFetch,
       );
+
+      // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
+      const toFetchEntities: { section: ApplicationSection; entity: MetaEntity }[] = [
+        ...modelEntitiesToFetch.map((e) => ({ section: "model" as ApplicationSection, entity: e })),
+        ...dataEntitiesToFetch.map((e) => ({ section: "data" as ApplicationSection, entity: e as MetaEntity })),
+      ];
+
 
       let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
       for (const e of toFetchEntities) {

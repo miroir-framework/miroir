@@ -1,5 +1,5 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstance } from "../0_interfaces/1_core/Instance.js";
+import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { IModelSectionStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
@@ -29,6 +29,9 @@ export class ErrorModelStore implements IModelSectionStore {
     throw new Error("Method not implemented.");
   }
   getEntityUuids(): string[] {
+    throw new Error("Method not implemented.");
+  }
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
   existsEntity(entityUuid: string): boolean {

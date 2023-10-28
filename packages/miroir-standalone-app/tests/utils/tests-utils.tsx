@@ -3,6 +3,10 @@ import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { FC, PropsWithChildren, createContext, useState } from 'react';
 import { Provider } from 'react-redux';
+import { RequestHandler } from 'msw';
+import { SetupWorkerApi } from 'msw/browser';
+import { setupServer } from 'msw/node';
+// import { SetupServerApi } from 'msw/lib/node';
 
 // As a basic setup, import your same slice reducers
 import {
@@ -23,9 +27,6 @@ import {
   defaultMiroirMetaModel
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-redux';
-import { RequestHandler } from 'msw';
-import { SetupWorkerApi } from 'msw/browser';
-import { SetupServerApi, setupServer } from 'msw/node';
 import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
 
 
@@ -36,8 +37,8 @@ import applicationVersionLibraryInitialVersion from "../../src/assets/library_mo
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
 
-// ################################################################################################
-const fetch = require('node-fetch');
+import { fetch } from "undici";
+// const fetch = require('node-fetch');
 
 
 // ################################################################################################
@@ -45,7 +46,7 @@ export interface MiroirIntegrationTestEnvironment {
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   localDataStoreWorker?: SetupWorkerApi,
-  localDataStoreServer?: typeof SetupServerApi,
+  localDataStoreServer?: any /**SetupServerApi*/,
   reduxStore: ReduxStore,
   localAndRemoteController: LocalAndRemoteControllerInterface,
   domainController: DomainControllerInterface,
@@ -107,7 +108,7 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
 
   const wrappedReduxStore = createReduxStoreAndRestClient(
     miroirConfig as MiroirConfig,
-    fetch,
+    fetch as any as (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   );
 
   const {
@@ -132,7 +133,8 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
     // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
     // localAppStoreController = wrapped.localAppStoreController as IStoreController;
     result.localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-    result.localDataStoreServer = wrapped.localDataStoreServer as typeof SetupServerApi;
+    // result.localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    result.localDataStoreServer = wrapped.localDataStoreServer;
     result.reduxStore = wrappedReduxStore.reduxStore;
     result.domainController = wrappedReduxStore.domainController;
     result.miroirContext = wrappedReduxStore.miroirContext;
@@ -241,7 +243,12 @@ export async function miroirBeforeEach(
     console.error('beforeEach',error);
     throw(error);
   }
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done beforeEach');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
+  console.log("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
+  console.log("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
+  console.log("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
+  console.log("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
+   
   return Promise.resolve();
 }
 
@@ -265,7 +272,7 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
-  localDataStoreServer?: typeof SetupServerApi,
+  localDataStoreServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   try {

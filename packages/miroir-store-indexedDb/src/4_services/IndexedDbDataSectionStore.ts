@@ -30,7 +30,7 @@ export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore imple
     for (const parentUuid of this.getEntityUuids()) {
       console.log(this.logHeader, "getState getting instances for", parentUuid);
       const instances = await this.getInstances(parentUuid);
-      console.log(this.logHeader, "getState found instances", parentUuid, instances);
+      // console.log(this.logHeader, "getState found instances", parentUuid, instances);
 
       Object.assign(result, { [parentUuid]: instances });
     }

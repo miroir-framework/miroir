@@ -19,54 +19,16 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
   return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
     // ##############################################################################################
     constructor(
-    // public applicationName: string,
-    // public dataStoreType: DataStoreApplicationType,
-    // private directory: string,
+      // ...args stands for:
+      // public applicationName: string,
+      // public dataStoreType: DataStoreApplicationType,
+      // private directory: string,
       // public logHeader: string,
       ...args:any[]
     ) {
       super(...args)
     }
     
-    // // #############################################################################################
-    // async clear(): Promise<void> {
-    //   console.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
-
-    //   for (const parentUuid of this.getEntityUuids()) {
-    //     console.log(this.logHeader, 'clear for entity',parentUuid);
-    //     await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
-    //   }
-    //   return Promise.resolve();
-    // }
-    
-    // // #############################################################################################
-    // createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    //   // console.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
-    //   const entityInstancesPath = path.join(this.directory,entity.uuid)
-    //   if (!fs.existsSync(entityInstancesPath)) {
-    //     fs.mkdirSync(entityInstancesPath)
-    //   } else {
-    //     console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
-    //   }
-    //   return Promise.resolve();
-    // }
-
-    // // #############################################################################################
-    // dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
-    //   const entityInstancesPath = path.join(this.directory,entityUuid)
-    //   if (fs.existsSync(entityInstancesPath)) {
-    //     fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
-    //   } else {
-    //     console.log(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
-    //   }
-    //   return Promise.resolve();
-    // }
-
-    // // #############################################################################################
-    // renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    //   console.log(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
-    //   return Promise.resolve();
-    // }
     // #############################################################################################
     getInstance(entityUuid: string, uuid: string): Promise<EntityInstance | undefined> {
       const entityInstancePath = path.join(this.directory,entityUuid,fullName(uuid))

@@ -335,6 +335,8 @@ export {
 } from './RestTools.js';
 export {
   RestServerStub,
+  HttpRequestBodyFormat,
+  HttpResponseBodyFormat,
   handleRestServiceCallAndGenerateServiceResponse,
   postPutDeleteHandler,
 } from './4_services/RestServerStub.js';

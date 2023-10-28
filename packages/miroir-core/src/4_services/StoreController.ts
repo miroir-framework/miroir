@@ -232,6 +232,18 @@ export class StoreController implements IStoreController{
     return this.dataSectionStore.getState();
   }
   
+  // ##############################################################################################
+  // used only for testing purposes!
+  async getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>{
+    return this.dataSectionStore.getState();
+  }
+  
+  // ##############################################################################################
+  // used only for testing purposes!
+  async getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>{
+    return this.modelSectionStore.getState();
+  }
+  
   // #############################################################################################
   async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
     // TODO: fix applicationSection!!!

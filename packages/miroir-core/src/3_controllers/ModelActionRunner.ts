@@ -13,7 +13,7 @@ export async function initApplicationDeployment(
   appStoreController:IStoreController,
   params:DomainModelInitActionParams
 ) {
-  console.log("ModelUpdateRunner model/initModel params",params);
+  console.log("modelActionRunner model/initModel params",params);
   if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
     await miroirStoreController.initApplication(
       // defaultMiroirMetaModel,
@@ -39,6 +39,79 @@ export async function initApplicationDeployment(
   console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntityUuids());
 }
 
+// ##############################################################################################
+export async function applyModelEntityUpdate(
+  storeController:IStoreController,
+  update:ModelReplayableUpdate
+):Promise<void>{
+  console.log('ModelActionRunner applyModelEntityUpdate',update);
+  const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
+  if (
+    [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
+    storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
+  ) {
+    // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
+    if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
+      const modelEntityUpdate = update.modelEntityUpdate;
+      switch (update.modelEntityUpdate.updateActionName) {
+        case "DeleteEntity":{
+          await storeController.dropEntity(update.modelEntityUpdate.entityUuid)
+          break;
+        }
+        case "alterEntityAttribute": { 
+          break;
+        }
+        case "renameEntity":{
+          await storeController.renameEntity(update);
+          break;
+        }
+        // case "renameEntity": {
+        //   break;
+        // }
+        case "createEntity": {
+          for (const entity of update.modelEntityUpdate.entities) {
+            console.log('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
+            await storeController.createEntity(entity.entity, entity.entityDefinition);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    } else {
+      switch (update.updateActionName) {
+        case "create": 
+        case "update":{
+          for (const instanceCollection of update.objects) {
+            for (const instance of instanceCollection.instances) {
+              await storeController.upsertInstance('data', instance);
+            }
+          }
+          break;
+        }
+        case "delete":{
+          for (const instanceCollection of update.objects) {
+            for (const instance of instanceCollection.instances) {
+              await storeController.deleteInstance('data', instance)
+            }
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    }
+  } else {
+    console.warn(
+      "applyModelEntityUpdate entity uuid",
+      modelCUDupdate.objects[0].parentUuid,
+      "name",
+      modelCUDupdate.objects[0].parentName,
+      "not found!"
+    );
+  }
+}
+
 // ################################################################################################
 /**
  * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
@@ -61,28 +134,26 @@ export async function modelActionRunner(
 
   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  console.log('###################################### ModelUpdateRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
-  console.log('ModelUpdateRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  console.log('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
+  console.log('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   switch (actionName) {
     case 'resetModel':{
-      // const update = (await req.body)[0];
-      console.log("ModelUpdateRunner resetModel update");
+      console.log("modelActionRunner resetModel update");
       await miroirDataStoreProxy.clear();
       await appDataStoreProxy.clear();
-      console.log('ModelUpdateRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+      console.log('modelActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'resetData':{
-      // const update = (await req.body)[0];
-      console.log("ModelUpdateRunner resetData update");
-      // await miroirDataStoreProxy.clear();
+      console.log("modelActionRunner resetData update");
       await appDataStoreProxy.clearDataInstances();
-      console.log('ModelUpdateRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
+      console.log('modelActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'initModel':{
-      // const update:DomainModelInitAction = JSON.parse(body[0]);
       const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      console.log('modelActionRunner initModel params',params);
+
       await initApplicationDeployment(
         deploymentUuid,
         actionName,
@@ -93,14 +164,14 @@ export async function modelActionRunner(
       break;
     }
     case 'updateEntity': {
-      const update: ModelReplayableUpdate = body[0];
-      console.log("ModelUpdateRunner updateEntity update",update);
+      const update: ModelReplayableUpdate = body;
+      console.log("modelActionRunner updateEntity update",update);
       if (update) {
         switch ((update as any)['action']) {
           default: {
             const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
             console.log(
-              "ModelUpdateRunner updateEntity update",
+              "modelActionRunner updateEntity update",
               (update as any)["action"],
               "used targetProxy",
               (targetProxy as any)["applicationName"],
@@ -109,92 +180,20 @@ export async function modelActionRunner(
             );
             
             await targetProxy.applyModelEntityUpdate(update);
-            console.log('ModelUpdateRunner applyModelEntityUpdate done', update);
+            console.log('modelActionRunner applyModelEntityUpdate done', update);
             break;
           }
         }
       } else {
-        console.log('ModelUpdateRunner has no update to execute!')
+        console.log('modelActionRunner has no update to execute!')
       }
       break;
     }
     default:
-      console.log('ModelUpdateRunner could not handle actionName', actionName)
+      console.log('modelActionRunner could not handle actionName', actionName)
       break;
   }
-  console.log('ModelUpdateRunner returning empty response.')
+  console.log('modelActionRunner returning empty response.')
   return Promise.resolve(undefined);
 }
 
-  // ##############################################################################################
-  export async function applyModelEntityUpdate(
-    storeController:IStoreController,
-    update:ModelReplayableUpdate
-  ):Promise<void>{
-    console.log('ModelActionRunner applyModelEntityUpdate',update);
-    const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
-    if (
-      [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
-      storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
-    ) {
-      // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
-      if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
-        const modelEntityUpdate = update.modelEntityUpdate;
-        switch (update.modelEntityUpdate.updateActionName) {
-          case "DeleteEntity":{
-            await storeController.dropEntity(update.modelEntityUpdate.entityUuid)
-            break;
-          }
-          case "alterEntityAttribute": { 
-            break;
-          }
-          case "renameEntity":{
-            await storeController.renameEntity(update);
-            break;
-          }
-          // case "renameEntity": {
-          //   break;
-          // }
-          case "createEntity": {
-            for (const entity of update.modelEntityUpdate.entities) {
-              console.log('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
-              await storeController.createEntity(entity.entity, entity.entityDefinition);
-            }
-            break;
-          }
-          default:
-            break;
-        }
-      } else {
-        switch (update.updateActionName) {
-          case "create": 
-          case "update":{
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await storeController.upsertInstance('data', instance);
-              }
-            }
-            break;
-          }
-          case "delete":{
-            for (const instanceCollection of update.objects) {
-              for (const instance of instanceCollection.instances) {
-                await storeController.deleteInstance('data', instance)
-              }
-            }
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    } else {
-      console.warn(
-        "applyModelEntityUpdate entity uuid",
-        modelCUDupdate.objects[0].parentUuid,
-        "name",
-        modelCUDupdate.objects[0].parentName,
-        "not found!"
-      );
-    }
-  }

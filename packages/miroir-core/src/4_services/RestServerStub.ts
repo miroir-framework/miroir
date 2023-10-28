@@ -1,11 +1,12 @@
+import { HttpResponse, http } from "msw";
+
+
 import { HttpMethod } from "../0_interfaces/1_core/Http.js";
-import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
-import { ApplicationDeployment } from "../0_interfaces/1_core/StorageConfiguration.js";
+import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/Instance.js";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary.js";
 import { generateRestServiceResponse } from "../RestTools.js";
-import { DefaultBodyType, HttpResponse, http } from "msw";
 
 // Add an extra delay to all endpoints, so loading spinners show up.
 const ARTIFICIAL_DELAY_MS = 100;
@@ -15,6 +16,23 @@ const serializePost = (post: any) => ({
   user: post.user.id,
 });
 
+
+export interface HttpRequestBodyFormat {
+  // instances: EntityInstancesUuidIndex
+  instances?: EntityInstance[];
+  crudInstances?: EntityInstance[];
+  modelUpdate?: any;
+  other?: any;
+};
+
+export interface HttpResponseBodyFormat {
+  // instances: EntityInstancesUuidIndex
+  instances: EntityInstance[]
+};
+
+function wrapResults(instances:EntityInstance[]): HttpResponseBodyFormat {
+  return {instances}
+}
 // ################################################################################################
 export function handleRestServiceCallAndGenerateServiceResponse(
   url: string, // log only, to remove?
@@ -50,7 +68,7 @@ export function handleRestServiceCallAndGenerateServiceResponse(
     ['section','parentUuid'],
     [],
     'get',
-    targetStoreController.getInstances.bind(targetStoreController),
+    async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetStoreController.getInstances.bind(targetStoreController)(section,parentUuid)),
     continuationFunction
   )
 }
@@ -60,7 +78,7 @@ export function handleRestServiceCallAndGenerateServiceResponse(
 export function postPutDeleteHandler(
   url: string, // log only, to remove?
   method: HttpMethod,
-  body: any[],
+  body: HttpRequestBodyFormat,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   request:any,
@@ -78,13 +96,18 @@ export function postPutDeleteHandler(
   const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
   
   return generateRestServiceResponse(
-    {section},
-    ['section'],
-    body,
+    { section },
+    ["section"],
+    body?.crudInstances??[],
     method,
-    ['post','put'].includes(method)?targetDataStore.upsertInstance.bind(targetDataStore):targetDataStore.deleteInstance.bind(targetDataStore),
+    // ['post','put'].includes(method)?targetDataStore.upsertInstance.bind(targetDataStore):targetDataStore.deleteInstance.bind(targetDataStore),
+    ["post", "put"].includes(method)
+      // ? targetDataStore.upsertInstance.bind(targetDataStore)
+      ? async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetDataStore.upsertInstance.bind(targetDataStore)(section,parentUuid))
+      // : targetDataStore.deleteInstance.bind(targetDataStore),
+      : async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetDataStore.deleteInstance.bind(targetDataStore)(section,parentUuid)),
     continuationFunction
-  )
+  );
 }
 
 // ##################################################################################
@@ -113,11 +136,11 @@ export class RestServerStub {
         )
       }),
       http.post(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity", async ({request, params}) => {
-        const body = await request.json();
+        const body: HttpRequestBodyFormat = await request.json() as HttpRequestBodyFormat;
         return postPutDeleteHandler(
           this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
            'post',
-          [body],
+          body,
           localMiroirStoreController,
           localAppStoreController,
           request,
@@ -126,11 +149,11 @@ export class RestServerStub {
         );
       }),
       http.put(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity", async ({request, params}) => {
-        const body = await request.json();
+        const body = await request.json() as HttpRequestBodyFormat;
         return postPutDeleteHandler(
           this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
            'put',
-          [body],
+          body,
           localMiroirStoreController,
           localAppStoreController,
           request,
@@ -139,7 +162,7 @@ export class RestServerStub {
         );
       }),
       http.delete(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity", async ({request, params}) => {
-        const body = await request.json();
+        const body = await request.json() as HttpRequestBodyFormat;
         return postPutDeleteHandler(
           this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
            'delete',
@@ -163,21 +186,24 @@ export class RestServerStub {
       
         const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
         console.log("post model/ actionName",actionName);
-        let update: any = {};
+        let update: HttpRequestBodyFormat = {};
         try {
-          update = await request.json();
+          update = await request.json() as HttpRequestBodyFormat;
         } catch(e){}
+
+        console.log("post modelWithDeployment/ received update",update);
 
         await modelActionRunner(
           deploymentUuid,
           actionName,
           localMiroirStoreController,
           localAppStoreController,
-          update
+          update.other
         );
       
         console.log("post modelWithDeployment/ return, with res", request, "params", params);
-        const jsonResult = await HttpResponse.json([]);
+        // const jsonResult = await HttpResponse.json([]);
+        const jsonResult = await HttpResponse.json({instances: []});
         // jsonResult.headers.all
         console.log("post modelWithDeployment/ return, with jsonResult", jsonResult);
         // const result: MaybePromise<MockedResponse<DefaultBodyType>> = res(jsonResult)

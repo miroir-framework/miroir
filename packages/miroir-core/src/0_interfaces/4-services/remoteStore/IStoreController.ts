@@ -62,6 +62,7 @@ export interface IAbstractEntityStore {
 // ###############################################################################################################
 // Data and Model sections
 export interface IModelSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore, IAbstractEntityStore {
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
 export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore {
@@ -93,7 +94,9 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
 
   clearDataInstances():Promise<void>;
 
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // From DataStoreControllerInterface used only for testing purposes!
+  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+  getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+  getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;

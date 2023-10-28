@@ -8,6 +8,7 @@ import { all, call, Effect, put, takeEvery } from 'redux-saga/effects';
 
 import {
   ApplicationSection,
+  HttpResponseBodyFormat,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
@@ -83,10 +84,10 @@ export class RemoteStoreRestAccessReduxSaga {
         try {
           // console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment param",p);
           const clientResult: {
-            status: number;
-            data: any;
-            headers: Headers;
-            url: string;
+            status: number,
+            data: HttpResponseBodyFormat,
+            headers: Headers,
+            url: string,
             // } = yield call(() => this.client.handleNetworkAction(action.payload));
           } = yield call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDActionWithDeployment(
@@ -95,9 +96,10 @@ export class RemoteStoreRestAccessReduxSaga {
               action
             )
           );
+          console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received clientResult",clientResult);
           const result = {
             status: "ok",
-            instanceCollection: clientResult["data"],
+            instanceCollection: clientResult.data.instances,
           };
 
           // console.log("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received result", result);

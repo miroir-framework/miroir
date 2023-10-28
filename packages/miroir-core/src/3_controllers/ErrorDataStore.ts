@@ -31,7 +31,7 @@ export class ErrorDataStore implements IDataSectionStore {
   getEntityUuids(): string[] {
     throw new Error("Method not implemented.");
   }
-  getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
