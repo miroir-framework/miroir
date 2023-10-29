@@ -199,17 +199,17 @@ function getInitializedSectionEntityAdapter(
       state[index] = sliceEntityAdapter.getInitialState();
     }
   }
-  console.log(
-    "LocalCacheSlice getInitializedDeploymentEntityAdapter",
-    "deploymentUuid",
-    deploymentUuid,
-    "section",
-    section,
-    "entityUuid",
-    entityUuid,
-    "state",
-    JSON.stringify(state)
-  );
+  // console.log(
+  //   "LocalCacheSlice getInitializedDeploymentEntityAdapter",
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "section",
+  //   section,
+  //   "entityUuid",
+  //   entityUuid,
+  //   "state",
+  //   JSON.stringify(state)
+  // );
   return sliceEntityAdapter;
 }
 

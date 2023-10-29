@@ -154,19 +154,26 @@ export class StoreController implements IStoreController{
 
   // ##############################################################################################
   async clearDataInstances():Promise<void> {
-    console.log(this.logHeader,'clearDataInstances',this.getEntityUuids());
-    const dataSectionEntities:EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
-    const dataSectionEntityDefinitions:EntityInstanceCollection = await this.getInstances("model", entityEntityDefinition.uuid);
-    const dataSectionFilteredEntities:MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter((e:MetaEntity)=>['Entity','EntityDefinition'].indexOf(e.name)==-1); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-    console.log(this.logHeader,'clearDataInstances found entities to clear:',dataSectionFilteredEntities);
+    console.log(this.logHeader, "clearDataInstances", this.getEntityUuids());
+    const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
+    const dataSectionEntityDefinitions: EntityInstanceCollection = await this.getInstances(
+      "model",
+      entityEntityDefinition.uuid
+    );
+    const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter(
+      (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
+    ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    console.log(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataSectionStore.clear();
-    
+
     for (const entity of dataSectionFilteredEntities) {
-      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.instances.find((d:EntityDefinition)=>d.entityUuid == entity.uuid) as EntityDefinition;
+      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.instances.find(
+        (d: EntityDefinition) => d.entityUuid == entity.uuid
+      ) as EntityDefinition;
       if (entityDefinition) {
-        await this.createDataStorageSpaceForInstancesOfEntity(entity,entityDefinition);
+        await this.createDataStorageSpaceForInstancesOfEntity(entity, entityDefinition);
       } else {
-        console.error(this.logHeader,'clearDataInstances could not find entity definition for Entity',entity);
+        console.error(this.logHeader, "clearDataInstances could not find entity definition for Entity", entity);
       }
     }
     return Promise.resolve();

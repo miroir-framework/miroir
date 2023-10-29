@@ -3,15 +3,17 @@
 
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
  
-export class RestClient implements RestClientInterface {
+  // ##############################################################################################
+  export class RestClient implements RestClientInterface {
   constructor(
     private customFetch:(...args:any) => any
   ){
     console.log("RestClient constructor")
   }
 
+  // ##############################################################################################
   async call(method:string, endpoint:string, args:any = {}):Promise<RestClientCallReturnType> {
-    // console.log("RestClient call")
+    console.log("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
     const headers = { 'Content-Type': 'application/json' }
   
@@ -24,7 +26,9 @@ export class RestClient implements RestClientInterface {
         ...customConfig.headers,
       },
     }
-  
+
+    console.log("RestClient call config", config)
+
     if (body) {
       config.body = JSON.stringify(body)
     }
@@ -50,24 +54,28 @@ export class RestClient implements RestClientInterface {
     }
   }
 
+  // ##############################################################################################
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('GET', endpoint, { ...customConfig, method: 'GET' })
     console.log('RestClient get', endpoint, result)
     return result
   }
 
+  // ##############################################################################################
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('POST', endpoint, { ...customConfig, body })
     console.log('RestClient post', endpoint, result)
     return result
   }
 
+  // ##############################################################################################
   async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('PUT', endpoint, { ...customConfig, body })
     console.log('RestClient put', endpoint, result)
     return result
   }
 
+  // ##############################################################################################
   async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('DELETE', endpoint, { ...customConfig, body })
     console.log('RestClient delete', endpoint, result)

@@ -37,7 +37,8 @@ import applicationVersionLibraryInitialVersion from "../../src/assets/library_mo
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
 
-import { fetch } from "undici";
+// import { fetch } from "undici";
+// import { fetch } from "cross-fetch";
 // const fetch = require('node-fetch');
 
 

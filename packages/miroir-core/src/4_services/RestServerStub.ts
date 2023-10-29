@@ -68,14 +68,14 @@ export function handleRestServiceCallAndGenerateServiceResponse(
     ['section','parentUuid'],
     [],
     'get',
-    async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetStoreController.getInstances.bind(targetStoreController)(section,parentUuid)),
+    async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await (targetStoreController.getInstances.bind(targetStoreController)(section,parentUuid))),
     continuationFunction
   )
 }
 
 
 // ################################################################################################
-export function postPutDeleteHandler(
+export async function postPutDeleteHandler(
   url: string, // log only, to remove?
   method: HttpMethod,
   body: HttpRequestBodyFormat,
@@ -86,7 +86,8 @@ export function postPutDeleteHandler(
   continuationFunction:(arg0: any)=>any
 ) {
   const foundParams = params??request.params;
-  console.log("postPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
+  console.log("postPutDeleteHandler",method,url, "foundParams", foundParams,"body",body);
+  // console.log("postPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
   const deploymentUuid: string =
     typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
 
@@ -94,7 +95,18 @@ export function postPutDeleteHandler(
     (typeof foundParams["section"] == "string" ? foundParams["section"] : foundParams["section"][0]) as ApplicationSection;
 
   const targetDataStore = deploymentUuid == applicationDeploymentLibrary.uuid?localAppStoreController:localMiroirStoreController;
-  
+
+  console.log(
+    "postPutDeleteHandler deploymentUuid",
+    deploymentUuid,
+    "section",
+    section,
+    "targetDataStore.modelDate",
+    await targetDataStore.getModelState(),
+    "targetDataStore.dataDtate",
+    await targetDataStore.getDataState()
+  );
+
   return generateRestServiceResponse(
     { section },
     ["section"],
@@ -103,9 +115,17 @@ export function postPutDeleteHandler(
     // ['post','put'].includes(method)?targetDataStore.upsertInstance.bind(targetDataStore):targetDataStore.deleteInstance.bind(targetDataStore),
     ["post", "put"].includes(method)
       // ? targetDataStore.upsertInstance.bind(targetDataStore)
-      ? async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetDataStore.upsertInstance.bind(targetDataStore)(section,parentUuid))
+      ? async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await (targetDataStore.upsertInstance.bind(targetDataStore)(section,parentUuid)))
+      // ? async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=> {
+      //   const result = await (targetDataStore.upsertInstance.bind(targetDataStore)(section,parentUuid));
+      //   return new Promise<HttpResponseBodyFormat>((resolve, reject) => resolve(wrapResults(result)))
+      // }
       // : targetDataStore.deleteInstance.bind(targetDataStore),
-      : async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await targetDataStore.deleteInstance.bind(targetDataStore)(section,parentUuid)),
+      // : async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=> {
+      //   const result = await (targetDataStore.deleteInstance.bind(targetDataStore)(section,parentUuid));
+      //   return new Promise<HttpResponseBodyFormat>((resolve, reject) => resolve(wrapResults(result)))
+      // },
+      : async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await (targetDataStore.deleteInstance.bind(targetDataStore)(section,parentUuid))),
     continuationFunction
   );
 }
@@ -124,7 +144,7 @@ export class RestServerStub {
     this.handlers = [
       // rest.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async (req, res, ctx) => {
       http.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async ({request, params}) => {
-        console.log("RestServerStub handler ", request);
+        // console.log("RestServerStub handler ", request);
         
         return handleRestServiceCallAndGenerateServiceResponse(
           this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
@@ -198,7 +218,7 @@ export class RestServerStub {
           actionName,
           localMiroirStoreController,
           localAppStoreController,
-          update.other
+          update.modelUpdate
         );
       
         console.log("post modelWithDeployment/ return, with res", request, "params", params);

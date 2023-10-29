@@ -6,13 +6,6 @@ import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { useMemo, useState } from "react";
 
-// const fetch = require('node-fetch');
-
-
-import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
-
 
 import {
   EntityDefinition,

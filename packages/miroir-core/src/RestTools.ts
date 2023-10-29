@@ -18,9 +18,7 @@ export const generateRestServiceResponse = async (
   paramNames:string[],
   instances:EntityInstance[],
   HttpMethod:HttpMethod,
-  // method:(...params: any)=>Promise<any>,
-  method:(...params: any)=>Promise<HttpResponseBodyFormat>,
-  // returnJsonResultContinuation:(a:any)=>StrictResponse<HttpResponseBodyFormat>,
+  method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
   // console.log('generateRestServiceResponse called with params',params);

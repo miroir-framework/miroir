@@ -4,16 +4,9 @@
  */
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SetupWorkerApi } from "msw";
 import { setupServer, SetupServerApi } from "msw/node";
+import { SetupWorkerApi } from "msw/browser";
 import React from "react";
-
-const fetch = require('node-fetch');
-
-
-import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder as any
 
 
 import {
@@ -82,8 +75,8 @@ miroirStorePostgresStartup();
 
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
-let localDataStoreWorker: SetupWorkerApi;
-let localDataStoreServer: SetupServerApi;
+let localDataStoreServer: any /**SetupServerApi | undefined */;
+let localDataStoreWorker: SetupWorkerApi | undefined;
 let reduxStore: ReduxStore;
 let localAndRemoteController: LocalAndRemoteControllerInterface;
 let domainController: DomainControllerInterface;

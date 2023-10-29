@@ -4,16 +4,9 @@
  */
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SetupServerApi, setupServer } from "msw/node";
+import { SetupWorkerApi } from "msw/browser";
+import { setupServer } from "msw/node";
 import React from "react";
-
-const fetch = require('node-fetch');
-
-
-import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
-
 
 import {
   ConfigurationService,
@@ -57,7 +50,6 @@ import {
   miroirBeforeEach,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { SetupWorkerApi } from "msw";
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -83,8 +75,8 @@ miroirStorePostgresStartup();
 
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
-let localDataStoreWorker: SetupWorkerApi;
-let localDataStoreServer: SetupServerApi;
+let localDataStoreServer: any /**SetupServerApi | undefined */;
+let localDataStoreWorker: SetupWorkerApi | undefined;
 let reduxStore: ReduxStore;
 let localAndRemoteController: LocalAndRemoteControllerInterface;
 let domainController: DomainControllerInterface;
@@ -119,7 +111,7 @@ beforeAll(
       // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
       // localAppStoreController = wrapped.localAppStoreController as IStoreController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      localDataStoreServer = wrapped.localDataStoreServer /*as SetupServerApi*/;
       reduxStore = wrappedReduxStore.reduxStore;
       domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
