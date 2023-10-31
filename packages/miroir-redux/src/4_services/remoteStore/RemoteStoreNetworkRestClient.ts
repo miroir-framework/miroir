@@ -96,6 +96,8 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
         : ["DomainTransactionalAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
         ? (networkAction as any)["update"]
           ? {modelUpdate: (networkAction as any)["update"]}
+          : networkAction.actionName == "initModel"
+          ? {modelUpdate: (networkAction as any)["params"]}
           : {other: (networkAction as any)["params"]}
         : {},
     };
