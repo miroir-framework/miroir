@@ -9,6 +9,10 @@ pipeline {
         stage('Download libs') { 
             steps {
                 sh 'npm install'
+                sh 'npm link -w miroir-core'
+                sh 'npm link -w miroir-redux'
+                sh 'npm link -w miroir-store-indexedDb'
+                sh 'npm link -w miroir-store-postgres'
             }
         }
         stage('Build') { 
