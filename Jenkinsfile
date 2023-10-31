@@ -6,10 +6,14 @@ pipeline {
         }
     }
     stages {
+        stage('Download libs') { 
+            steps {
+                sh 'npm install'
+            }
+        }
         stage('Build') { 
             steps {
-                sh 'npm install' 
-                sh 'npm run build -w miroir-standalone-app' 
+                sh 'npm run build -w miroir-standalone-app'
             }
         }
     }
