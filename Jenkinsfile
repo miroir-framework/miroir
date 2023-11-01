@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'miroir-ci-jenkins-node:1.0' 
+            image 'localhost:5001/miroir-ci-jenkins-node:1.0' 
             args '-p 3000:3000' 
         }
     }
