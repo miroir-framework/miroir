@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Download libs') { 
             steps {
+                sh 'env | sort'
                 sh 'npm install'
                 // sh 'npm link -w miroir-core'
                 // sh 'npm link -w miroir-redux'
@@ -17,6 +18,7 @@ pipeline {
         }
         stage('Build') { 
             steps {
+                sh '/home/miroir-app-ci/jenkins/link_packages.sh'
                 sh 'npm run build -w miroir-standalone-app'
             }
         }
