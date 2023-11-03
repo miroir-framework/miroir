@@ -1,16 +1,16 @@
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-core/
-npm link
+sudo npm link
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-redux/
-npm link
+sudo npm link
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-react/
-npm link
+sudo npm link
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-indexedDb/
-npm link
+sudo npm link
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-postgres/
-npm link
+sudo npm link
 cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-standalone-app/
-npm link miroir-core
-npm link miroir-redux
-npm link miroir-react
-npm link miroir-store-indexedDb
-npm link miroir-store-postgres
+sudo npm link miroir-core
+sudo npm link miroir-redux
+sudo npm link miroir-react
+sudo npm link miroir-store-indexedDb
+sudo npm link miroir-store-postgres
