@@ -21,6 +21,7 @@ pipeline {
         stage('Build') { 
             steps {
               sh 'chmod 777 ./link_packages.sh'
+              sh 'chmod -R 777 /usr/local/lib/node_modules'
               sh './link_packages.sh'
               sh 'npm run build -w miroir-standalone-app'
             }
