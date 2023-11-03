@@ -1,14 +1,14 @@
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-core/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-core/
 npm link
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-redux/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-redux/
 npm link
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-react/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-react/
 npm link
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-store-indexedDb/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-indexedDb/
 npm link
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-store-postgres/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-postgres/
 npm link
-cd /var/jenkins_home/workspace/miroir-app-ci/packages/miroir-standalone-app/
+cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-standalone-app/
 npm link miroir-core
 npm link miroir-redux
 npm link miroir-react
