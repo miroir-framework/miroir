@@ -18,8 +18,9 @@ pipeline {
         }
         stage('Build') { 
             steps {
-                sh '/home/miroir-app-ci/jenkins/link_packages.sh'
-                sh 'npm run build -w miroir-standalone-app'
+              sh 'pwd'
+              sh './link_packages.sh'
+              sh 'npm run build -w miroir-standalone-app'
             }
         }
     }
