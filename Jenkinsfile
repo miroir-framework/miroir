@@ -13,6 +13,7 @@ pipeline {
               sh 'whoami'
               sh 'cp -r /var/jenkins_home/workspace/miroir-standalone-app-ci /home/tmp'
               sh 'ls /home/tmp'
+              sh 'npm config ls -l'
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm install'
               // sh 'npm link -w miroir-core'
               // sh 'npm link -w miroir-redux'
