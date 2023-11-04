@@ -13,15 +13,15 @@ pipeline {
               sh 'whoami'
               sh 'rm -rf /home/tmp/*'
               sh 'ls -ail /home/tmp'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/node_modules'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-core/node_modules'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-redux/node_modules'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-indexedDb/node_modules'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-store-postgres/node_modules'
+              sh 'rm -rf /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-standalone-app/node_modules'
               sh 'cp -r /var/jenkins_home/workspace/miroir-standalone-app-ci /home/tmp'
               sh 'ls /home/tmp'
               sh 'ls -ail /home/tmp/miroir-standalone-app-ci/'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/node_modules'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/packages/miroir-core/node_modules'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/packages/miroir-redux/node_modules'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/packages/miroir-store-indexedDb/node_modules'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/packages/miroir-store-postgres/node_modules'
-              sh 'rm -rf /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app/node_modules'
               sh 'npm config ls -l'
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm install'
               // sh 'npm link -w miroir-core'
@@ -43,7 +43,7 @@ pipeline {
         }
         stage('test') { 
             steps {
-              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test'
+              sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test'
             }
         }
     }
