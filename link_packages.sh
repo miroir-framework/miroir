@@ -1,4 +1,4 @@
-cd /var/jenkins_home/workspace/miroir-standalone-app-ci/packages/miroir-core/ && npm link
+cd /home/tmp/packages/miroir-core/ && npm link
 cd /home/tmp/packages/miroir-redux/  && npm link
 cd /home/tmp/packages/miroir-react/  && npm link
 cd /home/tmp/packages/miroir-store-indexedDb/  && npm link
