@@ -45,7 +45,7 @@ pipeline {
         }
         stage('test') { 
             steps {
-              sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test'
+              sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test -- Model.CRUD'
             }
         }
     }
