@@ -41,5 +41,10 @@ pipeline {
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-standalone-app'
             }
         }
+        stage('test') { 
+            steps {
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test'
+            }
+        }
     }
 }
