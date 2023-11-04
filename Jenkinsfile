@@ -11,6 +11,8 @@ pipeline {
               sh 'env | sort'
               sh 'pwd'
               sh 'whoami'
+              sh 'rm -rf /home/tmp'
+              sh 'mkdir -p /home/tmp'
               sh 'cp -r /var/jenkins_home/workspace/miroir-standalone-app-ci /home/tmp'
               sh 'ls /home/tmp'
               sh 'npm config ls -l'
