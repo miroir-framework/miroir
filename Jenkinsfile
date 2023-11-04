@@ -24,6 +24,10 @@ pipeline {
             steps {
               sh 'cd /home/tmp/miroir-standalone-app-ci && chmod 777 ./link_packages.sh'
               sh 'cd /home/tmp/miroir-standalone-app-ci && ./link_packages.sh'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-core'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-redux'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-store-indexedDb'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-store-postgres'
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-standalone-app'
             }
         }
