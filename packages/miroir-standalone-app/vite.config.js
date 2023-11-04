@@ -26,6 +26,7 @@ export default defineConfig({
     watch: false,
     maxConcurrency: 1,
     maxThreads: 1,
+    minThreads: 1,
     environment: 'jsdom',
     setupFiles: ['./setup.ts'],
   },
