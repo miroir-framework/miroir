@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  * @jest-environment-options {"url": "http://localhost/"}
  */
+import path from "path";
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SetupWorkerApi } from "msw/browser";
@@ -56,16 +57,24 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { loadConfigFile } from "./DomainController.Data.CRUD.functions";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
+// const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
-const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
+
+console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+
 
 miroirAppStartup();
 miroirCoreStartup();

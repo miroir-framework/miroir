@@ -15,6 +15,7 @@ import {
   EntityInstance,
   IStoreController,
   MetaEntity,
+  MiroirConfig,
   MiroirContext
 } from "miroir-core";
 import { ReduxStore } from "miroir-redux";
@@ -37,6 +38,7 @@ import book4 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d30
 import book3 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
 import book1 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
 import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
+import path from "path";
 
 export async function refreshAllInstancesTest(
   localMiroirStoreController: IStoreController,
@@ -108,4 +110,19 @@ export async function refreshAllInstancesTest(
     expect(false).toBeTruthy();
   }
   return Promise.resolve();
+}
+
+
+export async function loadConfigFile(pwd: string, fileRelativePath:string): Promise<MiroirConfig> {
+  // console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+  // console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+  const configFilePath = path.join(pwd, fileRelativePath)
+  console.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
+  const configFileContents = await import(configFilePath);
+  console.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
+
+  const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+  console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+  return miroirConfig;
 }

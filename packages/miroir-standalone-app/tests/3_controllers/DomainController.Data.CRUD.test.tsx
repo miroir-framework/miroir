@@ -49,7 +49,7 @@ import book3 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d30
 import book4 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
 
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
-import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+import { loadConfigFile, refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -58,14 +58,19 @@ import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
-import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
+// import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_filesystem-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_sql-indexedDb.json";
 import { ReduxStore } from "miroir-redux";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 
-const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+// const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
+
+console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -139,6 +144,7 @@ afterEach(
   }
 )
 
+// describe.each([])(
 describe(
   'DomainController.Data.CRUD',
   () => {
