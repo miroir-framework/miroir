@@ -24,11 +24,16 @@ export function miroirStorePostgresStartup() {
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
-      return Promise.resolve(
-        config.emulatedServerType == "sql" && dataStore
-          ? new SqlDbModelStore(appName, dataStoreApplicationType, config.connectionString, config.schema, dataStore)
-          : new ErrorModelStore()
-      )
+      if (config.emulatedServerType == "sql" && dataStore) {
+        return Promise.resolve(
+          config.emulatedServerType == "sql" && dataStore
+            ? new SqlDbModelStore(appName, dataStoreApplicationType, config.connectionString, config.schema, dataStore)
+            : new ErrorModelStore()
+        )
+      } else {
+        return Promise.resolve(new ErrorModelStore())
+      }
+
     }
   );
   ConfigurationService.registerStoreFactory(
@@ -42,11 +47,16 @@ export function miroirStorePostgresStartup() {
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       console.log('called registerStoreFactory function for',appName, section, 'filesystem');
-      return Promise.resolve(
-        config.emulatedServerType == "sql"
-          ? new SqlDbDataStore(appName, dataStoreApplicationType, config.connectionString, config.schema)
-          : new ErrorDataStore()
-      )
+      if (config.emulatedServerType == "sql") {
+        return Promise.resolve(
+          config.emulatedServerType == "sql"
+            ? new SqlDbDataStore(appName, dataStoreApplicationType, config.connectionString, config.schema)
+            : new ErrorDataStore()
+        );
+      } else {
+        return Promise.resolve(new ErrorDataStore());
+      }
+
     }
   );
 }

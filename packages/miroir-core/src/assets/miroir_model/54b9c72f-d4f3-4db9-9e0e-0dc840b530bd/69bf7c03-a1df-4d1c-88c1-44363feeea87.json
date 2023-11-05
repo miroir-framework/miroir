@@ -41,6 +41,7 @@
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
+        "optional": true,
         "extra": { "id":6, "defaultLabel": "Name", "editable": true }
       },
       "application": {

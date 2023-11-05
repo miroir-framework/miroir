@@ -75,6 +75,7 @@ export type ApplicationModelLevel = z.infer<typeof ApplicationModelLevelSchema>;
 export const ApplicationDeploymentSchema = EntityInstanceWithNameSchema.extend({
   // uuid: z.string().uuid(),
   type: ClientServerDistributionModeSchema,
+  defaultLabel: z.string(),
   description: z.string(),
   // metaModel: ModelStorageLocation,
   application:z.string().uuid().optional(),

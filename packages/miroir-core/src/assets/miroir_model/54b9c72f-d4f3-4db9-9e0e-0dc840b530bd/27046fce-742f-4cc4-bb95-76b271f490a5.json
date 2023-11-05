@@ -35,6 +35,7 @@
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
+        "optional": true,
         "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
