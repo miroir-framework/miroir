@@ -1,0 +1,28 @@
+{
+  "emulateServer": true,
+  "rootApiUrl":"http://localhost:3080",
+  "miroirServerConfig": {
+    "model": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-miroir"
+    },
+    "data": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-miroir"
+    }
+  },
+  "appServerConfig": {
+    "model": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-app"
+    },
+    "data": {
+      "emulatedServerType": "indexedDb",
+      "indexedDbName":"indexedDb-app"
+    }
+  },
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false,
+  "versionControlForDataConceptLevel": false
+}
