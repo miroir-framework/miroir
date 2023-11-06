@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'miroir-ci-node:1.0' 
-            args '-p 3000:3000'
+            args '-p 3000:3000 --add-host host.docker.internal:host-gateway'
         }
     }
     stages {
