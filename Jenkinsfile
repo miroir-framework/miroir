@@ -43,14 +43,25 @@ pipeline {
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run build -w miroir-standalone-app'
             }
         }
-        stage('test') { 
+        stage('tests-DomainController-indexedDb') { 
+            steps {
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-indexedDb-sql.json -- DomainController.Model.CRUD'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-indexedDb-sql.json -- DomainController.Data.CRUD'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-indexedDb-sql.json -- DomainController.Model.undo-redo'
+            }
+        }
+        stage('tests-DomainController-filesystem') { 
+            steps {
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-filesystem-sql.json -- DomainController.Model.CRUD'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-filesystem-sql.json -- DomainController.Data.CRUD'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-filesystem-sql.json -- DomainController.Model.undo-redo'
+            }
+        }
+        stage('test-DomainController-sql') { 
             steps {
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql.json -- DomainController.Model.CRUD'
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql.json -- DomainController.Data.CRUD'
               sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql.json -- DomainController.Model.undo-redo'
-              // sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Model.CRUD'
-              // sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test --env=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Data.CRUD'
-              // sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test --env=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Model.undo-redo'
             }
         }
     }
