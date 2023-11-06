@@ -31,17 +31,23 @@
         "definition": "string",
         "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
       },
+      "entityUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 5, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }
+      },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Concept Level", "editable": false }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
       },
       "jzodSchema": {
         "type": "schemaReference",
@@ -50,7 +56,7 @@
           "relativePath": "jzodObject"
         },
         "optional": true,
-        "extra": { "id": 7, "defaultLabel": "Jzod Schema", "editable": true }
+        "extra": { "id": 8, "defaultLabel": "Jzod Schema", "editable": true }
       }
     }
   }

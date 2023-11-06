@@ -5,11 +5,18 @@ import {
 } from 'vitest';
 import { fetch } from 'cross-fetch';
 
-// import { server } from './utils';
-
 // Add `fetch` polyfill.
 global.fetch = fetch;
 
 // beforeAll(() => server.listen({ onUnhandledRequest: `error` }));
 // afterAll(() => server.close());
 // afterEach(() => server.resetHandlers());
+
+
+// FAIL LOUDLY on unhandled promise rejections / errors
+process.on('unhandledRejection', (reason) => {
+  // eslint-disable-next-line no-console
+  console.log(`FAILED TO HANDLE PROMISE REJECTION`);
+  process.exit(1);
+  // throw reason;
+});

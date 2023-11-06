@@ -63,14 +63,28 @@ export function handleRestServiceCallAndGenerateServiceResponse(
     applicationDeploymentLibrary.uuid
   );
 
-  return generateRestServiceResponse(
-    {section, parentUuid},
-    ['section','parentUuid'],
-    [],
-    'get',
-    async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await (targetStoreController.getInstances.bind(targetStoreController)(section,parentUuid))),
-    continuationFunction
-  )
+  try {
+    return generateRestServiceResponse(
+      {section, parentUuid},
+      ['section','parentUuid'],
+      [],
+      'get',
+      async (section: ApplicationSection, parentUuid:string):Promise<HttpResponseBodyFormat>=>wrapResults(await (targetStoreController.getInstances.bind(targetStoreController)(section,parentUuid))),
+      continuationFunction
+    )
+  } catch (error) {
+    console.warn(
+      "handleRestServiceCallAndGenerateServiceResponse get url",
+      url,
+      "deployment",
+      deploymentUuid,
+      "applicationDeploymentLibrary.uuid",
+      applicationDeploymentLibrary.uuid,
+      "failed with error",
+      error
+    );
+    return Promise.resolve(undefined);
+  }
 }
 
 
@@ -145,15 +159,25 @@ export class RestServerStub {
       // rest.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async (req, res, ctx) => {
       http.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async ({request, params}) => {
         // console.log("RestServerStub handler ", request);
-        
-        return handleRestServiceCallAndGenerateServiceResponse(
-          this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-          localMiroirStoreController,
-          localAppStoreController,
-          request,
-          params,
-          (localData)=>HttpResponse.json(localData)
-        )
+        try {
+          return handleRestServiceCallAndGenerateServiceResponse(
+            this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+            localMiroirStoreController,
+            localAppStoreController,
+            request,
+            params,
+            (localData)=>HttpResponse.json(localData)
+          );
+        } catch (error) {
+          console.warn(
+            "RestServerStub get handler",
+            "rootApiUrl",
+            rootApiUrl,
+            "failed with error",
+            error
+          );
+          return Promise.resolve(undefined);
+        }
       }),
       http.post(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity", async ({request, params}) => {
         const body: HttpRequestBodyFormat = await request.json() as HttpRequestBodyFormat;

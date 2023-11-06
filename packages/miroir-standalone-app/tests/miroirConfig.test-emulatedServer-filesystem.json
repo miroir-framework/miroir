@@ -4,21 +4,21 @@
   "miroirServerConfig":{
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/miroir_model"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/miroir_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/miroir_data"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/miroir_data"
     }
   },
   "appServerConfig": {
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/library_model"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/library_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tmp/library_data"
+      "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/library_data"
     }
   },
   "deploymentMode":"monoUser",

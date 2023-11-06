@@ -41,7 +41,15 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler{
   public async open():Promise<void> {
     try {
       await this.sequelize.authenticate();
-      console.log('Application',this.applicationName,'dataStoreType',this.dataStoreType,'data Connection to postgres data schema', this.schema, 'has been established successfully.');
+      console.log(
+        "Application",
+        this.applicationName,
+        "dataStoreType",
+        this.dataStoreType,
+        "data Connection to postgres data schema",
+        this.schema,
+        "has been established successfully."
+      );
     } catch (error) {
       console.error('Unable to connect data', this.schema, ' to the postgres database:', error);
     }
@@ -121,9 +129,27 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler{
       this.sqlSchemaTableAccess,
       this.getAccessToDataSectionEntity(entity, entityDefinition)
     );
-    console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'creating data schema table',entity.name);
+    console.log(
+      this.logHeader,
+      "createStorageSpaceForInstancesOfEntity",
+      "Application",
+      this.applicationName,
+      "dataStoreType",
+      this.dataStoreType,
+      "creating data schema table",
+      entity.name
+    );
     await this.sqlSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
-    console.log(this.logHeader,'createStorageSpaceForInstancesOfEntity','Application',this.applicationName,'dataStoreType',this.dataStoreType,'done creating data schema table',entity.name);
+    console.log(
+      this.logHeader,
+      "createStorageSpaceForInstancesOfEntity",
+      "Application",
+      this.applicationName,
+      "dataStoreType",
+      this.dataStoreType,
+      "done creating data schema table",
+      entity.name
+    );
     return Promise.resolve();
   }
 

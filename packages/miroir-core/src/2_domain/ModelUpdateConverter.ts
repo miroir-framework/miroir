@@ -14,7 +14,7 @@ export class ModelEntityUpdateConverter{
     entities: MetaEntity[],
     entityDefinitions: EntityDefinition[],
   ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
-    let domainAction: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
+    let domainActionCUDUpdate: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
     switch (modelUpdate.updateActionName) {
       case "renameEntity":{
         const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
@@ -26,7 +26,7 @@ export class ModelEntityUpdateConverter{
             {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          domainAction = {
+          domainActionCUDUpdate = {
             actionName: "update",
             objects
           }
@@ -42,7 +42,7 @@ export class ModelEntityUpdateConverter{
           parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, applicationSection:'model', instances:[{uuid: ed.uuid} as EntityInstanceWithName]
         }));
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-        domainAction = {
+        domainActionCUDUpdate = {
           // actionType:"DomainDataAction",
           actionName:"delete",
           // objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
@@ -56,7 +56,7 @@ export class ModelEntityUpdateConverter{
       case "alterEntityAttribute":
       case "createEntity":{
         const castUpdate = modelUpdate as ModelEntityUpdateCreateMetaModelInstance;
-        domainAction = {
+        domainActionCUDUpdate = {
           // actionType:"DomainDataAction",
           actionName: "create",
           objects:[
@@ -79,7 +79,7 @@ export class ModelEntityUpdateConverter{
       default:
       break;
     }
-    return domainAction;
+    return domainActionCUDUpdate;
   }
   // ###################################################################################################
   static modelEntityUpdateToLocalCacheUpdate(

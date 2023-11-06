@@ -34,7 +34,8 @@ export class SqlDbModelStore extends MixedSqlDbEntityAndInstanceStore implements
     
     for (const parentUuid of this.getEntityUuids()) {
       console.log(this.logHeader,'getState getting instances for',parentUuid);
-      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:await this.getInstances(parentUuid)};
+      const dbInstances = await this.getInstances(parentUuid);
+      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:dbInstances};
       // console.log(this.logHeader,'getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});

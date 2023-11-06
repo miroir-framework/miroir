@@ -17,8 +17,6 @@ import {
   export function createReduxStoreAndRestClient(
   miroirConfig: MiroirConfig,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
-  // fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
-  // fetch: (input: any, init?: any) => Promise<Response>,
 ):{
   miroirContext:MiroirContext,
   reduxStore: ReduxStore,

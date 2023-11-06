@@ -31,16 +31,10 @@ import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/mi
 
 
 import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-// import applicationDeploymentLibrary from '../../src/assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json';
 import applicationStoreBasedConfigurationLibrary from "../../src/assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
 import applicationVersionLibraryInitialVersion from "../../src/assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../../src/assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
-
-// import { fetch } from "undici";
-// import { fetch } from "cross-fetch";
-// const fetch = require('node-fetch');
-
 
 // ################################################################################################
 export interface MiroirIntegrationTestEnvironment {

@@ -1,9 +1,3 @@
-// /**
-//  * jest-environment ./tests/custom-test-env
-//  * @jest-environment jsdom
-//  * @jest-environment-options {"url": "http://localhost/"}
-//  */
-
 // import { TextDecoder, TextEncoder } from 'util'
 // global.TextEncoder = TextEncoder
 // global.TextDecoder = TextDecoder
@@ -11,9 +5,6 @@
 // import { waitFor } from '@testing-library/react'
 // import { setupServer } from 'msw/node'
 // import React from 'react'
-
-// // import fetch from "node-fetch";
-// const fetch = require('node-fetch');
 
 // import {
 //   LocalAndRemoteControllerInterface,

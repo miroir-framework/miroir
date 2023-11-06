@@ -29,12 +29,13 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
 
     console.log("RestClient call config", config)
 
-    if (body) {
-      config.body = JSON.stringify(body)
-    }
-  
     let data
     try {
+
+      if (body) {
+        config.body = JSON.stringify(body)
+      }
+    
       const response = await this.customFetch(endpoint, config)
 
       // console.log("RestClient response", response);

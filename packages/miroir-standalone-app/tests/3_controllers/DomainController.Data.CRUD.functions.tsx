@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- * @jest-environment-options {"url": "http://localhost/"}
- */
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";

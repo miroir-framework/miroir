@@ -36,6 +36,9 @@ packages/miroir-standalone-app/miroir*/
 packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/indexedDb-app-uuid*/
 packages/miroir-standalone-app/indexedDb-miroir-uuid*/
-packages/miroir-standalone-app/tmp*/
+packages/miroir-standalone-app/test/tmp/miroir_data/*
+packages/miroir-standalone-app/test/tmp/miroir_model/*
+packages/miroir-standalone-app/test/tmp/library_data/*
+packages/miroir-standalone-app/test/tmp/library_model/*
 package-lock.json
 packages/*/package-lock.json
