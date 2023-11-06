@@ -4,24 +4,24 @@
   "miroirServerConfig":{
     "model": {
       "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+      "connectionString":"postgres://postgres:postgres@172.17.0.1:5432/postgres",
       "schema": "miroir"
     },
     "data": {
       "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+      "connectionString":"postgres://postgres:postgres@172.17.0.1:5432/postgres",
       "schema": "miroir"
     }
   },
   "appServerConfig": {
     "model": {
       "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+      "connectionString":"postgres://postgres:postgres@172.17.0.1:5432/postgres",
       "schema": "library"
     },
     "data": {
       "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+      "connectionString":"postgres://postgres:postgres@172.17.0.1:5432/postgres",
       "schema": "library"
     }
   },
