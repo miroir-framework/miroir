@@ -45,7 +45,7 @@ pipeline {
         }
         stage('test') { 
             steps {
-              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-sql.json -- DomainController.Model.CRUD'
+              sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql.json -- DomainController.Model.CRUD'
               // sh 'cd /home/tmp/miroir-standalone-app-ci && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Model.CRUD'
               // sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test --env=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Data.CRUD'
               // sh 'cd /home/tmp/miroir-standalone-app-ci/packages/miroir-standalone-app && npm run test --env=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json -- DomainController.Model.undo-redo'
