@@ -317,7 +317,6 @@ export {
   metaModelEntities,
   miroirModelEntities,
 } from './3_controllers/ModelInitializer.js';
-export { LocalAndRemoteController } from './3_controllers/LocalAndRemoteController.js';
 export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';

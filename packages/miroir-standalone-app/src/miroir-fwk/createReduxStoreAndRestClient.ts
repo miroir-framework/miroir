@@ -1,8 +1,6 @@
 import {
   DomainController,
   DomainControllerInterface,
-  LocalAndRemoteController,
-  LocalAndRemoteControllerInterface,
   MiroirConfig,
   MiroirContext,
   RestClient
@@ -20,7 +18,6 @@ import {
 ):{
   miroirContext:MiroirContext,
   reduxStore: ReduxStore,
-  localAndRemoteController:LocalAndRemoteControllerInterface,
   domainController: DomainControllerInterface,
 } {
   const miroirContext = new MiroirContext();
@@ -42,13 +39,12 @@ import {
   const reduxStore: ReduxStore = new ReduxStore(instanceSagas);
   reduxStore.run();
 
-  const localAndRemoteController: LocalAndRemoteControllerInterface = new LocalAndRemoteController(
+  const domainController: DomainControllerInterface = new DomainController(
     miroirContext,
     reduxStore, // implements LocalCacheInterface
     reduxStore, // implements RemoteDataStoreInterface
   );
-  const domainController: DomainControllerInterface = new DomainController(localAndRemoteController);
 
-  return {miroirContext, reduxStore, localAndRemoteController, domainController}
+  return {miroirContext, reduxStore,  domainController}
   
 }
