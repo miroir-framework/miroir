@@ -1,56 +1,24 @@
 import express from 'express';
-import * as fs from "fs";
 import { readFileSync } from 'fs';
 // import * as prettier from "prettier";
 
 import {
-  JzodObject,
-  jzodToTsCode
+  JzodObject
 } from "@miroir-framework/jzod-ts";
 
 
 import bodyParser from 'body-parser';
 import {
-  ConfigurationService,
-  IStoreController,
   MiroirConfig,
-  StoreControllerFactory,
-  defaultMiroirMetaModel,
   entityDefinitionReport,
   handleRestServiceCallAndGenerateServiceResponse,
-  miroirCoreStartup,
   modelActionRunner,
   postPutDeleteHandler
 } from "miroir-core";
-import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
-import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
-import { miroirStorePostgresStartup } from 'miroir-store-postgres';
+import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
+import { startServer } from './start.js';
 
 
-export async function generateZodSchemaFileFromJzodSchema(
-  jzodObject: JzodObject,
-  targetFileName: string,
-  jzodSchemaVariableName:string,
-) {
-  // console.log("generateZodSchemaFileFromJzodSchema called!");
- 
-  const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
-  const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
-${newFileContentsNotFormated}
-`;
-
-  if (targetFileName && fs.existsSync(targetFileName)) {
-    const oldFileContents = fs.readFileSync(targetFileName).toString()
-    if (newFileContents != oldFileContents)  {
-      console.log("generateZodSchemaFileFromJzodSchema newFileContents",newFileContents);
-      fs.writeFileSync(targetFileName,newFileContents);
-    } else {
-      console.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport old contents equal new contents, no file generation needed.");
-    }
-  } else {
-    fs.writeFileSync(targetFileName,newFileContents);
-  }
-}
 
 const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
@@ -58,17 +26,7 @@ const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConf
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 console.log('configFileContents',configFileContents)
 
-// const applicationDeploymentLibrary = JSON.parse(readFileSync(new URL('./assets/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json', import.meta.url)).toString());
-// console.log('applicationDeploymentLibrary',applicationDeploymentLibrary)
-
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
-
-// miroirAppStartup();
-miroirCoreStartup();
-miroirStoreFileSystemStartup();
-miroirStoreIndexedDbStartup();
-miroirStorePostgresStartup();
-
 
 const app = express(),
       port = 3080;
@@ -79,33 +37,11 @@ const users = [];
 
 console.log(`Server being set-up, going to execute on the port::${port}`);
 
-let
-  localMiroirStoreController:IStoreController,
-  localAppStoreController:IStoreController
-;
-
 const {
-  localMiroirStoreController:a,localAppStoreController:b
-} = await StoreControllerFactory(
-  ConfigurationService.storeFactoryRegister,
-  miroirConfig,
-);
-localMiroirStoreController = a;
-localAppStoreController = b;
+  localMiroirStoreController,
+  localAppStoreController
+} = await startServer(miroirConfig);
 
-try {
-  await localMiroirStoreController?.open();
-  await localMiroirStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
-} catch(e) {
-  console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
-}
-
-try {
-  await localAppStoreController?.open();
-  await localAppStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
-} catch(e) {
-  console.error("failed to initialize app, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
-}
 
 // ################################################################################################
 const jzodSchemaConversion: {

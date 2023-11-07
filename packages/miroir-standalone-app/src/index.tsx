@@ -33,7 +33,7 @@ import miroirConfig from "./assets/miroirConfig.json";
 import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 
-const currentMiroirConfig: MiroirConfig = miroirConfig as MiroirConfig;
+const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
