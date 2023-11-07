@@ -88,102 +88,6 @@ function defaultToEntityList(value: string | undefined, miroirReports: Report[])
   return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
 }
 
-// ###################################################################################
-async function uploadBooksAndReports(
-  domainController: DomainControllerInterface,
-  currentModel?:MiroirApplicationModel
-) {
-  await domainController.handleDomainAction(
-    applicationDeploymentLibrary.uuid,
-    {
-    actionType: "DomainTransactionalAction",
-    actionName: "updateEntity",
-    update: {
-      updateActionName:"WrappedTransactionalEntityUpdate",
-      modelEntityUpdate: {
-        updateActionType: "ModelEntityUpdate",
-        updateActionName: "createEntity",
-        entities: [
-          {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-          {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-          {entity:entityPublisher as MetaEntity, entityDefinition:entityDefinitionPubliser as EntityDefinition},
-          {entity:entityTest as MetaEntity, entityDefinition:entityDefinitionTest as EntityDefinition},
-        ],
-      },
-    }
-  },currentModel);
-  await domainController.handleDomainAction(
-    applicationDeploymentLibrary.uuid,
-    {
-    actionType: "DomainTransactionalAction",
-    actionName: "UpdateMetaModelInstance",
-    update: {
-      updateActionType: "ModelCUDInstanceUpdate",
-      updateActionName: "create",
-      objects: [{
-        parentName: entityReport.name,
-        parentUuid: entityReport.uuid,
-        applicationSection:'model',
-        instances: [
-          reportAuthorList as EntityInstance, reportBookList as EntityInstance, reportPublisherList as EntityInstance, reportTestList as EntityInstance
-        ]
-      }],
-    }
-  },currentModel);
-
-  await domainController.handleDomainAction(
-    applicationDeploymentLibrary.uuid,
-    { actionName: "commit", actionType: "DomainTransactionalAction", label:"Adding Author and Book entities" },
-    currentModel
-  );
-
-  await domainController.handleDomainAction(
-    applicationDeploymentLibrary.uuid,
-    {
-    actionType: "DomainDataAction",
-    actionName: "create",
-    objects: [
-      {
-        parentName: entityPublisher.name,
-        parentUuid: entityPublisher.uuid,
-        applicationSection:'data',
-        instances: [folio as EntityInstance, penguin as EntityInstance, springer as EntityInstance],
-      },
-      {
-        parentName: entityAuthor.name,
-        parentUuid: entityAuthor.uuid,
-        applicationSection:'data',
-        instances: [
-          author1 as EntityInstance, 
-          author2 as EntityInstance,
-          author3 as EntityInstance,
-          author4 as EntityInstance,
-        ],
-      },
-      {
-        parentName: entityBook.name,
-        parentUuid: entityBook.uuid,
-        applicationSection:'data',
-        instances: [
-          book1 as EntityInstance, 
-          book2 as EntityInstance, 
-          book3 as EntityInstance, 
-          book4 as EntityInstance,
-          book5 as EntityInstance,
-          book6 as EntityInstance,
-        ],
-      },
-      {
-        parentName: entityTest.name,
-        parentUuid: entityTest.uuid,
-        applicationSection:'data',
-        instances: [
-          test1 as EntityInstance, 
-        ],
-      },
-    ],
-  });
-}
 
 // ###################################################################################
 // ###################################################################################
@@ -437,7 +341,7 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
@@ -486,7 +390,7 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Init database
         </button>
-      </span>
+      </span> */}
       <span>
         <button
           onClick={async () => {
@@ -504,7 +408,7 @@ export const HomePage = (props: RootComponentProps) => {
           fetch Miroir & App configurations from database
         </button>
       </span>
-      <p />
+      {/* <p />
       <span>
         <button
           onClick={async () => {
@@ -513,7 +417,7 @@ export const HomePage = (props: RootComponentProps) => {
         >
           upload App configuration to database
         </button>
-      </span>
+      </span> */}
       <span>
         <button
           onClick={async () => {

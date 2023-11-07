@@ -45,7 +45,7 @@ export const ReportPage = () => {
   const errorLog = useErrorLogService();
   const currentModel: MiroirApplicationModel = useCurrentModel(params.deploymentUuid);
 
-  // console.log("ReportPage currentModel", currentModel);
+  console.log("ReportPage currentModel", currentModel);
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
 
