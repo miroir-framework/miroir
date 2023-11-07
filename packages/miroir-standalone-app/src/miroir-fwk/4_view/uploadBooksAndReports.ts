@@ -19,6 +19,9 @@ import reportBookList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6
 import reportCountryList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json";
 import reportPublisherList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json";
 import reportTestList from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/931dd036-dfce-4e47-868e-36dba3654816.json";
+import reportAuthorDetails from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json";
+import reportBookDetails from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
+// import reportAuthorDetails from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/931dd036-dfce-4e47-868e-36dba3654816.json";
 
 import applicationLibrary from "../../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import applicationStoreBasedConfigurationLibrary from "../../assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
@@ -83,7 +86,9 @@ export async function uploadBooksAndReports(
             parentUuid: entityReport.uuid,
             applicationSection: "model",
             instances: [
+              reportAuthorDetails as EntityInstance,
               reportAuthorList as EntityInstance,
+              reportBookDetails as EntityInstance,
               reportBookList as EntityInstance,
               reportCountryList as EntityInstance,
               reportPublisherList as EntityInstance,
