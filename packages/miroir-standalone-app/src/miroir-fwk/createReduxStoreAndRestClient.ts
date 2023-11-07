@@ -32,7 +32,6 @@ import {
   );
 
   const instanceSagas: RemoteStoreAccessReduxSaga = new RemoteStoreAccessReduxSaga(
-    rootApiUrl,
     remoteStoreNetworkRestClient
   );
 

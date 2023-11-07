@@ -1,1 +1,5 @@
-export { RestServerStub } from "./RestServerStub"
+export {
+  RestServerStub,
+  handleRestServiceCallAndGenerateServiceResponse,
+  postPutDeleteHandler,
+} from './RestServerStub.js';

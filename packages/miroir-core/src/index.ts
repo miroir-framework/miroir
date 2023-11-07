@@ -253,6 +253,8 @@ export {
   LocalCacheInterface,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
+  HttpRequestBodyFormat,
+  HttpResponseBodyFormat,
   RemoteDataStoreInterface,
   RemoteStoreAction,
   RemoteStoreCRUDAction,
@@ -332,13 +334,6 @@ export {
 export {
   generateRestServiceResponse
 } from './RestTools.js';
-export {
-  RestServerStub,
-  HttpRequestBodyFormat,
-  HttpResponseBodyFormat,
-  handleRestServiceCallAndGenerateServiceResponse,
-  postPutDeleteHandler,
-} from './4_services/RestServerStub.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';
 

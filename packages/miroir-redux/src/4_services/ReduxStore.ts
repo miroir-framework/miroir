@@ -93,12 +93,8 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   private sagaMiddleware: any;
 
   // ###############################################################################
-  constructor(
-    public RemoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga
-  ) {
-    this.staticReducers = createUndoRedoReducer(
-      LocalCacheSlice.reducer
-    );
+  constructor(public remoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga) {
+    this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
     this.sagaMiddleware = sagaMiddleware();
 
@@ -108,23 +104,20 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
       ...localCacheSliceGeneratedActionNames,
     ];
 
-    console.log('ReduxStore ignoredActionsList',ignoredActionsList);
+    console.log("ReduxStore ignoredActionsList", ignoredActionsList);
     this.innerReduxStore = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
           serializableCheck: {
             ignoredActions: ignoredActionsList, // Ignore these action types
-            ignoredActionPaths: [
-              "meta.promiseActions",
-              "pastModelPatches.0.action.asyncDispatch",
-            ], // Ignore these field paths in all actions
+            ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
           },
         })
-        .concat(promiseMiddleware)
-        .concat(this.sagaMiddleware)
-      });
-    } //end constructor
+          .concat(promiseMiddleware)
+          .concat(this.sagaMiddleware),
+    });
+  } //end constructor
 
   // ###############################################################################
   getInnerStore() {
@@ -145,99 +138,154 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   public currentInfo(): LocalCacheInfo {
     // this.sagaMiddleware.run(this.rootSaga.bind(this));
     return {
-      localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot)
-    }
+      localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot),
+    };
   }
-
 
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
-  public currentModel(deploymentUuid:string):MiroirApplicationModel{
-    console.log('called currentModel(',deploymentUuid,') from state:',this.innerReduxStore.getState().presentModelSnapshot);
+  public currentModel(deploymentUuid: string): MiroirApplicationModel {
+    console.log(
+      "called currentModel(",
+      deploymentUuid,
+      ") from state:",
+      this.innerReduxStore.getState().presentModelSnapshot
+    );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
     if (!deploymentUuid) {
-      throw new Error('currentModel(deploymentUuid) parameter can not be undefined.');
+      throw new Error("currentModel(deploymentUuid) parameter can not be undefined.");
     } else {
       if (deploymentUuid == applicationDeploymentMiroir.uuid) {
-
         return {
-          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityApplicationVersion.uuid)].entities) as MiroirApplicationVersion[],
+          applicationVersions: Object.values(
+            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityApplicationVersion.uuid)]
+              .entities
+          ) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
-          configuration: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityStoreBasedConfiguration.uuid)].entities) as StoreBasedConfiguration[],
-          entities: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntity.uuid)].entities) as MetaEntity[],
-          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'model',entityEntityDefinition.uuid)].entities) as EntityDefinition[],
-          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityJzodSchema.uuid)].entities) as JzodSchemaDefinition[],
-          reports: Object.values(reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid,'data',entityReport.uuid)].entities) as Report[],
+          configuration: Object.values(
+            reduxState[
+              getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityStoreBasedConfiguration.uuid)
+            ].entities
+          ) as StoreBasedConfiguration[],
+          entities: Object.values(
+            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "model", entityEntity.uuid)].entities
+          ) as MetaEntity[],
+          entityDefinitions: Object.values(
+            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "model", entityEntityDefinition.uuid)]
+              .entities
+          ) as EntityDefinition[],
+          jzodSchemas: Object.values(
+            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityJzodSchema.uuid)]
+              .entities
+          ) as JzodSchemaDefinition[],
+          reports: Object.values(
+            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityReport.uuid)].entities
+          ) as Report[],
         };
       } else {
         // console.log('currentModel reports',reports,getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid));
-        
+
         return {
-          applicationVersions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityApplicationVersion.uuid)]?.entities??{}) as MiroirApplicationVersion[],
+          applicationVersions: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityApplicationVersion.uuid)]?.entities ?? {}
+          ) as MiroirApplicationVersion[],
           applicationVersionCrossEntityDefinition: [],
-          configuration: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityStoreBasedConfiguration.uuid)]?.entities??{}) as StoreBasedConfiguration[],
-          entities: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntity.uuid)]?.entities??{}) as MetaEntity[],
-          entityDefinitions: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityEntityDefinition.uuid)]?.entities??{}) as EntityDefinition[],
-          jzodSchemas: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityJzodSchema.uuid)]?.entities??{}) as JzodSchemaDefinition[],
-          reports: Object.values(reduxState[getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid)]?.entities??{}) as Report[],
+          configuration: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityStoreBasedConfiguration.uuid)]
+              ?.entities ?? {}
+          ) as StoreBasedConfiguration[],
+          entities: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid)]?.entities ?? {}
+          ) as MetaEntity[],
+          entityDefinitions: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid)]?.entities ?? {}
+          ) as EntityDefinition[],
+          jzodSchemas: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityJzodSchema.uuid)]?.entities ?? {}
+          ) as JzodSchemaDefinition[],
+          reports: Object.values(
+            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityReport.uuid)]?.entities ?? {}
+          ) as Report[],
         };
       }
     }
   }
 
   // ###############################################################################
-  async handleRemoteStoreCRUDActionWithDeployment(deploymentUuid: string, section: ApplicationSection, action: RemoteStoreCRUDAction): Promise<RemoteStoreCRUDActionReturnType> {
-    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDActionWithDeployment.creator({deploymentUuid, section, action})
-    )
+  async handleRemoteStoreCRUDActionWithDeployment(
+    deploymentUuid: string,
+    section: ApplicationSection,
+    action: RemoteStoreCRUDAction
+  ): Promise<RemoteStoreCRUDActionReturnType> {
+    const result: Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch(
+      // remote store access is accomplished through asynchronous sagas
+      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreCRUDActionWithDeployment.creator(
+        { deploymentUuid, section, action }
+      )
+    );
     // console.log("ReduxStore handleRemoteStoreCRUDActionWithDeployment", action, "returned", result)
     return Promise.resolve(result);
   }
 
   // ###############################################################################
-  async handleRemoteStoreModelActionWithDeployment(deploymentUuid: string, action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType> {
-    const result:Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch( // remote store access is accomplished through asynchronous sagas
-      this.RemoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelActionWithDeployment.creator({deploymentUuid, action})
-    )
+  async handleRemoteStoreModelActionWithDeployment(
+    deploymentUuid: string,
+    action: RemoteStoreModelAction
+  ): Promise<RemoteStoreCRUDActionReturnType> {
+    const result: Promise<RemoteStoreCRUDActionReturnType> = await this.innerReduxStore.dispatch(
+      // remote store access is accomplished through asynchronous sagas
+      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelActionWithDeployment.creator(
+        { deploymentUuid, action }
+      )
+    );
     // console.log("ReduxStore handleRemoteStoreModelActionWithDeployment", action, "returned", result)
     return Promise.resolve(result);
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(deploymentUuid: Uuid, domainAction:DomainTransactionalAncillaryOrReplayableAction): void {
+  handleLocalCacheModelAction(
+    deploymentUuid: Uuid,
+    domainAction: DomainTransactionalAncillaryOrReplayableAction
+  ): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+        deploymentUuid,
+        domainAction,
+      })
     );
   }
 
   // ###############################################################################
-  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction:DomainDataAction): void {
+  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction: DomainDataAction): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+        deploymentUuid,
+        domainAction,
+      })
     );
   }
 
   // ###############################################################################
-  handleLocalCacheAction(deploymentUuid: Uuid, domainAction:DomainAncillaryOrReplayableAction):void {
+  handleLocalCacheAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableAction): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({deploymentUuid, domainAction})
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+        deploymentUuid,
+        domainAction,
+      })
     );
   }
 
   // ###############################################################################
-  currentTransaction():DomainTransactionalReplayableAction[]{
+  currentTransaction(): DomainTransactionalReplayableAction[] {
     // console.log("ReduxStore currentTransaction called");
-    return this.innerReduxStore.getState().pastModelPatches.map(p=>p.action);
+    return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }
 
   // ###############################################################################
-  private *rootSaga(
-  ) {
+  private *rootSaga() {
     // console.log("ReduxStore rootSaga running", this.RemoteStoreAccessReduxSaga);
-    yield all([
-      this.RemoteStoreAccessReduxSaga.instanceRootSaga.bind(this.RemoteStoreAccessReduxSaga)(),
-    ]);
+    yield all([this.remoteStoreAccessReduxSaga.instanceRootSaga.bind(this.remoteStoreAccessReduxSaga)()]);
   }
 }
 

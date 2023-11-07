@@ -1,6 +1,6 @@
 import { HttpMethod } from "miroir-core/src/0_interfaces/1_core/Http";
 import { EntityInstance } from "miroir-core/src/0_interfaces/1_core/Instance";
-import { HttpResponseBodyFormat } from "./4_services/RestServerStub";
+import { HttpResponseBodyFormat } from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 
 /**
  * calls the async method {@link method} and returns the result or calls {@link returnJsonResultContinuation} with the result, if a continuation is provided.
@@ -17,7 +17,6 @@ export const generateRestServiceResponse = async (
   params:{[propName: string]: any},
   paramNames:string[],
   instances:EntityInstance[],
-  HttpMethod:HttpMethod,
   method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
   returnJsonResultContinuation:(a:any)=>any,
 ) => {

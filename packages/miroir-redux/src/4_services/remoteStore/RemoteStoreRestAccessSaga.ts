@@ -58,7 +58,6 @@ export class RemoteStoreRestAccessReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
-    private rootApiUrl: string,
     private remoteStoreNetworkClient: RemoteStoreNetworkClientInterface // public mInstanceSlice:Slice,
   ) {}
 

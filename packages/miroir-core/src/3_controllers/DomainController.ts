@@ -14,7 +14,6 @@ import {
   DomainTransactionalReplayableAction
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
-import { LocalAndRemoteControllerInterface } from "../0_interfaces/3_controllers/LocalAndRemoteControllerInterface";
 
 import { RemoteDataStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
@@ -26,7 +25,8 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
-import { entityEntity } from '..';
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+
 import { circularReplacer } from '../tools';
 import { throwExceptionIfError } from './ErrorUtils';
 import { miroirModelEntities, metaModelEntities } from './ModelInitializer';

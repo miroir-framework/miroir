@@ -11,12 +11,11 @@ import bodyParser from 'body-parser';
 import {
   MiroirConfig,
   entityDefinitionReport,
-  handleRestServiceCallAndGenerateServiceResponse,
   modelActionRunner,
-  postPutDeleteHandler
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
+import { handleRestServiceCallAndGenerateServiceResponse, postPutDeleteHandler } from 'miroir-server-msw-stub';
 
 
 

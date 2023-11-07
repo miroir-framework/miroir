@@ -25,6 +25,7 @@
     "miroir-core": "*",
     "miroir-react": "*",
     "miroir-redux": "*",
+    "miroir-server-msw-stub": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-postgres": "*",
     "mock-socket": "^9.1.5",

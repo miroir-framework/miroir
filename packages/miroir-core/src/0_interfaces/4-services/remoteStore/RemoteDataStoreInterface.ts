@@ -8,6 +8,23 @@ import {
   DomainTransactionalResetModelAction,
 } from "../../2_domain/DomainControllerInterface.js";
 
+
+// ################################################################################################
+export interface HttpRequestBodyFormat {
+  // instances: EntityInstancesUuidIndex
+  instances?: EntityInstance[];
+  crudInstances?: EntityInstance[];
+  modelUpdate?: any;
+  other?: any;
+};
+
+// ################################################################################################
+export interface HttpResponseBodyFormat {
+  // instances: EntityInstancesUuidIndex
+  instances: EntityInstance[]
+};
+
+// ################################################################################################
 export interface RemoteStoreCRUDAction {
   actionType: "RemoteStoreCRUDAction";
   actionName: CRUDActionName;
@@ -17,6 +34,7 @@ export interface RemoteStoreCRUDAction {
   objects?: EntityInstance[];
 }
 
+// ################################################################################################
 export type RemoteStoreModelAction =
   | DomainTransactionalReplayableAction
   | DomainTransactionalResetModelAction
@@ -24,8 +42,10 @@ export type RemoteStoreModelAction =
   | DomainModelInitAction
 ;
 
+// ################################################################################################
 export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
 
+// ################################################################################################
 export interface RemoteStoreCRUDActionReturnType {
   status: "ok" | "error";
   errorMessage?: string;
@@ -34,6 +54,7 @@ export interface RemoteStoreCRUDActionReturnType {
   instanceCollection?: EntityInstanceCollection;
 }
 
+// ################################################################################################
 export interface RestClientCallReturnType {
   status: number;
   data: any;
@@ -42,6 +63,7 @@ export interface RestClientCallReturnType {
   url: string;
 }
 
+// ################################################################################################
 export interface RestClientInterface {
   get(endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
   post(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
@@ -49,6 +71,7 @@ export interface RestClientInterface {
   delete(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
 }
 
+// ################################################################################################
 /**
  * Decorator for RestClientInterface, should eventually replace it entirely.
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
@@ -68,6 +91,7 @@ export interface RemoteStoreNetworkClientInterface {
 
 export default {};
 
+// ################################################################################################
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */

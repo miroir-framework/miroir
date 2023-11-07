@@ -6,8 +6,8 @@ import process from "process";
 import {
   IStoreController,
   MiroirConfig,
-  RestServerStub
 } from "miroir-core";
+import { RestServerStub } from "miroir-server-msw-stub";
 
 // ################################################################################################
 export interface CreateMswRestServerReturnType {
