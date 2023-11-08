@@ -16,7 +16,8 @@ import {
   Report,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  entityBook
 } from "miroir-core";
 
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
@@ -34,8 +35,6 @@ import {
   useCurrentModel,
   useEntityInstanceUuidIndexFromLocalCache,
 } from "../ReduxHooks";
-
-import entityBook from "../../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 

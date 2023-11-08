@@ -21,7 +21,6 @@ import {
 } from "miroir-core";
 import { useDomainControllerService } from "./MiroirContextReactProvider";
 import { JzodObject } from "@miroir-framework/jzod-ts";
-// import applicationLibrary from "../../src/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 
 
 export const ImporterCorePropsSchema = z.object({

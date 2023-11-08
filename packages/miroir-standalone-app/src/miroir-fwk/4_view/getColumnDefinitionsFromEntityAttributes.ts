@@ -10,9 +10,10 @@ import {
   SelectEntityInstanceEditor,
 } from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
+import { entityPublisher, entityAuthor } from "miroir-core";
 
-import entityPublisher from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
-import entityAuthor from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
+// import entityPublisher from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
+// import entityAuthor from "../../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
 // export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema:JzodObject):ColDef<any>[] {
 
 export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:string,jzodSchema: JzodElement): ColDef<any> {
