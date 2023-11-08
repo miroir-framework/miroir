@@ -125,14 +125,32 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
 
     // #############################################################################################
     async dropEntity(entityUuid: string): Promise<void> {
+      console.log(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
-        // this.localUuidIndexedDb.removeSubLevels([entityUuid]);
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
         console.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
+        const entityDefinitions = (
+          (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
+        ).filter((i) => i.entityUuid == entityUuid);
+        console.log(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
+          
+        for (const entityDefinition of entityDefinitions) {
+          await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
+        }
+      } else {
+        console.warn(
+          "StoreController dropEntity sublevel for entityEntityDefinition does not exist",
+          entityEntityDefinition.uuid,
+          this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
+        );
+      }
+
+      if (this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid)) {
+        console.log(this.logHeader, "dropEntity deleting Entity instance for with Entity with uuid", entityUuid);
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
       } else {
         console.warn(
@@ -143,22 +161,6 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
         );
       }
 
-      if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
-
-        const entityDefinitions = (
-          (await this.dataStore.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
-        ).filter((i) => i.entityUuid == entityUuid);
-        for (const entityDefinition of entityDefinitions) {
-          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
-        }
-      } else {
-        console.warn(
-          "StoreController dropEntity sublevel for entityEntityDefinition does not exist",
-          entityEntityDefinition.uuid,
-          this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
-        );
-      }
       return Promise.resolve();
     }
 

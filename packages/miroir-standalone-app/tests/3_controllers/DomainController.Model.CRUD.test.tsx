@@ -11,6 +11,7 @@ import {
   ConfigurationService,
   DomainAction,
   DomainControllerInterface,
+  DomainDataAction,
   EntityDefinition,
   EntityInstance,
   IStoreController,
@@ -22,9 +23,20 @@ import {
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book4,
+  entityAuthor,
+  entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
+  reportBookList
 } from "miroir-core";
 import {
   ReduxStore
@@ -40,19 +52,6 @@ import {
   miroirBeforeEach,
   renderWithProviders
 } from "../utils/tests-utils";
-
-
-import entityAuthor from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import reportBookList from "miroir-standalone-app/src/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
-import entityDefinitionBook from "miroir-standalone-app/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
-import entityDefinitionAuthor from "miroir-standalone-app/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
-import author1 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json";
-import author2 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json";
-import author3 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json";
-import book4 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
-import book1 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
-import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -86,11 +85,8 @@ miroirStorePostgresStartup();
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
 let localDataStoreWorker: SetupWorkerApi | undefined;
-// let localDataStoreServer: typeof setupServer;
-// let localDataStoreServer: SetupServerApi | undefined;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let reduxStore: ReduxStore;
-let localAndRemoteController: LocalAndRemoteControllerInterface;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 
@@ -101,51 +97,53 @@ beforeAll(
       fetch as any,
     );
 
-    const {
-      localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(
-      ConfigurationService.storeFactoryRegister,
-      miroirConfig,
-    );
-    localMiroirStoreController = a;
-    localAppStoreController = b;
-
-    // Establish requests interception layer before all tests.
-    const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
-      setupServer,
-      localMiroirStoreController,
-      localAppStoreController,
-    );
-
-    if (wrappedReduxStore && wrapped) {
-      // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
-      // localAppStoreController = wrapped.localAppStoreController as IStoreController;
-      localDataStoreWorker = wrapped.localDataStoreWorker;
-      // localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      localDataStoreServer = wrapped.localDataStoreServer;
+    if (wrappedReduxStore) {
       reduxStore = wrappedReduxStore.reduxStore;
       domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
+    }
+
+    if (miroirConfig.emulateServer) {
+      const {
+        localMiroirStoreController:a,localAppStoreController:b
+      } = await StoreControllerFactory(
+        ConfigurationService.storeFactoryRegister,
+        miroirConfig,
+      );
+      localMiroirStoreController = a;
+      localAppStoreController = b;
+  
+      // Establish requests interception layer before all tests.
+      const wrapped = await miroirBeforeAll(
+        miroirConfig as MiroirConfig,
+        setupServer,
+        localMiroirStoreController,
+        localAppStoreController,
+      );
+
+      if (wrapped) {
+        localDataStoreWorker = wrapped.localDataStoreWorker;
+        localDataStoreServer = wrapped.localDataStoreServer;
+      }
     }
   }
 )
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localMiroirStoreController,localAppStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirStoreController,localAppStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localMiroirStoreController,localAppStoreController,localDataStoreServer);
+    await miroirAfterAll(miroirConfig, localMiroirStoreController,localAppStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localMiroirStoreController,localAppStoreController);
+    await miroirAfterEach(miroirConfig, localMiroirStoreController,localAppStoreController);
   }
 )
 
@@ -330,7 +328,7 @@ describe(
 
     // ###########################################################################################
     it(
-      'Add Report definition then commit',
+      'Add entity then commit',
       async () => {
         try {
           console.log('Add Report definition then commit start');
@@ -354,7 +352,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Report definition step 1: loading initial configuration, Author entity must be absent from entity list.')
+          console.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -425,7 +423,11 @@ describe(
           // console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+              );
             }
           );
   
@@ -476,10 +478,9 @@ describe(
       }
     )
 
-
     // ###########################################################################################
     it(
-      'Remove Author entity then commit',
+      'Remove Entity then commit',
       async () => {
         try {
           console.log('remove Author entity start');
@@ -599,7 +600,11 @@ describe(
           console.log('remove Entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainTransactionalAction(
+                applicationDeploymentLibrary.uuid,
+                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+              );
             }
           );
           await act(()=>user.click(screen.getByRole('button')));
@@ -644,7 +649,7 @@ describe(
 
     // ###########################################################################################
     it(
-      'Update Author definition then commit',
+      'Update Entity then commit',
       async () => {
         try {
           console.log('update Author definition start');
@@ -652,18 +657,75 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          // await localDataStore.clear();
-          // await localDataStore.initModel();
-          await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-          // await localAppStoreController?.upsertInstance('data', book3 as Instance);
-          await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+          if (miroirConfig.emulateServer) {
+            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+          } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
+            const createAction: DomainAction = {
+              actionType:"DomainTransactionalAction",
+              actionName: "updateEntity",
+              update: {
+                updateActionName:"WrappedTransactionalEntityUpdate",
+                modelEntityUpdate: {
+                  updateActionType: "ModelEntityUpdate",
+                  updateActionName: "createEntity",
+                  // parentName: entityDefinitionEntityDefinition.name,
+                  // parentUuid: entityDefinitionEntityDefinition.uuid,
+                  entities: [
+                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+                  ],
+                },
+              }
+            };
+
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              }
+            );
+              
+            const createInstancesAction: DomainDataAction = {
+              actionName: "create",
+              actionType: "DomainDataAction",
+              objects: [
+                {
+                  parentName: entityAuthor.name,
+                  parentUuid: entityAuthor.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    author1 as EntityInstance,
+                    author2 as EntityInstance,
+                    author3 as EntityInstance,
+                  ],
+                },
+                {
+                  parentName: entityBook.name,
+                  parentUuid: entityBook.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    book1 as EntityInstance,
+                    book2 as EntityInstance,
+                    book4 as EntityInstance,
+                  ],
+                },
+              ],
+            };
+    
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+              }
+            );
+  
+          }
     
           await act(
             async () => {

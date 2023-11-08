@@ -384,7 +384,17 @@ export class DomainController implements DomainControllerInterface {
     let entityDomainAction:DomainAction | undefined = undefined;
     let otherDomainAction:DomainAction | undefined = undefined;
     const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','resetData','initModel','commit','rollback','replace','undo','redo'];
-    console.log('handleDomainAction','deploymentUuid',deploymentUuid,'actionName',domainAction?.actionName, 'actionType',domainAction?.actionType,'objects',(domainAction as any)['objects']);
+    console.log(
+      "handleDomainAction",
+      "deploymentUuid",
+      deploymentUuid,
+      "actionName",
+      domainAction?.actionName,
+      "actionType",
+      domainAction?.actionType,
+      "objects",
+      JSON.stringify((domainAction as any)["objects"], null, 2)
+    );
 
     // if (domainAction.actionName!="updateEntity"){
     if (!ignoredActionNames.includes(domainAction.actionName)){

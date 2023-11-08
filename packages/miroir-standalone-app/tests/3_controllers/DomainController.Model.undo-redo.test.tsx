@@ -126,19 +126,19 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localMiroirStoreController,localAppStoreController);
+    await miroirBeforeEach(miroirConfig, localMiroirStoreController,localAppStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localMiroirStoreController,localAppStoreController,localDataStoreServer);
+    await miroirAfterAll(miroirConfig, localMiroirStoreController,localAppStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localMiroirStoreController,localAppStoreController);
+    await miroirAfterEach(miroirConfig, localMiroirStoreController,localAppStoreController);
   }
 )
 

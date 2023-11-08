@@ -28,11 +28,12 @@ export function handleRestServiceCallAndGenerateServiceResponse(
   url: string, // log only, to remove?
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
-  request: any,
+  // request: any,
   params: any,
   continuationFunction: (arg0: any) => any
 ) {
-  const localParams = params ?? request.params;
+  // const localParams = params ?? request.params;
+  const localParams = params;
   const deploymentUuid: string =
     typeof localParams["deploymentUuid"] == "string" ? localParams["deploymentUuid"] : localParams["deploymentUuid"][0];
 
@@ -86,11 +87,12 @@ export async function postPutDeleteHandler(
   body: HttpRequestBodyFormat,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
-  request: any,
+  // request: any,
   params: any,
   continuationFunction: (arg0: any) => any
 ) {
-  const foundParams = params ?? request.params;
+  // const foundParams = params ?? request.params;
+  const foundParams = params;
   console.log("postPutDeleteHandler", method, url, "foundParams", foundParams, "body", body);
   // console.log("postPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
   const deploymentUuid: string =
@@ -155,7 +157,7 @@ export class RestServerStub {
               this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
               localMiroirStoreController,
               localAppStoreController,
-              request,
+              // request,
               params,
               (localData) => HttpResponse.json(localData)
             );
@@ -175,7 +177,6 @@ export class RestServerStub {
             body,
             localMiroirStoreController,
             localAppStoreController,
-            request,
             params,
             (localData) => HttpResponse.json(localData)
           );
@@ -191,7 +192,6 @@ export class RestServerStub {
             body,
             localMiroirStoreController,
             localAppStoreController,
-            request,
             params,
             (localData) => HttpResponse.json(localData)
           );
@@ -207,7 +207,6 @@ export class RestServerStub {
             body,
             localMiroirStoreController,
             localAppStoreController,
-            request,
             params,
             (localData) => HttpResponse.json(localData)
           );

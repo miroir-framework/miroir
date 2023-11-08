@@ -106,6 +106,7 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
 
     // ##############################################################################################
     async dropEntity(entityUuid: string) {
+      console.warn("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
@@ -119,15 +120,17 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
       } else {
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
-          await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
-
           //remove all entity definitions for the dropped entity
           const entityDefinitions = (
             (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
           ).filter((i) => i.entityUuid == entityUuid);
+          console.warn("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
+
           for (const entityDefinition of entityDefinitions) {
             await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
           }
+
+          await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
         } else {
           console.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
         }

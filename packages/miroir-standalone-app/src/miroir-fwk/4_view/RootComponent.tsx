@@ -28,23 +28,27 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  applicationLibrary,
   applicationMiroir,
+  applicationModelBranchLibraryMasterBranch,
   applicationModelBranchMiroirMasterBranch,
+  applicationStoreBasedConfigurationLibrary,
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
+  applicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
   DomainControllerInterface,
+  reportBookInstance,
 } from "miroir-core";
 
 import { useDomainControllerService } from './MiroirContextReactProvider';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
-import reportBookInstance from "../../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
-import applicationStoreBasedConfigurationLibrary from "../../assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
-import applicationLibrary from "../../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
-import applicationVersionLibraryInitialVersion from "../../assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
-import applicationModelBranchLibraryMasterBranch from "../../assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+// import applicationStoreBasedConfigurationLibrary from "../../assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json";
+// import applicationLibrary from "../../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
+// import applicationVersionLibraryInitialVersion from "../../assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
+// import applicationModelBranchLibraryMasterBranch from "../../assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
 
 import { uploadBooksAndReports } from './uploadBooksAndReports';
 

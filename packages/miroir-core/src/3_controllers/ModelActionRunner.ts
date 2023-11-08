@@ -44,7 +44,7 @@ export async function applyModelEntityUpdate(
   storeController:IStoreController,
   update:ModelReplayableUpdate
 ):Promise<void>{
-  console.log('ModelActionRunner applyModelEntityUpdate',update);
+  console.log('ModelActionRunner applyModelEntityUpdate for',JSON.stringify(update, null, 2));
   const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
   if (
     [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
@@ -52,7 +52,7 @@ export async function applyModelEntityUpdate(
   ) {
     // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
     if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
-      const modelEntityUpdate = update.modelEntityUpdate;
+      // const modelEntityUpdate = update.modelEntityUpdate;
       switch (update.modelEntityUpdate.updateActionName) {
         case "DeleteEntity":{
           await storeController.dropEntity(update.modelEntityUpdate.entityUuid)
@@ -167,23 +167,22 @@ export async function modelActionRunner(
       const update: ModelReplayableUpdate = body;
       console.log("modelActionRunner updateEntity update",update);
       if (update) {
-        switch ((update as any)['action']) {
-          default: {
-            const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-            console.log(
-              "modelActionRunner updateEntity update",
-              (update as any)["action"],
-              "used targetProxy",
-              (targetProxy as any)["applicationName"],
-              deploymentUuid,
-              applicationDeploymentMiroir.uuid
-            );
-            
-            await targetProxy.applyModelEntityUpdate(update);
-            console.log('modelActionRunner applyModelEntityUpdate done', update);
-            break;
-          }
-        }
+        // switch ((update as any)['action']) {
+        //   default: {
+        const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
+        console.log(
+          "modelActionRunner updateEntity",
+          "used targetProxy",
+          (targetProxy as any)["applicationName"],
+          deploymentUuid,
+          applicationDeploymentMiroir.uuid
+        );
+        
+        await targetProxy.applyModelEntityUpdate(update);
+        console.log('modelActionRunner applyModelEntityUpdate done', update);
+            // break;
+          // }
+        // }
       } else {
         console.log('modelActionRunner has no update to execute!')
       }

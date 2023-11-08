@@ -109,12 +109,20 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
 
   // ##############################################################################################
   async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
-    if (!this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
+    if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       await this.localUuidIndexedDb.removeSubLevels([entityUuid]);
-    } else {
-      console.log(
+      console.warn(
         this.logHeader,
-        "createStorageSpaceForInstancesOfEntity",
+        "dropStorageSpaceForInstancesOfEntity",
+        "input: entity",
+        entityUuid,
+        "removed sublevel. Remaining sublevels:",
+        this.localUuidIndexedDb.getSubLevels()
+      );
+    } else {
+      console.warn(
+        this.logHeader,
+        "dropStorageSpaceForInstancesOfEntity",
         "input: entity",
         entityUuid,
         "not found. Existing entities:",

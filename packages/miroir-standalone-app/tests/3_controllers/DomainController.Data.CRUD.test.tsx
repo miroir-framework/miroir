@@ -1,24 +1,37 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { setupServer, SetupServerApi } from "msw/node";
 import { SetupWorkerApi } from "msw/browser";
+import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
 
 
 import {
+  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book3,
+  book4,
   ConfigurationService,
+  DomainAction,
   DomainControllerInterface,
   DomainDataAction,
+  entityAuthor,
+  entityBook,
   EntityDefinition,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
   EntityInstance,
-  MetaEntity,
-  MiroirConfig, miroirCoreStartup,
-  StoreControllerFactory,
   IStoreController,
-  LocalAndRemoteControllerInterface,
+  MetaEntity,
+  MiroirConfig,
   MiroirContext,
-  applicationDeploymentLibrary
+  miroirCoreStartup,
+  reportBookList,
+  StoreControllerFactory
 } from "miroir-core";
 
 import {
@@ -27,22 +40,9 @@ import {
   miroirAfterEach,
   miroirBeforeAll,
   miroirBeforeEach,
-  renderWithProviders,
+  renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
-import entityAuthor from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json";
-import entityBook from "miroir-standalone-app/src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
-import reportBookList from "miroir-standalone-app/src/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/74b010b6-afee-44e7-8590-5f0849e4a5c9.json";
-import entityDefinitionBook from "miroir-standalone-app/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
-import entityDefinitionAuthor from "miroir-standalone-app/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
-import author1 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json";
-import author2 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json";
-import author3 from "../../src/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json";
-import book1 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json";
-import book2 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json";
-import book3 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json";
-import book4 from "../../src/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json";
 
 import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 import { loadConfigFile, refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
@@ -53,6 +53,7 @@ import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
 import { ReduxStore } from "miroir-redux";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
 console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
@@ -71,7 +72,6 @@ let localAppStoreController: IStoreController;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localDataStoreWorker: SetupWorkerApi | undefined;
 let reduxStore: ReduxStore;
-let localAndRemoteController: LocalAndRemoteControllerInterface;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 
@@ -81,54 +81,56 @@ beforeAll(
       miroirConfig as MiroirConfig,
       fetch,
     );
-
-    const {
-      localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(
-      ConfigurationService.storeFactoryRegister,
-      miroirConfig,
-    );
-    localMiroirStoreController = a;
-    localAppStoreController = b;
-
-    console.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
-    
-    // Establish requests interception layer before all tests.
-    const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
-      setupServer,
-      localMiroirStoreController,
-      localAppStoreController
-    );
-
-    if (wrappedReduxStore && wrapped) {
-      // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
-      // localAppStoreController = wrapped.localAppStoreController as IStoreController;
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    if (wrappedReduxStore) {
       reduxStore = wrappedReduxStore.reduxStore;
       domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
     }
+
+    if (miroirConfig.emulateServer) {
+      const {
+        localMiroirStoreController:a,localAppStoreController:b
+      } = await StoreControllerFactory(
+        ConfigurationService.storeFactoryRegister,
+        miroirConfig,
+      );
+      localMiroirStoreController = a;
+      localAppStoreController = b;
+
+      console.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
+      
+      // Establish requests interception layer before all tests.
+      const wrapped = await miroirBeforeAll(
+        miroirConfig as MiroirConfig,
+        setupServer,
+        localMiroirStoreController,
+        localAppStoreController
+      );
+      if (wrapped) {
+        localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+        localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      }
+    }
+
     return Promise.resolve();
   }
 )
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(localMiroirStoreController,localAppStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirStoreController,localAppStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(localMiroirStoreController,localAppStoreController,localDataStoreServer);
+    await miroirAfterAll(miroirConfig, localMiroirStoreController,localAppStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(localMiroirStoreController,localAppStoreController);
+    await miroirAfterEach(miroirConfig, localMiroirStoreController,localAppStoreController);
   }
 )
 
@@ -142,6 +144,7 @@ describe(
       'Refresh all Instances',
       async() => {
         await refreshAllInstancesTest(
+          miroirConfig,
           localMiroirStoreController,
           localAppStoreController,
           reduxStore,
@@ -164,17 +167,79 @@ describe(
   
           // await localDataStore.clear();
           // await localDataStore.initModel();
+          if (miroirConfig.emulateServer) {
+            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+            // await localAppStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
+            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+          } else {
+            const createAction: DomainAction = {
+              actionType:"DomainTransactionalAction",
+              actionName: "updateEntity",
+              update: {
+                updateActionName:"WrappedTransactionalEntityUpdate",
+                modelEntityUpdate: {
+                  updateActionType: "ModelEntityUpdate",
+                  updateActionName: "createEntity",
+                  entities: [
+                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+                  ],
+                },
+              }
+            };
 
-          await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-          // await localAppStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
-          await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
+              }
+            );
+              
+            const createInstancesAction: DomainDataAction = {
+              actionName: "create",
+              actionType: "DomainDataAction",
+              objects: [
+                {
+                  parentName: entityAuthor.name,
+                  parentUuid: entityAuthor.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    author1 as EntityInstance,
+                    author2 as EntityInstance,
+                    author3 as EntityInstance,
+                  ],
+                },
+                {
+                  parentName: entityBook.name,
+                  parentUuid: entityBook.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    book1 as EntityInstance,
+                    book2 as EntityInstance,
+                    book4 as EntityInstance,
+                  ],
+                },
+              ],
+            };
+    
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+              }
+            );
+  
+          }
 
           const {
             getByText,
@@ -293,17 +358,79 @@ describe(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
 
-          await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController.upsertInstance('model', reportBookList as EntityInstance);
-          await localAppStoreController.upsertInstance('data', author1 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', author2 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', author3 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', book1 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', book2 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', book3 as EntityInstance);
-          await localAppStoreController.upsertInstance('data', book4 as EntityInstance);
+          if (miroirConfig.emulateServer) {
+            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppStoreController.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppStoreController.upsertInstance('data', author1 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', author2 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', author3 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', book1 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', book2 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', book3 as EntityInstance);
+            await localAppStoreController.upsertInstance('data', book4 as EntityInstance);
+          } else {
+            const createAction: DomainAction = {
+              actionType:"DomainTransactionalAction",
+              actionName: "updateEntity",
+              update: {
+                updateActionName:"WrappedTransactionalEntityUpdate",
+                modelEntityUpdate: {
+                  updateActionType: "ModelEntityUpdate",
+                  updateActionName: "createEntity",
+                  entities: [
+                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+                  ],
+                },
+              }
+            };
 
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
+              }
+            );
+              
+            const createInstancesAction: DomainDataAction = {
+              actionName: "create",
+              actionType: "DomainDataAction",
+              objects: [
+                {
+                  parentName: entityAuthor.name,
+                  parentUuid: entityAuthor.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    author1 as EntityInstance,
+                    author2 as EntityInstance,
+                    author3 as EntityInstance,
+                  ],
+                },
+                {
+                  parentName: entityBook.name,
+                  parentUuid: entityBook.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    book1 as EntityInstance,
+                    book2 as EntityInstance,
+                    book3 as EntityInstance,
+                    book4 as EntityInstance,
+                  ],
+                },
+              ],
+            };
+    
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+              }
+            );
+          }
           const {
             getByText,
             getAllByRole,
@@ -347,7 +474,7 @@ describe(
   
           // ##########################################################################################################
           console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
-          const createAction: DomainDataAction = {
+          const deleteAction: DomainDataAction = {
             actionName:'delete',
             actionType:"DomainDataAction",
             objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
@@ -355,7 +482,7 @@ describe(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction);
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, deleteAction);
             }
           );
   
@@ -423,17 +550,79 @@ describe(
 
           // await localDataStore.clear();
           // await localDataStore.initModel();
+          if (miroirConfig.emulateServer) {
+            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
+            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+          } else {
+            const createAction: DomainAction = {
+              actionType:"DomainTransactionalAction",
+              actionName: "updateEntity",
+              update: {
+                updateActionName:"WrappedTransactionalEntityUpdate",
+                modelEntityUpdate: {
+                  updateActionType: "ModelEntityUpdate",
+                  updateActionName: "createEntity",
+                  entities: [
+                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+                  ],
+                },
+              }
+            };
 
-          await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-          await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-          await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
-          await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
+              }
+            );
+              
+            const createInstancesAction: DomainDataAction = {
+              actionName: "create",
+              actionType: "DomainDataAction",
+              objects: [
+                {
+                  parentName: entityAuthor.name,
+                  parentUuid: entityAuthor.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    author1 as EntityInstance,
+                    author2 as EntityInstance,
+                    author3 as EntityInstance,
+                  ],
+                },
+                {
+                  parentName: entityBook.name,
+                  parentUuid: entityBook.uuid,
+                  applicationSection: "data",
+                  instances: [
+                    book1 as EntityInstance,
+                    book2 as EntityInstance,
+                    book3 as EntityInstance,
+                    book4 as EntityInstance,
+                  ],
+                },
+              ],
+            };
+    
+            await act(
+              async () => {
+                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+              }
+            );
+          }
 
           const {
             getByText,

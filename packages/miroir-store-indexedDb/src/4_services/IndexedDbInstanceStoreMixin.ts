@@ -57,9 +57,10 @@ export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>
   
     // #############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      console.log(this.logHeader, "deleteDataInstance", parentUuid, instance);
       // for (const o of instances) {
-      await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
+        console.log(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
+        await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
+        console.log(this.logHeader, "deleteInstance done.", parentUuid, instance);
       // }
       return Promise.resolve();
     }

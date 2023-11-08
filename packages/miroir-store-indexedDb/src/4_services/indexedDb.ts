@@ -171,15 +171,26 @@ export class IndexedDb {
   // #############################################################################################
   public async deleteValue(tableUuid: string, uuid: string):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
-    const store = this.subLevels.get(tableUuid);
-    const result = await store?.get(uuid);
-    if (!result) {
-      console.warn(this.logHeader, 'deleteValue Id not found', uuid);
-      return Promise.resolve(result);
+    console.log(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
+    if (this.getSubLevels().includes(tableUuid)) {
+      const store = this.subLevels.get(tableUuid);
+      try {
+        const instance = await store?.get(uuid);
+        if (!instance) {
+          console.warn(this.logHeader, 'deleteValue Id not found', uuid);
+          return Promise.resolve(undefined);
+        } else {
+          await store?.del(uuid);
+          console.log(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
+          return Promise.resolve(uuid);
+        }
+      } catch (error) {
+        console.error(this.logHeader, "deleteValue could not find instance of entity: " + tableUuid + " with uuid: ", uuid);
+      }
+    } else {
+      console.error(this.logHeader, "deleteValue could not find sublevel: " + tableUuid + " existing sublevels: ", this.getSubLevels());
+      
     }
-    await store?.del(uuid);
-    console.log(this.logHeader, 'DeleteValue', uuid);
-    return Promise.resolve(uuid);
   }
 }
 
