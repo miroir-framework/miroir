@@ -3,7 +3,7 @@ pipeline {
       dockerfile {
         filename 'Dockerfile'
         dir '/home/workspace/miroir-app-ci/node_image'
-        label 'maître'
+        label 'master'
         args '-v C:/Users/nono/Documents/devhome:/home'
       }
     }
