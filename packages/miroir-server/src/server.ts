@@ -1,4 +1,4 @@
-import express, { Response } from 'express';
+import express from 'express';
 import { readFileSync } from 'fs';
 // import * as prettier from "prettier";
 
@@ -9,13 +9,15 @@ import {
 
 import bodyParser from 'body-parser';
 import {
+  HttpMethod,
   MiroirConfig,
   entityDefinitionReport,
   modelActionRunner,
+  restMethodGetHandler,
+  restMethodsPostPutDeleteHandler
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
-import { handleRestServiceCallAndGenerateServiceResponse, postPutDeleteHandler } from 'miroir-server-msw-stub';
 
 
 
@@ -75,120 +77,64 @@ try {
 
 app.use(bodyParser.json({limit:'10mb'}));
 
-
-let count: number = 0;
-
-const handlers = [
+const handlers: {
+  operation: HttpMethod;
+  url: string;
+  handler: (response: any, effectiveUrl: string, requestBody: any, requestParams: any) => Promise<void>;
+}[] = [
   {
     operation: "get",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-    handler: async (url: string, requestBody:any, requestParams: any, response: any)=>{
-      console.log('get "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all" called, count',count++,'body',requestBody);
-
-      console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',url)
-      await handleRestServiceCallAndGenerateServiceResponse(
-        "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-        localMiroirStoreController,
-        localAppStoreController,
-        requestParams,
-        response.json.bind(response)
-      )
-    }
+    handler: restMethodGetHandler.bind(
+      restMethodGetHandler,
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      "get"
+    ),
   },
   {
     operation: "put",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: async (url: string, requestBody:any, requestParams: any, response: any)=>{
-      console.log('put /miroirWithDeployment/entity received count',count++,'body',requestBody);
-      console.log('put /miroirWithDeployment/entity received req.originalUrl',url)
-    
-      await postPutDeleteHandler(
-        "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        'put',
-        requestBody,
-        localMiroirStoreController,
-        localAppStoreController,
-        requestParams,
-        response.json.bind(response)
-      )
-    }
-  }
-]
+    handler: restMethodsPostPutDeleteHandler.bind(
+      restMethodsPostPutDeleteHandler,
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      "put"
+    ),
+  },
+  {
+    operation: "post",
+    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+    handler: restMethodsPostPutDeleteHandler.bind(
+      restMethodsPostPutDeleteHandler,
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      "post"
+    ),
+  },
+  {
+    operation: "delete",
+    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+    handler: restMethodsPostPutDeleteHandler.bind(
+      restMethodsPostPutDeleteHandler,
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      "delete"
+    ),
+  },
+];
 
-// ##############################################################################################
-app.get("/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async (req, res, ctx) => {
-  // TODO: remove, it is identical to post!!
-  const body = await req.body;
+for (const op of handlers) {
+  (app as any)[op.operation](op.url, async (req:any, res:any, ctx:any) => {
+    const body = await req.body;
 
-  await handlers[0].handler(req.originalUrl,body,req.params,res)
-  // console.log('get "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all" called, count',count++,'body',body);
-
-  // console.log('get /miroirWithDeployment/:deploymentUuid/entity/:parentUuid/all received req.originalUrl',req.originalUrl)
-  // await handleRestServiceCallAndGenerateServiceResponse(
-  //   "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-  //   localMiroirStoreController,
-  //   localAppStoreController,
-  //   req.params,
-  //   res.json.bind(res)
-  // )
-});
-
-// ##############################################################################################
-app.put("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
-  // TODO: remove, it is identical to post!!
-  const body = await req.body;
-
-  console.log('put /miroirWithDeployment/entity received count',count++,'body',body);
-  console.log('put /miroirWithDeployment/entity received req.originalUrl',req.originalUrl)
-
-  await postPutDeleteHandler(
-    "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    'put',
-    body,
-    localMiroirStoreController,
-    localAppStoreController,
-    req.params,
-    res.json.bind(res)
-  )
-});
-
-// ##############################################################################################
-app.delete("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
-  // TODO: remove, it is identical to post!!
-  const body = await req.body;
-
-  console.log('put /miroirWithDeployment/entity received count',count++,'body',body);
-  console.log('put /miroirWithDeployment/entity received req.originalUrl',req.originalUrl)
-
-  await postPutDeleteHandler(
-    "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    'delete',
-    body,
-    localMiroirStoreController,
-    localAppStoreController,
-    req.params,
-    res.json.bind(res)
-  )
-});
-
-// ##############################################################################################
-app.post("/miroirWithDeployment/:deploymentUuid/:section/entity", async (req, res, ctx) => {
-  // TODO: remove, it is identical to post!!
-  const body = await req.body;
-
-  console.log('post /miroirWithDeployment/:deploymentUuid/:section/entity received count',count++,'body',body);
-  console.log('post /miroirWithDeployment/:deploymentUuid/:section/entity received req.originalUrl',req.originalUrl)
-
-  await postPutDeleteHandler(
-    "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    'post',
-    body,
-    localMiroirStoreController,
-    localAppStoreController,
-    req.params,
-    res.json.bind(res)
-  )
-});
+    await op.handler(res, req.originalUrl, body, req.params);
+  });
+}
 
 // ##############################################################################################
 app.post("/modelWithDeployment" + '/:deploymentUuid' + '/:actionName', async (req, res, ctx) => {
@@ -208,10 +154,10 @@ app.post("/modelWithDeployment" + '/:deploymentUuid' + '/:actionName', async (re
   // console.log("server post modelWithDeployment/ using",deploymentUuid == applicationDeploymentLibrary.uuid?"library":"miroir","schema");
   
   await modelActionRunner(
-    deploymentUuid,
-    actionName,
     localMiroirStoreController,
     localAppStoreController,
+    deploymentUuid,
+    actionName,
     update.modelUpdate
   );
  
