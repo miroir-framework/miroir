@@ -3,7 +3,7 @@ pipeline {
       dockerfile {
         filename 'Dockerfile'
         dir '/home/workspace/miroir-app-ci/node_image'
-        label 'Built-In Node'
+        label 'built-in node'
         args '-v C:/Users/nono/Documents/devhome:/home'
       }
     }
