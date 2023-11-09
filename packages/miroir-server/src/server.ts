@@ -14,6 +14,7 @@ import {
   entityDefinitionReport,
   modelActionRunner,
   restMethodGetHandler,
+  restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
@@ -77,7 +78,7 @@ try {
 
 app.use(bodyParser.json({limit:'10mb'}));
 
-const handlers: {
+const crudHandlers: {
   operation: HttpMethod;
   url: string;
   handler: (response: any, effectiveUrl: string, requestBody: any, requestParams: any) => Promise<void>;
@@ -126,43 +127,28 @@ const handlers: {
       "delete"
     ),
   },
+  {
+    operation: "post",
+    url: "/modelWithDeployment/:deploymentUuid/:actionName",
+    handler: restMethodModelActionRunnerHandler.bind(
+      restMethodModelActionRunnerHandler,
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      "post"
+    ),
+  },
 ];
 
-for (const op of handlers) {
-  (app as any)[op.operation](op.url, async (req:any, res:any, ctx:any) => {
-    const body = await req.body;
+// ##############################################################################################
+// CREATING ENDPOINTS SERVICING CRUD HANDLERS
+for (const op of crudHandlers) {
+  (app as any)[op.operation](op.url, async (request:any, response:any, context:any) => {
+    const body = await request.body;
 
-    await op.handler(res, req.originalUrl, body, req.params);
+    await op.handler(response, request.originalUrl, body, request.params);
   });
 }
-
-// ##############################################################################################
-app.post("/modelWithDeployment" + '/:deploymentUuid' + '/:actionName', async (req, res, ctx) => {
-  const actionName: string =
-    typeof req.params["actionName"] == "string" ? req.params["actionName"] : req.params["actionName"][0];
-  const deploymentUuid: string =
-    typeof req.params["deploymentUuid"] == "string" ? req.params["deploymentUuid"] : req.params["deploymentUuid"][0];
-  
-  let update = [];
-  try {
-    update = await req.body;
-  } catch(e){}
-
-  // const updates: RemoteStoreModelAction[] = await req.body;
-  console.log("server post modelWithDeployment/"," started #####################################");
-  console.log("server post modelWithDeployment/ deploymentUuid",deploymentUuid,"actionName",actionName);
-  // console.log("server post modelWithDeployment/ using",deploymentUuid == applicationDeploymentLibrary.uuid?"library":"miroir","schema");
-  
-  await modelActionRunner(
-    localMiroirStoreController,
-    localAppStoreController,
-    deploymentUuid,
-    actionName,
-    update.modelUpdate
-  );
- 
-  res.json([]);
-});
 
 // ##############################################################################################
 app.get('/', (req,res) => {

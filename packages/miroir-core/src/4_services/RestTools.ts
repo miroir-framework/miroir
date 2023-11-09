@@ -3,6 +3,7 @@ import { ApplicationSection, EntityInstance } from "miroir-core/src/0_interfaces
 import { HttpRequestBodyFormat, HttpResponseBodyFormat } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
+import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 
 function wrapResults(instances: EntityInstance[]): HttpResponseBodyFormat {
   return { instances };
@@ -131,7 +132,6 @@ export async function restMethodGetHandler(
 
 // ################################################################################################
 export async function restMethodsPostPutDeleteHandler(
-  // continuationFunction: (arg0: any) => any,
   continuationFunction: (response:any) =>(arg0: any) => any,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
@@ -177,4 +177,33 @@ export async function restMethodsPostPutDeleteHandler(
           wrapResults(await targetDataStore.deleteInstance.bind(targetDataStore)(section, parentUuid)),
     continuationFunction(response)
   );
+}
+
+// ################################################################################################
+export async function restMethodModelActionRunnerHandler(
+  continuationFunction: (response:any) =>(arg0: any) => any,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
+  method: HttpMethod,
+  response: any,
+  effectiveUrl: string, // log only, to remove?
+  body: HttpRequestBodyFormat,
+  params: any,
+):Promise<void> {
+  const actionName: string =
+  typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+
+  const deploymentUuid: string =
+    typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
+
+  console.log("restMethodModelActionRunnerHandler params", params, "body", body);
+
+  const result = modelActionRunner(
+    localMiroirStoreController,
+    localAppStoreController,
+    deploymentUuid,
+    actionName,
+    body.modelUpdate
+  );
+  return continuationFunction(response)(result)
 }

@@ -339,6 +339,7 @@ export {
   generateRestServiceResponse,
   restMethodGetHandler,
   restMethodsPostPutDeleteHandler,
+  restMethodModelActionRunnerHandler,
 } from './4_services/RestTools.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer } from './tools.js';

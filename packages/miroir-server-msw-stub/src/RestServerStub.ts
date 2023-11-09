@@ -3,9 +3,8 @@ import { HttpResponse, http } from "msw";
 import {
   HttpRequestBodyFormat,
   IStoreController,
-  applicationDeploymentLibrary,
-  modelActionRunner,
   restMethodGetHandler,
+  restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
 
@@ -16,7 +15,6 @@ const serializePost = (post: any) => ({
   ...post,
   user: post.user.id,
 });
-
 
 // ##################################################################################
 export class RestServerStub {
@@ -106,44 +104,26 @@ export class RestServerStub {
           );
         }
       ),
-
       // ############################    MODEL      ############################################
       http.post(this.rootApiUrl + "/modelWithDeployment/:deploymentUuid/:actionName", async ({ request, params }) => {
         console.log("post modelWithDeployment/", " started #####################################");
-        // const localParams = request.params
-        const actionName: string =
-          typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
-
-        const deploymentUuid: string =
-          typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
-
-        const targetDataStore =
-          deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
-        console.log("post model/ actionName", actionName);
-        let update: HttpRequestBodyFormat = {};
+        let body: HttpRequestBodyFormat = {};
         try {
-          update = (await request.json()) as HttpRequestBodyFormat;
+          body = (await request.json()) as HttpRequestBodyFormat;
         } catch (e) {}
 
-        console.log("post modelWithDeployment/ received update", update);
+        console.log("post modelWithDeployment/ received update", body);
 
-        await modelActionRunner(
+        return restMethodModelActionRunnerHandler(
+          (response) => (localData) => HttpResponse.json(localData),
           localMiroirStoreController,
           localAppStoreController,
-          deploymentUuid,
-          actionName,
-          update.modelUpdate
-        );
-
-        console.log("post modelWithDeployment/ return, with res", request, "params", params);
-        // const jsonResult = await HttpResponse.json([]);
-        const jsonResult = await HttpResponse.json({ instances: [] });
-        // jsonResult.headers.all
-        console.log("post modelWithDeployment/ return, with jsonResult", jsonResult);
-        // const result: MaybePromise<MockedResponse<DefaultBodyType>> = res(jsonResult)
-        // const result = res(jsonResult)
-        // console.log("post modelWithDeployment/ return, with result", result);
-        return jsonResult;
+          "post",
+          undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
+          this.rootApiUrl + "/modelWithDeployment/:deploymentUuid/:actionName",
+          body,
+          params
+        )
       }),
     ];
   }
