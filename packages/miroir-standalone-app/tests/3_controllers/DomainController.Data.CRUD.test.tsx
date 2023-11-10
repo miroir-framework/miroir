@@ -470,7 +470,6 @@ describe(
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
-        // }
   
           // ##########################################################################################################
           console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
@@ -504,7 +503,7 @@ describe(
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
-  
+
           // ##########################################################################################################
           console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(

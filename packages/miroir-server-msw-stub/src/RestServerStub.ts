@@ -1,6 +1,7 @@
-import { HttpResponse, http } from "msw";
+import { DefaultBodyType, HttpResponse, http } from "msw";
 
 import {
+  HttpMethod,
   HttpRequestBodyFormat,
   IStoreController,
   restMethodGetHandler,
@@ -15,6 +16,24 @@ const serializePost = (post: any) => ({
   ...post,
   user: post.user.id,
 });
+
+declare type TmpHandler = {
+  method: HttpMethod,
+  url: string,
+  rootApiUrl: string,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController
+  handler: (
+    continuationFunction: (response: any) => (arg0: any) => any,
+    localMiroirStoreController: IStoreController,
+    localAppStoreController: IStoreController,
+    method: HttpMethod,
+    response: any,
+    effectiveUrl: string, // log only, to remove?
+    body: HttpRequestBodyFormat,
+    params: any
+  ) => Promise<void>;
+};
 
 // ##################################################################################
 export class RestServerStub {
@@ -33,98 +52,81 @@ export class RestServerStub {
       localAppStoreController
     );
 
-    this.handlers = [
-      // rest.get(this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all", async (req, res, ctx) => {
-      http.get(
-        this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-        async ({ request, params }) => {
-          // console.log("RestServerStub handler ", request);
+    const tmpHandlers: TmpHandler[] = [
+      {
+        method: "get",
+        url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+        localMiroirStoreController,
+        localAppStoreController,
+        rootApiUrl: this.rootApiUrl,
+        handler: restMethodGetHandler.bind(restMethodGetHandler)
+      },
+      {
+        method: "put",
+        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+        localMiroirStoreController,
+        localAppStoreController,
+        rootApiUrl: this.rootApiUrl,
+        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
+      },
+      {
+        method: "post",
+        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+        localMiroirStoreController,
+        localAppStoreController,
+        rootApiUrl: this.rootApiUrl,
+        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
+      },
+      {
+        method: "delete",
+        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+        localMiroirStoreController,
+        localAppStoreController,
+        rootApiUrl: this.rootApiUrl,
+        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
+      },
+      {
+        method: "post",
+        url: "/modelWithDeployment/:deploymentUuid/:actionName",
+        localMiroirStoreController,
+        localAppStoreController,
+        rootApiUrl: this.rootApiUrl,
+        handler: restMethodModelActionRunnerHandler.bind(restMethodModelActionRunnerHandler)
+      },
+    ];
+
+    this.handlers = tmpHandlers.map(
+      (h:TmpHandler)=> (http as any)[h.method](h.rootApiUrl + h.url,
+        async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
+          const { request, params} = p;
+          // console.log("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
+          
+          let body: HttpRequestBodyFormat = {}
+          if (h.method !== "get") {
+            try {
+              body = (await request.json()) as HttpRequestBodyFormat;
+            } catch (e) {
+              console.error("RestServerStub could not read body for", h.method,h.url,":",e);
+            }
+          }
+          // console.log("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
-            return restMethodGetHandler(
-              (response) => (localData) => HttpResponse.json(localData),
-              localMiroirStoreController,
-              localAppStoreController,
-              "get", /* method */
-              undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
-              this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-              undefined, // body
-              params,
+            return h.handler(
+              (response: any) => (localData: any) => HttpResponse.json(localData),
+              h.localMiroirStoreController,
+              h.localAppStoreController,
+              h.method /* method */,
+              undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
+              h.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+              body, // body
+              params
             );
           } catch (error) {
             console.warn("RestServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
             return Promise.resolve(undefined);
           }
         }
-      ),
-      http.post(
-        this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        async ({ request, params }) => {
-          const body: HttpRequestBodyFormat = (await request.json()) as HttpRequestBodyFormat;
-          return restMethodsPostPutDeleteHandler(
-            (response) => (localData) => HttpResponse.json(localData),
-            localMiroirStoreController,
-            localAppStoreController,
-            "post",
-            undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
-            this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
-            body,
-            params,
-          );
-        }
-      ),
-      http.put(
-        this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        async ({ request, params }) => {
-          const body = (await request.json()) as HttpRequestBodyFormat;
-          return restMethodsPostPutDeleteHandler(
-            (response) => (localData) => HttpResponse.json(localData),
-            localMiroirStoreController,
-            localAppStoreController,
-            "put",
-            undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
-            this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
-            body,
-            params,
-          );
-        }
-      ),
-      http.delete(
-        this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        async ({ request, params }) => {
-          const body = (await request.json()) as HttpRequestBodyFormat;
-          return restMethodsPostPutDeleteHandler(
-            (response) => (localData) => HttpResponse.json(localData),
-            localMiroirStoreController,
-            localAppStoreController,
-            "delete",
-            undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
-            this.rootApiUrl + "miroirWithDeployment/:deploymentUuid/:section/entity",
-            body,
-            params,
-          );
-        }
-      ),
-      // ############################    MODEL      ############################################
-      http.post(this.rootApiUrl + "/modelWithDeployment/:deploymentUuid/:actionName", async ({ request, params }) => {
-        console.log("post modelWithDeployment/", " started #####################################");
-        let body: HttpRequestBodyFormat = {};
-        try {
-          body = (await request.json()) as HttpRequestBodyFormat;
-        } catch (e) {}
-
-        console.log("post modelWithDeployment/ received update", body);
-
-        return restMethodModelActionRunnerHandler(
-          (response) => (localData) => HttpResponse.json(localData),
-          localMiroirStoreController,
-          localAppStoreController,
-          "post",
-          undefined, /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/
-          this.rootApiUrl + "/modelWithDeployment/:deploymentUuid/:actionName",
-          body,
-          params
-        )
-      }),
-    ];
+      )
+    )
   }
 }

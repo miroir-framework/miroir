@@ -1,7 +1,4 @@
 import { ZodTypeAny, z } from "zod";
-// import { transform as _transform, isObject as _isObject, isUndefined as _isUndefined } from "lodash";
-import _ from "lodash";
-const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
 
 import {
   JzodElement,
@@ -132,43 +129,6 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;
 }
 
-// // ################################################################################################
-// //  deducing miroirJzodSchemaBootstrap from jzodBootstrapSetSchema, by adjoining "extra" attribute
-// // ################################################################################################
-// const miroirJzodExtraPropertiesSchema: JzodObject = {
-//   "type": "object",
-//   "definition": {
-//     "id": {"type":"simpleType", "definition": "number"},
-//     "defaultLabel": {"type":"simpleType", "definition": "string"},
-//     "editable": {"type":"simpleType", "definition": "boolean"},
-//   }
-// }
-
-// // const { transform, isObject, isUndefined } = _
-
-// const deepTransform = (obj:any, iterator:(key:any,value:any)=>[any,any]) => _transform(obj, (acc:any, val, key) => {
-//   const [k, v] = iterator(key, val) // use the iterator and get a pair of key and value
-  
-//   if(_isUndefined(k)) return // skip if no updated key
-  
-//   // set the updated key and value, and if the value is an object iterate it as well
-//   acc[k] = _isObject(v) ? deepTransform(v, iterator) : v 
-// })
-
-// // const obj = {"this":{"is_not":{"something":"we want to keep"},"is":{"a":{"good_idea":22},"b":{"bad_idea":67},"c":[{"meh_idea":22}]}}}
-
-// const miroirJzodExtraPropertiesSchemaTransform = (key:any, value:any):[any,any] => {
-//   if (String(key) == 'extra') return [key, miroirJzodExtraPropertiesSchema]
-  
-//   return [key, value]
-// }
-
-
-// const miroirJzodSchemaBootstrap = deepTransform(jzodBootstrapSetSchema,miroirJzodExtraPropertiesSchemaTransform)
-
-// console.log("miroirJzodSchemaBootstrap",miroirJzodSchemaBootstrap);
-
-// export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(miroirJzodSchemaBootstrap);
 export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(miroirJzodSchemaBootstrap.definition as JzodElement);
 
 export default {}

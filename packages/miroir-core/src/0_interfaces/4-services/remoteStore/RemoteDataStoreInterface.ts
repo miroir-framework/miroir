@@ -11,7 +11,6 @@ import {
 
 // ################################################################################################
 export interface HttpRequestBodyFormat {
-  // instances: EntityInstancesUuidIndex
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
@@ -20,9 +19,24 @@ export interface HttpRequestBodyFormat {
 
 // ################################################################################################
 export interface HttpResponseBodyFormat {
-  // instances: EntityInstancesUuidIndex
   instances: EntityInstance[]
 };
+
+// ################################################################################################
+export interface RestClientInterface {
+  get(endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
+  post(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+  put(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+  delete(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
+}
+
+// ################################################################################################
+export interface RestClientCallReturnType {
+  status: number;
+  data: any;
+  headers: Headers;
+  url: string;
+}
 
 // ################################################################################################
 export interface RemoteStoreCRUDAction {
@@ -50,26 +64,9 @@ export interface RemoteStoreCRUDActionReturnType {
   status: "ok" | "error";
   errorMessage?: string;
   error?: MError;
-  // instances: EntityInstanceCollection[]
   instanceCollection?: EntityInstanceCollection;
 }
 
-// ################################################################################################
-export interface RestClientCallReturnType {
-  status: number;
-  data: any;
-  // headers: any;
-  headers: Headers;
-  url: string;
-}
-
-// ################################################################################################
-export interface RestClientInterface {
-  get(endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
-  post(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
-  put(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
-  delete(endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
-}
 
 // ################################################################################################
 /**

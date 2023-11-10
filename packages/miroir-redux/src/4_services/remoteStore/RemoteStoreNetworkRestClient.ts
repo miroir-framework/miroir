@@ -77,6 +77,22 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     );
   }
 
+  private actionTypeArgsMap: {[k:string]:{[l:string]: {"attribute":string,"result": string} | undefined}} = {
+    "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
+    // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
+    "DomainTransactionalAction": {
+      "UpdateMetaModelInstance": {attribute: "update", result: "modelUpdate"},
+      "updateEntity": {attribute: "update", result: "modelUpdate"},
+      "commit": undefined,
+      "initModel": {attribute: "params", result: "modelUpdate"},
+      "redo": undefined,
+      "replaceLocalCache": undefined, // local action, not sent on the network
+      "resetModel": undefined,
+      "resetData": undefined,
+      "rollback": undefined,
+      "undo": undefined,
+    },
+  }
 
   // ##################################################################################
   getRestCallParams(
@@ -85,20 +101,25 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   ): {
     operation: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
     url: string;
-    // args: any[];
     args: any;
   } {
     return {
       operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]],
       url: this.networkActionUrl(networkAction, rootApiUrl),
-      args: ["RemoteStoreCRUDAction", "RemoteStoreCRUDActionWithDeployment"].includes(networkAction.actionType)
-        ? {crudInstances:(networkAction as any)["objects"]}
-        : ["DomainTransactionalAction", "DomainModelActionWithDeployment"].includes(networkAction.actionType)
-        ? (networkAction as any)["update"]
-          ? {modelUpdate: (networkAction as any)["update"]}
-          : networkAction.actionName == "initModel"
-          ? {modelUpdate: (networkAction as any)["params"]}
-          : {other: (networkAction as any)["params"]}
+      args: this.actionTypeArgsMap[networkAction.actionType]
+        ? this.actionTypeArgsMap[networkAction.actionType]["*"]
+          ? {
+              [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[
+                this.actionTypeArgsMap[networkAction.actionType]["*"]?.attribute ?? "ERROR"
+              ],
+            }
+          : this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]
+          ? {
+              [this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.result ?? "ERROR"]: (
+                networkAction as any
+              )[this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.attribute ?? "ERROR"],
+            }
+          : {}
         : {},
     };
   }
@@ -111,6 +132,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return callParams.operation(callParams.url, callParams.args);
   }
 
+  // ##################################################################################
   async handleNetworkRemoteStoreCRUDActionWithDeployment(
     deploymentUuid: string,
     section: ApplicationSection,
@@ -120,6 +142,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section + "/entity"
     );
+    // const args = 
     console.log(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDActionWithDeployment action",
       action,
@@ -133,6 +156,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return callParams.operation(callParams.url, callParams.args);
   }
 
+  // ##################################################################################
   async handleNetworkRemoteStoreModelActionWithDeployment(
     deploymentUuid: string,
     action: RemoteStoreAction
