@@ -1,3 +1,5 @@
+import log from 'loglevelnext';
+import { apply, reg } from "loglevel-plugin-prefix";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
 import { createRoot, Root } from "react-dom/client";
@@ -14,8 +16,10 @@ import {
   ConfigurationService,
   defaultMiroirMetaModel,
   entityDefinitionEntityDefinition,
+  LoggerFactoryInterface,
   MiroirConfig,
   miroirCoreStartup,
+  MiroirLoggerFactory,
   StoreControllerFactory,
 } from "miroir-core";
 
@@ -34,6 +38,7 @@ import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 
 const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
+MiroirLoggerFactory.setEffectiveLogger(log as any as LoggerFactoryInterface);
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");

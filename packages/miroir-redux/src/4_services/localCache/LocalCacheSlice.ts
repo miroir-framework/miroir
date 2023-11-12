@@ -21,12 +21,18 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
+  LoggerInterface,
   MetaEntity,
+  MiroirLoggerFactory,
   ModelEntityUpdateConverter,
   Uuid,
+  createLogger,
+  defaultLevels,
   entityDefinitionEntityDefinition,
   entityEntity,
-  entityEntityDefinition
+  entityEntityDefinition,
+  loggerAsyncFactory,
+  testLogger,
 } from "miroir-core";
 import {
   LocalCacheSliceState,
@@ -34,6 +40,10 @@ import {
   localCacheSliceInputActionNamesObject,
   localCacheSliceName
 } from "./localCacheInterface";
+
+const loggerName: string = "4_miroir-redux_LocalCacheSlice";
+let log:LoggerInterface = console as any as LoggerInterface;
+createLogger(loggerName,(value:LoggerInterface)=>{log = value},testLogger)
 
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
@@ -57,7 +67,7 @@ export function getLocalCacheSliceIndex(
 export function getLocalCacheIndexEntityUuid(localCacheIndex:string): Uuid {
   const entityUuid = new RegExp(/\_([0-9a-fA-F\-]+)$/).exec(localCacheIndex)
   if (entityUuid) {
-    // console.log('found entityUuid',entityUuid);
+    // log.info('found entityUuid',entityUuid);
     return entityUuid[1];
   } else {
     throw new Error("unknown entity in local cache index: " + localCacheIndex);
@@ -67,7 +77,7 @@ export function getLocalCacheIndexEntityUuid(localCacheIndex:string): Uuid {
 export function getLocalCacheIndexDeploymentUuid(localCacheIndex:string): Uuid {
   const deploymentUuid = new RegExp(/^([0-9a-fA-F\-]+)\_/).exec(localCacheIndex)
   if (deploymentUuid) {
-    // console.log('found deploymentUuid',deploymentUuid);
+    // log.info('found deploymentUuid',deploymentUuid);
     return deploymentUuid[1];
   } else {
     throw new Error("unknown deployment in local cache index: " + localCacheIndex);
@@ -77,7 +87,7 @@ export function getLocalCacheIndexDeploymentUuid(localCacheIndex:string): Uuid {
 export function getLocalCacheIndexDeploymentSection(localCacheIndex:string): Uuid {
   const deploymentSection = new RegExp(/^[0-9a-fA-F\-]+_([^_]+)_[0-9a-fA-F\-]+$/).exec(localCacheIndex)
   if (deploymentSection) {
-    // console.log('getLocalCacheIndexDeploymentSection found deploymentSection',deploymentSection);
+    // log.info('getLocalCacheIndexDeploymentSection found deploymentSection',deploymentSection);
     return deploymentSection[1];
   } else {
     throw new Error("getLocalCacheIndexDeploymentSection unknown deployment section in local cache index: " + localCacheIndex + ' found deploymentSection is undefined');
@@ -166,7 +176,7 @@ export function localCacheStateToDomainState(localCache:LocalCacheSliceState):Do
 //#########################################################################################
 const getLocalCacheSliceEntityAdapter: (entityUuid: string) => EntityAdapter<EntityInstance> = _memoize(
   (entityUuid: string) => {
-    // console.log("getEntityAdapter creating EntityAdapter For entity", parentName);
+    // log.info("getEntityAdapter creating EntityAdapter For entity", parentName);
     const result: EntityAdapter<EntityInstance> = createEntityAdapter<EntityInstance>({
       // Assume IDs are stored in a field other than `book.id`
       selectId: (entity) => entity.uuid,
@@ -174,7 +184,7 @@ const getLocalCacheSliceEntityAdapter: (entityUuid: string) => EntityAdapter<Ent
       // sortComparer: (a, b) => a.name.localeCompare(b.name),
     });
 
-    // console.log("getEntityAdapter creating EntityAdapter For entity", entityUuid, "result", result);
+    // log.info("getEntityAdapter creating EntityAdapter For entity", entityUuid, "result", result);
 
     return result;
   }
@@ -192,14 +202,14 @@ function getInitializedSectionEntityAdapter(
   const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
   if (!state) {
-    // console.log('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
+    // log.info('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
     state = { [index]: sliceEntityAdapter.getInitialState() } as LocalCacheSliceState;
   } else {
     if (!state[index]) {
       state[index] = sliceEntityAdapter.getInitialState();
     }
   }
-  // console.log(
+  // log.info(
   //   "LocalCacheSlice getInitializedDeploymentEntityAdapter",
   //   "deploymentUuid",
   //   deploymentUuid,
@@ -233,11 +243,11 @@ function ReplaceInstancesForSectionEntity(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // console.log('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  // log.info('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
   const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
   const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
-  // console.log(
+  // log.info(
   //   "ReplaceInstancesForDeploymentEntity for deployment",
   //   deploymentUuid,
   //   "entity",
@@ -251,7 +261,7 @@ function ReplaceInstancesForSectionEntity(
   );
 
   if (Object.keys(instanceCollection.instances).length > 0 && equalEntityInstances(instanceCollection.instances,state[instanceCollectionEntityIndex].entities)) {
-    console.log(
+    log.info(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
@@ -261,7 +271,7 @@ function ReplaceInstancesForSectionEntity(
       "nothing to be done, instances did not change."
     );
   } else {
-    console.log(
+    console.debug(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
@@ -270,8 +280,8 @@ function ReplaceInstancesForSectionEntity(
       instanceCollection.parentUuid,
       "new values",
       instanceCollection.instances,
-      "differ from old values",
-      state[instanceCollectionEntityIndex].entities
+      "differ from old values.",
+      // state[instanceCollectionEntityIndex].entities
     );
 
     state[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
@@ -279,7 +289,7 @@ function ReplaceInstancesForSectionEntity(
       instanceCollection.instances
     );
   }
-  // console.log('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
+  // log.info('ReplaceInstancesForDeploymentEntity for deployment',deploymentUuid, 'entity',action.payload.parentUuid,action.payload.parentName);
 }
 
 //#########################################################################################
@@ -290,7 +300,7 @@ function handleLocalCacheNonTransactionalAction(
   action: DomainDataAction
 ) {
   // const deploymentUuid = applicationDeploymentMiroir.uuid
-  console.log(
+  log.info(
     "localCacheSliceObject handleLocalCacheNonTransactionalAction called",
     "deploymentUuid",
     deploymentUuid,
@@ -308,7 +318,7 @@ function handleLocalCacheNonTransactionalAction(
           applicationSection,
           instanceCollection.parentUuid
         );
-        // console.log('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
+        // log.info('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           deploymentUuid,
@@ -317,21 +327,21 @@ function handleLocalCacheNonTransactionalAction(
           state
         );
 
-        // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
+        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
 
         sliceEntityAdapter.addMany(state[instanceCollectionEntityIndex], instanceCollection.instances);
 
-        // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
+        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
 
         if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
           // TODO: does it work? How?
-          // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
+          // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
 
           instanceCollection.instances.forEach((i:EntityInstance) =>
             getInitializedSectionEntityAdapter(deploymentUuid, applicationSection, i["uuid"], state)
           );
         }
-        // console.log('create done',JSON.stringify(state[deploymentUuid][applicationSection]));
+        // log.info('create done',JSON.stringify(state[deploymentUuid][applicationSection]));
       }
       break;
     }
@@ -342,7 +352,7 @@ function handleLocalCacheNonTransactionalAction(
           applicationSection,
           instanceCollection.parentUuid
         );
-        // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction delete', instanceCollection);
+        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction delete', instanceCollection);
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           deploymentUuid,
@@ -350,14 +360,14 @@ function handleLocalCacheNonTransactionalAction(
           instanceCollection.parentUuid,
           state
         );
-        // console.log('localCacheSliceObject handleLocalCacheNonTransactionalAction delete state before',JSON.stringify(state[deploymentUuid][applicationSection][instanceCollection.parentUuid]));
+        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction delete state before',JSON.stringify(state[deploymentUuid][applicationSection][instanceCollection.parentUuid]));
 
         sliceEntityAdapter.removeMany(
           state[instanceCollectionEntityIndex],
           instanceCollection.instances.map((i) => i.uuid)
         );
         // sliceEntityAdapter.removeMany(state[deploymentUuid][applicationSection][instanceCollection.parentUuid], instanceCollection.instances.map(i => i.uuid));
-        console.log(
+        log.info(
           "localCacheSliceObject handleLocalCacheNonTransactionalAction delete state after",
           JSON.stringify(state[instanceCollectionEntityIndex])
         );
@@ -385,7 +395,7 @@ function handleLocalCacheNonTransactionalAction(
       break;
     }
     default:
-      console.warn(
+      log.warn(
         "localCacheSliceObject handleLocalCacheNonTransactionalAction action could not be taken into account, unkown action",
         action.actionName
       );
@@ -398,7 +408,7 @@ function handleLocalCacheModelAction(
   deploymentUuid: Uuid,
   action: DomainTransactionalAction
 ) {
-  // console.log(
+  // log.info(
   //   "localCacheSliceObject handleLocalCacheModelAction called",
   //   action.actionName,
   //   "deploymentUuid",
@@ -409,7 +419,7 @@ function handleLocalCacheModelAction(
   switch (action.actionName) {
     case "replaceLocalCache": {
       const castAction: DomainTransactionalReplaceLocalCacheAction = action;
-      // console.log("localCacheSliceObject replaceLocalCache", deploymentUuid, action);
+      // log.info("localCacheSliceObject replaceLocalCache", deploymentUuid, action);
 
       for (const instanceCollection of action.objects) {
         ReplaceInstancesForSectionEntity(
@@ -431,13 +441,13 @@ function handleLocalCacheModelAction(
     }
     case "UpdateMetaModelInstance": {
       // not transactional??
-      // console.log('localCacheSliceObject handleLocalCacheModelAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
+      // log.info('localCacheSliceObject handleLocalCacheModelAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
       const domainDataAction: DomainDataAction = {
         actionType: "DomainDataAction",
         actionName: action.update.updateActionName,
         objects: action.update.objects,
       };
-      // console.log("localCacheSliceObject handleLocalCacheModelAction updateModel domainDataAction", domainDataAction);
+      // log.info("localCacheSliceObject handleLocalCacheModelAction updateModel domainDataAction", domainDataAction);
 
       // TODO: handle object instanceCollections by ApplicationSection
       handleLocalCacheNonTransactionalAction(
@@ -462,7 +472,7 @@ function handleLocalCacheModelAction(
         // Object.values(state[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
         action.update.modelEntityUpdate
       );
-      // console.log(
+      // log.info(
       //   "localCacheSliceObject handleLocalCacheModelAction updateModel deploymentUuid",
       //   deploymentUuid,
       //   "domainDataAction",
@@ -473,7 +483,7 @@ function handleLocalCacheModelAction(
       break;
     }
     default:
-      console.warn(
+      log.warn(
         "localCacheSliceObject handleLocalCacheModelAction deploymentUuid",
         deploymentUuid,
         "action could not be taken into account, unkown action",
@@ -484,7 +494,7 @@ function handleLocalCacheModelAction(
 
 //#########################################################################################
 function handleLocalCacheAction(state: LocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
-  console.log(
+  log.info(
     "localCacheSliceObject handleLocalCacheAction deploymentUuid",
     deploymentUuid,
     "actionType",
@@ -502,7 +512,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, deploymentUuid: Uui
       break;
     }
     default:
-      console.warn(
+      log.warn(
         "localCacheSliceObject handleLocalCacheAction action could not be taken into account, unkown action",
         action
       );

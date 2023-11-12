@@ -273,6 +273,12 @@ export {
   IStorageSpaceHandler,
   IStoreController,
 } from "./0_interfaces/4-services/remoteStore/IStoreController.js";
+export {
+  LoggerFactoryInterface,
+  LoggerFactoryAsyncInterface,
+  LoggerInterface,
+  defaultLevels,
+} from "./0_interfaces/4-services/LoggerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
@@ -327,6 +333,12 @@ export { ErrorLogService } from './3_controllers/ErrorLogService.js';
 export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
+export {
+  MiroirLoggerFactory,
+  loggerAsyncFactory,
+  createLogger,
+  testLogger
+} from './4_services/Logger.js';
 export {
   StoreController,
   StoreControllerFactory,

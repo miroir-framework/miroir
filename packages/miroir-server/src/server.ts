@@ -1,3 +1,7 @@
+import log from 'loglevelnext';
+// import * as loglevel from 'loglevel';
+
+// import * as pkg from 'loglevel-plugin-prefix';
 import express from 'express';
 import { readFileSync } from 'fs';
 // import * as prettier from "prettier";
@@ -10,7 +14,9 @@ import {
 import bodyParser from 'body-parser';
 import {
   HttpMethod,
+  LoggerFactoryInterface,
   MiroirConfig,
+  MiroirLoggerFactory,
   entityDefinitionReport,
   modelActionRunner,
   restMethodGetHandler,
@@ -19,6 +25,7 @@ import {
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
+import { trace } from 'loglevel';
 
 
 
@@ -29,6 +36,11 @@ const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConf
 console.log('configFileContents',configFileContents)
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+console.log("server starting log:", log);
+
+MiroirLoggerFactory.setEffectiveLogger(log as any as LoggerFactoryInterface);
+
 
 const app = express(),
       port = 3080;
