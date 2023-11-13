@@ -250,6 +250,14 @@ export {
   MiroirContextInterface
 } from './0_interfaces/3_controllers/MiroirContextInterface';
 export {
+  LoggerFactoryInterface,
+  LoggerFactoryAsyncInterface,
+  LoggerInterface,
+  LogLevelOptions,
+  defaultLevels,
+  SpecificLoggerOptionsMap,
+} from "./0_interfaces/4-services/LoggerInterface.js";
+export {
   LocalCacheInterface,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
@@ -273,12 +281,6 @@ export {
   IStorageSpaceHandler,
   IStoreController,
 } from "./0_interfaces/4-services/remoteStore/IStoreController.js";
-export {
-  LoggerFactoryInterface,
-  LoggerFactoryAsyncInterface,
-  LoggerInterface,
-  defaultLevels,
-} from "./0_interfaces/4-services/LoggerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
@@ -335,8 +337,7 @@ export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
   MiroirLoggerFactory,
-  loggerAsyncFactory,
-  createLogger,
+  templateLoggerOptionsFactory,
   testLogger
 } from './4_services/Logger.js';
 export {

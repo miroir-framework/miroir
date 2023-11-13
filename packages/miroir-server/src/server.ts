@@ -17,15 +17,15 @@ import {
   LoggerFactoryInterface,
   MiroirConfig,
   MiroirLoggerFactory,
+  SpecificLoggerOptionsMap,
+  defaultLevels,
   entityDefinitionReport,
-  modelActionRunner,
   restMethodGetHandler,
   restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
-import { trace } from 'loglevel';
 
 
 
@@ -39,7 +39,18 @@ const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 console.log("server starting log:", log);
 
-MiroirLoggerFactory.setEffectiveLogger(log as any as LoggerFactoryInterface);
+const specificLoggerOptions: SpecificLoggerOptionsMap = {
+  "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
+}
+
+MiroirLoggerFactory.setEffectiveLogger(
+  log as any as LoggerFactoryInterface,
+  defaultLevels.INFO,
+  "[{{time}}] {{level}} ({{name}}) AAAA-",
+  specificLoggerOptions,
+);
 
 
 const app = express(),

@@ -26,13 +26,9 @@ import {
   MiroirLoggerFactory,
   ModelEntityUpdateConverter,
   Uuid,
-  createLogger,
-  defaultLevels,
   entityDefinitionEntityDefinition,
   entityEntity,
-  entityEntityDefinition,
-  loggerAsyncFactory,
-  testLogger,
+  entityEntityDefinition
 } from "miroir-core";
 import {
   LocalCacheSliceState,
@@ -43,7 +39,10 @@ import {
 
 const loggerName: string = "4_miroir-redux_LocalCacheSlice";
 let log:LoggerInterface = console as any as LoggerInterface;
-createLogger(loggerName,(value:LoggerInterface)=>{log = value},testLogger)
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
+
 
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer

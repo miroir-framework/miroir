@@ -1,44 +1,58 @@
-import log from 'loglevelnext';
-import { apply, reg } from "loglevel-plugin-prefix";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
-import { blue, red } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
+import log from 'loglevelnext';
+import { setupWorker } from 'msw/browser';
+import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
+import { Provider } from "react-redux";
 import {
   createBrowserRouter,
-  Link,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
-import { StrictMode } from "react";
-import { Provider } from "react-redux";
-import { setupWorker } from 'msw/browser';
 
 import {
   ConfigurationService,
+  defaultLevels,
   defaultMiroirMetaModel,
   entityDefinitionEntityDefinition,
   LoggerFactoryInterface,
   MiroirConfig,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  StoreControllerFactory,
+  SpecificLoggerOptionsMap,
+  StoreControllerFactory
 } from "miroir-core";
 
-import { createReduxStoreAndRestClient } from "./miroir-fwk/createReduxStoreAndRestClient";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
+import { HomePage } from "./miroir-fwk/4_view/HomePage";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
-import { HomePage } from "./miroir-fwk/4_view/HomePage";
-import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePage";
+import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
+import { createReduxStoreAndRestClient } from "./miroir-fwk/createReduxStoreAndRestClient";
 import { miroirAppStartup } from "./startup";
 
 import miroirConfig from "./assets/miroirConfig.json";
 
-import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
+import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
 
 const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
-MiroirLoggerFactory.setEffectiveLogger(log as any as LoggerFactoryInterface);
+
+const specificLoggerOptions: SpecificLoggerOptionsMap = {
+  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
+  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
+  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+}
+
+MiroirLoggerFactory.setEffectiveLogger(
+  log as any as LoggerFactoryInterface,
+  defaultLevels.INFO,
+  "[{{time}}] {{level}} ({{name}}) AAAA-",
+  specificLoggerOptions
+);
 
 console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");

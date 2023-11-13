@@ -49,15 +49,14 @@ export interface LogLevelOptions {
   prefix?: PrefixFactoryOptions;
 }
 
+export type SpecificLoggerOptionsMap = Record<string,{level?: string | number, template?: string}>;
 
-// interface LoggerFactoryInterface extends LoggerInterface {
 export interface LoggerFactoryInterface {
   create(opts: LogLevelOptions | string): LoggerInterface
   get loggers(): Record<string, LoggerInterface>
 }
 
 export interface LoggerFactoryAsyncInterface {
-  create(opts: LogLevelOptions | string): Promise<LoggerInterface>
   get loggers(): Record<string, LoggerInterface>
 }
 

@@ -28,14 +28,18 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json";
 
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
-import { createLogger, testLogger } from '../4_services/Logger';
+import { MiroirLoggerFactory } from '../4_services/Logger';
 import { circularReplacer } from '../tools';
 import { throwExceptionIfError } from './ErrorUtils';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 
 const loggerName: string = "5_miroir-core_DomainController";
 let log:LoggerInterface = console as any as LoggerInterface;
-createLogger(loggerName,(value:LoggerInterface)=>{log = value},testLogger)
+MiroirLoggerFactory.asyncCreateLogger(
+  loggerName,
+).then((value: LoggerInterface) => {
+  log = value
+});
 
 
 /**
