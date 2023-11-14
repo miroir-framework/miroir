@@ -1,6 +1,6 @@
 // ###################################################################################
 
-import { ConfigurationService, StoreControllerFactory, defaultMiroirMetaModel, miroirCoreStartup } from "miroir-core";
+import { ConfigurationService, LoggerInterface, MiroirLoggerFactory, StoreControllerFactory, defaultMiroirMetaModel, getLoggerName, miroirCoreStartup } from "miroir-core";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
@@ -9,7 +9,16 @@ import {
   IStoreController,
   MiroirConfig
 } from "miroir-core";
+import { packageName, cleanLevel } from "./constants";
 
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 // TODO: factorize similar function in standalone-app index.tsx?
 export async function startServer(
@@ -41,14 +50,14 @@ export async function startServer(
     await localMiroirStoreController?.open();
     await localMiroirStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
   } catch(e) {
-    console.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
+    log.error("failed to initialize meta-model, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
   }
   
   try {
     await localAppStoreController?.open();
     await localAppStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);
   } catch(e) {
-    console.error("failed to initialize app, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
+    log.error("failed to initialize app, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
   }
   return Promise.resolve({localMiroirStoreController, localAppStoreController})
 }

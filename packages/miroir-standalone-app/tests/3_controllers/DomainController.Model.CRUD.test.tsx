@@ -1,7 +1,7 @@
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import React from "react";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { SetupWorkerApi } from "msw/browser";
 // import { SetupServerApi } from "msw/lib/node";
@@ -15,7 +15,6 @@ import {
   EntityDefinition,
   EntityInstance,
   IStoreController,
-  LocalAndRemoteControllerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
@@ -35,15 +34,11 @@ import {
   entityDefinitionBook,
   entityEntity,
   entityReport,
-  miroirCoreStartup,
-  reportBookList
+  miroirCoreStartup
 } from "miroir-core";
-import {
-  ReduxStore
-} from "miroir-redux";
 
+import { ReduxStore, createReduxStoreAndRestClient } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 import {
   DisplayLoadingInfo,
   miroirAfterAll,

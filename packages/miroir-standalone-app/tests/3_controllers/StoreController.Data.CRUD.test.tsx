@@ -1,57 +1,47 @@
-import { act, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { setupServer, SetupServerApi } from "msw/node";
 import { SetupWorkerApi } from "msw/browser";
-import React from "react";
+import { setupServer, SetupServerApi } from "msw/node";
 
 
 import {
-  applicationDeploymentMiroir,
-  ConfigurationService,
-  DomainControllerInterface,
-  DomainDataAction,
-  EntityDefinition,
-  EntityInstance,
-  MetaEntity,
-  MiroirConfig, miroirCoreStartup,
-  StoreControllerFactory,
-  IStoreController,
-  LocalAndRemoteControllerInterface,
-  MiroirContext,
-  applicationDeploymentLibrary,
-  entityEntity,
   author1,
   author2,
   author3,
   book1,
   book2,
   book4,
+  ConfigurationService,
+  DomainControllerInterface,
   entityAuthor,
   entityBook,
+  EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionBook,
-  reportBookList
+  entityEntity,
+  EntityInstance,
+  IStoreController,
+  LocalAndRemoteControllerInterface,
+  MetaEntity,
+  MiroirConfig,
+  MiroirContext,
+  miroirCoreStartup,
+  reportBookList,
+  StoreControllerFactory
 } from "miroir-core";
 
 import {
-  DisplayLoadingInfo,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
-  miroirBeforeEach,
-  renderWithProviders,
+  miroirBeforeEach
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
-import { loadConfigFile, refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-redux";
+import { loadConfigFile } from "./DomainController.Data.CRUD.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
-
-import { ReduxStore } from "miroir-redux";
 
 console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
 console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);

@@ -1,13 +1,23 @@
-import { DefaultBodyType, HttpResponse, http } from "msw";
+import { HttpResponse, http } from "msw";
 
 import {
   HttpMethod,
   HttpRequestBodyFormat,
   IStoreController,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
   restMethodGetHandler,
   restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
+import { packageName, cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServerStub");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // Add an extra delay to all endpoints, so loading spinners show up.
 const ARTIFICIAL_DELAY_MS = 100;
@@ -44,7 +54,7 @@ export class RestServerStub {
     private localMiroirStoreController: IStoreController,
     private localAppStoreController: IStoreController
   ) {
-    console.log(
+    log.log(
       "RestServerStub constructor rootApiUrl",
       rootApiUrl,
       "localIndexedDbDataStores",
@@ -99,17 +109,17 @@ export class RestServerStub {
       (h:TmpHandler)=> (http as any)[h.method](h.rootApiUrl + h.url,
         async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
           const { request, params} = p;
-          // console.log("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
+          // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
           
           let body: HttpRequestBodyFormat = {}
           if (h.method !== "get") {
             try {
               body = (await request.json()) as HttpRequestBodyFormat;
             } catch (e) {
-              console.error("RestServerStub could not read body for", h.method,h.url,":",e);
+              log.error("RestServerStub could not read body for", h.method,h.url,":",e);
             }
           }
-          // console.log("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
+          // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
             return h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
@@ -122,7 +132,7 @@ export class RestServerStub {
               params
             );
           } catch (error) {
-            console.warn("RestServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
+            log.warn("RestServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
             return Promise.resolve(undefined);
           }
         }

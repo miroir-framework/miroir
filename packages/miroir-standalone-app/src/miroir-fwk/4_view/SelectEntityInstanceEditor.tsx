@@ -17,16 +17,37 @@ import {
   useRef,
   useState
 } from 'react';
+import { useSelector } from "react-redux";
 import ReactDOM from 'react-dom';
 
-import { EntityDefinition, EntityInstanceWithName, MetaEntity, MiroirApplicationModel, LocalCacheQueryParams } from 'miroir-core';
-import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-redux";
-import { useSelector } from "react-redux";
+import {
+  EntityDefinition,
+  EntityInstanceWithName,
+  MetaEntity,
+  MiroirApplicationModel,
+  LocalCacheQueryParams,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
+} from "miroir-core";
+import {
+  ReduxStateWithUndoRedo,
+  selectInstanceArrayForDeploymentSectionEntity,
+  selectModelForDeployment,
+} from "miroir-localcache-redux";
+
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
 import { EntityInstanceUuidIndexSelectorParams } from "./ReduxHooks";
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -93,7 +114,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
   const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
-  console.log("DefaultCellRenderer",valueToDisplay, props);
+  log.log("DefaultCellRenderer",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -120,7 +141,7 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
     props.colDef?.field && props.data && props.data[props.colDef?.field]
       ? props.data[props.colDef?.field]
       : `attribute ${props.colDef?.field} does not exist on object`;
-  console.log("DefaultCellRenderer2",valueToDisplay, props);
+  log.log("DefaultCellRenderer2",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -143,7 +164,7 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
 // ################################################################################################
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    console.log('SelectEntityInstanceEditor',props,ref);
+    log.log('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
@@ -194,7 +215,7 @@ export const SelectEntityInstanceEditor = memo(
 
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      console.log('SelectEntityInstanceEditor ready for edit',props,ref);
+      log.log('SelectEntityInstanceEditor ready for edit',props,ref);
 
       setReady(true);
     }, []);
@@ -268,7 +289,7 @@ export const SelectEntityInstanceEditor = memo(
           onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
-            console.log('SelectEntityInstanceEditor renderOption props',props,'option',option);
+            log.log('SelectEntityInstanceEditor renderOption props',props,'option',option);
             return (
               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                 <img

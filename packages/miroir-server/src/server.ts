@@ -15,29 +15,20 @@ import bodyParser from 'body-parser';
 import {
   HttpMethod,
   LoggerFactoryInterface,
+  LoggerInterface,
   MiroirConfig,
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   defaultLevels,
   entityDefinitionReport,
+  getLoggerName,
   restMethodGetHandler,
   restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
-
-
-
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
-const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
-console.log('configFileContents',configFileContents)
-
-const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
-
-console.log("server starting log:", log);
+import { cleanLevel, packageName } from './constants.js';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -52,6 +43,24 @@ MiroirLoggerFactory.setEffectiveLogger(
   specificLoggerOptions,
 );
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
+let logger:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    logger = value;
+  }
+);
+
+
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
+logger.info('configFileContents',configFileContents)
+
+const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+logger.info("server starting log:", log);
 
 const app = express(),
       port = 3080;
@@ -60,7 +69,7 @@ const app = express(),
 const users = [];
 
 
-console.log(`Server being set-up, going to execute on the port::${port}`);
+logger.info(`Server being set-up, going to execute on the port::${port}`);
 
 const {
   localMiroirStoreController,
@@ -90,10 +99,10 @@ try {
   for (const schema of jzodSchemaConversion) {
     await generateZodSchemaFileFromJzodSchema(schema.jzodObject,schema.targetFileName,schema.jzodSchemaVariableName)
   }
-  console.log("GENERATED!!!!!!!");
+  logger.info("GENERATED!!!!!!!");
   
 } catch (error) {
-  console.error("could not generate TS files from Jzod schemas", error);
+  logger.error("could not generate TS files from Jzod schemas", error);
   
 }
 
@@ -180,5 +189,5 @@ app.get('/', (req,res) => {
 
 // ##############################################################################################
 app.listen(port, () => {
-    console.log(`Server listening on the port::${port}`);
+    logger.info(`Server listening on the port::${port}`);
 });

@@ -1,19 +1,28 @@
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import { useState } from 'react';
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
-import { default as AppBar, default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import MuiDrawer from '@mui/material/Drawer';
+import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { styled } from '@mui/material/styles';
+
+import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core';
+
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 const pages = ['Page1', 'Page2', 'Page3'];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];

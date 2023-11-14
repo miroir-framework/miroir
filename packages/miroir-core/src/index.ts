@@ -239,7 +239,7 @@ export {
 } from './2_domain/DomainDataAccess.js';
 export {
   ModelEntityUpdateConverter
-} from './2_domain/ModelUpdateConverter.js';
+} from './2_domain/ModelEntityUpdateConverter.js';
 export {
   LocalAndRemoteControllerInterface
 } from './0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js';
@@ -312,10 +312,10 @@ export {
 } from "./3_controllers/ConfigurationService.js";
 export {
   ErrorDataStore
-} from './3_controllers/ErrorDataStore.js';
+} from './3_controllers/ErrorHandling/ErrorDataStore.js';
 export {
   ErrorModelStore
-} from './3_controllers/ErrorModelStore.js';
+} from './3_controllers/ErrorHandling/ErrorModelStore.js';
 export {
   resetAndInitMiroirAndApplicationDatabase,
   resetMiroirAndApplicationDatabases,
@@ -331,8 +331,8 @@ export {
   metaModelEntities,
   miroirModelEntities,
 } from './3_controllers/ModelInitializer.js';
-export { ErrorLogService } from './3_controllers/ErrorLogService.js';
-export { throwExceptionIfError } from './3_controllers/ErrorUtils.js';
+export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
+export { throwExceptionIfError } from './3_controllers/ErrorHandling/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
@@ -355,7 +355,7 @@ export {
   restMethodModelActionRunnerHandler,
 } from './4_services/RestTools.js';
 export { miroirCoreStartup } from './startup.js';
-export { stringTuple, circularReplacer } from './tools.js';
+export { stringTuple, circularReplacer, getLoggerName } from './tools.js';
 
 export {
   GridReportSection,

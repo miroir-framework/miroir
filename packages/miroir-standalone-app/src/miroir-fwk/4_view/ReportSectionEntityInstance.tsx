@@ -12,9 +12,12 @@ import {
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName
 } from "miroir-core";
-import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
 import {
   useErrorLogService
@@ -26,6 +29,14 @@ import { JzodElementDisplay } from './JzodElementDisplay';
 import {
   useCurrentModel
 } from "./ReduxHooks";
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionEntityInstance");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface ReportSectionEntityInstanceProps {
   instance?: any,
@@ -62,7 +73,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  console.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeployment)
@@ -72,7 +83,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
-  console.log(
+  log.log(
     "ReportPage currentReportDefinitionDeployment",
     currentReportDefinitionDeployment,
     "currentReportDefinitionApplicationSection",
@@ -82,7 +93,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  console.log("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
+  log.log("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
 
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
@@ -104,8 +115,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [currentMiroirModel]
   );
 
-  console.log('ReportSectionEntityInstance instance',instance);
-  console.log('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
+  log.log('ReportSectionEntityInstance instance',instance);
+  log.log('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
   
   if (instance) {
     return (

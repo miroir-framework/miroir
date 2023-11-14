@@ -19,7 +19,7 @@ import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirCont
 import { LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
 import { RemoteDataStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 
-import { ModelEntityUpdateConverter } from "../2_domain/ModelUpdateConverter";
+import { ModelEntityUpdateConverter } from "../2_domain/ModelEntityUpdateConverter.js";
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -29,17 +29,19 @@ import entityDefinitionEntityDefinition from "../assets/miroir_model/54b9c72f-d4
 
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
-import { circularReplacer } from '../tools';
-import { throwExceptionIfError } from './ErrorUtils';
+import { circularReplacer, getLoggerName } from '../tools';
+import { throwExceptionIfError } from './ErrorHandling/ErrorUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
+import { packageName } from '../constants.js';
+import { cleanLevel } from './constants.js';
 
-const loggerName: string = "5_miroir-core_DomainController";
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(
-  loggerName,
-).then((value: LoggerInterface) => {
-  log = value
-});
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 
 /**
@@ -254,7 +256,7 @@ export class DomainController implements DomainControllerInterface {
       await this.localCache.handleLocalCacheDataAction(deploymentUuid, domainAction);
       log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
-      console.error(
+      log.error(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction could not handle action name",
         domainAction.actionName,
         "for action",
@@ -449,7 +451,7 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve()
       }
       default:
-        console.error(
+        log.error(
           "DomainController handleDomainAction action could not be taken into account, unkown action",
           domainAction
         );

@@ -1,8 +1,22 @@
 // ##############################################################################################
 
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
-import { EntityAttribute, EntityAttributeType, EntityDefinition } from "miroir-core";
-import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic, Sequelize } from "sequelize";
+import {
+  EntityDefinition,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName
+} from "miroir-core";
+import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic } from "sequelize";
+
+import { cleanLevel } from "./4_services/constants";
+import { packageName } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"utils");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
 export type SqlUuidEntityDefinition = {
@@ -56,7 +70,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       ];
     })
   );
-  console.log("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition","jzodSchema",entityDefinition.jzodSchema, "result", result);
+  log.log("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition","jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
 // // ##############################################################################################

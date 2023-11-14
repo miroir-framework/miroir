@@ -13,7 +13,10 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   EntityInstancesUuidIndex,
-  MetaEntity
+  LoggerInterface,
+  MetaEntity,
+  MiroirLoggerFactory,
+  getLoggerName
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
@@ -22,7 +25,15 @@ import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./
 import { MTableComponent } from "./MTableComponent";
 import { TableComponentType } from "./MTableComponentInterface";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
 
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // ##########################################################################################
 export const ReportSectionDisplayPropsSchema = ReportSectionDisplayEntityInstancePropsSchema;
@@ -36,7 +47,7 @@ export function defaultFormValues(
   currentMiroirEntity?: MetaEntity,
   displayedDeploymentDefinition?: ApplicationDeployment,
 ):any {
-  console.log(
+  log.log(
     "defaultFormValues called TableComponentType",
     tableComponentType,
     "currentMiroirEntity",
@@ -55,7 +66,7 @@ export function defaultFormValues(
       'application': displayedDeploymentDefinition?.application,
       'attributes': [],
     }
-    console.log();
+    log.log();
     
     const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,a)=>{
       let result
@@ -64,10 +75,10 @@ export function defaultFormValues(
       } else {
         result = Object.assign({},acc,{[a[0]]:''})
       }
-      // console.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
+      // log.log('ReportComponent defaultFormValues',tableComponentType,'EntityInstance setting default value for attribute',a.name,':',result);
       return result;
     },{});
-    console.log('defaultFormValues return',currentEditorAttributes);
+    log.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
   if (tableComponentType == "JSON_ARRAY") {
@@ -86,10 +97,10 @@ export function defaultFormValues(
       } else {
         result = Object.assign({},acc,{[a[1].name]:''})
       }
-      console.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a[1].name,':',result);
+      log.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a[1].name,':',result);
       return result;
     },{});
-    console.log('defaultFormValues return',currentEditorAttributes);
+    log.log('defaultFormValues return',currentEditorAttributes);
     return currentEditorAttributes;
   }
 }
@@ -112,11 +123,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
   count++;
-  console.log('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
+  log.log('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
 
-  // console.log('ReportSectionListDisplay props.fetchedData',props.fetchedData);
-  console.log('ReportSectionListDisplay props',props);
+  // log.log('ReportSectionListDisplay props.fetchedData',props.fetchedData);
+  log.log('ReportSectionListDisplay props',props);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
@@ -124,7 +135,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
     async (data,event) => {
       const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      console.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
+      log.log('ReportComponent onSubmitFormDialog',buttonType,'received data',data,'props',props,'dialogFormObject',dialogOuterFormObject);
       // if (props.tableComponentReportType == 'JSON_ARRAY') {
       //   if (buttonType == 'InnerDialog') {
       //     const previousValue = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData;
@@ -132,19 +143,19 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       //     newAttributesValue.push(data as EntityAttribute);
       //     const newObject = Object.assign({},dialogOuterFormObject?dialogOuterFormObject:{},{attributes:newAttributesValue});
       //     setdialogOuterFormObject(newObject); // TODO use Zod parse!
-      //     console.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
+      //     log.log('ReportComponent onSubmitFormDialog dialogFormObject',dialogOuterFormObject,'newObject',newObject);
       //   } else {
-      //     console.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
+      //     log.log('ReportComponent onSubmitFormDialog ignored event',buttonType);
       //   }
       // } else {
-      //   console.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
+      //   log.warn('ReportComponent onSubmitFormDialog called with inapropriate report type:',props.tableComponentReportType)
       // }
     },[dialogOuterFormObject]
   ) 
 
   const onCreateFormObject = useCallback(
     async (data:any) => {
-      console.log('ReportComponent onEditFormObject called with new object value',data);
+      log.log('ReportComponent onEditFormObject called with new object value',data);
       
       if (props.displayedDeploymentDefinition) {
         if (props.chosenApplicationSection == 'model') {
@@ -197,7 +208,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const onEditFormObject = useCallback(
     async (data:any) => {
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      console.log('ReportComponent onEditFormObject called with new object value',data);
+      log.log('ReportComponent onEditFormObject called with new object value',data);
       
       if (props.displayedDeploymentDefinition) {
         if (props.chosenApplicationSection == 'model') {
@@ -249,11 +260,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const onSubmitOuterDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
     async (data,event) => {
       const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      console.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
+      log.log('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
       if (buttonType == 'OuterDialog') {
         await onCreateFormObject(data);
       } else {
-        console.log('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
+        log.log('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
         
       }
     },
@@ -276,7 +287,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     }),
     [instancesToDisplayJzodSchema]
   );
-  console.log(
+  log.log(
     "ReportSectionListDisplay",
     count,
     "props.fetchedDataJzodSchema",
@@ -305,8 +316,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ,[props]
   );
 
-  console.log("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
-  console.log("ReportSectionListDisplay columnDefs",columnDefs);
+  log.log("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
+  log.log("ReportSectionListDisplay columnDefs",columnDefs);
   
   return (
     <div className="MiroirReport-global" style={{ display: "flex" }}>
@@ -364,7 +375,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   // } else { // props.tableComponentReportType == "JSON_ARRAY"
   //   // const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData
-  //   // console.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
+  //   // log.log('ReportComponent display report for',props.label,props.tableComponentReportType,'dialogFormObject',dialogOuterFormObject);
     
   //   return (
   //     <div>

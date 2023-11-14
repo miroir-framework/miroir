@@ -5,24 +5,34 @@ import {
   ApplicationSection,
   EntityDefinition,
   FetchedData,
+  LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
+  MiroirLoggerFactory,
   RecordOfJzodObject,
   ReportSection,
   SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  getLoggerName,
   reportEntityDefinitionList,
   reportEntityList
 } from "miroir-core";
 
 
 
+import { packageName } from '../../constants';
 import { useCurrentModel } from './ReduxHooks';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay';
-import { JzodObject } from '@miroir-framework/jzod-ts';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionView");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: FetchedData | undefined,
@@ -36,7 +46,7 @@ export interface ReportSectionEntityInstanceProps {
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   // const errorLog = useErrorLogService();
 
-  console.log("########################## ReportSectionView props", props);
+  log.log("########################## ReportSectionView props", props);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
 
@@ -48,7 +58,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  console.log("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.log("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
 
@@ -88,7 +98,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
       ? mapping[displayedDeploymentDefinition?.uuid][props.applicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
 
-  console.log("ReportSectionView availableReports",availableReports);
+  log.log("ReportSectionView availableReports",availableReports);
 
   const currentReportTargetEntity: MetaEntity | undefined = props.reportSection?.type === "objectListReportSection"
     ? entities?.find((e) => e?.uuid === (props.reportSection?.definition as SelectObjectListQuery).parentUuid)
@@ -97,7 +107,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   // computing current state #####################################################################
-  console.log(
+  log.log(
     "ReportSectionView displayedDeploymentDefinition",
     displayedDeploymentDefinition,
     "props.reportSection",
@@ -111,7 +121,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     width: "90vw",
   }),[])
 
-  console.log(
+  log.log(
     "ReportSectionView",
     "deploymentUuid",
     props.deploymentUuid,
@@ -120,21 +130,21 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     props.fetchedData
   );
 
-  // console.log('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
-  console.log('ReportSectionView props.reportSection',props.reportSection);
+  // log.log('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
+  log.log('ReportSectionView props.reportSection',props.reportSection);
 
   const evaluateExpression = (expression: string | undefined)=> {
     const parts = expression?.split(".");
     const object = Array.isArray(parts) && parts.length > 0 && props.fetchedData?props.fetchedData[parts[0]]: undefined;
     const result = object && Array.isArray(parts) && parts.length > 1?(object as any)[parts[1]]: undefined;
-    console.log("evaluateExpression",expression, parts, props.fetchedData, "object", object,"result",result);
+    log.log("evaluateExpression",expression, parts, props.fetchedData, "object", object,"result",result);
     return result;
   }
 
   const interpolateExpression = (stringToInterpolate: string | undefined)=> {
     const reg = /\$\{([^}]*)\}/g
     const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no string"
-    console.log("interpolateExpression result",result);
+    log.log("interpolateExpression result",result);
     return result;
   }
 

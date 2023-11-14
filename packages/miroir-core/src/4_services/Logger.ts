@@ -108,8 +108,8 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         MiroirLoggerFactory.effectiveLoggerFactory?.create(MiroirLoggerFactory.getOptionsFromMap(loggerName, logLevel, template))
       );
     }
-    // return result.then((value)=>{testLogger(loggerName,value); return value})
-    return result
+    return result.then((value)=>{testLogger(loggerName,value); return value})
+    // return result
   }
 
   // ###################################

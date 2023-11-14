@@ -15,13 +15,17 @@ import {
   defaultLevels,
   defaultMiroirMetaModel,
   entityDefinitionEntityDefinition,
+  getLoggerName,
   LoggerFactoryInterface,
+  LoggerInterface,
   MiroirConfig,
   miroirCoreStartup,
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   StoreControllerFactory
 } from "miroir-core";
+import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
+import { createMswRestServer } from "miroir-server-msw-stub";
 
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
@@ -29,13 +33,13 @@ import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextRea
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
 import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePage";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
-import { createReduxStoreAndRestClient } from "./miroir-fwk/createReduxStoreAndRestClient";
 import { miroirAppStartup } from "./startup";
 
 import miroirConfig from "./assets/miroirConfig.json";
+import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
+import { packageName } from "./constants";
+import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { createMswRestServer } from "./miroir-fwk/createMswRestServer";
 
 const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
 
@@ -44,17 +48,23 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
   // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
-  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
 }
 
 MiroirLoggerFactory.setEffectiveLogger(
   log as any as LoggerFactoryInterface,
   defaultLevels.INFO,
-  "[{{time}}] {{level}} ({{name}}) AAAA-",
+  "[{{time}}] {{level}} ({{name}})# ",
   specificLoggerOptions
 );
 
-console.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
+const loggerName: string = getLoggerName(packageName, cleanLevel, "index.tsx");
+let logger: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  logger = value;
+});
+
+logger.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
 
 const router = createBrowserRouter([
@@ -128,16 +138,16 @@ async function start(root:Root) {
       );
   
       if (localDataStoreWorker) {
-        console.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
+        logger.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
         localDataStoreWorker?.start();
       }
       if (localMiroirStoreController) {
-        // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
+        // log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
         await localMiroirStoreController?.open();
         try {
           await localMiroirStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
         } catch (error) {
-          console.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
+          logger.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
         }
       }
       if (localAppStoreController) {
@@ -145,7 +155,7 @@ async function start(root:Root) {
         try {
           await localAppStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
         } catch (error) {
-          console.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
+          logger.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
         }
       }
     }

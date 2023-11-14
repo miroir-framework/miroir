@@ -1,5 +1,14 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { useCallback, useState, useRef, forwardRef, useImperativeHandle, useEffect, KeyboardEvent } from "react";
+import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { KeyboardEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityEditor");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -7,10 +16,10 @@ const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
 export default forwardRef((props:ICellEditorParams, ref) => {
-  console.log('EntityEditor forwardRef props',props,'ref',ref);
+  log.log('EntityEditor forwardRef props',props,'ref',ref);
 
   const createInitialState = useCallback(() => {
-    // console.log('EntityEditor forwardRef createInitialState props',props,'ref',ref);
+    // log.log('EntityEditor forwardRef createInitialState props',props,'ref',ref);
     let startValue;
 
     if (props.eventKey === KEY_BACKSPACE) {
@@ -65,7 +74,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   };
 
   function inputHandler(e:any) {
-    console.log('EntityEditor inputHandler',e);
+    log.log('EntityEditor inputHandler',e);
     setValue(e.target.value);
   }
 
@@ -75,7 +84,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    console.log('onKeyDown char typed', event.key)
+    log.log('onKeyDown char typed', event.key)
     if (isLeftOrRight(event) || isBackspace(event)) {
       event.stopPropagation();
       return;
@@ -84,21 +93,21 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     // if (!finishedEditingPressed(event)) {
     //   if (event.preventDefault) event.preventDefault();
     // } else {
-    //   console.log('char typed', event.key)
+    //   log.log('char typed', event.key)
     // }
   };
 
   useImperativeHandle(
     ref,
     () => {
-      console.log('EntityEditor useImperativeHandle called');
+      log.log('EntityEditor useImperativeHandle called');
       return {
         getValue: () => {
-          console.log('EntityEditor useImperativeHandle getValue', value);
+          log.log('EntityEditor useImperativeHandle getValue', value);
           return value;
         },
         // afterGuiAttached: () => {
-        //   console.log('EntityEditor useImperativeHandle afterGuiAttached');
+        //   log.log('EntityEditor useImperativeHandle afterGuiAttached');
         //   setValue(props.value);
         //   inputRef.current.focus();
         //   // inputRef.current.select();

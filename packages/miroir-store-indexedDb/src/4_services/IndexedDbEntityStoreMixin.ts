@@ -4,13 +4,25 @@ import {
   IAbstractEntityStore,
   IAbstractInstanceStore,
   IDataSectionStore,
+  LoggerInterface,
   MetaEntity,
+  MiroirLoggerFactory,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
-  entityEntityDefinition
+  entityEntityDefinition,
+  getLoggerName
 } from "miroir-core";
 import { IndexedDbInstanceStoreMixin, MixedIndexedDbInstanceStore } from "./IndexedDbInstanceStoreMixin.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";
+
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbEntityStoreMixin");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // ################################################################################################
 export const MixedIndexedDbEntityAndInstanceStore = IndexedDbEntityStoreMixin(
@@ -32,7 +44,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
     ) {
       super(...args.slice(0, 4));
       this.dataStore = args[4];
-      // console.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
+      // log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
     }
 
     // ##############################################################################################
@@ -40,7 +52,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
       // drop data anq model Entities
       // await this.dataStore.clear();
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
-      console.log(this.logHeader, "clear DONE", this.getEntityUuids());
+      log.log(this.logHeader, "clear DONE", this.getEntityUuids());
       return Promise.resolve();
     }
 
@@ -58,14 +70,14 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
     async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
-        console.error(
+        log.error(
           this.logHeader,
           "createEntity",
           "inconsistent input: given entityDefinition is not related to given entity."
         );
       } else {
         if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
-          console.warn(
+          log.warn(
             this.logHeader,
             "createEntity",
             entity.name,
@@ -79,7 +91,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
           if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
             await this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
           } else {
-            console.warn(
+            log.warn(
               this.logHeader,
               "createEntity",
               entity.name,
@@ -106,11 +118,11 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
       ) {
         const cudUpdate = update.equivalentModelCUDUpdates[0];
         const currentValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
-        console.log(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
+        log.log(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
         const updatedValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
-        console.log(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
+        log.log(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
           (update.modelEntityUpdate as any)["entityName"],
           (update.modelEntityUpdate as any)["targetValue"],
@@ -125,24 +137,24 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
 
     // #############################################################################################
     async dropEntity(entityUuid: string): Promise<void> {
-      console.log(this.logHeader, "dropEntity entity", entityEntity.uuid);
+      log.log(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
-        console.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
+        log.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
         const entityDefinitions = (
           (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
         ).filter((i) => i.entityUuid == entityUuid);
-        console.log(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
+        log.log(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
           
         for (const entityDefinition of entityDefinitions) {
           await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {
-        console.warn(
+        log.warn(
           "StoreController dropEntity sublevel for entityEntityDefinition does not exist",
           entityEntityDefinition.uuid,
           this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
@@ -150,10 +162,10 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid)) {
-        console.log(this.logHeader, "dropEntity deleting Entity instance for with Entity with uuid", entityUuid);
+        log.log(this.logHeader, "dropEntity deleting Entity instance for with Entity with uuid", entityUuid);
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
       } else {
-        console.warn(
+        log.warn(
           this.logHeader,
           "dropEntity sublevel for entityEntity does not exist",
           entityEntity.uuid,

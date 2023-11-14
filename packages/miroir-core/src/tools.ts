@@ -17,3 +17,11 @@ export const circularReplacer = () => {
   };
 };
 
+export function getLoggerName(
+  packageName: string,
+  cleanLevel: string,
+  functionalityName: string,
+) {
+  return `${cleanLevel}_${packageName}_${functionalityName}`
+}
+

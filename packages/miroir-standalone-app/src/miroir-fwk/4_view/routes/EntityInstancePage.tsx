@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { List, ListItem } from '@mui/material';
 import Box from '@mui/material/Box';
-import { Params, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
@@ -10,31 +10,41 @@ import {
   ApplicationSection,
   EntityDefinition,
   EntityInstancesUuidIndex,
+  LocalCacheQueryParams,
+  LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
-  LocalCacheQueryParams,
+  MiroirLoggerFactory,
   Report,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
-  entityBook
+  entityBook,
+  getLoggerName
 } from "miroir-core";
 
-import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-redux";
+import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
 import {
-  useErrorLogService, useMiroirContextService
+  useErrorLogService
 } from "../../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
+import { packageName } from '../../../constants';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools';
 import { EntityInstanceLink } from '../EntityInstanceLink';
 import { JzodElementDisplay } from '../JzodElementDisplay';
 import {
-  EntityInstanceUuidIndexSelectorParams,
   useCurrentModel,
-  useEntityInstanceUuidIndexFromLocalCache,
+  useEntityInstanceUuidIndexFromLocalCache
 } from "../ReduxHooks";
+import { cleanLevel } from '../constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"EntityInstancePage");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'entityUuid' | 'instanceUuid';
 
@@ -42,7 +52,7 @@ export type EntityInstanceUrlParamKeys = 'deploymentUuid' | 'applicationSection'
 // ###############################################################################################################
 export const EntityInstancePage = () => {
   const params = useParams<EntityInstanceUrlParamKeys>();
-  console.log('EntityInstancePage params',params);
+  log.log('EntityInstancePage params',params);
   
   // const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   // const domainController: DomainControllerInterface = useDomainControllerService();
@@ -82,7 +92,7 @@ export const EntityInstancePage = () => {
   const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
     (d) => d.uuid == params.deploymentUuid
   );
-  console.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || params.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeployment)
@@ -91,7 +101,7 @@ export const EntityInstancePage = () => {
     params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
-  console.log(
+  log.log(
     "EntityInstancePage currentReportDefinitionDeployment",
     currentReportDefinitionDeployment,
     "currentReportDefinitionApplicationSection",
@@ -102,7 +112,7 @@ export const EntityInstancePage = () => {
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  console.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
+  log.log("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
     (e) => e?.uuid === params.entityUuid
@@ -159,10 +169,10 @@ export const EntityInstancePage = () => {
     [instance, booksUuidIndex]
   );
 
-  console.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
+  log.log('EntityInstancePage publisherBooks',publisherBooks,'authorBooks',authorBooks);
 
-  console.log('EntityInstancePage instance',instance);
-  console.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
+  log.log('EntityInstancePage instance',instance);
+  log.log('EntityInstancePage entityJzodSchema',entityJzodSchemaDefinition);
   
   if (params.applicationSection && instance) {
     return (

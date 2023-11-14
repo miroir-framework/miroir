@@ -5,14 +5,26 @@ import { useSelector } from "react-redux";
 import {
   ApplicationSection,
   DomainControllerInterface,
+  LoggerInterface,
   MiroirContext,
   MiroirContextInterface,
-  Uuid
+  MiroirLoggerFactory,
+  Uuid,
+  getLoggerName
 } from "miroir-core";
 import {
   ReduxStateChanges,
   selectCurrentTransaction
-} from "miroir-redux";
+} from "miroir-localcache-redux";
+
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"MiroirContextReactProvider");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface MiroirReactContext {
   miroirContext: MiroirContextInterface;
@@ -56,7 +68,7 @@ export function MiroirContextReactProvider(props: {
       miroirContext: props.miroirContext || new MiroirContext(),
       domainController: props.domainController,
       deploymentUuid,
-      // setDeploymentUuid:(...args)=>{console.log('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
+      // setDeploymentUuid:(...args)=>{log.log('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
       setDeploymentUuid,
       reportUuid,
       setReportUuid,

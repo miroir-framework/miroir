@@ -6,7 +6,7 @@ export {
 } from './4_services/IndexedDbModelSectionStore.js';
 export {
   IndexedDb
-} from './4_services/indexedDb.js';
+} from './4_services/IndexedDb.js';
 export {
   miroirStoreIndexedDbStartup
 } from './startup.js';

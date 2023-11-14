@@ -1,6 +1,8 @@
 import { ColDef } from "ag-grid-community";
 
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import { JzodElement } from "@miroir-framework/jzod-ts";
+
+import { LoggerInterface, MiroirLoggerFactory, entityAuthor, entityPublisher, getLoggerName } from "miroir-core";
 
 import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
 import {
@@ -9,12 +11,19 @@ import {
   SelectEntityInstanceEditor,
 } from "../../miroir-fwk/4_view/SelectEntityInstanceEditor";
 import GenderCellRenderer from "./GenderCellRenderer";
-import { entityPublisher, entityAuthor } from "miroir-core";
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"getColumnDefinitionsFromEntityDefinitionJzodElemenSchema");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:string,jzodSchema: JzodElement): ColDef<any> {
   switch (name) {
     case "gender": {
-      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", name, jzodSchema);
+      log.log("column gender", name, jzodSchema);
 
       return ({
         field: "gender",
@@ -26,7 +35,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "publisher": {
-      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", name, jzodSchema);
+      log.log("column publisher", name, jzodSchema);
 
       return {
         field: "publisher",
@@ -45,7 +54,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "author": {
-      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", name, jzodSchema);
+      log.log("column author", name, jzodSchema);
 
       return {
         field: "author",
@@ -64,14 +73,14 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "conceptLevel": {
-      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", name, jzodSchema);
+      log.log("column conceptLevel", name, jzodSchema);
       return {
         field: name,
         headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
       };
     }
     default: {
-      console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", name, jzodSchema);
+      log.log("column default", name, jzodSchema);
       return {
         field: name,
         cellRenderer: DefaultCellRenderer2,
@@ -102,7 +111,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   // return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
   //   switch (e[0]) {
   //     case "gender": {
-  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
+  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
 
   //       return {
   //         field: "gender",
@@ -114,7 +123,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "publisher": {
-  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
+  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
 
   //       return {
   //         field: "publisher",
@@ -133,7 +142,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "author": {
-  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
+  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
 
   //       return {
   //         field: "author",
@@ -152,14 +161,14 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "conceptLevel": {
-  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
+  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
   //       return {
   //         field: e[1].name,
   //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
   //       };
   //     }
   //     default: {
-  //       console.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
+  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
   //       return {
   //         field: e[0],
   //         cellRenderer: DefaultCellRenderer,

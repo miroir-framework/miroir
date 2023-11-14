@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
+import { Params, useParams } from 'react-router-dom';
 
 import {
   ApplicationSection,
   DomainFetchQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   FetchedData,
-  RecordOfJzodElement,
+  LoggerInterface,
+  MiroirLoggerFactory,
   RecordOfJzodObject,
   RootReportSection,
   Uuid,
+  getLoggerName,
   selectFetchQueryJzodSchemaFromDomainState,
   selectFetchedDataFromDomainState
 } from "miroir-core";
@@ -17,9 +20,16 @@ import {
 
 import { useDomainStateSelector } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
-import { Params, useParams } from 'react-router-dom';
 import { ReportUrlParamKeys } from './routes/ReportPage';
-import { JzodObject } from '@miroir-framework/jzod-ts';
+
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RootReportSectionView");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface ReportSectionEntityInstanceProps {
   fetchedData: Record<string,any>,
@@ -37,10 +47,10 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   // const errorLog = useErrorLogService();
 
-  console.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
+  log.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
   // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
-  console.log(
+  log.log(
     "RootReportSectionView",
     "deploymentUuid",
     props.deploymentUuid,
@@ -75,9 +85,9 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
 
-  console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
-  // console.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
-  console.log('RootReportSectionView props.reportSection',props.reportSection);
+  log.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
+  // log.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
+  log.log('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {
     return (

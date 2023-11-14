@@ -1,22 +1,29 @@
+import { Autocomplete, Box, TextField } from '@mui/material';
+import {
+  ICellEditorParams
+} from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import React, {
+import {
   forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
-import ReactDOM, { render } from 'react-dom';
-import { AgGridReact } from 'ag-grid-react';
-import {
-  ColDef,
-  ICellEditorParams,
-  ICellRendererParams,
-} from 'ag-grid-community';
-import { Autocomplete, Box, TextField } from '@mui/material';
+import ReactDOM from 'react-dom';
+
+import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core';
+
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"GendeCellEditor");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 // backspace starts the editor on Windows
 const KEY_BACKSPACE = 'Backspace';
@@ -27,7 +34,7 @@ const KEY_TAB = 'Tab';
 
 export const GenderCellEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    console.log('GenderCellEditor2',props,ref);
+    log.log('GenderCellEditor2',props,ref);
     const isFemale = (value: string) => value === 'Female';
 
     const [ready, setReady] = useState(false);
@@ -50,7 +57,7 @@ export const GenderCellEditor = memo(
 
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      console.log('GenderCellEditor2 ready for edit',props,ref);
+      log.log('GenderCellEditor2 ready for edit',props,ref);
 
       setReady(true);
     }, []);
@@ -138,7 +145,7 @@ export const GenderCellEditor = memo(
           onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
-            console.log('GenderCellEditor2 renderOption props',props,'option',option);
+            log.log('GenderCellEditor2 renderOption props',props,'option',option);
             return (
               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                 <img

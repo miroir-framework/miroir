@@ -1,19 +1,32 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
- 
-  // ##############################################################################################
-  export class RestClient implements RestClientInterface {
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { MiroirLoggerFactory } from "./Logger";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RestClient");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
+
+// ##############################################################################################
+export class RestClient implements RestClientInterface {
   constructor(
     private customFetch:(...args:any) => any
   ){
-    console.log("RestClient constructor")
+    log.info("RestClient constructor")
   }
 
   // ##############################################################################################
   async call(method:string, endpoint:string, args:any = {}):Promise<RestClientCallReturnType> {
-    console.log("RestClient call", method, endpoint, args)
+    log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
     const headers = { 'Content-Type': 'application/json' }
   
@@ -27,7 +40,7 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
       },
     }
 
-    console.log("RestClient call config", config)
+    log.info("RestClient call config", config)
 
     let data
     try {
@@ -38,7 +51,7 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
     
       const response = await this.customFetch(endpoint, config)
 
-      // console.log("RestClient response", response);
+      // log.info("RestClient response", response);
       data = await response?.json()
       if (response.ok) {
         // Return a result object similar to Axios
@@ -58,28 +71,28 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
   // ##############################################################################################
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('GET', endpoint, { ...customConfig, method: 'GET' })
-    console.log('RestClient get', endpoint, result)
+    log.info('RestClient get', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('POST', endpoint, { ...customConfig, body })
-    console.log('RestClient post', endpoint, result)
+    log.info('RestClient post', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('PUT', endpoint, { ...customConfig, body })
-    console.log('RestClient put', endpoint, result)
+    log.info('RestClient put', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('DELETE', endpoint, { ...customConfig, body })
-    console.log('RestClient delete', endpoint, result)
+    log.info('RestClient delete', endpoint, result)
     return result
   }
 }

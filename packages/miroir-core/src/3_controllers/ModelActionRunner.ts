@@ -1,9 +1,22 @@
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
+import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { cleanLevel } from "./constants.js";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelActionRunner");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 // ################################################################################################
 export async function initApplicationDeployment(
@@ -13,7 +26,7 @@ export async function initApplicationDeployment(
   appStoreController:IStoreController,
   params:DomainModelInitActionParams
 ) {
-  console.log("modelActionRunner model/initModel params",params);
+  log.info("modelActionRunner model/initModel params",params);
   if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
     await miroirStoreController.initApplication(
       // defaultMiroirMetaModel,
@@ -36,7 +49,7 @@ export async function initApplicationDeployment(
       params.applicationStoreBasedConfiguration,
     );
   }
-  console.log('server post resetModel after initModel, entities:',miroirStoreController.getEntityUuids());
+  log.info('server post resetModel after initModel, entities:',miroirStoreController.getEntityUuids());
 }
 
 // ##############################################################################################
@@ -44,13 +57,13 @@ export async function applyModelEntityUpdate(
   storeController:IStoreController,
   update:ModelReplayableUpdate
 ):Promise<void>{
-  console.log('ModelActionRunner applyModelEntityUpdate for',JSON.stringify(update, null, 2));
+  log.info('ModelActionRunner applyModelEntityUpdate for',JSON.stringify(update, null, 2));
   const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
   if (
     [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||
     storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
   ) {
-    // console.log('StoreController applyModelEntityUpdate',modelEntityUpdate);
+    // log.info('StoreController applyModelEntityUpdate',modelEntityUpdate);
     if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
       // const modelEntityUpdate = update.modelEntityUpdate;
       switch (update.modelEntityUpdate.updateActionName) {
@@ -70,7 +83,7 @@ export async function applyModelEntityUpdate(
         // }
         case "createEntity": {
           for (const entity of update.modelEntityUpdate.entities) {
-            console.log('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
+            log.info('ModelActionRunner applyModelEntityUpdates createEntity inserting',entity);
             await storeController.createEntity(entity.entity, entity.entityDefinition);
           }
           break;
@@ -129,30 +142,30 @@ export async function modelActionRunner(
   actionName:string,
   body:any
 ):Promise<void> {
-  // console.log("server post model/"," started #####################################");
-  // console.log("server post model/"," started #####################################");
+  // log.info("server post model/"," started #####################################");
+  // log.info("server post model/"," started #####################################");
 
   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {
-  console.log('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
-  console.log('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  log.info('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
+  log.info('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   switch (actionName) {
     case 'resetModel':{
-      console.log("modelActionRunner resetModel update");
+      log.info("modelActionRunner resetModel update");
       await miroirDataStoreProxy.clear();
       await appDataStoreProxy.clear();
-      console.log('modelActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+      log.info('modelActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'resetData':{
-      console.log("modelActionRunner resetData update");
+      log.info("modelActionRunner resetData update");
       await appDataStoreProxy.clearDataInstances();
-      console.log('modelActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
+      log.info('modelActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
       break;
     }
     case 'initModel':{
       const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
-      console.log('modelActionRunner initModel params',params);
+      log.info('modelActionRunner initModel params',params);
 
       await initApplicationDeployment(
         deploymentUuid,
@@ -165,12 +178,12 @@ export async function modelActionRunner(
     }
     case 'updateEntity': {
       const update: ModelReplayableUpdate = body;
-      console.log("modelActionRunner updateEntity update",update);
+      log.info("modelActionRunner updateEntity update",update);
       if (update) {
         // switch ((update as any)['action']) {
         //   default: {
         const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-        console.log(
+        log.info(
           "modelActionRunner updateEntity",
           "used targetProxy",
           (targetProxy as any)["applicationName"],
@@ -179,20 +192,20 @@ export async function modelActionRunner(
         );
         
         await targetProxy.applyModelEntityUpdate(update);
-        console.log('modelActionRunner applyModelEntityUpdate done', update);
+        log.info('modelActionRunner applyModelEntityUpdate done', update);
             // break;
           // }
         // }
       } else {
-        console.log('modelActionRunner has no update to execute!')
+        log.info('modelActionRunner has no update to execute!')
       }
       break;
     }
     default:
-      console.log('modelActionRunner could not handle actionName', actionName)
+      log.info('modelActionRunner could not handle actionName', actionName)
       break;
   }
-  console.log('modelActionRunner returning empty response.')
+  log.info('modelActionRunner returning empty response.')
   return Promise.resolve(undefined);
 }
 

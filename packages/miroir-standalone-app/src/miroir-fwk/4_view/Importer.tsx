@@ -18,10 +18,21 @@ import {
   DomainDataAction,
   EntityInstance,
   Report,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
 } from "miroir-core";
 import { useDomainControllerService } from "./MiroirContextReactProvider";
 import { JzodObject } from "@miroir-framework/jzod-ts";
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
 
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export const ImporterCorePropsSchema = z.object({
   filename:z.string(),
@@ -60,16 +71,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         if (result && !isCancel) {
           setFileDataURL(result);
           const workBook: XLSX.WorkBook = XLSX.read(result, {type: 'binary'});
-          console.log('found excel workbook',workBook);
+          log.log('found excel workbook',workBook);
           const workSheetName: string = workBook.SheetNames[0];
-          console.log('found excel workSheetName',workSheetName);
+          log.log('found excel workSheetName',workSheetName);
           const workSheet: XLSX.WorkSheet = workBook.Sheets[workSheetName];
-          console.log('found excel workSheet',workSheet);
+          log.log('found excel workSheet',workSheet);
           const data: any = XLSX.utils.sheet_to_json(workSheet, {header:"A"});
           // headers = data[0];
           setFileData(data);
           setCurrentWorkSheet(workSheet)
-          console.log('found excel data',data);
+          log.log('found excel data',data);
           
         }
 
@@ -220,7 +231,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         }
       ) 
     ;
-    console.log('adding instances',instances);
+    log.log('adding instances',instances);
     
     const createRowsAction: DomainDataAction = {
       actionName:'create',

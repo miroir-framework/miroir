@@ -6,12 +6,25 @@ import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/Miroi
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { IDataSectionStore, IModelSectionStore, IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
-import { applicationModelEntities, modelInitialize } from "../3_controllers/ModelInitializer.js";
+import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+import { packageName } from "../constants.js";
+import { getLoggerName } from "../tools.js";
+import { MiroirLoggerFactory } from "./Logger.js";
+import { cleanLevel } from "./constants.js";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreController");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 // #######################################################################################################################
 export interface StoreControllerFactoryReturnType {
@@ -29,7 +42,7 @@ export async function storeFactory (
   config: EmulatedServerConfig,
   dataStore?: IDataSectionStore,
 ):Promise<IDataSectionStore | IModelSectionStore> {
-  console.log('storeFactory called for',appName, dataStoreApplicationType, section, config);
+  log.info('storeFactory called for',appName, dataStoreApplicationType, section, config);
   if (section == 'model' && !dataStore) {
     throw new Error('storeFactory model section factory must receive data section store.')
   }
@@ -54,7 +67,7 @@ export async function StoreControllerFactory(
 ): Promise<StoreControllerFactoryReturnType> {
   let localMiroirStoreController,localAppStoreController;
 
-  console.log('StoreControllerFactory called with config:',miroirConfig);
+  log.info('StoreControllerFactory called with config:',miroirConfig);
 
   if (!miroirConfig.emulateServer) {
     throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
@@ -146,7 +159,7 @@ export class StoreController implements IStoreController{
 
   // ##############################################################################################
   async clear():Promise<void> {
-    console.log(this.logHeader,'clear',this.getEntityUuids());
+    log.info(this.logHeader,'clear',this.getEntityUuids());
     await this.dataSectionStore.clear();
     await this.modelSectionStore.clear();
     return Promise.resolve();
@@ -154,7 +167,7 @@ export class StoreController implements IStoreController{
 
   // ##############################################################################################
   async clearDataInstances():Promise<void> {
-    console.log(this.logHeader, "clearDataInstances", this.getEntityUuids());
+    log.info(this.logHeader, "clearDataInstances", this.getEntityUuids());
     const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
     const dataSectionEntityDefinitions: EntityInstanceCollection = await this.getInstances(
       "model",
@@ -163,7 +176,7 @@ export class StoreController implements IStoreController{
     const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter(
       (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
     ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-    console.log(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
+    log.info(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataSectionStore.clear();
 
     for (const entity of dataSectionFilteredEntities) {
@@ -173,7 +186,7 @@ export class StoreController implements IStoreController{
       if (entityDefinition) {
         await this.createDataStorageSpaceForInstancesOfEntity(entity, entityDefinition);
       } else {
-        console.error(this.logHeader, "clearDataInstances could not find entity definition for Entity", entity);
+        log.error(this.logHeader, "clearDataInstances could not find entity definition for Entity", entity);
       }
     }
     return Promise.resolve();
@@ -263,13 +276,13 @@ export class StoreController implements IStoreController{
     } else {
       result = await Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelSectionStore.getInstances(entityUuid)});
     }
-    console.log(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
+    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
     return result;
   }
   
   // ##############################################################################################
   async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
-    console.log(this.logHeader,'upsertInstance','section',section,'type',this.dataStoreType,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
+    log.info(this.logHeader,'upsertInstance','section',section,'type',this.dataStoreType,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
     
     // if (this.getEntityUuids().includes(parentUuid)) {
     if (section == 'data') {
@@ -304,7 +317,7 @@ export class StoreController implements IStoreController{
 
   // ##############################################################################################
   async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>{
-    console.log('StoreController applyModelEntityUpdate',update);
+    log.info('StoreController applyModelEntityUpdate',update);
     await applyModelEntityUpdate(this,update);
     return Promise.resolve();
   }

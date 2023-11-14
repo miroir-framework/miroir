@@ -12,7 +12,19 @@ import applicationStoreBasedConfigurationLibrary from "../assets/library_model/7
 import applicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
 import applicationVersionLibraryInitialVersion from "../assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json";
 import applicationModelBranchLibraryMasterBranch from "../assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"resetApplicationDatabases");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 export async function resetMiroirAndApplicationDatabases(
   domainController: DomainControllerInterface
@@ -58,7 +70,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     },
   });
 
-  console.log(
+  log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {

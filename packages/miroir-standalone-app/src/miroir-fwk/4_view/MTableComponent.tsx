@@ -13,7 +13,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeployment
+  ApplicationDeployment, LoggerInterface, MiroirLoggerFactory, getLoggerName
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -26,6 +26,14 @@ import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './
 import { TableComponentProps, TableComponentTypeSchema } from './MTableComponentInterface';
 import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionListDisplay';
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 
 const applicationDeploymentLibrary: ApplicationDeployment = {
@@ -60,7 +68,7 @@ let count=0
 let prevProps:TableComponentProps;
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-  console.log("MTableComponent",props);
+  log.log("MTableComponent",props);
   
 
   // const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
@@ -68,14 +76,14 @@ export const MTableComponent = (props: TableComponentProps) => {
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
   const errorLog = useErrorLogService();
-  // console.log('MTableComponent 5');
+  // log.log('MTableComponent 5');
   // const domainController: DomainControllerInterface = useDomainControllerService();
-  // console.log('MTableComponent 6');
+  // log.log('MTableComponent 6');
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  // console.log('MTableComponent 7');
+  // log.log('MTableComponent 7');
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  // console.log('MTableComponent 8');
+  // log.log('MTableComponent 8');
 
   const instancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] } = useMemo(
     () => ({
@@ -97,15 +105,15 @@ export const MTableComponent = (props: TableComponentProps) => {
     }),
     [props?.instancesToDisplay]
   );
-  console.log("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+  log.log("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
 
   
   const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  console.log("MTableComponent currentModel", currentModel);
+  log.log("MTableComponent currentModel", currentModel);
 
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
     // event?.stopPropagation();
-    console.warn("onCellValueChanged",event, 'contextDeploymentUuid',contextDeploymentUuid)
+    log.warn("onCellValueChanged",event, 'contextDeploymentUuid',contextDeploymentUuid)
     // if (props.reportSection.definition.parentUuid == entityEntity.uuid) {
     //   const entity = e.data as MetaEntity;
     //   // sending ModelUpdates
@@ -129,7 +137,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //   );
         
     // } else {
-    //   console.log("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
+    //   log.log("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
     //   // sending DataUpdates
     //   await domainController.handleDomainAction(
     //     contextDeploymentUuid,
@@ -154,35 +162,35 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
     // event?.stopPropagation();
-    console.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
+    log.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
     if (props.type == 'EntityInstance' && props?.onRowEdit) {
       await props.onRowEdit(data);
     } else {
-      console.error('MTableComponent onSubmitTableRowFormDialog called for not EntityInstance');
+      log.error('MTableComponent onSubmitTableRowFormDialog called for not EntityInstance');
     }
     handleDialogTableRowFormClose('');
   },[props])
 
   const handleDialogTableRowFormOpen = useCallback((a?:any,event?:any) => {
     event?.stopPropagation();
-    console.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
+    log.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:{});
-      console.log('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      log.log('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      console.log('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      log.log('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
   },[]);
 
   const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
-    console.log('ReportComponent handleDialogTableRowFormClose',value);
+    log.log('ReportComponent handleDialogTableRowFormClose',value);
     
     setdialogFormIsOpen(false);
   },[]);
@@ -211,7 +219,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
   
-  console.log(
+  log.log(
     "MTableComponent started count",
     count++,
     "with props",
@@ -226,9 +234,9 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const onCellClicked = useCallback((event:CellClickedEvent)=> {
     // event.stopPropagation();
-    console.warn("onCellClicked",event,event.colDef.field)
+    log.warn("onCellClicked",event,event.colDef.field)
     if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
-      // console.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
+      // log.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
       const columnDefinitionAttributeEntry = Object.entries(props.currentEntityDefinition?.jzodSchema.definition??{}).find((a:[string,any])=>a[0] == event.colDef.field);
       if (columnDefinitionAttributeEntry && (columnDefinitionAttributeEntry[1] as any).type == "simpleType" && (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
@@ -241,30 +249,30 @@ export const MTableComponent = (props: TableComponentProps) => {
           }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
-        console.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
+        log.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
       }
     }
   },[props,])
   
   
   // function onCellDoubleClicked(e:CellDoubleClickedEvent) {
-  //   console.warn("onCellDoubleClicked",e)
+  //   log.warn("onCellDoubleClicked",e)
   // }
   
   // function onCellEditingStarted(e:CellEditingStartedEvent) {
-  //   console.warn("onCellEditingStarted",e)
+  //   log.warn("onCellEditingStarted",e)
   // }
   
   // function onCellEditingStopped(e:CellEditingStoppedEvent) {
-  //   console.warn("onCellEditingStarted",e)
+  //   log.warn("onCellEditingStarted",e)
   // }
   
   // function onRowDataUpdated(e:RowDataUpdatedEvent) {
-  //   console.warn("onRowDataUpdated",e)
+  //   log.warn("onRowDataUpdated",e)
   // }
   
   // function onRowValueChanged(e:RowDataUpdatedEvent) {
-  //   console.warn("onRowValueChanged",e)
+  //   log.warn("onRowValueChanged",e)
   // }
     const [dummyRowData] = useState([
       {make: "Toyota", model: "Celica", price: 35000},
@@ -318,7 +326,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
                 // rowData={gridData}
                 getRowId={(params) => {
-                  // console.log("MtableComponent getRowId", params);
+                  // log.log("MtableComponent getRowId", params);
                   return params.data?.uuid ? params.data?.uuid : params.data?.id;
                 }}
                 defaultColDef={defaultColDef}
@@ -346,7 +354,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             // rowData={props.rowData}
             // rowData={gridData}
             getRowId={(params:any) => {
-              console.log("MtableComponent getRowId", params);
+              log.log("MtableComponent getRowId", params);
               return params?.data["uuid"]
                 ? params?.data["uuid"]
                 : params.data["id"]

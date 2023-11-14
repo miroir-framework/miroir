@@ -44,7 +44,6 @@ import {
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 import { loadConfigFile, refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
@@ -52,7 +51,7 @@ import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
-import { ReduxStore } from "miroir-redux";
+import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);

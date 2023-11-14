@@ -11,11 +11,14 @@ import {
   EntityInstancesUuidIndex,
   LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
+  LoggerInterface,
   MiroirApplicationModel,
+  MiroirLoggerFactory,
   MiroirSelectorQueryParams,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
+  getLoggerName,
   selectEntityUuidFromJzodAttribute
 } from "miroir-core";
 import {
@@ -24,7 +27,16 @@ import {
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
-} from "miroir-redux";
+} from "miroir-localcache-redux";
+
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxHooks");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
@@ -139,7 +151,7 @@ export function useLocalCacheInstancesForJzodAttribute(
       }
     )
   );
-  console.log('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
+  log.log('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
   // return Object.values(miroirEntities) as EntityInstance[];
   return miroirEntities as EntityInstance[];
 }

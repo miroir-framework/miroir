@@ -1,10 +1,22 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore
+  IDataSectionStore,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName
 } from "miroir-core";
 import { MixedIndexedDbInstanceStore } from "./IndexedDbInstanceStoreMixin.js";
-import { IndexedDb } from "./indexedDb.js";
+import { IndexedDb } from "./IndexedDb.js";
+
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbDataSectionStore");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore implements IDataSectionStore {
 
@@ -25,12 +37,12 @@ export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore imple
   // ##############################################################################################
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     let result = {};
-    console.log(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());
+    log.log(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
-      console.log(this.logHeader, "getState getting instances for", parentUuid);
+      log.log(this.logHeader, "getState getting instances for", parentUuid);
       const instances = await this.getInstances(parentUuid);
-      // console.log(this.logHeader, "getState found instances", parentUuid, instances);
+      // log.log(this.logHeader, "getState found instances", parentUuid, instances);
 
       Object.assign(result, { [parentUuid]: instances });
     }

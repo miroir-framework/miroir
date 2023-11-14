@@ -11,8 +11,8 @@ import {
 
 
 import { ApplicationSchema } from "../1_core/Application.js";
-import { ApplicationSection, EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
-import { MiroirApplicationModel, ApplicationModelSchema } from "../1_core/Model.js";
+import { EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
+import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 
 export interface LocalCacheInfo {
@@ -243,19 +243,19 @@ export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSc
 
 // ###################################################################################
 export interface EntitiesDomainState {
-  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-localcache-redux.
   [entityUuid: string]: EntityInstancesUuidIndex;
 }
 
 // ###################################################################################
 export interface DeploymentSectionDomainState {
-  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-localcache-redux.
   [section: string]: EntitiesDomainState;
 }
 
 // ###################################################################################
 export interface DomainState {
-  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-redux.
+  // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-localcache-redux.
   [deploymentUuid: string]: DeploymentSectionDomainState;
 }
 

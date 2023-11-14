@@ -1,5 +1,22 @@
-import { DataStoreApplicationType, IDataSectionStore, EntityDefinition, EntityInstance, IAbstractEntityStore, IAbstractInstanceStore, IAbstractStore, MetaEntity, WrappedTransactionalEntityUpdateWithCUDUpdate, entityEntity, entityEntityDefinition, IStorageSpaceHandler } from "miroir-core";
-import { IndexedDb } from "./indexedDb.js";
+import {
+  DataStoreApplicationType,
+  EntityDefinition,
+  IAbstractStore,
+  IStorageSpaceHandler,
+  LoggerInterface,
+  MetaEntity,
+  MiroirLoggerFactory,
+  getLoggerName
+} from "miroir-core";
+import { packageName } from "../constants";
+import { IndexedDb } from "./IndexedDb";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStore");
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 
@@ -18,34 +35,34 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     // public dataStoreType: DataStoreApplicationType;
     // public localUuidIndexedDb: IndexedDb;
     // public logHeader: string;
-    ...args:any[] // mixin constructors are limited to args:any[] parameters
+    ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
     this.applicationName = args[0];
     this.dataStoreType = args[1];
     this.localUuidIndexedDb = args[2];
     this.logHeader = args[3];
-    // console.log(this.logHeader,'IndexedDbStore constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+    // log.log(this.logHeader,'IndexedDbStore constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
-  
+
   // ##################################################################################################
   async open(): Promise<void> {
-    console.log(this.logHeader,'open(): opening');
+    log.log(this.logHeader, "open(): opening");
     await this.localUuidIndexedDb.openObjectStore();
-    console.log(this.logHeader,'open(): opened');
+    log.log(this.logHeader, "open(): opened");
     return Promise.resolve();
   }
 
   // ##############################################################################################
-  async close():Promise<void> {
-    console.log(this.logHeader,'close(): closing');
+  async close(): Promise<void> {
+    log.log(this.logHeader, "close(): closing");
     await this.localUuidIndexedDb.closeObjectStore();
-    console.log(this.logHeader,'close(): closed');
-      return Promise.resolve();
+    log.log(this.logHeader, "close(): closed");
+    return Promise.resolve();
   }
 
   // ##################################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    console.log(this.logHeader,'bootFromPersistedState does nothing!');
+    log.log(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve();
   }
 
@@ -59,10 +76,10 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
   getEntityUuids(): string[] {
     return this.localUuidIndexedDb.getSubLevels();
   }
-  
+
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
-    console.log(
+    log.log(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       // "dataStoreType",
@@ -76,7 +93,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     );
     if (entity.uuid != entityDefinition.entityUuid) {
       // inconsistent input, raise exception
-      console.error(
+      log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
         "Application",
@@ -90,7 +107,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
         this.localUuidIndexedDb.addSubLevels([entity.uuid]);
       } else {
         this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
-        console.log(
+        log.log(
           this.logHeader,
           "createStorageSpaceForInstancesOfEntity",
           "dataStoreType",
@@ -111,7 +128,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
   async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
     if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       await this.localUuidIndexedDb.removeSubLevels([entityUuid]);
-      console.warn(
+      log.warn(
         this.logHeader,
         "dropStorageSpaceForInstancesOfEntity",
         "input: entity",
@@ -120,7 +137,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
         this.localUuidIndexedDb.getSubLevels()
       );
     } else {
-      console.warn(
+      log.warn(
         this.logHeader,
         "dropStorageSpaceForInstancesOfEntity",
         "input: entity",
@@ -139,7 +156,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     entity: MetaEntity,
     entityDefinition: EntityDefinition
   ): Promise<void> {
-    console.warn(
+    log.warn(
       this.logHeader,
       "renameStorageSpaceForInstancesOfEntity does nothing for entity",
       oldName,
@@ -149,5 +166,3 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     return Promise.resolve();
   }
 }
-
-

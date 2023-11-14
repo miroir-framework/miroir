@@ -31,9 +31,8 @@ import {
   defaultMiroirMetaModel,
   resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
-import { ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-redux';
-import { CreateMswRestServerReturnType, createMswRestServer } from '../../src/miroir-fwk/createMswRestServer';
-import { createReduxStoreAndRestClient } from '../../src/miroir-fwk/createReduxStoreAndRestClient';
+import { createReduxStoreAndRestClient, ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-localcache-redux';
+import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
 import { log } from 'console';
 
 

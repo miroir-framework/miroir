@@ -38,6 +38,9 @@ import {
   applicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
   DomainControllerInterface,
+  getLoggerName,
+  LoggerInterface,
+  MiroirLoggerFactory,
   reportBookInstance,
 } from "miroir-core";
 
@@ -46,6 +49,14 @@ import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
 import { uploadBooksAndReports } from './uploadBooksAndReports';
+import { packageName } from '../../constants';
+import { cleanLevel } from './constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface RootComponentProps {
   // store:any;
@@ -296,7 +307,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <span>
             <button
               onClick={async () => {
-                console.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+                log.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
                 await domainController.handleDomainAction(
                   applicationDeploymentMiroir.uuid,
                   {
@@ -349,7 +360,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 // TODO: transactional action must not autocommit! initModel neither?!
                 // .then(
                 // async () => {
-                console.log(
+                log.log(
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 );
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {

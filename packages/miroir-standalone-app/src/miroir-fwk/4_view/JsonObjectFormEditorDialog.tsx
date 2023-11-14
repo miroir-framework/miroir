@@ -2,20 +2,32 @@ import _ from "lodash";
 
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
+import { useCallback, useMemo, useState } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import { JzodObject } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
   EntityAttribute,
+  LoggerInterface,
+  MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentMiroir
+  applicationDeploymentMiroir,
+  getLoggerName
 } from "miroir-core";
-import { useCallback, useMemo, useState } from "react";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../JzodTools";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { useMiroirContextInnerFormOutput, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { useCurrentModel } from "./ReduxHooks";
-import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../JzodTools";
+import { cleanLevel } from "./constants";
+import { packageName } from "../../constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectFormEditorDialog");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export type JsonObjectFormEditorDialogInputs = { [a: string]: any };
 
@@ -63,7 +75,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 // not used
 const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
-  console.log(
+  log.log(
     logHeader,
     "handleAddObjectDialogFormSubmit reorderField",
     orderUpdatePathParam.length,
@@ -79,7 +91,7 @@ const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc,curr)=>({...acc,[curr]:dataParam[orderUpdatePathParam[0]][curr]}),{})
     const result = {[orderUpdatePathParam[0]]:newFieldValue}
-    console.log(logHeader,"handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
+    log.log(logHeader,"handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -87,7 +99,7 @@ const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam
     } else {
       const recursiveReorder = reorderObjectField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
       const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
-      console.log(
+      log.log(
         logHeader,
         "handleAddObjectDialogFormSubmit reorderField",
         orderUpdatePathParam.length,
@@ -108,7 +120,7 @@ const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam
 }
 
 const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam:string[], newOrder:number[]):any=>{
-  console.log(
+  log.log(
     logHeader,
     "handleAddObjectDialogFormSubmit reorderField",
     orderUpdatePathParam.length,
@@ -124,7 +136,7 @@ const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc,curr)=>([...acc,dataParam[orderUpdatePathParam[0]][curr]]),[])
     const result = {...dataParam,[orderUpdatePathParam[0]]:newFieldValue}
-    console.log(logHeader,"handleAddObjectDialogFormSubmit reorderArrayField final",newFieldValue,"result",result);
+    log.log(logHeader,"handleAddObjectDialogFormSubmit reorderArrayField final",newFieldValue,"result",result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
@@ -132,7 +144,7 @@ const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam
     } else {
       const recursiveReorder = reorderArrayField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
       const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
-      console.log(
+      log.log(
         logHeader,
         "handleAddObjectDialogFormSubmit reorderField",
         orderUpdatePathParam.length,
@@ -174,7 +186,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
 
   const { errors } = formState;
-  console.log(
+  log.log(
     logHeader,
     "called with props",
     props,
@@ -193,7 +205,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const formIsOpen = addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
   const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
-    console.log(
+    log.log(
       logHeader,
       "handleAddObjectDialogFormOpen",
       label,
@@ -209,7 +221,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   },[props]);
 
   const handleAddObjectDialogFormClose = useCallback((value: string) => {
-    console.log(logHeader, "handleAddObjectDialogFormClose", value);
+    log.log(logHeader, "handleAddObjectDialogFormClose", value);
 
     setAddObjectdialogFormIsOpen(false);
     if (!props.showButton) {
@@ -219,7 +231,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data, event) => {
     const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
-    console.log(
+    log.log(
       logHeader,
       "handleAddObjectDialogFormSubmit called for buttonType",
       buttonType,
@@ -240,14 +252,14 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       const orderUpdatePath = orderUpdate.split(".").slice(1);
       const newOrder:number[] = Object.values(formHelperState)[0] as number[];
 
-      console.log(logHeader,"handleAddObjectDialogFormSubmit calling reorderField",data);
+      log.log(logHeader,"handleAddObjectDialogFormSubmit calling reorderField",data);
       
       const reorderedDataValue = reorderArrayField(logHeader, data, orderUpdatePath, newOrder);
       // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
       // reorderedDataValue = {...data,reorderedField}
       delete reorderedDataValue["ROOT"]; // WHY HAS ROOT BEEN ADDED???? BUG?
       const newVersion = structuredClone(reorderedDataValue)
-      console.log(
+      log.log(
         logHeader,
         "handleAddObjectDialogFormSubmit after reorderArrayField",
         "newOrder",
@@ -268,13 +280,13 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     // const newVersion = _.merge(reorderedDataValue,data["ROOT"]);
     // const newVersion = Object.assign({},reorderedDataValue);
     // // delete newVersion["ROOT"];
-    // console.log(logHeader,"handleAddObjectDialogFormSubmit","newVersion",newVersion);
+    // log.log(logHeader,"handleAddObjectDialogFormSubmit","newVersion",newVersion);
     
 
     if (buttonType == props.label) {
       handleAddObjectDialogFormClose("");
     } else {
-      console.warn(
+      log.warn(
         logHeader,
         "handleAddObjectDialogFormSubmit now closing dialog form",
         props.label,
@@ -290,11 +302,11 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   //   props.currentApplicationSection,
   //   props.jzodSchema as JzodAttribute
   // ) as EntityInstanceWithName[];
-  // console.log("selectList",selectList);
+  // log.log("selectList",selectList);
 
   // if (dialogFormIsOpen && getValues()['uuid'] != props.formObject['uuid']) {
   if (formIsOpen && getValues()["uuid"] != props.initialValuesObject["uuid"]) {
-    console.log(logHeader, "reset form!");
+    log.log(logHeader, "reset form!");
     reset(props.initialValuesObject);
   }
 

@@ -1,0 +1,55 @@
+import {
+  DataStoreApplicationType,
+  EntityInstanceCollection,
+  IDataSectionStore,
+  IModelSectionStore,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName
+} from "miroir-core";
+
+import { MixedFileSystemDbEntityAndInstanceStore } from "./FileSystemEntityStoreMixin.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemModelSectionStore");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
+
+export class FileSystemModelSectionStore extends MixedFileSystemDbEntityAndInstanceStore implements IModelSectionStore {
+
+  // #############################################################################################
+  constructor(
+    applicationName: string,
+    dataStoreType: DataStoreApplicationType,
+    directory: string,
+    dataStore: IDataSectionStore,
+  ) {
+    super(
+      applicationName,
+      dataStoreType,
+      directory,
+      'FileSystemModelSectionStore ' + applicationName + ' dataStoreType ' + dataStoreType,
+      dataStore
+    )
+  }
+
+  // #############################################################################################
+  // TODO: also implemented in FileSystemDataSectionStore => mix it up?
+  async getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
+    let result = {};
+    log.log(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
+
+    for (const parentUuid of this.getEntityUuids()) {
+      log.log(this.logHeader, 'getState getting instances for',parentUuid);
+      const instances = await this.getInstances(parentUuid);
+      // log.log(this.logHeader, 'getState found instances',parentUuid,instances);
+
+      Object.assign(result,{[parentUuid]:instances});
+    }
+    return Promise.resolve(result);
+  }
+  
+}

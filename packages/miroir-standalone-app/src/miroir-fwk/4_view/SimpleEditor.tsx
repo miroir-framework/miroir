@@ -1,12 +1,22 @@
 import { ICellEditorParams } from "ag-grid-community";
+import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SimpleEditor");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
+
 
 export default forwardRef((props:ICellEditorParams, ref) => {
     const inputRef = useRef<any>();
     const [value, setValue] = useState('');
 
     function inputHandler(e:any) {
-      console.log('SimpleEditor inputHandler',e);
+      log.log('SimpleEditor inputHandler',e);
       setValue(e.target.value);
     }
 
@@ -15,11 +25,11 @@ export default forwardRef((props:ICellEditorParams, ref) => {
       () => {
         return {
           getValue: () => {
-            console.log('SimpleEditor useImperativeHandle getValue', value);
+            log.log('SimpleEditor useImperativeHandle getValue', value);
             return value;
           },
           afterGuiAttached: () => {
-            console.log('SimpleEditor useImperativeHandle afterGuiAttached');
+            log.log('SimpleEditor useImperativeHandle afterGuiAttached');
             setValue(props.value);
             inputRef.current.focus();
             inputRef.current.select();

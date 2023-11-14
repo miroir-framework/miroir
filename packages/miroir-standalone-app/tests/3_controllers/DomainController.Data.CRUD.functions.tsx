@@ -29,7 +29,7 @@ import {
   MiroirContext,
   reportBookList
 } from "miroir-core";
-import { ReduxStore } from "miroir-redux";
+import { ReduxStore } from "miroir-localcache-redux";
 
 import {
   DisplayLoadingInfo,

@@ -1,4 +1,3 @@
-import path from "path";
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SetupWorkerApi } from "msw/browser";
@@ -27,9 +26,7 @@ import {
   entityReport,
   miroirCoreStartup
 } from "miroir-core";
-import {
-  ReduxStore
-} from "miroir-redux";
+import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-redux";
 
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
@@ -40,7 +37,6 @@ import {
   miroirBeforeEach,
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
-import { createReduxStoreAndRestClient } from "../../src/miroir-fwk/createReduxStoreAndRestClient";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";

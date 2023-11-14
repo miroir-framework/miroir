@@ -1,17 +1,22 @@
+import { Link, useNavigate } from 'react-router-dom';
+
 import {
-  ApplicationDeployment,
   ApplicationSection,
-  EntityInstancesUuidIndex,
-  Report,
-  selectEntityInstanceFromObjectQueryAndDomainState,
+  getLoggerName,
+  LoggerInterface,
+  MiroirLoggerFactory,
   Uuid
 } from "miroir-core";
-import { Link, useNavigate } from 'react-router-dom';
-import { useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
-import { useSelector } from "react-redux";
-import { applyDomainStateSelector, ReduxStateWithUndoRedo } from "miroir-redux";
+
+import { packageName } from "../../constants";
+import { cleanLevel } from "./constants";
 
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportInstanceLink");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 
 export interface EntityInstanceLinkProps {
@@ -28,7 +33,7 @@ export interface EntityInstanceLinkProps {
 // ###############################################################################################################
 export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
 
-  console.log('ReportInstanceLink props',props);
+  log.log('ReportInstanceLink props',props);
   
   const navigate = useNavigate();
 

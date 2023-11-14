@@ -1,12 +1,22 @@
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { List, ListItem } from "@mui/material";
-import { ApplicationSection, EntityInstancesUuidIndex, MetaEntity, Uuid, applicationDeploymentMiroir } from "miroir-core";
 import { useMemo } from "react";
+
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import { ApplicationSection, EntityInstancesUuidIndex, LoggerInterface, MetaEntity, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName } from "miroir-core";
+
+import { packageName } from "../../constants";
+import { JzodEnumSchemaToJzodElementResolver, resolveJzodSchemaReference } from "../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
 import { MTableComponent } from "./MTableComponent";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
+import { cleanLevel } from "./constants";
 import { getColumnDefinitionsFromEntityDefinitionJzodElemenSchema } from "./getColumnDefinitionsFromEntityAttributes";
-import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, resolveJzodSchemaReference } from "../JzodTools";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementDisplay");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export interface JzodElementDisplayProps {
   name: string;
@@ -60,7 +70,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     }),
     []
   );
-  console.log(
+  log.log(
     "JzodElementDisplay path",
     props.path,
     "props.elementJzodSchema",
@@ -78,7 +88,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
   switch (targetJzodSchema?.type) {
     case "array": {
       const columnDefs:any[]=[getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(props.name,targetJzodSchema.definition)];
-      console.log("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
+      log.log("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
       
       return (
         <>

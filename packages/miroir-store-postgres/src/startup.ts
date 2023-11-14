@@ -7,9 +7,21 @@ import {
   ErrorDataStore,
   ErrorModelStore,
   IModelSectionStore,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
 } from "miroir-core";
-import { SqlDbModelStore } from "./SqlDbModelSectionStore.js";
-import { SqlDbDataStore } from "./SqlDbDataStore.js";
+import { SqlDbModelStore } from "./4_services/SqlDbModelSectionStore.js";
+import { SqlDbDataStore } from "./4_services/SqlDbDataStore.js";
+
+import { packageName } from "./constants.js";
+import { cleanLevel } from "./4_services/constants.js";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export function miroirStorePostgresStartup() {
   ConfigurationService.registerStoreFactory(
@@ -22,7 +34,7 @@ export function miroirStorePostgresStartup() {
       config: EmulatedServerConfig,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
       if (config.emulatedServerType == "sql" && dataStore) {
         return Promise.resolve(
@@ -46,7 +58,7 @@ export function miroirStorePostgresStartup() {
       config: EmulatedServerConfig,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      console.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
       if (config.emulatedServerType == "sql") {
         return Promise.resolve(
           config.emulatedServerType == "sql"

@@ -1,5 +1,3 @@
-// 
-
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition";
 import { EntityInstance } from "../0_interfaces/1_core/Instance";
@@ -18,6 +16,19 @@ import {
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState = (
@@ -50,7 +61,7 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
     domainState[deploymentUuid][applicationSection][entityUuid]
       ? domainState[deploymentUuid][applicationSection][entityUuid]
       : undefined;
-  console.log('DomainSelector selectEntityInstanceUuidIndexFromDomainState','selectorParams',selectorParams,'domainState',domainState,'result',result);
+  log.info('DomainSelector selectEntityInstanceUuidIndexFromDomainState','selectorParams',selectorParams,'domainState',domainState,'result',result);
   return result;
 };
 
@@ -80,7 +91,7 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
             : undefined)
       )
     );
-    console.log(
+    log.info(
       "DomainSelector selectEntityInstancesFromListQueryAndDomainState",
       "selectorParams",
       selectorParams,
@@ -158,7 +169,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
     }
   }
 
-  console.log(
+  log.info(
     "DomainSelector selectEntityInstanceFromObjectQueryAndDomainState",
     "query",
     query,
@@ -192,7 +203,7 @@ export const selectFetchedDataFromDomainState = (
   query: DomainFetchQueryParams,
 ): FetchedData | undefined => {
 
-  // console.log("########## DomainSelector selectFetchedDataFromDomainState begin");
+  // log.info("########## DomainSelector selectFetchedDataFromDomainState begin");
 
   const newFetchedData:FetchedData = query.fetchedData??{};
 
@@ -231,12 +242,12 @@ export const selectFetchedDataFromDomainState = (
       }
     }
     newFetchedData[entry[0]] = result;
-    console.log("DomainSelector selectFetchedDataFromDomainState set", entry[0], "query", entry[1], result);
+    log.info("DomainSelector selectFetchedDataFromDomainState set", entry[0], "query", entry[1], result);
   }
 
   
   if (query.combine) {
-    console.log("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
+    log.info("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
 
     newFetchedData["combine"] = Object.fromEntries(
       Object.values(newFetchedData[query.combine?.a ?? ""] ?? {}).flatMap((a) =>
@@ -253,9 +264,9 @@ export const selectFetchedDataFromDomainState = (
   }
 
 
-  // console.log("########## DomainSelector selectFetchedDataFromDomainState end");
+  // log.info("########## DomainSelector selectFetchedDataFromDomainState end");
 
-  console.log(
+  log.info(
     "DomainSelector selectFetchedDataFromDomainState",
     "query",
     query,
@@ -301,7 +312,7 @@ export const selectEntityJzodSchemaFromDomainState = (
     // const result: JzodElement | undefined = index > -1?values[index].jzodSchema: undefined;
     const result: JzodObject | undefined = index > -1?values[index].jzodSchema: undefined;
   
-    console.log("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
+    log.info("DomainSelector selectEntityJzodSchemaFromDomainState result", result);
   
     return result
   } else {
@@ -323,7 +334,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
 // ):  RecordOfJzodElement | undefined => {
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: DomainFetchQueryParams = query.fetchParams
-  // console.log("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
+  // log.info("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
@@ -340,7 +351,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   );
 
   if (localFetchParams.combine) {
-    // console.log("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
+    // log.info("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
 
     fetchQueryJzodSchema["combine"] = {
       type: "object",

@@ -16,14 +16,14 @@ packages/miroir-server/miroir-db*/
 packages/miroir-server/miroir-indexedDb*/
 packages/miroir-server-msw-stub/node_modules*/
 packages/miroir-server-msw-stub/dist*/
-packages/miroir-redux/node_modules*/
+packages/miroir-localcache-redux/node_modules*/
 packages/miroir-store-filesystem/dist*/
 packages/miroir-store-filesystem/node_modules*/
 packages/miroir-store-indexedDb/dist*/
 packages/miroir-store-indexedDb/node_modules*/
 packages/miroir-store-postgres/node_modules*/
 packages/miroir-store-postgres/dist*/
-packages/miroir-redux/dist*/
+packages/miroir-localcache-redux/dist*/
 packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/dist*/
 packages/miroir-standalone-app/build*/

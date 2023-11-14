@@ -5,8 +5,11 @@ import Box from '@mui/material/Box';
 import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationSection,
+  LoggerInterface,
   MiroirApplicationModel,
-  Report
+  MiroirLoggerFactory,
+  Report,
+  getLoggerName
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -15,6 +18,14 @@ import {
 
 import { useCurrentModel } from '../ReduxHooks';
 import { RootReportSectionView } from '../RootReportSectionView';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportPage");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
+  log = value;
+});
 
 export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
 
@@ -39,18 +50,18 @@ export const ReportPage = () => {
   const context = useMiroirContextService();
 
   count++;
-  console.log("ReportPage count",count,"params", params,);
+  log.log("ReportPage count",count,"params", params,);
   useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
   const errorLog = useErrorLogService();
   const currentModel: MiroirApplicationModel = useCurrentModel(params.deploymentUuid);
 
-  console.log("ReportPage currentModel", currentModel);
+  log.log("ReportPage currentModel", currentModel);
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
 
   if (params.applicationSection) {
-    console.log("ReportPage rendering count",count,"params", params,);
+    log.log("ReportPage rendering count",count,"params", params,);
     return (
       <div>
         <Box>
