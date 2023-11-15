@@ -118,6 +118,7 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
 
     // #########################################################################################
     async dropEntities(entityUuids: string[]):Promise<void> {
+      log.log(this.logHeader,"dropEntities", entityUuids);
       entityUuids.forEach(async (e) =>await this.dropEntity(e));
       return Promise.resolve()
     }
@@ -142,11 +143,11 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
       ) {
         const cudUpdate = update.equivalentModelCUDUpdates[0];
         const currentValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
-        log.log(this.logHeader, 'renameEntity',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
+        log.debug(this.logHeader, 'renameEntity',cudUpdate.objects[0].instances[0].parentUuid,currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
         const updatedValue = await this.getInstance(entityEntity.uuid,cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
-        log.log(this.logHeader, 'renameEntity done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
+        log.debug(this.logHeader, 'renameEntity done',cudUpdate.objects[0].instances[0].parentUuid,updatedValue);
 
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
           (update.modelEntityUpdate as any)['entityName'],

@@ -40,7 +40,7 @@ export class SqlDbDataStore extends MixedSqlDbInstanceStore implements IDataSect
     log.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
     
     for (const parentUuid of this.getEntityUuids()) {
-      log.log(this.logHeader,'getState getting instances for',parentUuid);
+      log.debug(this.logHeader,'getState getting instances for',parentUuid);
       const dbInstances = await this.getInstances(parentUuid);
       const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
       // log.log(this.logHeader,'getState found instances',parentUuid,instances);

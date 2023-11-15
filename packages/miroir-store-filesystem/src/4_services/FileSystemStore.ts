@@ -77,7 +77,7 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
     log.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
-      log.log(this.logHeader, 'clear for entity',parentUuid);
+      log.debug(this.logHeader, 'clear for entity',parentUuid);
       await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
     }
     return Promise.resolve();
@@ -85,12 +85,12 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
  
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    // log.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity does nothing!');
+    log.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity', entity);
     const entityInstancesPath = path.join(this.directory,entity.uuid)
     if (!fs.existsSync(entityInstancesPath)) {
       fs.mkdirSync(entityInstancesPath)
     } else {
-      log.log(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
+      log.debug(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
     }
     return Promise.resolve();
   }
@@ -101,7 +101,7 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
     if (fs.existsSync(entityInstancesPath)) {
       fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
     } else {
-      log.log(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
+      log.debug(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
     }
     return Promise.resolve();
   }

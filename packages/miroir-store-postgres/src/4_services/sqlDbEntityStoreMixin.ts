@@ -120,18 +120,18 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
         }
         // }
       }
-      log.log(this.logHeader, "createEntity", "done for", entity.name);
+      log.debug(this.logHeader, "createEntity", "done for", entity.name);
       return Promise.resolve();
     }
 
     // ##############################################################################################
     async dropEntity(entityUuid: string) {
-      log.warn("dropEntity entityUuid", entityUuid);
+      log.log("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
           const model = this.sqlSchemaTableAccess[entityUuid];
-          log.log("dropEntity entityUuid", entityUuid, "parentName", model.parentName);
+          log.debug("dropEntity entityUuid", entityUuid, "parentName", model.parentName);
           await model.sequelizeModel.drop();
           delete this.sqlSchemaTableAccess[entityUuid];
         } else {
@@ -144,7 +144,7 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
           const entityDefinitions = (
             (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
           ).filter((i) => i.entityUuid == entityUuid);
-          log.warn("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
+          log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
 
           for (const entityDefinition of entityDefinitions) {
             await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
@@ -181,8 +181,8 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
           modelCUDupdate && modelCUDupdate.objects?.length && modelCUDupdate.objects[0]
             ? this.sqlSchemaTableAccess[modelCUDupdate.objects[0].parentUuid]
             : undefined;
-        log.log(this.logHeader, "renameEntity update", update);
-        log.log(this.logHeader, "renameEntity model", model);
+        log.debug(this.logHeader, "renameEntity update", update);
+        log.debug(this.logHeader, "renameEntity model", model);
 
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
           (update.modelEntityUpdate as any)["entityName"],
@@ -202,7 +202,7 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
       } else {
         log.error("renameEntity could not execute update", update);
       }
-      log.log(this.logHeader, "renameEntity done.");
+      log.debug(this.logHeader, "renameEntity done.");
       return Promise.resolve();
     }
   };

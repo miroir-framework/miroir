@@ -54,7 +54,7 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
     // #########################################################################################
     async getInstances(entityUuid: string): Promise<EntityInstance[]> {
       log.log(
-        "FileSystemEntityDataStore getInstances application",
+        "FileSystemInstanceStore getInstances application",
         this.applicationName,
         "dataStoreType",
         this.dataStoreType,
@@ -67,8 +67,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
       const entityInstancesPath = path.join(this.directory, entityUuid);
       if (fs.existsSync(entityInstancesPath)) {
         const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
-        log.log(
-          "FileSystemEntityDataStore getInstances application",
+        log.debug(
+          "FileSystemInstanceStore getInstances application",
           this.applicationName,
           "dataStoreType",
           this.dataStoreType,
@@ -85,8 +85,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
             JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e)).toString())
           ),
         } as EntityInstanceCollection;
-        log.log(
-          "FileSystemEntityDataStore getInstances application",
+        log.debug(
+          "FileSystemInstanceStore getInstances application",
           this.applicationName,
           "dataStoreType",
           this.dataStoreType,
@@ -100,7 +100,7 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
         return Promise.resolve(entityInstances.instances);
       } else {
         log.warn(
-          "FileSystemEntityDataStore getInstances application",
+          "FileSystemInstanceStore getInstances application",
           this.applicationName,
           "dataStoreType",
           this.dataStoreType,

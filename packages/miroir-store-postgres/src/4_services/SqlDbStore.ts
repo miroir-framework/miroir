@@ -107,7 +107,7 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce((prev, curr: MetaEntity) => {
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
-        log.log(
+        log.debug(
           this.logHeader,
           "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
           curr.name,
@@ -158,7 +158,7 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
       entity.name
     );
     await this.sqlSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
-    log.log(
+    log.debug(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "Application",
@@ -198,7 +198,7 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
   async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<void> {
     if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
       const model = this.sqlSchemaTableAccess[entityUuid];
-      log.log(
+      log.debug(
         this.logHeader,
         "dropStorageSpaceForInstancesOfEntity entityUuid",
         entityUuid,

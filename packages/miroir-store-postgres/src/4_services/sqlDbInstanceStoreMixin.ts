@@ -63,7 +63,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
     // ##############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
       const tmp = await this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
-      log.log(
+      log.debug(
         "upsertInstance application",
         this.applicationName,
         "upserting into Parent",
@@ -90,7 +90,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      log.log('deleteDataInstance', parentUuid,instance);
+      log.debug('deleteDataInstance', parentUuid,instance);
       await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
       return Promise.resolve();
     }

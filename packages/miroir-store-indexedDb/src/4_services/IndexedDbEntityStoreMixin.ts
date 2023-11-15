@@ -122,7 +122,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
         const updatedValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
-        log.log(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
+        log.debug(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(
           (update.modelEntityUpdate as any)["entityName"],
           (update.modelEntityUpdate as any)["targetValue"],
@@ -148,7 +148,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
         const entityDefinitions = (
           (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
         ).filter((i) => i.entityUuid == entityUuid);
-        log.log(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
+        log.debug(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
           
         for (const entityDefinition of entityDefinitions) {
           await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
@@ -162,7 +162,7 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid)) {
-        log.log(this.logHeader, "dropEntity deleting Entity instance for with Entity with uuid", entityUuid);
+        log.debug(this.logHeader, "dropEntity deleting Entity instance for with Entity with uuid", entityUuid);
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
       } else {
         log.warn(

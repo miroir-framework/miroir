@@ -47,7 +47,7 @@ export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>
       if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
         await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
         const tmp = await this.getInstances(instance.parentUuid);
-        log.log(this.logHeader, "upsertInstance", instance.parentUuid, "found existing",tmp );
+        log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing",tmp );
         
       } else {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
@@ -68,9 +68,9 @@ export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>
     // #############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
       // for (const o of instances) {
-        log.log(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
+        log.debug(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
         await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
-        log.log(this.logHeader, "deleteInstance done.", parentUuid, instance);
+        log.debug(this.logHeader, "deleteInstance done.", parentUuid, instance);
       // }
       return Promise.resolve();
     }

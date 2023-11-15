@@ -45,7 +45,7 @@ export class IndexedDbModelSectionStore extends MixedIndexedDbEntityAndInstanceS
     log.log(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
-      log.log(this.logHeader, "getState getting instances for", parentUuid);
+      log.debug(this.logHeader, "getState getting instances for", parentUuid);
       const instances = await this.getInstances(parentUuid);
       // log.log(this.logHeader, "getState found instances", parentUuid, instances);
 

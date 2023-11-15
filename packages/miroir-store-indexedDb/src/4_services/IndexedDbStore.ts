@@ -107,7 +107,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
         this.localUuidIndexedDb.addSubLevels([entity.uuid]);
       } else {
         this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
-        log.log(
+        log.debug(
           this.logHeader,
           "createStorageSpaceForInstancesOfEntity",
           "dataStoreType",

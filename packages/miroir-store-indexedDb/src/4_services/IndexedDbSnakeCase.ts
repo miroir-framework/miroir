@@ -63,9 +63,9 @@ export class IndexedDb {
       } else {
         this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
         this.subLevels = this.createSubLevels(this.db,tableNames);
-        log.log(this.logHeader, 'createObjectStore created db with sublevels',tableNames,this.subLevels)
-        log.log(this.logHeader, 'createObjectStore db',this.db)
-        log.log(this.logHeader, 'createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
+        log.debug(this.logHeader, 'createObjectStore created db with sublevels',tableNames,this.subLevels)
+        log.trace(this.logHeader, 'createObjectStore db',this.db)
+        log.trace(this.logHeader, 'createObjectStore hasSublevel',entityDefinitionEntityDefinition.uuid, this.hasSubLevel(entityDefinitionEntityDefinition.uuid))
         return Promise.resolve(undefined);
       }
     } catch (error) {
@@ -86,9 +86,9 @@ export class IndexedDb {
             tableName,
             <any>this.db?.sublevel(tableName),
           ];
-          log.log(this.logHeader, 'adding sublevel:',tableName);
+          log.debug(this.logHeader, 'adding sublevel:',tableName);
           result[1]?.clear();
-          log.log(this.logHeader, 'addSubLevels added and cleared sublevel:',result[0]);
+          log.debug(this.logHeader, 'addSubLevels added and cleared sublevel:',result[0]);
           
           return result;
         }
@@ -98,7 +98,7 @@ export class IndexedDb {
 
   // #############################################################################
   private createSubLevels(db: Level, tableNames:string[]) {
-    log.log(this.logHeader, 'createSublevels',db,tableNames)
+    log.debug(this.logHeader, 'createSublevels',db,tableNames)
     return new Map<string, any>([
       ...tableNames.map(
           (tableName: string) => {
@@ -107,7 +107,7 @@ export class IndexedDb {
             <any>db.sublevel(tableName),
           ];
           result[1].clear();
-          log.log('indexedDb createSubLevels added and cleared sublevel:',result[0]);
+          log.trace('indexedDb createSubLevels added and cleared sublevel:',result[0]);
           return result;
         }
       ),
@@ -138,7 +138,7 @@ export class IndexedDb {
   // #############################################################################################
   public async getValue(parentUuid: string, instanceUuid: string): Promise<any> {
     const table = this.subLevels.get(parentUuid)
-    log.log(this.logHeader, 'getValue for entity',parentUuid,'instance uuid',instanceUuid,table);
+    log.debug(this.logHeader, 'getValue for entity',parentUuid,'instance uuid',instanceUuid,table);
     let result = {};
     if (table) {
       result = await table.get(instanceUuid, {valueEncoding: 'json'});
@@ -153,14 +153,14 @@ export class IndexedDb {
   public async getAllValue(parentUuid: string):Promise<any[]> {
     const store = this.subLevels.get(parentUuid);
     const result =  store?(await store.values({valueEncoding: 'json'}).all()):[];
-    log.log(this.logHeader, 'getAllValue', parentUuid, "result", JSON.stringify(result));
+    log.trace(this.logHeader, 'getAllValue', parentUuid, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }
 
   // #############################################################################################
   public async putValue(parentUuid: string, value: any):Promise<any> {
     const store = this.subLevels.get(parentUuid);
-    // log.log('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
+    log.debug('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
     // log.log('IndexedDb PutValue written', tableName,);
     return Promise.resolve(result1);
@@ -172,7 +172,7 @@ export class IndexedDb {
     const store = this.subLevels.get(tableName);
     for (const value of values) {
       const result = await store?.put(value.uuid,value, {valueEncoding: 'json'});
-      log.log(this.logHeader, 'PutBulkValue ', JSON.stringify(result));
+      log.trace(this.logHeader, 'PutBulkValue ', JSON.stringify(result));
     }
     return this.getAllValue(tableName); // TODO: do not return the full table!
   }
@@ -190,7 +190,7 @@ export class IndexedDb {
           return Promise.resolve(undefined);
         } else {
           await store?.del(uuid);
-          log.log(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
+          log.debug(this.logHeader, 'DeleteValue done for entity', tableUuid, "instance with uuid", uuid);
           return Promise.resolve(uuid);
         }
       } catch (error) {
