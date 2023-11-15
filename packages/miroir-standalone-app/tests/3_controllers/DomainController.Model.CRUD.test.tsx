@@ -15,9 +15,13 @@ import {
   EntityDefinition,
   EntityInstance,
   IStoreController,
+  LoggerFactoryInterface,
+  LoggerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
+  MiroirLoggerFactory,
+  SpecificLoggerOptionsMap,
   StoreControllerFactory,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentLibrary,
@@ -28,12 +32,14 @@ import {
   book1,
   book2,
   book4,
+  defaultLevels,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityEntity,
   entityReport,
+  getLoggerName,
   miroirCoreStartup
 } from "miroir-core";
 
@@ -54,17 +60,45 @@ import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 import { loadConfigFile } from "./DomainController.Data.CRUD.functions";
 
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+import { loglevelnext } from '../../src/loglevelnextImporter';
+import { packageName } from "../../src/constants";
+import { cleanLevel } from "./constants";
+
+const specificLoggerOptions: SpecificLoggerOptionsMap = {
+  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
+  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
+  // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
+}
+
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
+  defaultLevels.INFO,
+  "[{{time}}] {{level}} ({{name}})# ",
+  specificLoggerOptions
+);
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.CRUD");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
+
+log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
 const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
 
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 miroirAppStartup();
 miroirCoreStartup();
 miroirStoreFileSystemStartup();
 miroirStoreIndexedDbStartup();
 miroirStorePostgresStartup();
+
 
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
@@ -138,7 +172,7 @@ describe(
     it(
       'Refresh all Entity definitions',
       async () => {
-        console.log('Refresh all Entity definitions start');
+        log.log('Refresh all Entity definitions start');
         const displayLoadingInfo=<DisplayLoadingInfo/>
         const user = userEvent.setup()
 
@@ -179,7 +213,7 @@ describe(
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
         expect(true).toBeTruthy() // Entity
@@ -191,7 +225,7 @@ describe(
       'Add Entity then rollback',
       async () => {
         try {
-          console.log('Add Entity then rollback start');
+          log.log('Add Entity then rollback start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
@@ -215,7 +249,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
+          log.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -237,7 +271,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
+          log.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
@@ -263,8 +297,8 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
-          console.log("createAction", createAction);
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
@@ -281,7 +315,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
+          log.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -290,7 +324,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -304,7 +338,7 @@ describe(
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
@@ -315,7 +349,7 @@ describe(
       'Add entity then commit',
       async () => {
         try {
-          console.log('Add Report definition then commit start');
+          log.log('Add Report definition then commit start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
           const user = userEvent.setup()
@@ -336,7 +370,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
+          log.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -361,7 +395,7 @@ describe(
           );
 
           // ##########################################################################################################
-          console.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
+          log.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
@@ -385,7 +419,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
@@ -403,8 +437,8 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
-          // console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
+          log.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
+          // log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
               await domainController.handleDomainAction(
@@ -417,7 +451,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -432,7 +466,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
+          log.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
@@ -441,7 +475,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -456,7 +490,7 @@ describe(
           );
           // #####
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
@@ -467,7 +501,7 @@ describe(
       'Remove Entity then commit',
       async () => {
         try {
-          console.log('remove Author entity start');
+          log.log('remove Author entity start');
           const displayLoadingInfo=<DisplayLoadingInfo/>
           const user = userEvent.setup()
 
@@ -493,14 +527,14 @@ describe(
             }
           };
 
-          console.log('remove Author entity setup: adding Author entity locally.')
+          log.log('remove Author entity setup: adding Author entity locally.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
 
-          console.log('remove Author entity setup: adding Author entity remotely by commit.')
+          log.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
@@ -526,7 +560,7 @@ describe(
   
   
           // ##########################################################################################################
-          console.log('remove Author entity step  1: refreshing entity list from remote store, Author entity must be present in the entity list.')
+          log.log('remove Author entity step  1: refreshing entity list from remote store, Author entity must be present in the entity list.')
   
           await act(
             async () => {
@@ -546,7 +580,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('remove Entity step 2: removing Author entity from local store, it must be absent from the entity list.')
+          log.log('remove Entity step 2: removing Author entity from local store, it must be absent from the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(
@@ -581,7 +615,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('remove Entity step 3: commit to remote store, Author entity must still be absent from the report list.')
+          log.log('remove Entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
               await domainController.handleDomainTransactionalAction(
@@ -603,7 +637,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
+          log.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -612,7 +646,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -625,7 +659,7 @@ describe(
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
@@ -636,7 +670,7 @@ describe(
       'Update Entity then commit',
       async () => {
         try {
-          console.log('update Author definition start');
+          log.log('update Author definition start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
@@ -733,16 +767,16 @@ describe(
             }
           };
 
-          console.log('update Author entity setup: adding Author entity locally.');
-          console.log('reduxStore',reduxStore);
-          console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          log.log('update Author entity setup: adding Author entity locally.');
+          log.log('reduxStore',reduxStore);
+          log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
 
-          console.log('update Author entity setup: adding Author entity remotely by commit.')
+          log.log('update Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
@@ -766,7 +800,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
+          log.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -787,7 +821,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+          log.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
           // const updatedReport = 
           const updateAction: DomainAction = 
             {
@@ -811,7 +845,7 @@ describe(
             }
           );
   
-          console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
+          log.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
   
           expect(domainController.currentTransaction().length).toEqual(1);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
@@ -829,7 +863,7 @@ describe(
           );
 
           // ##########################################################################################################
-          console.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
+          log.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
@@ -849,7 +883,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
+          log.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -858,7 +892,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -871,7 +905,7 @@ describe(
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       },

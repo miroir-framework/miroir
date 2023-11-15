@@ -1,4 +1,5 @@
-import log from 'loglevelnext';
+// import log from 'loglevelnext';
+import { loglevelnext } from './loglevelnextImporter';
 // import * as loglevel from 'loglevel';
 
 // import * as pkg from 'loglevel-plugin-prefix';
@@ -36,18 +37,18 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
 }
 
-MiroirLoggerFactory.setEffectiveLogger(
-  log as any as LoggerFactoryInterface,
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
   defaultLevels.INFO,
   "[{{time}}] {{level}} ({{name}}) AAAA-",
   specificLoggerOptions,
 );
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
-let logger:LoggerInterface = console as any as LoggerInterface;
+let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
-    logger = value;
+    log = value;
   }
 );
 
@@ -56,11 +57,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
-logger.info('configFileContents',configFileContents)
+log.info('configFileContents',configFileContents)
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
-logger.info("server starting log:", log);
+log.info("server starting log:", log);
 
 const app = express(),
       port = 3080;
@@ -69,7 +70,7 @@ const app = express(),
 const users = [];
 
 
-logger.info(`Server being set-up, going to execute on the port::${port}`);
+log.info(`Server being set-up, going to execute on the port::${port}`);
 
 const {
   localMiroirStoreController,
@@ -99,10 +100,10 @@ try {
   for (const schema of jzodSchemaConversion) {
     await generateZodSchemaFileFromJzodSchema(schema.jzodObject,schema.targetFileName,schema.jzodSchemaVariableName)
   }
-  logger.info("GENERATED!!!!!!!");
+  log.info("GENERATED!!!!!!!");
   
 } catch (error) {
-  logger.error("could not generate TS files from Jzod schemas", error);
+  log.error("could not generate TS files from Jzod schemas", error);
   
 }
 
@@ -189,5 +190,5 @@ app.get('/', (req,res) => {
 
 // ##############################################################################################
 app.listen(port, () => {
-    logger.info(`Server listening on the port::${port}`);
+    log.info(`Server listening on the port::${port}`);
 });

@@ -15,8 +15,10 @@ import {
   DomainControllerInterface,
   IStoreController,
   LocalAndRemoteControllerInterface,
+  LoggerInterface,
   MiroirConfig,
   MiroirContext,
+  MiroirLoggerFactory,
   StoreControllerFactory,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -29,12 +31,21 @@ import {
   applicationVersionInitialMiroirVersion,
   applicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
+  getLoggerName,
   resetAndInitMiroirAndApplicationDatabase
 } from "miroir-core";
 import { createReduxStoreAndRestClient, ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-localcache-redux';
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
-import { log } from 'console';
+import { packageName } from '../../src/constants';
+import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 
 // ################################################################################################

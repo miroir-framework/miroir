@@ -23,10 +23,13 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   EntityInstance,
+  getLoggerName,
   IStoreController,
+  LoggerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
+  MiroirLoggerFactory,
   reportBookList
 } from "miroir-core";
 import { ReduxStore } from "miroir-localcache-redux";
@@ -36,7 +39,16 @@ import {
   renderWithProviders
 } from "miroir-standalone-app/tests/utils/tests-utils";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
+import { packageName } from "../../src/constants";
+import { cleanLevel } from "./constants";
 
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD.functions");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
 
 export async function refreshAllInstancesTest(
   miroirConfig: MiroirConfig,
@@ -47,7 +59,7 @@ export async function refreshAllInstancesTest(
   miroirContext: MiroirContext
 ) {
   try {
-    console.log("Refresh all Instances start");
+    log.log("Refresh all Instances start");
     const displayLoadingInfo = <DisplayLoadingInfo />;
     const user = userEvent.setup();
 
@@ -126,7 +138,7 @@ export async function refreshAllInstancesTest(
       );
     }
 
-    // console.log(
+    // log.log(
     //   'after test preparation',
     //   await localAppStoreController?.getState()
     // );
@@ -155,7 +167,7 @@ export async function refreshAllInstancesTest(
       });
     });
 
-    console.log("Refresh all Instances start", JSON.stringify(reduxStore.getState()));
+    log.log("Refresh all Instances start", JSON.stringify(reduxStore.getState()));
     
     await act(()=>user.click(screen.getByRole("button")));
 
@@ -168,7 +180,7 @@ export async function refreshAllInstancesTest(
       expect(getByText(new RegExp(`${book4.uuid}`, "i"))).toBeTruthy(); // Rear Window
     });
   } catch (error) {
-    console.error("error during test", expect.getState().currentTestName, error);
+    log.error("error during test", expect.getState().currentTestName, error);
     expect(false).toBeTruthy();
   }
   return Promise.resolve();
@@ -176,15 +188,15 @@ export async function refreshAllInstancesTest(
 
 
 export async function loadConfigFile(pwd: string, fileRelativePath:string): Promise<MiroirConfig> {
-  // console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-  // console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
   const configFilePath = path.join(pwd, fileRelativePath)
-  console.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
+  log.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
   const configFileContents = await import(configFilePath);
-  console.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
+  log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
 
   const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
-  console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+  log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
   return miroirConfig;
 }

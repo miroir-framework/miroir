@@ -66,7 +66,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   }
 
   // ###################################
-  static setEffectiveLogger(
+  static setEffectiveLoggerFactory(
     effectiveLoggerFactory: LoggerFactoryInterface,
     defaultLogLevel: string | number,
     defaultTemplate: string,
@@ -89,10 +89,10 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     ): Promise<LoggerInterface> {
     
     let result: Promise<LoggerInterface>
-    console.log("MiroirLoggerFactory.create", loggerName, "has to wait:", !MiroirLoggerFactory.effectiveLoggerFactory);
+    // console.log("MiroirLoggerFactory.create", loggerName, "has to wait:", !MiroirLoggerFactory.effectiveLoggerFactory);
     if (!MiroirLoggerFactory.effectiveLoggerFactory) {
       const getLoggerResult = new Promise<LoggerInterface>((resolve) => {
-        console.log("MiroirLoggerFactory.create received effective logger for", loggerName);
+        // console.log("MiroirLoggerFactory.create received effective logger for", loggerName);
 
         delete MiroirLoggerFactory.waitingLoggers[loggerName];
         MiroirLoggerFactory.waitingLoggers = {
@@ -102,14 +102,14 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
       });
       result =  getLoggerResult;
     } else {
-      console.log("MiroirLoggerFactory.create asked for logger", loggerName, "when root logger is known, ok.");
+      // console.log("MiroirLoggerFactory.create asked for logger", loggerName, "when root logger is known, ok.");
 
       result = Promise.resolve(
         MiroirLoggerFactory.effectiveLoggerFactory?.create(MiroirLoggerFactory.getOptionsFromMap(loggerName, logLevel, template))
       );
     }
-    return result.then((value)=>{testLogger(loggerName,value); return value})
-    // return result
+    // return result.then((value)=>{testLogger(loggerName,value); return value})
+    return result
   }
 
   // ###################################

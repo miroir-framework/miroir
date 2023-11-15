@@ -1,6 +1,5 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
-import log from 'loglevelnext';
 import { setupWorker } from 'msw/browser';
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
@@ -27,6 +26,7 @@ import {
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { createMswRestServer } from "miroir-server-msw-stub";
 
+import { loglevelnext } from './loglevelnextImporter';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
@@ -35,13 +35,15 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
+import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
+import miroirConfigRealServer from "./assets/miroirConfig-realServer.json";
 import miroirConfig from "./assets/miroirConfig.json";
 import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 
-const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
+
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -51,20 +53,38 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
 }
 
-MiroirLoggerFactory.setEffectiveLogger(
-  log as any as LoggerFactoryInterface,
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
   defaultLevels.INFO,
   "[{{time}}] {{level}} ({{name}})# ",
   specificLoggerOptions
 );
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "index.tsx");
-let logger: LoggerInterface = console as any as LoggerInterface;
+let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
-  logger = value;
+  log = value;
 });
 
-logger.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
+const miroirConfigFiles: {[k: string]: MiroirConfig} = {
+  "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfig,
+  "miroirConfigRealServer": miroirConfigRealServer as any as MiroirConfig
+}
+
+  // logger.info("start current process.env:",process); 
+  const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+  const currentMiroirConfig: MiroirConfig =
+    currentMiroirConfigName && miroirConfigFiles[currentMiroirConfigName]
+      ? miroirConfigFiles[currentMiroirConfigName ?? ""]
+      : (miroirConfig as unknown as MiroirConfig);
+
+  log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
+  // const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
+
+// logger.info("current process.env:",process); 
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
+
+log.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
 
 const router = createBrowserRouter([
@@ -111,7 +131,6 @@ async function start(root:Root) {
 
 
   if (process.env.NODE_ENV === "development") {
-
     const {
       reduxStore: mReduxStore,
       domainController,
@@ -138,7 +157,7 @@ async function start(root:Root) {
       );
   
       if (localDataStoreWorker) {
-        logger.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
+        log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
         localDataStoreWorker?.start();
       }
       if (localMiroirStoreController) {
@@ -147,7 +166,7 @@ async function start(root:Root) {
         try {
           await localMiroirStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
         } catch (error) {
-          logger.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
+          log.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
         }
       }
       if (localAppStoreController) {
@@ -155,7 +174,7 @@ async function start(root:Root) {
         try {
           await localAppStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
         } catch (error) {
-          logger.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
+          log.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
         }
       }
     }
@@ -212,6 +231,8 @@ async function start(root:Root) {
       </StrictMode>
     );
   } else { // process.env.NODE_ENV !== "development"
+    console.warn("start prod",process.env.NODE_ENV)
+
     root.render(
       <span>Production mode not implemented yet!</span>
     )

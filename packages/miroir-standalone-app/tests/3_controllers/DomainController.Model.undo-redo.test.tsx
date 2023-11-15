@@ -11,19 +11,25 @@ import {
   EntityDefinition,
   IStoreController,
   LocalAndRemoteControllerInterface,
+  LoggerFactoryInterface,
+  LoggerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
+  MiroirLoggerFactory,
+  SpecificLoggerOptionsMap,
   StoreControllerFactory,
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  defaultLevels,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
   entityEntity,
   entityReport,
+  getLoggerName,
   miroirCoreStartup
 } from "miroir-core";
 import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-redux";
@@ -44,11 +50,38 @@ import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 import { loadConfigFile } from "./DomainController.Data.CRUD.functions";
 
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+import { loglevelnext } from '../../src/loglevelnextImporter';
+import { packageName } from "../../src/constants";
+import { cleanLevel } from "./constants";
+
+const specificLoggerOptions: SpecificLoggerOptionsMap = {
+  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
+  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
+  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
+  // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
+}
+
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
+  defaultLevels.INFO,
+  "[{{time}}] {{level}} ({{name}})# ",
+  specificLoggerOptions
+);
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.undo-redo");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
+
+log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
 const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
 
-console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 
 miroirAppStartup();
@@ -130,7 +163,7 @@ describe(
       async () => {
         try {
           
-          console.log('Add 2 entity definitions then undo one then commit start');
+          log.log('Add 2 entity definitions then undo one then commit start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
@@ -154,7 +187,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from entity list.')
+          log.log('Add 2 entity definitions then undo one then commit step 1: loading initial configuration, entities must be absent from entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -177,7 +210,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
+          log.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
@@ -216,7 +249,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          // console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          // log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
@@ -236,7 +269,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
+          log.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
@@ -245,7 +278,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          // console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          // log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
@@ -262,7 +295,7 @@ describe(
           );
 
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
+          log.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
@@ -271,7 +304,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
@@ -290,7 +323,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
+          log.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
@@ -301,7 +334,7 @@ describe(
       
           await act(()=>user.click(screen.getByRole('button')));
       
-          // console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          // log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
@@ -324,7 +357,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
+          log.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
@@ -336,7 +369,7 @@ describe(
       
           await act(()=>user.click(screen.getByRole('button')));
       
-          // console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          // log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
@@ -359,7 +392,7 @@ describe(
           );
   
           // ##########################################################################################################
-          console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
+          log.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
@@ -368,7 +401,7 @@ describe(
       
           await act(()=>user.click(screen.getByRole('button')));
       
-          // console.log("domainController.currentTransaction()", domainController.currentTransaction());
+          // log.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
@@ -394,7 +427,7 @@ describe(
             }
           );
         } catch (error) {
-          console.error('error during test',expect.getState().currentTestName,error);
+          log.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }

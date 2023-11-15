@@ -63,7 +63,7 @@
     "vitest": "^0.34.6"
   },
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --cors",
     "build": "vite build --emptyOutDir",
     "test": "cross-env NODE_ENV=test vitest"
   },
