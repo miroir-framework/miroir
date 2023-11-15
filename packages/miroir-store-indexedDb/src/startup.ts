@@ -13,7 +13,7 @@ import {
 } from "miroir-core";
 import { IndexedDbModelSectionStore } from "./4_services/IndexedDbModelSectionStore.js";
 import { IndexedDbDataSectionStore } from "./4_services/IndexedDbDataSectionStore.js";
-import { IndexedDb } from "./4_services/IndexedDb.js";
+import { IndexedDb } from "./4_services/IndexedDbSnakeCase.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 

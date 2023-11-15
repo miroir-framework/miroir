@@ -9,7 +9,7 @@ import {
   getLoggerName
 } from "miroir-core";
 import { packageName } from "../constants";
-import { IndexedDb } from "./IndexedDb";
+import { IndexedDb } from "./IndexedDbSnakeCase";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStore");

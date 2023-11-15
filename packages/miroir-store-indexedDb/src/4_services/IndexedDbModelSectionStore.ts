@@ -9,7 +9,7 @@ import {
 } from "miroir-core";
 
 import { MixedIndexedDbEntityAndInstanceStore } from "./IndexedDbEntityStoreMixin.js";
-import { IndexedDb } from "./IndexedDb.js";
+import { IndexedDb } from "./IndexedDbSnakeCase.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 

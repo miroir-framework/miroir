@@ -7,7 +7,7 @@ import {
   getLoggerName
 } from "miroir-core";
 import { MixedIndexedDbInstanceStore } from "./IndexedDbInstanceStoreMixin.js";
-import { IndexedDb } from "./IndexedDb.js";
+import { IndexedDb } from "./IndexedDbSnakeCase.js";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
