@@ -65,6 +65,7 @@
   "scripts": {
     "dev": "vite --host --cors",
     "build": "vite build --emptyOutDir",
+    "build5": "vite build --emptyOutDir",
     "test": "cross-env NODE_ENV=test vitest"
   },
   "author": "Arnaud Bailly",

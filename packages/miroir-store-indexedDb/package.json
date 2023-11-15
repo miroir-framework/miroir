@@ -28,6 +28,8 @@
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-indexedDb' --include-dependencies -- lerna run build --scope='miroir-store-indexedDb'",
     "build": "rollup --config --logLevel info",
+    "build4": "rollup --config --logLevel info",
+    "build5": "rollup --config --logLevel info",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "jest --verbose --silent=false -t"
   },

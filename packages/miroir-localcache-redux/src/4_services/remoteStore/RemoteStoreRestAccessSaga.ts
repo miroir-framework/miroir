@@ -94,7 +94,7 @@ export class RemoteStoreRestAccessReduxSaga {
       ): RemoteStoreSagaGenReturnType {
         const { deploymentUuid, section, action } = p.payload;
         try {
-          // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment param",p);
+          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment param",p);
           const clientResult: {
             status: number,
             data: HttpResponseBodyFormat,
@@ -108,7 +108,7 @@ export class RemoteStoreRestAccessReduxSaga {
               action
             )
           );
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received clientResult",clientResult);
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreCRUDActionWithDeployment received clientResult",clientResult);
           const result = {
             status: "ok",
             instanceCollection: clientResult.data.instances,
@@ -149,14 +149,14 @@ export class RemoteStoreRestAccessReduxSaga {
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelActionWithDeployment(deploymentUuid, action)
           );
           // } = yield call(() => this.client.handleNetworkAction(action));
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received clientResult", clientResult);
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received clientResult", clientResult);
 
           const result = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment received result", result.status);
           return yield result;
         } catch (e: any) {
           log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelActionWithDeployment exception", e);

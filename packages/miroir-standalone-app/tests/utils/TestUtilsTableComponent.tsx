@@ -14,13 +14,18 @@ import {
   entityDefinitionEntity, 
   entityDefinitionEntityDefinition, 
   entityEntity, 
-  entityEntityDefinition 
+  entityEntityDefinition,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
 } from 'miroir-core';
 import { JzodElement } from "@miroir-framework/jzod-ts";
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
 import { EntityInstanceUuidIndexSelectorParams } from "../../src/miroir-fwk/4_view/ReduxHooks";
+import { packageName } from "../../src/constants";
+import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 export interface MiroirReportComponentProps {
   entityName?: string;
   entityUuid: string;
@@ -28,6 +33,15 @@ export interface MiroirReportComponentProps {
   deploymentUuid: Uuid;
   instancesApplicationSection?: ApplicationSection;
 };
+
+const loggerName: string = getLoggerName(packageName, cleanLevel,"TestUtilsTableComponent");
+let log:LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+  (value: LoggerInterface) => {
+    log = value;
+  }
+);
+
 
 export const TestUtilsTableComponent = (
   props: MiroirReportComponentProps
@@ -58,8 +72,8 @@ export const TestUtilsTableComponent = (
     Report:deploymentReports,
   }
 
-  console.log("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
-  console.log("TestUtilsTableComponent libraryAppEntities",entitiesOfDataSection, "deploymentReports", deploymentReports);
+  log.debug("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
+  log.debug("TestUtilsTableComponent libraryAppEntities",entitiesOfDataSection, "deploymentReports", deploymentReports);
 
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
   let instancesToDisplay:EntityInstance[];
@@ -92,14 +106,14 @@ export const TestUtilsTableComponent = (
       selectInstanceArrayForDeploymentSectionEntity(state, instancesToDisplaySelectorParams)
     ) as EntityInstanceWithName[];
   }
-  console.log("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
-  console.log("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
+  log.debug("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
+  log.debug("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
   
-  console.log("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
+  log.debug("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
   // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
   const currentAttributes = currentMiroirEntityDefinition?.jzodSchema ? Object.entries(currentMiroirEntityDefinition?.jzodSchema.definition)?.filter(a=>a[0]!=='parentUuid'):[];
-  console.log("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
+  log.debug("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>
       {/* <span>

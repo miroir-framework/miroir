@@ -9,6 +9,11 @@
   "scripts": {
     "watch": "lerna watch --scope='miroir-core' --include-dependencies -- lerna run build --scope='miroir-core'",
     "build": "npm run copy-files && rollup --config",
+    "build1": "npm run copy-files && rollup --config",
+    "build2": "npm run copy-files && rollup --config",
+    "build3": "npm run copy-files && rollup --config",
+    "build4": "npm run copy-files && rollup --config",
+    "build5": "npm run copy-files && rollup --config",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
   },

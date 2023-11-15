@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SetupWorkerApi } from "msw/browser";
@@ -63,20 +64,22 @@ import { loglevelnext } from '../../src/loglevelnextImporter';
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "./constants";
 
-const specificLoggerOptions: SpecificLoggerOptionsMap = {
-  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
-  // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
-  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
-  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
-  // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
-}
+import loggerOptions from "../specificLoggersConfig_default.json"
+
+// const loggerOptions = JSON.parse(readFileSync(new URL('../specificLoggersConfig_default.json', import.meta.url)).toString());
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
-  defaultLevels.INFO,
-  "[{{time}}] {{level}} ({{name}})# ",
-  specificLoggerOptions
+  defaultLevels[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
 );
+// MiroirLoggerFactory.setEffectiveLoggerFactory(
+//   loglevelnext,
+//   defaultLevels.INFO,
+//   "[{{time}}] {{level}} ({{name}})# ",
+//   specificLoggerOptions
+// );
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
 let log:LoggerInterface = console as any as LoggerInterface;

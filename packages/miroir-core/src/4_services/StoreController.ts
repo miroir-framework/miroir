@@ -42,7 +42,7 @@ export async function storeFactory (
   config: EmulatedServerConfig,
   dataStore?: IDataSectionStore,
 ):Promise<IDataSectionStore | IModelSectionStore> {
-  log.info('storeFactory called for',appName, dataStoreApplicationType, section, config);
+  log.debug('storeFactory called for',appName, dataStoreApplicationType, section, config);
   if (section == 'model' && !dataStore) {
     throw new Error('storeFactory model section factory must receive data section store.')
   }
@@ -100,7 +100,7 @@ export class StoreController implements IStoreController{
     private modelSectionStore:IModelSectionStore,
     private dataSectionStore:IDataSectionStore,
   ){
-    this.logHeader = 'StoreController' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.logHeader = 'Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
   }
 
 
@@ -167,7 +167,7 @@ export class StoreController implements IStoreController{
 
   // ##############################################################################################
   async clearDataInstances():Promise<void> {
-    log.info(this.logHeader, "clearDataInstances", this.getEntityUuids());
+    log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
     const dataSectionEntityDefinitions: EntityInstanceCollection = await this.getInstances(
       "model",
@@ -176,7 +176,7 @@ export class StoreController implements IStoreController{
     const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter(
       (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
     ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-    log.info(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
+    log.trace(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataSectionStore.clear();
 
     for (const entity of dataSectionFilteredEntities) {
@@ -268,6 +268,7 @@ export class StoreController implements IStoreController{
   async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
     // TODO: fix applicationSection!!!
     // const modelEntitiesUuid = this.dataStoreType == "app"?applicationModelEntities.map(e=>e.uuid):[entityEntity.uuid,entityEntityDefinition.uuid];
+    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid);
     
     // const result = Promise.resolve({parentUuid:entityUuid, applicationSection: section, instances: await this.dataSectionStore.getInstances(entityUuid)})
     let result: EntityInstanceCollection;
@@ -276,7 +277,7 @@ export class StoreController implements IStoreController{
     } else {
       result = await Promise.resolve({parentUuid:entityUuid, applicationSection:'model', instances: await this.modelSectionStore.getInstances(entityUuid)});
     }
-    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
+    log.trace(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
     return result;
   }
   

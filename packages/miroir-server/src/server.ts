@@ -1,18 +1,13 @@
-// import log from 'loglevelnext';
-import { loglevelnext } from './loglevelnextImporter';
-// import * as loglevel from 'loglevel';
-
-// import * as pkg from 'loglevel-plugin-prefix';
 import express from 'express';
 import { readFileSync } from 'fs';
-// import * as prettier from "prettier";
+import { loglevelnext } from './loglevelnextImporter';
+import bodyParser from 'body-parser';
 
 import {
   JzodObject
 } from "@miroir-framework/jzod-ts";
 
 
-import bodyParser from 'body-parser';
 import {
   HttpMethod,
   LoggerFactoryInterface,

@@ -41,7 +41,7 @@ export const generateRestServiceResponse = async (
   method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
-  // log.info('generateRestServiceResponse called with params',params);
+  log.debug('generateRestServiceResponse called with params',params);
   
   let localData: HttpResponseBodyFormat = {instances:[]};
   let paramVals: string[] = [];
@@ -68,7 +68,7 @@ export const generateRestServiceResponse = async (
     // localData = instances;
   }
 
-  // log.info("generateRestServiceResponse received", localData);
+  log.trace("generateRestServiceResponse received", localData);
   // log.info("##################################### end: ",HttpMethod, url);
   return localData?returnJsonResultContinuation(localData):[];
 }
@@ -86,7 +86,7 @@ export async function restMethodGetHandler(
   params: any,
 ) {
   // const localParams = params ?? request.params;
-  log.info(
+  log.debug(
     "restMethodGetHandler get miroirWithDeployment/ called using",
     "method",
     method,
@@ -110,7 +110,7 @@ export async function restMethodGetHandler(
   const targetStoreController =
     deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  log.info(
+  log.trace(
     "restMethodGetHandler get miroirWithDeployment/ using application",
     (targetStoreController as any)["applicationName"],
     "deployment",
@@ -156,7 +156,7 @@ export async function restMethodsPostPutDeleteHandler(
 ) {
   // const foundParams = params ?? request.params;
   const foundParams = params;
-  log.info("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
+  log.debug("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
   // log.info("restMethodsPostPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
   const deploymentUuid: string =
     typeof foundParams["deploymentUuid"] == "string" ? foundParams["deploymentUuid"] : foundParams["deploymentUuid"][0];
@@ -168,7 +168,7 @@ export async function restMethodsPostPutDeleteHandler(
   const targetDataStore =
     deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
 
-  log.info(
+  log.trace(
     "restMethodsPostPutDeleteHandler deploymentUuid",
     deploymentUuid,
     "section",
@@ -209,7 +209,7 @@ export async function restMethodModelActionRunnerHandler(
   const deploymentUuid: string =
     typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
 
-  log.info("restMethodModelActionRunnerHandler params", params, "body", body);
+  log.debug("restMethodModelActionRunnerHandler params", params, "body", body);
 
   const result = modelActionRunner(
     localMiroirStoreController,

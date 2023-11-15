@@ -42,7 +42,7 @@ import {
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreController");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCacheSlice");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -213,17 +213,17 @@ function getInitializedSectionEntityAdapter(
       state[index] = sliceEntityAdapter.getInitialState();
     }
   }
-  // log.info(
-  //   "LocalCacheSlice getInitializedDeploymentEntityAdapter",
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "state",
-  //   JSON.stringify(state)
-  // );
+  log.trace(
+    "LocalCacheSlice getInitializedDeploymentEntityAdapter",
+    "deploymentUuid",
+    deploymentUuid,
+    "section",
+    section,
+    "entityUuid",
+    entityUuid,
+    "state",
+    JSON.stringify(state)
+  );
   return sliceEntityAdapter;
 }
 
@@ -247,7 +247,7 @@ function ReplaceInstancesForSectionEntity(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  // log.info('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
+  log.debug('ReplaceInstancesForSectionEntity',deploymentUuid,section,instanceCollection);
   const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
   const instanceCollectionEntityIndex = getLocalCacheSliceIndex(deploymentUuid, section, instanceCollection.parentUuid);
   const entity = state[entityEntityIndex]?.entities[instanceCollection.parentUuid];
@@ -265,7 +265,7 @@ function ReplaceInstancesForSectionEntity(
   );
 
   if (Object.keys(instanceCollection.instances).length > 0 && equalEntityInstances(instanceCollection.instances,state[instanceCollectionEntityIndex].entities)) {
-    log.info(
+    log.debug(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
@@ -275,7 +275,7 @@ function ReplaceInstancesForSectionEntity(
       "nothing to be done, instances did not change."
     );
   } else {
-    log.debug(
+    log.trace(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
@@ -304,7 +304,7 @@ function handleLocalCacheNonTransactionalAction(
   action: DomainDataAction
 ) {
   // const deploymentUuid = applicationDeploymentMiroir.uuid
-  log.info(
+  log.debug(
     "localCacheSliceObject handleLocalCacheNonTransactionalAction called",
     "deploymentUuid",
     deploymentUuid,
@@ -322,7 +322,7 @@ function handleLocalCacheNonTransactionalAction(
           applicationSection,
           instanceCollection.parentUuid
         );
-        // log.info('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
+        log.trace('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           deploymentUuid,
@@ -356,7 +356,7 @@ function handleLocalCacheNonTransactionalAction(
           applicationSection,
           instanceCollection.parentUuid
         );
-        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction delete', instanceCollection);
+        log.trace('localCacheSliceObject handleLocalCacheNonTransactionalAction delete', instanceCollection);
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           deploymentUuid,
@@ -371,7 +371,7 @@ function handleLocalCacheNonTransactionalAction(
           instanceCollection.instances.map((i) => i.uuid)
         );
         // sliceEntityAdapter.removeMany(state[deploymentUuid][applicationSection][instanceCollection.parentUuid], instanceCollection.instances.map(i => i.uuid));
-        log.info(
+        log.trace(
           "localCacheSliceObject handleLocalCacheNonTransactionalAction delete state after",
           JSON.stringify(state[instanceCollectionEntityIndex])
         );

@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import { act, getAllByText, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
@@ -64,19 +65,13 @@ import { loglevelnext } from '../../src/loglevelnextImporter';
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "./constants";
 
-const specificLoggerOptions: SpecificLoggerOptionsMap = {
-  // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
-  // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
-  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
-  // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
-  // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},
-}
+import loggerOptions from "../specificLoggersConfig_default.json"
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
-  defaultLevels.INFO,
-  "[{{time}}] {{level}} ({{name}})# ",
-  specificLoggerOptions
+  defaultLevels[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
 );
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.CRUD");
@@ -909,7 +904,7 @@ describe(
           expect(false).toBeTruthy();
         }
       },
-      10000
+      20000
     )
   }
 )

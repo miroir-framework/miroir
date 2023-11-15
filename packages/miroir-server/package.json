@@ -11,6 +11,7 @@
     "dev": "vite --host",
     "build": "npm run copy-all && vite build",
     "build-webpack": "npm run copy-all && webpack",
+    "build5": "npm run copy-all && webpack",
     "dev-nodemon": "npm run copy-all && concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\"",
     "test": "cross-env NODE_ENV=test vitest"
   },

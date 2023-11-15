@@ -21,7 +21,6 @@ export class RestClient implements RestClientInterface {
   constructor(
     private customFetch:(...args:any) => any
   ){
-    log.info("RestClient constructor")
   }
 
   // ##############################################################################################
@@ -40,7 +39,7 @@ export class RestClient implements RestClientInterface {
       },
     }
 
-    log.info("RestClient call config", config)
+    log.debug("RestClient call config", config)
 
     let data
     try {
@@ -71,28 +70,28 @@ export class RestClient implements RestClientInterface {
   // ##############################################################################################
   async get(endpoint:string, customConfig:any = {}): Promise<RestClientCallReturnType> {
     const result:RestClientCallReturnType = await this.call('GET', endpoint, { ...customConfig, method: 'GET' })
-    log.info('RestClient get', endpoint, result)
+    log.trace('RestClient get', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('POST', endpoint, { ...customConfig, body })
-    log.info('RestClient post', endpoint, result)
+    log.trace('RestClient post', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('PUT', endpoint, { ...customConfig, body })
-    log.info('RestClient put', endpoint, result)
+    log.trace('RestClient put', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
     const result:Promise<RestClientCallReturnType> = this.call('DELETE', endpoint, { ...customConfig, body })
-    log.info('RestClient delete', endpoint, result)
+    log.trace('RestClient delete', endpoint, result)
     return result
   }
 }

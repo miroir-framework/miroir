@@ -160,6 +160,10 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   public currentModel(deploymentUuid: string): MiroirApplicationModel {
     log.info(
       "called currentModel(",
+      deploymentUuid,")"
+    );
+    log.trace(
+      "called currentModel(",
       deploymentUuid,
       ") from state:",
       this.innerReduxStore.getState().presentModelSnapshot
