@@ -163,333 +163,333 @@ afterEach(
 describe(
   'DomainController.Model.CRUD',
   () => {
-    // ###########################################################################################
-    it(
-      'Refresh all Entity definitions',
-      async () => {
-        log.log('Refresh all Entity definitions start');
-        const displayLoadingInfo=<DisplayLoadingInfo/>
-        const user = userEvent.setup()
+    // // ###########################################################################################
+    // it(
+    //   'Refresh all Entity definitions',
+    //   async () => {
+    //     log.log('Refresh all Entity definitions start');
+    //     const displayLoadingInfo=<DisplayLoadingInfo/>
+    //     const user = userEvent.setup()
 
-        try {
-          const {
-            getByText,
-            getAllByRole,
-            // container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityEntity.name}
-              entityUuid={entityEntity.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentMiroir.uuid}
-              instancesApplicationSection="model"
-            />
-            ,
-            {store:reduxStore.getInnerStore()}
-          );
+    //     try {
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         // container
+    //       } = renderWithProviders(
+    //         <TestUtilsTableComponent
+    //           entityName={entityEntity.name}
+    //           entityUuid={entityEntity.uuid}
+    //           DisplayLoadingInfo={displayLoadingInfo}
+    //           deploymentUuid={applicationDeploymentMiroir.uuid}
+    //           instancesApplicationSection="model"
+    //         />
+    //         ,
+    //         {store:reduxStore.getInnerStore()}
+    //       );
   
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(getByText(new RegExp(`${entityReport.uuid}`,'i'))).toBeTruthy() // Report
-              expect(getByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy() // Entity
-            }
-          );
-        } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-        expect(true).toBeTruthy() // Entity
-      }
-    )
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:1/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(getByText(new RegExp(`${entityReport.uuid}`,'i'))).toBeTruthy() // Report
+    //           expect(getByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy() // Entity
+    //         }
+    //       );
+    //     } catch (error) {
+    //       log.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //     expect(true).toBeTruthy() // Entity
+    //   }
+    // )
 
-    // ###########################################################################################
-    it(
-      'Add Entity then rollback',
-      async () => {
-        try {
-          log.log('Add Entity then rollback start');
+    // // ###########################################################################################
+    // it(
+    //   'Add Entity then rollback',
+    //   async () => {
+    //     try {
+    //       log.log('Add Entity then rollback start');
 
-          const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
-          const user = userEvent.setup()
+    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
+    //       const user = userEvent.setup()
   
-          // await localDataStore.clear();
-          // await localDataStore.initModel(defaultMiroirMetaModel);
+    //       // await localDataStore.clear();
+    //       // await localDataStore.initModel(defaultMiroirMetaModel);
   
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityEntity.name}
-              entityUuid={entityEntity.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
-              instancesApplicationSection="model"
-            />,
-            {store:reduxStore.getInnerStore(),}
-          );
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <TestUtilsTableComponent
+    //           entityName={entityEntity.name}
+    //           entityUuid={entityEntity.uuid}
+    //           DisplayLoadingInfo={displayLoadingInfo}
+    //           deploymentUuid={applicationDeploymentLibrary.uuid}
+    //           instancesApplicationSection="model"
+    //         />,
+    //         {store:reduxStore.getInnerStore(),}
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
 
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:1/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
-          const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
-            update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
-              modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
-                // parentName: entityDefinitionEntityDefinition.name,
-                // parentUuid: entityDefinitionEntityDefinition.uuid,
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
-              },
-            }
-          };
+    //       // ##########################################################################################################
+    //       log.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
+    //       const createAction: DomainAction = {
+    //         actionType:"DomainTransactionalAction",
+    //         actionName: "updateEntity",
+    //         update: {
+    //           updateActionName:"WrappedTransactionalEntityUpdate",
+    //           modelEntityUpdate: {
+    //             updateActionType: "ModelEntityUpdate",
+    //             updateActionName: "createEntity",
+    //             // parentName: entityDefinitionEntityDefinition.name,
+    //             // parentUuid: entityDefinitionEntityDefinition.uuid,
+    //             entities: [
+    //               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+    //             ],
+    //           },
+    //         }
+    //       };
   
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          log.log("createAction", createAction);
-          expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       log.log("createAction", createAction);
+    //       expect(domainController.currentTransaction().length).toEqual(1);
+    //       expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
-          await waitFor(
-            () => {
-              // getAllByText(container,/finished/)
-              getAllByText(container,/step:2/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           // getAllByText(container,/finished/)
+    //           getAllByText(container,/step:2/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(0);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(0);
   
-          await waitFor(
-            () => {
-              getAllByText(container,/step:3/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
-        } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      }
-    )
+    //       await waitFor(
+    //         () => {
+    //           getAllByText(container,/step:3/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
+    //     } catch (error) {
+    //       log.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
 
-    // ###########################################################################################
-    it(
-      'Add entity then commit',
-      async () => {
-        try {
-          log.log('Add Report definition then commit start');
+    // // ###########################################################################################
+    // it(
+    //   'Add entity then commit',
+    //   async () => {
+    //     try {
+    //       log.log('Add Report definition then commit start');
 
-          const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
-          const user = userEvent.setup()
+    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.uuid}/>
+    //       const user = userEvent.setup()
 
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityEntity.name}
-              entityUuid={entityEntity.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
-              instancesApplicationSection="model"
-            />,
-            {store:reduxStore.getInnerStore(),}
-          );
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <TestUtilsTableComponent
+    //           entityName={entityEntity.name}
+    //           entityUuid={entityEntity.uuid}
+    //           DisplayLoadingInfo={displayLoadingInfo}
+    //           deploymentUuid={applicationDeploymentLibrary.uuid}
+    //           instancesApplicationSection="model"
+    //         />,
+    //         {store:reduxStore.getInnerStore(),}
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-              // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
-              // expect(absentReport).toBeNull() 
-              // expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:1/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeNull() 
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //           // const absentReport = screen.queryByText(/c9ea3359-690c-4620-9603-b5b402e4a2b9/i); // Entity List
+    //           // expect(absentReport).toBeNull() 
+    //           // expect(screen.queryByText(/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855/i)).toBeTruthy() // Report List
+    //         }
+    //       );
 
-          // ##########################################################################################################
-          log.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
-          const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
-            update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
-              modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
-              },
-            }
-          };
+    //       // ##########################################################################################################
+    //       log.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
+    //       const createAction: DomainAction = {
+    //         actionType:"DomainTransactionalAction",
+    //         actionName: "updateEntity",
+    //         update: {
+    //           updateActionName:"WrappedTransactionalEntityUpdate",
+    //           modelEntityUpdate: {
+    //             updateActionType: "ModelEntityUpdate",
+    //             updateActionName: "createEntity",
+    //             entities: [
+    //               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+    //             ],
+    //           },
+    //         }
+    //       };
   
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(1);
+    //       expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
   
 
-          await waitFor(
-            () => {
-              // getAllByText(container,/finished/)
-              getAllByText(container,/step:2/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           // getAllByText(container,/finished/)
+    //           getAllByText(container,/step:2/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
-          // log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
-          await act(
-            async () => {
-              await domainController.handleDomainAction(
-                applicationDeploymentLibrary.uuid,
-                { actionName: "commit", actionType: "DomainTransactionalAction" },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
-              );
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
+    //       // log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(
+    //             applicationDeploymentLibrary.uuid,
+    //             { actionName: "commit", actionType: "DomainTransactionalAction" },
+    //             reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+    //           );
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(0);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(0);
   
-          await waitFor(
-            () => {
-              getAllByText(container,/step:3/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByText(container,/step:3/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "rollback",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(0);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(0);
   
-          await waitFor(
-            () => {
-              getAllByText(container,/step:4/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
-              // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
-            }
-          );
-          // #####
-        } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      }
-    )
+    //       await waitFor(
+    //         () => {
+    //           getAllByText(container,/step:4/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy();
+    //           // expect(screen.queryByText(new RegExp(`${entityEntity.uuid}`,'i'))).toBeTruthy();
+    //         }
+    //       );
+    //       // #####
+    //     } catch (error) {
+    //       log.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   }
+    // )
 
     // ###########################################################################################
     it(
@@ -660,251 +660,251 @@ describe(
       }
     )
 
-    // ###########################################################################################
-    it(
-      'Update Entity then commit',
-      async () => {
-        try {
-          log.log('update Author definition start');
+    // // ###########################################################################################
+    // it(
+    //   'Update Entity then commit',
+    //   async () => {
+    //     try {
+    //       log.log('update Author definition start');
 
-          const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
-          const user = userEvent.setup()
+    //       const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
+    //       const user = userEvent.setup()
   
-          if (miroirConfig.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
-            const createAction: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
-              update: {
-                updateActionName:"WrappedTransactionalEntityUpdate",
-                modelEntityUpdate: {
-                  updateActionType: "ModelEntityUpdate",
-                  updateActionName: "createEntity",
-                  // parentName: entityDefinitionEntityDefinition.name,
-                  // parentUuid: entityDefinitionEntityDefinition.uuid,
-                  entities: [
-                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-                  ],
-                },
-              }
-            };
+    //       if (miroirConfig.emulateServer) {
+    //         await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+    //         await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+    //         // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
+    //         await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+    //       } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
+    //         const createAction: DomainAction = {
+    //           actionType:"DomainTransactionalAction",
+    //           actionName: "updateEntity",
+    //           update: {
+    //             updateActionName:"WrappedTransactionalEntityUpdate",
+    //             modelEntityUpdate: {
+    //               updateActionType: "ModelEntityUpdate",
+    //               updateActionName: "createEntity",
+    //               // parentName: entityDefinitionEntityDefinition.name,
+    //               // parentUuid: entityDefinitionEntityDefinition.uuid,
+    //               entities: [
+    //                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+    //                 {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+    //               ],
+    //             },
+    //           }
+    //         };
 
-            await act(
-              async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-              }
-            );
+    //         await act(
+    //           async () => {
+    //             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //           }
+    //         );
               
-            const createInstancesAction: DomainDataAction = {
-              actionName: "create",
-              actionType: "DomainDataAction",
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
-            };
+    //         const createInstancesAction: DomainDataAction = {
+    //           actionName: "create",
+    //           actionType: "DomainDataAction",
+    //           objects: [
+    //             {
+    //               parentName: entityAuthor.name,
+    //               parentUuid: entityAuthor.uuid,
+    //               applicationSection: "data",
+    //               instances: [
+    //                 author1 as EntityInstance,
+    //                 author2 as EntityInstance,
+    //                 author3 as EntityInstance,
+    //               ],
+    //             },
+    //             {
+    //               parentName: entityBook.name,
+    //               parentUuid: entityBook.uuid,
+    //               applicationSection: "data",
+    //               instances: [
+    //                 book1 as EntityInstance,
+    //                 book2 as EntityInstance,
+    //                 book4 as EntityInstance,
+    //               ],
+    //             },
+    //           ],
+    //         };
     
-            await act(
-              async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
-              }
-            );
+    //         await act(
+    //           async () => {
+    //             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+    //           }
+    //         );
   
-          }
+    //       }
     
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
 
-          const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
-            update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
-              modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
-              },
-            }
-          };
+    //       const createAction: DomainAction = {
+    //         actionType:"DomainTransactionalAction",
+    //         actionName: "updateEntity",
+    //         update: {
+    //           updateActionName:"WrappedTransactionalEntityUpdate",
+    //           modelEntityUpdate: {
+    //             updateActionType: "ModelEntityUpdate",
+    //             updateActionName: "createEntity",
+    //             entities: [
+    //               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+    //             ],
+    //           },
+    //         }
+    //       };
 
-          log.log('update Author entity setup: adding Author entity locally.');
-          log.log('reduxStore',reduxStore);
-          log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       log.log('update Author entity setup: adding Author entity locally.');
+    //       log.log('reduxStore',reduxStore);
+    //       log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
 
-          log.log('update Author entity setup: adding Author entity remotely by commit.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       log.log('update Author entity setup: adding Author entity remotely by commit.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
   
-          const {
-            getByText,
-            getAllByRole,
-            container
-          } = renderWithProviders(
-            <TestUtilsTableComponent
-              entityName={entityEntity.name}
-              entityUuid={entityEntity.uuid}
-              DisplayLoadingInfo={displayLoadingInfo}
-              deploymentUuid={applicationDeploymentLibrary.uuid}
-              instancesApplicationSection="model"
-            />,
-            {store:reduxStore.getInnerStore(),}
-          );
+    //       const {
+    //         getByText,
+    //         getAllByRole,
+    //         container
+    //       } = renderWithProviders(
+    //         <TestUtilsTableComponent
+    //           entityName={entityEntity.name}
+    //           entityUuid={entityEntity.uuid}
+    //           DisplayLoadingInfo={displayLoadingInfo}
+    //           deploymentUuid={applicationDeploymentLibrary.uuid}
+    //           instancesApplicationSection="model"
+    //         />,
+    //         {store:reduxStore.getInnerStore(),}
+    //       );
   
-          // ##########################################################################################################
-          log.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:1/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:1/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(new RegExp(`${entityAuthor.uuid}`,'i'))).toBeTruthy() 
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
-          // const updatedReport = 
-          const updateAction: DomainAction = 
-            {
-              actionType: "DomainTransactionalAction",
-              actionName: "updateEntity",
-              update: {
-                updateActionName:"WrappedTransactionalEntityUpdate",
-                modelEntityUpdate:{
-                  updateActionType:"ModelEntityUpdate",
-                  updateActionName: "renameEntity",
-                  entityName: entityAuthor.name,
-                  entityUuid: entityAuthor.uuid,
-                  targetValue: "Authorsss",
-                },
-              }
-            }
-          ;
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('Update Report definition step 2: update reportReportList, modified version must then be present in the report list.')
+    //       // const updatedReport = 
+    //       const updateAction: DomainAction = 
+    //         {
+    //           actionType: "DomainTransactionalAction",
+    //           actionName: "updateEntity",
+    //           update: {
+    //             updateActionName:"WrappedTransactionalEntityUpdate",
+    //             modelEntityUpdate:{
+    //               updateActionType:"ModelEntityUpdate",
+    //               updateActionName: "renameEntity",
+    //               entityName: entityAuthor.name,
+    //               entityUuid: entityAuthor.uuid,
+    //               targetValue: "Authorsss",
+    //             },
+    //           }
+    //         }
+    //       ;
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
-          log.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
+    //       log.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXX domainController.currentTransaction()',JSON.stringify(domainController.currentTransaction()))
   
-          expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
+    //       expect(domainController.currentTransaction().length).toEqual(1);
+    //       expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(updateAction.update.modelEntityUpdate);
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByRole(/step:2/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByRole(/step:2/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
+    //         }
+    //       );
 
-          // ##########################################################################################################
-          log.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
-          await act(
-            async () => {
-              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          await waitFor(
-            () => {
-              getAllByText(container,/step:3/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
-            }
-          );
+    //       await waitFor(
+    //         () => {
+    //           getAllByText(container,/step:3/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
+    //         }
+    //       );
   
-          // ##########################################################################################################
-          log.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+    //       // ##########################################################################################################
+    //       log.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
+    //       await act(
+    //         async () => {
+    //           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+    //         }
+    //       );
   
-          await act(()=>user.click(screen.getByRole('button')));
+    //       await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
-          expect(domainController.currentTransaction().length).toEqual(0);
+    //       log.log("domainController.currentTransaction()", domainController.currentTransaction());
+    //       expect(domainController.currentTransaction().length).toEqual(0);
   
-          await waitFor(
-            () => {
-              getAllByText(container,/step:4/)
-            },
-          ).then(
-            ()=> {
-              expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
-            }
-          );
-        } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
-          expect(false).toBeTruthy();
-        }
-      },
-      20000
-    )
+    //       await waitFor(
+    //         () => {
+    //           getAllByText(container,/step:4/)
+    //         },
+    //       ).then(
+    //         ()=> {
+    //           expect(screen.queryByText(/Authorsss/i)).toBeTruthy() // Report List
+    //         }
+    //       );
+    //     } catch (error) {
+    //       log.error('error during test',expect.getState().currentTestName,error);
+    //       expect(false).toBeTruthy();
+    //     }
+    //   },
+    //   20000
+    // )
   }
 )
