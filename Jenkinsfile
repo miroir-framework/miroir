@@ -53,12 +53,12 @@ pipeline {
         steps {
           sh 'cd "${target_build_dir}" && chmod 777 ./link_packages.sh'
           sh 'cd "${target_build_dir}" && ./link_packages.sh'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-core'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-localcache-redux'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-server-msw-stub'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-store-filesystem'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-store-indexedDb'
-          // sh 'cd "${target_build_dir}" && npm run build -w miroir-store-postgres'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-core'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-localcache-redux'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-server-msw-stub'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-store-filesystem'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-store-indexedDb'
+          sh 'cd "${target_build_dir}" && npm run build -w miroir-store-postgres'
           sh 'cd "${target_build_dir}" && npm run build -w miroir-standalone-app'
         }
       }
