@@ -10,7 +10,7 @@ pipeline {
     dockerfile {
       filename 'Dockerfile'
       dir '/home/workspace/miroir-app-ci/node_image'
-      args '-v build_space:/home/workspace'
+      args '-v build_space:/home/workspace/tmp'
     }
   }
   stages {
@@ -47,8 +47,8 @@ pipeline {
             // sh 'mv /home/tmp/miroir-standalone-app-ci_backup/miroir-store-indexedDb/node_modules /home/tmp/miroir-standalone-app-ci/miroir-store-indexedDb'
             // sh 'mv /home/tmp/miroir-standalone-app-ci_backup/miroir-store-postgres/node_modules /home/tmp/miroir-standalone-app-ci/miroir-store-postgres'
             // sh 'mv /home/tmp/miroir-standalone-app-ci_backup/miroir-standalone-app/node_modules /home/tmp/miroir-standalone-app-ci/miroir-standalone-app'
-            sh 'ls -ail /home/workspace/tmp'
-            sh 'ls -ail /home/workspace/tmp/miroir-standalone-app-ci/'
+            sh 'ls -ail ${build_dir}'
+            sh 'ls -ail ${target_build_dir}'
             sh 'npm config ls -l'
             sh 'cd "${target_build_dir}" && npm install'
           }
