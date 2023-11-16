@@ -3,6 +3,7 @@ pipeline {
       dockerfile {
         filename 'Dockerfile'
         dir '/home/workspace/miroir-app-ci/node_image'
+        args '-v /home:/home/workspace'
       }
     }
     stages {
