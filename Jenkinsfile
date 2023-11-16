@@ -3,8 +3,8 @@ pipeline {
   environment {
     src_dir = "/var/jenkins_home/workspace/miroir-standalone-app-ci"
     build_dir = "/home/workspace/tmp"
-    target_build_dir = build_dir + "/miroir-standalone-app-ci"
-    target_build_backup_dir = build_dir + "/miroir-standalone-app-ci_backup"
+    target_build_dir = "/home/workspace/tmp/miroir-standalone-app-ci"
+    target_build_backup_dir = "/home/workspace/tmp/miroir-standalone-app-ci_backup"
   }
   agent {
     dockerfile {
