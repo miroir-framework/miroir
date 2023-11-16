@@ -25,6 +25,11 @@ pipeline {
             sh 'ls -ail /home/node_modules'
             sh 'ls -ail /home/tmp'
             sh 'ls -ail /var/jenkins_home/workspace'
+            // for filesystem tests
+            sh 'if [ -d "${build_dir}/miroir_model" ] ; then rm -rf "${build_dir}/miroir_model/*" ; else mkdir -p "${build_dir}/miroir_model" && chmod 777 "${build_dir}/miroir_model" ; fi'
+            sh 'if [ -d "${build_dir}/miroir_data" ] ; then rm -rf "${build_dir}/miroir_data/*" ; else mkdir -p "${build_dir}/miroir_data" && chmod 777 "${build_dir}/miroir_data" ; fi'
+            sh 'if [ -d "${build_dir}/library_model" ] ; then rm -rf "${build_dir}/library_model/*" ; else mkdir -p "${build_dir}/library_model" && chmod 777 "${build_dir}/library_model" ; fi'
+            sh 'if [ -d "${build_dir}/library_data" ] ; then rm -rf "${build_dir}/library_data/*" ; else mkdir -p "${build_dir}/library_data" && chmod 777 "${build_dir}/library_data" ; fi'
             // sh 'ls -ail /home/tmp/miroir-standalone-app-ci_backup'
             // sh 'mv /home/workspace/tmp/miroir-standalone-app-ci /home/tmp/miroir-standalone-app-ci_backup'
             sh 'if [ -d "${target_build_backup_dir}" ] ; then rm -rf "${target_build_backup_dir}" ; fi'
