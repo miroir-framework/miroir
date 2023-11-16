@@ -1,0 +1,11 @@
+{
+  "defaultLevel": "INFO",
+  "defaultTemplate": "[{{time}}] {{level}} ({{name}})# ",
+  "specificLoggerOptions": {
+    "4_miroir-store-filesystem_FileSystemEntityStoreMixin": {"level":"TRACE"},
+    "4_miroir-store-filesystem_FileSystemInstanceStoreMixin": {"level":"TRACE"},
+    "4_miroir-store-filesystem_FileSystemDataSectionStore ": {"level":"TRACE"},
+    "4_miroir-store-filesystem_FileSystemModelSectionStore ": {"level":"TRACE"},
+    "4_miroir-store-filesystem_FileSystemStore ": {"level":"TRACE"}
+  }
+}

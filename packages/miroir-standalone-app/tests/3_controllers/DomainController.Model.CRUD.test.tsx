@@ -65,7 +65,8 @@ import { loglevelnext } from '../../src/loglevelnextImporter';
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "./constants";
 
-import loggerOptions from "../specificLoggersConfig_default.json"
+// import loggerOptions from "../specificLoggersConfig_default.json"
+import loggerOptions from "../specificLoggersConfig_trace_filesystem.json"
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
@@ -532,7 +533,11 @@ describe(
           log.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+              );
             }
           );
 
