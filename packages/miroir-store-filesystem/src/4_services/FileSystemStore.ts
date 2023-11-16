@@ -49,8 +49,13 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
   }
   // #########################################################################################
   open(): Promise<void> {
-    const entityDirectories = fs.readdirSync(this.directory);
-    log.log(this.logHeader, 'open does nothing! existing entities',entityDirectories);
+    // const entityDirectories = fs.readdirSync(this.directory);
+    if (fs.existsSync(this.directory)) {
+      log.debug(this.logHeader, 'open checked that directory exist:', this.directory);
+    } else {
+      fs.mkdirSync(this.directory,{recursive: true})
+      log.log(this.logHeader, 'open created directory:',this.directory);
+    }
     return Promise.resolve();
   }
 
