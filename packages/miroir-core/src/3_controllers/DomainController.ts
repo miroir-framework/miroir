@@ -188,7 +188,14 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "updateEntity": {
-          log.debug('DomainController updateModel for model entity update',domainModelAction?.update.modelEntityUpdate, "entities", currentModel.entities, "entity definitions", currentModel.entityDefinitions);
+          log.debug(
+            "DomainController updateModel for model entity update",
+            domainModelAction?.update.modelEntityUpdate,
+            "entities",
+            currentModel.entities,
+            "entity definitions",
+            currentModel.entityDefinitions
+          );
           const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel);
           log.trace('DomainController updateModel correspondingCUDUpdate',cudUpdate);
 
@@ -208,12 +215,12 @@ export class DomainController implements DomainControllerInterface {
         }
   
         default: {
-          console.warn("DomainController handleDomainTransactionalAction cannot handle action name for", domainModelAction);
+          log.warn("DomainController handleDomainTransactionalAction cannot handle action name for", domainModelAction);
           break;
         }
       }
     } catch (error) {
-      console.warn(
+      log.warn(
         "DomainController handleDomainTransactionalAction caught exception",
         domainModelAction["actionName"],
         "deployment",
@@ -223,8 +230,8 @@ export class DomainController implements DomainControllerInterface {
         "exception",
         error
       );
-      return Promise.resolve();
     }
+    return Promise.resolve();
   }
 
   // ########################################################################################
@@ -358,7 +365,7 @@ export class DomainController implements DomainControllerInterface {
         if (entityInstanceCollection) {
           instances.push(entityInstanceCollection);
         } else {
-          console.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
+          log.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
         }
       }
 
@@ -381,7 +388,7 @@ export class DomainController implements DomainControllerInterface {
 
       return Promise.resolve();
     } catch (error) {
-      console.warn("DomainController loadConfigurationFromRemoteDataStore", error);
+      log.warn("DomainController loadConfigurationFromRemoteDataStore", error);
     }
   }
 

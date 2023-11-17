@@ -47,7 +47,7 @@ import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
-  "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
+  // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
   // "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
   // "4_miroir-redux_LocalCacheSlice": {template:"[{{time}}] {{level}} ({{name}}) -"},

@@ -203,26 +203,30 @@ function getInitializedSectionEntityAdapter(
   state: LocalCacheSliceState
 ) {
   // TODO: refactor so as to avoid side effects!
-  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   const index = getLocalCacheSliceIndex(deploymentUuid, section, entityUuid);
+  log.debug("getInitializedSectionEntityAdapter called", "deploymentUuid", deploymentUuid, "section", section, "entityUuid", entityUuid, "index", index);
+  const sliceEntityAdapter = getLocalCacheSliceEntityAdapter(entityUuid);
   if (!state) {
-    // log.info('getInitializedDeploymentEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
+    log.debug('getInitializedSectionEntityAdapter state is undefined, initializing state!',JSON.stringify(state),state == undefined);
     state = { [index]: sliceEntityAdapter.getInitialState() } as LocalCacheSliceState;
   } else {
     if (!state[index]) {
       state[index] = sliceEntityAdapter.getInitialState();
+      log.debug("getInitializedSectionEntityAdapter state[",index,"] is undefined! setting value",JSON.stringify(state[index]));
     }
   }
-  log.trace(
-    "LocalCacheSlice getInitializedDeploymentEntityAdapter",
+  log.debug(
+    "LocalCacheSlice getInitializedSectionEntityAdapter done",
     "deploymentUuid",
     deploymentUuid,
     "section",
     section,
     "entityUuid",
     entityUuid,
-    "state",
-    JSON.stringify(state)
+    "result",
+    sliceEntityAdapter
+    // "state",
+    // JSON.stringify(state)
   );
   return sliceEntityAdapter;
 }
@@ -322,7 +326,14 @@ function handleLocalCacheNonTransactionalAction(
           applicationSection,
           instanceCollection.parentUuid
         );
-        log.trace('create for entity',instanceCollection.parentName, instanceCollection.parentUuid, 'instances', instanceCollection.instances, JSON.stringify(state));
+        log.debug(
+          "create for entity",
+          instanceCollection.parentName,
+          instanceCollection.parentUuid,
+          "instances",
+          instanceCollection.instances,
+          // JSON.stringify(state)
+        );
 
         const sliceEntityAdapter = getInitializedSectionEntityAdapter(
           deploymentUuid,
@@ -351,30 +362,50 @@ function handleLocalCacheNonTransactionalAction(
     }
     case "delete": {
       for (let instanceCollection of action.objects) {
-        const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
-          deploymentUuid,
-          applicationSection,
-          instanceCollection.parentUuid
-        );
-        log.trace('localCacheSliceObject handleLocalCacheNonTransactionalAction delete', instanceCollection);
+        try {
+          log.debug('localCacheSliceObject handleLocalCacheNonTransactionalAction delete called for instanceCollection', instanceCollection);
 
-        const sliceEntityAdapter = getInitializedSectionEntityAdapter(
-          deploymentUuid,
-          applicationSection,
-          instanceCollection.parentUuid,
-          state
-        );
-        // log.info('localCacheSliceObject handleLocalCacheNonTransactionalAction delete state before',JSON.stringify(state[deploymentUuid][applicationSection][instanceCollection.parentUuid]));
-
-        sliceEntityAdapter.removeMany(
-          state[instanceCollectionEntityIndex],
-          instanceCollection.instances.map((i) => i.uuid)
-        );
-        // sliceEntityAdapter.removeMany(state[deploymentUuid][applicationSection][instanceCollection.parentUuid], instanceCollection.instances.map(i => i.uuid));
-        log.trace(
-          "localCacheSliceObject handleLocalCacheNonTransactionalAction delete state after",
-          JSON.stringify(state[instanceCollectionEntityIndex])
-        );
+          const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
+            deploymentUuid,
+            applicationSection,
+            instanceCollection.parentUuid
+          );
+  
+          log.debug('localCacheSliceObject handleLocalCacheNonTransactionalAction delete received instanceCollectionEntityIndex', instanceCollectionEntityIndex);
+  
+          const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+            deploymentUuid,
+            applicationSection,
+            instanceCollection.parentUuid,
+            state
+          );
+          log.debug(
+            "localCacheSliceObject handleLocalCacheNonTransactionalAction delete received sliceEntityAdapter",
+            sliceEntityAdapter,
+            "for instanceCollection",
+            instanceCollection,
+            "state",
+            JSON.stringify(state[instanceCollectionEntityIndex])
+          );
+  
+          sliceEntityAdapter.removeMany(
+            state[instanceCollectionEntityIndex],
+            instanceCollection.instances.map((i) => i.uuid)
+          );
+          // sliceEntityAdapter.removeMany(state[deploymentUuid][applicationSection][instanceCollection.parentUuid], instanceCollection.instances.map(i => i.uuid));
+          log.debug(
+            "localCacheSliceObject handleLocalCacheNonTransactionalAction delete state after removeMany for instanceCollection",
+            instanceCollection,
+            "state",
+            JSON.stringify(state[instanceCollectionEntityIndex])
+          );
+          // log.trace(
+          //   "localCacheSliceObject handleLocalCacheNonTransactionalAction delete state after",
+          //   JSON.stringify(state[instanceCollectionEntityIndex])
+          // );
+        } catch (error) {
+          log.error("localCacheSliceObject handleLocalCacheNonTransactionalAction delete for instanceCollection",instanceCollection,"received error",error)
+        }
       }
       break;
     }

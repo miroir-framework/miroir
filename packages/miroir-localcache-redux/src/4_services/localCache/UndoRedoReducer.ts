@@ -39,7 +39,6 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
     (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
     a => ({
-      // type: localCacheSliceName + '/' + localCacheSliceInputActionNamesOb#ject.handleLocalCacheModelAction,
       type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
       actionName: a
     })
