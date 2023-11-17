@@ -132,7 +132,18 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
     // #############################################################################################
     deleteInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
-      fs.rmSync(filePath);
+      if (fs.existsSync(filePath)) {
+        fs.rmSync(filePath);
+      } else {
+        log.debug(
+          "deleteInstance could not find file to delete:",
+          filePath,
+          "entityUuid",
+          entityUuid,
+          "instance",
+          instance
+        );
+      }
       return Promise.resolve();
     }
   };

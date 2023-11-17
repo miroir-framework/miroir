@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SetupWorkerApi } from "msw/browser";
@@ -26,17 +25,13 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   EntityInstance,
-  getLoggerName,
   IStoreController,
-  LoggerFactoryInterface,
-  LoggerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
   reportBookList,
-  SpecificLoggerOptionsMap,
   StoreControllerFactory
 } from "miroir-core";
 
@@ -61,12 +56,10 @@ import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-red
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
-import { packageName } from "../../src/constants";
-import { cleanLevel } from "./constants";
 
-import loggerOptions from "../specificLoggersConfig_default.json"
-
+import loggerOptions from "../specificLoggersConfig_default.json";
 // const loggerOptions = JSON.parse(readFileSync(new URL('../specificLoggersConfig_default.json', import.meta.url)).toString());
+
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
@@ -74,26 +67,22 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-// MiroirLoggerFactory.setEffectiveLoggerFactory(
-//   loglevelnext,
-//   defaultLevels.INFO,
-//   "[{{time}}] {{level}} ({{name}})# ",
-//   specificLoggerOptions
+
+// jest intercepts logs, only console.log will produce test output
+// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
+// let log:LoggerInterface = console as any as LoggerInterface;
+// MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
+//   (value: LoggerInterface) => {
+//     log = value;
+//   }
 // );
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
-let log:LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-  (value: LoggerInterface) => {
-    log = value;
-  }
-);
 
-log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
 const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
 
-log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -132,7 +121,7 @@ beforeAll(
       localMiroirStoreController = a;
       localAppStoreController = b;
 
-      log.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
+      console.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
       
       // Establish requests interception layer before all tests.
       const wrapped = await miroirBeforeAll(
@@ -195,7 +184,7 @@ describe(
       'Add Book instance then rollback',
       async () => {
         try {
-          log.log('Add Book instance then rollback start');
+          console.log('Add Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -291,14 +280,14 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('add Book step 1: the Book must be absent in the local cache report list.')
+          console.log('add Book step 1: the Book must be absent in the local cache report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
             }
           );
-          log.log('add Book step 1: done replace.')
+          console.log('add Book step 1: done replace.')
   
           await act(()=>user.click(screen.getByRole('button')));
   
@@ -316,7 +305,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('add Book instance step 2: the Book must then be present in the local cache report list.')
+          console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
           const createAction: DomainDataAction = {
             actionName:'create',
             actionType:"DomainDataAction",
@@ -331,7 +320,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
+          console.log("domainController.currentTransaction()", domainController.currentTransaction());
           // data operations are not transactional
           expect(domainController.currentTransaction().length).toEqual(0);
           // expect(domainController.currentTransaction()[0]).toEqual(createAction);
@@ -350,7 +339,7 @@ describe(
           );
 
           // ##########################################################################################################
-          log.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
+          console.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -359,7 +348,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
+          console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -375,7 +364,7 @@ describe(
             }
           );
         } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
+          console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
@@ -388,7 +377,7 @@ describe(
 
         try {
           
-          log.log('Remove Book instance then rollback start');
+          console.log('Remove Book instance then rollback start');
   
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -482,7 +471,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
+          console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -507,7 +496,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
+          console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
           const deleteAction: DomainDataAction = {
             actionName:'delete',
             actionType:"DomainDataAction",
@@ -522,7 +511,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
+          console.log("domainController.currentTransaction()", domainController.currentTransaction());
           // data operations are not transactional
           expect(domainController.currentTransaction().length).toEqual(0);
   
@@ -540,7 +529,7 @@ describe(
           );
 
           // ##########################################################################################################
-          log.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
+          console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -549,7 +538,7 @@ describe(
   
           await act(()=>user.click(screen.getByRole('button')));
   
-          log.log("domainController.currentTransaction()", domainController.currentTransaction());
+          console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
   
           await waitFor(
@@ -565,7 +554,7 @@ describe(
             }
           );
         } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
+          console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }
@@ -577,7 +566,7 @@ describe(
       async () => {
         try {
           
-          log.log('update Book instance start');
+          console.log('update Book instance start');
 
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
@@ -674,7 +663,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
+          console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -698,7 +687,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
+          console.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
           const updateAction: DomainDataAction = {
             actionName: "update",
             actionType:"DomainDataAction",
@@ -741,7 +730,7 @@ describe(
           );
   
           // ##########################################################################################################
-          log.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
+          console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
           await act(
             async () => {
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
@@ -760,7 +749,7 @@ describe(
             }
           );
         } catch (error) {
-          log.error('error during test',expect.getState().currentTestName,error);
+          console.error('error during test',expect.getState().currentTestName,error);
           expect(false).toBeTruthy();
         }
       }

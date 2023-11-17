@@ -106,7 +106,7 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
     if (fs.existsSync(entityInstancesPath)) {
       fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
     } else {
-      log.debug(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid);
+      log.debug(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid,"entityInstancesPath", entityInstancesPath );
     }
     return Promise.resolve();
   }

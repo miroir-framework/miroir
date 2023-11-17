@@ -1,6 +1,6 @@
 {
   "defaultLevel": "INFO",
-  "defaultTemplate": "[{{time}}] {{level}} ({{name}})# ",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
   "specificLoggerOptions": {
   }
 }

@@ -119,7 +119,9 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
     // #########################################################################################
     async dropEntities(entityUuids: string[]):Promise<void> {
       log.log(this.logHeader,"dropEntities", entityUuids);
-      entityUuids.forEach(async (e) =>await this.dropEntity(e));
+      for (const entityUuid of entityUuids) {
+        await this.dropEntity(entityUuid)
+      }
       return Promise.resolve()
     }
 
