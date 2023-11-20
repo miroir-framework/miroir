@@ -63,7 +63,7 @@ import loggerOptions from "../specificLoggersConfig_default.json";
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
-  defaultLevels[loggerOptions.defaultLevel],
+  (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
@@ -291,7 +291,10 @@ describe(
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           console.log("createAction", createAction);
           expect(domainController.currentTransaction().length).toEqual(1);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {

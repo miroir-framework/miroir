@@ -57,8 +57,8 @@ export async function applyModelEntityUpdate(
   storeController:IStoreController,
   update:ModelReplayableUpdate
 ):Promise<void>{
-  log.info('ModelActionRunner applyModelEntityUpdate for',update);
-  log.debug('ModelActionRunner applyModelEntityUpdate for',JSON.stringify(update, null, 2));
+  // log.info('ModelActionRunner applyModelEntityUpdate for',update);
+  log.info('ModelActionRunner applyModelEntityUpdate for',JSON.stringify(update, null, 2));
   const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;
   if (
     [entityEntity.uuid, entityEntityDefinition.uuid].includes(modelCUDupdate.objects[0].parentUuid) ||

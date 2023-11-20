@@ -221,7 +221,11 @@ describe(
 
             await act(
               async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  createAction,
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
                   { actionName: "commit", actionType: "DomainTransactionalAction" },

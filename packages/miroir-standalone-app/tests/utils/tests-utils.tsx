@@ -155,11 +155,11 @@ export async function miroirBeforeAll(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
 ):Promise<CreateMswRestServerReturnType|undefined> {
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
     
     if (!miroirConfig.emulateServer) {
-      log.warn('miroirBeforeAll: emulateServer is true in miroirConfig, tests depend on the availability of a server.');
+      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, tests depend on the availability of a server.');
     } else {
       // if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
         // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
@@ -177,18 +177,18 @@ export async function miroirBeforeAll(
       );
   
       localDataStoreServer?.listen();
-      // log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
       await localMiroirStoreController?.open();
       await localAppStoreController?.open();
       try {
         await localMiroirStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
       } catch (error) {
-        log.log('miroirBeforeAll: could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
+        console.log('miroirBeforeAll: could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
       }
       try {
         await localAppStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
       } catch (error) {
-        log.log('miroirBeforeAll: could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
+        console.log('miroirBeforeAll: could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
       }
       return Promise.resolve({
         localMiroirStoreController,
@@ -199,9 +199,9 @@ export async function miroirBeforeAll(
     }
 
   } catch (error) {
-    log.error('Error beforeAll',error);
+    console.error('Error beforeAll',error);
   }
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
   return Promise.resolve(undefined);
 }
 
@@ -218,11 +218,11 @@ export async function miroirBeforeEach(
     await resetAndInitMiroirAndApplicationDatabase(domainController);
   } else {
     try {
-      log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
       await localAppStoreController.clear();
       await localMiroirStoreController.clear();
       try {
-        log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
         await localMiroirStoreController.initApplication(
           defaultMiroirMetaModel,
           'miroir',
@@ -232,13 +232,13 @@ export async function miroirBeforeEach(
           applicationVersionInitialMiroirVersion,
           applicationStoreBasedConfigurationMiroir,
         );
-        log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
       } catch (error) {
-        log.error('could not initApplication for miroir datastore, can not go further!');
+        console.error('could not initApplication for miroir datastore, can not go further!');
         throw(error);
       }
       try {
-        log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app START');
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app START');
         await localAppStoreController.initApplication(
           defaultMiroirMetaModel,
           'app',
@@ -248,20 +248,20 @@ export async function miroirBeforeEach(
           applicationVersionLibraryInitialVersion,
           applicationStoreBasedConfigurationLibrary,
         );
-        log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
       } catch (error) {
-        log.error('could not initApplication for app datastore, can not go further!');
+        console.error('could not initApplication for app datastore, can not go further!');
         throw(error);
       }
     } catch (error) {
-      log.error('beforeEach',error);
+      console.error('beforeEach',error);
       throw(error);
     }
-    log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
-    log.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
-    log.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
-    log.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
-    log.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
+    console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
+    console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
+    console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
+    console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
   }
 
   return Promise.resolve();
@@ -273,19 +273,19 @@ export async function miroirAfterEach(
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
 ):Promise<void> {
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.emulateServer) {
-    log.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: empty clear / reset datastore
+    console.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: empty clear / reset datastore
   } else {
     try {
       // await localDataStore?.close();
       await localMiroirStoreController.clear();
       await localAppStoreController.clear();
     } catch (error) {
-      log.error('Error afterEach',error);
+      console.error('Error afterEach',error);
     }
   }
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterEach');
   return Promise.resolve();
 }
 
@@ -295,19 +295,19 @@ export async function miroirAfterAll(
   localAppStoreController: IStoreController,
   localDataStoreServer?: any /*SetupServerApi*/,
 ) {
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   if (!miroirConfig.emulateServer) {
-    log.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: really???
+    console.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: really???
   } else {
     try {
       await (localDataStoreServer as any)?.close();
       await localMiroirStoreController.close();
       await localAppStoreController.close();
     } catch (error) {
-      log.error('Error afterAll',error);
+      console.error('Error afterAll',error);
     }
   }
-  log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
   return Promise.resolve();
 }
 
