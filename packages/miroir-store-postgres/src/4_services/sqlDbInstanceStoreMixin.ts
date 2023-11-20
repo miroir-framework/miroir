@@ -4,6 +4,7 @@ import { MixableSqlDbStore, SqlDbStore } from "./SqlDbStore.js"
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
+const consoleLog:any = console.log.bind(console, packageName,cleanLevel,"SqlDbInstanceStoreMixin")
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbInstanceStoreMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
@@ -35,35 +36,38 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
           const result:EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
           return Promise.resolve(result);
         } else {
-          log.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+          console.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
           return Promise.resolve(undefined);
         }
       } catch (error) {
-        log.warn('getInstance',this.applicationName,this.dataStoreType,'could not fetch instance from db: parentId',parentUuid,"uuid",uuid);
+        console.warn('getInstance',this.applicationName,this.dataStoreType,'could not fetch instance from db: parentId',parentUuid,"uuid",uuid);
         return Promise.resolve(undefined);
       }
     }
 
     // ##############################################################################################
     async getInstances(parentUuid: string): Promise<EntityInstance[]> {
-      let result: EntityInstance[] = [];
+      let rawResult: any[] = [];
+      let cleanResult: EntityInstance[] = [];
       if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid] && this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel) {
-        log.log('getInstances calling this.sqlEntities findall', parentUuid);
+        consoleLog('getInstances calling this.sqlEntities findall', parentUuid);
         try {
-          result = (await this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()) as unknown as EntityInstance[]
+          rawResult = (await this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()) as unknown as EntityInstance[]
+          cleanResult = rawResult.map(i => i["dataValues"])
+          consoleLog('getInstances result', cleanResult);
         } catch (e) {
-          log.warn('getInstances',this.applicationName,this.dataStoreType,'failed to fetch instances of entityUuid',parentUuid);
+          console.warn('getInstances',this.applicationName,this.dataStoreType,'failed to fetch instances of entityUuid',parentUuid);
         }
       } else {
-        log.warn('getInstances',this.applicationName,this.dataStoreType,'could not find entity in database: entityUuid',parentUuid);
+        console.warn('getInstances',this.applicationName,this.dataStoreType,'could not find entity in database: entityUuid',parentUuid);
       }
-      return Promise.resolve(result);
+      return Promise.resolve(cleanResult);
     }
 
     // ##############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
       const tmp = await this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
-      log.debug(
+      console.debug(
         "upsertInstance application",
         this.applicationName,
         "upserting into Parent",
@@ -90,7 +94,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      log.debug('deleteDataInstance', parentUuid,instance);
+      console.debug('deleteDataInstance', parentUuid,instance);
       await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
       return Promise.resolve();
     }
