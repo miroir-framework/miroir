@@ -66,7 +66,7 @@ pipeline {
           steps {
             sh 'cd "${target_build_dir}" && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-indexedDb.json -- LocalStoreController'
             sh 'cd "${target_build_dir}" && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-filesystem.json -- LocalStoreController'
-            sh 'cd "${target_build_dir}" && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-sql.json -- LocalStoreController'
+            sh 'cd "${target_build_dir}" && npm run test -w miroir-standalone-app --env=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql.json -- LocalStoreController'
           }
       }
       stage('tests-DomainController-indexedDb') { 
