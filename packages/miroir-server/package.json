@@ -8,9 +8,12 @@
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "copy-config": "copyfiles -u 1 config/**/*.json dist/config",
     "copy-all": "npm run copy-files && npm run copy-config",
-    "dev": "vite --host",
-    "build": "npm run copy-all && vite build",
+    "dev": "vite-node -w ./dist/src/server.js localhost 3080",
+    "help": "vite-node -h",
+    "dev-vite": "nodemon  --watch './**/*.ts' --exec 'ts-node-esm' ./src/server.js localhost 3080",
+    "build-vite": "npm run copy-all && vite build",
     "build-webpack": "npm run copy-all && webpack",
+    "build": "npm run build-webpack",
     "build5": "npm run copy-all && webpack",
     "dev-nodemon": "npm run copy-all && concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js --experimental-json-modules localhost 3080\"",
     "test": "cross-env NODE_ENV=test vitest"
@@ -36,7 +39,8 @@
     "miroir-server-msw-stub": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*"
+    "miroir-store-postgres": "*",
+    "vite-express": "^0.11.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
@@ -46,6 +50,7 @@
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.4",
     "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.5",
     "vite-plugin-node": "^3.0.2",

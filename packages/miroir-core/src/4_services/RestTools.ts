@@ -74,8 +74,8 @@ export const generateRestServiceResponse = async (
 }
 
 // ################################################################################################
-export async function restMethodGetHandler(
-  // continuationFunction: (arg0: any) => any,
+export async function restMethodGetHandler
+(
   continuationFunction: (response:any) =>(arg0: any) => any,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,

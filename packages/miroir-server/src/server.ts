@@ -1,7 +1,7 @@
 import express from 'express';
 import { readFileSync } from 'fs';
-import { loglevelnext } from './loglevelnextImporter';
 import bodyParser from 'body-parser';
+import ViteExpress from "vite-express";
 
 import {
   JzodObject
@@ -14,6 +14,7 @@ import {
   LoggerInterface,
   MiroirConfig,
   MiroirLoggerFactory,
+  RestMethodHandler,
   SpecificLoggerOptionsMap,
   defaultLevels,
   entityDefinitionReport,
@@ -22,15 +23,19 @@ import {
   restMethodModelActionRunnerHandler,
   restMethodsPostPutDeleteHandler
 } from "miroir-core";
-import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
-import { startServer } from './start.js';
-import { cleanLevel, packageName } from './constants.js';
+// import { loglevelnext } from './loglevelnextImporter';
+import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema';
+import { startServer } from './start';
+import { cleanLevel, packageName } from './constants';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
   "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
 }
+
+import log from 'loglevelnext';
+const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
@@ -39,11 +44,13 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
   specificLoggerOptions,
 );
 
+
+
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
-let log:LoggerInterface = console as any as LoggerInterface;
+let myLogger:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
-    log = value;
+    myLogger = value;
   }
 );
 
@@ -52,11 +59,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
-log.info('configFileContents',configFileContents)
+myLogger.info('configFileContents',configFileContents)
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
-log.info("server starting log:", log);
+myLogger.info("server starting log:", myLogger);
 
 const app = express(),
       port = 3080;
@@ -65,7 +72,7 @@ const app = express(),
 const users = [];
 
 
-log.info(`Server being set-up, going to execute on the port::${port}`);
+myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 
 const {
   localMiroirStoreController,
@@ -95,10 +102,10 @@ try {
   for (const schema of jzodSchemaConversion) {
     await generateZodSchemaFileFromJzodSchema(schema.jzodObject,schema.targetFileName,schema.jzodSchemaVariableName)
   }
-  log.info("GENERATED!!!!!!!");
+  myLogger.info("GENERATED!!!!!!!");
   
 } catch (error) {
-  log.error("could not generate TS files from Jzod schemas", error);
+  myLogger.error("could not generate TS files from Jzod schemas", error);
   
 }
 
@@ -107,74 +114,52 @@ try {
 app.use(bodyParser.json({limit:'10mb'}));
 
 const crudHandlers: {
-  operation: HttpMethod;
-  url: string;
-  handler: (response: any, effectiveUrl: string, requestBody: any, requestParams: any) => Promise<void>;
+  method: HttpMethod,
+  url: string,
+  handler: RestMethodHandler,
 }[] = [
   {
-    operation: "get",
+    method: "get",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-    handler: restMethodGetHandler.bind(
-      restMethodGetHandler,
-      (response: any) => response.json.bind(response),
-      localMiroirStoreController,
-      localAppStoreController,
-      "get"
-    ),
+    handler: restMethodGetHandler
   },
   {
-    operation: "put",
+    method: "put",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler.bind(
-      restMethodsPostPutDeleteHandler,
-      (response: any) => response.json.bind(response),
-      localMiroirStoreController,
-      localAppStoreController,
-      "put"
-    ),
+    handler: restMethodsPostPutDeleteHandler
   },
   {
-    operation: "post",
+    method: "post",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler.bind(
-      restMethodsPostPutDeleteHandler,
-      (response: any) => response.json.bind(response),
-      localMiroirStoreController,
-      localAppStoreController,
-      "post"
-    ),
+    handler: restMethodsPostPutDeleteHandler
   },
   {
-    operation: "delete",
+    method: "delete",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler.bind(
-      restMethodsPostPutDeleteHandler,
-      (response: any) => response.json.bind(response),
-      localMiroirStoreController,
-      localAppStoreController,
-      "delete"
-    ),
+    handler: restMethodsPostPutDeleteHandler
   },
   {
-    operation: "post",
+    method: "post",
     url: "/modelWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodModelActionRunnerHandler.bind(
-      restMethodModelActionRunnerHandler,
-      (response: any) => response.json.bind(response),
-      localMiroirStoreController,
-      localAppStoreController,
-      "post"
-    ),
+    handler: restMethodModelActionRunnerHandler
   },
 ];
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of crudHandlers) {
-  (app as any)[op.operation](op.url, async (request:any, response:any, context:any) => {
+  (app as any)[op.method](op.url, async (request:any, response:any, context:any) => {
     const body = await request.body;
 
-    await op.handler(response, request.originalUrl, body, request.params);
+    await op.handler(
+      (response: any) => response.json.bind(response),
+      localMiroirStoreController,
+      localAppStoreController,
+      op.method,
+      response, 
+      request.originalUrl, 
+      body, 
+      request.params);
   });
 }
 
@@ -184,6 +169,9 @@ app.get('/', (req,res) => {
 });
 
 // ##############################################################################################
-app.listen(port, () => {
-    log.info(`Server listening on the port::${port}`);
+// app.listen(port, () => {
+//     myLogger.info(`Server listening on the port::${port}`);
+// });
+ViteExpress.listen(app, port, () => {
+    myLogger.info(`Server listening on the port::${port}`);
 });

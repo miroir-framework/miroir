@@ -39,7 +39,8 @@ export default defineConfig({
             syntax: 'typescript',
             decorators: true
           },
-         transform: {
+          esModuleInterop: true,
+          transform: {
             legacyDecorator: true,
             decoratorMetadata: true
           }

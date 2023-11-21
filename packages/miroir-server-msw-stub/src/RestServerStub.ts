@@ -1,17 +1,14 @@
 import { HttpResponse, http } from "msw";
 
 import {
-  HttpMethod,
   HttpRequestBodyFormat,
   IStoreController,
   LoggerInterface,
   MiroirLoggerFactory,
+  RestServiceHandler,
   getLoggerName,
-  restMethodGetHandler,
-  restMethodModelActionRunnerHandler,
-  restMethodsPostPutDeleteHandler
 } from "miroir-core";
-import { packageName, cleanLevel } from "./constants";
+import { cleanLevel, packageName } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServerStub");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -27,30 +24,13 @@ const serializePost = (post: any) => ({
   user: post.user.id,
 });
 
-declare type TmpHandler = {
-  method: HttpMethod,
-  url: string,
-  rootApiUrl: string,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController
-  handler: (
-    continuationFunction: (response: any) => (arg0: any) => any,
-    localMiroirStoreController: IStoreController,
-    localAppStoreController: IStoreController,
-    method: HttpMethod,
-    response: any,
-    effectiveUrl: string, // log only, to remove?
-    body: HttpRequestBodyFormat,
-    params: any
-  ) => Promise<void>;
-};
-
 // ##################################################################################
 export class RestServerStub {
   public handlers: any[];
 
   constructor(
     private rootApiUrl: string,
+    restServerHandlers: RestServiceHandler[],
     private localMiroirStoreController: IStoreController,
     private localAppStoreController: IStoreController
   ) {
@@ -62,51 +42,9 @@ export class RestServerStub {
       localAppStoreController
     );
 
-    const tmpHandlers: TmpHandler[] = [
-      {
-        method: "get",
-        url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-        localMiroirStoreController,
-        localAppStoreController,
-        rootApiUrl: this.rootApiUrl,
-        handler: restMethodGetHandler.bind(restMethodGetHandler)
-      },
-      {
-        method: "put",
-        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        localMiroirStoreController,
-        localAppStoreController,
-        rootApiUrl: this.rootApiUrl,
-        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
-      },
-      {
-        method: "post",
-        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        localMiroirStoreController,
-        localAppStoreController,
-        rootApiUrl: this.rootApiUrl,
-        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
-      },
-      {
-        method: "delete",
-        url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-        localMiroirStoreController,
-        localAppStoreController,
-        rootApiUrl: this.rootApiUrl,
-        handler: restMethodsPostPutDeleteHandler.bind(restMethodsPostPutDeleteHandler)
-      },
-      {
-        method: "post",
-        url: "/modelWithDeployment/:deploymentUuid/:actionName",
-        localMiroirStoreController,
-        localAppStoreController,
-        rootApiUrl: this.rootApiUrl,
-        handler: restMethodModelActionRunnerHandler.bind(restMethodModelActionRunnerHandler)
-      },
-    ];
 
-    this.handlers = tmpHandlers.map(
-      (h:TmpHandler)=> (http as any)[h.method](h.rootApiUrl + h.url,
+    this.handlers = restServerHandlers.map(
+      (h:RestServiceHandler)=> (http as any)[h.method](this.rootApiUrl + h.url,
         async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
           const { request, params} = p;
           // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
@@ -123,11 +61,11 @@ export class RestServerStub {
           try {
             return h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
-              h.localMiroirStoreController,
-              h.localAppStoreController,
+              localMiroirStoreController,
+              localAppStoreController,
               h.method /* method */,
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
-              h.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+              this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
               body, // body
               params
             );

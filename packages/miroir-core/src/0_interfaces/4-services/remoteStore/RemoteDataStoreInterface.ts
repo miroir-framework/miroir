@@ -1,5 +1,6 @@
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../../../0_interfaces/1_core/Instance.js";
 import { MError } from "../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
+import { HttpMethod } from "../../1_core/Http.js";
 import {
   CRUDActionName,
   DomainModelInitAction,
@@ -7,6 +8,7 @@ import {
   DomainTransactionalResetDataAction,
   DomainTransactionalResetModelAction,
 } from "../../2_domain/DomainControllerInterface.js";
+import { IStoreController } from "./IStoreController.js";
 
 
 // ################################################################################################
@@ -20,6 +22,36 @@ export interface HttpRequestBodyFormat {
 // ################################################################################################
 export interface HttpResponseBodyFormat {
   instances: EntityInstance[]
+};
+
+// ################################################################################################
+export type RestMethodHandler =  (
+  continuationFunction: (response:any) =>(arg0: any) => any,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
+  method: HttpMethod | undefined, // unused!
+  response: any,
+  effectiveUrl: string, // log only, to remove?
+  body: HttpRequestBodyFormat | undefined, // unused!
+  params: any,
+) => Promise<any>;
+
+
+// ################################################################################################
+export declare type RestServiceHandler = {
+  method: HttpMethod,
+  url: string,
+  handler: RestMethodHandler
+  // handler: (
+  //   continuationFunction: (response: any) => (arg0: any) => any,
+  //   localMiroirStoreController: IStoreController,
+  //   localAppStoreController: IStoreController,
+  //   method: HttpMethod,
+  //   response: any,
+  //   effectiveUrl: string, // log only, to remove?
+  //   body: HttpRequestBodyFormat,
+  //   params: any
+  // ) => Promise<void>;
 };
 
 // ################################################################################################

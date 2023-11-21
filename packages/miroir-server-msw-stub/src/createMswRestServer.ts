@@ -8,6 +8,7 @@ import {
   LoggerInterface,
   MiroirConfig,
   MiroirLoggerFactory,
+  RestServiceHandler,
   getLoggerName,
 } from "miroir-core";
 
@@ -33,6 +34,7 @@ export interface CreateMswRestServerReturnType {
 export async function createMswRestServer(
   miroirConfig: MiroirConfig,
   platformType: "browser" | "nodejs",
+  restServerHandlers: RestServiceHandler[],
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
@@ -43,7 +45,7 @@ export async function createMswRestServer(
   if (miroirConfig.emulateServer) {
     // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
     log.warn("######################### createMswRestServer emulating server on", miroirConfig.rootApiUrl, "##########################################");
-    const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, localMiroirStoreController, localAppStoreController);
+    const restServerStub: RestServerStub = new RestServerStub(miroirConfig.rootApiUrl, restServerHandlers, localMiroirStoreController, localAppStoreController);
 
     let localDataStoreWorker: SetupWorkerApi | undefined = undefined;
     let localDataStoreServer: any /*SetupServerApi*/ | undefined = undefined;

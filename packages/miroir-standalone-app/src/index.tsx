@@ -15,16 +15,16 @@ import {
   defaultMiroirMetaModel,
   entityDefinitionEntityDefinition,
   getLoggerName,
-  LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfig,
   miroirCoreStartup,
   MiroirLoggerFactory,
+  restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
   StoreControllerFactory
 } from "miroir-core";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { createMswRestServer } from "miroir-server-msw-stub";
+import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from './loglevelnextImporter';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
@@ -35,10 +35,10 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
+import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServer from "./assets/miroirConfig-realServer.json";
 import miroirConfig from "./assets/miroirConfig.json";
-import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
@@ -151,6 +151,7 @@ async function start(root:Root) {
       } = await createMswRestServer(
         currentMiroirConfig,
         'browser',
+        restServerDefaultHandlers,
         localMiroirStoreController,
         localAppStoreController,
         setupWorker

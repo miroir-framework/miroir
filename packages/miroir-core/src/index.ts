@@ -271,6 +271,8 @@ export {
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
+  RestMethodHandler,
+  RestServiceHandler,
 } from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
 export {
   IAbstractStore,
@@ -348,6 +350,9 @@ export {
 export {
   RestClient
 } from './4_services/RestClient.js';
+export {
+  restServerDefaultHandlers
+} from './4_services/RestServer.js';
 export {
   generateRestServiceResponse,
   restMethodGetHandler,

@@ -1,16 +1,15 @@
-import * as React from 'react';
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
-import { FC, PropsWithChildren, createContext, useState } from 'react';
-import { Provider } from 'react-redux';
 import { RequestHandler } from 'msw';
 import { SetupWorkerApi } from 'msw/browser';
 import { setupServer } from 'msw/node';
+import * as React from 'react';
+import { FC, PropsWithChildren, createContext, useState } from 'react';
+import { Provider } from 'react-redux';
 // import { SetupServerApi } from 'msw/lib/node';
 
 // As a basic setup, import your same slice reducers
 import {
-  ApplicationDeployment,
   ConfigurationService,
   DomainControllerInterface,
   IStoreController,
@@ -32,9 +31,10 @@ import {
   applicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
   getLoggerName,
-  resetAndInitMiroirAndApplicationDatabase
+  resetAndInitMiroirAndApplicationDatabase,
+  restServerDefaultHandlers
 } from "miroir-core";
-import { createReduxStoreAndRestClient, ReduxStore, ReduxStoreWithUndoRedo } from 'miroir-localcache-redux';
+import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
 import { packageName } from '../../src/constants';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
@@ -159,7 +159,7 @@ export async function miroirBeforeAll(
   try {
     
     if (!miroirConfig.emulateServer) {
-      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, tests depend on the availability of a server.');
+      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
     } else {
       // if (miroirConfig.miroirServerConfig.model.emulatedServerType == "indexedDb" && miroirConfig.appServerConfig.model.emulatedServerType == "indexedDb") {
         // TODO: allow mixed mode? (indexedDb / sqlDb emulated miroir/app servers)
@@ -171,6 +171,7 @@ export async function miroirBeforeAll(
       } = await createMswRestServer(
         miroirConfig,
         'nodejs',
+        restServerDefaultHandlers,
         localMiroirStoreController,
         localAppStoreController,
         createRestServiceFromHandlers
@@ -275,7 +276,7 @@ export async function miroirAfterEach(
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.emulateServer) {
-    console.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: empty clear / reset datastore
+    console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
   } else {
     try {
       // await localDataStore?.close();
@@ -297,7 +298,7 @@ export async function miroirAfterAll(
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   if (!miroirConfig.emulateServer) {
-    console.log('miroirAfterAll emulateServer is true in miroirConfig, nothing to do on client side.'); // TODO: really???
+    console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: really???
   } else {
     try {
       await (localDataStoreServer as any)?.close();
