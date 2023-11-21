@@ -1,6 +1,6 @@
+import bodyParser from 'body-parser';
 import express from 'express';
 import { readFileSync } from 'fs';
-import bodyParser from 'body-parser';
 import ViteExpress from "vite-express";
 
 import {
@@ -9,24 +9,20 @@ import {
 
 
 import {
-  HttpMethod,
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfig,
   MiroirLoggerFactory,
-  RestMethodHandler,
   SpecificLoggerOptionsMap,
   defaultLevels,
   entityDefinitionReport,
   getLoggerName,
-  restMethodGetHandler,
-  restMethodModelActionRunnerHandler,
-  restMethodsPostPutDeleteHandler
+  restServerDefaultHandlers
 } from "miroir-core";
 // import { loglevelnext } from './loglevelnextImporter';
+import { cleanLevel, packageName } from './constants';
 import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema';
 import { startServer } from './start';
-import { cleanLevel, packageName } from './constants';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -110,44 +106,11 @@ try {
 }
 
 // ################################################################################################
-
 app.use(bodyParser.json({limit:'10mb'}));
-
-const crudHandlers: {
-  method: HttpMethod,
-  url: string,
-  handler: RestMethodHandler,
-}[] = [
-  {
-    method: "get",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
-    handler: restMethodGetHandler
-  },
-  {
-    method: "put",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler
-  },
-  {
-    method: "post",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler
-  },
-  {
-    method: "delete",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
-    handler: restMethodsPostPutDeleteHandler
-  },
-  {
-    method: "post",
-    url: "/modelWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodModelActionRunnerHandler
-  },
-];
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
-for (const op of crudHandlers) {
+for (const op of restServerDefaultHandlers) {
   (app as any)[op.method](op.url, async (request:any, response:any, context:any) => {
     const body = await request.body;
 
