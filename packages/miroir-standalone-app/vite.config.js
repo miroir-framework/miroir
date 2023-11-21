@@ -24,8 +24,7 @@ export default defineConfig({
     root: "tests",
     globals: true,
     watch: false,
-    maxConcurrency: 1,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: ['./setup.ts'],
   },
 });

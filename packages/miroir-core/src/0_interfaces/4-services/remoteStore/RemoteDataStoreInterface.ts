@@ -42,16 +42,6 @@ export declare type RestServiceHandler = {
   method: HttpMethod,
   url: string,
   handler: RestMethodHandler
-  // handler: (
-  //   continuationFunction: (response: any) => (arg0: any) => any,
-  //   localMiroirStoreController: IStoreController,
-  //   localAppStoreController: IStoreController,
-  //   method: HttpMethod,
-  //   response: any,
-  //   effectiveUrl: string, // log only, to remove?
-  //   body: HttpRequestBodyFormat,
-  //   params: any
-  // ) => Promise<void>;
 };
 
 // ################################################################################################
@@ -106,7 +96,6 @@ export interface RemoteStoreCRUDActionReturnType {
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
 export interface RemoteStoreNetworkClientInterface {
-  handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType>; //TODO: return type must be independent of actually called client
   handleNetworkRemoteStoreCRUDActionWithDeployment(
     deploymentUuid: string,
     section: ApplicationSection,
@@ -125,7 +114,7 @@ export default {};
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface RemoteDataStoreInterface {
-  handleRemoteStoreCRUDActionWithDeployment(
+  handleRemoteStoreRestCRUDActionWithDeployment(
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreCRUDAction

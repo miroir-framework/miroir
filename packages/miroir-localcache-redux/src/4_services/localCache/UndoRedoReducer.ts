@@ -152,9 +152,9 @@ export function createUndoRedoReducer(
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches,    queriesResultsCache } = state
 
     switch (action.type) {
-      case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: // TODO: here?
-      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment + '/resolved': // TODO: here?
-      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreCRUDActionWithDeployment: {
+      case localCacheSliceName+'/'+RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDActionWithDeployment: // TODO: here?
+      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDActionWithDeployment + '/resolved': // TODO: here?
+      case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDActionWithDeployment: {
         // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
         return callNextReducer(innerReducer, state, action);
       }

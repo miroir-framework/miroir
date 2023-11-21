@@ -38,6 +38,7 @@ import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } fro
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
 import { packageName } from '../../src/constants';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
+import path from 'path';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"tests-utils");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -95,7 +96,7 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
   const [loaded,setLoaded] = useState(false);
   return (
     <div>
-      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportUuid} role='button'>{'next step '+props.reportUuid}</button>
+      <button onClick={()=>setStep(step+1)} name={'next step '+props.reportUuid  + ' step=' + step} role='button'>{'next step '+props.reportUuid + ' step=' + step}</button>
       <span role={"step:" + step}>loaded step:{step}</span>
       <span>loaded:{loaded ? "finished" : "not"}</span>
     </div>
@@ -265,6 +266,8 @@ export async function miroirBeforeEach(
     console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
   }
 
+  document.body.innerHTML = '';
+
   return Promise.resolve();
 }
 
@@ -310,5 +313,50 @@ export async function miroirAfterAll(
   }
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done afterAll');
   return Promise.resolve();
+}
+
+// ################################################################################################
+export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfig> {
+  const pwd = process.env["PWD"]??""
+  log.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
+  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+  const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
+  log.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
+  const configFileContents = await import(configFilePath);
+  log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
+
+  const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+
+  log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+  return miroirConfig;
+}
+// ################################################################################################
+// export async function loadTestConfigFiles(env:any, loglevelnext: any, defaultLevels: any) {
+export async function loadTestConfigFiles(env:any) {
+  let miroirConfig:MiroirConfig
+  if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
+    miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
+    console.log("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)
+  } else {
+    throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+  }
+  
+  let logConfig:any
+  if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
+    logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME??"specificLoggersConfig_warn");
+    console.log("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
+  
+    // MiroirLoggerFactory.setEffectiveLoggerFactory(
+    //   loglevelnext,
+    //   defaultLevels[logConfig.defaultLevel],
+    //   logConfig.defaultTemplate,
+    //   logConfig.specificLoggerOptions
+    // );
+    
+    
+  } else {
+    throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+  }
+  return {miroirConfig,logConfig}
 }
 

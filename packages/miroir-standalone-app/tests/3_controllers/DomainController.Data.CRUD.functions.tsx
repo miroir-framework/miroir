@@ -186,17 +186,3 @@ export async function refreshAllInstancesTest(
   return Promise.resolve();
 }
 
-
-export async function loadConfigFile(pwd: string, fileRelativePath:string): Promise<MiroirConfig> {
-  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-  const configFilePath = path.join(pwd, fileRelativePath)
-  log.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
-  const configFileContents = await import(configFilePath);
-  log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
-
-  const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
-
-  log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-  return miroirConfig;
-}

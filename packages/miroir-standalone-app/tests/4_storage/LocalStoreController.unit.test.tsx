@@ -1,4 +1,5 @@
 import * as path from "path";
+import { describe, expect, test } from 'vitest'
 
 // import { miroirStoreFileSystemStartup } from "../dist/bundle";
 import {
@@ -37,38 +38,23 @@ import {
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
 
-import loggerOptions from "../specificLoggersConfig_default.json";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem/src/startup";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { loadTestConfigFiles } from "../utils/tests-utils";
+
+const env:any = (import.meta as any).env
+console.log("@@@@@@@@@@@@@@@@@@ env", env);
+
+const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
   loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel as string],
+  (defaultLevels as any)[loggerOptions.defaultLevel],
   loggerOptions.defaultTemplate,
   loggerOptions.specificLoggerOptions
 );
-
-
-export async function loadConfigFile(pwd: string, fileRelativePath:string): Promise<MiroirConfig> {
-  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-  const configFilePath = path.join(pwd, fileRelativePath)
-  console.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
-  const configFileContents = await import(configFilePath);
-  console.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
-
-  const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
-
-  console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-  return miroirConfig;
-}
-
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-// const miroirConfig:MiroirConfig = (async ()=>await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??""))();
-const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -177,7 +163,7 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
   return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
 }
 
-describe("localCacheSlice.unit.test", () => {
+describe.sequential("localStoreController.unit.test", () => {
 
   it("get Miroir Entities", async () => {
     const rawResult = (await localMiroirStoreController.getInstances("model",entityEntity.uuid))

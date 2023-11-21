@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { SetupWorkerApi } from "msw/browser";
 import { setupServer, SetupServerApi } from "msw/node";
 import React from "react";
+import { describe, expect } from 'vitest';
+
+// import process from "process";
 
 import {
   applicationDeploymentLibrary,
@@ -37,6 +40,7 @@ import {
 
 import {
   DisplayLoadingInfo,
+  loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
@@ -45,7 +49,7 @@ import {
 } from "miroir-standalone-app/tests/utils/tests-utils";
 
 
-import { loadConfigFile, refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
+import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
@@ -57,16 +61,6 @@ import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
 
-import loggerOptions from "../specificLoggersConfig_default.json";
-// const loggerOptions = JSON.parse(readFileSync(new URL('../specificLoggersConfig_default.json', import.meta.url)).toString());
-
-
-MiroirLoggerFactory.setEffectiveLoggerFactory(
-  loglevelnext,
-  defaultLevels[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
-);
 
 // jest intercepts logs, only console.log will produce test output
 // const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Data.CRUD");
@@ -78,9 +72,17 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 // );
 
 
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
+const env:any = (import.meta as any).env
+console.log("@@@@@@@@@@@@@@@@@@ env", env);
+
+const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
+  (defaultLevels as any)[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
+);
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -159,7 +161,8 @@ afterEach(
 )
 
 // describe.each([])(
-describe(
+// describe.sequential(
+describe.sequential(
   'DomainController.Data.CRUD',
   () => {
 

@@ -43,6 +43,7 @@ import { ReduxStore, createReduxStoreAndRestClient } from "miroir-localcache-red
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,
+  loadTestConfigFiles,
   miroirAfterAll,
   miroirAfterEach,
   miroirBeforeAll,
@@ -54,19 +55,12 @@ import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
-import { loadConfigFile } from "./DomainController.Data.CRUD.functions";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
 
-import loggerOptions from "../specificLoggersConfig_default.json";
+// import loggerOptions from "../specificLoggersConfig_default.json";
 // import loggerOptions from "../specificLoggersConfig_trace_filesystem.json"
 
-MiroirLoggerFactory.setEffectiveLoggerFactory(
-  loglevelnext,
-  (defaultLevels as any)[loggerOptions.defaultLevel],
-  loggerOptions.defaultTemplate,
-  loggerOptions.specificLoggerOptions
-);
   
 // jest intercepts logs, only console.log will produce test output
 // const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.CRUD");
@@ -78,9 +72,20 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 // );
 
 
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-const miroirConfig:MiroirConfig = await loadConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
+// console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
+// console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+// const miroirConfig:MiroirConfig = await loadTestSingleConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
+const env:any = (import.meta as any).env
+console.log("@@@@@@@@@@@@@@@@@@ env", env);
+
+const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
+
+MiroirLoggerFactory.setEffectiveLoggerFactory(
+  loglevelnext,
+  (defaultLevels as any)[loggerOptions.defaultLevel],
+  loggerOptions.defaultTemplate,
+  loggerOptions.specificLoggerOptions
+);
 
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
@@ -156,7 +161,7 @@ afterEach(
   }
 )
 
-describe(
+describe.sequential(
   'DomainController.Model.CRUD',
   () => {
     // ###########################################################################################
@@ -299,7 +304,7 @@ describe(
           await waitFor(
             () => {
               // getAllByText(container,/finished/)
-              getAllByText(container,/step:2/)
+              getAllByRole(/step:2/)
             },
           ).then(
             ()=> {
@@ -323,7 +328,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:3/)
+              getAllByRole(/step:3/)
             },
           ).then(
             ()=> {
@@ -421,7 +426,7 @@ describe(
           await waitFor(
             () => {
               // getAllByText(container,/finished/)
-              getAllByText(container,/step:2/)
+              getAllByRole(/step:2/)
             },
           ).then(
             ()=> {
@@ -450,7 +455,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:3/)
+              getAllByRole(/step:3/)
             },
           ).then(
             ()=> {
@@ -474,7 +479,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:4/)
+              getAllByRole(/step:4/)
             },
           ).then(
             ()=> {
@@ -570,7 +575,6 @@ describe(
   
           await waitFor(
             () => {
-              // getAllByText(container,/step:1/)
               getAllByRole(/step:1/)
             },
           ).then(
@@ -610,7 +614,6 @@ describe(
           console.log("remove Author entity step 2: wait for screen refresh")
           await waitFor(
             () => {
-              // getAllByText(container,/step:2/)
               getAllByRole(/step:2/)
             },
           ).then(
@@ -638,8 +641,6 @@ describe(
           await waitFor(
             () => {
               getAllByRole(/step:3/)
-              // getAllByText(container,/step:3/)
-              // getAllByText(container,/step:2/)
             },
           ).then(
             ()=> {
@@ -663,7 +664,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:4/)
+              getAllByRole(/step:4/)
             },
           ).then(
             ()=> {
@@ -886,7 +887,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:3/)
+              getAllByRole(/step:3/)
             },
           ).then(
             ()=> {
@@ -909,7 +910,7 @@ describe(
   
           await waitFor(
             () => {
-              getAllByText(container,/step:4/)
+              getAllByRole(/step:4/)
             },
           ).then(
             ()=> {

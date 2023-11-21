@@ -6,6 +6,7 @@ import {
   MiroirLoggerFactory,
   RemoteStoreAction,
   RemoteStoreActionName,
+  RemoteStoreCRUDAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
@@ -42,7 +43,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
   constructor(private rootApiUrl: string, private restClient: RestClientInterface) {
-    log.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
+    console.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
   }
 
   // ##################################################################################
@@ -56,40 +57,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   };
 
   // ##################################################################################
-  private networkActionUrlAddition(networkAction: RemoteStoreAction): string {
-    return (networkAction as any)["uuid"]
-      ? (networkAction as any)["uuid"]
-      : networkAction.actionName == "read"
-      ? networkAction.parentUuid + "/all"
-      : "";
-  }
-
-  // ##################################################################################
-  private networkActionUrlRoot(
-    networkAction: RemoteStoreAction,
-    useUuidForEntity: string | undefined = undefined
-  ): string {
-    return (
-      this.rootApiUrl +
-      (CRUDActionNamesArrayString.includes(networkAction.actionName)
-        ? "/miroir/entity"
-        : "/model/" + networkAction.actionName)
-    );
-  }
-
-  // ##################################################################################
-  private networkActionUrl(networkAction: RemoteStoreAction, rootApiUrl?: string): string {
-    return (
-      (rootApiUrl ? rootApiUrl : this.networkActionUrlRoot(networkAction)) +
-      (CRUDActionNamesArrayString.includes(networkAction.actionName)
-        ? this.networkActionUrlAddition(networkAction)
-          ? "/" + this.networkActionUrlAddition(networkAction)
-          : ""
-        : "")
-    );
-  }
-
-  private actionTypeArgsMap: {[k:string]:{[l:string]: {"attribute":string,"result": string} | undefined}} = {
+  private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"attribute":string,"result": string} | undefined}} = {
     "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     "DomainTransactionalAction": {
@@ -109,15 +77,22 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   getRestCallParams(
     networkAction: RemoteStoreAction,
-    rootApiUrl?: string
+    rootApiUrl: string
   ): {
     operation: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
     url: string;
     args: any;
   } {
+    const networkActionUrlMap: {[actionName:string]:string} = {
+      "read": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??((networkAction as RemoteStoreCRUDAction).parentUuid + "/all")),
+      "create": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
+      "update": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
+      "delete": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
+    }
+  
     return {
       operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]],
-      url: this.networkActionUrl(networkAction, rootApiUrl),
+      url: rootApiUrl + (networkActionUrlMap[networkAction.actionName]??""),
       args: this.actionTypeArgsMap[networkAction.actionType]
         ? this.actionTypeArgsMap[networkAction.actionType]["*"]
           ? {
@@ -137,14 +112,6 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkAction(networkAction: RemoteStoreAction): Promise<RestClientCallReturnType> {
-    //TODO: return type must be independent of actually called client
-    log.info("RemoteStoreNetworkRestClient handleAction", networkAction);
-    const callParams = this.getRestCallParams(networkAction);
-    return callParams.operation(callParams.url, callParams.args);
-  }
-
-  // ##################################################################################
   async handleNetworkRemoteStoreCRUDActionWithDeployment(
     deploymentUuid: string,
     section: ApplicationSection,
@@ -155,7 +122,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section + "/entity"
     );
     // const args = 
-    log.debug(
+    console.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDActionWithDeployment action",
       action,
       "deploymentUuid",
@@ -177,7 +144,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
-    log.debug(
+    console.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelActionWithDeployment",
       action,
       "callParams",

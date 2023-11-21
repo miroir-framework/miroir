@@ -131,7 +131,7 @@ export class DomainController implements DomainControllerInterface {
             };
     
             // in the case of the Miroir app, this should be done in the 'data' section
-            await this.remoteStore.handleRemoteStoreCRUDActionWithDeployment(deploymentUuid, sectionOfapplicationEntities, newModelVersionAction);
+            await this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment(deploymentUuid, sectionOfapplicationEntities, newModelVersionAction);
     
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
     
@@ -142,7 +142,7 @@ export class DomainController implements DomainControllerInterface {
               } else {
                 // for (const instances of replayAction["objects"]) {
                   // TODO: replace with parallel implementation Promise.all?
-                  await this.remoteStore.handleRemoteStoreCRUDActionWithDeployment(
+                  await this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment(
                     deploymentUuid,
                     replayAction.update.objects[0].applicationSection,
                     {
@@ -179,7 +179,7 @@ export class DomainController implements DomainControllerInterface {
               ],
             };
             // TODO: in the case of the Miroir app, this should be in the 'data'section
-            await this.remoteStore.handleRemoteStoreCRUDActionWithDeployment(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
+            await this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
           }
           break;
         }
@@ -247,7 +247,7 @@ export class DomainController implements DomainControllerInterface {
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction sending to remote storage instances",
           instances.parentName, instances.instances
         );
-        await this.remoteStore.handleRemoteStoreCRUDActionWithDeployment(
+        await this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment(
           deploymentUuid,
           'data',
           {
@@ -285,7 +285,7 @@ export class DomainController implements DomainControllerInterface {
     try {
       const dataEntitiesFromModelSection: EntityInstanceCollection | void = await throwExceptionIfError(
         this.miroirContext.errorLogService,
-        this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
+        this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment,
         this.remoteStore, //this
         deploymentUuid,
         "model",
@@ -347,7 +347,7 @@ export class DomainController implements DomainControllerInterface {
         );
         const entityInstanceCollection: EntityInstanceCollection | void = await throwExceptionIfError(
           this.miroirContext.errorLogService,
-          this.remoteStore.handleRemoteStoreCRUDActionWithDeployment,
+          this.remoteStore.handleRemoteStoreRestCRUDActionWithDeployment,
           this.remoteStore, // this
           deploymentUuid,
           e.section,
@@ -399,7 +399,7 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     currentModel:MiroirApplicationModel,
   ): Promise<void> {
-    let entityDomainAction:DomainAction | undefined = undefined;
+    // let entityDomainAction:DomainAction | undefined = undefined;
     let otherDomainAction:DomainAction | undefined = undefined;
     const ignoredActionNames:string[] = ['UpdateMetaModelInstance','updateEntity','resetModel','resetData','initModel','commit','rollback','replace','undo','redo'];
     log.info(
@@ -414,45 +414,48 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((domainAction as any)["objects"], null, 2)
     );
 
-    // if (domainAction.actionName!="updateEntity"){
-    if (!ignoredActionNames.includes(domainAction.actionName)){
-      const entityObjects = Array.isArray((domainAction as any)['objects'])?(domainAction as any)['objects'].filter((a:any)=>a.parentUuid == entityDefinitionEntityDefinition.uuid):[];
-      const otherObjects = Array.isArray((domainAction as any)['objects'])?(domainAction as any)['objects'].filter((a:any)=>a.parentUuid !== entityDefinitionEntityDefinition.uuid):[];
+    // if (!ignoredActionNames.includes(domainAction.actionName)){
+    //   const entityObjects = Array.isArray((domainAction as any)["objects"])
+    //     ? (domainAction as any)["objects"].filter((a: any) => a.parentUuid == entityDefinitionEntityDefinition.uuid)
+    //     : [];
+    //   const otherObjects = Array.isArray((domainAction as any)["objects"])
+    //     ? (domainAction as any)["objects"].filter((a: any) => a.parentUuid !== entityDefinitionEntityDefinition.uuid)
+    //     : [];
 
-      if(entityObjects.length > 0){
-        entityDomainAction = {
-          actionType: domainAction.actionType,
-          actionName: domainAction.actionName,
-          objects: entityObjects
-        } as DomainAction
-      }
-      if(otherObjects.length > 0){
-        otherDomainAction = {
-          actionType: domainAction.actionType,
-          actionName: domainAction.actionName,
-          objects: otherObjects
-        } as DomainAction
-      }
-    } else {
+    //   if(entityObjects.length > 0){
+    //     entityDomainAction = {
+    //       actionType: domainAction.actionType,
+    //       actionName: domainAction.actionName,
+    //       objects: entityObjects
+    //     } as DomainAction
+    //   }
+    //   if(otherObjects.length > 0){
+    //     otherDomainAction = {
+    //       actionType: domainAction.actionType,
+    //       actionName: domainAction.actionName,
+    //       objects: otherObjects
+    //     } as DomainAction
+    //   }
+    // } else {
       otherDomainAction = domainAction;
-    }
-    log.debug('handleDomainAction entityDomainAction',entityDomainAction);
+    // }
+    // log.debug('handleDomainAction entityDomainAction',entityDomainAction);
     log.debug('handleDomainAction otherDomainAction',otherDomainAction);
      
     switch (domainAction.actionType) {
       case "DomainDataAction": {
-        if (!!entityDomainAction) {
-          await this.handleDomainNonTransactionalAction(deploymentUuid, entityDomainAction as DomainDataAction);
-        }
+        // if (!!entityDomainAction) {
+        //   await this.handleDomainNonTransactionalAction(deploymentUuid, entityDomainAction as DomainDataAction);
+        // }
         if (!!otherDomainAction) {
           await this.handleDomainNonTransactionalAction(deploymentUuid, otherDomainAction as DomainDataAction);
         }
         return Promise.resolve()
       }
       case "DomainTransactionalAction": {
-        if (!!entityDomainAction) {
-            await this.handleDomainTransactionalAction(deploymentUuid, entityDomainAction as DomainTransactionalAction, currentModel);
-        }
+        // if (!!entityDomainAction) {
+        //     await this.handleDomainTransactionalAction(deploymentUuid, entityDomainAction as DomainTransactionalAction, currentModel);
+        // }
         if (!!otherDomainAction) {
           await this.handleDomainTransactionalAction(deploymentUuid, otherDomainAction as DomainTransactionalAction, currentModel);
         }
