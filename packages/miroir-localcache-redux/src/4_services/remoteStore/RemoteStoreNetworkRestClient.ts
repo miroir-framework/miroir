@@ -112,7 +112,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteStoreCRUDActionWithDeployment(
+  async handleNetworkRemoteStoreCRUDAction(
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreAction
@@ -123,7 +123,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     );
     // const args = 
     console.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDActionWithDeployment action",
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDAction action",
       action,
       "deploymentUuid",
       deploymentUuid,
@@ -136,7 +136,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteStoreModelActionWithDeployment(
+  async handleNetworkRemoteStoreModelAction(
     deploymentUuid: string,
     action: RemoteStoreAction
   ): Promise<RestClientCallReturnType> {
@@ -145,7 +145,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
     console.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelActionWithDeployment",
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelAction",
       action,
       "callParams",
       callParams

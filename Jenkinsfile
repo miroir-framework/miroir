@@ -63,32 +63,32 @@ pipeline {
         }
       }
       stage('tests-LocalStoreController') { 
-          steps {
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app  -- LocalStoreController'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- LocalStoreController'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- LocalStoreController'
-          }
+        steps {
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app  -- LocalStoreController'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- LocalStoreController'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- LocalStoreController'
+        }
       }
       stage('tests-DomainController-indexedDb') { 
-          steps {
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
-          }
+        steps {
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
+        }
       }
       stage('test-DomainController-sql') { 
-          steps {
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
-          }
+        steps {
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
+        }
       }
       stage('tests-DomainController-filesystem') { 
-          steps {
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
-            sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
-          }
+        steps {
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Model.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Data.CRUD'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- DomainController.Model.undo-redo'
+        }
       }
   }
 }

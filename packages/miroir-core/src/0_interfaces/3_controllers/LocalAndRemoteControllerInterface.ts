@@ -18,8 +18,8 @@ export interface LocalAndRemoteControllerInterface {
   handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction):void;
   handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction):void;
   handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction):void;
-  handleRemoteStoreRestCRUDActionWithDeployment(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
-  handleRemoteStoreModelActionWithDeployment(deploymentUuid:string, action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreRestCRUDAction(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
+  handleRemoteStoreModelAction(deploymentUuid:string, action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
   currentLocalCacheTransaction(): DomainTransactionalReplayableAction[];
   currentLocalCacheInfo(): LocalCacheInfo;
 }

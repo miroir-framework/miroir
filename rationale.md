@@ -49,3 +49,14 @@ Now web-applications more and more look like any general-purpose application [Re
 In the worst case Miroir could end up as yet another software demonstator of somwhat ludicrous, way above their head ideas, or maybe in the best case as another Smalltalk.
 
 Miroir being largely developped in Miroir itself.
+
+# Ways to look at Miroir
+
+There are always many sides to a story...
+
+## For software developers
+
+- DSLs and the "command" pattern gone mad.
+
+## For your next-door neighboor
+

@@ -503,8 +503,6 @@ function handleLocalCacheModelAction(
       const domainDataAction: DomainDataAction = ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
         Object.values(state[entityEntityIndex].entities) as MetaEntity[],
         Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
-        // Object.values(state[deploymentUuid]['model'][entityEntity.uuid].entities) as MetaEntity[],
-        // Object.values(state[deploymentUuid]['model'][entityEntityDefinition.uuid].entities) as EntityDefinition[],
         action.update.modelEntityUpdate
       );
       // log.info(

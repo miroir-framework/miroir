@@ -96,12 +96,12 @@ export interface RemoteStoreCRUDActionReturnType {
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
 export interface RemoteStoreNetworkClientInterface {
-  handleNetworkRemoteStoreCRUDActionWithDeployment(
+  handleNetworkRemoteStoreCRUDAction(
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreModelActionWithDeployment(
+  handleNetworkRemoteStoreModelAction(
     deploymentUuid: string,
     action: RemoteStoreModelAction
   ): Promise<RestClientCallReturnType>;
@@ -114,12 +114,12 @@ export default {};
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface RemoteDataStoreInterface {
-  handleRemoteStoreRestCRUDActionWithDeployment(
+  handleRemoteStoreRestCRUDAction(
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RemoteStoreCRUDActionReturnType>;
-  handleRemoteStoreModelActionWithDeployment(
+  handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: RemoteStoreModelAction
   ): Promise<RemoteStoreCRUDActionReturnType>;
