@@ -321,7 +321,7 @@ export async function loadTestSingleConfigFile( fileName:string): Promise<Miroir
   log.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
   // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
   // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
-  const configFilePath = path.join(pwd, "./tests/" + fileName + ".json")
+  const configFilePath = path.join(pwd, fileName + ".json")
   log.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
   const configFileContents = await import(configFilePath);
   log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
