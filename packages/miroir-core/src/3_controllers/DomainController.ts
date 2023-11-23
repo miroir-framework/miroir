@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
-import { ApplicationSection, EntityInstanceCollection } from '../0_interfaces/1_core/Instance.js';
+import { EntityInstanceCollection } from '../0_interfaces/1_core/Instance.js';
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
 import {
@@ -34,6 +34,7 @@ import { throwExceptionIfError } from './ErrorHandling/ErrorUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
+import { ApplicationSection } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -159,7 +160,7 @@ export class DomainController implements DomainControllerInterface {
     
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.localCache.currentTransaction());
     
-            this.localCache.handleLocalCacheAction(
+            this.localCache.handleLocalCacheDomainAction(
               deploymentUuid,
               {
                 actionName:'create',
@@ -168,7 +169,7 @@ export class DomainController implements DomainControllerInterface {
               }
             );
     
-            this.localCache.handleLocalCacheAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
+            this.localCache.handleLocalCacheDomainAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
     
             const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
             log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -185,7 +186,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "UpdateMetaModelInstance": {
-          this.localCache.handleLocalCacheAction(deploymentUuid, domainModelAction);
+          this.localCache.handleLocalCacheDomainAction(deploymentUuid, domainModelAction);
           break;
         }
         case "updateEntity": {
@@ -208,7 +209,7 @@ export class DomainController implements DomainControllerInterface {
           log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
           
   
-          this.localCache.handleLocalCacheAction(
+          this.localCache.handleLocalCacheDomainAction(
             deploymentUuid,
             {...domainModelAction,update:structureUpdatesWithCUDUpdates}
           );

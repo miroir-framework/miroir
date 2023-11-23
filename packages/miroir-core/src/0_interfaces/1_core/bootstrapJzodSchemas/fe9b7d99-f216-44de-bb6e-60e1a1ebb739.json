@@ -1,0 +1,161 @@
+{
+  "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+  "parentName": "JzodSchema",
+  "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+  "name": "miroirFundamentalJzodSchema",
+  "defaultLabel": "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
+  "definition": {
+    "type": "schemaReference",
+    "context": {
+      "applicationSection": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "literal",
+            "definition": "model"
+          },
+          {
+            "type": "literal",
+            "definition": "data"
+          }
+        ]
+      },
+      "entityRoot": {
+        "type": "object",
+        "strict": false,
+        "definition": {
+          "uuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "parentName": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+          },
+          "parentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+          },
+          "conceptLevel": {
+            "type": "enum",
+            "definition": ["MetaModel", "Model", "Data"],
+            "optional": true,
+            "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+          },
+          "name": {
+            "type": "simpleType",
+            "definition": "string",
+            "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+          },
+          "description": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+          }
+        }
+      },
+      "entityInstanceCollection": {
+        "type": "object",
+        "definition": {
+          "parentName": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true
+          },
+          "parentUuid": {
+            "type": "simpleType",
+            "definition": "string"
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "instances": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityRoot"
+              }
+            }
+          }
+        }
+      },
+      "localCacheAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionName": {"type": "literal", "definition":"create"}
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionName": {"type": "literal", "definition":"update"}
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionName": {"type": "literal", "definition":"delete"}
+            }
+          }
+        ]
+      },
+      "miroirAllFundamentalTypesUnion": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityRoot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityInstanceCollection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "localCacheAction"
+            }
+          }
+        ]
+      }
+    },
+    "definition": {
+      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      "relativePath": "miroirAllFundamentalTypesUnion"
+    }
+  }
+}

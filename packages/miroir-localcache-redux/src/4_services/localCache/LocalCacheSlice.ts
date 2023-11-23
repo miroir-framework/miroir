@@ -526,9 +526,9 @@ function handleLocalCacheModelAction(
 }
 
 //#########################################################################################
-function handleLocalCacheAction(state: LocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
+function handleLocalCacheDomainAction(state: LocalCacheSliceState, deploymentUuid: Uuid, action: DomainAction) {
   log.info(
-    "localCacheSliceObject handleLocalCacheAction deploymentUuid",
+    "localCacheSliceObject handleLocalCacheDomainAction deploymentUuid",
     deploymentUuid,
     "actionType",
     action.actionType,
@@ -546,7 +546,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, deploymentUuid: Uui
     }
     default:
       log.warn(
-        "localCacheSliceObject handleLocalCacheAction action could not be taken into account, unkown action",
+        "localCacheSliceObject handleLocalCacheDomainAction action could not be taken into account, unkown action",
         action
       );
   }
@@ -559,11 +559,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: {} as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleLocalCacheAction](
+    [localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction](
       state: LocalCacheSliceState,
       action: PayloadAction<DomainActionWithDeployment>
     ) {
-      handleLocalCacheAction(state, action.payload.deploymentUuid, action.payload.domainAction);
+      handleLocalCacheDomainAction(state, action.payload.deploymentUuid, action.payload.domainAction);
     },
   },
 });

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ApplicationSection, applicationSection } from "./preprocessor-generated/miroirFundamentalType";
 
 // ##########################################################################################
 export const ApplicationConceptLevelSchema = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
@@ -19,9 +20,9 @@ export const EntityInstanceWithNameSchema = EntityInstanceSchema.extend({
 });
 export type EntityInstanceWithName = z.infer<typeof EntityInstanceWithNameSchema>;
 
-// ##########################################################################################
-export const ApplicationSectionSchema = z.union([z.literal("model"), z.literal("data")]);
-export type ApplicationSection = z.infer<typeof ApplicationSectionSchema>;
+// // ##########################################################################################
+// export const ApplicationSectionSchema = z.union([z.literal("model"), z.literal("data")]);
+// export type ApplicationSection = z.infer<typeof ApplicationSectionSchema>;
 
 // ##########################################################################################
 export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSection {
@@ -33,7 +34,7 @@ export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSect
 export const EntityInstanceCollectionSchema = z.object({
   parentName: z.string().optional(),
   parentUuid: z.string().uuid(),
-  applicationSection: ApplicationSectionSchema,
+  applicationSection: applicationSection,
   instances: z.array(EntityInstanceSchema)
 });
 export type EntityInstanceCollection = z.infer<typeof EntityInstanceCollectionSchema>;

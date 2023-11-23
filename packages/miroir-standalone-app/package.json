@@ -11,7 +11,7 @@
     "@emotion/styled": "^11.10.5",
     "@hilla/react-components": "^1.3.10",
     "@hookform/resolvers": "^3.1.1",
-    "@miroir-framework/jzod": "^0.5.3",
+    "@miroir-framework/jzod": "^0.5.4",
     "@miroir-framework/jzod-ts": "^0.5.3",
     "@mswjs/data": "^0.11.0",
     "@mui/icons-material": "^5.11.16",

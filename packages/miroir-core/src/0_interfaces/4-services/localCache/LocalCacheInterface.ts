@@ -9,8 +9,6 @@ import {
   DomainTransactionalReplayableAction,
 } from "../../2_domain/DomainControllerInterface.js";
 
-export default {}
-
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
@@ -27,5 +25,5 @@ export declare interface LocalCacheInterface
   // actions on local cache
   handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainTransactionalAncillaryOrReplayableAction):void;
   handleLocalCacheDataAction(deploymentUuid: Uuid, action:DomainDataAction):void;
-  handleLocalCacheAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction):void;
+  handleLocalCacheDomainAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction):void;
 }

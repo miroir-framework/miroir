@@ -1,6 +1,14 @@
 // ###################################################################################
 
-import { ConfigurationService, LoggerInterface, MiroirLoggerFactory, StoreControllerFactory, defaultMiroirMetaModel, getLoggerName, miroirCoreStartup } from "miroir-core";
+import {
+  ConfigurationService,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  StoreControllerFactory,
+  defaultMiroirMetaModel,
+  getLoggerName,
+  miroirCoreStartup,
+} from "miroir-core";
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
@@ -9,8 +17,8 @@ import {
   IStoreController,
   MiroirConfig
 } from "miroir-core";
-import { packageName, cleanLevel } from "./constants";
 
+import { packageName, cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -32,10 +40,10 @@ export async function startServer(
   miroirStoreIndexedDbStartup();
   miroirStorePostgresStartup();
     
-  let
-    localMiroirStoreController:IStoreController,
-    localAppStoreController:IStoreController
-  ;
+  // let
+  //   localMiroirStoreController:IStoreController,
+  //   localAppStoreController:IStoreController
+  // ;
 
   const {
     localMiroirStoreController:a,localAppStoreController:b
@@ -43,8 +51,10 @@ export async function startServer(
     ConfigurationService.storeFactoryRegister,
     miroirConfig,
   );
-  localMiroirStoreController = a;
-  localAppStoreController = b;
+  const
+    localMiroirStoreController:IStoreController = a,
+    localAppStoreController:IStoreController = b
+  ;
   
   try {
     await localMiroirStoreController?.open();

@@ -1,9 +1,10 @@
 
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
+import { EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";

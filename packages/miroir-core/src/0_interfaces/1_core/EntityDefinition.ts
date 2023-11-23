@@ -11,9 +11,10 @@ import {
   ZodSchemaAndDescription, jzodElementSchemaToZodSchemaAndDescription,
   // jzodSchemaObjectToZodSchemaAndDescriptionRecord
 } from "@miroir-framework/jzod";
-import { ApplicationSectionSchema, EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
+import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 
 import miroirJzodSchemaBootstrap from '../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
+import { applicationSection } from "./preprocessor-generated/miroirFundamentalType.js";
 
 
 // ##########################################################################################
@@ -69,7 +70,7 @@ export type EntityArrayAttribute = z.infer<typeof EntityArrayAttributeSchema>;
 
 export const EntityForeignKeyAttributeSchema = EntityAttributeUntypedCoreSchema.extend({
   type: z.literal("ENTITY_INSTANCE_UUID"),
-  applicationSection: ApplicationSectionSchema.optional(),
+  applicationSection: applicationSection.optional(),
   entityUuid: z.string().uuid()
 });
 export type EntityForeignKeyAttribute = z.infer<typeof EntityForeignKeyAttributeSchema>;

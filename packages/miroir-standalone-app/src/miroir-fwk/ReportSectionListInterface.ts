@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   ApplicationDeploymentSchema,
   selectObjectListQuery,
-  ApplicationSectionSchema,
+  // ApplicationSectionSchema,
   objectListReportSection,
   MetaEntitySchema,
   EntityDefinitionSchema,
@@ -11,6 +11,7 @@ import {
 
 import { TableComponentTypeSchema } from "./4_view/MTableComponentInterface";
 import { jzodObject } from "@miroir-framework/jzod-ts";
+import { applicationSection } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({
@@ -21,12 +22,12 @@ export const ReportSectionDisplayCorePropsSchema = z.object({
   select: selectObjectListQuery.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedData: z.record(z.any()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
   fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
-  chosenApplicationSection: ApplicationSectionSchema.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  chosenApplicationSection: applicationSection.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
 });
 
 export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
-  chosenApplicationSection: ApplicationSectionSchema,
+  chosenApplicationSection: applicationSection,
   currentModel: z.any(),
   currentMiroirEntity: MetaEntitySchema.optional(),
   currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),

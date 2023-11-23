@@ -1,9 +1,10 @@
 import { EntityDefinition, MetaEntity, Uuid } from '../../1_core/EntityDefinition.js';
-import { ApplicationSection, EntityInstance, EntityInstanceCollection } from '../../1_core/Instance.js';
+import { EntityInstance, EntityInstanceCollection } from '../../1_core/Instance.js';
 import { MiroirApplicationModel } from '../../1_core/Model.js';
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../../2_domain/ModelUpdateInterface.js';
 import { Application } from '../../1_core/Application.js';
 import { DataStoreApplicationType } from '../../3_controllers/ApplicationControllerInterface.js';
+import { ApplicationSection } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 
 // ###########################################################################################
 // Abstract store interfaces

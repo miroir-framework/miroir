@@ -1,3 +1,15 @@
+import miroirFundamentalJzodSchema from "./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json";
+
+export {miroirFundamentalJzodSchema};
+export {
+  ApplicationSection,
+  // EntityInstanceCollection,
+  EntityRoot,
+  LocalCacheAction,
+  MiroirFundamentalType
+}
+from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
+
 export {
   Application,
   ApplicationSchema,
@@ -30,8 +42,8 @@ export {
 export {
   ApplicationConceptLevelSchema,
   ApplicationConceptLevel,
-  ApplicationSectionSchema,
-  ApplicationSection,
+  // ApplicationSectionSchema,
+  // ApplicationSection,
   ApplicationSectionOpposite,
   EntityInstanceSchema,
   EntityInstance,

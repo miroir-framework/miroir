@@ -1,9 +1,9 @@
 
 // TODO: put in ConfigurationServiceInterface
 
-import { ApplicationSection } from "../0_interfaces/1_core/Instance.js";
 import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { IDataSectionStore, IModelSectionStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";

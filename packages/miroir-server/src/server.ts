@@ -1,14 +1,20 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import { readFileSync } from 'fs';
-import ViteExpress from "vite-express";
+// import ViteExpress from "vite-express";
 
 import {
-  JzodObject
+  JzodObject,
+  JzodElement,
 } from "@miroir-framework/jzod-ts";
 
+import { zodToJzod } from "@miroir-framework/jzod";
+
+
 
 import {
+  DomainActionSchema,
+  EntityInstanceCollectionSchema,
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfig,
@@ -17,12 +23,13 @@ import {
   defaultLevels,
   entityDefinitionReport,
   getLoggerName,
+  miroirFundamentalJzodSchema,
   restServerDefaultHandlers
 } from "miroir-core";
 // import { loglevelnext } from './loglevelnextImporter';
-import { cleanLevel, packageName } from './constants';
-import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema';
-import { startServer } from './start';
+import { cleanLevel, packageName } from './constants.js';
+import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
+import { startServer } from './start.js';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -70,6 +77,9 @@ const users = [];
 
 myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 
+const convertedZodSchema = zodToJzod(EntityInstanceCollectionSchema,"EntityInstanceCollectionSchema");
+console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
+
 const {
   localMiroirStoreController,
   localAppStoreController
@@ -78,14 +88,19 @@ const {
 
 // ################################################################################################
 const jzodSchemaConversion: {
-  jzodObject: JzodObject,
+  jzodElement: JzodElement,
   targetFileName: string,
   jzodSchemaVariableName:string,
 }[] = [
+  // {
+  //   jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
+  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
+  //   jzodSchemaVariableName: "report",
+  // },
   {
-    jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
-    targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
-    jzodSchemaVariableName: "report",
+    jzodElement: miroirFundamentalJzodSchema.definition as any as JzodElement,
+    targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
+    jzodSchemaVariableName: "miroirFundamentalType",
   },
   // {
   //   jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
@@ -96,7 +111,7 @@ const jzodSchemaConversion: {
 
 try {
   for (const schema of jzodSchemaConversion) {
-    await generateZodSchemaFileFromJzodSchema(schema.jzodObject,schema.targetFileName,schema.jzodSchemaVariableName)
+    await generateZodSchemaFileFromJzodSchema(schema.jzodElement,schema.targetFileName,schema.jzodSchemaVariableName)
   }
   myLogger.info("GENERATED!!!!!!!");
   
@@ -132,9 +147,9 @@ app.get('/', (req,res) => {
 });
 
 // ##############################################################################################
-// app.listen(port, () => {
-//     myLogger.info(`Server listening on the port::${port}`);
-// });
-ViteExpress.listen(app, port, () => {
+app.listen(port, () => {
     myLogger.info(`Server listening on the port::${port}`);
 });
+// ViteExpress.listen(app, port, () => {
+//     myLogger.info(`Server listening on the port::${port}`);
+// });

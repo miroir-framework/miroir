@@ -1,8 +1,9 @@
-import { JzodObject, jzodToTsCode } from "@miroir-framework/jzod-ts";
+import { JzodObject, jzodToTsCode, JzodElement } from "@miroir-framework/jzod-ts";
 
 import * as fs from "fs";
 import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import { packageName, cleanLevel } from "./constants";
+
+import { packageName, cleanLevel } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -13,13 +14,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 export async function generateZodSchemaFileFromJzodSchema(
-  jzodObject: JzodObject,
+  jzodElement: JzodElement,
   targetFileName: string,
   jzodSchemaVariableName:string,
 ) {
   // log.log("generateZodSchemaFileFromJzodSchema called!");
  
-  const newFileContentsNotFormated = jzodToTsCode(jzodObject, true, jzodSchemaVariableName)
+  const newFileContentsNotFormated = jzodToTsCode(jzodElement, true, jzodSchemaVariableName)
   const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
 ${newFileContentsNotFormated}
 `;

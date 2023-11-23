@@ -39,7 +39,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
     (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
     a => ({
-      type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
+      type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction,
       actionName: a
     })
   )
@@ -158,8 +158,8 @@ export function createUndoRedoReducer(
         // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
         return callNextReducer(innerReducer, state, action);
       }
-      case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
-        // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheAction with actionType',action.payload.domainAction.actionType,'for action', action);
+      case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction: {
+        // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction with actionType',action.payload.domainAction.actionType,'for action', action);
         switch (action.payload.domainAction.actionType) {
           case "DomainDataAction": {
             if (CRUDActionNamesArrayString.includes(action.payload.domainAction.actionName)) {
@@ -175,7 +175,7 @@ export function createUndoRedoReducer(
               });
             } else {
               // TODO: raise exception?
-              log.warn('UndoRedoReducer handleLocalCacheAction action not recognized', action)
+              log.warn('UndoRedoReducer handleLocalCacheDomainAction action not recognized', action)
             }
             break;
           }
@@ -252,13 +252,13 @@ export function createUndoRedoReducer(
                 break;
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-                // log.warn('UndoRedoReducer handleLocalCacheAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
+                // log.warn('UndoRedoReducer handleLocalCacheDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
                 return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>)
             }
             break;
           }
           default: {
-            log.error('UndoRedoReducer handleLocalCacheAction default case for action', action);
+            log.error('UndoRedoReducer handleLocalCacheDomainAction default case for action', action);
             break;
           }
         }

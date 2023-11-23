@@ -1,5 +1,6 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/Instance";
+import { EntityInstance } from "../0_interfaces/1_core/Instance";
+import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";

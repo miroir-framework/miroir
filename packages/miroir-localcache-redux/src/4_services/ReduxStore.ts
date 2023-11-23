@@ -266,7 +266,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     domainAction: DomainTransactionalAncillaryOrReplayableAction
   ): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
         deploymentUuid,
         domainAction,
       })
@@ -276,7 +276,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   // ###############################################################################
   handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction: DomainDataAction): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
         deploymentUuid,
         domainAction,
       })
@@ -284,9 +284,9 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableAction): void {
+  handleLocalCacheDomainAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableAction): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction]({
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
         deploymentUuid,
         domainAction,
       })

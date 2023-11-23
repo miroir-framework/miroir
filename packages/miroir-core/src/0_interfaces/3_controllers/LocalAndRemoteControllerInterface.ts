@@ -1,5 +1,4 @@
 import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
-import { ApplicationSection } from "../1_core/Instance.js";
 import {
   DomainAncillaryOrReplayableAction,
   DomainDataAction,
@@ -12,12 +11,13 @@ import {
   RemoteStoreCRUDActionReturnType,
   RemoteStoreModelAction,
 } from "../4-services/remoteStore/RemoteDataStoreInterface";
+import { ApplicationSection } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export interface LocalAndRemoteControllerInterface {
   loadConfigurationFromRemoteDataStore(deploymentUuid: string,): Promise<void>;
   handleLocalCacheModelAction(deploymentUuid:Uuid, action: DomainTransactionalAncillaryOrReplayableAction):void;
   handleLocalCacheDataAction(deploymentUuid:Uuid, action: DomainDataAction):void;
-  handleLocalCacheAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction):void;
+  handleLocalCacheDomainAction(deploymentUuid:Uuid, action: DomainAncillaryOrReplayableAction):void;
   handleRemoteStoreRestCRUDAction(deploymentUuid:string, section: ApplicationSection, action: RemoteStoreAction): Promise<RemoteStoreCRUDActionReturnType>;
   handleRemoteStoreModelAction(deploymentUuid:string, action: RemoteStoreModelAction): Promise<RemoteStoreCRUDActionReturnType>;
   currentLocalCacheTransaction(): DomainTransactionalReplayableAction[];
