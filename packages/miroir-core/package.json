@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "watch": "lerna watch --scope='miroir-core' --include-dependencies -- lerna run build --scope='miroir-core'",
-    "build": "npm run copy-files && npm run generate-types && rollup --config",
+    "dev-build": "npm run copy-files && npm run generate-types && rollup --config",
+    "build": "npm run copy-files && rollup --config",
     "build1": "npm run build",
     "build2": "npm run build",
     "build3": "npm run build",
