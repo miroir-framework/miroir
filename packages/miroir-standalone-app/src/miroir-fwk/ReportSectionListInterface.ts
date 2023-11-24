@@ -2,16 +2,14 @@ import { z } from "zod";
 
 import {
   ApplicationDeploymentSchema,
-  selectObjectListQuery,
-  // ApplicationSectionSchema,
-  objectListReportSection,
-  MetaEntitySchema,
   EntityDefinitionSchema,
+  MetaEntitySchema,
+  applicationSection,
+  selectObjectListQuery
 } from "miroir-core";
 
-import { TableComponentTypeSchema } from "./4_view/MTableComponentInterface";
 import { jzodObject } from "@miroir-framework/jzod-ts";
-import { applicationSection } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { TableComponentTypeSchema } from "./4_view/MTableComponentInterface";
 
 // ################################################################################################
 export const ReportSectionDisplayCorePropsSchema = z.object({

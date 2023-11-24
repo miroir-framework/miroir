@@ -1,12 +1,13 @@
 import { z } from "zod";
 
-import { EntityInstance, EntityInstanceSchema, EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
+import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
 import { EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { jzodSchemaDefinitionSchema } from "../../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { StoreBasedConfigurationSchema } from "../../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationVersionSchema } from "../../0_interfaces/1_core/ModelVersion.js";
 // import { ReportSchema } from "../../0_interfaces/1_core/Report.js";
+import { EntityInstance, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 import { report } from "./preprocessor-generated/server-generated";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
@@ -20,7 +21,7 @@ export interface MiroirModel {
   [parentUuid: string]: {[uuid:string]:EntityInstance}
 }
 
-export const ApplicationVersionCrossEntityDefinitionSchema = EntityInstanceSchema.extend({
+export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.extend({
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });

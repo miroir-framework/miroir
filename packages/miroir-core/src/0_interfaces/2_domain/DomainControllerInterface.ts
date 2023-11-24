@@ -11,9 +11,10 @@ import {
 
 
 import { ApplicationSchema } from "../1_core/Application.js";
-import { EntityInstance, EntityInstanceCollectionSchema, EntityInstanceSchema } from "../1_core/Instance.js";
+import { EntityInstanceCollectionSchema } from "../1_core/Instance.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
+import { EntityInstance, entityInstance } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -148,10 +149,10 @@ export const DomainModelInitActionParamsSchema = z.object({
   metaModel: ApplicationModelSchema,
   dataStoreType: DataStoreApplicationTypeSchema,
   application: ApplicationSchema,
-  applicationDeployment: EntityInstanceSchema,
-  applicationModelBranch: EntityInstanceSchema,
-  applicationVersion: EntityInstanceSchema,
-  applicationStoreBasedConfiguration: EntityInstanceSchema,
+  applicationDeployment: entityInstance,
+  applicationModelBranch: entityInstance,
+  applicationVersion: entityInstance,
+  applicationStoreBasedConfiguration: entityInstance,
 });
 export type DomainModelInitActionParams = z.infer<typeof DomainModelInitActionParamsSchema>;
 
@@ -233,7 +234,7 @@ export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof Dom
 
 
 // ###################################################################################
-export const entityInstancesUuidIndexSchema = z.record(EntityInstanceSchema)
+export const entityInstancesUuidIndexSchema = z.record(entityInstance)
 
 
 export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSchema>;

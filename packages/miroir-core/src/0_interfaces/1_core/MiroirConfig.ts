@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { EntityInstance, EntityInstanceSchema } from "../../0_interfaces/1_core/Instance";
 import { ApplicationDeploymentSchema } from "../../0_interfaces/1_core/StorageConfiguration.js";
+import { entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
 
@@ -52,7 +52,7 @@ export interface MiroirConfigForRest extends MiroirConfigRoot{
 
 export type MiroirConfig = MiroirConfigForMsw | MiroirConfigForRest;
 
-export const StoreBasedConfigurationSchema = EntityInstanceSchema.extend({
+export const StoreBasedConfigurationSchema = entityInstance.extend({
   definition: z.object({currentModelVersion: z.string()})
 })
 

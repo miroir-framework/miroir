@@ -3,12 +3,13 @@ import miroirFundamentalJzodSchema from "./0_interfaces/1_core/bootstrapJzodSche
 export {miroirFundamentalJzodSchema};
 export {
   ApplicationSection,
-  // EntityInstanceCollection,
-  EntityRoot,
+  applicationSection,
+  EntityInstance,
+  entityInstance,
   LocalCacheAction,
   MiroirFundamentalType
 }
-from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
+from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
 export {
   Application,
@@ -42,11 +43,7 @@ export {
 export {
   ApplicationConceptLevelSchema,
   ApplicationConceptLevel,
-  // ApplicationSectionSchema,
-  // ApplicationSection,
   ApplicationSectionOpposite,
-  EntityInstanceSchema,
-  EntityInstance,
   EntityInstanceCollectionSchema,
   EntityInstanceCollection,
   EntityInstanceWithNameSchema,

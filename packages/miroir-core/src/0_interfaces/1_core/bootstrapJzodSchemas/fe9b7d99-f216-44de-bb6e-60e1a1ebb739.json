@@ -20,7 +20,7 @@
           }
         ]
       },
-      "entityRoot": {
+      "entityInstance": {
         "type": "object",
         "strict": false,
         "definition": {
@@ -47,17 +47,6 @@
             "definition": ["MetaModel", "Model", "Data"],
             "optional": true,
             "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
-          },
-          "name": {
-            "type": "simpleType",
-            "definition": "string",
-            "extra": { "id":5, "defaultLabel": "Name", "editable": true }
-          },
-          "description": {
-            "type": "simpleType",
-            "definition": "string",
-            "optional": true,
-            "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
           }
         }
       },
@@ -87,7 +76,7 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityRoot"
+                "relativePath": "entityInstance"
               }
             }
           }
@@ -133,7 +122,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityRoot"
+              "relativePath": "entityInstance"
             }
           },
           {

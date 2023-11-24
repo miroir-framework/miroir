@@ -5,8 +5,8 @@ import {
   DomainTransactionalReplayableAction,
   EntityDefinition,
   EntityInstanceCollection,
-  EntityInstanceSchema,
-  FetchedData
+  FetchedData,
+  entityInstance
 } from "miroir-core";
 import { z } from "zod";
 
@@ -63,7 +63,7 @@ export type Maction = MinstanceAction | MentityAction;
 //# DATA TYPES
 //#########################################################################################
 export const ZEntityIdSchema = z.union([z.number(), z.string()]);
-export const ZDictionarySchema = z.record(z.string().uuid(), EntityInstanceSchema.optional());
+export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance.optional());
 export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: z.array(ZEntityIdSchema), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used

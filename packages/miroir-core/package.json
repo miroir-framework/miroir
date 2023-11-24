@@ -8,20 +8,21 @@
   "type": "module",
   "scripts": {
     "watch": "lerna watch --scope='miroir-core' --include-dependencies -- lerna run build --scope='miroir-core'",
-    "build": "npm run copy-files && rollup --config",
-    "build1": "npm run copy-files && rollup --config",
-    "build2": "npm run copy-files && rollup --config",
-    "build3": "npm run copy-files && rollup --config",
-    "build4": "npm run copy-files && rollup --config",
-    "build5": "npm run copy-files && rollup --config",
+    "build": "npm run copy-files && npm run generate-types && rollup --config",
+    "build1": "npm run build",
+    "build2": "npm run build",
+    "build3": "npm run build",
+    "build4": "npm run build",
+    "build5": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "generate-types": "node ./src/generate-ts-types.mjs",
     "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
   },
   "author": "Arnaud Bailly <miroir-framework@protonmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@miroir-framework/jzod": "^0.5.3",
-    "@miroir-framework/jzod-ts": "^0.5.3",
+    "@miroir-framework/jzod": "*",
+    "@miroir-framework/jzod-ts": "*",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-typescript2": "^0.34.1",
     "serialize-javascript": "^6.0.1",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.4",
     "zod-to-json-schema": "^3.21.2"

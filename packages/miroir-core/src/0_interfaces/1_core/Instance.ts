@@ -1,21 +1,21 @@
-import { z } from "zod";
-import { ApplicationSection, applicationSection } from "./preprocessor-generated/miroirFundamentalType";
+import { ZodObject, z } from "zod";
+import { ApplicationSection, entityInstance, applicationSection } from "./preprocessor-generated/miroirFundamentalType";
 
 // ##########################################################################################
 export const ApplicationConceptLevelSchema = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
 export type ApplicationConceptLevel = z.infer<typeof ApplicationConceptLevelSchema>;
 
 // ##########################################################################################
-export const EntityInstanceSchema = z.object({
-  uuid: z.string().uuid(),
-  parentUuid: z.string().uuid(),
-  parentName: z.string().optional(),
-  conceptLevel: ApplicationConceptLevelSchema.optional(),
-});
-export type EntityInstance = z.infer<typeof EntityInstanceSchema>;
+// export const EntityInstanceSchema = z.object({
+//   uuid: z.string().uuid(),
+//   parentUuid: z.string().uuid(),
+//   parentName: z.string().optional(),
+//   conceptLevel: ApplicationConceptLevelSchema.optional(),
+// });
+// export type EntityInstance = z.infer<typeof entityInstance>;
 
 // ##########################################################################################
-export const EntityInstanceWithNameSchema = EntityInstanceSchema.extend({
+export const EntityInstanceWithNameSchema = entityInstance.extend({
   name: z.string(),
 });
 export type EntityInstanceWithName = z.infer<typeof EntityInstanceWithNameSchema>;
@@ -35,7 +35,7 @@ export const EntityInstanceCollectionSchema = z.object({
   parentName: z.string().optional(),
   parentUuid: z.string().uuid(),
   applicationSection: applicationSection,
-  instances: z.array(EntityInstanceSchema)
+  instances: z.array(entityInstance)
 });
 export type EntityInstanceCollection = z.infer<typeof EntityInstanceCollectionSchema>;
 
