@@ -1,5 +1,5 @@
-import Instance, { EntityInstance } from "../0_interfaces/1_core/Instance";
-import { EntityInstancesUuidIndex, EntitiesDomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 export function DomainInstanceUuidIndexToArray(instances:EntityInstancesUuidIndex):EntityInstance[] {
   return !!instances?Object.values(instances):[];

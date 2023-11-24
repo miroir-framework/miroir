@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EntityAttributePartialSchema, EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollectionSchema } from "../../0_interfaces/1_core/Instance.js";
+import { entityInstanceCollection } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 
 // #############################################################################################
@@ -87,7 +87,7 @@ export type ModelEntityUpdate = z.infer<typeof ModelEntityUpdateSchema>;
 export const ModelCUDInstanceUpdateSchema = z.object({
   updateActionType: z.literal('ModelCUDInstanceUpdate'),
   updateActionName: CUDActionNameSchema,
-  objects:z.array(EntityInstanceCollectionSchema),
+  objects:z.array(entityInstanceCollection),
 });
 export type ModelCUDInstanceUpdate = z.infer<typeof ModelCUDInstanceUpdateSchema>;
 

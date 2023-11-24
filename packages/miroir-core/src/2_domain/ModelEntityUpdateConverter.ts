@@ -1,6 +1,7 @@
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
+import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
+import { EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { CUDActionName, ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";

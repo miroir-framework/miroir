@@ -1,6 +1,6 @@
 import { RemoteDataStoreInterface, RemoteStoreCRUDActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
-import { EntityInstanceCollection } from "../../0_interfaces/1_core/Instance";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
+import { EntityInstanceCollection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export default {}
 

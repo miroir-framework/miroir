@@ -6,6 +6,8 @@ export {
   applicationSection,
   EntityInstance,
   entityInstance,
+  EntityInstanceCollection,
+  entityInstanceCollection,
   LocalCacheAction,
   MiroirFundamentalType
 }
@@ -44,8 +46,6 @@ export {
   ApplicationConceptLevelSchema,
   ApplicationConceptLevel,
   ApplicationSectionOpposite,
-  EntityInstanceCollectionSchema,
-  EntityInstanceCollection,
   EntityInstanceWithNameSchema,
   EntityInstanceWithName,
 } from './0_interfaces/1_core/Instance.js';

@@ -1,6 +1,5 @@
 import { EntityDefinition, MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstance, EntityInstanceCollection } from "../../0_interfaces/1_core/Instance.js";
-import { MiroirApplicationModel } from "../../0_interfaces/1_core/Model.js";
+import { EntityInstanceCollection, EntityInstance } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { IModelSectionStore } from "../../0_interfaces/4-services/remoteStore/IStoreController.js";
 

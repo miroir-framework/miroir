@@ -13,15 +13,13 @@ import { zodToJzod } from "@miroir-framework/jzod";
 
 
 import {
-  DomainActionSchema,
-  EntityInstanceCollectionSchema,
+  entityInstanceCollection,
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfig,
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   defaultLevels,
-  entityDefinitionReport,
   getLoggerName,
   miroirFundamentalJzodSchema,
   restServerDefaultHandlers
@@ -77,7 +75,7 @@ const users = [];
 
 myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 
-const convertedZodSchema = zodToJzod(EntityInstanceCollectionSchema,"EntityInstanceCollectionSchema");
+const convertedZodSchema = zodToJzod(entityInstanceCollection,"EntityInstanceCollectionSchema");
 console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
 
 const {

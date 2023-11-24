@@ -1,6 +1,5 @@
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { EntityDefinition } from "../0_interfaces/1_core/EntityDefinition";
-import { EntityInstance } from "../0_interfaces/1_core/Instance";
 import { MiroirSelectQuery, SelectObjectInstanceQuery } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -21,6 +20,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
+import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;

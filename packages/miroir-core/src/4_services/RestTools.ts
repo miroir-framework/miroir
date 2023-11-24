@@ -1,4 +1,4 @@
-import { EntityInstance } from "miroir-core/src/0_interfaces/1_core/Instance";
+import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpResponseBodyFormat } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { packageName } from "../constants";

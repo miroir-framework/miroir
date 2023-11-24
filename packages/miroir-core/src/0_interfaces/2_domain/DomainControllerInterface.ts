@@ -11,10 +11,9 @@ import {
 
 
 import { ApplicationSchema } from "../1_core/Application.js";
-import { EntityInstanceCollectionSchema } from "../1_core/Instance.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { EntityInstance, entityInstance } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstance, entityInstance, entityInstanceCollection } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -60,7 +59,7 @@ export const DomainDataActionSchema = z.object({
   actionName: CUDActionNameSchema,
   steps: z.number().optional(),
   uuid: z.string().optional(),
-  objects: z.array(EntityInstanceCollectionSchema),
+  objects: z.array(entityInstanceCollection),
 });
 export type DomainDataAction = z.infer<typeof DomainDataActionSchema>;
 
@@ -119,7 +118,7 @@ export type DomainTransactionalRollbackAction = z.infer<typeof DomainTransaction
 export const DomainTransactionalReplaceLocalCacheActionSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
   actionName: z.literal("replaceLocalCache"),
-  objects: z.array(EntityInstanceCollectionSchema)
+  objects: z.array(entityInstanceCollection)
 });
 export type DomainTransactionalReplaceLocalCacheAction = z.infer<typeof DomainTransactionalReplaceLocalCacheActionSchema>;
 

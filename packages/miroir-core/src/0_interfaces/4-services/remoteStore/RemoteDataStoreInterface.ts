@@ -1,7 +1,6 @@
-import { EntityInstance, EntityInstanceCollection } from "../../../0_interfaces/1_core/Instance.js";
 import { MError } from "../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 import { HttpMethod } from "../../1_core/Http.js";
-import { ApplicationSection } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
   DomainModelInitAction,

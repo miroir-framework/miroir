@@ -1,18 +1,9 @@
-import { ZodObject, z } from "zod";
-import { ApplicationSection, entityInstance, applicationSection } from "./preprocessor-generated/miroirFundamentalType";
+import { z } from "zod";
+import { ApplicationSection, applicationSection, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 // ##########################################################################################
 export const ApplicationConceptLevelSchema = z.union([z.literal("MetaModel"), z.literal("Model"), z.literal("Data")]);
 export type ApplicationConceptLevel = z.infer<typeof ApplicationConceptLevelSchema>;
-
-// ##########################################################################################
-// export const EntityInstanceSchema = z.object({
-//   uuid: z.string().uuid(),
-//   parentUuid: z.string().uuid(),
-//   parentName: z.string().optional(),
-//   conceptLevel: ApplicationConceptLevelSchema.optional(),
-// });
-// export type EntityInstance = z.infer<typeof entityInstance>;
 
 // ##########################################################################################
 export const EntityInstanceWithNameSchema = entityInstance.extend({
@@ -31,13 +22,13 @@ export function ApplicationSectionOpposite(s:ApplicationSection):ApplicationSect
 
 // ##########################################################################################
 // TODO: make parameterized type for instances!
-export const EntityInstanceCollectionSchema = z.object({
-  parentName: z.string().optional(),
-  parentUuid: z.string().uuid(),
-  applicationSection: applicationSection,
-  instances: z.array(entityInstance)
-});
-export type EntityInstanceCollection = z.infer<typeof EntityInstanceCollectionSchema>;
+// export const EntityInstanceCollectionSchema = z.object({
+//   parentName: z.string().optional(),
+//   parentUuid: z.string().uuid(),
+//   applicationSection: applicationSection,
+//   instances: z.array(entityInstance)
+// });
+// export type EntityInstanceCollection = z.infer<typeof EntityInstanceCollectionSchema>;
 
 
 export default {}
