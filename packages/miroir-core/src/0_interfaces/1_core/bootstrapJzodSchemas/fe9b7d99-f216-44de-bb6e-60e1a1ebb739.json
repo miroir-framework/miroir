@@ -141,6 +141,25 @@
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionName": {"type": "literal", "definition":"replaceLocalCache"},
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
           }
         ]
       },

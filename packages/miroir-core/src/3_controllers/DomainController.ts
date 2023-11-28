@@ -158,12 +158,14 @@ export class DomainController implements DomainControllerInterface {
     
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.localCache.currentTransaction());
     
-            this.localCache.handleLocalCacheDomainAction(
-              deploymentUuid,
+            this.localCache.handleLocalCacheAction(
               {
-                actionName:'create',
-                actionType: 'DomainDataAction',
-                objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
+                deploymentUuid,
+                localCacheAction: {
+                  actionType: 'LocalCacheAction',
+                  actionName:'create',
+                  objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
+                }
               }
             );
     
@@ -185,6 +187,15 @@ export class DomainController implements DomainControllerInterface {
         }
         case "UpdateMetaModelInstance": {
           this.localCache.handleLocalCacheDomainAction(deploymentUuid, domainModelAction);
+          // this.localCache.handleLocalCacheAction(
+          //   {
+          //     deploymentUuid,
+          //     localCacheAction: {
+          //       actionType: 'LocalCacheAction',
+          //       actionName: "UpdateMetaModelInstance",
+          //       objects:domainModelAction.update.objects
+          //     }
+          //   }
           break;
         }
         case "updateEntity": {
@@ -381,11 +392,16 @@ export class DomainController implements DomainControllerInterface {
         "DomainController loadConfigurationFromRemoteDataStore all instances fetched from server",
         instances
       );
-      this.localCache.handleLocalCacheModelAction(deploymentUuid, {
-        actionName: "replaceLocalCache",
-        actionType: "DomainTransactionalAction",
-        objects: instances,
-      });
+      this.localCache.handleLocalCacheAction(
+        {
+          deploymentUuid, 
+          localCacheAction: {
+            actionType: "LocalCacheAction",
+            actionName: "replaceLocalCache",
+            objects: instances,
+          }
+        }
+      );
 
       log.debug(
         "DomainController loadConfigurationFromRemoteDataStore",

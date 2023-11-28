@@ -245,8 +245,14 @@ describe.sequential(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -272,7 +278,10 @@ describe.sequential(
           // console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createAuthorAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -299,8 +308,14 @@ describe.sequential(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createBookAction.update.modelEntityUpdate);
   
           await waitFor(
             () => {
@@ -396,8 +411,14 @@ describe.sequential(
           expect(domainController.currentTransaction().length).toEqual(2);
           // expect(domainController.currentTransaction()[0]).toEqual(createAuthorAction);
           // expect(domainController.currentTransaction()[1]).toEqual(createBookAction);
-          expect((domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createAuthorAction.update.modelEntityUpdate);
-          expect((domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate).modelEntityUpdate).toEqual(createBookAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[0].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createAuthorAction.update.modelEntityUpdate);
+          expect(
+            (domainController.currentTransaction()[1].update as WrappedTransactionalEntityUpdateWithCUDUpdate)
+              .modelEntityUpdate
+          ).toEqual(createBookAction.update.modelEntityUpdate);
   
           await act(
             async () => {

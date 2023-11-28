@@ -1,7 +1,7 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
-  DomainAncillaryOrReplayableActionWithDeployment,
+  DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment,
   DomainTransactionalReplayableAction,
   EntityDefinition,
   EntityInstanceCollection,
@@ -48,10 +48,10 @@ export interface ReduxStateWithUndoRedo {
   queriesResultsCache: QueriesResultsCache,
 }
 
-export type InnerReducerInterface = (state: LocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => LocalCacheSliceState;
+export type InnerReducerInterface = (state: LocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>) => LocalCacheSliceState;
 
 // TODO: make action type explicit!
-export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>) => ReduxStateWithUndoRedo
+export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>) => ReduxStateWithUndoRedo
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 export type MinstanceAction = PayloadAction<EntityInstanceCollection,string>;

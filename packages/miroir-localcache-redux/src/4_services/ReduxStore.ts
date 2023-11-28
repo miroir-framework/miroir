@@ -7,25 +7,20 @@ import { all } from 'redux-saga/effects';
 
 
 import {
-  applicationDeploymentMiroir,
   ApplicationSection,
-  DomainAncillaryOrReplayableAction,
-  DomainDataAction,
+  DomainAncillaryOrReplayableOrLocalCacheAction,
   DomainTransactionalAncillaryOrReplayableAction,
   DomainTransactionalReplayableAction,
-  entityApplicationVersion,
   EntityDefinition,
-  entityEntity,
-  entityEntityDefinition,
-  entityJzodSchema,
-  entityReport,
-  entityStoreBasedConfiguration,
   JzodSchemaDefinition,
+  LocalCacheActionWithDeployment,
   LocalCacheInfo,
   LocalCacheInterface,
+  LoggerInterface,
   MetaEntity,
-  MiroirApplicationVersion,
   MiroirApplicationModel,
+  MiroirApplicationVersion,
+  MiroirLoggerFactory,
   RemoteDataStoreInterface,
   RemoteStoreCRUDAction,
   RemoteStoreCRUDActionReturnType,
@@ -33,26 +28,30 @@ import {
   Report,
   StoreBasedConfiguration,
   Uuid,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName,
-  LocalCacheActionWithDeployment
+  applicationDeploymentMiroir,
+  entityApplicationVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityReport,
+  entityStoreBasedConfiguration,
+  getLoggerName
 } from "miroir-core";
+import RemoteStoreRestAccessReduxSaga, {
+  RemoteStoreRestSagaGeneratedActionNames,
+  RemoteStoreRestSagaInputActionNamesArray
+} from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { packageName } from '../constants';
+import { cleanLevel } from './constants';
 import {
-  getLocalCacheSliceIndex,
   LocalCacheSlice,
+  getLocalCacheSliceIndex,
   localCacheSliceGeneratedActionNames,
 } from "./localCache/LocalCacheSlice";
 import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer";
-import RemoteStoreRestAccessReduxSaga, {
-  RemoteStoreRestSagaGeneratedActionNames,
-  RemoteStoreRestSagaInputActionNamesArray
-} from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
-import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localCache/localCacheReduxSliceInterface';
-import { packageName } from '../constants';
-import { cleanLevel } from './constants';
+import { ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo, localCacheSliceInputActionNamesObject } from './localCache/localCacheReduxSliceInterface';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxStore");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -275,7 +274,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheDomainAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableAction): void {
+  handleLocalCacheDomainAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableOrLocalCacheAction): void {
     this.innerReduxStore.dispatch(
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
         deploymentUuid,

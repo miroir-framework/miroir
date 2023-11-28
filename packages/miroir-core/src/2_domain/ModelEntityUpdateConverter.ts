@@ -57,9 +57,7 @@ export class ModelEntityUpdateConverter{
         }));
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         domainActionCUDUpdate = {
-          // actionType:"DomainDataAction",
           actionName:"delete",
-          // objects:[{parentName: currentEntity.name, parentUuid:currentEntity.uuid, instances:[{uuid: modelUpdate.instanceUuid} as EntityInstanceWithName]}]
           objects:[
             {parentName: entityEntity.name, parentUuid:entityEntity.uuid, applicationSection:'model', instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
             ...definitionsToRemove

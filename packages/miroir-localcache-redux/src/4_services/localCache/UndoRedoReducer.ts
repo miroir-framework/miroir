@@ -4,8 +4,9 @@ import produce, { Patch, applyPatches, enablePatches } from "immer";
 import {
   CRUDActionNamesArrayString,
   CUDActionNamesArray,
-  DomainAncillaryOrReplayableActionWithDeployment,
+  DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment,
   DomainTransactionalReplayableAction,
+  LocalCacheAction,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
@@ -35,6 +36,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+// ################################################################################################
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
     (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
@@ -46,6 +48,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
 ;
 
 
+// ################################################################################################
 export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWithUndoRedo {
   return {
     previousModelSnapshot: {} as LocalCacheSliceState,
@@ -56,11 +59,11 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer:any):ReduxStateWit
   }
 }
 
-// ####################################################################################################
+// ################################################################################################
 function callUndoRedoReducer(
   reducer:InnerReducerInterface,
   state:LocalCacheSliceState,
-  action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
+  action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>
 ):{newSnapshot:LocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
   // log.info('callUndoRedoReducer called with action', action, 'state', state);
   let changes:Patch[] = [];
@@ -90,7 +93,7 @@ function callUndoRedoReducer(
   const callNextReducerWithUndoRedo = (
     innerReducer:InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
-    action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
+    action: PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>,
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
     // log.info('callNextReducerWithUndoRedo called for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction');
@@ -120,7 +123,7 @@ function callUndoRedoReducer(
 function callNextReducer(
   innerReducer:InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>,
+  action: PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>,
 ): ReduxStateWithUndoRedo {
   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } = state;
   // because of asyncDispatchMiddleware. to clean up so that asyncDispatchMiddleware does not modify actions that can be replayed!
@@ -147,7 +150,7 @@ export function createUndoRedoReducer(
   // Returns a reducer function, that handles undo and redo
   return (
     state:ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer), 
-    action:PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>
+    action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>
   ): ReduxStateWithUndoRedo => {
     const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches,    queriesResultsCache } = state
 
@@ -157,6 +160,32 @@ export function createUndoRedoReducer(
       case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction: {
         // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
         return callNextReducer(innerReducer, state, action);
+      }
+      case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
+        if ((action.payload as any)["localCacheAction"]) {
+          const localCacheAction:LocalCacheAction = (action.payload as any)["localCacheAction"] as LocalCacheAction;
+          log.info("UndoRedoReducer handleLocalCacheAction", localCacheAction)
+          switch (localCacheAction.actionName) {
+            case "replaceLocalCache": {
+              const next = callNextReducer(innerReducer, state, action);
+              return {
+                previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+                pastModelPatches: [],
+                presentModelSnapshot: next.presentModelSnapshot,
+                futureModelPatches: [],
+                queriesResultsCache,
+              };
+              break;
+            }
+            default: {
+              return callNextReducer(innerReducer, state, action);
+              break;
+            }
+          }
+        } else {
+          log.error('UndoRedoReducer handleLocalCacheAction wrong actionType, expected LocalCacheAction, got', action.payload.domainAction.actionType,"instead.");
+          throw new Error('UndoRedoReducer handleLocalCacheAction wrong actionType, expected LocalCacheAction, got ' + action.payload.domainAction.actionType + " instead.");
+        }
       }
       case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction with actionType',action.payload.domainAction.actionType,'for action', action);
@@ -253,7 +282,7 @@ export function createUndoRedoReducer(
               }
               default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                 // log.warn('UndoRedoReducer handleLocalCacheDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
-                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableActionWithDeployment>)
+                return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>)
             }
             break;
           }

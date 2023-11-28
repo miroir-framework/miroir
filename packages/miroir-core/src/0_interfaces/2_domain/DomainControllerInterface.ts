@@ -13,7 +13,7 @@ import {
 import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { EntityInstance, entityInstance, entityInstanceCollection } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstance, entityInstance, entityInstanceCollection, localCacheAction } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -220,16 +220,16 @@ export const DomainActionWithDeploymentSchema = z.object({
 export type DomainActionWithDeployment = z.infer<typeof DomainActionWithDeploymentSchema>;
 
 
-export const DomainAncillaryOrReplayableActionSchema = z.union([DomainDataActionSchema, DomainTransactionalAncillaryOrReplayableActionSchema]);
-export type DomainAncillaryOrReplayableAction = z.infer<typeof DomainAncillaryOrReplayableActionSchema>;
+export const DomainAncillaryOrReplayableOrLocalCacheActionSchema = z.union([DomainDataActionSchema, localCacheAction, DomainTransactionalAncillaryOrReplayableActionSchema]);
+export type DomainAncillaryOrReplayableOrLocalCacheAction = z.infer<typeof DomainAncillaryOrReplayableOrLocalCacheActionSchema>;
 
 
 // #############################################################################################
-export const DomainAncillaryOrReplayableActionWithDeploymentSchema = z.object({
+export const DomainAncillaryOrReplayableOrLocalCacheActionWithDeploymentSchema = z.object({
   deploymentUuid: z.string().uuid(),
-  domainAction: DomainAncillaryOrReplayableActionSchema,
+  domainAction: DomainAncillaryOrReplayableOrLocalCacheActionSchema,
 });
-export type DomainAncillaryOrReplayableActionWithDeployment = z.infer<typeof DomainAncillaryOrReplayableActionWithDeploymentSchema>;
+export type DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment = z.infer<typeof DomainAncillaryOrReplayableOrLocalCacheActionWithDeploymentSchema>;
 
 
 // ###################################################################################

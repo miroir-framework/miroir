@@ -455,17 +455,19 @@ function handleLocalCacheModelAction(
   // );
   switch (action.actionName) {
     case "replaceLocalCache": {
-      const castAction: DomainTransactionalReplaceLocalCacheAction = action;
-      // log.info("localCacheSliceObject replaceLocalCache", deploymentUuid, action);
+      // const castAction: DomainTransactionalReplaceLocalCacheAction = action;
+      // // log.info("localCacheSliceObject replaceLocalCache", deploymentUuid, action);
 
-      for (const instanceCollection of action.objects) {
-        ReplaceInstancesForSectionEntity(
-          deploymentUuid,
-          instanceCollection.applicationSection,
-          state,
-          instanceCollection
-        );
-      }
+      // for (const instanceCollection of action.objects) {
+      //   ReplaceInstancesForSectionEntity(
+      //     deploymentUuid,
+      //     instanceCollection.applicationSection,
+      //     state,
+      //     instanceCollection
+      //   );
+      // }
+      throw new Error("handleLocalCacheModelAction does not handle replaceLocalCache actions!");
+      
       break;
     }
     case "commit": {
@@ -677,6 +679,20 @@ function handleLocalCacheAction(state: LocalCacheSliceState, action: LocalCacheA
         sliceEntityAdapter.updateMany(
           state[instanceCollectionEntityIndex],
           instanceCollection.instances.map((i) => ({ id: i.uuid, changes: i }))
+        );
+      }
+      break;
+    }
+    case "replaceLocalCache": {
+      // const castAction: DomainTransactionalReplaceLocalCacheAction = action;
+      // log.info("localCacheSliceObject replaceLocalCache", deploymentUuid, action);
+
+      for (const instanceCollection of localCacheAction.objects) {
+        ReplaceInstancesForSectionEntity(
+          action.deploymentUuid,
+          instanceCollection.applicationSection,
+          state,
+          instanceCollection
         );
       }
       break;

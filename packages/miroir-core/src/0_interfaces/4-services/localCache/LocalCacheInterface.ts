@@ -3,7 +3,7 @@ import { MiroirApplicationModel } from '../../1_core/Model.js';
 import { LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 
 import {
-  DomainAncillaryOrReplayableAction,
+  DomainAncillaryOrReplayableOrLocalCacheAction,
   DomainDataAction,
   DomainTransactionalAncillaryOrReplayableAction,
   DomainTransactionalReplayableAction,
@@ -32,6 +32,6 @@ export declare interface LocalCacheInterface
   currentTransaction():DomainTransactionalReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainTransactionalAncillaryOrReplayableAction):void;
-  handleLocalCacheDomainAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction):void;
+  handleLocalCacheDomainAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableOrLocalCacheAction):void;
   handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
 }
