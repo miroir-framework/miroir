@@ -1,16 +1,12 @@
-import { ZodTypeAny, z } from "zod";
+import { z } from "zod";
 
 import {
-  JzodElement,
-  JzodObject,
-  // ZodSchemaAndDescriptionRecord,
-  jzodObject,
-  // jzodSchemaObjectToZodSchemaAndDescriptionRecord
-} from "@miroir-framework/jzod-ts";
-import {
   ZodSchemaAndDescription, jzodElementSchemaToZodSchemaAndDescription,
-  // jzodSchemaObjectToZodSchemaAndDescriptionRecord
 } from "@miroir-framework/jzod";
+import {
+  JzodElement,
+  jzodObject
+} from "@miroir-framework/jzod-ts";
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance.js";
 
 import miroirJzodSchemaBootstrap from '../../../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json';
@@ -98,19 +94,12 @@ export const MetaEntitySchema = EntityInstanceWithNameSchema.extend({
 export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 
 
-// // ##########################################################################################
-// export const entityDefinitionEntityDefinitionAttributes2Schema = entityDefinitionEntityDefinitionZodSchema.shape.attributesNew.unwrap().element;
-// export type entityDefinitionEntityDefinitionAttributes2Type = z.infer<typeof entityDefinitionEntityDefinitionAttributes2Schema>
-
 // #################################################################################################
 export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
   entityUuid: UuidSchema,
   description: z.string().optional(),
   defaultLabel: z.string().optional(),
   jzodSchema: jzodObject,
-  // jzodSchema: z.any().optional(),
-  // attributes: z.array(EntityAttributeSchema).optional(),
-  // attributesNew: z.array(entityDefinitionEntityDefinitionAttributeNewSchema).optional()
 });
 export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;
 

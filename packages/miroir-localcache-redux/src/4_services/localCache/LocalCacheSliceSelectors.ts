@@ -8,7 +8,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { MiroirSelectorQueryParams, DomainState, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { getLocalCacheSliceIndex, localCacheStateToDomainState } from "./LocalCacheSlice";
-import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheInterface";
+import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 

@@ -35,7 +35,8 @@ import {
   Uuid,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  LocalCacheActionWithDeployment
 } from "miroir-core";
 import {
   getLocalCacheSliceIndex,
@@ -49,7 +50,7 @@ import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
   RemoteStoreRestSagaInputActionNamesArray
 } from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
-import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localCache/localCacheInterface';
+import { localCacheSliceInputActionNamesObject, ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo } from './localCache/localCacheReduxSliceInterface';
 import { packageName } from '../constants';
 import { cleanLevel } from './constants';
 
@@ -290,6 +291,15 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
         deploymentUuid,
         domainAction,
       })
+    );
+  }
+
+  // ###############################################################################
+  handleLocalCacheAction(localCacheAction: LocalCacheActionWithDeployment): void {
+    log.info("handleLocalCacheAction", localCacheAction);
+    
+    this.innerReduxStore.dispatch(
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](localCacheAction)
     );
   }
 

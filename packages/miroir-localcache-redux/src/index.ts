@@ -32,7 +32,7 @@ export {
   ReduxStoreWithUndoRedo,
   LocalCacheSliceState,
   MiroirDictionary,
-} from "./4_services/localCache/localCacheInterface";
+} from "./4_services/localCache/localCacheReduxSliceInterface";
 export {
   RemoteStoreRestAccessReduxSaga,
   RemoteStoreSagaGenReturnType,

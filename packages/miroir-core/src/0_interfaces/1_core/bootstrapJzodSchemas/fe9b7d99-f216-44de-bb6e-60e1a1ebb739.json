@@ -64,8 +64,8 @@
           },
           "applicationSection": {
             "type": "schemaReference",
+            "optional": false,
             "definition": {
-              "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "applicationSection"
             }
@@ -89,7 +89,19 @@
             "type": "object",
             "definition": {
               "actionType": {"type": "literal", "definition":"LocalCacheAction"},
-              "actionName": {"type": "literal", "definition":"create"}
+              "actionName": {"type": "literal", "definition":"create"},
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": false },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
             }
           },
           {

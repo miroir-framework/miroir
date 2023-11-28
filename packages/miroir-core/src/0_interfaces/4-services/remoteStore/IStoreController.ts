@@ -18,6 +18,7 @@ export interface IAbstractStore {
   clear():Promise<void>;
 }
 
+
 // ###########################################################################################
 export interface IStorageSpaceHandler {
   dropStorageSpaceForInstancesOfEntity(
@@ -68,6 +69,11 @@ export interface IModelSectionStore extends IAbstractStore, IStorageSpaceHandler
 export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
+
+
+// ###############################################################################################################
+export type IDataOrModelStore = IDataSectionStore | IModelSectionStore;
+
 
 // ###############################################################################################################
 // store Controller

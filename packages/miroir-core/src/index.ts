@@ -43,8 +43,8 @@ export {
   Uuid,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
-  ApplicationConceptLevelSchema,
-  ApplicationConceptLevel,
+  // ApplicationConceptLevelSchema,
+  // ApplicationConceptLevel,
   ApplicationSectionOpposite,
   EntityInstanceWithNameSchema,
   EntityInstanceWithName,
@@ -250,9 +250,6 @@ export {
   ModelEntityUpdateConverter
 } from './2_domain/ModelEntityUpdateConverter.js';
 export {
-  LocalAndRemoteControllerInterface
-} from './0_interfaces/3_controllers/LocalAndRemoteControllerInterface.js';
-export {
   ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
 export {
@@ -267,6 +264,7 @@ export {
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
+  LocalCacheActionWithDeployment,
   LocalCacheInterface,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
@@ -290,6 +288,7 @@ export {
   IAbstractEntityStore,
   IAbstractInstanceStore,
   IStorageSpaceHandler,
+  IDataOrModelStore,
   IStoreController,
 } from "./0_interfaces/4-services/remoteStore/IStoreController.js";
 export { } from './1_core/Report.js';

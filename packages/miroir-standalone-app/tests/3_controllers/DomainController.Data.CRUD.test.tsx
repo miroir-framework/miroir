@@ -238,8 +238,8 @@ describe.sequential(
             );
               
             const createInstancesAction: DomainDataAction = {
-              actionName: "create",
               actionType: "DomainDataAction",
+              actionName: "create",
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -310,7 +310,7 @@ describe.sequential(
               expect(getByText(new RegExp(`${book4.uuid}`,'i'))).toBeTruthy() // Rear Window
             }
           );
-  
+
           // ##########################################################################################################
           console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
           const createAction: DomainDataAction = {

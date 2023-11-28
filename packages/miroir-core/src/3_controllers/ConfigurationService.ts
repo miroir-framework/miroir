@@ -6,7 +6,7 @@ import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { IDataSectionStore, IModelSectionStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
+import { IDataSectionStore, IModelSectionStore, IDataOrModelStore } from "../0_interfaces/4-services/remoteStore/IStoreController.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -37,7 +37,7 @@ export type StoreFactory = (
   section:ApplicationSection,
   config: EmulatedServerConfig,
   dataStore?: IDataSectionStore,
-)=>Promise<IDataSectionStore | IModelSectionStore>;
+)=>Promise<IDataOrModelStore>;
 
 export type StoreFactoryRegister = Map<string,StoreFactory>;
 

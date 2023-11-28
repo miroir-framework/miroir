@@ -12,8 +12,6 @@ import {
   DomainControllerInterface,
   EntityDefinition,
   IStoreController,
-  LocalAndRemoteControllerInterface,
-  LoggerInterface,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
@@ -90,7 +88,6 @@ let localAppStoreController: IStoreController;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localDataStoreWorker: SetupWorkerApi | undefined;
 let reduxStore: ReduxStore;
-let localAndRemoteController: LocalAndRemoteControllerInterface;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 

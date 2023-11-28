@@ -7,7 +7,6 @@
 // import React from 'react'
 
 // import {
-//   LocalAndRemoteControllerInterface,
 //   LocalAndRemoteController,
 //   DomainControllerInterface,
 //   DomainController,
@@ -52,7 +51,6 @@
 
 // const miroirContext = new MiroirContext();
 
-// const dataController: LocalAndRemoteControllerInterface = new LocalAndRemoteController(miroirContext,mReduxStore, mReduxStore); // ReduxStore implements both local and remote Data Store access.
 // const domainController:DomainControllerInterface = new DomainController(dataController);
 
 // // Enable API mocking before tests.

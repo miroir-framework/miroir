@@ -11,12 +11,13 @@ export type EntityInstance = {
 export type EntityInstanceCollection = {
     parentName?: string | undefined;
     parentUuid: string;
-    applicationSection: "model" | "data";
+    applicationSection: ApplicationSection;
     instances: EntityInstance[];
 };
 export type LocalCacheAction = {
     actionType: "LocalCacheAction";
     actionName: "create";
+    objects: EntityInstanceCollection[];
 } | {
     actionType: "LocalCacheAction";
     actionName: "update";
@@ -27,10 +28,10 @@ export type LocalCacheAction = {
 export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | LocalCacheAction;
 export type MiroirFundamentalType = MiroirAllFundamentalTypesUnion;
 
-export const applicationSection = z.union([z.literal("model"),z.literal("data"),]);
-export const entityInstance = z.object({uuid:z.string().uuid(),parentName:z.string().optional(),parentUuid:z.string().uuid(),conceptLevel:z.enum(["MetaModel","Model","Data"] as any).optional(),}).strict();
-export const entityInstanceCollection = z.object({parentName:z.string().optional(),parentUuid:z.string(),applicationSection:z.union([z.literal("model"),z.literal("data"),]),instances:z.array(z.lazy(() =>entityInstance)),}).strict();
-export const localCacheAction = z.union([z.object({actionType:z.literal("LocalCacheAction"),actionName:z.literal("create"),}).strict(),z.object({actionType:z.literal("LocalCacheAction"),actionName:z.literal("update"),}).strict(),z.object({actionType:z.literal("LocalCacheAction"),actionName:z.literal("delete"),}).strict(),]);
-export const miroirAllFundamentalTypesUnion = z.union([z.lazy(() =>applicationSection),z.lazy(() =>entityInstance),z.lazy(() =>entityInstanceCollection),z.lazy(() =>localCacheAction),]);
+export const applicationSection = z.union([z.literal("model"), z.literal("data")]);
+export const entityInstance = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()}).strict();
+export const entityInstanceCollection = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
+export const localCacheAction = z.union([z.object({actionType:z.literal("LocalCacheAction"), actionName:z.literal("create"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("LocalCacheAction"), actionName:z.literal("update")}).strict(), z.object({actionType:z.literal("LocalCacheAction"), actionName:z.literal("delete")}).strict()]);
+export const miroirAllFundamentalTypesUnion = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>localCacheAction)]);
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);
 

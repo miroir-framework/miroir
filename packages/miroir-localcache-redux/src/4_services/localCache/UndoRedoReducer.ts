@@ -19,7 +19,7 @@ import {
   ReduxStateWithUndoRedo,
   localCacheSliceInputActionNamesObject,
   localCacheSliceName,
-} from "./localCacheInterface";
+} from "./localCacheReduxSliceInterface";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 enablePatches(); // to gather undo/redo operation history

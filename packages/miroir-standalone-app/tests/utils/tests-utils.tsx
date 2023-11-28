@@ -13,7 +13,6 @@ import {
   ConfigurationService,
   DomainControllerInterface,
   IStoreController,
-  LocalAndRemoteControllerInterface,
   LoggerInterface,
   MiroirConfig,
   MiroirContext,
@@ -56,7 +55,6 @@ export interface MiroirIntegrationTestEnvironment {
   localDataStoreWorker?: SetupWorkerApi,
   localDataStoreServer?: any /**SetupServerApi*/,
   reduxStore: ReduxStore,
-  localAndRemoteController: LocalAndRemoteControllerInterface,
   domainController: DomainControllerInterface,
   miroirContext: MiroirContext,
 }

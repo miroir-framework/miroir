@@ -20,7 +20,7 @@ import {
   entityStoreBasedConfiguration,
   getLoggerName,
 } from "miroir-core";
-import { ReduxStateWithUndoRedo } from "./localCacheInterface";
+import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface";
 import { selectEntityInstanceUuidIndexFromLocalCache, selectSelectorParams } from "./LocalCacheSliceSelectors";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -145,7 +145,7 @@ const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: M
 };
 
 //#########################################################################################
-export const selectModelForDeployment = () =>
+export const selectModelForDeployment: () => (state: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => any = () =>
   createSelector(
     [
       selectApplicationVersions,

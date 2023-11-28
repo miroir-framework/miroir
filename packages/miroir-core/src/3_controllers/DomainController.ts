@@ -15,7 +15,7 @@ import {
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
-import { LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
+import { LocalCacheActionWithDeployment, LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
 import { RemoteDataStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 
 import { ModelEntityUpdateConverter } from "../2_domain/ModelEntityUpdateConverter.js";
@@ -260,7 +260,20 @@ export class DomainController implements DomainControllerInterface {
       log.debug(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheDataAction", domainAction
       );
-      await this.localCache.handleLocalCacheDataAction(deploymentUuid, domainAction);
+      if (domainAction.actionName == "create") {
+        const localCacheAction: LocalCacheActionWithDeployment = {
+          deploymentUuid,
+          localCacheAction: {
+            actionType: "LocalCacheAction",
+            actionName: domainAction.actionName,
+            objects: domainAction.objects,
+          },
+        }
+        log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheAction for", domainAction, "sending", localCacheAction);
+        await this.localCache.handleLocalCacheAction(localCacheAction);
+      } else {
+        await this.localCache.handleLocalCacheDataAction(deploymentUuid, domainAction);
+      }
       log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
       log.error(

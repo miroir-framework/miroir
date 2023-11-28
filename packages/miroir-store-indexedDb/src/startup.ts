@@ -10,6 +10,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
+  IDataOrModelStore,
 } from "miroir-core";
 import { IndexedDbModelSectionStore } from "./4_services/IndexedDbModelSectionStore.js";
 import { IndexedDbDataSectionStore } from "./4_services/IndexedDbDataSectionStore.js";
@@ -33,7 +34,7 @@ export function miroirStoreIndexedDbStartup() {
       section: ApplicationSection,
       config: EmulatedServerConfig,
       dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
+    ): Promise<IDataOrModelStore> => {
       log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
@@ -54,7 +55,7 @@ export function miroirStoreIndexedDbStartup() {
       section: ApplicationSection,
       config: EmulatedServerConfig,
       dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
+    ): Promise<IDataOrModelStore> => {
       log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       if (config.emulatedServerType == "indexedDb") {
         const db = new IndexedDbDataSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
