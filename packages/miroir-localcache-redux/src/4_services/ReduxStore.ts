@@ -275,16 +275,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheDataAction(deploymentUuid: Uuid, domainAction: DomainDataAction): void {
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
-        deploymentUuid,
-        domainAction,
-      })
-    );
-  }
-
-  // ###############################################################################
   handleLocalCacheDomainAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableAction): void {
     this.innerReduxStore.dispatch(
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({

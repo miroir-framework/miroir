@@ -32,7 +32,6 @@ export declare interface LocalCacheInterface
   currentTransaction():DomainTransactionalReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainTransactionalAncillaryOrReplayableAction):void;
-  handleLocalCacheDataAction(deploymentUuid: Uuid, action:DomainDataAction):void;
   handleLocalCacheDomainAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableAction):void;
   handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
 }

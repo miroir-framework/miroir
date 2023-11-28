@@ -258,22 +258,17 @@ export class DomainController implements DomainControllerInterface {
           });
       }
       log.debug(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheDataAction", domainAction
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheAction", domainAction
       );
-      if (domainAction.actionName == "create") {
-        const localCacheAction: LocalCacheActionWithDeployment = {
-          deploymentUuid,
-          localCacheAction: {
-            actionType: "LocalCacheAction",
-            actionName: domainAction.actionName,
-            objects: domainAction.objects,
-          },
-        }
-        log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheAction for", domainAction, "sending", localCacheAction);
-        await this.localCache.handleLocalCacheAction(localCacheAction);
-      } else {
-        await this.localCache.handleLocalCacheDataAction(deploymentUuid, domainAction);
+      const localCacheAction: LocalCacheActionWithDeployment = {
+        deploymentUuid,
+        localCacheAction: {
+          actionType: "LocalCacheAction",
+          actionName: domainAction.actionName,
+          objects: domainAction.objects,
+        },
       }
+      await this.localCache.handleLocalCacheAction(localCacheAction);
       log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
       log.error(

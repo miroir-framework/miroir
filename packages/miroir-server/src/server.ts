@@ -83,7 +83,6 @@ const {
   localAppStoreController
 } = await startServer(miroirConfig);
 
-
 // ################################################################################################
 const jzodSchemaConversion: {
   jzodElement: JzodElement,

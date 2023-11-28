@@ -75,7 +75,6 @@ export const localCacheSliceName: string = "localCache";
 
 export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheModelAction: "handleLocalCacheModelAction",
-  handleLocalCacheDataAction: "handleLocalCacheDataAction",
   handleLocalCacheDomainAction: "handleLocalCacheDomainAction",
   handleLocalCacheAction: "handleLocalCacheAction",
 };
