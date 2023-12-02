@@ -2,7 +2,6 @@
   "defaultLevel": "INFO",
   "defaultTemplate": "[{{time}}] {{level}} {{name}}### ",
   "specificLoggerOptions": {
-    "3_miroir-core_DomainController": {"level":"DEBUG"},
-    "4_miroir-store-indexedDb_IndexedDbInstanceStoreMixin": {"level":"DEBUG"}
+    "3_miroir-core_DomainController": {"level":"DEBUG"}
   }
 }

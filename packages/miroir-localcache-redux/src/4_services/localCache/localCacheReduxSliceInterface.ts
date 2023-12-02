@@ -82,7 +82,7 @@ export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: 
 export const localCacheSliceName: string = "localCache";
 
 export const localCacheSliceInputActionNamesObject = {
-  handleDomainAction: "handleDomainAction",
+  handleTransactionalAction: "handleTransactionalAction",
   handleLocalCacheAction: "handleLocalCacheAction",
 };
 export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;

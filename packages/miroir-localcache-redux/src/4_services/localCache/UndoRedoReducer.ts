@@ -40,13 +40,20 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
-    (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).map(
-    a => ({
-      type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleDomainAction,
-      actionName: a
-    })
+    (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).flatMap(
+    a => ([
+      {
+        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleTransactionalAction,
+        actionName: a
+      },
+      // {
+      //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
+      //   actionName: a
+      // }
+    ])
   )
 ;
+
 
 
 // ################################################################################################
@@ -68,6 +75,8 @@ function callUndoRedoReducer(
 ):{newSnapshot:LocalCacheSliceState,changes: Patch[],inverseChanges:Patch[]} {
   // log.info('callUndoRedoReducer called with action', action, 'state', state);
   log.info('callUndoRedoReducer called with action', JSON.stringify(action, undefined, 2));
+  log.info('callUndoRedoReducer undoableSliceUpdateActions', JSON.stringify(undoableSliceUpdateActions, undefined, 2));
+
   let changes:Patch[] = [];
   let inverseChanges:Patch[] = [];
   const newPresentModelSnapshot:LocalCacheSliceState = produce(
@@ -211,7 +220,7 @@ export function createUndoRedoReducer(
           throw new Error('UndoRedoReducer handleLocalCacheAction wrong actionType, expected LocalCacheAction, got ' + action.payload.localCacheAction.actionType + " instead.");
         }
       }
-      case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleDomainAction: {
+      case localCacheSliceName+'/'+localCacheSliceInputActionNamesObject.handleTransactionalAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info('UndoRedoReducer handleDomainAction for action', JSON.stringify(action, undefined, 2));
         if (action.payload.actionType != "DomainActionWithTransactionalEntityUpdateWithCUDUpdate") {

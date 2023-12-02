@@ -248,6 +248,7 @@ function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Dictionary<Entity
   }
   return true;
 }
+
 // ################################################################################################
 function ReplaceInstancesForSectionEntity(
   deploymentUuid: string,
@@ -522,7 +523,7 @@ function handleDomainTransactionalAction(
 }
 
 //#########################################################################################
-function handleDomainAction(
+function handleTransactionalAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
   action: DomainAction
@@ -539,7 +540,8 @@ function handleDomainAction(
   );
   switch (action.actionType) {
     case "DomainDataAction": {
-      handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "data", action);
+      throw new Error("handleDomainAction for dataAction not allowed!");
+      // handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "data", action);
       break;
     }
     case "DomainTransactionalAction": {
@@ -742,11 +744,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: {} as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleDomainAction](
+    [localCacheSliceInputActionNamesObject.handleTransactionalAction](
       state: LocalCacheSliceState,
       action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
     ) {
-      handleDomainAction(state, action.payload.deploymentUuid, convertToDomainAction(action.payload.domainAction));
+      handleTransactionalAction(state, action.payload.deploymentUuid, convertToDomainAction(action.payload.domainAction));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheAction](
       state: LocalCacheSliceState,

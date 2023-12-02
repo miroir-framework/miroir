@@ -89,7 +89,7 @@ export class DomainController implements DomainControllerInterface {
         case "undo":
         case "redo": {
           // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);
-          this.localCache.handleDomainAction({
+          this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid,
             domainAction: domainTransactionalAction
@@ -151,19 +151,20 @@ export class DomainController implements DomainControllerInterface {
                     deploymentUuid,
                     replayAction.update.objects[0].applicationSection,
                     {
-                    actionType:'RemoteStoreCRUDAction',
-                    actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-                    parentName: replayAction.update.objects[0].parentName,
-                    parentUuid: replayAction.update.objects[0].parentUuid,
-                    objects: replayAction.update.objects[0].instances,
-                  });
+                      actionType:'RemoteStoreCRUDAction',
+                      actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
+                      parentName: replayAction.update.objects[0].parentName,
+                      parentUuid: replayAction.update.objects[0].parentUuid,
+                      objects: replayAction.update.objects[0].instances,
+                    }
+                  );
                 // }
               }
             }
     
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",this.localCache.currentTransaction());
 
-            await this.localCache.handleDomainAction({
+            await this.localCache.handleTransactionalAction({
               actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
               deploymentUuid,
               domainAction: {
@@ -187,7 +188,7 @@ export class DomainController implements DomainControllerInterface {
               }
             );
     
-            // this.localCache.handleDomainAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
+            // this.localCache.handleTransactionalAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
     
             const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
             log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -206,7 +207,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "UpdateMetaModelInstance": {
-          this.localCache.handleDomainAction({
+          this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid, 
             domainAction:domainTransactionalAction
@@ -244,7 +245,7 @@ export class DomainController implements DomainControllerInterface {
           // log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
           
   
-          this.localCache.handleDomainAction({
+          this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid,
             domainAction: {...domainTransactionalAction,update:structureUpdatesWithCUDUpdates}

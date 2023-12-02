@@ -41,6 +41,6 @@ export declare interface LocalCacheInterface
   currentModel(deploymentUuid:string): MiroirApplicationModel;
   currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
-  handleDomainAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment):void;
+  handleTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment):void;
   handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
 }
