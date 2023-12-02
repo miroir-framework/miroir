@@ -90,14 +90,14 @@ export function defaultFormValues(
       // 'attributes': [],
     }
     // TODO: CORRECT THIS IT DOES NOT WORK!!!
-    const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,a)=>{
+    const currentEditorAttributes = Object.entries(currentEntityJzodSchema).reduce((acc,currentAttribute)=>{
       let result
-      if (Object.keys(attributeDefaultValue).includes(a[1].name)) {
-        result = Object.assign({},acc,{[a[1].name]:attributeDefaultValue[a[1].name]})
+      if (Object.keys(attributeDefaultValue).includes(currentAttribute[1].name)) {
+        result = Object.assign({},acc,{[currentAttribute[1].name]:attributeDefaultValue[currentAttribute[1].name]})
       } else {
-        result = Object.assign({},acc,{[a[1].name]:''})
+        result = Object.assign({},acc,{[currentAttribute[1].name]:''})
       }
-      log.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',a[1].name,':',result);
+      log.log('ReportComponent defaultFormValues',tableComponentType,'setting default value for attribute',currentAttribute[1].name,':',result);
       return result;
     },{});
     log.log('defaultFormValues return',currentEditorAttributes);

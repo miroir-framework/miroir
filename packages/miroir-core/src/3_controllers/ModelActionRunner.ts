@@ -124,6 +124,7 @@ export async function applyModelEntityUpdate(
       "not found!"
     );
   }
+  return Promise.resolve(undefined);
 }
 
 // ################################################################################################

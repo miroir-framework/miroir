@@ -36,12 +36,12 @@ import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
 import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
-import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServer from "./assets/miroirConfig-realServer.json";
-import miroirConfig from "./assets/miroirConfig.json";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
+import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
+import miroirConfigRealServer from "./assets/miroirConfig-realServer.json";
+import miroirConfig from "./assets/miroirConfig.json";
 
 
 

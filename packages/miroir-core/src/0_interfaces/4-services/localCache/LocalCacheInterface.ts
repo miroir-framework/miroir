@@ -1,20 +1,30 @@
 import { Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { MiroirApplicationModel } from '../../1_core/Model.js';
-import { LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment, LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
+import {z} from "zod"
 
 import {
-  DomainAncillaryOrReplayableOrLocalCacheAction,
-  DomainDataAction,
-  DomainTransactionalAncillaryOrReplayableAction,
-  DomainTransactionalReplayableAction,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
+  DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
+  DomainTransactionalActionWithCUDUpdate,
 } from "../../2_domain/DomainControllerInterface.js";
-import { LocalCacheAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { LocalCacheAction, localCacheAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 
 // ################################################################################################
-export interface LocalCacheActionWithDeployment {
-  deploymentUuid: Uuid,
-  localCacheAction: LocalCacheAction,
-}
+
+export const LocalCacheActionWithDeploymentSchema = z.object(
+  {
+    actionType:z.literal("LocalCacheAction"),
+    deploymentUuid: z.string().uuid(),
+    localCacheAction: localCacheAction
+  }
+)
+
+export type LocalCacheActionWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
+// export interface LocalCacheActionWithDeployment {
+//   deploymentUuid: Uuid,
+//   localCacheAction: LocalCacheAction,
+// }
 
 // ################################################################################################
 /**
@@ -29,9 +39,8 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MiroirApplicationModel;
-  currentTransaction():DomainTransactionalReplayableAction[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
-  handleLocalCacheModelAction(deploymentUuid: Uuid, action:DomainTransactionalAncillaryOrReplayableAction):void;
-  handleLocalCacheDomainAction(deploymentUuid: Uuid, action:DomainAncillaryOrReplayableOrLocalCacheAction):void;
+  handleDomainAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment):void;
   handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
 }

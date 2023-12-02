@@ -4,7 +4,7 @@ import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "..
 import {
   CRUDActionName,
   DomainModelInitAction,
-  DomainTransactionalReplayableAction,
+  DomainTransactionalActionWithCUDUpdate,
   DomainTransactionalResetDataAction,
   DomainTransactionalResetModelAction,
 } from "../../2_domain/DomainControllerInterface.js";
@@ -72,7 +72,7 @@ export interface RemoteStoreCRUDAction {
 
 // ################################################################################################
 export type RemoteStoreModelAction =
-  | DomainTransactionalReplayableAction
+  | DomainTransactionalActionWithCUDUpdate
   | DomainTransactionalResetModelAction
   | DomainTransactionalResetDataAction
   | DomainModelInitAction

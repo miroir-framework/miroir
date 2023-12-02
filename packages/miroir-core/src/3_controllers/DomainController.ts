@@ -9,7 +9,7 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   DomainTransactionalAction,
-  DomainTransactionalReplayableAction,
+  DomainTransactionalActionWithCUDUpdate,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
@@ -56,7 +56,7 @@ export class DomainController implements DomainControllerInterface {
   ) {}
 
   // ##############################################################################################
-  currentTransaction(): DomainTransactionalReplayableAction[] {
+  currentTransaction(): DomainTransactionalActionWithCUDUpdate[] {
     return this.localCache.currentTransaction();
   }
 
@@ -69,32 +69,37 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainTransactionalAction(
     deploymentUuid:Uuid,
-    domainModelAction: DomainTransactionalAction,
+    domainTransactionalAction: DomainTransactionalAction,
     currentModel:MiroirApplicationModel,
   ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
-      domainModelAction['actionName'],
+      domainTransactionalAction['actionName'],
       "deployment", deploymentUuid,
       "action",
-      domainModelAction
+      domainTransactionalAction
     );
     // await this.dataController.handleRemoteStoreModelAction(domainAction);
     try {
-      switch (domainModelAction.actionName) {
+      switch (domainTransactionalAction.actionName) {
         case "rollback": {
           await this.loadConfigurationFromRemoteDataStore(deploymentUuid);
           break;
         }
         case "undo":
         case "redo": {
-          this.localCache.handleLocalCacheModelAction(deploymentUuid, domainModelAction);
+          // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);
+          this.localCache.handleDomainAction({
+            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+            deploymentUuid,
+            domainAction: domainTransactionalAction
+          });
           break;
         }
         case "initModel": 
         case "resetData": 
         case "resetModel": {
-          await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,domainModelAction);
+          await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,domainTransactionalAction);
           break;
         }
         case "commit": {
@@ -113,8 +118,8 @@ export class DomainController implements DomainControllerInterface {
               conceptLevel:'Data',
               parentName:entityApplicationVersion?.name,
               parentUuid: entityApplicationVersion?.uuid,
-              description: domainModelAction.label,
-              name: domainModelAction.label?domainModelAction.label:'No label was given to this version.',
+              description: domainTransactionalAction.label,
+              name: domainTransactionalAction.label?domainTransactionalAction.label:'No label was given to this version.',
               previousVersion: currentModel?.configuration[0]?.definition?.currentModelVersion,
               // branch: applicationModelBranchMiroirMasterBranch.uuid,
               branch: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
@@ -156,20 +161,33 @@ export class DomainController implements DomainControllerInterface {
               }
             }
     
-            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed",this.localCache.currentTransaction());
-    
-            this.localCache.handleLocalCacheAction(
+            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",this.localCache.currentTransaction());
+
+            await this.localCache.handleDomainAction({
+              actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+              deploymentUuid,
+              domainAction: {
+                actionType: "DomainTransactionalAction",
+                actionName: "commit"
+              }
+            });
+
+            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed and notified to local cache, currentTransaction:",this.localCache.currentTransaction());
+  
+            await this.localCache.handleLocalCacheAction(
               {
+                actionType: "LocalCacheAction",
                 deploymentUuid,
                 localCacheAction: {
                   actionType: 'LocalCacheAction',
                   actionName:'create',
+                  applicationSection: "model",
                   objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
                 }
               }
             );
     
-            this.localCache.handleLocalCacheDomainAction(deploymentUuid, domainModelAction);// commit clears transaction information, locally.
+            // this.localCache.handleDomainAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
     
             const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
             log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -182,62 +200,71 @@ export class DomainController implements DomainControllerInterface {
             };
             // TODO: in the case of the Miroir app, this should be in the 'data'section
             await this.remoteStore.handleRemoteStoreRestCRUDAction(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
+
+
           }
           break;
         }
         case "UpdateMetaModelInstance": {
-          this.localCache.handleLocalCacheDomainAction(deploymentUuid, domainModelAction);
-          // this.localCache.handleLocalCacheAction(
-          //   {
-          //     deploymentUuid,
-          //     localCacheAction: {
-          //       actionType: 'LocalCacheAction',
-          //       actionName: "UpdateMetaModelInstance",
-          //       objects:domainModelAction.update.objects
-          //     }
+          this.localCache.handleDomainAction({
+            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+            deploymentUuid, 
+            domainAction:domainTransactionalAction
+          });
+          // const localCacheAction: LocalCacheActionWithDeployment = {
+          //   deploymentUuid,
+          //   localCacheAction: {
+          //     actionType: "LocalCacheAction",
+          //     actionName: domainModelAction.update.updateActionName,
+          //     includeInTransaction: true,
+          //     applicationSection: domainModelAction.update.objects[0].applicationSection,
+          //     objects: domainModelAction.update.objects,
           //   }
+          // };
+          // this.localCache.handleLocalCacheAction(localCacheAction);
           break;
         }
         case "updateEntity": {
           log.debug(
-            "DomainController updateModel for model entity update",
-            domainModelAction?.update.modelEntityUpdate,
+            "DomainController updateEntity for model entity update",
+            domainTransactionalAction?.update.modelEntityUpdate,
             "entities",
             currentModel.entities,
             "entity definitions",
             currentModel.entityDefinitions
           );
-          const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainModelAction?.update.modelEntityUpdate, currentModel);
-          log.trace('DomainController updateModel correspondingCUDUpdate',cudUpdate);
+          const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainTransactionalAction?.update.modelEntityUpdate, currentModel);
+          log.trace('DomainController updateEntity correspondingCUDUpdate',cudUpdate);
 
           const structureUpdatesWithCUDUpdates: WrappedTransactionalEntityUpdateWithCUDUpdate = {
             updateActionName: 'WrappedTransactionalEntityUpdateWithCUDUpdate',
-            modelEntityUpdate:domainModelAction?.update.modelEntityUpdate,
+            modelEntityUpdate:domainTransactionalAction?.update.modelEntityUpdate,
             equivalentModelCUDUpdates: cudUpdate?[cudUpdate]:[],
           };
-          log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
+          // log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
           
   
-          this.localCache.handleLocalCacheDomainAction(
+          this.localCache.handleDomainAction({
+            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid,
-            {...domainModelAction,update:structureUpdatesWithCUDUpdates}
-          );
+            domainAction: {...domainTransactionalAction,update:structureUpdatesWithCUDUpdates}
+          });
           break;
         }
   
         default: {
-          log.warn("DomainController handleDomainTransactionalAction cannot handle action name for", domainModelAction);
+          log.warn("DomainController handleDomainTransactionalAction cannot handle action name for", domainTransactionalAction);
           break;
         }
       }
     } catch (error) {
       log.warn(
-        "DomainController handleDomainTransactionalAction caught exception",
-        domainModelAction["actionName"],
+        "DomainController handleDomainTransactionalAction caught exception when handling",
+        domainTransactionalAction["actionName"],
         "deployment",
         deploymentUuid,
         "action",
-        domainModelAction,
+        domainTransactionalAction,
         "exception",
         error
       );
@@ -272,10 +299,12 @@ export class DomainController implements DomainControllerInterface {
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheAction", domainAction
       );
       const localCacheAction: LocalCacheActionWithDeployment = {
+        actionType: "LocalCacheAction",
         deploymentUuid,
         localCacheAction: {
           actionType: "LocalCacheAction",
           actionName: domainAction.actionName,
+          applicationSection: domainAction.objects[0].applicationSection,
           objects: domainAction.objects,
         },
       }
@@ -359,7 +388,7 @@ export class DomainController implements DomainControllerInterface {
 
       let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
       for (const e of toFetchEntities) {
-        // makes sequetial calls to interface. Make parallel calls instead using Promise.all?
+        // makes sequential calls to interface. Make parallel calls instead using Promise.all?
         log.trace(
           "DomainController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
           (e as any)["name"]
@@ -394,7 +423,8 @@ export class DomainController implements DomainControllerInterface {
       );
       this.localCache.handleLocalCacheAction(
         {
-          deploymentUuid, 
+          actionType: "LocalCacheAction",
+          deploymentUuid,
           localCacheAction: {
             actionType: "LocalCacheAction",
             actionName: "replaceLocalCache",

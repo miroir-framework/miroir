@@ -57,19 +57,23 @@ export class ModelEntityUpdateConverter{
         }));
         // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
         domainActionCUDUpdate = {
-          actionName:"delete",
-          objects:[
-            {parentName: entityEntity.name, parentUuid:entityEntity.uuid, applicationSection:'model', instances:[{uuid: modelUpdate.entityUuid} as EntityInstanceWithName]},
-            ...definitionsToRemove
-          ]
-        }
+          actionName: "delete",
+          objects: [
+            {
+              parentName: entityEntity.name,
+              parentUuid: entityEntity.uuid,
+              applicationSection: "model",
+              instances: [{ uuid: modelUpdate.entityUuid } as EntityInstanceWithName],
+            },
+            ...definitionsToRemove,
+          ],
+        };
         break;
       }
       case "alterEntityAttribute":
       case "createEntity":{
         const castUpdate = modelUpdate as ModelEntityUpdateCreateMetaModelInstance;
         domainActionCUDUpdate = {
-          // actionType:"DomainDataAction",
           actionName: "create",
           objects:[
             {

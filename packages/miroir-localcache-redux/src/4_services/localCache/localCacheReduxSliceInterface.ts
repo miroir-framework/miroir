@@ -1,11 +1,12 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
-  DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment,
-  DomainTransactionalReplayableAction,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
+  DomainTransactionalActionWithCUDUpdate,
   EntityDefinition,
   EntityInstanceCollection,
   FetchedData,
+  LocalCacheActionWithDeployment,
   entityInstance
 } from "miroir-core";
 import { z } from "zod";
@@ -21,7 +22,7 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action:DomainTransactionalReplayableAction, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainTransactionalActionWithCUDUpdate, changes:Patch[]; inverseChanges:Patch[];
 }
 
 export type QueriesResultsCache = {[k: string]: FetchedData};
@@ -48,10 +49,17 @@ export interface ReduxStateWithUndoRedo {
   queriesResultsCache: QueriesResultsCache,
 }
 
-export type InnerReducerInterface = (state: LocalCacheSliceState, action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>) => LocalCacheSliceState;
+export type InnerReducerInterface = (
+  state: LocalCacheSliceState,
+  action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheActionWithDeployment>
+) => LocalCacheSliceState;
 
 // TODO: make action type explicit!
-export type ReduxReducerWithUndoRedoInterface = (state:ReduxStateWithUndoRedo, action:PayloadAction<DomainAncillaryOrReplayableOrLocalCacheActionWithDeployment>) => ReduxStateWithUndoRedo
+export type ReduxReducerWithUndoRedoInterface = (
+  state: ReduxStateWithUndoRedo,
+  action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment  | LocalCacheActionWithDeployment>
+) => ReduxStateWithUndoRedo;
+
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
 export type MinstanceAction = PayloadAction<EntityInstanceCollection,string>;
@@ -74,8 +82,7 @@ export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: 
 export const localCacheSliceName: string = "localCache";
 
 export const localCacheSliceInputActionNamesObject = {
-  handleLocalCacheModelAction: "handleLocalCacheModelAction",
-  handleLocalCacheDomainAction: "handleLocalCacheDomainAction",
+  handleDomainAction: "handleDomainAction",
   handleLocalCacheAction: "handleLocalCacheAction",
 };
 export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;

@@ -8,9 +8,11 @@ import { all } from 'redux-saga/effects';
 
 import {
   ApplicationSection,
-  DomainAncillaryOrReplayableOrLocalCacheAction,
-  DomainTransactionalAncillaryOrReplayableAction,
-  DomainTransactionalReplayableAction,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
+  DomainActionWithDeployment,
+  DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
+  DomainTransactionalActionWithCUDUpdate,
   EntityDefinition,
   JzodSchemaDefinition,
   LocalCacheActionWithDeployment,
@@ -261,25 +263,9 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(
-    deploymentUuid: Uuid,
-    domainAction: DomainTransactionalAncillaryOrReplayableAction
-  ): void {
+  handleDomainAction(domainAction: DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment): void {
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
-        deploymentUuid,
-        domainAction,
-      })
-    );
-  }
-
-  // ###############################################################################
-  handleLocalCacheDomainAction(deploymentUuid: Uuid, domainAction: DomainAncillaryOrReplayableOrLocalCacheAction): void {
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheDomainAction]({
-        deploymentUuid,
-        domainAction,
-      })
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleDomainAction](domainAction)
     );
   }
 
@@ -293,7 +279,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  currentTransaction(): DomainTransactionalReplayableAction[] {
+  currentTransaction(): DomainTransactionalActionWithCUDUpdate[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

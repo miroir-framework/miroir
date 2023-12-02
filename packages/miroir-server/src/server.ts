@@ -75,9 +75,6 @@ const users = [];
 
 myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 
-const convertedZodSchema = zodToJzod(entityInstanceCollection,"EntityInstanceCollectionSchema");
-console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
-
 const {
   localMiroirStoreController,
   localAppStoreController

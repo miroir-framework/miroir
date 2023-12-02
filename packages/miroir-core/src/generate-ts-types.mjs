@@ -2,6 +2,10 @@ import { jzodToTsCode } from "@miroir-framework/jzod-ts";
 // require JzodElement, jzodToTsCode from "@miroir-framework/jzod-ts";
 // import * as fs from "fs";
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+// import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
+import {ModelEntityUpdateCreateMetaModelInstanceSchema} from "../dist/bundle.js";
+import { zodToJzod } from "@miroir-framework/jzod";
+// import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
 // import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
@@ -21,10 +25,9 @@ export async function generateZodSchemaFileFromJzodSchema(
 ) {
   // log.log("generateZodSchemaFileFromJzodSchema called!");
  
-  const newFileContentsNotFormated = jzodToTsCode(jzodElement, true, jzodSchemaVariableName)
-  const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
-${newFileContentsNotFormated}
-`;
+  const newFileContentsNotFormated = jzodToTsCode(jzodElement, true, jzodSchemaVariableName,true)
+  // const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
+  const newFileContents = newFileContentsNotFormated;
 
   if (targetFileName && existsSync(targetFileName)) {
     const oldFileContents = readFileSync(targetFileName).toString()
@@ -68,6 +71,11 @@ const jzodSchemaConversion
   //   jzodSchemaVariableName: "jzodSchema",
   // }
 ];
+
+
+// console.log("####### JZodElement to convert",JSON.stringify(ModelEntityUpdateCreateMetaModelInstanceSchema, null, 2));
+// const convertedZodSchema = zodToJzod(ModelEntityUpdateCreateMetaModelInstanceSchema,"ModelEntityUpdateCreateMetaModelInstanceSchema");
+// console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
 
 try {
   for (const schema of jzodSchemaConversion) {

@@ -1,4 +1,5 @@
 
+import { promise } from "zod";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
@@ -228,7 +229,8 @@ export class StoreController implements IStoreController{
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
   ): Promise<void> {
-    return this.modelSectionStore.createEntity(entity,entityDefinition);
+    const result = await this.modelSectionStore.createEntity(entity,entityDefinition);
+    return Promise.resolve(result);
   }
 
   // ##############################################################################################

@@ -267,7 +267,7 @@ describe.sequential(
           );
   
           // ##########################################################################################################
-          console.log('add Entity definition step 2: adding entity Author, it must then be present in the local cache report list.')
+          console.log('add Entity step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",

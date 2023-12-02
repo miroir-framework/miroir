@@ -9,7 +9,7 @@
   "scripts": {
     "watch": "lerna watch --scope='miroir-core' --include-dependencies -- lerna run build --scope='miroir-core'",
     "build": "npm run copy-files && rollup --config",
-    "dev-build": "npm run copy-files && npm run preBuild && rollup --config",
+    "dev-build": "npm run preBuild && npm run copy-files && rollup --config",
     "build1": "npm run dev-build",
     "build2": "npm run dev-build",
     "build3": "npm run dev-build",
