@@ -263,6 +263,9 @@ export {
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
   LocalCacheActionWithDeployment,
+  LocalCacheActionWithDeploymentSchema,
+  LocalCacheTransactionalActionWithDeployment,
+  LocalCacheTransactionalActionWithDeploymentSchema,
   LocalCacheInterface,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {

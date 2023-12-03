@@ -1,6 +1,6 @@
 import { Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
 import { MiroirApplicationModel } from '../../1_core/Model.js';
-import { DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment, LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema, DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment, LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 import {z} from "zod"
 
 import {
@@ -14,7 +14,7 @@ import { LocalCacheAction, localCacheAction } from '../../1_core/preprocessor-ge
 
 export const LocalCacheActionWithDeploymentSchema = z.object(
   {
-    actionType:z.literal("LocalCacheAction"),
+    actionType:z.literal("LocalCacheActionWithDeployment"),
     deploymentUuid: z.string().uuid(),
     localCacheAction: localCacheAction
   }
@@ -25,6 +25,13 @@ export type LocalCacheActionWithDeployment = z.infer<typeof LocalCacheActionWith
 //   deploymentUuid: Uuid,
 //   localCacheAction: LocalCacheAction,
 // }
+
+export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
+  actionType:z.literal("localCacheTransactionalActionWithDeploymentSchema"),
+  deploymentUuid: z.string().uuid(),
+  domainAction: DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
+});
+export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
 
 // ################################################################################################
 /**
@@ -41,6 +48,6 @@ export declare interface LocalCacheInterface
   currentModel(deploymentUuid:string): MiroirApplicationModel;
   currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
-  handleTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment):void;
+  handleTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment):void;
   handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
 }

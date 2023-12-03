@@ -89,7 +89,7 @@ export class DomainController implements DomainControllerInterface {
         case "undo":
         case "redo": {
           // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);
-          this.localCache.handleTransactionalAction({
+          await this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid,
             domainAction: domainTransactionalAction
@@ -177,7 +177,7 @@ export class DomainController implements DomainControllerInterface {
   
             await this.localCache.handleLocalCacheAction(
               {
-                actionType: "LocalCacheAction",
+                actionType: "LocalCacheActionWithDeployment",
                 deploymentUuid,
                 localCacheAction: {
                   actionType: 'LocalCacheAction',
@@ -207,7 +207,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "UpdateMetaModelInstance": {
-          this.localCache.handleTransactionalAction({
+          await this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid, 
             domainAction:domainTransactionalAction
@@ -222,7 +222,7 @@ export class DomainController implements DomainControllerInterface {
           //     objects: domainModelAction.update.objects,
           //   }
           // };
-          // this.localCache.handleLocalCacheAction(localCacheAction);
+          // await this.localCache.handleLocalCacheAction(localCacheAction);
           break;
         }
         case "updateEntity": {
@@ -245,7 +245,7 @@ export class DomainController implements DomainControllerInterface {
           // log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
           
   
-          this.localCache.handleTransactionalAction({
+          await this.localCache.handleTransactionalAction({
             actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
             deploymentUuid,
             domainAction: {...domainTransactionalAction,update:structureUpdatesWithCUDUpdates}
@@ -300,7 +300,7 @@ export class DomainController implements DomainControllerInterface {
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheAction", domainAction
       );
       const localCacheAction: LocalCacheActionWithDeployment = {
-        actionType: "LocalCacheAction",
+        actionType: "LocalCacheActionWithDeployment",
         deploymentUuid,
         localCacheAction: {
           actionType: "LocalCacheAction",
@@ -422,9 +422,9 @@ export class DomainController implements DomainControllerInterface {
         "DomainController loadConfigurationFromRemoteDataStore all instances fetched from server",
         instances
       );
-      this.localCache.handleLocalCacheAction(
+      await this.localCache.handleLocalCacheAction(
         {
-          actionType: "LocalCacheAction",
+          actionType: "LocalCacheActionWithDeployment",
           deploymentUuid,
           localCacheAction: {
             actionType: "LocalCacheAction",

@@ -34,7 +34,8 @@ import {
   entityEntityDefinition,
   getLoggerName,
   DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdate
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
+  LocalCacheTransactionalActionWithDeployment
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -456,7 +457,14 @@ function handleDomainTransactionalAction(
   //   action
   // );
   switch (action.actionName) {
+    case "rollback":
+    case "undo":
+    case "redo":
+    case "resetModel":
+    case "resetData":
+    case "initModel":
     case "commit": {
+      log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
       // reset transation contents
       // send ModelEntityUpdates to server for execution?
       // for (let instanceCollection of action.payload.objects) {
@@ -468,7 +476,7 @@ function handleDomainTransactionalAction(
       // not transactional??
       // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
       const localCacheAction: LocalCacheActionWithDeployment = {
-        actionType: "LocalCacheAction",
+        actionType: "LocalCacheActionWithDeployment",
         deploymentUuid,
         localCacheAction: {
           actionType: "LocalCacheAction",
@@ -517,7 +525,7 @@ function handleDomainTransactionalAction(
         "localCacheSliceObject handleDomainTransactionalAction deploymentUuid",
         deploymentUuid,
         "action could not be taken into account, unkown action",
-        action.actionName
+        JSON.stringify(action, undefined, 2)
       );
   }
 }
@@ -685,6 +693,7 @@ function handleLocalCacheAction(state: LocalCacheSliceState, action: LocalCacheA
       break;
     }
     case "replaceLocalCache": {
+      log.info("localCacheSlice handleLocalCacheAction replaceLocalCache called!")
       for (const instanceCollection of localCacheAction.objects) {
         ReplaceInstancesForSectionEntity(
           action.deploymentUuid,
@@ -746,7 +755,8 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   reducers: {
     [localCacheSliceInputActionNamesObject.handleTransactionalAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
+      // action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
+      action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment>
     ) {
       handleTransactionalAction(state, action.payload.deploymentUuid, convertToDomainAction(action.payload.domainAction));
     },

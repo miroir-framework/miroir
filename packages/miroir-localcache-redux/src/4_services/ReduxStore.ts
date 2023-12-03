@@ -37,7 +37,8 @@ import {
   entityJzodSchema,
   entityReport,
   entityStoreBasedConfiguration,
-  getLoggerName
+  getLoggerName,
+  LocalCacheTransactionalActionWithDeployment
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -122,15 +123,18 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
     log.info("ReduxStore ignoredActionsList", ignoredActionsList);
     this.innerReduxStore = configureStore({
       reducer: this.staticReducers,
-      middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-          serializableCheck: {
-            ignoredActions: ignoredActionsList, // Ignore these action types
-            ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
-          },
-        })
-          .concat(promiseMiddleware)
-          .concat(this.sagaMiddleware),
+      middleware: (getDefaultMiddleware) => {
+        return getDefaultMiddleware(
+          {
+            serializableCheck: {
+              ignoredActions: ignoredActionsList, // Ignore these action types
+              ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
+            },
+          }
+        )
+        .concat(promiseMiddleware)
+        .concat(this.sagaMiddleware)
+      },
     });
   } //end constructor
 
@@ -263,7 +267,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleTransactionalAction(domainAction: DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment): void {
+  handleTransactionalAction(domainAction: DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment): void {
     this.innerReduxStore.dispatch(
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleTransactionalAction](domainAction)
     );
