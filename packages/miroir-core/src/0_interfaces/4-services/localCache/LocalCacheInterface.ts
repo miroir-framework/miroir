@@ -8,22 +8,22 @@ import {
   DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
   DomainTransactionalActionWithCUDUpdate,
 } from "../../2_domain/DomainControllerInterface.js";
-import { LocalCacheAction, localCacheAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { LocalCacheCUDAction, localCacheCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 
 // ################################################################################################
 
 export const LocalCacheActionWithDeploymentSchema = z.object(
   {
-    actionType:z.literal("LocalCacheActionWithDeployment"),
+    actionType:z.literal("LocalCacheActionCUDWithDeployment"),
     deploymentUuid: z.string().uuid(),
-    localCacheAction: localCacheAction
+    localCacheCUDAction: localCacheCUDAction
   }
 )
 
-export type LocalCacheActionWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
-// export interface LocalCacheActionWithDeployment {
+export type LocalCacheActionCUDWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
+// export interface LocalCacheActionCUDWithDeployment {
 //   deploymentUuid: Uuid,
-//   localCacheAction: LocalCacheAction,
+//   localCacheCUDAction: LocalCacheCUDAction,
 // }
 
 export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
@@ -49,5 +49,5 @@ export declare interface LocalCacheInterface
   currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment):void;
-  handleLocalCacheAction(action:LocalCacheActionWithDeployment):void;
+  handleLocalCacheCUDAction(action:LocalCacheActionCUDWithDeployment):void;
 }

@@ -13,7 +13,7 @@ import {
 import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { EntityInstance, entityInstance, entityInstanceCollection, localCacheAction } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstance, entityInstance, entityInstanceCollection, localCacheCUDAction } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -216,7 +216,7 @@ export type DomainActionWithDeployment = z.infer<typeof DomainActionWithDeployme
 
 
 // #############################################################################################
-// export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, localCacheAction, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
+// export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, localCacheCUDAction, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
 // with translation of Entity Updates in CUD updates
 export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
 export type DomainActionWithTransactionalEntityUpdateWithCUDUpdate = z.infer<typeof DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema>;

@@ -8,7 +8,7 @@ export {
   entityInstance,
   EntityInstanceCollection,
   entityInstanceCollection,
-  LocalCacheAction,
+  LocalCacheCUDAction,
   MiroirFundamentalType
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
@@ -262,7 +262,7 @@ export {
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
-  LocalCacheActionWithDeployment,
+  LocalCacheActionCUDWithDeployment,
   LocalCacheActionWithDeploymentSchema,
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheTransactionalActionWithDeploymentSchema,

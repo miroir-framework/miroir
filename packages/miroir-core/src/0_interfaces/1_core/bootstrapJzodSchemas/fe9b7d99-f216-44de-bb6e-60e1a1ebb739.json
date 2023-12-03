@@ -929,13 +929,13 @@
           }
         }
       },
-      "localCacheAction": {
+      "localCacheCUDAction": {
         "type": "union",
         "definition": [
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
               "actionName": {"type": "literal", "definition":"create"},
               "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
               "applicationSection": {
@@ -962,7 +962,7 @@
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
               "actionName": {"type": "literal", "definition":"update"},
               "applicationSection": {
                 "type": "schemaReference",
@@ -989,7 +989,7 @@
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
               "actionName": {"type": "literal", "definition":"delete"},
               "applicationSection": {
                 "type": "schemaReference",
@@ -1016,7 +1016,7 @@
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheAction"},
+              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
               "actionName": {"type": "literal", "definition":"replaceLocalCache"},
               "objects": {
                 "type": "array",
@@ -1191,7 +1191,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "localCacheAction"
+              "relativePath": "localCacheCUDAction"
             }
           }
         ]

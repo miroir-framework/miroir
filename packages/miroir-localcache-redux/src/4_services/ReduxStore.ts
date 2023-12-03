@@ -15,7 +15,7 @@ import {
   DomainTransactionalActionWithCUDUpdate,
   EntityDefinition,
   JzodSchemaDefinition,
-  LocalCacheActionWithDeployment,
+  LocalCacheActionCUDWithDeployment,
   LocalCacheInfo,
   LocalCacheInterface,
   LoggerInterface,
@@ -274,11 +274,11 @@ export class ReduxStore implements LocalCacheInterface, RemoteDataStoreInterface
   }
 
   // ###############################################################################
-  handleLocalCacheAction(localCacheAction: LocalCacheActionWithDeployment): void {
-    log.info("handleLocalCacheAction", localCacheAction);
+  handleLocalCacheCUDAction(localCacheCUDAction: LocalCacheActionCUDWithDeployment): void {
+    log.info("handleLocalCacheCUDAction", localCacheCUDAction);
     
     this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheAction](localCacheAction)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](localCacheCUDAction)
     );
   }
 

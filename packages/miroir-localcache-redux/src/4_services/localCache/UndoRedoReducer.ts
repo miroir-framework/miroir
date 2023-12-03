@@ -6,8 +6,8 @@ import {
   CUDActionNamesArray,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
-  LocalCacheAction,
-  LocalCacheActionWithDeployment,
+  LocalCacheCUDAction,
+  LocalCacheActionCUDWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -49,7 +49,7 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
         actionName: a
       },
       // {
-      //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheAction,
+      //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction,
       //   actionName: a
       // }
     ])
@@ -154,7 +154,7 @@ function callNextReducer(
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheTransactionalActionWithDeployment
-    | LocalCacheActionWithDeployment
+    | LocalCacheActionCUDWithDeployment
     | RemoteStoreCRUDAction
   >
 ): ReduxStateWithUndoRedo {
@@ -182,7 +182,7 @@ function callNextReducer(
 //   action: PayloadAction<
 //     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
 //     | LocalCacheTransactionalActionWithDeployment
-//     | LocalCacheActionWithDeployment
+//     | LocalCacheActionCUDWithDeployment
 //     | RemoteStoreCRUDAction
 //   >
 // ):ReduxStateWithUndoRedo => {
@@ -202,15 +202,15 @@ function callNextReducer(
 //   //   // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
 //   //   return callNextReducer(innerReducer, state, action);
 //   // }
-//   case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
-//     if (action.payload.actionType != "LocalCacheAction") {
+//   case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction: {
+//     if (action.payload.actionType != "LocalCacheCUDAction") {
 //       throw new Error(
-//         "reduceWithUndoRedo handleLocalCacheAction accepts only actionType=localCacheAction, found " + action.payload.actionType
+//         "reduceWithUndoRedo handleLocalCacheCUDAction accepts only actionType=localCacheCUDAction, found " + action.payload.actionType
 //       );
 //     } else {
-//       const localCacheAction: LocalCacheAction = action as any as LocalCacheAction;
-//       log.info("reduceWithUndoRedo handleLocalCacheAction", localCacheAction);
-//       switch (localCacheAction.actionName) {
+//       const localCacheCUDAction: LocalCacheCUDAction = action as any as LocalCacheCUDAction;
+//       log.info("reduceWithUndoRedo handleLocalCacheCUDAction", localCacheCUDAction);
+//       switch (localCacheCUDAction.actionName) {
 //         case "replaceLocalCache": {
 //           const next = callNextReducer(innerReducer, state, action);
 //           return {
@@ -223,7 +223,7 @@ function callNextReducer(
 //           break;
 //         }
 //         default: {
-//           // if (localCacheAction.includeInTransaction) {
+//           // if (localCacheCUDAction.includeInTransaction) {
 //           //   return callNextReducerWithUndoRedo(innerReducer, state, action);
 //           // } else {
 //           return callNextReducer(innerReducer, state, action);
@@ -237,8 +237,8 @@ function callNextReducer(
 //     // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
 //     log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
 //     // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
-//     if (action.payload.actionType == "LocalCacheAction" || action.payload.actionType == "RemoteStoreCRUDAction") {
-//       throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheAction!");
+//     if (action.payload.actionType == "LocalCacheCUDAction" || action.payload.actionType == "RemoteStoreCRUDAction") {
+//       throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheCUDAction!");
 //     } else {
 //       switch (action.payload.domainAction.actionType) {
 //         case "DomainTransactionalAction": {
@@ -370,7 +370,7 @@ export function createUndoRedoReducer(
     action: PayloadAction<
       | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
       | LocalCacheTransactionalActionWithDeployment
-      | LocalCacheActionWithDeployment
+      | LocalCacheActionCUDWithDeployment
       | RemoteStoreCRUDAction
     >
   ): ReduxStateWithUndoRedo => {
@@ -390,18 +390,18 @@ export function createUndoRedoReducer(
       //   // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
       //   return callNextReducer(innerReducer, state, action);
       // }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheAction: {
-        if (action.payload.actionType != "LocalCacheActionWithDeployment") {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction: {
+        if (action.payload.actionType != "LocalCacheActionCUDWithDeployment") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheAction accepts only actionType=localCacheAction, found " + action.payload.actionType
+            "reduceWithUndoRedo handleLocalCacheCUDAction accepts only actionType=localCacheCUDAction, found " + action.payload.actionType
           );
         } else {
-          // const localCacheAction: LocalCacheAction = action.payload.localCacheAction;
-          log.info("reduceWithUndoRedo handleLocalCacheAction", action.payload.localCacheAction);
-          switch (action.payload.localCacheAction.actionName) {
+          // const localCacheCUDAction: LocalCacheCUDAction = action.payload.localCacheCUDAction;
+          log.info("reduceWithUndoRedo handleLocalCacheCUDAction", action.payload.localCacheCUDAction);
+          switch (action.payload.localCacheCUDAction.actionName) {
             case "replaceLocalCache": {
               const next = callNextReducer(innerReducer, state, action);
-              log.info("reduceWithUndoRedo handleLocalCacheAction replaceLocalCache done reducer, returning empty transaction");
+              log.info("reduceWithUndoRedo handleLocalCacheCUDAction replaceLocalCache done reducer, returning empty transaction");
               return {
                 previousModelSnapshot, //TODO: effectively set previousModelSnapshot
                 pastModelPatches: [],
@@ -412,7 +412,7 @@ export function createUndoRedoReducer(
               break;
             }
             default: {
-              // if (localCacheAction.includeInTransaction) {
+              // if (localCacheCUDAction.includeInTransaction) {
               //   return callNextReducerWithUndoRedo(innerReducer, state, action);
               // } else {
               return callNextReducer(innerReducer, state, action);
@@ -426,8 +426,8 @@ export function createUndoRedoReducer(
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
         // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
-        if (action.payload.actionType == "LocalCacheActionWithDeployment" || action.payload.actionType == "RemoteStoreCRUDAction") {
-          throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheAction!");
+        if (action.payload.actionType == "LocalCacheActionCUDWithDeployment" || action.payload.actionType == "RemoteStoreCRUDAction") {
+          throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheCUDAction!");
         } else {
           switch (action.payload.domainAction.actionType) {
             case "DomainTransactionalAction": {
