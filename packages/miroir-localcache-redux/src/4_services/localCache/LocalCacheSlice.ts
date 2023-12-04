@@ -35,7 +35,8 @@ import {
   getLoggerName,
   DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
-  LocalCacheTransactionalActionWithDeployment
+  LocalCacheTransactionalActionWithDeployment,
+  LocalCacheTransactionalAction
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -442,10 +443,10 @@ function handleDomainNonTransactionalActionDEFUNCT(
 }
 
 //#########################################################################################
-function handleDomainTransactionalAction(
+function handleLocalCacheTransactionalAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: DomainTransactionalAction
+  action: LocalCacheTransactionalAction
   // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ) {
   // log.info(
@@ -526,40 +527,6 @@ function handleDomainTransactionalAction(
         deploymentUuid,
         "action could not be taken into account, unkown action",
         JSON.stringify(action, undefined, 2)
-      );
-  }
-}
-
-//#########################################################################################
-function handleTransactionalAction(
-  state: LocalCacheSliceState,
-  deploymentUuid: Uuid,
-  action: DomainAction
-  // action: DomainActionWithDeployment
-  // action: DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-) {
-  log.info(
-    "localCacheSliceObject handleDomainAction deploymentUuid",
-    deploymentUuid,
-    // "actionType",
-    // action.actionType,
-    "called with action",
-    JSON.stringify(action, undefined, 2)
-  );
-  switch (action.actionType) {
-    case "DomainDataAction": {
-      throw new Error("handleDomainAction for dataAction not allowed!");
-      // handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "data", action);
-      break;
-    }
-    case "DomainTransactionalAction": {
-      handleDomainTransactionalAction(state, deploymentUuid, action);
-      break;
-    }
-    default:
-      log.warn(
-        "localCacheSliceObject handleDomainAction action could not be taken into account, unkown action",
-        action
       );
   }
 }
@@ -714,10 +681,10 @@ function handleLocalCacheCUDAction(state: LocalCacheSliceState, action: LocalCac
 
 
 //#########################################################################################
-function convertToDomainAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdate): DomainAction {
+function convertDomainActionToDomainTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdate): DomainTransactionalAction | undefined {
   switch (action.actionType) {
     case "DomainDataAction": {
-      return action
+      return undefined
       break;
     }
     case "DomainTransactionalAction": {
@@ -753,12 +720,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: {} as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleTransactionalAction](
+    [localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction](
       state: LocalCacheSliceState,
-      // action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
-      action: PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment>
+      action: PayloadAction<LocalCacheTransactionalActionWithDeployment>
     ) {
-      handleTransactionalAction(state, action.payload.deploymentUuid, convertToDomainAction(action.payload.domainAction));
+      handleLocalCacheTransactionalAction(state, action.payload.deploymentUuid, action.payload.domainAction);
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
       state: LocalCacheSliceState,

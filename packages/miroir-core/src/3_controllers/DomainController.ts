@@ -88,9 +88,8 @@ export class DomainController implements DomainControllerInterface {
         }
         case "undo":
         case "redo": {
-          // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);
-          await this.localCache.handleTransactionalAction({
-            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+          await this.localCache.handleLocalCacheTransactionalAction({
+            actionType: "localCacheTransactionalActionWithDeploymentSchema",
             deploymentUuid,
             domainAction: domainTransactionalAction
           });
@@ -164,8 +163,9 @@ export class DomainController implements DomainControllerInterface {
     
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",this.localCache.currentTransaction());
 
-            await this.localCache.handleTransactionalAction({
-              actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+            // await this.localCache.handleDomainTransactionalAction({
+            await this.localCache.handleLocalCacheTransactionalAction({
+              actionType: "localCacheTransactionalActionWithDeploymentSchema",
               deploymentUuid,
               domainAction: {
                 actionType: "DomainTransactionalAction",
@@ -188,7 +188,7 @@ export class DomainController implements DomainControllerInterface {
               }
             );
     
-            // this.localCache.handleTransactionalAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
+            // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
     
             const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
             log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
@@ -207,8 +207,9 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "UpdateMetaModelInstance": {
-          await this.localCache.handleTransactionalAction({
-            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+          // await this.localCache.handleDomainTransactionalAction({
+          await this.localCache.handleLocalCacheTransactionalAction({
+            actionType: "localCacheTransactionalActionWithDeploymentSchema",
             deploymentUuid, 
             domainAction:domainTransactionalAction
           });
@@ -245,8 +246,8 @@ export class DomainController implements DomainControllerInterface {
           // log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
           
   
-          await this.localCache.handleTransactionalAction({
-            actionType: "DomainActionWithTransactionalEntityUpdateWithCUDUpdate",
+          await this.localCache.handleLocalCacheTransactionalAction({
+            actionType: "localCacheTransactionalActionWithDeploymentSchema",
             deploymentUuid,
             domainAction: {...domainTransactionalAction,update:structureUpdatesWithCUDUpdates}
           });
@@ -433,6 +434,15 @@ export class DomainController implements DomainControllerInterface {
           }
         }
       );
+
+      await this.localCache.handleLocalCacheTransactionalAction({
+        actionType: "localCacheTransactionalActionWithDeploymentSchema",
+        deploymentUuid,
+        domainAction: {
+          actionType: "DomainTransactionalAction",
+          actionName: "rollback"
+        }
+      });
 
       log.debug(
         "DomainController loadConfigurationFromRemoteDataStore",

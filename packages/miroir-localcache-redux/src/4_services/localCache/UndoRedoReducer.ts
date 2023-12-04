@@ -2,11 +2,9 @@ import { PayloadAction, createSelector } from "@reduxjs/toolkit";
 import produce, { Patch, applyPatches, enablePatches } from "immer";
 
 import {
-  CRUDActionNamesArrayString,
   CUDActionNamesArray,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
-  LocalCacheCUDAction,
   LocalCacheCUDActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
@@ -14,7 +12,8 @@ import {
   RemoteStoreCRUDAction,
   getLoggerName
 } from "miroir-core";
-import { RemoteStoreRestSagaInputActionNamesObject } from "../remoteStore/RemoteStoreRestAccessSaga";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
 import {
   InnerReducerInterface,
   LocalCacheSliceState,
@@ -24,8 +23,6 @@ import {
   localCacheSliceInputActionNamesObject,
   localCacheSliceName,
 } from "./localCacheReduxSliceInterface";
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
 enablePatches(); // to gather undo/redo operation history
 
 
@@ -44,8 +41,12 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
     (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).flatMap(
     a => ([
+      // {
+      //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleDomainTransactionalAction,
+      //   actionName: a
+      // },
       {
-        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleTransactionalAction,
+        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction,
         actionName: a
       },
       // {
@@ -174,191 +175,7 @@ function callNextReducer(
   };
 };
 
-// // ####################################################################################################
-// /** decorates passed reducer with undo/redo capabilities, then call it straightaway with given state and action */
-// const reduceWithUndoRedo = (
-//   innerReducer:InnerReducerInterface,
-//   state: ReduxStateWithUndoRedo,
-//   action: PayloadAction<
-//     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-//     | LocalCacheTransactionalActionWithDeployment
-//     | LocalCacheCUDActionWithDeployment
-//     | RemoteStoreCRUDAction
-//   >
-// ):ReduxStateWithUndoRedo => {
-//   const { previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches, queriesResultsCache } = state;
-
-//   log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
-
-// switch (action.type) {
-//   // case localCacheSliceName + "/" + RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction: // TODO: here?
-//   // case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction + "/resolved": // TODO: here?
-//   // case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction: {
-//   //   // TODO: ADD REAL TYPE TO INTERFACE!!!!
-//   //   // if (action.payload.actionType != "DomainActionWithTransactionalEntityUpdateWithCUDUpdate") {
-//   //     // throw new Error("createUndoRedoReducer must not be called for RemoteStoreRestCRUDAction: " + JSON.stringify(action, undefined, 2));
-//   //     log.warn("reduceWithUndoRedo ignored for RemoteStoreRestCRUDAction: " + JSON.stringify(action, undefined, 2));
-//   //   // }
-//   //   // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
-//   //   return callNextReducer(innerReducer, state, action);
-//   // }
-//   case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction: {
-//     if (action.payload.actionType != "LocalCacheCUDAction") {
-//       throw new Error(
-//         "reduceWithUndoRedo handleLocalCacheCUDAction accepts only actionType=localCacheCUDAction, found " + action.payload.actionType
-//       );
-//     } else {
-//       const localCacheCUDAction: LocalCacheCUDAction = action as any as LocalCacheCUDAction;
-//       log.info("reduceWithUndoRedo handleLocalCacheCUDAction", localCacheCUDAction);
-//       switch (localCacheCUDAction.actionName) {
-//         case "replaceLocalCache": {
-//           const next = callNextReducer(innerReducer, state, action);
-//           return {
-//             previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-//             pastModelPatches: [],
-//             presentModelSnapshot: next.presentModelSnapshot,
-//             futureModelPatches: [],
-//             queriesResultsCache,
-//           };
-//           break;
-//         }
-//         default: {
-//           // if (localCacheCUDAction.includeInTransaction) {
-//           //   return callNextReducerWithUndoRedo(innerReducer, state, action);
-//           // } else {
-//           return callNextReducer(innerReducer, state, action);
-//           // }
-//           break;
-//         }
-//       }
-//     }
-//   }
-//   case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleTransactionalAction: {
-//     // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
-//     log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
-//     // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
-//     if (action.payload.actionType == "LocalCacheCUDAction" || action.payload.actionType == "RemoteStoreCRUDAction") {
-//       throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheCUDAction!");
-//     } else {
-//       switch (action.payload.domainAction.actionType) {
-//         case "DomainTransactionalAction": {
-//           switch (action.payload.domainAction.actionName) {
-//             case "rollback": {
-//               const next = callNextReducer(innerReducer, state, action);
-//               return {
-//                 previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-//                 pastModelPatches: [],
-//                 presentModelSnapshot: next.presentModelSnapshot,
-//                 futureModelPatches: [],
-//                 queriesResultsCache,
-//               };
-//               break;
-//             }
-//             case "commit": {
-//               // no effect on local storage contents, just clears the present transaction contents.
-//               return {
-//                 previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
-//                 pastModelPatches: [],
-//                 presentModelSnapshot: presentModelSnapshot,
-//                 futureModelPatches: [],
-//                 queriesResultsCache,
-//               };
-//             }
-//             case "undo": {
-//               if (pastModelPatches.length > 0) {
-//                 const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
-//                 const newPresentSnapshot = applyPatches(
-//                   presentModelSnapshot,
-//                   pastModelPatches[pastModelPatches.length - 1].inverseChanges
-//                 );
-//                 log.info(
-//                   "reduceWithUndoRedo handleDomainAction undo patches",
-//                   pastModelPatches,
-//                   "undo",
-//                   pastModelPatches[0],
-//                   pastModelPatches[1]
-//                 );
-//                 return {
-//                   previousModelSnapshot,
-//                   pastModelPatches: newPast,
-//                   presentModelSnapshot: newPresentSnapshot,
-//                   futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
-//                   queriesResultsCache,
-//                 };
-//               } else {
-//                 // do nothing
-//                 log.warn("reduceWithUndoRedo handleDomainAction cannot further undo, ignoring undo action");
-//                 return {
-//                   previousModelSnapshot,
-//                   pastModelPatches,
-//                   presentModelSnapshot,
-//                   futureModelPatches,
-//                   queriesResultsCache,
-//                 };
-//               }
-//             }
-//             case "redo": {
-//               if (futureModelPatches.length > 0) {
-//                 const newPastPatches = futureModelPatches[0];
-//                 const newFuturePatches = futureModelPatches.slice(1);
-//                 const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
-//                 return {
-//                   previousModelSnapshot,
-//                   pastModelPatches: [...pastModelPatches, newPastPatches],
-//                   presentModelSnapshot: newPresentSnapshot,
-//                   futureModelPatches: newFuturePatches,
-//                   queriesResultsCache,
-//                 };
-//               } else {
-//                 // do nothing
-//                 log.warn(
-//                   "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleDomainTransactionalAction cannot further redo, ignoring redo action"
-//                 );
-//                 return {
-//                   previousModelSnapshot,
-//                   pastModelPatches,
-//                   presentModelSnapshot,
-//                   futureModelPatches,
-//                   queriesResultsCache,
-//                 };
-//               }
-//               break;
-//             }
-//             default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-//               // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
-//               // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>)
-//               throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-  
-//               return callNextReducerWithUndoRedo(
-//                 innerReducer,
-//                 state,
-//                 action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
-//               );
-//           }
-//           break;
-//         }
-//         default: {
-//           throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-//           log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
-//           break;
-//         }
-//       }
-//     }
-//     break;
-//   }
-//   default: {
-//     log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
-//     // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-//     return callNextReducer(innerReducer, state, action);
-//   }
-// }
-// // log.error("UndoRedoReducer handleDomainAction out of switch handling action", action);
-// // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-
-// // return callNextReducer(innerReducer, state, action);
-
-// }
-
+// ################################################################################################
 export function createUndoRedoReducer(
   innerReducer:InnerReducerInterface
 ):ReduxReducerWithUndoRedoInterface
@@ -379,17 +196,6 @@ export function createUndoRedoReducer(
     log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
     
     switch (action.type) {
-      // case localCacheSliceName + "/" + RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction: // TODO: here?
-      // case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction + "/resolved": // TODO: here?
-      // case RemoteStoreRestSagaInputActionNamesObject.handleRemoteStoreRestCRUDAction: {
-      //   // TODO: ADD REAL TYPE TO INTERFACE!!!!
-      //   // if (action.payload.actionType != "DomainActionWithTransactionalEntityUpdateWithCUDUpdate") {
-      //     // throw new Error("createUndoRedoReducer must not be called for RemoteStoreRestCRUDAction: " + JSON.stringify(action, undefined, 2));
-      //     log.warn("reduceWithUndoRedo ignored for RemoteStoreRestCRUDAction: " + JSON.stringify(action, undefined, 2));
-      //   // }
-      //   // log.info('UndoRedoReducer handleRemoteStoreCRUDAction', action)
-      //   return callNextReducer(innerReducer, state, action);
-      // }
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction: {
         if (action.payload.actionType != "LocalCacheCUDActionWithDeployment") {
           throw new Error(
@@ -404,9 +210,9 @@ export function createUndoRedoReducer(
               log.info("reduceWithUndoRedo handleLocalCacheCUDAction replaceLocalCache done reducer, returning empty transaction");
               return {
                 previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-                pastModelPatches: [],
+                pastModelPatches,
                 presentModelSnapshot: next.presentModelSnapshot,
-                futureModelPatches: [],
+                futureModelPatches,
                 queriesResultsCache,
               };
               break;
@@ -422,12 +228,12 @@ export function createUndoRedoReducer(
           }
         }
       }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleTransactionalAction: {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
         // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
         if (action.payload.actionType == "LocalCacheCUDActionWithDeployment" || action.payload.actionType == "RemoteStoreCRUDAction") {
-          throw new Error("reduceWithUndoRedo handleTransactionalAction does not accept actionType=LocalCacheCUDAction!");
+          throw new Error("reduceWithUndoRedo handleDomainTransactionalAction does not accept actionType=LocalCacheCUDAction!");
         } else {
           switch (action.payload.domainAction.actionType) {
             case "DomainTransactionalAction": {
@@ -540,6 +346,124 @@ export function createUndoRedoReducer(
         }
         break;
       }
+      // case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleDomainTransactionalAction: {
+      //   // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
+      //   log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
+      //   // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
+      //   if (action.payload.actionType == "LocalCacheCUDActionWithDeployment" || action.payload.actionType == "RemoteStoreCRUDAction") {
+      //     throw new Error("reduceWithUndoRedo handleDomainTransactionalAction does not accept actionType=LocalCacheCUDAction!");
+      //   } else {
+      //     switch (action.payload.domainAction.actionType) {
+      //       case "DomainTransactionalAction": {
+      //         switch (action.payload.domainAction.actionName) {
+      //           case "rollback": {
+      //             const next = callNextReducer(innerReducer, state, action);
+      //             return {
+      //               previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+      //               pastModelPatches: [],
+      //               presentModelSnapshot: next.presentModelSnapshot,
+      //               futureModelPatches: [],
+      //               queriesResultsCache,
+      //             };
+      //             break;
+      //           }
+      //           case "commit": {
+      //             // no effect on local storage contents, just clears the present transaction contents.
+      //             return {
+      //               previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+      //               pastModelPatches: [],
+      //               presentModelSnapshot: presentModelSnapshot,
+      //               futureModelPatches: [],
+      //               queriesResultsCache,
+      //             };
+      //           }
+      //           case "undo": {
+      //             if (pastModelPatches.length > 0) {
+      //               const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
+      //               const newPresentSnapshot = applyPatches(
+      //                 presentModelSnapshot,
+      //                 pastModelPatches[pastModelPatches.length - 1].inverseChanges
+      //               );
+      //               log.info(
+      //                 "reduceWithUndoRedo handleDomainAction undo patches",
+      //                 pastModelPatches,
+      //                 "undo",
+      //                 pastModelPatches[0],
+      //                 pastModelPatches[1]
+      //               );
+      //               return {
+      //                 previousModelSnapshot,
+      //                 pastModelPatches: newPast,
+      //                 presentModelSnapshot: newPresentSnapshot,
+      //                 futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
+      //                 queriesResultsCache,
+      //               };
+      //             } else {
+      //               // do nothing
+      //               log.warn("reduceWithUndoRedo handleDomainAction cannot further undo, ignoring undo action");
+      //               return {
+      //                 previousModelSnapshot,
+      //                 pastModelPatches,
+      //                 presentModelSnapshot,
+      //                 futureModelPatches,
+      //                 queriesResultsCache,
+      //               };
+      //             }
+      //           }
+      //           case "redo": {
+      //             if (futureModelPatches.length > 0) {
+      //               const newPastPatches = futureModelPatches[0];
+      //               const newFuturePatches = futureModelPatches.slice(1);
+      //               const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
+      //               return {
+      //                 previousModelSnapshot,
+      //                 pastModelPatches: [...pastModelPatches, newPastPatches],
+      //                 presentModelSnapshot: newPresentSnapshot,
+      //                 futureModelPatches: newFuturePatches,
+      //                 queriesResultsCache,
+      //               };
+      //             } else {
+      //               // do nothing
+      //               log.warn(
+      //                 "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleDomainTransactionalAction cannot further redo, ignoring redo action"
+      //               );
+      //               return {
+      //                 previousModelSnapshot,
+      //                 pastModelPatches,
+      //                 presentModelSnapshot,
+      //                 futureModelPatches,
+      //                 queriesResultsCache,
+      //               };
+      //             }
+      //             break;
+      //           }
+      //           case "updateEntity":
+      //           case "UpdateMetaModelInstance":
+      //           case "resetModel":
+      //           case "resetData":
+      //           case "initModel":
+      //           default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
+      //             // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
+      //             // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>)
+      //             // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
+      
+      //             return callNextReducerWithUndoRedo(
+      //               innerReducer,
+      //               state,
+      //               action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
+      //             );
+      //         }
+      //         break;
+      //       }
+      //       default: {
+      //         throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
+      //         log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   break;
+      // }
       default: {
         log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
         // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));

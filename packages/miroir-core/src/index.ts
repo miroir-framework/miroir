@@ -264,6 +264,8 @@ export {
 export {
   LocalCacheCUDActionWithDeployment,
   LocalCacheActionWithDeploymentSchema,
+  LocalCacheTransactionalAction,
+  LocalCacheTransactionalActionSchema,
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheTransactionalActionWithDeploymentSchema,
   LocalCacheInterface,
