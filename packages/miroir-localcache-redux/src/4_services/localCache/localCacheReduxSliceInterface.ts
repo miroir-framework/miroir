@@ -6,7 +6,7 @@ import {
   EntityDefinition,
   EntityInstanceCollection,
   FetchedData,
-  LocalCacheActionCUDWithDeployment,
+  LocalCacheCUDActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   RemoteStoreCRUDAction,
   entityInstance
@@ -56,7 +56,7 @@ export type InnerReducerInterface = (
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheTransactionalActionWithDeployment
-    | LocalCacheActionCUDWithDeployment
+    | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => LocalCacheSliceState;
@@ -67,7 +67,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheTransactionalActionWithDeployment
-    | LocalCacheActionCUDWithDeployment
+    | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => ReduxStateWithUndoRedo;

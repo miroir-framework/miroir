@@ -262,7 +262,7 @@ export {
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
-  LocalCacheActionCUDWithDeployment,
+  LocalCacheCUDActionWithDeployment,
   LocalCacheActionWithDeploymentSchema,
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheTransactionalActionWithDeploymentSchema,

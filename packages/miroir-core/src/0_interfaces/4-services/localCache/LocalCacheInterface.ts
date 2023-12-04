@@ -14,14 +14,14 @@ import { LocalCacheCUDAction, localCacheCUDAction } from '../../1_core/preproces
 
 export const LocalCacheActionWithDeploymentSchema = z.object(
   {
-    actionType:z.literal("LocalCacheActionCUDWithDeployment"),
+    actionType:z.literal("LocalCacheCUDActionWithDeployment"),
     deploymentUuid: z.string().uuid(),
     localCacheCUDAction: localCacheCUDAction
   }
 )
 
-export type LocalCacheActionCUDWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
-// export interface LocalCacheActionCUDWithDeployment {
+export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
+// export interface LocalCacheCUDActionWithDeployment {
 //   deploymentUuid: Uuid,
 //   localCacheCUDAction: LocalCacheCUDAction,
 // }
@@ -49,5 +49,5 @@ export declare interface LocalCacheInterface
   currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment):void;
-  handleLocalCacheCUDAction(action:LocalCacheActionCUDWithDeployment):void;
+  handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):void;
 }

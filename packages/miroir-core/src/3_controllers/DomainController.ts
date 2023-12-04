@@ -15,7 +15,7 @@ import {
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
-import { LocalCacheActionCUDWithDeployment, LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
+import { LocalCacheCUDActionWithDeployment, LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
 import { RemoteDataStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
 
 import { ModelEntityUpdateConverter } from "../2_domain/ModelEntityUpdateConverter.js";
@@ -177,7 +177,7 @@ export class DomainController implements DomainControllerInterface {
   
             await this.localCache.handleLocalCacheCUDAction(
               {
-                actionType: "LocalCacheActionCUDWithDeployment",
+                actionType: "LocalCacheCUDActionWithDeployment",
                 deploymentUuid,
                 localCacheCUDAction: {
                   actionType: 'LocalCacheCUDAction',
@@ -212,7 +212,7 @@ export class DomainController implements DomainControllerInterface {
             deploymentUuid, 
             domainAction:domainTransactionalAction
           });
-          // const localCacheCUDAction: LocalCacheActionCUDWithDeployment = {
+          // const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
           //   deploymentUuid,
           //   localCacheCUDAction: {
           //     actionType: "LocalCacheCUDAction",
@@ -299,8 +299,8 @@ export class DomainController implements DomainControllerInterface {
       log.debug(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheCUDAction", domainAction
       );
-      const localCacheCUDAction: LocalCacheActionCUDWithDeployment = {
-        actionType: "LocalCacheActionCUDWithDeployment",
+      const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+        actionType: "LocalCacheCUDActionWithDeployment",
         deploymentUuid,
         localCacheCUDAction: {
           actionType: "LocalCacheCUDAction",
@@ -424,7 +424,7 @@ export class DomainController implements DomainControllerInterface {
       );
       await this.localCache.handleLocalCacheCUDAction(
         {
-          actionType: "LocalCacheActionCUDWithDeployment",
+          actionType: "LocalCacheCUDActionWithDeployment",
           deploymentUuid,
           localCacheCUDAction: {
             actionType: "LocalCacheCUDAction",

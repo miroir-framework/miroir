@@ -23,7 +23,7 @@ import {
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
   LocalCacheCUDAction,
-  LocalCacheActionCUDWithDeployment,
+  LocalCacheCUDActionWithDeployment,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -475,8 +475,8 @@ function handleDomainTransactionalAction(
     case "UpdateMetaModelInstance": {
       // not transactional??
       // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
-      const localCacheCUDAction: LocalCacheActionCUDWithDeployment = {
-        actionType: "LocalCacheActionCUDWithDeployment",
+      const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+        actionType: "LocalCacheCUDActionWithDeployment",
         deploymentUuid,
         localCacheCUDAction: {
           actionType: "LocalCacheCUDAction",
@@ -566,7 +566,7 @@ function handleTransactionalAction(
 
 //#########################################################################################
 // 
-function handleLocalCacheCUDAction(state: LocalCacheSliceState, action: LocalCacheActionCUDWithDeployment) {
+function handleLocalCacheCUDAction(state: LocalCacheSliceState, action: LocalCacheCUDActionWithDeployment) {
   // state: LocalCacheSliceState,
   // deploymentUuid: Uuid,
   // applicationSection: ApplicationSection,
@@ -762,7 +762,7 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheActionCUDWithDeployment>
+      action: PayloadAction<LocalCacheCUDActionWithDeployment>
     ) {
       handleLocalCacheCUDAction(state, action.payload);
     },
