@@ -293,7 +293,7 @@ export {
   IStorageSpaceHandler,
   IDataOrModelStore,
   IStoreController,
-} from "./0_interfaces/4-services/remoteStore/IStoreController.js";
+} from "./0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';

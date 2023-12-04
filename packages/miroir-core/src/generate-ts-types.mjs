@@ -25,7 +25,19 @@ export async function generateZodSchemaFileFromJzodSchema(
 ) {
   // log.log("generateZodSchemaFileFromJzodSchema called!");
  
-  const newFileContentsNotFormated = jzodToTsCode(jzodElement, true, jzodSchemaVariableName,true)
+  const generateTypeAnotationsForSchema =
+    // jzodElement.type == "schemaReference" ? Object.keys(jzodElement.context) : [];
+    jzodElement.type == "schemaReference"
+      ? Object.keys(jzodElement.context).filter((e) => !["jzodObject", "entityInstance"].includes(e))
+      : [];
+
+  console.log("generateZodSchemaFileFromJzodSchema generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);
+  const newFileContentsNotFormated = jzodToTsCode(
+    jzodElement,
+    true,
+    jzodSchemaVariableName,
+    generateTypeAnotationsForSchema,
+  );
   // const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
   const newFileContents = newFileContentsNotFormated;
 

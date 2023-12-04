@@ -1,7 +1,7 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
 import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { IStoreController } from "../0_interfaces/4-services/remoteStore/IStoreController";
+import { IStoreController } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
 import { modelActionRunner } from "../3_controllers/ModelActionRunner";
 

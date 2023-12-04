@@ -8,7 +8,7 @@ import {
   DomainTransactionalResetDataAction,
   DomainTransactionalResetModelAction,
 } from "../../2_domain/DomainControllerInterface.js";
-import { IStoreController } from "./IStoreController.js";
+import { IStoreController } from "./StoreControllerInterface.js";
 
 
 // ################################################################################################
