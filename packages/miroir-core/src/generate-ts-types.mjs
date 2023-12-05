@@ -5,13 +5,15 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
 import {ModelEntityUpdateCreateMetaModelInstanceSchema} from "../dist/bundle.js";
 import { zodToJzod } from "@miroir-framework/jzod";
+import { miroirFundamentalJzodSchema } from "../tmp/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.js";
 // import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
 // import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 // import miroirFundamentalJzodSchema from "./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json"  assert { type: "json" };
 
-const miroirFundamentalJzodSchema = JSON.parse(readFileSync(new URL('./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json', import.meta.url)).toString());
+// const localMiroirFundamentalJzodSchema = JSON.parse(miroirFundamentalJzodSchema).toString();
+// const miroirFundamentalJzodSchema = JSON.parse(readFileSync(new URL('./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json', import.meta.url)).toString());
 // const test = JSON.parse(readFileSync(new URL('./0_interfaces/1_core/bootstrapJzodSchemas/4721c050-71a0-4f9d-beb4-6520817594e0.json', import.meta.url)).toString());
 
 

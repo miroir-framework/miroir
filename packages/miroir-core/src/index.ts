@@ -1,9 +1,13 @@
-import miroirFundamentalJzodSchema from "./0_interfaces/1_core/bootstrapJzodSchemas/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.json";
+export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
 
-export {miroirFundamentalJzodSchema};
 export {
   ApplicationSection,
   applicationSection,
+  ConceptLevel,
+  CreateEntityAction,
+  Entity,
+  EntityAction,
+  EntityDefinition,
   EntityInstance,
   entityInstance,
   EntityInstanceCollection,
@@ -34,7 +38,7 @@ export {
   EntityAttributePartialSchema,
   EntityAttributePartial,
   EntityDefinitionSchema,
-  EntityDefinition,
+  // EntityDefinition,
   InstanceDictionaryNum,
   InstanceDictionary,
   MetaEntitySchema,
@@ -273,17 +277,17 @@ export {
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
-  RemoteDataStoreInterface,
+  RemoteStoreInterface,
   RemoteStoreAction,
   RemoteStoreCRUDAction,
-  RemoteStoreCRUDActionReturnType,
+  RemoteStoreActionReturnType,
   RemoteStoreModelAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
   RestMethodHandler,
   RestServiceHandler,
-} from "./0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js";
+} from "./0_interfaces/4-services/remoteStore/RemoteStoreInterface.js";
 export {
   IAbstractStore,
   IDataSectionStore,
