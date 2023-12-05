@@ -1,6 +1,7 @@
 import {
   ApplicationSection,
   CRUDActionNamesArrayString,
+  EntityAction,
   HttpMethod,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -152,6 +153,26 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     );
     return callParams.operation(callParams.url, callParams.args);
   }
+
+  // ##################################################################################
+  async handleNetworkRemoteStoreEntityAction(
+    deploymentUuid: string,
+    action: EntityAction
+  ): Promise<RestClientCallReturnType> {
+    const callParams = this.getRestCallParams(
+      action,
+      this.rootApiUrl + "/entityWithDeployment/" + deploymentUuid + "/" + action.actionName
+    );
+    console.debug(
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
+      action,
+      "callParams",
+      callParams
+    );
+    return callParams.operation(callParams.url, callParams.args);
+  }
+
+  // ##################################################################################
 }
 
 export default RemoteStoreNetworkRestClient;

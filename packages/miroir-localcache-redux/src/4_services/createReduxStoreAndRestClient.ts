@@ -52,7 +52,7 @@ export function createReduxStoreAndRestClient(
   const domainController: DomainControllerInterface = new DomainController(
     miroirContext,
     reduxStore, // implements LocalCacheInterface
-    reduxStore, // implements RemoteDataStoreInterface
+    reduxStore, // implements RemoteStoreInterface
   );
 
   return {miroirContext, reduxStore,  domainController}

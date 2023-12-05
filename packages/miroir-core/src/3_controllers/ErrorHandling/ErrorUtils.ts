@@ -1,4 +1,4 @@
-import { RemoteDataStoreInterface, RemoteStoreCRUDActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface";
+import { RemoteStoreInterface, RemoteStoreActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteStoreInterface";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { EntityInstanceCollection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -10,11 +10,11 @@ export default {}
  */ 
 export async function throwExceptionIfError(
   errorLogService: ErrorLogServiceInterface,
-  f: (...args: any) => Promise<RemoteStoreCRUDActionReturnType>,
-  _this: RemoteDataStoreInterface,
+  f: (...args: any) => Promise<RemoteStoreActionReturnType>,
+  _this: RemoteStoreInterface,
   ...args: any[]
 ): Promise<EntityInstanceCollection | void> {
-  const result: RemoteStoreCRUDActionReturnType = await f.bind(_this)(...args);
+  const result: RemoteStoreActionReturnType = await f.bind(_this)(...args);
   if (result && result['status'] == "error") {
     //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
     // Problem: what if the local storage is not accessible? => store it in a in-memory effect.

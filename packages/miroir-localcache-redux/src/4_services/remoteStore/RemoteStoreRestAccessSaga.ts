@@ -12,11 +12,12 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   RemoteStoreCRUDAction,
-  RemoteStoreCRUDActionReturnType,
+  RemoteStoreActionReturnType,
   RemoteStoreModelAction,
   RemoteStoreNetworkClientInterface,
   getLoggerName,
   stringTuple,
+  EntityAction,
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -32,7 +33,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreCRUDActionReturnType>;
+export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
 
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
@@ -50,6 +51,7 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 export const RemoteStoreRestSagaInputActionNamesObject = {
   'handleRemoteStoreRestCRUDAction':'handleRemoteStoreRestCRUDAction',
   'handleRemoteStoreModelAction':'handleRemoteStoreModelAction',
+  'handleRemoteStoreEntityAction':'handleRemoteStoreEntityAction',
 };
 export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
 export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
@@ -84,7 +86,7 @@ export class RemoteStoreRestAccessReduxSaga {
   } = {
     handleRemoteStoreRestCRUDAction: {
       name: "handleRemoteStoreRestCRUDAction",
-      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<
+      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
         { deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction },
         "handleRemoteStoreRestCRUDAction"
       >("handleRemoteStoreRestCRUDAction"),
@@ -122,13 +124,54 @@ export class RemoteStoreRestAccessReduxSaga {
             status: "error",
             errorMessage: e["message"],
             error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreCRUDActionReturnType;
+          } as RemoteStoreActionReturnType;
         }
       }.bind(this as RemoteStoreRestAccessReduxSaga),
     },
+    handleRemoteStoreEntityAction: {
+      name: "handleRemoteStoreEntityAction",
+      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+        { deploymentUuid: string; action: EntityAction },
+        "handleRemoteStoreEntityAction"
+      >("handleRemoteStoreEntityAction"),
+      generator: function* (
+        this: RemoteStoreRestAccessReduxSaga,
+        p: PayloadAction<{ deploymentUuid: string; action: EntityAction }>
+      ): RemoteStoreSagaGenReturnType {
+        const { deploymentUuid, action } = p.payload;
+        try {
+          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction on action",action);
+          const clientResult: {
+            status: number;
+            data: any;
+            headers: Headers;
+            url: string;
+          } = yield call(() =>
+            this.remoteStoreNetworkClient.handleNetworkRemoteStoreEntityAction(deploymentUuid, action)
+          );
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction received clientResult", clientResult);
+
+          const result = {
+            status: "ok",
+            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
+          };
+
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction received result", result.status);
+          return yield result;
+        } catch (e: any) {
+          log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction exception", e);
+          yield put({ type: "instances/failure/instancesNotReceived" });
+          return {
+            status: "error",
+            errorMessage: e["message"],
+            error: { errorMessage: e["message"], stack: [e["message"]] },
+          } as RemoteStoreActionReturnType;
+        }
+      }.bind(this),
+    },
     handleRemoteStoreModelAction: {
       name: "handleRemoteStoreModelAction",
-      creator: promiseActionFactory<RemoteStoreCRUDActionReturnType>().create<
+      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
         { deploymentUuid: string; action: RemoteStoreModelAction },
         "handleRemoteStoreModelAction"
       >("handleRemoteStoreModelAction"),
@@ -163,7 +206,7 @@ export class RemoteStoreRestAccessReduxSaga {
             status: "error",
             errorMessage: e["message"],
             error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreCRUDActionReturnType;
+          } as RemoteStoreActionReturnType;
         }
       }.bind(this),
     },

@@ -211,3 +211,88 @@ export async function modelActionRunner(
   return Promise.resolve(undefined);
 }
 
+
+// ################################################################################################
+/**
+ * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * @param deploymentUuid 
+ * @param actionName 
+ * @param miroirDataStoreProxy 
+ * @param appDataStoreProxy 
+ * @param body 
+ * @returns 
+ */
+export async function entityActionRunner(
+  miroirDataStoreProxy:IStoreController,
+  appDataStoreProxy:IStoreController,
+  deploymentUuid: string,
+  actionName:string,
+  body:any
+):Promise<void> {
+  // log.info("server post model/"," started #####################################");
+  // log.info("server post model/"," started #####################################");
+
+  // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
+  // for (const instance of addedObjects) {
+  log.info('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
+  log.debug('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  switch (actionName) {
+    case 'resetModel':{
+      log.debug("modelActionRunner resetModel update");
+      await miroirDataStoreProxy.clear();
+      await appDataStoreProxy.clear();
+      log.trace('modelActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+      break;
+    }
+    case 'resetData':{
+      log.debug("modelActionRunner resetData update");
+      await appDataStoreProxy.clearDataInstances();
+      log.trace('modelActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
+      break;
+    }
+    case 'initModel':{
+      const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      log.debug('modelActionRunner initModel params',params);
+
+      await initApplicationDeployment(
+        deploymentUuid,
+        actionName,
+        miroirDataStoreProxy,
+        appDataStoreProxy,
+        params
+      );
+      break;
+    }
+    case 'updateEntity': {
+      const update: ModelReplayableUpdate = body;
+      log.debug("modelActionRunner updateEntity update",update);
+      if (update) {
+        // switch ((update as any)['action']) {
+        //   default: {
+        const targetProxy = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
+        log.trace(
+          "modelActionRunner updateEntity",
+          "used targetProxy",
+          (targetProxy as any)["applicationName"],
+          deploymentUuid,
+          applicationDeploymentMiroir.uuid
+        );
+        
+        await targetProxy.applyModelEntityUpdate(update);
+        log.trace('modelActionRunner applyModelEntityUpdate done', update);
+            // break;
+          // }
+        // }
+      } else {
+        log.warn('modelActionRunner has no update to execute!')
+      }
+      break;
+    }
+    default:
+      log.warn('modelActionRunner could not handle actionName', actionName)
+      break;
+  }
+  log.debug('modelActionRunner returning empty response.')
+  return Promise.resolve(undefined);
+}
+

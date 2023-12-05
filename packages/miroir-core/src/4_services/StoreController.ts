@@ -1,7 +1,7 @@
 
 import { promise } from "zod";
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -264,6 +264,20 @@ export class StoreController implements IStoreController{
   // used only for testing purposes!
   async getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>{
     return this.modelSectionStore.getState();
+  }
+  
+  // #############################################################################################
+  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<EntityInstance | undefined> {
+    log.info(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid);
+    
+    let result: EntityInstance | undefined;
+    if (section == 'data') {
+      result = await this.dataSectionStore.getInstance(entityUuid,uuid);
+    } else {
+      result = await this.modelSectionStore.getInstance(entityUuid, uuid);
+    }
+    log.trace(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid, "result", result);
+    return result;
   }
   
   // #############################################################################################

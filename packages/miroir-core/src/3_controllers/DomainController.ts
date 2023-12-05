@@ -16,7 +16,7 @@ import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import { LocalCacheCUDActionWithDeployment, LocalCacheInterface } from '../0_interfaces/4-services/localCache/LocalCacheInterface';
-import { RemoteDataStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteDataStoreInterface.js';
+import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteStoreInterface.js';
 
 import { ModelEntityUpdateConverter } from "../2_domain/ModelEntityUpdateConverter.js";
 
@@ -52,7 +52,7 @@ export class DomainController implements DomainControllerInterface {
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: RemoteDataStoreInterface
+    private remoteStore: RemoteStoreInterface
   ) {}
 
   // ##############################################################################################

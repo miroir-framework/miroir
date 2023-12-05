@@ -1,6 +1,6 @@
-import { MError } from "../../../0_interfaces/3_controllers/ErrorLogServiceInterface.js";
+import { MError } from "../../3_controllers/ErrorLogServiceInterface.js";
 import { HttpMethod } from "../../1_core/Http.js";
-import { ApplicationSection, EntityInstance, EntityInstanceCollection } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ApplicationSection, EntityAction, EntityInstance, EntityInstanceCollection } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
   DomainModelInitAction,
@@ -79,10 +79,10 @@ export type RemoteStoreModelAction =
 ;
 
 // ################################################################################################
-export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction;
+export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction | EntityAction;
 
 // ################################################################################################
-export interface RemoteStoreCRUDActionReturnType {
+export interface RemoteStoreActionReturnType {
   status: "ok" | "error";
   errorMessage?: string;
   error?: MError;
@@ -105,6 +105,10 @@ export interface RemoteStoreNetworkClientInterface {
     deploymentUuid: string,
     action: RemoteStoreModelAction
   ): Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreEntityAction(
+    deploymentUuid: string,
+    action: EntityAction
+  ): Promise<RestClientCallReturnType>;
 }
 
 export default {};
@@ -113,14 +117,19 @@ export default {};
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface RemoteDataStoreInterface {
+export declare interface RemoteStoreInterface {
   handleRemoteStoreRestCRUDAction(
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
-  ): Promise<RemoteStoreCRUDActionReturnType>;
+  ): Promise<RemoteStoreActionReturnType>;
   handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: RemoteStoreModelAction
-  ): Promise<RemoteStoreCRUDActionReturnType>;
+  ): Promise<RemoteStoreActionReturnType>;
+  handleRemoteStoreEntityAction(
+    deploymentUuid: string,
+    action: EntityAction
+  ): Promise<RemoteStoreActionReturnType>;
 }
+

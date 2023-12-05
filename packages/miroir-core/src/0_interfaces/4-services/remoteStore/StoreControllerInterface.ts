@@ -77,7 +77,7 @@ export type IDataOrModelStore = IDataSectionStore | IModelSectionStore;
 
 // ###############################################################################################################
 // store Controller
-export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
+export interface IStoreController extends IAbstractStore, IAbstractEntityStore /**, IAbstractInstanceStore */ {
   initApplication(
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
@@ -103,6 +103,9 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+
+  // instance interface differs from the one in IAbstractInstanceStore: it has an ApplicationSection as first parameter
+  getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<EntityInstance | undefined>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
