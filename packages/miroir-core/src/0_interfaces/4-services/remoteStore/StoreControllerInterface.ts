@@ -1,9 +1,16 @@
-import { EntityDefinition, MetaEntity, Uuid } from '../../1_core/EntityDefinition.js';
+import { Uuid } from '../../1_core/EntityDefinition.js';
+
 import { MiroirApplicationModel } from '../../1_core/Model.js';
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../../2_domain/ModelUpdateInterface.js';
 import { Application } from '../../1_core/Application.js';
 import { DataStoreApplicationType } from '../../3_controllers/ApplicationControllerInterface.js';
-import { ApplicationSection, EntityInstance, EntityInstanceCollection } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import {
+  ApplicationSection,
+  Entity,
+  EntityDefinition,
+  EntityInstance,
+  EntityInstanceCollection,
+} from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ###########################################################################################
 // Abstract store interfaces
@@ -11,7 +18,7 @@ export interface IAbstractStore {
   open():Promise<void>;
   close():Promise<void>;
   bootFromPersistedState(
-    entities : MetaEntity[],
+    entities : Entity[],
     entityDefinitions : EntityDefinition[],
   ):Promise<void>;
   getEntityUuids():string[];
@@ -26,14 +33,14 @@ export interface IStorageSpaceHandler {
   ): Promise<void>;
 
   createStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
-    entity: MetaEntity,
+    entity: Entity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
 }
@@ -52,7 +59,7 @@ export interface IAbstractEntityStore {
   existsEntity(entityUuid:string):boolean;
 
   createEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void>;
@@ -89,12 +96,12 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore /
   ):Promise<void>;
 
   createModelStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
 
   createDataStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<void>;
 

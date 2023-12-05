@@ -1116,19 +1116,26 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "validations": [{ "type": "uuid" }],
             "extra": { "id": 5, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }
           },
+          "application": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
+          },
           "conceptLevel": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "conceptLevel"
-            }
+            },
+            "extra": { "id": 7, "defaultLabel": "Concept Level", "editable": false }
           },
           "description": {
             "type": "simpleType",
-            "definition": "string",
             "optional": true,
-            "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+            "definition": "string",
+            "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
           },
           "jzodSchema": {
             "type": "schemaReference",
@@ -1136,7 +1143,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodObject"
             },
-            "extra": { "id": 8, "defaultLabel": "Jzod Schema", "editable": true }
+            "extra": { "id": 9, "defaultLabel": "Jzod Schema", "editable": true }
           }
         }
       },

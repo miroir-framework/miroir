@@ -25,7 +25,7 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 
-import { ApplicationSection, EntityInstanceCollection } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { ApplicationSection, EntityAction, EntityDefinition, EntityInstanceCollection } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants.js';
@@ -142,7 +142,22 @@ export class DomainController implements DomainControllerInterface {
             for (const replayAction of this.localCache.currentTransaction()) {
               log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
               if (replayAction.actionName == "updateEntity") {
-                await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,replayAction);
+                switch (replayAction.update.modelEntityUpdate.updateActionName) {
+                  case 'createEntity': {
+                    const entityAction: EntityAction = {
+                      actionType: "entityAction",
+                      actionName: 'createEntity',
+                      entity: replayAction.update.modelEntityUpdate.entities[0].entity,
+                      entityDefinition: replayAction.update.modelEntityUpdate.entities[0].entityDefinition as any as EntityDefinition,
+                    }
+                    await this.remoteStore.handleRemoteStoreEntityAction(deploymentUuid,entityAction);
+                    break;
+                  }
+                  default: {
+                    await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,replayAction);
+                    break;
+                  }
+                }
               } else {
                 // for (const instances of replayAction["objects"]) {
                   // TODO: replace with parallel implementation Promise.all?

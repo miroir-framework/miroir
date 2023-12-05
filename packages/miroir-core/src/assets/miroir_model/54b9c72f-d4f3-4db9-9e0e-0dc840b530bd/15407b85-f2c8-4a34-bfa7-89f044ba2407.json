@@ -47,7 +47,7 @@
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 7, "description": "Description", "editable": true }
+        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
       },
       "definition": {
         "type": "schemaReference",

@@ -30,7 +30,7 @@ import reportEntityList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43
 import reportEntityDefinitionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import reportReportList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
 
-import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { IStoreController } from '../0_interfaces/4-services/remoteStore/StoreControllerInterface.js';
@@ -40,7 +40,7 @@ import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants';
 import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
-import { EntityInstance } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { EntityDefinition, EntityInstance } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;

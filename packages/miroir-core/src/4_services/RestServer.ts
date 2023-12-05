@@ -3,7 +3,7 @@ import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/prepr
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/remoteStore/RemoteStoreInterface";
-import { modelActionRunner } from "../3_controllers/ModelActionRunner";
+import { entityActionRunner, modelActionRunner } from "../3_controllers/ModelActionRunner";
 
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import { packageName } from "../constants";
@@ -192,12 +192,12 @@ export async function restMethodEntityActionRunnerHandler(
 
   log.debug("restMethodEntityActionRunnerHandler params", params, "body", body);
 
-  const result = modelActionRunner(
+  const result = entityActionRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
     actionName,
-    body.modelUpdate
+    body
   );
   return continuationFunction(response)(result)
 }
