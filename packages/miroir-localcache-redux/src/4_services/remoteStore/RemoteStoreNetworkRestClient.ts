@@ -63,6 +63,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
     "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
     "entityAction": {"*": {action: true}},
+    // "localCacheEntityActionWithDeployment": {"*": {action: true}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     "DomainTransactionalAction": {
       "UpdateMetaModelInstance": {attribute: "update", result: "modelUpdate"}, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)

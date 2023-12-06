@@ -3,9 +3,7 @@ import { jzodToTsCode } from "@miroir-framework/jzod-ts";
 // import * as fs from "fs";
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
-import {ModelEntityUpdateCreateMetaModelInstanceSchema} from "../dist/bundle.js";
-import { zodToJzod } from "@miroir-framework/jzod";
-import { miroirFundamentalJzodSchema } from "../tmp/fe9b7d99-f216-44de-bb6e-60e1a1ebb739.js";
+import { miroirFundamentalJzodSchema } from "../tmp/miroirFundamentalJzodSchema.js";
 // import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
 // import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";

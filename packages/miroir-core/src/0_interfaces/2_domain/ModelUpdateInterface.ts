@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { EntityAttributePartialSchema, EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { entityInstanceCollection } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityAttributePartialSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { entityDefinition, entityInstanceCollection } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 
 // #############################################################################################
@@ -35,7 +35,7 @@ export const ModelEntityUpdateCreateMetaModelInstanceSchema = z.object({
   updateActionName: z.literal('createEntity'),
   entities: z.array(z.object({
     entity: MetaEntitySchema,
-    entityDefinition: EntityDefinitionSchema
+    entityDefinition: entityDefinition
   }))
 });
 export type ModelEntityUpdateCreateMetaModelInstance = z.infer<typeof ModelEntityUpdateCreateMetaModelInstanceSchema>;

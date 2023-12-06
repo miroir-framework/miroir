@@ -1,14 +1,14 @@
-import { Uuid } from '../../../0_interfaces/1_core/EntityDefinition.js';
-import { MiroirApplicationModel } from '../../1_core/Model.js';
-import { DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema, DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment, LocalCacheInfo } from "../../../0_interfaces/2_domain/DomainControllerInterface";
-import {z} from "zod"
-
+import { z } from "zod";
 import {
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
-  DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
-  DomainTransactionalActionWithCUDUpdate,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
+  LocalCacheInfo,
+} from "../../../0_interfaces/2_domain/DomainControllerInterface";
+import { MiroirApplicationModel } from '../../1_core/Model.js';
+
+import { entityAction, localCacheCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import {
+  DomainTransactionalActionWithCUDUpdate
 } from "../../2_domain/DomainControllerInterface.js";
-import { LocalCacheCUDAction, localCacheCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 
 // ################################################################################################
 
@@ -26,15 +26,22 @@ export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionW
 //   localCacheCUDAction: LocalCacheCUDAction,
 // }
 
-export const LocalCacheTransactionalActionSchema = DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema;
+export const LocalCacheTransactionalActionSchema = z.union([DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema, entityAction]);
 export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
 
 export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
-  actionType:z.literal("localCacheTransactionalActionWithDeploymentSchema"),
+  actionType:z.literal("localCacheTransactionalActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
   domainAction: LocalCacheTransactionalActionSchema,
 });
 export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
+
+export const LocalCacheEntityActionWithDeploymentSchema = z.object({
+  actionType:z.literal("localCacheEntityActionWithDeployment"),
+  deploymentUuid: z.string().uuid(),
+  entityAction: entityAction,
+});
+export type LocalCacheEntityActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
 
 // ################################################################################################
 /**
@@ -49,8 +56,9 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MiroirApplicationModel;
-  currentTransaction():DomainTransactionalActionWithCUDUpdate[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):void;
+  handleLocalCacheEntityAction(action:LocalCacheEntityActionWithDeployment):void;
   handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):void;
 }

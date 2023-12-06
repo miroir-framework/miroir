@@ -1,10 +1,11 @@
-import { EntityDefinition, MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
+import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
-import { EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityAction, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { CUDActionName, ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
@@ -97,6 +98,39 @@ export class ModelEntityUpdateConverter{
     }
     return domainActionCUDUpdate;
   }
+
+  // ###################################################################################################
+  static entityActionToLocalCacheAction(
+    deploymentUuid: Uuid,
+    entityAction:EntityAction,
+  ):LocalCacheCUDActionWithDeployment[] {
+    return [
+      {
+        actionType:"LocalCacheCUDActionWithDeployment",
+        deploymentUuid,
+        localCacheCUDAction: {
+          actionType: "LocalCacheCUDAction",
+          actionName: "create",
+          applicationSection: "model",
+          objects: [
+            {
+              parentName:entityEntity.name,
+              parentUuid:entityEntity.uuid,
+              applicationSection:'model',
+              instances:[entityAction.entity]
+            },
+            {
+              parentName:entityEntityDefinition.name,
+              parentUuid:entityEntityDefinition.uuid,
+              applicationSection:'model', 
+              instances:[entityAction.entityDefinition]
+            },
+          ]
+        }
+      }
+    ]
+  }
+
   // ###################################################################################################
   static modelEntityUpdateToLocalCacheUpdate(
     entities: MetaEntity[],

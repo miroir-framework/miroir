@@ -3,10 +3,12 @@ import { Patch } from "immer";
 import {
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
+  EntityAction,
   EntityDefinition,
   EntityInstanceCollection,
   FetchedData,
   LocalCacheCUDActionWithDeployment,
+  LocalCacheEntityActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   RemoteStoreCRUDAction,
   entityInstance
@@ -24,7 +26,7 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action:DomainTransactionalActionWithCUDUpdate, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment, changes:Patch[]; inverseChanges:Patch[];
 }
 
 export type QueriesResultsCache = {[k: string]: FetchedData};
@@ -55,6 +57,7 @@ export type InnerReducerInterface = (
   state: LocalCacheSliceState,
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
+    | LocalCacheEntityActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
@@ -66,6 +69,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
+    | LocalCacheEntityActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
@@ -94,6 +98,7 @@ export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: 
 export const localCacheSliceName: string = "localCache";
 
 export const localCacheSliceInputActionNamesObject = {
+  handleLocalCacheEntityAction: "handleLocalCacheEntityAction",
   handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
   handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
 };

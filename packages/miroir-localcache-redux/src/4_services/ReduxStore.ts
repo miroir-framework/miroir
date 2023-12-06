@@ -13,6 +13,7 @@ import {
   EntityDefinition,
   JzodSchemaDefinition,
   LocalCacheCUDActionWithDeployment,
+  LocalCacheEntityActionWithDeployment,
   LocalCacheInfo,
   LocalCacheInterface,
   LocalCacheTransactionalActionWithDeployment,
@@ -285,6 +286,13 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
+  handleLocalCacheEntityAction(localCacheEntityAction: LocalCacheEntityActionWithDeployment): void {
+    this.innerReduxStore.dispatch(
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction](localCacheEntityAction)
+    );
+  }
+
+  // ###############################################################################
   handleLocalCacheCUDAction(localCacheCUDAction: LocalCacheCUDActionWithDeployment): void {
     log.info("handleLocalCacheCUDAction", localCacheCUDAction);
     
@@ -294,7 +302,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  currentTransaction(): DomainTransactionalActionWithCUDUpdate[] {
+  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

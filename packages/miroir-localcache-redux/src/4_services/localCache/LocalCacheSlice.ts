@@ -12,18 +12,20 @@ import { memoize as _memoize } from "lodash";
 
 import {
   ApplicationSection,
-  DomainActionWithDeployment,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
   DomainDataAction,
-  DomainAction,
   DomainState,
   DomainTransactionalAction,
+  EntityAction,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
   LocalCacheCUDAction,
   LocalCacheCUDActionWithDeployment,
+  LocalCacheEntityActionWithDeployment,
+  LocalCacheTransactionalAction,
+  LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -32,11 +34,7 @@ import {
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
-  getLoggerName,
-  DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
-  LocalCacheTransactionalActionWithDeployment,
-  LocalCacheTransactionalAction
+  getLoggerName
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -457,60 +455,18 @@ function handleLocalCacheTransactionalAction(
   //   "action",
   //   action
   // );
-  switch (action.actionName) {
-    case "rollback":
-    case "undo":
-    case "redo":
-    case "resetModel":
-    case "resetData":
-    case "initModel":
-    case "commit": {
-      log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
-      // reset transation contents
-      // send ModelEntityUpdates to server for execution?
-      // for (let instanceCollection of action.payload.objects) {
-      //   ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<EntityInstanceCollection>);
-      // }
-      break;
-    }
-    case "UpdateMetaModelInstance": {
-      // not transactional??
-      // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
-      const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
-        actionType: "LocalCacheCUDActionWithDeployment",
-        deploymentUuid,
-        localCacheCUDAction: {
-          actionType: "LocalCacheCUDAction",
-          actionName: action.update.updateActionName,
-          applicationSection: action.update.objects[0].applicationSection,
-          objects: action.update.objects,
-        }
-      };
+  switch (action.actionType) {
+    case "entityAction": {
+      // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
+      // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
 
-      // log.info("localCacheSliceObject handleDomainTransactionalAction updateModel domainDataAction", domainDataAction);
+      // const entityAction: EntityAction = ModelEntityUpdateConverter.modelEntityUpdateToEntityAction(
+      //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
+      //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
+      //   action.update.modelEntityUpdate
+      // );
 
-      // TODO: handle object instanceCollections by ApplicationSection
-      handleLocalCacheCUDAction(
-        state,
-        localCacheCUDAction
-        // deploymentUuid,
-        // domainDataAction.objects[0].applicationSection,
-        // domainDataAction
-      );
-      break;
-    }
-    case "updateEntity": {
-      // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
-      // send CUD actions to local cache
-      // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
-      const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
-      const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
-
-      const domainDataAction: DomainDataAction = ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
-        Object.values(state[entityEntityIndex].entities) as MetaEntity[],
-        Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
-        action.update.modelEntityUpdate
-      );
+      const localCacheCUDActionsWithDeployment = ModelEntityUpdateConverter.entityActionToLocalCacheAction(deploymentUuid, action)
       // log.info(
       //   "localCacheSliceObject handleDomainTransactionalAction updateModel deploymentUuid",
       //   deploymentUuid,
@@ -518,22 +474,96 @@ function handleLocalCacheTransactionalAction(
       //   domainDataAction
       // );
 
-      handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "model", domainDataAction);
+
+      for (const localCacheCUDActionWithDeployment of localCacheCUDActionsWithDeployment) {
+        handleLocalCacheCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);
+      }
+
       break;
     }
-    default:
-      log.warn(
-        "localCacheSliceObject handleDomainTransactionalAction deploymentUuid",
-        deploymentUuid,
-        "action could not be taken into account, unkown action",
-        JSON.stringify(action, undefined, 2)
-      );
+    case "DomainDataAction":
+    case "DomainTransactionalAction":
+    default: {
+      switch (action.actionName) {
+        case "rollback":
+        case "undo":
+        case "redo":
+        case "resetModel":
+        case "resetData":
+        case "initModel":
+        case "commit": {
+          log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
+          // reset transation contents
+          // send ModelEntityUpdates to server for execution?
+          // for (let instanceCollection of action.payload.objects) {
+          //   ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<EntityInstanceCollection>);
+          // }
+          break;
+        }
+        case "UpdateMetaModelInstance": {
+          // not transactional??
+          // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
+          const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+            actionType: "LocalCacheCUDActionWithDeployment",
+            deploymentUuid,
+            localCacheCUDAction: {
+              actionType: "LocalCacheCUDAction",
+              actionName: action.update.updateActionName,
+              applicationSection: action.update.objects[0].applicationSection,
+              objects: action.update.objects,
+            }
+          };
+    
+          // log.info("localCacheSliceObject handleDomainTransactionalAction updateModel domainDataAction", domainDataAction);
+    
+          // TODO: handle object instanceCollections by ApplicationSection
+          handleLocalCacheCUDActionWithDeployment(
+            state,
+            localCacheCUDAction
+            // deploymentUuid,
+            // domainDataAction.objects[0].applicationSection,
+            // domainDataAction
+          );
+          break;
+        }
+        case "updateEntity": {
+          // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
+          // send CUD actions to local cache
+          // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
+          const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
+          const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
+    
+          const domainDataAction: DomainDataAction = ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
+            Object.values(state[entityEntityIndex].entities) as MetaEntity[],
+            Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
+            action.update.modelEntityUpdate
+          );
+          // log.info(
+          //   "localCacheSliceObject handleDomainTransactionalAction updateModel deploymentUuid",
+          //   deploymentUuid,
+          //   "domainDataAction",
+          //   domainDataAction
+          // );
+    
+          handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "model", domainDataAction);
+          break;
+        }
+        default:
+          log.warn(
+            "localCacheSliceObject handleDomainTransactionalAction deploymentUuid",
+            deploymentUuid,
+            "action could not be taken into account, unkown action",
+            JSON.stringify(action, undefined, 2)
+          );
+      }
+      break;
+    }
   }
 }
 
 //#########################################################################################
 // 
-function handleLocalCacheCUDAction(state: LocalCacheSliceState, action: LocalCacheCUDActionWithDeployment) {
+function handleLocalCacheCUDActionWithDeployment(state: LocalCacheSliceState, action: LocalCacheCUDActionWithDeployment) {
   // state: LocalCacheSliceState,
   // deploymentUuid: Uuid,
   // applicationSection: ApplicationSection,
@@ -714,6 +744,128 @@ function convertDomainActionToDomainTransactionalAction(action:DomainActionWithT
 }
 
 //#########################################################################################
+function handleLocalCacheEntityAction(
+  state: LocalCacheSliceState,
+  deploymentUuid: Uuid,
+  action: EntityAction
+  // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
+) {
+  // log.info(
+  //   "localCacheSliceObject handleDomainTransactionalAction called",
+  //   action.actionName,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "action",
+  //   action
+  // );
+  switch (action.actionType) {
+    case "entityAction": {
+      // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
+      // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
+
+      // const entityAction: EntityAction = ModelEntityUpdateConverter.modelEntityUpdateToEntityAction(
+      //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
+      //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
+      //   action.update.modelEntityUpdate
+      // );
+
+      const localCacheCUDActionsWithDeployment = ModelEntityUpdateConverter.entityActionToLocalCacheAction(deploymentUuid, action)
+      // log.info(
+      //   "localCacheSliceObject handleDomainEntityAction updateModel deploymentUuid",
+      //   deploymentUuid,
+      //   "domainDataAction",
+      //   domainDataAction
+      // );
+
+
+      for (const localCacheCUDActionWithDeployment of localCacheCUDActionsWithDeployment) {
+        handleLocalCacheCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);
+      }
+
+      break;
+    }
+    // case "DomainDataAction":
+    // case "DomainTransactionalAction":
+    default: {
+      log.warn("localCacheSliceObject handleDomainEntityAction could not handle action:", JSON.stringify(action, undefined, 2))
+      // switch (action.actionName) {
+      //   case "rollback":
+      //   case "undo":
+      //   case "redo":
+      //   case "resetModel":
+      //   case "resetData":
+      //   case "initModel":
+      //   case "commit": {
+      //     log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
+      //     // reset transation contents
+      //     // send ModelEntityUpdates to server for execution?
+      //     // for (let instanceCollection of action.payload.objects) {
+      //     //   ReplaceInstancesForEntity(state, { type: "ReplaceInstancesForEntity", payload: instanceCollection } as PayloadAction<EntityInstanceCollection>);
+      //     // }
+      //     break;
+      //   }
+      //   case "UpdateMetaModelInstance": {
+      //     // not transactional??
+      //     // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
+      //     const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+      //       actionType: "LocalCacheCUDActionWithDeployment",
+      //       deploymentUuid,
+      //       localCacheCUDAction: {
+      //         actionType: "LocalCacheCUDAction",
+      //         actionName: action.update.updateActionName,
+      //         applicationSection: action.update.objects[0].applicationSection,
+      //         objects: action.update.objects,
+      //       }
+      //     };
+    
+      //     // log.info("localCacheSliceObject handleDomainTransactionalAction updateModel domainDataAction", domainDataAction);
+    
+      //     // TODO: handle object instanceCollections by ApplicationSection
+      //     handleLocalCacheCUDActionWithDeployment(
+      //       state,
+      //       localCacheCUDAction
+      //       // deploymentUuid,
+      //       // domainDataAction.objects[0].applicationSection,
+      //       // domainDataAction
+      //     );
+      //     break;
+      //   }
+      //   case "updateEntity": {
+      //     // infer from ModelEntityUpdates the CUD actions to be performed on model Entities, Reports, etc.
+      //     // send CUD actions to local cache
+      //     // have undo / redo contain both(?) local cache CUD actions and ModelEntityUpdates
+      //     const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
+      //     const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
+    
+      //     const domainDataAction: DomainDataAction = ModelEntityUpdateConverter.modelEntityUpdateToLocalCacheUpdate(
+      //       Object.values(state[entityEntityIndex].entities) as MetaEntity[],
+      //       Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
+      //       action.update.modelEntityUpdate
+      //     );
+      //     // log.info(
+      //     //   "localCacheSliceObject handleDomainTransactionalAction updateModel deploymentUuid",
+      //     //   deploymentUuid,
+      //     //   "domainDataAction",
+      //     //   domainDataAction
+      //     // );
+    
+      //     handleDomainNonTransactionalActionDEFUNCT(state, deploymentUuid, "model", domainDataAction);
+      //     break;
+      //   }
+      //   default:
+      //     log.warn(
+      //       "localCacheSliceObject handleDomainTransactionalAction deploymentUuid",
+      //       deploymentUuid,
+      //       "action could not be taken into account, unkown action",
+      //       JSON.stringify(action, undefined, 2)
+      //     );
+      // }
+      break;
+    }
+  }
+}
+
+//#########################################################################################
 //# SLICE
 //#########################################################################################
 export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
@@ -726,11 +878,17 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     ) {
       handleLocalCacheTransactionalAction(state, action.payload.deploymentUuid, action.payload.domainAction);
     },
+    [localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction](
+      state: LocalCacheSliceState,
+      action: PayloadAction<LocalCacheEntityActionWithDeployment>
+    ) {
+      handleLocalCacheEntityAction(state, action.payload.deploymentUuid, action.payload.entityAction);
+    },
     [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
       state: LocalCacheSliceState,
       action: PayloadAction<LocalCacheCUDActionWithDeployment>
     ) {
-      handleLocalCacheCUDAction(state, action.payload);
+      handleLocalCacheCUDActionWithDeployment(state, action.payload);
     },
   },
 });

@@ -12,8 +12,13 @@ import {
 
 import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
+import {
+  EntityInstance,
+  entityInstance,
+  entityInstanceCollection
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { EntityInstance, entityInstance, entityInstanceCollection, localCacheCUDAction } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { LocalCacheEntityActionWithDeployment } from "../4-services/localCache/LocalCacheInterface.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -139,7 +144,7 @@ export type DomainTransactionalResetDataAction = z.infer<typeof DomainTransactio
 
 // #############################################################################################
 export const DomainModelInitActionParamsSchema = z.object({
-  metaModel: ApplicationModelSchema,
+  metaModel: z.lazy(()=>ApplicationModelSchema),
   dataStoreType: DataStoreApplicationTypeSchema,
   application: ApplicationSchema,
   applicationDeployment: entityInstance,
@@ -316,7 +321,7 @@ export interface DomainControllerInterface {
    * 
    * 
    */
-  currentTransaction(): DomainTransactionalActionWithCUDUpdate[];
+  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[];
   currentLocalCacheInfo(): LocalCacheInfo;
 
   

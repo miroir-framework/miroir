@@ -2,6 +2,10 @@
   "name": "miroir-standalone-app",
   "version": "1.0.0",
   "description": "",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-standalone-app/#readme",
+  "bugs": "https://github.com/miroir-framework/miroir/issues",
+  "license": "MIT",
   "main": "index.js",
   "proxy": "http://localhost:3080",
   "private": true,
@@ -69,8 +73,6 @@
     "build5": "vite build --emptyOutDir",
     "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
   },
-  "author": "Arnaud Bailly",
-  "license": "MIT",
   "browserslist": {
     "production": [
       ">0.2%",

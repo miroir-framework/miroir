@@ -1118,6 +1118,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           },
           "application": {
             "type": "simpleType",
+            "optional": true,
             "definition": "string",
             "validations": [{ "type": "uuid" }],
             "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
