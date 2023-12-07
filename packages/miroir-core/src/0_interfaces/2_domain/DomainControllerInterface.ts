@@ -221,7 +221,7 @@ export type DomainActionWithDeployment = z.infer<typeof DomainActionWithDeployme
 
 
 // #############################################################################################
-// export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, localCacheCUDAction, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
+// export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, instanceCUDAction, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
 // with translation of Entity Updates in CUD updates
 export const DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema = z.union([DomainDataActionSchema, DomainTransactionalActionWithEntityUpdateWithCUDUpdateSchema]);
 export type DomainActionWithTransactionalEntityUpdateWithCUDUpdate = z.infer<typeof DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema>;

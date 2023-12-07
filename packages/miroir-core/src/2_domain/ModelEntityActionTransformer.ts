@@ -3,7 +3,12 @@ import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { EntityAction, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { CUDActionName, ModelCUDInstanceUpdate, ModelEntityUpdate, ModelEntityUpdateCreateMetaModelInstance } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
+import {
+  CUDActionName,
+  ModelCUDInstanceUpdate,
+  ModelEntityUpdate,
+  ModelEntityUpdateCreateMetaModelInstance,
+} from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
@@ -14,7 +19,7 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelEntityUpdateConverter");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelEntityActionTransformer");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -22,7 +27,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-export class ModelEntityUpdateConverter{
+export class ModelEntityActionTransformer{
 
   static modelEntityUpdateToCUDUpdate(
     modelUpdate:ModelEntityUpdate,
@@ -100,7 +105,7 @@ export class ModelEntityUpdateConverter{
   }
 
   // ###################################################################################################
-  static entityActionToLocalCacheAction(
+  static entityActionToInstanceAction(
     deploymentUuid: Uuid,
     entityAction:EntityAction,
   ):LocalCacheCUDActionWithDeployment[] {
@@ -108,8 +113,8 @@ export class ModelEntityUpdateConverter{
       {
         actionType:"LocalCacheCUDActionWithDeployment",
         deploymentUuid,
-        localCacheCUDAction: {
-          actionType: "LocalCacheCUDAction",
+        instanceCUDAction: {
+          actionType: "InstanceCUDAction",
           actionName: "create",
           applicationSection: "model",
           objects: [
@@ -139,7 +144,7 @@ export class ModelEntityUpdateConverter{
   ):DomainDataAction{
     return {
       actionType:"DomainDataAction",
-      ...ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(
+      ...ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
         modelUpdate,
         entities,
         entityDefinitions,
@@ -152,7 +157,7 @@ export class ModelEntityUpdateConverter{
     modelUpdate:ModelEntityUpdate,
     currentModel: MiroirApplicationModel,
   ):ModelCUDInstanceUpdate | undefined {
-    const o = ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(
+    const o = ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
       modelUpdate,
       currentModel.entities,
       currentModel.entityDefinitions,

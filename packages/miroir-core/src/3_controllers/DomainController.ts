@@ -22,7 +22,7 @@ import {
 } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteStoreInterface.js';
 
-import { ModelEntityUpdateConverter } from "../2_domain/ModelEntityUpdateConverter.js";
+import { ModelEntityActionTransformer } from "../2_domain/ModelEntityActionTransformer.js";
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -224,8 +224,8 @@ export class DomainController implements DomainControllerInterface {
               {
                 actionType: "LocalCacheCUDActionWithDeployment",
                 deploymentUuid,
-                localCacheCUDAction: {
-                  actionType: 'LocalCacheCUDAction',
+                instanceCUDAction: {
+                  actionType: 'InstanceCUDAction',
                   actionName:'create',
                   applicationSection: "model",
                   objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
@@ -258,17 +258,17 @@ export class DomainController implements DomainControllerInterface {
             deploymentUuid, 
             domainAction:domainTransactionalAction
           });
-          // const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+          // const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
           //   deploymentUuid,
-          //   localCacheCUDAction: {
-          //     actionType: "LocalCacheCUDAction",
+          //   instanceCUDAction: {
+          //     actionType: "InstanceCUDAction",
           //     actionName: domainModelAction.update.updateActionName,
           //     includeInTransaction: true,
           //     applicationSection: domainModelAction.update.objects[0].applicationSection,
           //     objects: domainModelAction.update.objects,
           //   }
           // };
-          // await this.localCache.handleLocalCacheCUDAction(localCacheCUDAction);
+          // await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
           break;
         }
         case "updateEntity": {
@@ -294,7 +294,7 @@ export class DomainController implements DomainControllerInterface {
               })
             }
           } else {
-            const cudUpdate = ModelEntityUpdateConverter.modelEntityUpdateToModelCUDUpdate(domainTransactionalAction?.update.modelEntityUpdate, currentModel);
+            const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelCUDUpdate(domainTransactionalAction?.update.modelEntityUpdate, currentModel);
             log.trace('DomainController updateEntity correspondingCUDUpdate',cudUpdate);
   
             const structureUpdatesWithCUDUpdates: WrappedTransactionalEntityUpdateWithCUDUpdate = {
@@ -360,17 +360,17 @@ export class DomainController implements DomainControllerInterface {
       log.debug(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheCUDAction", domainAction
       );
-      const localCacheCUDAction: LocalCacheCUDActionWithDeployment = {
+      const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
         actionType: "LocalCacheCUDActionWithDeployment",
         deploymentUuid,
-        localCacheCUDAction: {
-          actionType: "LocalCacheCUDAction",
+        instanceCUDAction: {
+          actionType: "InstanceCUDAction",
           actionName: domainAction.actionName,
           applicationSection: domainAction.objects[0].applicationSection,
           objects: domainAction.objects,
         },
       }
-      await this.localCache.handleLocalCacheCUDAction(localCacheCUDAction);
+      await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
       log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
       log.error(
@@ -487,8 +487,8 @@ export class DomainController implements DomainControllerInterface {
         {
           actionType: "LocalCacheCUDActionWithDeployment",
           deploymentUuid,
-          localCacheCUDAction: {
-            actionType: "LocalCacheCUDAction",
+          instanceCUDAction: {
+            actionType: "InstanceCUDAction",
             actionName: "replaceLocalCache",
             objects: instances,
           }

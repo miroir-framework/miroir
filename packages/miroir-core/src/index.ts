@@ -12,7 +12,7 @@ export {
   entityInstance,
   EntityInstanceCollection,
   entityInstanceCollection,
-  LocalCacheCUDAction,
+  InstanceCUDAction,
   MiroirFundamentalType
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
@@ -249,8 +249,8 @@ export {
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
-  ModelEntityUpdateConverter
-} from './2_domain/ModelEntityUpdateConverter.js';
+  ModelEntityActionTransformer
+} from './2_domain/ModelEntityActionTransformer.js';
 export {
   ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';

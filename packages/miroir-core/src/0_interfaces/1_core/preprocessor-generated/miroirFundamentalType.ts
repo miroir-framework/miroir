@@ -269,26 +269,31 @@ export type EntityInstanceCollection = {
     applicationSection: ApplicationSection;
     instances: EntityInstance[];
 };
-export type LocalCacheCUDAction = {
-    actionType: "LocalCacheCUDAction";
+export type InstanceCUDAction = {
+    actionType: "InstanceCUDAction";
     actionName: "create";
     includeInTransaction?: boolean | undefined;
     applicationSection: ApplicationSection;
     objects: EntityInstanceCollection[];
 } | {
-    actionType: "LocalCacheCUDAction";
+    actionType: "InstanceCUDAction";
     actionName: "update";
     applicationSection: ApplicationSection;
     includeInTransaction?: boolean | undefined;
     objects: EntityInstanceCollection[];
 } | {
-    actionType: "LocalCacheCUDAction";
+    actionType: "InstanceCUDAction";
     actionName: "delete";
     applicationSection: ApplicationSection;
     includeInTransaction?: boolean | undefined;
     objects: EntityInstanceCollection[];
 } | {
-    actionType: "LocalCacheCUDAction";
+    actionType: "InstanceCUDAction";
+    actionName: "replaceLocalCache";
+    objects: EntityInstanceCollection[];
+};
+export type LocalCacheAction = {
+    actionType: "InstanceCUDAction";
     actionName: "replaceLocalCache";
     objects: EntityInstanceCollection[];
 };
@@ -319,7 +324,7 @@ export type CreateEntityAction = {
     entityDefinition: EntityDefinition;
 };
 export type EntityAction = CreateEntityAction;
-export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | LocalCacheCUDAction;
+export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceCUDAction;
 export type MiroirFundamentalType = MiroirAllFundamentalTypesUnion;
 
 export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number(), defaultLabel:z.string(), editable:z.boolean()}).strict().optional()}).strict();
@@ -350,11 +355,12 @@ export const jzodUnion: z.ZodType<JzodUnion> = z.object({optional:z.boolean().op
 export const applicationSection: z.ZodType<ApplicationSection> = z.union([z.literal("model"), z.literal("data")]);
 export const entityInstance = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()});
 export const entityInstanceCollection: z.ZodType<EntityInstanceCollection> = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
-export const localCacheCUDAction: z.ZodType<LocalCacheCUDAction> = z.union([z.object({actionType:z.literal("LocalCacheCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("LocalCacheCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("LocalCacheCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("LocalCacheCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
+export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
+export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const conceptLevel: z.ZodType<ConceptLevel> = z.enum(["MetaModel","Model","Data"]);
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.lazy(() =>conceptLevel).optional(), name:z.string(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), name:z.string(), entityUuid:z.string().uuid(), application:z.string().uuid().optional(), conceptLevel:z.lazy(() =>conceptLevel).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
 export const createEntityAction: z.ZodType<CreateEntityAction> = z.object({actionType:z.literal("entityAction"), actionName:z.literal("createEntity"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
 export const entityAction: z.ZodType<EntityAction> = z.lazy(() =>createEntityAction);
-export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>localCacheCUDAction)]);
+export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);

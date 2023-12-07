@@ -14,7 +14,7 @@ import {
   MiroirLoggerFactory,
   ModelCUDInstanceUpdate,
   ModelEntityUpdate,
-  ModelEntityUpdateConverter,
+  ModelEntityActionTransformer,
   StoreControllerFactory,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -238,7 +238,7 @@ describe.sequential("localStoreController.unit.test", () => {
     const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
 
     const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-      ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
+      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
     console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
 
     await localAppStoreController.applyModelEntityUpdate(
@@ -288,7 +288,7 @@ describe.sequential("localStoreController.unit.test", () => {
     const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
 
     const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-      ModelEntityUpdateConverter.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
+      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
     console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
 
     await localAppStoreController.applyModelEntityUpdate(

@@ -930,13 +930,13 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "localCacheCUDAction": {
+      "instanceCUDAction": {
         "type": "union",
         "definition": [
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
               "actionName": {"type": "literal", "definition":"create"},
               "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
               "applicationSection": {
@@ -963,7 +963,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
               "actionName": {"type": "literal", "definition":"update"},
               "applicationSection": {
                 "type": "schemaReference",
@@ -990,7 +990,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
               "actionName": {"type": "literal", "definition":"delete"},
               "applicationSection": {
                 "type": "schemaReference",
@@ -1017,7 +1017,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "actionType": {"type": "literal", "definition":"LocalCacheCUDAction"},
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
               "actionName": {"type": "literal", "definition":"replaceLocalCache"},
               "objects": {
                 "type": "array",
@@ -1034,6 +1034,25 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             }
           }
         ]
+      },
+      "localCacheAction": {
+        "type": "object",
+        "definition": {
+          "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+          "actionName": {"type": "literal", "definition":"replaceLocalCache"},
+          "objects": {
+            "type": "array",
+            "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+            "definition": {
+              "type": "schemaReference",
+              "optional": false,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstanceCollection"
+              }
+            }
+          }
+        }
       },
       "conceptLevel": {
         "type": "enum",
@@ -1203,7 +1222,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "localCacheCUDAction"
+              "relativePath": "instanceCUDAction"
             }
           }
         ]
