@@ -1,8 +1,9 @@
-export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
+// export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
 
 export {
   ApplicationSection,
   applicationSection,
+  Commit,
   ConceptLevel,
   CreateEntityAction,
   Entity,
@@ -13,7 +14,8 @@ export {
   EntityInstanceCollection,
   entityInstanceCollection,
   InstanceCUDAction,
-  MiroirFundamentalType
+  LocalCacheAction,
+  MiroirFundamentalType,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 

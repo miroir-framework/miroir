@@ -3,7 +3,7 @@ import { jzodToTsCode } from "@miroir-framework/jzod-ts";
 // import * as fs from "fs";
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
-import { miroirFundamentalJzodSchema } from "../tmp/miroirFundamentalJzodSchema.js";
+import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
 // import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
 // import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";

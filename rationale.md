@@ -58,5 +58,49 @@ There are always many sides to a story...
 
 - DSLs and the "command" pattern gone mad.
 
+Miroir aims at letting applicative software developers concentrate their efforts on tackling the intrinsic complexity of the problem at hand, by providing "standard" solutions for extrinsic complexity of development (storage, concurrent versioning, transactions and data consistency...). Miroir provides the following services:
+
+- a concept modeling DSL for versioned Entities, relations among Entities, applications, users...
+- concurrent versioning and transactions for the above-defined concepts,
+- transparent access to Databases (Relational, NoSQL) and files,
+
 ## For your next-door neighboor
 
+## Model-Based Software Engineering (MBSoE)
+
+Software engineers usually rely on models at least in the conception phase of applications, using variants on well-known methods (merise, Booch, etc.) and notations (UML), which are part of the state-of-the art informal lingua-franca, that can be observed along blog articles, software documentation, or software problem-solving forums all around the internet.
+
+Such models remain used, in our experience and observations, mostly as support for development-time communication among developers themselves, and at most as a basis for user-documentation.
+
+We propose to use software models all along the software development lifecycle. We claim that the tools to create, manipulate and exploit these models are now for the most part readily available, and that there has been an incomprehensible delay in the software industry to take this fact into account.
+
+From abstract, simple models, we claim to:
+
+- infer display properties, used in generating graphical user interfaces,
+- infer storage properties, for any available storage form (NoSQL database or key-value files, JSON files, Relational database, distributed databases, plain-text databases),
+- provide the end-user with the capacity to analyze and extract the wanted information from the modeled data,
+- provide the end-user with the capacity to define and exploit Domain-Specific Languages (DSLs) at any level of the software to obtain the sought results
+- allow value-adding business code to be reused among server and client.
+
+## Comparison to existing solutions
+
+Some existing platform limitate the scope, horizontally or vertically:
+
+- Tooljet and others are focused on Graphical User Intreface aspects, the built "model" is not used for other purposes,
+- Cliq Sense: allows modeling somewhat, focused on time series
+- RStudio: not intended to build "releasable" apps?
+
+## Developing Web Applications, the Miroir way
+
+### What you give
+
+-  a structured model of the data you manipulate, which you have to maintain through an integrated versioning tool
+-  a definition for one or more Domain-Specific-Languages (DSL), encompassing actions for data transformation
+-  a set of queries used to retrieve the data relevant for display, written in one of the Miroir Query Languages (MQL)
+
+
+
+### What you get
+
+- a back-end web server (nodejs) able to execute your DSL Actions and return the required data 
+- a web application, that can be executed through a "plain" desktop-based application, or be deployed within the server and accessed through the browser

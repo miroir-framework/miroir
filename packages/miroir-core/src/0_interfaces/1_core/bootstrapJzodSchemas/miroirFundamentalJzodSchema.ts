@@ -1,5 +1,14 @@
-import { jzodReference } from "@miroir-framework/jzod-ts";
-import { z } from "zod";
+import { readFileSync } from "fs";
+import { array, z } from "zod";
+
+import { JzodObject, jzodReference } from "@miroir-framework/jzod-ts";
+
+// import entityDefinitionEntity from 'assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
+
+const entityDefinitionEntity = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json', import.meta.url)).toString());
+const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
+const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json', import.meta.url)).toString());
+// const configFileContents = await import(configFilePath);
 
 // redeclaring to avoir any circurlarities
 const entityInstanceSchema = z.object({
@@ -1062,111 +1071,8 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "Data"
         ]
       },
-      "entity": {
-        "type": "object",
-        "definition": {
-          "uuid": {
-            "type": "simpleType",
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-          },
-          "parentName": {
-            "type": "simpleType",
-            "definition": "string",
-            "optional": true,
-            "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
-          },
-          "parentUuid": {
-            "type": "simpleType",
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
-          },
-          "conceptLevel": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "conceptLevel"
-            }
-          },
-          "name": {
-            "type": "simpleType",
-            "definition": "string",
-            "extra": { "id":5, "defaultLabel": "Name", "editable": true }
-          },
-          "description": {
-            "type": "simpleType",
-            "definition": "string",
-            "optional": true,
-            "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
-          }
-        }
-      },
-      "entityDefinition": {
-        "type": "object",
-        "definition": {
-          "uuid": {
-            "type": "simpleType",
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
-          },
-          "parentName": {
-            "type": "simpleType",
-            "definition": "string",
-            "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
-          },
-          "parentUuid": {
-            "type": "simpleType",
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
-          },
-          "name": {
-            "type": "simpleType",
-            "definition": "string",
-            "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
-          },
-          "entityUuid": {
-            "type": "simpleType",
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id": 5, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }
-          },
-          "application": {
-            "type": "simpleType",
-            "optional": true,
-            "definition": "string",
-            "validations": [{ "type": "uuid" }],
-            "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
-          },
-          "conceptLevel": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "conceptLevel"
-            },
-            "extra": { "id": 7, "defaultLabel": "Concept Level", "editable": false }
-          },
-          "description": {
-            "type": "simpleType",
-            "optional": true,
-            "definition": "string",
-            "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
-          },
-          "jzodSchema": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodObject"
-            },
-            "extra": { "id": 9, "defaultLabel": "Jzod Schema", "editable": true }
-          }
-        }
-      },
+      "entity":entityDefinitionEntity.jzodSchema as JzodObject,
+      "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "createEntityAction": {
         "type": "object",
         "definition": {
@@ -1192,6 +1098,43 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         "type": "schemaReference",
         "definition": {
           "relativePath": "createEntityAction"
+        }
+      },
+      "commit": {
+        "type": "object",
+        "definition": {
+          ...entityDefinitionCommit.jzodSchema.definition,
+          "actions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityAction"
+              }
+            }
+          },
+          "patches": {
+            "type": "array", 
+            "definition": {
+              "type": "simpleType",
+              "definition": "any"
+            }
+          },
+          // "pastPatches": {
+          //   "type": "array", 
+          //   "definition": {
+          //     "type": "simpleType",
+          //     "definition": "any"
+          //   }
+          // },
+          // "futurePatches": {
+          //   "type": "array", 
+          //   "definition": {
+          //     "type": "simpleType",
+          //     "definition": "any"
+          //   }
+          // }
         }
       },
       "miroirAllFundamentalTypesUnion": {

@@ -1,6 +1,7 @@
 import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
+  Commit,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
   EntityAction,
@@ -46,6 +47,7 @@ export type QueriesResultsCache = {[k: string]: FetchedData};
  */
 export interface ReduxStateWithUndoRedo {
   // dataCache: any; // the cache of data not impacted by commit / rollback / undo / redo.
+  currentTransaction: Commit,
   previousModelSnapshot: LocalCacheSliceState, // state recorded on the previous commit.
   pastModelPatches: ReduxStateChanges[], // list of effects achieved on the previousSnapshot, to reach the presentSnapshot
   presentModelSnapshot: LocalCacheSliceState, // only effects on the current snapshot goes into the undo/redo history

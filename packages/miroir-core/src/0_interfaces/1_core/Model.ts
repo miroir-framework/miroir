@@ -2,14 +2,14 @@ import { z } from "zod";
 
 import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
-import { EntityDefinitionSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { jzodSchemaDefinitionSchema } from "../../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { StoreBasedConfigurationSchema } from "../../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationVersionSchema } from "../../0_interfaces/1_core/ModelVersion.js";
 // import { ReportSchema } from "../../0_interfaces/1_core/Report.js";
 import { report } from "./preprocessor-generated/server-generated";
 
-import { EntityInstance, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { EntityInstance, entityDefinition, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -32,7 +32,7 @@ export const ApplicationModelSchema = z.object({
   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
   configuration: z.array(StoreBasedConfigurationSchema),
   entities: z.array(MetaEntitySchema),
-  entityDefinitions: z.array(EntityDefinitionSchema),
+  entityDefinitions: z.array(entityDefinition),
   jzodSchemas:z.array(jzodSchemaDefinitionSchema),
   // reports: z.array(ReportSchema),
   reports: z.array(report),
