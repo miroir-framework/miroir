@@ -6,7 +6,6 @@ import {
   Commit,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
-  EntityAction,
   LocalCacheCUDActionWithDeployment,
   LocalCacheEntityActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,

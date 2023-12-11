@@ -1,17 +1,15 @@
 import {
   ApplicationSection,
-  CRUDActionNamesArrayString,
-  EntityAction,
+  EntityActionParams,
   HttpMethod,
   LoggerInterface,
   MiroirLoggerFactory,
   RemoteStoreAction,
-  RemoteStoreActionName,
   RemoteStoreCRUDAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
-  getLoggerName,
+  getLoggerName
 } from "miroir-core";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -165,7 +163,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   async handleNetworkRemoteStoreEntityAction(
     deploymentUuid: string,
-    action: EntityAction
+    action: EntityActionParams
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,

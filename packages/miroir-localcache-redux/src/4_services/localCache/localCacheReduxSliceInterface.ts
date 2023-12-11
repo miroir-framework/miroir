@@ -4,7 +4,6 @@ import {
   Commit,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
-  EntityAction,
   EntityDefinition,
   EntityInstanceCollection,
   FetchedData,

@@ -16,7 +16,7 @@ import {
   DomainDataAction,
   DomainState,
   DomainTransactionalAction,
-  EntityAction,
+  EntityActionParams,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -747,7 +747,7 @@ function convertDomainActionToDomainTransactionalAction(action:DomainActionWithT
 function handleLocalCacheEntityAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: EntityAction
+  action: EntityActionParams
   // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ) {
   // log.info(

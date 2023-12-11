@@ -5,7 +5,7 @@ import {
 } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 import { MiroirApplicationModel } from '../../1_core/Model.js';
 
-import { entityAction, instanceCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { entityActionParams, instanceCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   DomainTransactionalActionWithCUDUpdate
 } from "../../2_domain/DomainControllerInterface.js";
@@ -26,7 +26,10 @@ export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionW
 //   instanceCUDAction: InstanceCUDAction,
 // }
 
-export const LocalCacheTransactionalActionSchema = z.union([DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema, entityAction]);
+export const LocalCacheTransactionalActionSchema = z.union([
+  DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
+  entityActionParams,
+]);
 export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
 
 export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
@@ -39,7 +42,7 @@ export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCa
 export const LocalCacheEntityActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheEntityActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  entityAction: entityAction,
+  entityAction: entityActionParams,
 });
 export type LocalCacheEntityActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
 

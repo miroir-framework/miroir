@@ -1,0 +1,42 @@
+{
+  "uuid": "6796e19e-8bbd-4b96-b505-76fe49ed5c6a",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "757595aa-7e4a-43c0-b561-ae545360ab2d",
+  "name": "Action",
+  "conceptLevel": "MetaModel",
+  "description": "definition of an Action",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 5, "defaultLabel": "Description", "editable": true }
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "uuid": "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "name": "ActionVersion",
+  "conceptLevel": "MetaModel",
+  "description": "definition of an Action Version",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+      },
+      "definition": {
+        "type": "object",
+        "extra": { "id": 8, "defaultLabel": "Definition", "editable": true },
+        "definition": {
+          "actionParameter": {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"entityAction"},
+              "actionName": {"type": "literal", "definition":"createEntity"},
+              "entity": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entity"
+                }
+              },
+              "entityDefinition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityDefinition"
+                }
+              }
+            }
+          },
+          "actionTransformer": {
+            "type": "simpleType", 
+            "definition": "any"
+          },
+          "actionMigrations": {
+            "type": "simpleType", 
+            "definition": "any"
+          }
+        }
+      }
+    }
+  }
+}

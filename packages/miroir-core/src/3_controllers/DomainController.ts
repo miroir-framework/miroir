@@ -31,7 +31,7 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 
 import {
   ApplicationSection,
-  EntityAction,
+  EntityActionParams,
   EntityDefinition,
   EntityInstanceCollection,
   entityDefinition,
@@ -162,7 +162,7 @@ export class DomainController implements DomainControllerInterface {
                   if (replayAction.actionName == "updateEntity") {
                     switch (replayAction.update.modelEntityUpdate.updateActionName) {
                       case 'createEntity': {
-                        const entityAction: EntityAction = {
+                        const entityAction: EntityActionParams = {
                             actionType: "entityAction",
                             actionName: 'createEntity',
                             entity: replayAction.update.modelEntityUpdate.entities[0].entity,

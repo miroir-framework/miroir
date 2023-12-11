@@ -19,7 +19,7 @@ This tendency has however been somewhat squelched in recent years, thanks to the
 
 Only the tools we use still lag in features to address those practices.
 
-# Proposition
+# Proposal
 
 Looking in the past for inspiration, some development environments have indeed pioneered this radically different and interactive approach to software development, integrating software development activities and software execution: [Smalltalk](https://en.wikipedia.org/wiki/Smalltalk) being the prime example for this. In Smalltalk, development-time activities and run-time activities are done in the same environment: on the small scale, development, testing and deployment become essentially the same activity. Having perfect, run-time-precise, immediate feedback during development amounts to many developpers to being in a proverbial "ideal world", a paradise lost which many have endeavoured to reach again. Indeed, accelerating feedback is now largely viewed as a primary means to increase software quality and developer productivity (see [Accelerate](https://en.wikipedia.org/wiki/Accelerate_(book))).
 
@@ -79,7 +79,7 @@ From abstract, simple models, we claim to:
 - infer display properties, used in generating graphical user interfaces,
 - infer storage properties, for any available storage form (NoSQL database or key-value files, JSON files, Relational database, distributed databases, plain-text databases),
 - provide the end-user with the capacity to analyze and extract the wanted information from the modeled data,
-- provide the end-user with the capacity to define and exploit Domain-Specific Languages (DSLs) at any level of the software to obtain the sought results
+- provide the end-user with the capacity to define and exploit Domain-Specific Languages (DSLs) at any level of the software to implement business functionalities,
 - allow value-adding business code to be reused among server and client.
 
 ## Comparison to existing solutions
@@ -95,7 +95,7 @@ Some existing platform limitate the scope, horizontally or vertically:
 ### What you give
 
 -  a structured model of the data you manipulate, which you have to maintain through an integrated versioning tool
--  a definition for one or more Domain-Specific-Languages (DSL), encompassing actions for data transformation
+-  a definition for one or more Domain-Specific-Languages (DSL), encompassing actions for data edition and data transformation
 -  a set of queries used to retrieve the data relevant for display, written in one of the Miroir Query Languages (MQL)
 
 

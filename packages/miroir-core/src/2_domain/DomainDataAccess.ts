@@ -1,6 +1,6 @@
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 
-import { EntityDefinition, MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   DomainState,
   DomainStateMetaModelSelector,
@@ -34,7 +34,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -1,7 +1,3 @@
-// import { Instance } from '../0_interfaces/1_core/Instance.js';
-// import { EntityDefinition } from '../0_interfaces/1_core/EntityDefinition.js';
-// import { Report } from '../0_interfaces/1_core/Report.js';
-
 import { Report } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";

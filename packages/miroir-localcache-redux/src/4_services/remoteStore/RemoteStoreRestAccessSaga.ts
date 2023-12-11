@@ -17,7 +17,7 @@ import {
   RemoteStoreNetworkClientInterface,
   getLoggerName,
   stringTuple,
-  EntityAction,
+  EntityActionParams,
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -131,12 +131,12 @@ export class RemoteStoreRestAccessReduxSaga {
     handleRemoteStoreEntityAction: {
       name: "handleRemoteStoreEntityAction",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-        { deploymentUuid: string; action: EntityAction },
+        { deploymentUuid: string; action: EntityActionParams },
         "handleRemoteStoreEntityAction"
       >("handleRemoteStoreEntityAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: EntityAction }>
+        p: PayloadAction<{ deploymentUuid: string; action: EntityActionParams }>
       ): RemoteStoreSagaGenReturnType {
         const { deploymentUuid, action } = p.payload;
         try {

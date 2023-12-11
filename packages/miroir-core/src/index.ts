@@ -1,13 +1,14 @@
 // export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
 
 export {
+  ActionTransformer,
+  actionTransformer,
   ApplicationSection,
   applicationSection,
   Commit,
   ConceptLevel,
-  CreateEntityAction,
   Entity,
-  EntityAction,
+  EntityActionParams,
   EntityDefinition,
   EntityInstance,
   entityInstance,
@@ -16,6 +17,7 @@ export {
   InstanceCUDAction,
   LocalCacheAction,
   MiroirFundamentalType,
+  MiroirAllFundamentalTypesUnion,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -39,8 +41,6 @@ export {
   EntityAttributeType,
   EntityAttributePartialSchema,
   EntityAttributePartial,
-  EntityDefinitionSchema,
-  // EntityDefinition,
   InstanceDictionaryNum,
   InstanceDictionary,
   MetaEntitySchema,
