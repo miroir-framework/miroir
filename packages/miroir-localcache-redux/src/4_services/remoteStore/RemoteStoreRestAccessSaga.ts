@@ -3,8 +3,8 @@ import {
   promiseActionFactory,
   SagaPromiseActionCreator
 } from "@teroneko/redux-saga-promise";
-import { all, call, Effect, put, takeEvery } from 'redux-saga/effects';
-
+import { CallEffect, Effect } from 'redux-saga/effects';
+import { call, all, put, takeEvery } from "typed-redux-saga";
 
 import {
   ApplicationSection,
@@ -18,6 +18,7 @@ import {
   getLoggerName,
   stringTuple,
   ActionModelerParams,
+  RestClientCallReturnType,
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -33,7 +34,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
+export type RemoteStoreRestAccessReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
+
+export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreRestAccessReduxSagaReturnType>;
+// export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
+// export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType | RestClientCallReturnType>;
 
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
@@ -86,31 +91,30 @@ export class RemoteStoreRestAccessReduxSaga {
   } = {
     handleRemoteStoreRestCRUDAction: {
       name: "handleRemoteStoreRestCRUDAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      creator: promiseActionFactory<RemoteStoreRestAccessReduxSagaReturnType>().create<
         { deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction },
         "handleRemoteStoreRestCRUDAction"
       >("handleRemoteStoreRestCRUDAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction }>
-      ): RemoteStoreSagaGenReturnType {
+      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, section, action } = p.payload;
         try {
           log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction param",p);
-          const clientResult: {
-            status: number,
-            data: HttpResponseBodyFormat,
-            headers: Headers,
-            url: string,
-          } = yield call(() =>
-            this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(
-              deploymentUuid,
-              section,
-              action
-            )
-          );
+          const clientResult : RestClientCallReturnType
+            = yield* call(
+              () => 
+                this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(
+                  deploymentUuid,
+                  section,
+                  action
+                )
+            );
+
           log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received clientResult",clientResult);
-          const result = {
+          const result:RemoteStoreActionReturnType = {
             status: "ok",
             instanceCollection: clientResult.data.instances,
           };
@@ -119,7 +123,7 @@ export class RemoteStoreRestAccessReduxSaga {
           return yield result;
         } catch (e: any) {
           log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction exception", e);
-          yield put({ type: "instances/failure/instancesNotReceived" });
+          // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
             errorMessage: e["message"],
@@ -137,21 +141,17 @@ export class RemoteStoreRestAccessReduxSaga {
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; action: ActionModelerParams }>
-      ): RemoteStoreSagaGenReturnType {
+      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
           log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction on action",action);
-          const clientResult: {
-            status: number;
-            data: any;
-            headers: Headers;
-            url: string;
-          } = yield call(() =>
+          const clientResult: RestClientCallReturnType
+           = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreEntityAction(deploymentUuid, action)
           );
           log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction received clientResult", clientResult);
 
-          const result = {
+          const result: RemoteStoreActionReturnType = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
@@ -160,7 +160,7 @@ export class RemoteStoreRestAccessReduxSaga {
           return yield result;
         } catch (e: any) {
           log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreEntityAction exception", e);
-          yield put({ type: "instances/failure/instancesNotReceived" });
+          // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
             errorMessage: e["message"],
@@ -178,21 +178,17 @@ export class RemoteStoreRestAccessReduxSaga {
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreModelAction }>
-      ): RemoteStoreSagaGenReturnType {
+      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
           log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction on action",action);
-          const clientResult: {
-            status: number;
-            data: any;
-            headers: Headers;
-            url: string;
-          } = yield call(() =>
+          const clientResult: RestClientCallReturnType
+          = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelAction(deploymentUuid, action)
           );
           log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction received clientResult", clientResult);
 
-          const result = {
+          const result: RemoteStoreActionReturnType = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
@@ -201,7 +197,7 @@ export class RemoteStoreRestAccessReduxSaga {
           return yield result;
         } catch (e: any) {
           log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelAction exception", e);
-          yield put({ type: "instances/failure/instancesNotReceived" });
+          // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
             errorMessage: e["message"],
@@ -213,14 +209,15 @@ export class RemoteStoreRestAccessReduxSaga {
   };
 
   //#########################################################################################
-  public *instanceRootSaga(): RemoteStoreSagaGenReturnType {
+  // public *instanceRootSaga(): RemoteStoreSagaGenReturnType {
+  public *instanceRootSaga() {
     yield all([
       ...Object.values(this.remoteStoreRestAccessSagaInputPromiseActions).map((a: any) =>
         takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
       ),
     ]);
   }
-}// end class Mslice
+}// end class RemoteStoreRestAccessReduxSaga
 
 export default RemoteStoreRestAccessReduxSaga;
 

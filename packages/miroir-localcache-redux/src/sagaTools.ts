@@ -3,11 +3,14 @@ import {
   implementPromiseAction
 } from "@teroneko/redux-saga-promise";
 
-import { call } from 'redux-saga/effects';
+import { call } from "typed-redux-saga";
 import { RemoteStoreSagaGenReturnType } from "./4_services/remoteStore/RemoteStoreRestAccessSaga.js";
 
 // ###############################################################################
-export function handlePromiseActionForSaga (saga: { (a: any): RemoteStoreSagaGenReturnType; bind?: any; }, ...args: undefined[]) {
+export function handlePromiseActionForSaga(
+  saga: { (a: any): RemoteStoreSagaGenReturnType; bind?: any },
+  ...args: undefined[]
+) {
   return function* (
     actionHandler: { payload: any; type: any } & {
       meta: {
