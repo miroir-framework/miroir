@@ -8,10 +8,11 @@ import { JzodObject, jzodReference } from "@miroir-framework/jzod-ts";
 const entityDefinitionEntity = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json', import.meta.url)).toString());
 const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
 const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json', import.meta.url)).toString());
-const entityDefinitionActionVersion = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json', import.meta.url)).toString());
+// const entityDefinitionActionVersion = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json', import.meta.url)).toString());
+const entityDefinitionActionVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json', import.meta.url)).toString());
 // const configFileContents = await import(configFilePath);
 
-// console.log("###################### action version:",entityDefinitionActionVersion.jzodSchema.definition.definition.definition.actionParameter);
+console.log("###################### action version:",entityDefinitionActionVersionV1.definition.definition);
 
 // redeclaring to avoir any circurlarities
 const entityInstanceSchema = z.object({
@@ -1097,7 +1098,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       //     }
       //   }
       // },
-      "entityActionParams": entityDefinitionActionVersion.jzodSchema.definition.definition.definition.actionParameter as JzodObject,
+      "actionModelerParams": entityDefinitionActionVersionV1.definition.definition.actionParameter as JzodObject,
       // "entityAction": {
       //   "type": "schemaReference",
       //   "definition": {
@@ -1141,7 +1142,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityActionParams"
+                    "relativePath": "actionModelerParams"
                   }
                 }
               }

@@ -1,7 +1,7 @@
 import { HttpMethod } from "../../1_core/Http.js";
 import {
   ApplicationSection,
-  EntityActionParams,
+  ActionModelerParams,
   EntityInstance,
   EntityInstanceCollection,
 } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -84,7 +84,7 @@ export type RemoteStoreModelAction =
 ;
 
 // ################################################################################################
-export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction | EntityActionParams;
+export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction | ActionModelerParams;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {
@@ -112,7 +112,7 @@ export interface RemoteStoreNetworkClientInterface {
   ): Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreEntityAction(
     deploymentUuid: string,
-    action: EntityActionParams
+    action: ActionModelerParams
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -134,7 +134,7 @@ export declare interface RemoteStoreInterface {
   ): Promise<RemoteStoreActionReturnType>;
   handleRemoteStoreEntityAction(
     deploymentUuid: string,
-    action: EntityActionParams
+    action: ActionModelerParams
   ): Promise<RemoteStoreActionReturnType>;
 }
 

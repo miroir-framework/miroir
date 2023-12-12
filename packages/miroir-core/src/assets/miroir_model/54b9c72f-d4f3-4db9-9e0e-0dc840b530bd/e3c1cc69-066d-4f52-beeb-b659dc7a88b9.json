@@ -26,10 +26,21 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "actionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
         "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+      },
+      "version": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 4, "defaultLabel": "Version", "editable": false }
       },
       "description": {
         "type": "simpleType",
@@ -42,24 +53,18 @@
         "extra": { "id": 8, "defaultLabel": "Definition", "editable": true },
         "definition": {
           "actionParameter": {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "actionType": {"type": "literal", "definition":"entityAction"},
-              "actionName": {"type": "literal", "definition":"createEntity"},
-              "entity": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entity"
-                }
-              },
-              "entityDefinition": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityDefinition"
-                }
-              }
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodObject"
+            },
+            "extra": { "id": 8, "defaultLabel": "Jzod Schema", "editable": true }
+          },
+          "entityDefinition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinition"
             }
           },
           "actionTransformer": {

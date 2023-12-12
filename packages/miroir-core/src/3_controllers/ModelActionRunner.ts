@@ -1,4 +1,4 @@
-import { EntityActionParams, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ActionModelerParams, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -233,7 +233,7 @@ export async function entityActionRunner(
   log.info('###################################### entityActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
   log.debug('entityActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-  const update: EntityActionParams = body;
+  const update: ActionModelerParams = body;
   log.info('entityActionRunner action', JSON.stringify(update,undefined,2));
   switch (actionName) {
     case "createEntity": {

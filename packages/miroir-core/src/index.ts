@@ -8,7 +8,7 @@ export {
   Commit,
   ConceptLevel,
   Entity,
-  EntityActionParams,
+  ActionModelerParams,
   EntityDefinition,
   EntityInstance,
   entityInstance,

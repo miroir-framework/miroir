@@ -9,7 +9,7 @@ import { all } from 'redux-saga/effects';
 import {
   ApplicationSection,
   DomainTransactionalActionWithCUDUpdate,
-  EntityActionParams,
+  ActionModelerParams,
   EntityDefinition,
   JzodSchemaDefinition,
   LocalCacheCUDActionWithDeployment,
@@ -266,7 +266,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   // ###############################################################################
   async handleRemoteStoreEntityAction(
     deploymentUuid: string,
-    action: EntityActionParams,
+    action: ActionModelerParams,
   ): Promise<RemoteStoreActionReturnType> {
     const result: Promise<RemoteStoreActionReturnType> = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas

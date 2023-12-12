@@ -1,6 +1,6 @@
 import {
   ApplicationSection,
-  EntityActionParams,
+  ActionModelerParams,
   HttpMethod,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -163,7 +163,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   async handleNetworkRemoteStoreEntityAction(
     deploymentUuid: string,
-    action: EntityActionParams
+    action: ActionModelerParams
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,

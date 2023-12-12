@@ -16,7 +16,7 @@ import {
   DomainDataAction,
   DomainState,
   DomainTransactionalAction,
-  EntityActionParams,
+  ActionModelerParams,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -460,7 +460,7 @@ function handleLocalCacheTransactionalAction(
       // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
       // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
 
-      // const entityAction: EntityAction = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
+      // const entityAction: ActionModeler = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
       //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
       //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
       //   action.update.modelEntityUpdate
@@ -747,7 +747,7 @@ function convertDomainActionToDomainTransactionalAction(action:DomainActionWithT
 function handleLocalCacheEntityAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: EntityActionParams
+  action: ActionModelerParams
   // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ) {
   // log.info(
@@ -763,7 +763,7 @@ function handleLocalCacheEntityAction(
       // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
       // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
 
-      // const entityAction: EntityAction = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
+      // const entityAction: ActionModeler = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
       //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
       //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
       //   action.update.modelEntityUpdate
