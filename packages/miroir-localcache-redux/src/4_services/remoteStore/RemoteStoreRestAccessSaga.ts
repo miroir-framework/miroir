@@ -91,8 +91,7 @@ export class RemoteStoreRestAccessReduxSaga {
   } = {
     handleRemoteStoreRestCRUDAction: {
       name: "handleRemoteStoreRestCRUDAction",
-      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-      creator: promiseActionFactory<RemoteStoreRestAccessReduxSagaReturnType>().create<
+      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
         { deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction },
         "handleRemoteStoreRestCRUDAction"
       >("handleRemoteStoreRestCRUDAction"),

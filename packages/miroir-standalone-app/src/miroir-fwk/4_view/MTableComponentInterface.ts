@@ -1,11 +1,10 @@
 import { z } from "zod";
 
 import {
-  entityInstancesUuidIndexSchema,
   ApplicationDeploymentSchema,
   MetaEntitySchema,
-  EntityDefinitionSchema,
-  objectListReportSection,
+  entityDefinition,
+  entityInstancesUuidIndexSchema
 } from "miroir-core";
 
 export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"]);
@@ -33,7 +32,7 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: MetaEntitySchema.optional(),
-  currentEntityDefinition: EntityDefinitionSchema.optional(),
+  currentEntityDefinition: entityDefinition.optional(),
   // reportSectionListDefinition: objectListReportSection,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });

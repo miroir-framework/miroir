@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import {
   ApplicationDeploymentSchema,
-  EntityDefinitionSchema,
   MetaEntitySchema,
   applicationSection,
+  entityDefinition,
   selectObjectListQuery
 } from "miroir-core";
 
@@ -28,7 +28,7 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   chosenApplicationSection: applicationSection,
   currentModel: z.any(),
   currentMiroirEntity: MetaEntitySchema.optional(),
-  currentMiroirEntityDefinition: EntityDefinitionSchema.optional(),
+  currentMiroirEntityDefinition: entityDefinition.optional(),
 });
 
 export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCorePropsSchema.extend({

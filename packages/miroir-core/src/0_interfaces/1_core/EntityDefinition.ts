@@ -94,15 +94,6 @@ export const MetaEntitySchema = EntityInstanceWithNameSchema.extend({
 export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 
 
-// // #################################################################################################
-// export const EntityDefinitionSchema = EntityInstanceWithNameSchema.extend({
-//   entityUuid: UuidSchema,
-//   description: z.string().optional(),
-//   defaultLabel: z.string().optional(),
-//   jzodSchema: jzodObject,
-// });
-// export type EntityDefinition = z.infer<typeof EntityDefinitionSchema>;
-
 /**
 * duplicated from Redux
 * @public

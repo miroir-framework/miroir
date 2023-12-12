@@ -1077,34 +1077,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       },
       "entity":entityDefinitionEntity.jzodSchema as JzodObject,
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
-      // "createEntityAction": {
-      //   "type": "object",
-      //   "definition": {
-      //     "actionType": {"type": "literal", "definition":"entityAction"},
-      //     "actionName": {"type": "literal", "definition":"createEntity"},
-      //     "entity": {
-      //       "type": "schemaReference",
-      //       "definition": {
-      //         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      //         "relativePath": "entity"
-      //       }
-      //     },
-      //     "entityDefinition": {
-      //       "type": "schemaReference",
-      //       "definition": {
-      //         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      //         "relativePath": "entityDefinition"
-      //       }
-      //     }
-      //   }
-      // },
       "actionModelerParams": actionModelerVersionV1.definition.definition.actionParameter as JzodObject,
-      // "entityAction": {
-      //   "type": "schemaReference",
-      //   "definition": {
-      //     "relativePath": "createEntityAction"
-      //   }
-      // },
       "actionTransformer": {
         "type": "object",
         "definition": {
