@@ -246,17 +246,8 @@ export {
   DataStoreApplicationType,
 } from './0_interfaces/3_controllers/ApplicationControllerInterface.js';
 export {
-  // selectReportSectionInstances,
-  selectEntityInstances,
-  selectEntityInstancesFromJzodAttribute,
-  selectEntityUuidFromJzodAttribute,
-  selectCurrentDeploymentModel,
-  // selectEntityInstancesForReportSection,
-  selectReportDefinitionFromReportUuid,
-} from './2_domain/DomainDataAccess.js';
-export {
-  ModelEntityActionTransformer
-} from './2_domain/ModelEntityActionTransformer.js';
+  EndpointInterface
+} from './0_interfaces/3_controllers/EndpointInterface.js';
 export {
   ErrorLogServiceInterface, MError
 } from './0_interfaces/3_controllers/ErrorLogServiceInterface.js';
@@ -281,6 +272,7 @@ export {
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheTransactionalActionWithDeploymentSchema,
   LocalCacheInterface,
+  CreateInstanceParameters,
 } from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
 export {
   HttpRequestBodyFormat,
@@ -317,6 +309,13 @@ export {
   getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
+  selectEntityInstances,
+  selectEntityInstancesFromJzodAttribute,
+  selectEntityUuidFromJzodAttribute,
+  selectCurrentDeploymentModel,
+  selectReportDefinitionFromReportUuid,
+} from './2_domain/DomainDataAccess.js';
+export {
   selectFetchedDataFromDomainState,
   selectDomainModelMetaInformationFromDomainState,
   selectEntityJzodSchemaFromDomainState,
@@ -327,6 +326,9 @@ export {
   selectSingleSelectQueryJzodSchemaFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
+  ModelEntityActionTransformer
+} from './2_domain/ModelEntityActionTransformer.js';
+export {
   cacheFetchPolicy,
   cacheInvalidationPolicy,
   ConfigurationService,
@@ -335,6 +337,9 @@ export {
   StoreFactory,
   StoreFactoryRegister,
 } from "./3_controllers/ConfigurationService.js";
+export {
+  Endpoint
+} from './3_controllers/Endpoint.js';
 export {
   ErrorDataStore
 } from './3_controllers/ErrorHandling/ErrorDataStore.js';

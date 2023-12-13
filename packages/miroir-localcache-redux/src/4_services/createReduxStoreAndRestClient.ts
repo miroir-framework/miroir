@@ -1,6 +1,7 @@
 import {
   DomainController,
   DomainControllerInterface,
+  Endpoint,
   LoggerInterface,
   MiroirConfig,
   MiroirContext,
@@ -53,6 +54,7 @@ export function createReduxStoreAndRestClient(
     miroirContext,
     reduxStore, // implements LocalCacheInterface
     reduxStore, // implements RemoteStoreInterface
+    new Endpoint(reduxStore)
   );
 
   return {miroirContext, reduxStore,  domainController}

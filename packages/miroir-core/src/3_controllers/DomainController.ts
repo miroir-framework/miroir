@@ -44,6 +44,7 @@ import { circularReplacer, getLoggerName } from '../tools';
 import { throwExceptionIfError } from './ErrorHandling/ErrorUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
+import { Endpoint } from './Endpoint.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -63,7 +64,8 @@ export class DomainController implements DomainControllerInterface {
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: RemoteStoreInterface
+    private remoteStore: RemoteStoreInterface,
+    private endpoint: Endpoint,
   ) {}
 
   // ##############################################################################################
@@ -375,7 +377,10 @@ export class DomainController implements DomainControllerInterface {
           deploymentUuid,
           objects: domainAction.objects,
         }
-        await this.localCache.handleEndpointAction(instanceAction);
+        // await this.localCache.handleEndpointAction(instanceAction);
+        // await this.localCache.createInstance(deploymentUuid, domainAction.objects[0].applicationSection, domainAction.objects);
+        // await this.endpoint.handleAction(instanceAction);
+        this.endpoint.handleAction(instanceAction);
         
       } else {
         const instanceCUDAction: LocalCacheCUDActionWithDeployment = {

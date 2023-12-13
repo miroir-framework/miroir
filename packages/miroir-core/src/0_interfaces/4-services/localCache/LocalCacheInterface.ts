@@ -5,7 +5,7 @@ import {
 } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 import { MiroirApplicationModel } from '../../1_core/Model.js';
 
-import { modelAction, instanceCUDAction, InstanceAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   DomainTransactionalActionWithCUDUpdate
 } from "../../2_domain/DomainControllerInterface.js";
@@ -46,6 +46,12 @@ export const LocalCacheEntityActionWithDeploymentSchema = z.object({
 });
 export type LocalCacheModelActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
 
+export type CreateInstanceParameters = {
+  deploymentUuid: string,
+  applicationSection: ApplicationSection,
+  objects: EntityInstanceCollection[],
+};
+
 // ################################################################################################
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
@@ -60,7 +66,15 @@ export declare interface LocalCacheInterface
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MiroirApplicationModel;
   currentTransaction():(DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+
   // actions on local cache
+  createInstance(
+    deploymentUuid: string,
+    applicationSection: ApplicationSection,
+    objects: EntityInstanceCollection[],
+  ): void;
+
+  // ##############################################################################################
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):void;
   handleLocalCacheEntityAction(action:LocalCacheModelActionWithDeployment):void;
   handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):void;

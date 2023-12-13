@@ -35,7 +35,8 @@ import {
   entityDefinitionEntityDefinition,
   entityEntity,
   entityEntityDefinition,
-  getLoggerName
+  getLoggerName,
+  CreateInstanceParameters
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -867,14 +868,67 @@ function handleLocalCacheEntityAction(
 }
 
 //#########################################################################################
+function createInstance(
+  state: LocalCacheSliceState,
+  deploymentUuid: string,
+  applicationSection: ApplicationSection,
+  objects: EntityInstanceCollection[],
+) {
+  for (let instanceCollection of objects??([] as EntityInstanceCollection[])) {
+    const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
+      deploymentUuid,
+      applicationSection,
+      instanceCollection.parentUuid
+    );
+    log.debug(
+      "create for entity",
+      instanceCollection.parentName,
+      instanceCollection.parentUuid,
+      "instances",
+      instanceCollection.instances
+      // JSON.stringify(state)
+    );
+
+    const sliceEntityAdapter = getInitializedSectionEntityAdapter(
+      deploymentUuid,
+      applicationSection,
+      instanceCollection.parentUuid,
+      state
+    );
+
+    // log.info('localCacheSliceObject handleEndpointAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
+
+    sliceEntityAdapter.addMany(state[instanceCollectionEntityIndex], instanceCollection.instances);
+
+    // log.info('localCacheSliceObject handleEndpointAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
+
+    if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
+      // TODO: does it work? How?
+      // log.info('localCacheSliceObject handleEndpointAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
+
+      instanceCollection.instances.forEach((i: EntityInstance) =>
+        getInitializedSectionEntityAdapter(deploymentUuid, applicationSection, i["uuid"], state)
+      );
+    }
+    // log.info('create done',JSON.stringify(state[deploymentUuid][applicationSection]));
+  }
+}
+
+//#########################################################################################
+function deleteInstance(
+  state: LocalCacheSliceState,
+  deploymentUuid: string,
+  applicationSection: ApplicationSection,
+  objects: EntityInstanceCollection[],
+) {
+}
+//#########################################################################################
 function handleEndpointAction(
   state: LocalCacheSliceState,
-  // deploymentUuid: Uuid,
   action: InstanceAction
-  // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ) {
   // log.info(
-  //   "localCacheSliceObject handleDomainTransactionalAction called",
+  //   "localCacheSliceObject handleEndpointAction called",
   //   action.actionName,
   //   "deploymentUuid",
   //   deploymentUuid,
@@ -883,62 +937,14 @@ function handleEndpointAction(
   // );
   switch (action.actionType) {
     case "instanceAction": {
-      // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
-      // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
-      // const modelAction: ModelAction = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
-      //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
-      //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
-      //   action.update.modelEntityUpdate
-      // );
-
-      // const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToInstanceAction(deploymentUuid, action)
-      // log.info(
-      //   "localCacheSliceObject handleDomainEntityAction updateModel deploymentUuid",
-      //   deploymentUuid,
-      //   "domainDataAction",
-      //   domainDataAction
-      // );
-      // handleLocalCacheCUDActionWithDeployment(state, localCacheCUDActionWithDeployment)
       switch (action.actionName) {
         case "createInstance": {
-          for (let instanceCollection of action.objects??([] as EntityInstanceCollection[])) {
-            const instanceCollectionEntityIndex = getLocalCacheSliceIndex(
-              action.deploymentUuid,
-              action.applicationSection,
-              instanceCollection.parentUuid
-            );
-            log.debug(
-              "create for entity",
-              instanceCollection.parentName,
-              instanceCollection.parentUuid,
-              "instances",
-              instanceCollection.instances
-              // JSON.stringify(state)
-            );
-    
-            const sliceEntityAdapter = getInitializedSectionEntityAdapter(
-              action.deploymentUuid,
-              action.applicationSection,
-              instanceCollection.parentUuid,
-              state
-            );
-    
-            // log.info('localCacheSliceObject handleLocalCacheCUDAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state before insert',JSON.stringify(state));
-    
-            sliceEntityAdapter.addMany(state[instanceCollectionEntityIndex], instanceCollection.instances);
-    
-            // log.info('localCacheSliceObject handleLocalCacheCUDAction', instanceCollection.parentName, instanceCollection.parentUuid, 'state after insert',JSON.stringify(state));
-    
-            if (instanceCollection.parentUuid == entityDefinitionEntityDefinition.uuid) {
-              // TODO: does it work? How?
-              // log.info('localCacheSliceObject handleLocalCacheCUDAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
-    
-              instanceCollection.instances.forEach((i: EntityInstance) =>
-                getInitializedSectionEntityAdapter(action.deploymentUuid, action.applicationSection, i["uuid"], state)
-              );
-            }
-            // log.info('create done',JSON.stringify(state[deploymentUuid][applicationSection]));
-          }
+          createInstance(
+            state,
+            action.deploymentUuid,
+            action.applicationSection,
+            action.objects,
+          )
           break;
         }
         // case "delete": {
@@ -1024,15 +1030,10 @@ function handleEndpointAction(
         // }
         default:
           log.warn(
-            "localCacheSliceObject handleLocalCacheCUDAction action could not be taken into account, unkown action",
+            "localCacheSliceObject handleEndpointAction action could not be taken into account, unkown action",
             action
           );
       }
-    
-      // for (const localCacheCUDActionWithDeployment of localCacheCUDActionsWithDeployment) {
-      //   handleLocalCacheCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);
-      // }
-
       break;
     }
     // case "DomainDataAction":
@@ -1116,6 +1117,7 @@ function handleEndpointAction(
   }
 }
 
+
 //#########################################################################################
 //# SLICE
 //#########################################################################################
@@ -1146,6 +1148,12 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
       action: PayloadAction<InstanceAction>
     ) {
       handleEndpointAction(state, action.payload);
+    },
+    [localCacheSliceInputActionNamesObject.createInstance](
+      state: LocalCacheSliceState,
+      action: PayloadAction<CreateInstanceParameters>
+    ) {
+      createInstance(state, action.payload.deploymentUuid, action.payload.applicationSection, action.payload.objects);
     },
   },
 });
