@@ -18,7 +18,7 @@ import {
   entityInstanceCollection
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { LocalCacheEntityActionWithDeployment } from "../4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheModelActionWithDeployment } from "../4-services/localCache/LocalCacheInterface.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -321,7 +321,7 @@ export interface DomainControllerInterface {
    * 
    * 
    */
-  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[];
+  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[];
   currentLocalCacheInfo(): LocalCacheInfo;
 
   

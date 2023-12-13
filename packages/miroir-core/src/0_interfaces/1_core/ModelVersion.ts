@@ -5,14 +5,10 @@ import { LocalCacheEntityActionWithDeploymentSchema } from "../4-services/localC
 
 export const MiroirApplicationVersionSchema = EntityInstanceWithNameSchema.extend({
   description: z.string().optional(),
-  // model?: MiroirApplicationModel;
   application: z.string(),
   branch: z.string(),
   previousVersion: z.string(),
   modelCUDMigration: z.array(ModelReplayableUpdateSchema).optional(),
-  // modelStructureMigration: z.array(z.union([ModelReplayableUpdateSchema, z.lazy(()=>LocalCacheEntityActionWithDeploymentSchema)])).optional(),
   modelStructureMigration: z.array(z.union([ModelReplayableUpdateSchema, LocalCacheEntityActionWithDeploymentSchema])).optional(),
 });
 export type MiroirApplicationVersion = z.infer<typeof MiroirApplicationVersionSchema>;
-
-// export type MiroirModelHistory = MiroirApplicationVersion[]; // branches?

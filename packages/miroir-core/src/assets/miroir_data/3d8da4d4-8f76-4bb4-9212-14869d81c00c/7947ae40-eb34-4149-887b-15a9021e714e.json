@@ -1,19 +1,20 @@
 {
   "uuid": "7947ae40-eb34-4149-887b-15a9021e714e",
-  "parentName": "ActionVersion",
+  "parentName": "EndpointVersion",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
   "actionUuid": "45132eed-f0a0-46df-b413-294b1472a46d",
-  "name": "ActionModelerVersion",
+  "name": "ModelEndpointVersion",
   "version": "1",
-  "description": "Version of Actions on Entities",
+  "description": "Version of Model Endpoint",
   "definition": {
     "type": "object",
     "definition": {
       "actionParameter": {
         "type": "object",
         "definition": {
-          "actionType": {"type": "literal", "definition":"entityAction"},
+          "actionType": {"type": "literal", "definition":"modelAction"},
           "actionName": {"type": "literal", "definition":"createEntity"},
+          "endpointVersion": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
           "entity": {
             "type": "schemaReference",
             "definition": {

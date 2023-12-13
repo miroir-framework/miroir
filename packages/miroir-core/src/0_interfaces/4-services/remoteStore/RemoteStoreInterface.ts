@@ -1,7 +1,7 @@
 import { HttpMethod } from "../../1_core/Http.js";
 import {
   ApplicationSection,
-  ActionModelerParams,
+  ModelAction,
   EntityInstance,
   EntityInstanceCollection,
 } from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -76,7 +76,7 @@ export interface RemoteStoreCRUDAction {
 }
 
 // ################################################################################################
-export type RemoteStoreModelAction =
+export type RemoteStoreOLDModelAction =
   | DomainTransactionalActionWithCUDUpdate
   | DomainTransactionalResetModelAction
   | DomainTransactionalResetDataAction
@@ -84,7 +84,7 @@ export type RemoteStoreModelAction =
 ;
 
 // ################################################################################################
-export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreModelAction | ActionModelerParams;
+export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreOLDModelAction | ModelAction;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {
@@ -106,13 +106,13 @@ export interface RemoteStoreNetworkClientInterface {
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreModelAction(
+  handleNetworkRemoteStoreOLDModelAction(
     deploymentUuid: string,
-    action: RemoteStoreModelAction
+    action: RemoteStoreOLDModelAction
   ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreEntityAction(
+  handleNetworkRemoteStoreModelEntityAction(
     deploymentUuid: string,
-    action: ActionModelerParams
+    action: ModelAction
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -128,13 +128,13 @@ export declare interface RemoteStoreInterface {
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RemoteStoreActionReturnType>;
-  handleRemoteStoreModelAction(
+  handleRemoteStoreOLDModelAction(
     deploymentUuid: string,
-    action: RemoteStoreModelAction
+    action: RemoteStoreOLDModelAction
   ): Promise<RemoteStoreActionReturnType>;
-  handleRemoteStoreEntityAction(
+  handleRemoteStoreModelEntityAction(
     deploymentUuid: string,
-    action: ActionModelerParams
+    action: ModelAction
   ): Promise<RemoteStoreActionReturnType>;
 }
 

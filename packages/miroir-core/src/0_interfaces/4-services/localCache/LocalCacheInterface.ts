@@ -5,7 +5,7 @@ import {
 } from "../../../0_interfaces/2_domain/DomainControllerInterface";
 import { MiroirApplicationModel } from '../../1_core/Model.js';
 
-import { actionModelerParams, instanceCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { modelAction, instanceCUDAction } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   DomainTransactionalActionWithCUDUpdate
 } from "../../2_domain/DomainControllerInterface.js";
@@ -28,7 +28,7 @@ export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionW
 
 export const LocalCacheTransactionalActionSchema = z.union([
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
-  actionModelerParams,
+  modelAction,
 ]);
 export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
 
@@ -40,11 +40,11 @@ export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
 export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
 
 export const LocalCacheEntityActionWithDeploymentSchema = z.object({
-  actionType:z.literal("localCacheEntityActionWithDeployment"),
+  actionType:z.literal("localCacheModelActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  entityAction: actionModelerParams,
+  modelAction: modelAction,
 });
-export type LocalCacheEntityActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
+export type LocalCacheModelActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
 
 // ################################################################################################
 /**
@@ -59,9 +59,9 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MiroirApplicationModel;
-  currentTransaction():(DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   // actions on local cache
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):void;
-  handleLocalCacheEntityAction(action:LocalCacheEntityActionWithDeployment):void;
+  handleLocalCacheEntityAction(action:LocalCacheModelActionWithDeployment):void;
   handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):void;
 }

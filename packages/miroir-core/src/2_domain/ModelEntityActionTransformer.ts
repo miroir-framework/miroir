@@ -1,7 +1,7 @@
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
-import { ActionModelerParams, EntityDefinition, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ModelAction, EntityDefinition, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   CUDActionName,
@@ -105,9 +105,9 @@ export class ModelEntityActionTransformer{
   }
 
   // ###################################################################################################
-  static entityActionToInstanceAction(
+  static modelActionToInstanceAction(
     deploymentUuid: Uuid,
-    entityAction:ActionModelerParams,
+    modelAction:ModelAction,
   ):LocalCacheCUDActionWithDeployment[] {
     return [
       {
@@ -122,13 +122,13 @@ export class ModelEntityActionTransformer{
               parentName:entityEntity.name,
               parentUuid:entityEntity.uuid,
               applicationSection:'model',
-              instances:[entityAction.entity]
+              instances:[modelAction.entity]
             },
             {
               parentName:entityEntityDefinition.name,
               parentUuid:entityEntityDefinition.uuid,
               applicationSection:'model', 
-              instances:[entityAction.entityDefinition]
+              instances:[modelAction.entityDefinition]
             },
           ]
         }

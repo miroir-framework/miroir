@@ -1,4 +1,4 @@
-import { ActionModelerParams, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ModelAction, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -138,7 +138,7 @@ export async function applyModelEntityUpdate(
  * @param body 
  * @returns 
  */
-export async function modelActionRunner(
+export async function modelOLDActionRunner(
   miroirDataStoreProxy:IStoreController,
   appDataStoreProxy:IStoreController,
   deploymentUuid: string,
@@ -223,29 +223,29 @@ export async function modelActionRunner(
  * @param body 
  * @returns 
  */
-export async function entityActionRunner(
+export async function modelActionRunner(
   miroirDataStoreProxy:IStoreController,
   appDataStoreProxy:IStoreController,
   deploymentUuid: string,
   actionName:string,
   body:any
 ):Promise<void> {
-  log.info('###################################### entityActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
-  log.debug('entityActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  log.info('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
+  log.debug('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-  const update: ActionModelerParams = body;
-  log.info('entityActionRunner action', JSON.stringify(update,undefined,2));
+  const update: ModelAction = body;
+  log.info('modelActionRunner action', JSON.stringify(update,undefined,2));
   switch (actionName) {
     case "createEntity": {
-      log.debug('entityActionRunner applyModelEntityUpdates createEntity inserting',update.entity.name);
+      log.debug('modelActionRunner applyModelEntityUpdates createEntity inserting',update.entity.name);
       await targetProxy.createEntity(update.entity, update.entityDefinition);
       break;
     }
     default:
-      log.warn('entityActionRunner could not handle actionName', actionName)
+      log.warn('modelActionRunner could not handle actionName', actionName)
       break;
   }
-  log.debug('entityActionRunner returning empty response.')
+  log.debug('modelActionRunner returning empty response.')
   return Promise.resolve(undefined);
 }
 

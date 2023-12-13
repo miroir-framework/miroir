@@ -8,7 +8,7 @@ import {
   EntityInstanceCollection,
   FetchedData,
   LocalCacheCUDActionWithDeployment,
-  LocalCacheEntityActionWithDeployment,
+  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   RemoteStoreCRUDAction,
   entityInstance
@@ -26,7 +26,7 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action:DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment, changes:Patch[]; inverseChanges:Patch[];
+  action:DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment, changes:Patch[]; inverseChanges:Patch[];
 }
 
 export type QueriesResultsCache = {[k: string]: FetchedData};
@@ -58,7 +58,7 @@ export type InnerReducerInterface = (
   state: LocalCacheSliceState,
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-    | LocalCacheEntityActionWithDeployment
+    | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
@@ -70,7 +70,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-    | LocalCacheEntityActionWithDeployment
+    | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction

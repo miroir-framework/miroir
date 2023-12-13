@@ -3,9 +3,9 @@
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "757595aa-7e4a-43c0-b561-ae545360ab2d",
-  "name": "Action",
+  "name": "Endpoint",
   "conceptLevel": "MetaModel",
-  "description": "definition of an Action",
+  "description": "definition of an Endpoint",
   "jzodSchema": {
     "type": "object",
     "definition": {

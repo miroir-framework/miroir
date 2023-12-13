@@ -1,6 +1,6 @@
 import {
   ApplicationSection,
-  ActionModelerParams,
+  ModelAction,
   HttpMethod,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -60,8 +60,8 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
     "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
-    "entityAction": {"*": {action: true}},
-    // "localCacheEntityActionWithDeployment": {"*": {action: true}},
+    "modelAction": {"*": {action: true}},
+    // "localCacheModelActionWithDeployment": {"*": {action: true}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     "DomainTransactionalAction": {
       "UpdateMetaModelInstance": {attribute: "update", result: "modelUpdate"}, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)
@@ -143,16 +143,16 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteStoreModelAction(
+  async handleNetworkRemoteStoreOLDModelAction(
     deploymentUuid: string,
     action: RemoteStoreAction
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,
-      this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
+      this.rootApiUrl + "/modelOLDWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
     console.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreModelAction",
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreOLDModelAction",
       action,
       "callParams",
       callParams
@@ -161,13 +161,13 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteStoreEntityAction(
+  async handleNetworkRemoteStoreModelEntityAction(
     deploymentUuid: string,
-    action: ActionModelerParams
+    action: ModelAction
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,
-      this.rootApiUrl + "/entityWithDeployment/" + deploymentUuid + "/" + action.actionName
+      this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
     console.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",

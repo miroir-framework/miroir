@@ -318,9 +318,10 @@ export type EntityDefinition = {
     description?: string | undefined;
     jzodSchema: JzodObject;
 };
-export type ActionModelerParams = {
-    actionType: "entityAction";
+export type ModelAction = {
+    actionType: "modelAction";
     actionName: "createEntity";
+    endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e";
     entity: Entity;
     entityDefinition: EntityDefinition;
 };
@@ -342,8 +343,8 @@ export type Commit = {
     author?: string | undefined;
     description?: string | undefined;
     actions: {
-        actionVersion: string;
-        actionArguments: ActionModelerParams;
+        endpointVersion: string;
+        actionArguments: ModelAction;
     }[];
     patches: any[];
 };
@@ -383,9 +384,9 @@ export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionTyp
 export const conceptLevel: z.ZodType<ConceptLevel> = z.enum(["MetaModel","Model","Data"]);
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const actionModelerParams: z.ZodType<ActionModelerParams> = z.object({actionType:z.literal("entityAction"), actionName:z.literal("createEntity"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
+export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
-export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({actionVersion:z.string().uuid(), actionArguments:z.lazy(() =>actionModelerParams)}).strict()), patches:z.array(z.any())}).strict();
+export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);

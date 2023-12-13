@@ -3,9 +3,9 @@
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "entityUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "name": "ActionVersion",
+  "name": "EndpointVersion",
   "conceptLevel": "MetaModel",
-  "description": "definition of an Action Version",
+  "description": "definition of an Endpoint Version",
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -58,14 +58,15 @@
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
               "relativePath": "jzodObject"
             },
-            "extra": { "id": 8, "defaultLabel": "Jzod Schema", "editable": true }
+            "extra": { "id": 8, "defaultLabel": "Endpoint Parameter", "editable": true }
           },
-          "entityDefinition": {
+          "actionDefinition": {
             "type": "schemaReference",
             "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityDefinition"
-            }
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodObject"
+            },
+            "extra": { "id": 8, "defaultLabel": "Endpoint Definition", "editable": true }
           },
           "actionTransformer": {
             "type": "simpleType", 

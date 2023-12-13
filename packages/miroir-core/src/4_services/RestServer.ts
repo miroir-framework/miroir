@@ -3,7 +3,7 @@ import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/prepr
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { IStoreController } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/remoteStore/RemoteStoreInterface";
-import { entityActionRunner, modelActionRunner } from "../3_controllers/ModelActionRunner";
+import { modelActionRunner, modelOLDActionRunner } from "../3_controllers/ModelActionRunner";
 
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import { packageName } from "../constants";
@@ -145,7 +145,7 @@ export async function restMethodsPostPutDeleteHandler(
 }
 
 // ################################################################################################
-export async function restMethodModelActionRunnerHandler(
+export async function restMethodModelOLDActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
@@ -161,9 +161,9 @@ export async function restMethodModelActionRunnerHandler(
   const deploymentUuid: string =
     typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
 
-  log.debug("restMethodModelActionRunnerHandler params", params, "body", body);
+  log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
 
-  const result = modelActionRunner(
+  const result = modelOLDActionRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
@@ -192,7 +192,7 @@ export async function restMethodEntityActionRunnerHandler(
 
   log.debug("restMethodEntityActionRunnerHandler params", params, "body", body);
 
-  const result = entityActionRunner(
+  const result = modelActionRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
@@ -226,12 +226,12 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   },
   {
     method: "post",
-    url: "/modelWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodModelActionRunnerHandler
+    url: "/modelOLDWithDeployment/:deploymentUuid/:actionName",
+    handler: restMethodModelOLDActionRunnerHandler
   },
   {
     method: "post",
-    url: "/entityWithDeployment/:deploymentUuid/:actionName",
+    url: "/modelWithDeployment/:deploymentUuid/:actionName",
     handler: restMethodEntityActionRunnerHandler
   },
 ];

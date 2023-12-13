@@ -17,7 +17,7 @@ import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
   LocalCacheCUDActionWithDeployment,
-  LocalCacheEntityActionWithDeployment,
+  LocalCacheModelActionWithDeployment,
   LocalCacheInterface,
 } from "../0_interfaces/4-services/localCache/LocalCacheInterface";
 import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteStoreInterface.js';
@@ -31,7 +31,7 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 
 import {
   ApplicationSection,
-  ActionModelerParams,
+  ModelAction,
   EntityDefinition,
   EntityInstanceCollection,
   entityDefinition,
@@ -66,7 +66,7 @@ export class DomainController implements DomainControllerInterface {
   ) {}
 
   // ##############################################################################################
-  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheEntityActionWithDeployment)[] {
+  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -89,7 +89,7 @@ export class DomainController implements DomainControllerInterface {
       "action",
       domainTransactionalAction
     );
-    // await this.dataController.handleRemoteStoreModelAction(domainAction);
+    // await this.dataController.handleRemoteStoreOLDModelAction(domainAction);
     try {
       switch (domainTransactionalAction.actionName) {
         case "rollback": {
@@ -108,7 +108,7 @@ export class DomainController implements DomainControllerInterface {
         case "initModel": 
         case "resetData": 
         case "resetModel": {
-          await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,domainTransactionalAction);
+          await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,domainTransactionalAction);
           break;
         }
         case "commit": {
@@ -138,8 +138,8 @@ export class DomainController implements DomainControllerInterface {
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               modelStructureMigration: this.localCache
                 .currentTransaction()
-                .map((t: LocalCacheEntityActionWithDeployment | DomainTransactionalActionWithCUDUpdate) =>
-                  t.actionType == "localCacheEntityActionWithDeployment" ? t : t.update
+                .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalActionWithCUDUpdate) =>
+                  t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
                 ),
             };
     
@@ -162,18 +162,19 @@ export class DomainController implements DomainControllerInterface {
                   if (replayAction.actionName == "updateEntity") {
                     switch (replayAction.update.modelEntityUpdate.updateActionName) {
                       case 'createEntity': {
-                        const entityAction: ActionModelerParams = {
-                            actionType: "entityAction",
+                        const modelAction: ModelAction = {
+                            actionType: "modelAction",
                             actionName: 'createEntity',
+                            endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e",
                             entity: replayAction.update.modelEntityUpdate.entities[0].entity,
                             entityDefinition: replayAction.update.modelEntityUpdate.entities[0].entityDefinition as any as EntityDefinition,
                           // }
                         }
-                        await this.remoteStore.handleRemoteStoreEntityAction(deploymentUuid,entityAction);
+                        await this.remoteStore.handleRemoteStoreModelEntityAction(deploymentUuid,modelAction);
                         break;
                       }
                       default: {
-                        await this.remoteStore.handleRemoteStoreModelAction(deploymentUuid,replayAction);
+                        await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,replayAction);
                         break;
                       }
                     }
@@ -195,8 +196,11 @@ export class DomainController implements DomainControllerInterface {
                   }
                   break;
                 }
-                case "localCacheEntityActionWithDeployment": {
-                  await this.remoteStore.handleRemoteStoreEntityAction(deploymentUuid,(replayAction as LocalCacheEntityActionWithDeployment).entityAction);
+                case "localCacheModelActionWithDeployment": {
+                  await this.remoteStore.handleRemoteStoreModelEntityAction(
+                    deploymentUuid,
+                    (replayAction as LocalCacheModelActionWithDeployment).modelAction
+                  );
                   break;
                 }
                 default:
@@ -283,11 +287,12 @@ export class DomainController implements DomainControllerInterface {
           if (domainTransactionalAction.update.modelEntityUpdate.updateActionName == "createEntity") {
             for (const entity of domainTransactionalAction?.update.modelEntityUpdate.entities) {
               await this.localCache.handleLocalCacheEntityAction({
-                actionType: "localCacheEntityActionWithDeployment",
+                actionType: "localCacheModelActionWithDeployment",
                 deploymentUuid,
-                entityAction: {
-                  actionType: "entityAction",
+                modelAction: {
+                  actionType: "modelAction",
                   actionName: "createEntity",
+                  endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entity: entity.entity,
                   entityDefinition: entity.entityDefinition
                 }

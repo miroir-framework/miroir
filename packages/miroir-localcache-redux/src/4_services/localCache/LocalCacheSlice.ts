@@ -16,14 +16,14 @@ import {
   DomainDataAction,
   DomainState,
   DomainTransactionalAction,
-  ActionModelerParams,
+  ModelAction,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
   InstanceCUDAction,
   LocalCacheCUDActionWithDeployment,
-  LocalCacheEntityActionWithDeployment,
+  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalAction,
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
@@ -456,17 +456,17 @@ function handleLocalCacheTransactionalAction(
   //   action
   // );
   switch (action.actionType) {
-    case "entityAction": {
+    case "modelAction": {
       // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
       // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
 
-      // const entityAction: ActionModeler = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
+      // const modelAction: ModelAction = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
       //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
       //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
       //   action.update.modelEntityUpdate
       // );
 
-      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.entityActionToInstanceAction(deploymentUuid, action)
+      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToInstanceAction(deploymentUuid, action)
       // log.info(
       //   "localCacheSliceObject handleDomainTransactionalAction updateModel deploymentUuid",
       //   deploymentUuid,
@@ -747,7 +747,7 @@ function convertDomainActionToDomainTransactionalAction(action:DomainActionWithT
 function handleLocalCacheEntityAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: ActionModelerParams
+  action: ModelAction
   // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ) {
   // log.info(
@@ -759,17 +759,17 @@ function handleLocalCacheEntityAction(
   //   action
   // );
   switch (action.actionType) {
-    case "entityAction": {
+    case "modelAction": {
       // const entityEntityIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid);
       // const entityEntityDefinitionIndex = getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid);
 
-      // const entityAction: ActionModeler = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
+      // const modelAction: ModelAction = ModelEntityActionTransformer.modelEntityUpdateToEntityAction(
       //   Object.values(state[entityEntityIndex].entities) as MetaEntity[],
       //   Object.values(state[entityEntityDefinitionIndex].entities) as EntityDefinition[],
       //   action.update.modelEntityUpdate
       // );
 
-      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.entityActionToInstanceAction(deploymentUuid, action)
+      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToInstanceAction(deploymentUuid, action)
       // log.info(
       //   "localCacheSliceObject handleDomainEntityAction updateModel deploymentUuid",
       //   deploymentUuid,
@@ -880,9 +880,9 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheEntityActionWithDeployment>
+      action: PayloadAction<LocalCacheModelActionWithDeployment>
     ) {
-      handleLocalCacheEntityAction(state, action.payload.deploymentUuid, action.payload.entityAction);
+      handleLocalCacheEntityAction(state, action.payload.deploymentUuid, action.payload.modelAction);
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
       state: LocalCacheSliceState,

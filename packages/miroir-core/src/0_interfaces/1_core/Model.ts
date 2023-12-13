@@ -6,7 +6,6 @@ import { MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js"
 import { jzodSchemaDefinitionSchema } from "../../0_interfaces/1_core/JzodSchemaDefinition.js";
 import { StoreBasedConfigurationSchema } from "../../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationVersionSchema } from "../../0_interfaces/1_core/ModelVersion.js";
-// import { ReportSchema } from "../../0_interfaces/1_core/Report.js";
 import { report } from "./preprocessor-generated/server-generated";
 
 import { EntityInstance, entityDefinition, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
@@ -34,7 +33,6 @@ export const ApplicationModelSchema = z.object({
   entities: z.array(MetaEntitySchema),
   entityDefinitions: z.array(entityDefinition),
   jzodSchemas:z.array(jzodSchemaDefinitionSchema),
-  // reports: z.array(ReportSchema),
   reports: z.array(report),
 });
 

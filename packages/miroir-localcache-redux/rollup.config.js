@@ -15,6 +15,7 @@ export default [
       'miroir-core',
       'redux-saga',
       'redux-saga/effects',
+      'typed-redux-saga',
       'zod'
     ],
     output: [

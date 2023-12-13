@@ -7,7 +7,7 @@ import {
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainTransactionalActionWithCUDUpdate,
   LocalCacheCUDActionWithDeployment,
-  LocalCacheEntityActionWithDeployment,
+  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -105,7 +105,7 @@ function callUndoRedoReducer(
   presentModelSnapshot: LocalCacheSliceState,
   action: PayloadAction<
     | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-    | LocalCacheEntityActionWithDeployment
+    | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
   >
 ): { newSnapshot: LocalCacheSliceState; changes: Patch[]; inverseChanges: Patch[] } {
@@ -126,7 +126,7 @@ function callUndoRedoReducer(
   );
   // if (undoableSliceUpdateActions.some((item)=>item.type == action?.type && item.actionName == action?.payload?.domainAction.actionName)) {
   switch (action.payload.actionType) {
-    case "localCacheEntityActionWithDeployment": {
+    case "localCacheModelActionWithDeployment": {
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
@@ -179,7 +179,7 @@ function callUndoRedoReducer(
     state: ReduxStateWithUndoRedo,
     action: PayloadAction<
       | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-      | LocalCacheEntityActionWithDeployment
+      | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
     >
   ): ReduxStateWithUndoRedo => {
@@ -193,7 +193,7 @@ function callUndoRedoReducer(
     } else {
       // presentModelSnapshot !== newSnapshot
       const newPatch: ReduxStateChanges = {
-        action: action.payload.actionType == "localCacheEntityActionWithDeployment"?action.payload:action.payload.domainAction as DomainTransactionalActionWithCUDUpdate,
+        action: action.payload.actionType == "localCacheModelActionWithDeployment"?action.payload:action.payload.domainAction as DomainTransactionalActionWithCUDUpdate,
         changes,
         inverseChanges,
       };
@@ -217,7 +217,7 @@ function callUndoRedoReducer(
     state: ReduxStateWithUndoRedo,
     action: PayloadAction<
       | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-      | LocalCacheEntityActionWithDeployment
+      | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
     >
   ): ReduxStateWithUndoRedo => {
@@ -247,7 +247,7 @@ function callUndoRedoReducer(
       // presentModelSnapshot !== newSnapshot
       const newPatch: ReduxStateChanges = {
         action:
-          action.payload.actionType == "localCacheEntityActionWithDeployment"
+          action.payload.actionType == "localCacheModelActionWithDeployment"
             ? action.payload
             : (action.payload.domainAction as DomainTransactionalActionWithCUDUpdate),
         changes,
@@ -278,7 +278,7 @@ export function createUndoRedoReducer(
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
       | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
-      | LocalCacheEntityActionWithDeployment
+      | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
       | LocalCacheCUDActionWithDeployment
       | RemoteStoreCRUDAction
@@ -290,12 +290,12 @@ export function createUndoRedoReducer(
     
     switch (action.type) {
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction: {
-        if (action.payload.actionType != "localCacheEntityActionWithDeployment") {
+        if (action.payload.actionType != "localCacheModelActionWithDeployment") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheEntityAction accepts only actionType=entityAction, found " + action.payload.actionType
+            "reduceWithUndoRedo handleLocalCacheEntityAction accepts only actionType=modelAction, found " + action.payload.actionType
           );
         } else {
-          return callNextReducerWithUndoRedoAction(innerReducer, state, action as PayloadAction<LocalCacheEntityActionWithDeployment>);
+          return callNextReducerWithUndoRedoAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);
         }
         break;
       }
