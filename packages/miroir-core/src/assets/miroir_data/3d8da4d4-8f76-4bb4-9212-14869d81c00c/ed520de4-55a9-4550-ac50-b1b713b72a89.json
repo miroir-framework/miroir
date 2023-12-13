@@ -1,0 +1,49 @@
+{
+  "uuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+  "parentName": "EndpointVersion",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "3b31cf8d-5847-4b82-9dbf-22bc5fc9ae99",
+  "name": "InstanceEndpointVersion",
+  "version": "1",
+  "description": "Version of Instance Endpoint",
+  "definition": {
+    "type": "object",
+    "definition": {
+      "actionParameter": {
+        "type": "object",
+        "definition": {
+          "actionType": {"type": "literal", "definition":"instanceAction"},
+          "actionName": {"type": "literal", "definition":"createInstance"},
+          "endpointVersion": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "objects": {
+            "type": "array",
+            "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": true },
+            "definition": {
+              "type": "schemaReference",
+              "optional": false,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstanceCollection"
+              }
+            }
+          }
+        }
+      },
+      "actionTransformer": {},
+      "actionMigrations": {}
+    }
+  }
+}

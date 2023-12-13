@@ -10,6 +10,8 @@ export {
   Entity,
   entity,
   ModelAction,
+  modelAction,
+  InstanceAction,
   EntityDefinition,
   entityDefinition,
   EntityInstance,

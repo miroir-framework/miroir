@@ -79,11 +79,6 @@ export type ReduxReducerWithUndoRedoInterface = (
 
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
 
-export type MinstanceAction = PayloadAction<EntityInstanceCollection,string>;
-export type MentityAction = PayloadAction<EntityDefinition[],string>;
-
-export type Maction = MinstanceAction | MentityAction;
-
 //#########################################################################################
 //# DATA TYPES
 //#########################################################################################
@@ -102,6 +97,7 @@ export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheEntityAction: "handleLocalCacheEntityAction",
   handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
   handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
+  handleEndpointAction: "handleEndpointAction",
 };
 export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
 export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;

@@ -35,6 +35,7 @@ import {
   EntityDefinition,
   EntityInstanceCollection,
   entityDefinition,
+  InstanceAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -365,17 +366,31 @@ export class DomainController implements DomainControllerInterface {
       log.debug(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheCUDAction", domainAction
       );
-      const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
-        actionType: "LocalCacheCUDActionWithDeployment",
-        deploymentUuid,
-        instanceCUDAction: {
-          actionType: "InstanceCUDAction",
-          actionName: domainAction.actionName,
+      if (domainAction.actionName == "create") {
+        const instanceAction: InstanceAction = {
+          actionType: "instanceAction",
+          actionName: "createInstance",
+          endpointVersion: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           applicationSection: domainAction.objects[0].applicationSection,
+          deploymentUuid,
           objects: domainAction.objects,
-        },
+        }
+        await this.localCache.handleEndpointAction(instanceAction);
+        
+      } else {
+        const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
+          actionType: "LocalCacheCUDActionWithDeployment",
+          deploymentUuid,
+          instanceCUDAction: {
+            actionType: "InstanceCUDAction",
+            actionName: domainAction.actionName,
+            applicationSection: domainAction.objects[0].applicationSection,
+            objects: domainAction.objects,
+          },
+        }
+        await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
       }
-      await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
+
       log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
       log.error(

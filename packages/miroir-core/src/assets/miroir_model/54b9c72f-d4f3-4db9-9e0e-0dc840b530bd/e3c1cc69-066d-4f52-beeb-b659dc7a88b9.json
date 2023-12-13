@@ -26,7 +26,7 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
-      "actionUuid": {
+      "endpointUuid": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],

@@ -35,7 +35,8 @@ import {
   entityJzodSchema,
   entityReport,
   entityStoreBasedConfiguration,
-  getLoggerName
+  getLoggerName,
+  InstanceAction
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -289,6 +290,13 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   handleLocalCacheEntityAction(localCacheEntityAction: LocalCacheModelActionWithDeployment): void {
     this.innerReduxStore.dispatch(
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction](localCacheEntityAction)
+    );
+  }
+
+  // ###############################################################################
+  handleEndpointAction(endPointAction: InstanceAction): void {
+    this.innerReduxStore.dispatch(
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleEndpointAction](endPointAction)
     );
   }
 

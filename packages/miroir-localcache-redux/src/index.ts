@@ -15,7 +15,6 @@ export {
   selectInstanceArrayForDeploymentSectionEntity,
   selectSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors";
-// export { Maction, MentityAction, MinstanceAction } from "./4_services/localStore/Mslice";
 export {
   createUndoRedoReducer,
   reduxStoreWithUndoRedoGetInitialState,
@@ -23,9 +22,6 @@ export {
 } from "./4_services/localCache/UndoRedoReducer";
 export {
   InnerReducerInterface,
-  Maction,
-  MentityAction,
-  MinstanceAction,
   ReduxReducerWithUndoRedoInterface,
   ReduxStateChanges,
   ReduxStateWithUndoRedo,
