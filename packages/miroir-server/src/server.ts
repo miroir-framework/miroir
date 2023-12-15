@@ -99,14 +99,11 @@ if (miroirConfig.emulateServer) {
 
       await startServer(localMiroirStoreController, localAppStoreController);
 
-            
-      // app.use(bodyParser.json({limit:'10mb'}));
-
       // ##############################################################################################
       // CREATING ENDPOINTS SERVICING CRUD HANDLERS
       for (const op of restServerDefaultHandlers) {
         (app as any)[op.method](op.url, async (request:Request<{}, any, any, any, Record<string, any>>, response:any, context:any) => {
-          const body = await request.body;
+          const body = request.body;
           
           // console.log("received", op.method, op.url, "body", body)
           // console.log("received", op.method, op.url, "request", request)

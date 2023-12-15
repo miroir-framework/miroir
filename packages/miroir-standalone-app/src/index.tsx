@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 
 import {
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
   ConfigurationService,
   defaultLevels,
   defaultMiroirMetaModel,
@@ -24,7 +26,8 @@ import {
   MiroirLoggerFactory,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  StoreControllerFactory
+  StoreControllerFactory,
+  StoreControllerManager
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
@@ -75,12 +78,12 @@ const miroirConfigFiles: {[k: string]: MiroirConfig} = {
 }
 
   // log.info("start current process.env:",process); 
-  // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
-
-
+  
+  
   // ##############################################################################################
   // ##############################################################################################
-  const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
+  const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+  // const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
   // ##############################################################################################
   // ##############################################################################################
 
@@ -140,6 +143,8 @@ async function start(root:Root) {
   miroirCoreStartup();
   miroirStoreIndexedDbStartup();
 
+  const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+
 
   if (process.env.NODE_ENV === "development") {
     const {
@@ -156,12 +161,31 @@ async function start(root:Root) {
     );
   
     if (currentMiroirConfig.emulateServer) {
-      const {
-        localMiroirStoreController,localAppStoreController
-      } = await StoreControllerFactory(
-        ConfigurationService.storeFactoryRegister,
-        currentMiroirConfig,
+      await storeControllerManager.addStoreController(
+        "miroir",
+        "miroir",
+        applicationDeploymentMiroir.uuid,
+        currentMiroirConfig.miroirServerConfig
       );
+      await storeControllerManager.addStoreController(
+        "library",
+        "app",
+        applicationDeploymentLibrary.uuid,
+        currentMiroirConfig.appServerConfig
+      );
+
+      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      if (!localMiroirStoreController || !localAppStoreController) {
+        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      } 
+
+      // const {
+      //   localMiroirStoreController,localAppStoreController
+      // } = await StoreControllerFactory(
+      //   ConfigurationService.storeFactoryRegister,
+      //   currentMiroirConfig,
+      // );
   
       const {
         localDataStoreWorker, // browser
@@ -183,7 +207,10 @@ async function start(root:Root) {
         // log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
         await localMiroirStoreController?.open();
         try {
-          await localMiroirStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+          await localMiroirStoreController?.bootFromPersistedState(
+            defaultMiroirMetaModel.entities,
+            defaultMiroirMetaModel.entityDefinitions
+          );
         } catch (error) {
           log.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
         }
@@ -191,7 +218,10 @@ async function start(root:Root) {
       if (localAppStoreController) {
         await localAppStoreController?.open();
         try {
-          await localAppStoreController?.bootFromPersistedState(defaultMiroirMetaModel.entities,defaultMiroirMetaModel.entityDefinitions);
+          await localAppStoreController?.bootFromPersistedState(
+            defaultMiroirMetaModel.entities,
+            defaultMiroirMetaModel.entityDefinitions
+          );
         } catch (error) {
           log.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
         }

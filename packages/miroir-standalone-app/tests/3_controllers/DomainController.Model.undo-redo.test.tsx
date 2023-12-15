@@ -1,10 +1,9 @@
-import { act, getAllByText, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { readFileSync } from "fs";
 import { SetupWorkerApi } from "msw/browser";
-import { setupServer } from "msw/node";
+import { SetupServerApi, setupServer } from "msw/node";
 import React from "react";
-import { describe, expect, test } from 'vitest'
+import { describe, expect } from 'vitest';
 
 import {
   ConfigurationService,
@@ -18,8 +17,7 @@ import {
   MiroirConfig,
   MiroirContext,
   MiroirLoggerFactory,
-  StoreControllerFactory,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
+  StoreControllerManager,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
@@ -29,7 +27,6 @@ import {
   entityDefinitionBook,
   entityEntity,
   entityReport,
-  getLoggerName,
   miroirCoreStartup
 } from "miroir-core";
 import { ReduxStore, createReduxStoreAndRestClient } from "miroir-localcache-redux";
@@ -50,9 +47,7 @@ import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
-import { packageName } from "../../src/constants";
 import { loglevelnext } from '../../src/loglevelnextImporter';
-import { cleanLevel } from "./constants";
 
 
 
@@ -100,43 +95,44 @@ beforeAll(
       fetch,
     );
 
-    const {
-      localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(
-      ConfigurationService.storeFactoryRegister,
-      miroirConfig,
-      // sqlDbStoreControllerFactory,
-    );
-    localMiroirStoreController = a;
-    localAppStoreController = b;
-
-    // Establish requests interception layer before all tests.
-    const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
-      setupServer,
-      localMiroirStoreController,
-      localAppStoreController,
-    );
-
-    if (wrappedReduxStore && wrapped) {
-      // localMiroirStoreController = wrapped.localMiroirStoreController as IStoreController;
-      // localAppStoreController = wrapped.localAppStoreController as IStoreController;
-      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-      localDataStoreServer = wrapped.localDataStoreServer /*as SetupServerApi*/;
+    if (wrappedReduxStore) {
       reduxStore = wrappedReduxStore.reduxStore;
       // domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
+    }
 
-      domainController = new DomainController(
-        miroirContext,
-        reduxStore, // implements LocalCacheInterface
-        reduxStore, // implements RemoteStoreInterface
-        new Endpoint(reduxStore)
+    domainController = new DomainController(
+      miroirContext,
+      reduxStore, // implements LocalCacheInterface
+      reduxStore, // implements RemoteStoreInterface
+      new Endpoint(reduxStore)
+    );
+
+    if (miroirConfig.emulateServer) {
+      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+
+      await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
+      await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
+
+      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
+        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      } else {
+        localMiroirStoreController = localMiroirStoreControllerTmp;
+        localAppStoreController = localAppStoreControllerTmp;
+      }
+
+      const wrapped = await miroirBeforeAll(
+        miroirConfig as MiroirConfig,
+        setupServer,
+        localMiroirStoreController,
+        localAppStoreController
       );
-  
-    } else {
-      throw new Error("Could not create redux store: " + wrappedReduxStore);
-      
+      if (wrapped) {
+        localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+        localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      }
     }
   }
 )
