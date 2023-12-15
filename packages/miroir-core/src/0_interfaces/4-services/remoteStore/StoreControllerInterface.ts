@@ -89,7 +89,7 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore /
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
     application: Application,
-    applicationDeployment: EntityInstance,
+    applicationDeploymentConfiguration: EntityInstance,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,

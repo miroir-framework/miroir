@@ -20,8 +20,10 @@ import {
   ConfigurationService,
   defaultLevels,
   DomainAction,
+  DomainController,
   DomainControllerInterface,
   DomainDataAction,
+  Endpoint,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -109,9 +111,16 @@ beforeAll(
     );
     if (wrappedReduxStore) {
       reduxStore = wrappedReduxStore.reduxStore;
-      domainController = wrappedReduxStore.domainController;
+      // domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
     }
+
+    domainController = new DomainController(
+      miroirContext,
+      reduxStore, // implements LocalCacheInterface
+      reduxStore, // implements RemoteStoreInterface
+      new Endpoint(reduxStore)
+    );
 
     if (miroirConfig.emulateServer) {
       const {

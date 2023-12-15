@@ -13,7 +13,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeployment, LoggerInterface, MiroirLoggerFactory, getLoggerName
+  ApplicationDeploymentConfiguration, LoggerInterface, MiroirLoggerFactory, getLoggerName
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -36,9 +36,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 
-const applicationDeploymentLibrary: ApplicationDeployment = {
+const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
+  "parentName":"ApplicationDeploymentConfiguration",
   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "type":"singleNode",
   "name":"LibraryApplicationPostgresDeployment",

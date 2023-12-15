@@ -96,7 +96,7 @@ Figure out needs for model evolution: entities definitions may have many version
 ### development: 36 commits
 
 - **adding Model historization: one entity can have many EntityDefinitions, grouped into ModelVersions**
-- added Model entities: Application, ApplicationVersion, ApplicationModelBranch, ApplicationDeployment.
+- added Model entities: Application, ApplicationVersion, ApplicationModelBranch, ApplicationDeploymentConfiguration.
 - creating EntityViewer to display the details of the definition of an Entity
 - **creating miroir-store-filesystem**
 

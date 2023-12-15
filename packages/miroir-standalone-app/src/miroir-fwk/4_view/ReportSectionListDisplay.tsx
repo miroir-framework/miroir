@@ -9,7 +9,7 @@ import { z } from "zod";
 import { JzodObject } from "@miroir-framework/jzod-ts";
 
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   DomainControllerInterface,
   DomainDataAction,
   EntityInstancesUuidIndex,
@@ -45,7 +45,7 @@ export function defaultFormValues(
   currentEntityJzodSchema: JzodObject,
   idList?:{id:number}[],
   currentMiroirEntity?: MetaEntity,
-  displayedDeploymentDefinition?: ApplicationDeployment,
+  displayedDeploymentDefinition?: ApplicationDeploymentConfiguration,
 ):any {
   log.log(
     "defaultFormValues called TableComponentType",

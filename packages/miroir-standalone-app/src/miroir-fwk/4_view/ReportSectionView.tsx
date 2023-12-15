@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityDefinition,
   FetchedData,
@@ -48,14 +48,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.log("########################## ReportSectionView props", props);
 
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   // ##############################################################################################
   const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   const libraryAppModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
   log.log("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);

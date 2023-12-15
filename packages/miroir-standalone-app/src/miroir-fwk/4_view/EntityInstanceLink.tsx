@@ -1,5 +1,5 @@
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityInstancesUuidIndex,
   LoggerInterface,

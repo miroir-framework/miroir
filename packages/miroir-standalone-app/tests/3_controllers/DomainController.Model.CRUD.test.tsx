@@ -10,9 +10,11 @@ import { setupServer } from "msw/node";
 import {
   ConfigurationService,
   DomainAction,
+  DomainController,
   DomainControllerInterface,
   DomainDataAction,
   DomainTransactionalActionWithCUDUpdate,
+  Endpoint,
   EntityDefinition,
   EntityInstance,
   IStoreController,
@@ -114,9 +116,16 @@ beforeAll(
 
     if (wrappedReduxStore) {
       reduxStore = wrappedReduxStore.reduxStore;
-      domainController = wrappedReduxStore.domainController;
+      // domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
     }
+
+    domainController = new DomainController(
+      miroirContext,
+      reduxStore, // implements LocalCacheInterface
+      reduxStore, // implements RemoteStoreInterface
+      new Endpoint(reduxStore)
+    );
 
     if (miroirConfig.emulateServer) {
       const {

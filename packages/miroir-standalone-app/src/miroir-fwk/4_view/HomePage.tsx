@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import { useMemo } from "react";
 
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
   EntityDefinition,
@@ -73,7 +73,7 @@ export const HomePage = (props: RootComponentProps) => {
   const errorLog = useErrorLogService();
   const domainController: DomainControllerInterface = useDomainControllerService();
   
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
   // log.log("RootComponent deployments",deployments);
 
   // context utility functions
@@ -89,13 +89,13 @@ export const HomePage = (props: RootComponentProps) => {
   const libraryAppModel: MiroirApplicationModel = useCurrentModel(displayedDeploymentUuid);
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition:ApplicationDeployment | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
+  const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
   log.log("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
-  // const currentReportDefinitionDeployment: ApplicationDeployment | undefined = displayedDeploymentDefinition
+  // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = displayedDeploymentDefinition
   // ;
-  // const currentReportDefinitionDeployment: ApplicationDeployment | undefined = 
+  // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = 
   //   displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || displayedApplicationSection =='model'? 
-  //     applicationDeploymentMiroir as ApplicationDeployment
+  //     applicationDeploymentMiroir as ApplicationDeploymentConfiguration
   //     :
   //     displayedDeploymentDefinition
   // ;
@@ -328,7 +328,7 @@ export const HomePage = (props: RootComponentProps) => {
                 dataStoreType: "miroir",
                 metaModel: defaultMiroirMetaModel,
                 application: applicationMiroir,
-                applicationDeployment: applicationDeploymentMiroir,
+                applicationDeploymentConfiguration: applicationDeploymentMiroir,
                 applicationModelBranch: applicationModelBranchMiroirMasterBranch,
                 applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
                 applicationVersion: applicationVersionInitialMiroirVersion,
@@ -341,7 +341,7 @@ export const HomePage = (props: RootComponentProps) => {
                 dataStoreType: "app",
                 metaModel: defaultMiroirMetaModel,
                 application: applicationLibrary,
-                applicationDeployment: applicationDeploymentLibrary,
+                applicationDeploymentConfiguration: applicationDeploymentLibrary,
                 applicationModelBranch: applicationModelBranchLibraryMasterBranch,
                 applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
                 applicationVersion: applicationVersionLibraryInitialVersion,

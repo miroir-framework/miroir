@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 
 import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityDefinition,
   EntityInstancesUuidIndex,
@@ -58,7 +58,7 @@ export const EntityInstancePage = () => {
   // const domainController: DomainControllerInterface = useDomainControllerService();
   const errorLog = useErrorLogService();
   
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   // const context = useMiroirContextService();
 
@@ -89,13 +89,13 @@ export const EntityInstancePage = () => {
   ) as MiroirApplicationModel;
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == params.deploymentUuid
   );
   log.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
+  const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || params.applicationSection == "model"
-      ? (applicationDeploymentMiroir as ApplicationDeployment)
+      ? (applicationDeploymentMiroir as ApplicationDeploymentConfiguration)
       : displayedDeploymentDefinition;
   const currentModel =
     params.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;

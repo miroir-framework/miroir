@@ -30,15 +30,13 @@ export function createReduxStoreAndRestClient(
 ):{
   miroirContext:MiroirContext,
   reduxStore: ReduxStore,
-  domainController: DomainControllerInterface,
+  // domainController: DomainControllerInterface,
 } {
   const miroirContext = new MiroirContext();
 
-  const rootApiUrl: string = miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl;
     
   const client: RestClient = new RestClient(fetch);
   const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
-    // rootApiUrl,
     miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
     client
   );
@@ -50,13 +48,7 @@ export function createReduxStoreAndRestClient(
   const reduxStore: ReduxStore = new ReduxStore(instanceSagas);
   reduxStore.run();
 
-  const domainController: DomainControllerInterface = new DomainController(
-    miroirContext,
-    reduxStore, // implements LocalCacheInterface
-    reduxStore, // implements RemoteStoreInterface
-    new Endpoint(reduxStore)
-  );
 
-  return {miroirContext, reduxStore,  domainController}
+  return { miroirContext, reduxStore }
   
 }

@@ -9,7 +9,9 @@ import { describe, expect, test } from 'vitest'
 import {
   ConfigurationService,
   DomainAction,
+  DomainController,
   DomainControllerInterface,
+  Endpoint,
   EntityDefinition,
   IStoreController,
   MetaEntity,
@@ -122,8 +124,19 @@ beforeAll(
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer /*as SetupServerApi*/;
       reduxStore = wrappedReduxStore.reduxStore;
-      domainController = wrappedReduxStore.domainController;
+      // domainController = wrappedReduxStore.domainController;
       miroirContext = wrappedReduxStore.miroirContext;
+
+      domainController = new DomainController(
+        miroirContext,
+        reduxStore, // implements LocalCacheInterface
+        reduxStore, // implements RemoteStoreInterface
+        new Endpoint(reduxStore)
+      );
+  
+    } else {
+      throw new Error("Could not create redux store: " + wrappedReduxStore);
+      
     }
   }
 )

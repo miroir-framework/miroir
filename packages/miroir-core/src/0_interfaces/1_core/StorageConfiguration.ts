@@ -85,4 +85,4 @@ export const ApplicationDeploymentSchema = EntityInstanceWithNameSchema.extend({
   data: ModelStorageLocationSchema.optional(),
 });
 
-export type ApplicationDeployment = z.infer<typeof ApplicationDeploymentSchema>;
+export type ApplicationDeploymentConfiguration = z.infer<typeof ApplicationDeploymentSchema>;

@@ -1,9 +1,9 @@
-import { ApplicationDeployment } from "./0_interfaces/1_core/StorageConfiguration";
+import { ApplicationDeploymentConfiguration } from "./0_interfaces/1_core/StorageConfiguration";
 
 // duplicated from server!!!!!!!!
-export const applicationDeploymentLibrary: ApplicationDeployment = {
+export const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"ApplicationDeployment",
+  "parentName":"ApplicationDeploymentConfiguration",
   "parentUuid":"35c5608a-7678-4f07-a4ec-76fc5bc35424",
   "type":"singleNode",
   "name":"LibraryApplicationPostgresDeployment",

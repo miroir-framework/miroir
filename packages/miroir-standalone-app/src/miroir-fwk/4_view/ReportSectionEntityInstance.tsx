@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityDefinition,
   MetaEntity,
@@ -52,7 +52,7 @@ export interface ReportSectionEntityInstanceProps {
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const errorLog = useErrorLogService();
   
-  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
@@ -70,13 +70,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   ) as MiroirApplicationModel;
 
   // computing current state #####################################################################
-  const displayedDeploymentDefinition: ApplicationDeployment | undefined = deployments.find(
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
   log.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
-  const currentReportDefinitionDeployment: ApplicationDeployment | undefined =
+  const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
-      ? (applicationDeploymentMiroir as ApplicationDeployment)
+      ? (applicationDeploymentMiroir as ApplicationDeploymentConfiguration)
       : displayedDeploymentDefinition;
   const currentModel =
     props.deploymentUuid == applicationDeploymentLibrary.uuid ? libraryAppModel : defaultMiroirMetaModel;

@@ -13,6 +13,9 @@ import {
   ConfigurationService,
   defaultLevels,
   defaultMiroirMetaModel,
+  DomainController,
+  DomainControllerInterface,
+  Endpoint,
   entityDefinitionEntityDefinition,
   getLoggerName,
   LoggerInterface,
@@ -133,10 +136,17 @@ async function start(root:Root) {
   if (process.env.NODE_ENV === "development") {
     const {
       reduxStore: mReduxStore,
-      domainController,
+      // domainController,
       miroirContext: myMiroirContext,
     } = await createReduxStoreAndRestClient(currentMiroirConfig, window.fetch.bind(window));
 
+    const domainController: DomainControllerInterface = new DomainController(
+      myMiroirContext,
+      mReduxStore, // implements LocalCacheInterface
+      mReduxStore, // implements RemoteStoreInterface
+      new Endpoint(mReduxStore)
+    );
+  
     if (currentMiroirConfig.emulateServer) {
       const {
         localMiroirStoreController,localAppStoreController

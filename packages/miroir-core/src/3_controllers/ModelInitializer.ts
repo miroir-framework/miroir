@@ -70,7 +70,7 @@ export async function modelInitialize(
   storeController:IStoreController,
   dataStoreType: DataStoreApplicationType,
   application: Application,
-  applicationDeployment: EntityInstance,
+  applicationDeploymentConfiguration: EntityInstance,
   applicationModelBranch: EntityInstance,
   applicationVersion: EntityInstance,
   applicationStoreBasedConfiguration: EntityInstance,
@@ -137,7 +137,7 @@ export async function modelInitialize(
 
 
     await storeController.upsertInstance('data', application);
-    await storeController.upsertInstance('data', applicationDeployment);
+    await storeController.upsertInstance('data', applicationDeploymentConfiguration);
     await storeController.upsertInstance('data', applicationModelBranch);
     await storeController.upsertInstance('data', applicationVersion);
     await storeController.upsertInstance('data', applicationStoreBasedConfiguration);
@@ -177,7 +177,7 @@ export async function modelInitialize(
     log.info(logHeader, 'app initialized entity EntityReport',storeController.getEntityUuids());
     
     await storeController.upsertInstance('model', application);
-    await storeController.upsertInstance('model', applicationDeployment);
+    await storeController.upsertInstance('model', applicationDeploymentConfiguration);
     await storeController.upsertInstance('model', applicationModelBranch);
     await storeController.upsertInstance('model', applicationVersion);
     await storeController.upsertInstance('model', applicationStoreBasedConfiguration);

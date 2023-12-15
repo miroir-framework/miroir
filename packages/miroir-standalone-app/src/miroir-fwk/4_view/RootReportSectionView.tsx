@@ -49,7 +49,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   log.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
-  // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeployment[];
+  // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
   log.log(
     "RootReportSectionView",
     "deploymentUuid",

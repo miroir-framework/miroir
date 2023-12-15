@@ -147,7 +147,7 @@ export const DomainModelInitActionParamsSchema = z.object({
   metaModel: z.lazy(()=>ApplicationModelSchema),
   dataStoreType: DataStoreApplicationTypeSchema,
   application: ApplicationSchema,
-  applicationDeployment: entityInstance,
+  applicationDeploymentConfiguration: entityInstance,
   applicationModelBranch: entityInstance,
   applicationVersion: entityInstance,
   applicationStoreBasedConfiguration: entityInstance,

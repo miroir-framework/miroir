@@ -4,16 +4,13 @@ import { readFileSync } from 'fs';
 // import ViteExpress from "vite-express";
 
 import {
-  JzodObject,
-  JzodElement,
+  JzodElement
 } from "@miroir-framework/jzod-ts";
 
-import { zodToJzod } from "@miroir-framework/jzod";
 
 
 
 import {
-  entityInstanceCollection,
   LoggerFactoryInterface,
   LoggerInterface,
   MiroirConfig,
@@ -21,12 +18,11 @@ import {
   SpecificLoggerOptionsMap,
   defaultLevels,
   getLoggerName,
-  miroirFundamentalJzodSchema,
   restServerDefaultHandlers
 } from "miroir-core";
 // import { loglevelnext } from './loglevelnextImporter';
 import { cleanLevel, packageName } from './constants.js';
-import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
+// import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './start.js';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
@@ -80,41 +76,42 @@ const {
   localAppStoreController
 } = await startServer(miroirConfig);
 
-// ################################################################################################
-const jzodSchemaConversion: {
-  jzodElement: JzodElement,
-  targetFileName: string,
-  jzodSchemaVariableName:string,
-}[] = [
-  // {
-  //   jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
-  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
-  //   jzodSchemaVariableName: "report",
-  // },
-  {
-    jzodElement: miroirFundamentalJzodSchema.definition as any as JzodElement,
-    targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
-    jzodSchemaVariableName: "miroirFundamentalType",
-  },
-  // {
-  //   jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
-  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
-  //   jzodSchemaVariableName: "jzodSchema",
-  // }
-];
+// // ################################################################################################
+// const jzodSchemaConversion: {
+//   jzodElement: JzodElement,
+//   targetFileName: string,
+//   jzodSchemaVariableName:string,
+// }[] = [
+//   // {
+//   //   jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
+//   //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
+//   //   jzodSchemaVariableName: "report",
+//   // },
+//   {
+//     jzodElement: miroirFundamentalJzodSchema.definition as any as JzodElement,
+//     targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
+//     jzodSchemaVariableName: "miroirFundamentalType",
+//   },
+//   // {
+//   //   jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
+//   //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
+//   //   jzodSchemaVariableName: "jzodSchema",
+//   // }
+// ];
 
-try {
-  for (const schema of jzodSchemaConversion) {
-    await generateZodSchemaFileFromJzodSchema(schema.jzodElement,schema.targetFileName,schema.jzodSchemaVariableName)
-  }
-  myLogger.info("GENERATED!!!!!!!");
+// try {
+//   for (const schema of jzodSchemaConversion) {
+//     await generateZodSchemaFileFromJzodSchema(schema.jzodElement,schema.targetFileName,schema.jzodSchemaVariableName)
+//   }
+//   myLogger.info("GENERATED!!!!!!!");
   
-} catch (error) {
-  myLogger.error("could not generate TS files from Jzod schemas", error);
+// } catch (error) {
+//   myLogger.error("could not generate TS files from Jzod schemas", error);
   
-}
+// }
 
 // ################################################################################################
+
 app.use(bodyParser.json({limit:'10mb'}));
 
 // ##############################################################################################

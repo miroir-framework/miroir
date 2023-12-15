@@ -108,7 +108,7 @@ export {
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
-  ApplicationDeployment,
+  ApplicationDeploymentConfiguration,
   ApplicationModelLevelSchema,
   ApplicationModelLevel,
   DeploymentSide,

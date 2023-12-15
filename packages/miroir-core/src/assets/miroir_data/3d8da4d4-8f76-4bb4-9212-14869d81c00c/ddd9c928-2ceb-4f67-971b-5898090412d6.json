@@ -1,0 +1,36 @@
+{
+  "uuid": "ddd9c928-2ceb-4f67-971b-5898090412d6",
+  "parentName": "EndpointVersion",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "a04f7b8a-cdec-4f43-b08c-388f70fdd6ba",
+  "name": "ApplicationEndpointVersion",
+  "version": "1",
+  "description": "Version of Application Endpoint",
+  "definition": {
+    "type": "object",
+    "definition": {
+      "actionParameter": {
+        "type": "object",
+        "definition": {
+          "actionType": {"type": "literal", "definition":"applicationAction"},
+          "actionName": {"type": "literal", "definition":"createApplication"},
+          "endpointVersion": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
+          "objects": {
+            "type": "array",
+            "extra": { "defaultLabel": "Application Instance to create", "editable": true },
+            "definition": {
+              "type": "schemaReference",
+              "optional": false,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstance"
+              }
+            }
+          }
+        }
+      },
+      "actionTransformer": {},
+      "actionMigrations": {}
+    }
+  }
+}
