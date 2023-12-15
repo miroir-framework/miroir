@@ -18,7 +18,7 @@ import {
   entityInstanceCollection
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
-import { LocalCacheModelActionWithDeployment } from "../4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;

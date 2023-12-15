@@ -19,8 +19,8 @@ import {
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheInterface,
-} from "../0_interfaces/4-services/localCache/LocalCacheInterface";
-import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/remoteStore/RemoteStoreInterface.js';
+} from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
 import { ModelEntityActionTransformer } from "../2_domain/ModelEntityActionTransformer.js";
 

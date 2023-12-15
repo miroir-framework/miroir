@@ -43,19 +43,25 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
-  constructor(private rootApiUrl: string, private restClient: RestClientInterface) {
+
+  private operationMethod: {
+    [P in HttpMethod]: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
+  }
+
+  constructor(
+    private rootApiUrl: string, 
+    private restClient: RestClientInterface
+  ) {
     console.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
+    this.operationMethod = {
+      get: this.restClient.get.bind(this.restClient),
+      post: this.restClient.post.bind(this.restClient),
+      put: this.restClient.put.bind(this.restClient),
+      delete: this.restClient.delete.bind(this.restClient),
+    };
   }
 
   // ##################################################################################
-  private operationMethod: {
-    [P in HttpMethod]: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
-  } = {
-    get: this.restClient.get.bind(this.restClient),
-    post: this.restClient.post.bind(this.restClient),
-    put: this.restClient.put.bind(this.restClient),
-    delete: this.restClient.delete.bind(this.restClient),
-  };
 
   // ##################################################################################
   private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
@@ -106,7 +112,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
               [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[
                 this.actionTypeArgsMap[networkAction.actionType]["*"]?.attribute ?? "ERROR"
               ],
-            }
+          }
           : this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]
           ? {
               [this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.result ?? "ERROR"]: (

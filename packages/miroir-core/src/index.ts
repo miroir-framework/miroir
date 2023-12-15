@@ -263,6 +263,9 @@ export {
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
+  StoreControllerManagerInterface
+} from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
+export {
   LocalCacheCUDActionWithDeployment,
   LocalCacheActionWithDeploymentSchema,
   LocalCacheModelActionWithDeployment,
@@ -273,7 +276,7 @@ export {
   LocalCacheTransactionalActionWithDeploymentSchema,
   LocalCacheInterface,
   CreateInstanceParameters,
-} from './0_interfaces/4-services/localCache/LocalCacheInterface.js';
+} from './0_interfaces/4-services/LocalCacheInterface.js';
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
@@ -287,7 +290,7 @@ export {
   RestClientInterface,
   RestMethodHandler,
   RestServiceHandler,
-} from "./0_interfaces/4-services/remoteStore/RemoteStoreInterface.js";
+} from "./0_interfaces/4-services/RemoteStoreInterface.js";
 export {
   IAbstractStore,
   IDataSectionStore,
@@ -297,7 +300,7 @@ export {
   IStorageSpaceHandler,
   IDataOrModelStore,
   IStoreController,
-} from "./0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+} from "./0_interfaces/4-services/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
@@ -381,6 +384,9 @@ export {
 export {
   restServerDefaultHandlers
 } from './4_services/RestServer.js';
+export {
+  StoreControllerManager
+} from './4_services/StoreControllerManager.js';
 export {
   generateRestServiceResponse,
 } from './4_services/RestTools.js';

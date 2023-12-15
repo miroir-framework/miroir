@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance";
 import { ModelReplayableUpdateSchema } from "../../0_interfaces/2_domain/ModelUpdateInterface";
-import { LocalCacheEntityActionWithDeploymentSchema } from "../4-services/localCache/LocalCacheInterface";
+import { LocalCacheEntityActionWithDeploymentSchema } from "../4-services/LocalCacheInterface";
 
 export const MiroirApplicationVersionSchema = EntityInstanceWithNameSchema.extend({
   description: z.string().optional(),

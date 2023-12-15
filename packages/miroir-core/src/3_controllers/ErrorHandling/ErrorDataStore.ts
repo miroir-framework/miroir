@@ -1,6 +1,6 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection, EntityInstance, EntityDefinition } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { IDataSectionStore } from "../../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+import { IDataSectionStore } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
 export class ErrorDataStore implements IDataSectionStore {
   constructor() {}

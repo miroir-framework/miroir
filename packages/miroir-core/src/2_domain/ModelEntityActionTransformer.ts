@@ -10,7 +10,7 @@ import {
   ModelEntityUpdateCreateMetaModelInstance,
 } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/localCache/LocalCacheInterface.js";
+import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";

@@ -20,7 +20,7 @@ import {
   IDataSectionStore,
   IModelSectionStore,
   IStoreController,
-} from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+} from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ModelActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
@@ -87,11 +87,10 @@ export async function StoreControllerFactory(
     throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
   }
 
-  let miroirModelStore:IModelSectionStore, miroirDataStore:IDataSectionStore, appModelStore:IModelSectionStore, appDataStore:IDataSectionStore;
-  appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data',miroirConfig.appServerConfig.data) as IDataSectionStore;
-  appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model',miroirConfig.appServerConfig.model,appDataStore) as IModelSectionStore;
-  miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data',miroirConfig.miroirServerConfig.data) as IDataSectionStore;
-  miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model',miroirConfig.miroirServerConfig.model,miroirDataStore) as IModelSectionStore;
+  const appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data', miroirConfig.appServerConfig.data) as IDataSectionStore;
+  const appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model', miroirConfig.appServerConfig.model,appDataStore) as IModelSectionStore;
+  const miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data', miroirConfig.miroirServerConfig.data) as IDataSectionStore;
+  const miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model', miroirConfig.miroirServerConfig.model,miroirDataStore) as IModelSectionStore;
 
   localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
   localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);

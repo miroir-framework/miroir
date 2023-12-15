@@ -74,8 +74,16 @@ const miroirConfigFiles: {[k: string]: MiroirConfig} = {
   "miroirConfigRealServer": miroirConfigRealServer as any as MiroirConfig
 }
 
-  // logger.info("start current process.env:",process); 
-  const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+  // log.info("start current process.env:",process); 
+  // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+
+
+  // ##############################################################################################
+  // ##############################################################################################
+  const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
+  // ##############################################################################################
+  // ##############################################################################################
+
   const currentMiroirConfig: MiroirConfig =
     currentMiroirConfigName && miroirConfigFiles[currentMiroirConfigName]
       ? miroirConfigFiles[currentMiroirConfigName ?? ""]

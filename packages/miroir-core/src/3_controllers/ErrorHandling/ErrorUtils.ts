@@ -1,4 +1,4 @@
-import { RemoteStoreInterface, RemoteStoreActionReturnType } from "../../0_interfaces/4-services/remoteStore/RemoteStoreInterface";
+import { RemoteStoreInterface, RemoteStoreActionReturnType } from "../../0_interfaces/4-services/RemoteStoreInterface";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { EntityInstanceCollection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 

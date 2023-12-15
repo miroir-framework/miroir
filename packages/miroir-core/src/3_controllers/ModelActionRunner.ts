@@ -2,7 +2,7 @@ import { ModelAction, EntityDefinition } from "../0_interfaces/1_core/preprocess
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { IStoreController } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface.js";
+import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
@@ -146,7 +146,8 @@ export async function modelOLDActionRunner(
   body:any
 ):Promise<void> {
   // log.info("server post model/"," started #####################################");
-  // log.info("server post model/"," started #####################################");
+  log.info("server post model/"," started #####################################");
+  log.info("server post model/ body",body);
 
   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
   // for (const instance of addedObjects) {

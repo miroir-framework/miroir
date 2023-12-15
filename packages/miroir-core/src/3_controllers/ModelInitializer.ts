@@ -33,7 +33,7 @@ import reportReportList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { IStoreController } from '../0_interfaces/4-services/remoteStore/StoreControllerInterface.js';
+import { IStoreController } from '../0_interfaces/4-services/StoreControllerInterface.js';
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';

@@ -2,13 +2,13 @@ import { z } from "zod";
 import {
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
   LocalCacheInfo,
-} from "../../../0_interfaces/2_domain/DomainControllerInterface";
-import { MiroirApplicationModel } from '../../1_core/Model.js';
+} from "../2_domain/DomainControllerInterface";
+import { MiroirApplicationModel } from '../1_core/Model.js';
 
-import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection } from '../../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection } from '../1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   DomainTransactionalActionWithCUDUpdate
-} from "../../2_domain/DomainControllerInterface.js";
+} from "../2_domain/DomainControllerInterface.js";
 
 // ################################################################################################
 

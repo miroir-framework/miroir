@@ -1,18 +1,18 @@
-import { HttpMethod } from "../../1_core/Http.js";
+import { HttpMethod } from "../1_core/Http.js";
 import {
   ApplicationSection,
   ModelAction,
   EntityInstance,
   EntityInstanceCollection,
-} from "../../1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
   DomainModelInitAction,
   DomainTransactionalActionWithCUDUpdate,
   DomainTransactionalResetDataAction,
   DomainTransactionalResetModelAction,
-} from "../../2_domain/DomainControllerInterface.js";
-import { MError } from "../../3_controllers/ErrorLogServiceInterface.js";
+} from "../2_domain/DomainControllerInterface.js";
+import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { IStoreController } from "./StoreControllerInterface.js";
 
 

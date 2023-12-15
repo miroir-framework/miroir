@@ -1,24 +1,19 @@
 // ###################################################################################
 
 import {
-  ConfigurationService,
   LoggerInterface,
   MiroirLoggerFactory,
-  StoreControllerFactory,
   defaultMiroirMetaModel,
-  getLoggerName,
-  miroirCoreStartup,
+  getLoggerName
 } from "miroir-core";
-import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
 import {
-  IStoreController,
-  MiroirConfig
+  IStoreController
 } from "miroir-core";
 
-import { packageName, cleanLevel } from "./constants.js";
+// import { packageName, cleanLevel } from "./constants.js";
+export const packageName = "server"
+export const cleanLevel = "5"
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -30,31 +25,18 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // TODO: factorize similar function in standalone-app index.tsx?
 export async function startServer(
-  miroirConfig:MiroirConfig
+  // miroirConfig:MiroirConfig,
+  localMiroirStoreController:IStoreController,
+  localAppStoreController:IStoreController,
 ) {
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
-  miroirCoreStartup();
-  miroirStoreFileSystemStartup();
-  miroirStoreIndexedDbStartup();
-  miroirStorePostgresStartup();
     
   // let
   //   localMiroirStoreController:IStoreController,
   //   localAppStoreController:IStoreController
   // ;
-
-  const {
-    localMiroirStoreController:a,localAppStoreController:b
-  } = await StoreControllerFactory(
-    ConfigurationService.storeFactoryRegister,
-    miroirConfig,
-  );
-  const
-    localMiroirStoreController:IStoreController = a,
-    localAppStoreController:IStoreController = b
-  ;
   
   try {
     await localMiroirStoreController?.open();
@@ -69,5 +51,5 @@ export async function startServer(
   } catch(e) {
     log.error("failed to initialize app, Entity 'Entity' is likely missing from Database, or database could not be opened. Entity Entity can be (re-)created using the 'InitDb' functionality on the client. this.sqlEntities:",localMiroirStoreController.getEntityUuids(),'error',e);
   }
-  return Promise.resolve({localMiroirStoreController, localAppStoreController})
+  return Promise.resolve()
 }

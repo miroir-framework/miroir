@@ -1,8 +1,8 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
 import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { IStoreController } from "../0_interfaces/4-services/remoteStore/StoreControllerInterface";
-import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/remoteStore/RemoteStoreInterface";
+import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface";
+import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
 import { modelActionRunner, modelOLDActionRunner } from "../3_controllers/ModelActionRunner";
 
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
@@ -161,7 +161,8 @@ export async function restMethodModelOLDActionRunnerHandler(
   const deploymentUuid: string =
     typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
 
-  log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
+  // log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
+  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body);
 
   const result = modelOLDActionRunner(
     localMiroirStoreController,
