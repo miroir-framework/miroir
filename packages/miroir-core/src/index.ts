@@ -375,7 +375,6 @@ export {
 } from './4_services/Logger.js';
 export {
   StoreController,
-  StoreControllerFactory,
   StoreControllerFactoryReturnType,
 } from './4_services/StoreController.js';
 export {

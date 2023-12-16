@@ -74,32 +74,32 @@ export async function storeFactory (
 }
 
 
-// #################################################################################################################
-export async function StoreControllerFactory(
-  storeFactoryRegister:StoreFactoryRegister,
-  miroirConfig:MiroirConfig,
-): Promise<StoreControllerFactoryReturnType> {
-  let localMiroirStoreController,localAppStoreController;
+// // #################################################################################################################
+// export async function StoreControllerFactory(
+//   storeFactoryRegister:StoreFactoryRegister,
+//   miroirConfig:MiroirConfig,
+// ): Promise<StoreControllerFactoryReturnType> {
+//   let localMiroirStoreController,localAppStoreController;
 
-  log.info('StoreControllerFactory called with config:',miroirConfig);
+//   log.info('StoreControllerFactory called with config:',miroirConfig);
 
-  if (!miroirConfig.emulateServer) {
-    throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
-  }
+//   if (!miroirConfig.emulateServer) {
+//     throw new Error('StoreControllerFactory emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
+//   }
 
-  const appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data', miroirConfig.appServerConfig.data) as IDataSectionStore;
-  const appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model', miroirConfig.appServerConfig.model,appDataStore) as IModelSectionStore;
-  const miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data', miroirConfig.miroirServerConfig.data) as IDataSectionStore;
-  const miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model', miroirConfig.miroirServerConfig.model,miroirDataStore) as IModelSectionStore;
+//   const appDataStore = await storeFactory(storeFactoryRegister, 'library','app','data', miroirConfig.appServerConfig.data) as IDataSectionStore;
+//   const appModelStore = await storeFactory(storeFactoryRegister, 'library','app','model', miroirConfig.appServerConfig.model,appDataStore) as IModelSectionStore;
+//   const miroirDataStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','data', miroirConfig.miroirServerConfig.data) as IDataSectionStore;
+//   const miroirModelStore = await storeFactory(storeFactoryRegister, 'miroir','miroir','model', miroirConfig.miroirServerConfig.model,miroirDataStore) as IModelSectionStore;
 
-  localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
-  localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);
+//   localAppStoreController = new StoreController('library','app',appModelStore,appDataStore);
+//   localMiroirStoreController = new StoreController('miroir','miroir',miroirModelStore,miroirDataStore);
 
-  return Promise.resolve({
-    localMiroirStoreController,
-    localAppStoreController,
-  });
-}
+//   return Promise.resolve({
+//     localMiroirStoreController,
+//     localAppStoreController,
+//   });
+// }
 
 // #######################################################################################################################
 // MAIN CLASS: StoreController

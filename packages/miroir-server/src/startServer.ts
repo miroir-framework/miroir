@@ -11,9 +11,7 @@ import {
   IStoreController
 } from "miroir-core";
 
-// import { packageName, cleanLevel } from "./constants.js";
-export const packageName = "server"
-export const cleanLevel = "5"
+import { packageName, cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Server");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -25,19 +23,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // TODO: factorize similar function in standalone-app index.tsx?
 export async function startServer(
-  // miroirConfig:MiroirConfig,
   localMiroirStoreController:IStoreController,
   localAppStoreController:IStoreController,
 ) {
-  // Start our mock API server
-  // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
-
-    
-  // let
-  //   localMiroirStoreController:IStoreController,
-  //   localAppStoreController:IStoreController
-  // ;
-  
   try {
     await localMiroirStoreController?.open();
     await localMiroirStoreController.bootFromPersistedState(defaultMiroirMetaModel.entities, defaultMiroirMetaModel.entityDefinitions);

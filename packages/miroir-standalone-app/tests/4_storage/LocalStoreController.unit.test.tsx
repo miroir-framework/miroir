@@ -1,5 +1,4 @@
-import * as path from "path";
-import { describe, expect, test } from 'vitest'
+import { describe, expect } from 'vitest';
 
 // import { miroirStoreFileSystemStartup } from "../dist/bundle";
 import {
@@ -10,39 +9,29 @@ import {
   EntityInstanceCollection,
   IStoreController,
   MetaEntity,
-  MiroirConfig,
   MiroirLoggerFactory,
   ModelCUDInstanceUpdate,
-  ModelEntityUpdate,
   ModelEntityActionTransformer,
-  StoreControllerFactory,
+  ModelEntityUpdate,
+  StoreControllerManager,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  applicationLibrary,
-  applicationMiroir,
-  applicationModelBranchLibraryMasterBranch,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationLibrary,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
-  applicationVersionLibraryInitialVersion,
   author1,
   defaultLevels,
-  defaultMiroirMetaModel,
   entityAuthor,
   entityDefinitionAuthor,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityDefinition
 } from "miroir-core";
 
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
 
 import { miroirStoreFileSystemStartup } from "miroir-store-filesystem/src/startup";
-import { loglevelnext } from "../../src/loglevelnextImporter";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
-import { loadTestConfigFiles } from "../utils/tests-utils";
+import { loglevelnext } from "../../src/loglevelnextImporter";
+import { loadTestConfigFiles, miroirBeforeEach } from "../utils/tests-utils";
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -64,14 +53,22 @@ beforeAll(
     miroirStoreFileSystemStartup();
     miroirStoreIndexedDbStartup();
     miroirStorePostgresStartup();
-    const {
-      localMiroirStoreController:a,localAppStoreController:b
-    } = await StoreControllerFactory(
-      ConfigurationService.storeFactoryRegister,
-      miroirConfig,
-    );
-    localMiroirStoreController = a;
-    localAppStoreController = b;
+
+    if (miroirConfig.emulateServer) {
+      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+
+      await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
+      await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
+
+      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
+        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      } else {
+        localMiroirStoreController = localMiroirStoreControllerTmp;
+        localAppStoreController = localAppStoreControllerTmp;
+      }
+    }
 
     await localMiroirStoreController?.open();
     await localAppStoreController?.open();
@@ -80,51 +77,7 @@ beforeAll(
 
 beforeEach(
   async  () => {
-    try {
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-      await localAppStoreController.clear();
-      await localMiroirStoreController.clear();
-      try {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
-        await localMiroirStoreController.initApplication(
-          defaultMiroirMetaModel,
-          'miroir',
-          applicationMiroir,
-          applicationDeploymentMiroir,
-          applicationModelBranchMiroirMasterBranch,
-          applicationVersionInitialMiroirVersion,
-          applicationStoreBasedConfigurationMiroir,
-        );
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir END');
-      } catch (error) {
-        console.error('could not initApplication for miroir datastore, can not go further!');
-        throw(error);
-      }
-      try {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app START');
-        await localAppStoreController.initApplication(
-          defaultMiroirMetaModel,
-          'app',
-          applicationLibrary,
-          applicationDeploymentLibrary,
-          applicationModelBranchLibraryMasterBranch,
-          applicationVersionLibraryInitialVersion,
-          applicationStoreBasedConfigurationLibrary,
-        );
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app END');
-      } catch (error) {
-        console.error('could not initApplication for app datastore, can not go further!');
-        throw(error);
-      }
-    } catch (error) {
-      console.error('beforeEach',error);
-      throw(error);
-    }
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
-    // console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
-    // console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
-    // console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
-    // console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
+    await miroirBeforeEach(miroirConfig, undefined, localMiroirStoreController,localAppStoreController);
   }
 )
 

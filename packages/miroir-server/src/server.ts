@@ -17,8 +17,8 @@ import {
   restServerDefaultHandlers
 } from "miroir-core";
 
-export const packageName = "server"
-export const cleanLevel = "5"
+import { packageName, cleanLevel } from "./constants";
+
 // import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 import { startServer } from './startServer';
 

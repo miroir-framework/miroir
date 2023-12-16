@@ -205,6 +205,7 @@ export async function restMethodEntityActionRunnerHandler(
 
 // ################################################################################################
 export const restServerDefaultHandlers: RestServiceHandler[] = [
+  // CRUD operations (plain REST)
   {
     method: "get",
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
@@ -225,6 +226,7 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },
+  // other operations, receiving Miroir Actions
   {
     method: "post",
     url: "/modelOLDWithDeployment/:deploymentUuid/:actionName",

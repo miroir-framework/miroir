@@ -1,4 +1,4 @@
-import { act, getAllByText, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -13,7 +13,6 @@ import {
   DomainController,
   DomainControllerInterface,
   DomainDataAction,
-  DomainTransactionalActionWithCUDUpdate,
   Endpoint,
   EntityDefinition,
   EntityInstance,
@@ -22,9 +21,7 @@ import {
   MiroirConfig,
   MiroirContext,
   MiroirLoggerFactory,
-  StoreControllerFactory,
   StoreControllerManager,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   author1,

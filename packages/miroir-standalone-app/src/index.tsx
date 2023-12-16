@@ -26,7 +26,6 @@ import {
   MiroirLoggerFactory,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  StoreControllerFactory,
   StoreControllerManager
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
@@ -180,13 +179,6 @@ async function start(root:Root) {
         throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
       } 
 
-      // const {
-      //   localMiroirStoreController,localAppStoreController
-      // } = await StoreControllerFactory(
-      //   ConfigurationService.storeFactoryRegister,
-      //   currentMiroirConfig,
-      // );
-  
       const {
         localDataStoreWorker, // browser
         localDataStoreServer, // nodejs

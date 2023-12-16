@@ -37,7 +37,6 @@ import {
   miroirCoreStartup,
   MiroirLoggerFactory,
   reportBookList,
-  StoreControllerFactory,
   StoreControllerManager
 } from "miroir-core";
 
@@ -132,13 +131,11 @@ beforeAll(
       const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+        throw new Error("could not find controller:" + localMiroirStoreControllerTmp + " " + localAppStoreControllerTmp);
       } else {
         localMiroirStoreController = localMiroirStoreControllerTmp;
         localAppStoreController = localAppStoreControllerTmp;
       }
-
-      console.log('DomainController.Data.CRUD.test beforeAll StoreControllerFactory returned',localAppStoreController);
 
       // Establish requests interception layer before all tests.
       const wrapped = await miroirBeforeAll(
