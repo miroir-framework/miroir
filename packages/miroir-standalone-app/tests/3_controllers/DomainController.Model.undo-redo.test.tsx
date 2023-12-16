@@ -90,50 +90,22 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
-    const wrappedReduxStore = createReduxStoreAndRestClient(
-      miroirConfig as MiroirConfig,
-      fetch,
-    );
-
-    if (wrappedReduxStore) {
-      reduxStore = wrappedReduxStore.reduxStore;
-      // domainController = wrappedReduxStore.domainController;
-      miroirContext = wrappedReduxStore.miroirContext;
-    }
-
-    domainController = new DomainController(
-      miroirContext,
-      reduxStore, // implements LocalCacheInterface
-      reduxStore, // implements RemoteStoreInterface
-      new Endpoint(reduxStore)
-    );
-
-    if (miroirConfig.emulateServer) {
-      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
-
-      await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
-      await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
-
-      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } else {
-        localMiroirStoreController = localMiroirStoreControllerTmp;
-        localAppStoreController = localAppStoreControllerTmp;
-      }
-
       const wrapped = await miroirBeforeAll(
         miroirConfig as MiroirConfig,
         setupServer,
-        localMiroirStoreController,
-        localAppStoreController
       );
-      if (wrapped) {
+      if (wrapped && wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
+        reduxStore = wrapped.reduxStore;
+        miroirContext = wrapped.miroirContext;
+        domainController = wrapped.domainController;
+        localMiroirStoreController = wrapped.localMiroirStoreController;
+        localAppStoreController = wrapped.localAppStoreController;
         localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
         localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+      } else {
+        throw new Error("beforeAll failed initialization!");
       }
-    }
+    // }
   }
 )
 

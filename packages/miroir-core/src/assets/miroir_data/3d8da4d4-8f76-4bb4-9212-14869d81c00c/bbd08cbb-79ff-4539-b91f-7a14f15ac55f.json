@@ -1,0 +1,30 @@
+{
+  "uuid": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  "parentName": "EndpointVersion",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "b1c4d5d7-56d3-41e2-9574-300d821ecf4c",
+  "name": "DeploymentEndpointVersion",
+  "version": "1",
+  "description": "Version of Deployment Endpoint",
+  "definition": {
+    "type": "object",
+    "definition": {
+      "actionParameter": {
+        "type": "object",
+        "definition": {
+          "actionType": {"type": "literal", "definition":"deploymentAction"},
+          "actionName": {"type": "literal", "definition":"deployApplication"},
+          "endpointVersion": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
+          "applicationUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "defaultLabel": "Application Uuid", "editable": false }
+          }
+        }
+      },
+      "actionTransformer": {},
+      "actionMigrations": {}
+    }
+  }
+}

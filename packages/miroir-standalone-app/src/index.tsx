@@ -158,7 +158,7 @@ async function start(root:Root) {
       mReduxStore, // implements RemoteStoreInterface
       new Endpoint(mReduxStore)
     );
-  
+
     if (currentMiroirConfig.emulateServer) {
       await storeControllerManager.addStoreController(
         "miroir",
@@ -173,11 +173,11 @@ async function start(root:Root) {
         currentMiroirConfig.appServerConfig
       );
 
-      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreController || !localAppStoreController) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } 
+      // const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      // const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      // if (!localMiroirStoreController || !localAppStoreController) {
+      //   throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      // } 
 
       const {
         localDataStoreWorker, // browser
@@ -186,8 +186,9 @@ async function start(root:Root) {
         currentMiroirConfig,
         'browser',
         restServerDefaultHandlers,
-        localMiroirStoreController,
-        localAppStoreController,
+        storeControllerManager,
+        // localMiroirStoreController,
+        // localAppStoreController,
         setupWorker
       );
   

@@ -7,6 +7,8 @@ export {
   applicationSection,
   Commit,
   ConceptLevel,
+  DeploymentAction,
+  deploymentAction,
   Entity,
   entity,
   ModelAction,
@@ -354,6 +356,8 @@ export {
   resetMiroirAndApplicationDatabases,
 } from './3_controllers/resetApplicationDatabase.js';
 export {
+  actionRunner,
+  modelOLDActionRunner,
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,

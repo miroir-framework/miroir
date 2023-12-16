@@ -4,6 +4,7 @@ import {
   ModelAction,
   EntityInstance,
   EntityInstanceCollection,
+  DeploymentAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
@@ -84,7 +85,7 @@ export type RemoteStoreOLDModelAction =
 ;
 
 // ################################################################################################
-export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreOLDModelAction | ModelAction;
+export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreOLDModelAction | ModelAction | DeploymentAction;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {
@@ -114,6 +115,10 @@ export interface RemoteStoreNetworkClientInterface {
     deploymentUuid: string,
     action: ModelAction
   ): Promise<RestClientCallReturnType>;
+  handleNetworkRemoteAction(
+    deploymentUuid: string,
+    action: DeploymentAction
+  ): Promise<RestClientCallReturnType>;
 }
 
 export default {};
@@ -135,6 +140,10 @@ export declare interface RemoteStoreInterface {
   handleRemoteStoreModelEntityAction(
     deploymentUuid: string,
     action: ModelAction
+  ): Promise<RemoteStoreActionReturnType>;
+  handleRemoteAction(
+    deploymentUuid: string,
+    action: DeploymentAction
   ): Promise<RemoteStoreActionReturnType>;
 }
 

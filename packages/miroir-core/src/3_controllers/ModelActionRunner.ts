@@ -1,4 +1,4 @@
-import { ModelAction, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ModelAction, EntityDefinition, DeploymentAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -247,6 +247,39 @@ export async function modelActionRunner(
       break;
   }
   log.debug('modelActionRunner returning empty response.')
+  return Promise.resolve(undefined);
+}
+
+// ################################################################################################
+/**
+ * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * @param actionName 
+ * @param body 
+ * @returns 
+ */
+export async function actionRunner(
+  // miroirDataStoreProxy:IStoreController,
+  // appDataStoreProxy:IStoreController,
+  // deploymentUuid: string,
+  actionName:string,
+  body:any
+):Promise<void> {
+  log.info('###################################### modelActionRunner started ', 'actionName',actionName);
+  // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  // const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
+  const update: DeploymentAction = body;
+  log.info('actionRunner action', JSON.stringify(update,undefined,2));
+  switch (update.actionName) {
+    case "deployApplication": {
+      log.debug('actionRunner deployApplication',update.applicationUuid);
+      // await targetProxy.createEntity(update.entity, update.entityDefinition);
+      break;
+    }
+    default:
+      log.warn('actionRunner could not handle actionName', actionName)
+      break;
+  }
+  log.debug('actionRunner returning empty response.')
   return Promise.resolve(undefined);
 }
 

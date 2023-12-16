@@ -9,7 +9,8 @@ import {
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
-  getLoggerName
+  getLoggerName,
+  DeploymentAction
 } from "miroir-core";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -28,6 +29,7 @@ export const actionHttpMethods: { [P in string]: HttpMethod } = {
   resetData: "post",
   initModel: "post",
   updateEntity: "post",
+  deployApplication: "post",
 };
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RemoteStoreNetworkRestClient");
@@ -67,6 +69,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
     "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
     "modelAction": {"*": {action: true}},
+    "deploymentAction": {"*": {action: true}},
     // "localCacheModelActionWithDeployment": {"*": {action: true}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     "DomainTransactionalAction": {
@@ -174,6 +177,24 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     const callParams = this.getRestCallParams(
       action,
       this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
+    );
+    console.debug(
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
+      action,
+      "callParams",
+      callParams
+    );
+    return callParams.operation(callParams.url, callParams.args);
+  }
+
+  // ##################################################################################
+  async handleNetworkRemoteAction(
+    deploymentUuid: string,
+    action: DeploymentAction
+  ): Promise<RestClientCallReturnType> {
+    const callParams = this.getRestCallParams(
+      action,
+      this.rootApiUrl + "/action/" + action.actionName
     );
     console.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",

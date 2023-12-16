@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 
 import { SetupWorkerApi } from "msw/browser";
 // import { SetupServerApi } from "msw/lib/node";
-import { setupServer } from "msw/node";
+import { SetupServerApi, setupServer } from "msw/node";
 
 import {
   ConfigurationService,
@@ -59,23 +59,6 @@ import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
 
-// import loggerOptions from "../specificLoggersConfig_default.json";
-// import loggerOptions from "../specificLoggersConfig_trace_filesystem.json"
-
-  
-// jest intercepts logs, only console.log will produce test output
-// const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController.Model.CRUD");
-// let myTestLogger:LoggerInterface = console as any as LoggerInterface;
-// MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
-//   (value: LoggerInterface) => {
-//     myTestLogger = value;
-//   }
-// );
-
-
-// console.log("@@@@@@@@@@@@@@@@@@ env", process.env["PWD"]);
-// console.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
-// const miroirConfig:MiroirConfig = await loadTestSingleConfigFile(process.env["PWD"]??"",process.env["npm_config_env"]??"");
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -107,52 +90,22 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
-    const wrappedReduxStore = createReduxStoreAndRestClient(
+    // Establish requests interception layer before all tests.
+    const wrapped = await miroirBeforeAll(
       miroirConfig as MiroirConfig,
-      fetch as any,
+      setupServer,
     );
 
-    if (wrappedReduxStore) {
-      reduxStore = wrappedReduxStore.reduxStore;
-      // domainController = wrappedReduxStore.domainController;
-      miroirContext = wrappedReduxStore.miroirContext;
-    }
-
-    domainController = new DomainController(
-      miroirContext,
-      reduxStore, // implements LocalCacheInterface
-      reduxStore, // implements RemoteStoreInterface
-      new Endpoint(reduxStore)
-    );
-
-    if (miroirConfig.emulateServer) {
-      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
-
-      await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
-      await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
-
-      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } else {
-        localMiroirStoreController = localMiroirStoreControllerTmp;
-        localAppStoreController = localAppStoreControllerTmp;
-      }
-
-  
-      // Establish requests interception layer before all tests.
-      const wrapped = await miroirBeforeAll(
-        miroirConfig as MiroirConfig,
-        setupServer,
-        localMiroirStoreController,
-        localAppStoreController,
-      );
-
-      if (wrapped) {
-        localDataStoreWorker = wrapped.localDataStoreWorker;
-        localDataStoreServer = wrapped.localDataStoreServer;
-      }
+    if (wrapped && wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
+      reduxStore = wrapped.reduxStore;
+      miroirContext = wrapped.miroirContext;
+      domainController = wrapped.domainController;
+      localMiroirStoreController = wrapped.localMiroirStoreController;
+      localAppStoreController = wrapped.localAppStoreController;
+      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    } else {
+      throw new Error("beforeAll failed initialization!");
     }
   }
 )

@@ -19,6 +19,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
+import { RemoteStoreInterface } from "../4-services/RemoteStoreInterface.js";
 
 export interface LocalCacheInfo {
   localCacheSize: number;
@@ -321,8 +322,8 @@ export interface DomainControllerInterface {
    * 
    * 
    */
-  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[];
-  currentLocalCacheInfo(): LocalCacheInfo;
-
+  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[],
+  currentLocalCacheInfo(): LocalCacheInfo,
+  getRemoteStore(): RemoteStoreInterface,
   
 }

@@ -11,6 +11,7 @@ const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../asse
 // const entityDefinitionActionVersion = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json', import.meta.url)).toString());
 const modelEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json', import.meta.url)).toString());
 const instanceEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json', import.meta.url)).toString());
+const deploymentEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json', import.meta.url)).toString());
 // const configFileContents = await import(configFilePath);
 
 // console.log("###################### action version:",actionModelerVersionV1.definition.definition);
@@ -1080,6 +1081,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "deploymentAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "actionTransformer": {
         "type": "object",
         "definition": {

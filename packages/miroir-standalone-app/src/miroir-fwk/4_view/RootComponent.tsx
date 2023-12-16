@@ -179,6 +179,7 @@ export const RootComponent = (props: RootComponentProps) => {
         handleDrawerOpen={handleDrawerOpen}
         open = {open}
       >
+        Bar!
       </ResponsiveAppBar>
       <Drawer
         // sx={{
@@ -331,6 +332,13 @@ export const RootComponent = (props: RootComponentProps) => {
           <span>
             <button
               onClick={async () => {
+                await domainController.getRemoteStore().handleRemoteAction("",{
+                  actionType: "deploymentAction",
+                  actionName: "deployApplication",
+                  endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                  applicationUuid: applicationDeploymentMiroir.uuid,
+                })
+
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                   actionType: "DomainTransactionalAction",
                   actionName: "initModel",
@@ -360,7 +368,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 // TODO: transactional action must not autocommit! initModel neither?!
                 // .then(
                 // async () => {
-                log.log(
+                log.info(
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 );
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
@@ -371,6 +379,13 @@ export const RootComponent = (props: RootComponentProps) => {
                   actionType: "DomainTransactionalAction",
                   actionName: "rollback",
                 });
+                await domainController.getRemoteStore().handleRemoteAction("",{
+                  actionType: "deploymentAction",
+                  actionName: "deployApplication",
+                  endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                  applicationUuid: applicationDeploymentMiroir.uuid,
+                })
+          
                 // }
                 // );
               }}

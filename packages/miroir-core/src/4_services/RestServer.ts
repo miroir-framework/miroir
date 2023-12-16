@@ -3,7 +3,7 @@ import { ApplicationSection, EntityInstance } from "../0_interfaces/1_core/prepr
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
-import { modelActionRunner, modelOLDActionRunner } from "../3_controllers/ModelActionRunner";
+import { actionRunner, modelActionRunner, modelOLDActionRunner } from "../3_controllers/ModelActionRunner";
 
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import { packageName } from "../constants";
@@ -204,6 +204,35 @@ export async function restMethodEntityActionRunnerHandler(
 }
 
 // ################################################################################################
+export async function restMethodActionRunnerHandler(
+  continuationFunction: (response:any) =>(arg0: any) => any,
+  localMiroirStoreController: IStoreController,
+  localAppStoreController: IStoreController,
+  method: HttpMethod,
+  response: any,
+  effectiveUrl: string, // log only, to remove?
+  body: HttpRequestBodyFormat,
+  params: any,
+):Promise<void> {
+  const actionName: string =
+  typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+
+  // const deploymentUuid: string =
+  //   typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
+
+  log.debug("restMethodActionRunnerHandler params", params, "body", body);
+
+  const result = actionRunner(
+    // localMiroirStoreController,
+    // localAppStoreController,
+    // deploymentUuid,
+    actionName,
+    body
+  );
+  return continuationFunction(response)(result)
+}
+
+// ################################################################################################
 export const restServerDefaultHandlers: RestServiceHandler[] = [
   // CRUD operations (plain REST)
   {
@@ -236,5 +265,10 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     method: "post",
     url: "/modelWithDeployment/:deploymentUuid/:actionName",
     handler: restMethodEntityActionRunnerHandler
+  },
+  {
+    method: "post",
+    url: "/action/:actionName",
+    handler: restMethodActionRunnerHandler
   },
 ];

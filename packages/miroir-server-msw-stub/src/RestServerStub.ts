@@ -65,7 +65,8 @@ export class RestServerStub {
               localAppStoreController,
               h.method /* method */,
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
-              this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+              // this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+              this.rootApiUrl + h.url,
               body, // body
               params
             );

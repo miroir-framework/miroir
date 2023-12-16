@@ -68,6 +68,9 @@ export class DomainController implements DomainControllerInterface {
     private endpoint: Endpoint,
   ) {}
 
+  getRemoteStore(): RemoteStoreInterface {
+      return this.remoteStore
+  }
   // ##############################################################################################
   currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();

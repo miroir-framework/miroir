@@ -1,24 +1,24 @@
 import { ActionCreatorWithPayload, PayloadAction } from '@reduxjs/toolkit';
 import {
-  promiseActionFactory,
-  SagaPromiseActionCreator
+  SagaPromiseActionCreator,
+  promiseActionFactory
 } from "@teroneko/redux-saga-promise";
 import { CallEffect, Effect } from 'redux-saga/effects';
-import { call, all, put, takeEvery } from "typed-redux-saga";
+import { all, call, takeEvery } from "typed-redux-saga";
 
 import {
   ApplicationSection,
-  HttpResponseBodyFormat,
+  DeploymentAction,
   LoggerInterface,
   MiroirLoggerFactory,
-  RemoteStoreCRUDAction,
-  RemoteStoreActionReturnType,
-  RemoteStoreOLDModelAction,
-  RemoteStoreNetworkClientInterface,
-  getLoggerName,
-  stringTuple,
   ModelAction,
+  RemoteStoreActionReturnType,
+  RemoteStoreCRUDAction,
+  RemoteStoreNetworkClientInterface,
+  RemoteStoreOLDModelAction,
   RestClientCallReturnType,
+  getLoggerName,
+  stringTuple
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -57,6 +57,7 @@ export const RemoteStoreRestSagaInputActionNamesObject = {
   'handleRemoteStoreRestCRUDAction':'handleRemoteStoreRestCRUDAction',
   'handleRemoteStoreOLDModelAction':'handleRemoteStoreOLDModelAction',
   'handleRemoteStoreModelEntityAction':'handleRemoteStoreModelEntityAction',
+  'handleRemoteAction':'handleRemoteAction',
 };
 export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
 export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
@@ -159,6 +160,43 @@ export class RemoteStoreRestAccessReduxSaga {
           return yield result;
         } catch (e: any) {
           log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelEntityAction exception", e);
+          // yield put({ type: "instances/failure/instancesNotReceived" });
+          return {
+            status: "error",
+            errorMessage: e["message"],
+            error: { errorMessage: e["message"], stack: [e["message"]] },
+          } as RemoteStoreActionReturnType;
+        }
+      }.bind(this),
+    },
+    handleRemoteAction: {
+      name: "handleRemoteAction",
+      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+        { deploymentUuid: string; action: DeploymentAction },
+        "handleRemoteAction"
+      >("handleRemoteAction"),
+      generator: function* (
+        this: RemoteStoreRestAccessReduxSaga,
+        p: PayloadAction<{ deploymentUuid: string; action: DeploymentAction }>
+      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+        const { deploymentUuid, action } = p.payload;
+        try {
+          log.info("RemoteStoreRestAccessReduxSaga handleRemoteAction on action",action);
+          const clientResult: RestClientCallReturnType
+           = yield* call(() =>
+            this.remoteStoreNetworkClient.handleNetworkRemoteAction(deploymentUuid, action)
+          );
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteAction received clientResult", clientResult);
+
+          const result: RemoteStoreActionReturnType = {
+            status: "ok",
+            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
+          };
+
+          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteAction received result", result.status);
+          return yield result;
+        } catch (e: any) {
+          log.error("RemoteStoreRestAccessReduxSaga handleRemoteAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
