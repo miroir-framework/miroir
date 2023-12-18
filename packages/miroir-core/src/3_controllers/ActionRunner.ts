@@ -297,6 +297,26 @@ export async function actionRunner(
 
       break;
     }
+    case "closeDeployment": {
+      log.info('actionRunner closeDeployment',miroirConfig);
+      // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
+      await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
+      await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
+      // await createStoreControllers(storeControllerManager,miroirConfig);
+      // const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      // const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      // if (!localMiroirStoreController || !localAppStoreController) {
+      //   throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      // } 
+    
+      // await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
+
+      log.info('actionRunner deployApplication DONE!', storeControllerManager.getStoreControllers());
+      // await targetProxy.createEntity(update.entity, update.entityDefinition);
+      // await createStoreControllers(storeControllerManager, miroirConfig)
+
+      break;
+    }
     default:
       log.warn('actionRunner could not handle actionName', actionName)
       break;

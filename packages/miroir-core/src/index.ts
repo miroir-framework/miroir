@@ -302,6 +302,8 @@ export {
   IStorageSpaceHandler,
   IDataOrModelStore,
   IStoreController,
+  StoreFactory,
+  StoreFactoryRegister,
 } from "./0_interfaces/4-services/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';
@@ -339,8 +341,6 @@ export {
   ConfigurationService,
   PackageConfiguration,
   undoRedoHistorization,
-  StoreFactory,
-  StoreFactoryRegister,
 } from "./3_controllers/ConfigurationService.js";
 export {
   Endpoint

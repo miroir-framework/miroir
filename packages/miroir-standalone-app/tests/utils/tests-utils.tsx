@@ -303,6 +303,7 @@ export async function miroirBeforeEach(
 // #################################################################################################################
 export async function miroirAfterEach(
   miroirConfig: MiroirConfig,
+  domainController: DomainControllerInterface | undefined,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
 ):Promise<void> {
@@ -324,6 +325,7 @@ export async function miroirAfterEach(
 
 export async function miroirAfterAll(
   miroirConfig: MiroirConfig,
+  domainController: DomainControllerInterface | undefined,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   localDataStoreServer?: any /*SetupServerApi*/,
@@ -331,6 +333,19 @@ export async function miroirAfterAll(
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
   if (!miroirConfig.emulateServer) {
     console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: really???
+    if (!domainController) {
+      throw new Error("miroirAfterAll could not close store controller: DomainController is undefined");
+    } else {
+      console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
+      const remoteStore = domainController.getRemoteStore();
+      await remoteStore.handleRemoteAction("",{
+        actionType: "deploymentAction",
+        actionName: "closeDeployment",
+        endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        deploymentUuid: applicationDeploymentMiroir.uuid,
+      })
+      console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid, "DONE!"); // TODO: really???
+    }
   } else {
     try {
       await (localDataStoreServer as any)?.close();

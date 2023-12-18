@@ -13,4 +13,5 @@ export interface StoreControllerManagerInterface {
 
   getStoreControllers(): string[];
   getStoreController(deploymentUuid: Uuid): IStoreController | undefined;
+  deleteStoreController(deploymentUuid: Uuid): Promise<void>;
 }

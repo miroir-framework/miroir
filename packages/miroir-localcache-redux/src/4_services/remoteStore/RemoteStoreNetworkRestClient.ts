@@ -30,6 +30,7 @@ export const actionHttpMethods: { [P in string]: HttpMethod } = {
   initModel: "post",
   updateEntity: "post",
   deployApplication: "post",
+  closeDeployment: "post",
 };
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RemoteStoreNetworkRestClient");

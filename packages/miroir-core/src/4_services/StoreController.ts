@@ -20,8 +20,8 @@ import {
   IDataSectionStore,
   IModelSectionStore,
   IStoreController,
+  StoreFactoryRegister,
 } from "../0_interfaces/4-services/StoreControllerInterface.js";
-import { StoreFactoryRegister } from "../3_controllers/ConfigurationService.js";
 import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import { packageName } from "../constants.js";

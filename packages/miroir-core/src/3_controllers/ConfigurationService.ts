@@ -1,12 +1,10 @@
 
 // TODO: put in ConfigurationServiceInterface
 
-import { EmulatedServerConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { IDataSectionStore, IModelSectionStore, IDataOrModelStore } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreFactory, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -30,16 +28,6 @@ export interface PackageConfiguration {
   packageName: string;
   packageVersion: string;
 }
-
-export type StoreFactory = (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
-  section:ApplicationSection,
-  config: EmulatedServerConfig,
-  dataStore?: IDataSectionStore,
-)=>Promise<IDataOrModelStore>;
-
-export type StoreFactoryRegister = Map<string,StoreFactory>;
 
 /**
  * Allows Miroir packages to inject (and access?) configuration information.

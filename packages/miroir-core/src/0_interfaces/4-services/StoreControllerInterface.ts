@@ -11,6 +11,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EmulatedServerConfig } from '../1_core/MiroirConfig.js';
 
 // ###########################################################################################
 // Abstract store interfaces
@@ -80,6 +81,17 @@ export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler,
 
 // ###############################################################################################################
 export type IDataOrModelStore = IDataSectionStore | IModelSectionStore;
+
+// ###############################################################################################################
+export type StoreFactory = (
+  appName: string,
+  dataStoreApplicationType: DataStoreApplicationType,
+  section:ApplicationSection,
+  config: EmulatedServerConfig,
+  dataStore?: IDataSectionStore,
+)=>Promise<IDataOrModelStore>;
+
+export type StoreFactoryRegister = Map<string,StoreFactory>;
 
 
 // ###############################################################################################################
