@@ -83,20 +83,7 @@ miroirStoreIndexedDbStartup();
 miroirStorePostgresStartup();
 
 
-if (miroirConfig.emulateServer) {
-  await createStoreControllers(storeControllerManager, miroirConfig)
-  .then(
-    async () => {
-      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreController || !localAppStoreController) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      }
-
-      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController);
-
-      myLogger.info(`local store controllers started ${localMiroirStoreController}, ${localAppStoreController}`);
-
+if (miroirConfig.emulateServer) { // _TODO: spurious test, the MiroirConfig type must be corrected.
       // ##############################################################################################
       // CREATING ENDPOINTS SERVICING CRUD HANDLERS
       for (const op of restServerDefaultHandlers) {
@@ -106,7 +93,7 @@ if (miroirConfig.emulateServer) {
           // console.log("received", op.method, op.url, "body", body)
           // console.log("received", op.method, op.url, "request", request)
 
-          await op.handler(
+          const result = await op.handler(
             (response: any) => response.json.bind(response),
             storeControllerManager,
             miroirConfig,
@@ -114,7 +101,9 @@ if (miroirConfig.emulateServer) {
             response, 
             request.originalUrl, 
             body, 
-            request.params);
+            request.params
+          );
+          return result;
         });
       }
 
@@ -127,9 +116,6 @@ if (miroirConfig.emulateServer) {
       app.listen(port, () => {
           myLogger.info(`Server listening on the port::${port}`);
       });
-
-    }
-  )
 } else {
   throw new Error("Configuration has emulateServer = false");
   // exit(1);

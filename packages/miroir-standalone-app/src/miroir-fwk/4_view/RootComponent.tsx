@@ -332,12 +332,13 @@ export const RootComponent = (props: RootComponentProps) => {
           <span>
             <button
               onClick={async () => {
-                // await domainController.getRemoteStore().handleRemoteAction("",{
-                //   actionType: "deploymentAction",
-                //   actionName: "deployApplication",
-                //   endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                //   applicationUuid: applicationDeploymentMiroir.uuid,
-                // })
+                const remoteStore = domainController.getRemoteStore();
+                await remoteStore.handleRemoteAction("",{
+                  actionType: "deploymentAction",
+                  actionName: "deployApplication",
+                  endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                  applicationUuid: applicationDeploymentMiroir.uuid,
+                })
 
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                   actionType: "DomainTransactionalAction",

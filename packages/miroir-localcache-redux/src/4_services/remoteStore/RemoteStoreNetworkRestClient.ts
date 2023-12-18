@@ -54,7 +54,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     private rootApiUrl: string, 
     private restClient: RestClientInterface
   ) {
-    console.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
+    log.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
     this.operationMethod = {
       get: this.restClient.get.bind(this.restClient),
       post: this.restClient.post.bind(this.restClient),
@@ -138,7 +138,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section + "/entity"
     );
     // const args = 
-    console.debug(
+    log.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDAction action",
       action,
       "deploymentUuid",
@@ -160,7 +160,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/modelOLDWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
-    console.debug(
+    log.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreOLDModelAction",
       action,
       "callParams",
@@ -178,7 +178,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
-    console.debug(
+    log.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
       action,
       "callParams",
@@ -196,13 +196,20 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/action/" + action.actionName
     );
-    console.debug(
+    log.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
       action,
       "callParams",
       callParams
     );
-    return callParams.operation(callParams.url, callParams.args);
+    const result = await callParams.operation(callParams.url, callParams.args);
+    log.log(
+      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
+      action,
+      "result",
+      result
+    );
+    return result;
   }
 
   // ##################################################################################

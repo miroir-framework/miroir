@@ -64,7 +64,7 @@ export async function restMethodGetHandler
   const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
   const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
   if (!localMiroirStoreController || !localAppStoreController) {
-    throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+    throw new Error("restMethodGetHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
   } 
 
   const targetStoreController =
@@ -128,7 +128,7 @@ export async function restMethodsPostPutDeleteHandler(
   const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
   const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
   if (!localMiroirStoreController || !localAppStoreController) {
-    throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+    throw new Error("restMethodsPostPutDeleteHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
   } 
 
   const targetDataStore =
@@ -179,19 +179,22 @@ export async function restMethodModelOLDActionRunnerHandler(
     const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
     const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
     if (!localMiroirStoreController || !localAppStoreController) {
-      throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      throw new Error("restMethodModelOLDActionRunnerHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
     } 
   
   // log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
-  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body);
+  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "storeControllers", localMiroirStoreController, localAppStoreController);
 
-  const result = modelOLDActionRunner(
+  const result = await modelOLDActionRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
     actionName,
     body.modelUpdate
   );
+
+  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "result", result);
+
   return continuationFunction(response)(result)
 }
 
@@ -212,15 +215,15 @@ export async function restMethodEntityActionRunnerHandler(
   const deploymentUuid: string =
     typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
 
-    const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-    const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-    if (!localMiroirStoreController || !localAppStoreController) {
-      throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-    } 
+  const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+  const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+  if (!localMiroirStoreController || !localAppStoreController) {
+    throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+  } 
   
   log.debug("restMethodEntityActionRunnerHandler params", params, "body", body);
 
-  const result = modelActionRunner(
+  const result = await modelActionRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
@@ -257,7 +260,7 @@ export async function restActionRunner(
 
   log.debug("restActionRunner params", params, "body", body);
 
-  const result = actionRunner(
+  const result = await actionRunner(
     actionName,
     body,
     storeControllerManager,

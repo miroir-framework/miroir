@@ -148,7 +148,7 @@ export async function miroirBeforeAll(
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
 
-    const wrappedReduxStore = createReduxStoreAndRestClient(
+    const wrappedReduxStore = await createReduxStoreAndRestClient(
       miroirConfig as MiroirConfig,
       fetch,
     );
@@ -160,9 +160,17 @@ export async function miroirBeforeAll(
       new Endpoint(wrappedReduxStore.reduxStore)
     );
 
-
     if (!miroirConfig.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+      // creating localStoreControllers
+      const remoteStore = domainController.getRemoteStore();
+      await remoteStore.handleRemoteAction("",{
+        actionType: "deploymentAction",
+        actionName: "deployApplication",
+        endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        applicationUuid: applicationDeploymentMiroir.uuid,
+      })
+
       return Promise.resolve({
         domainController,
         miroirContext: wrappedReduxStore.miroirContext,
@@ -188,6 +196,7 @@ export async function miroirBeforeAll(
         localMiroirStoreController = localMiroirStoreControllerTmp;
         localAppStoreController = localAppStoreControllerTmp;
       }
+
       const {
         localDataStoreWorker,
         localDataStoreServer,
@@ -199,9 +208,10 @@ export async function miroirBeforeAll(
         createRestServiceFromHandlers
       );
   
-      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
       localDataStoreServer?.listen();
+      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
+
       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
       return Promise.resolve({
         domainController,
@@ -213,6 +223,7 @@ export async function miroirBeforeAll(
         localDataStoreServer,
       });
     }
+    
   } catch (error) {
     console.error('Error beforeAll',error);
     throw error;

@@ -50,8 +50,11 @@ export class RestClient implements RestClientInterface {
     
       const response = await this.customFetch(endpoint, config)
 
-      // log.info("RestClient response", response);
-      data = await response?.json()
+      const responseText: string = await response.text();
+      log.info("RestClient response length", responseText.length, responseText);
+      const data = responseText.length > 0?JSON.parse(responseText):undefined;
+      log.info("RestClient parsed response", data);
+      // data = await response?.json()
       if (response.ok) {
         // Return a result object similar to Axios
         return {

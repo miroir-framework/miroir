@@ -28,8 +28,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // TODO: MOVE TO miroir-server-msw-stub
 // ################################################################################################
 export interface CreateMswRestServerReturnType {
-  localMiroirStoreController: IStoreController | undefined,
-  localAppStoreController: IStoreController | undefined,
+  // localMiroirStoreController: IStoreController | undefined,
+  // localAppStoreController: IStoreController | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: any /**SetupServerApi*/ | undefined,
 }
@@ -46,13 +46,6 @@ export async function createMswRestServer(
   log.log("createMswRestServer process.browser", (process as any)["browser"]);
 
   if (miroirConfig.emulateServer) {
-    // create server query interceptor. Scope is extruded because interceptor needs to be started / stopped
-    log.warn("######################### createMswRestServer emulating server on", miroirConfig.rootApiUrl, "##########################################");
-    const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-    const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-    if (!localMiroirStoreController || !localAppStoreController) {
-      throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-    } 
 
     const restServerStub: RestServerStub = new RestServerStub(
       miroirConfig.rootApiUrl,
@@ -72,8 +65,6 @@ export async function createMswRestServer(
     }
 
     return Promise.resolve({
-      localMiroirStoreController,
-      localAppStoreController,
       localDataStoreWorker,
       localDataStoreServer,
     });

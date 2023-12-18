@@ -9,6 +9,8 @@ export interface StoreControllerManagerInterface {
     dataStoreType: DataStoreApplicationType,
     deploymentUuid: Uuid,
     config: EmulatedPartitionedServerConfig
-  ): void;
+  ): Promise<void>;
+
+  getStoreControllers(): string[];
   getStoreController(deploymentUuid: Uuid): IStoreController | undefined;
 }

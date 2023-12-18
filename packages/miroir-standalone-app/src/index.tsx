@@ -153,14 +153,6 @@ async function start(root:Root) {
     );
 
     if (currentMiroirConfig.emulateServer) {
-      await createStoreControllers(storeControllerManager, currentMiroirConfig);
-
-      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreController || !localAppStoreController) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } 
-
       const {
         localDataStoreWorker, // browser
         localDataStoreServer, // nodejs
@@ -176,7 +168,6 @@ async function start(root:Root) {
         log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
         localDataStoreWorker?.start();
       }
-      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
     }
 
     const theme = createTheme({
