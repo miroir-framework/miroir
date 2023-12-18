@@ -90,22 +90,23 @@ let miroirContext: MiroirContext;
 
 beforeAll(
   async () => {
-      const wrapped = await miroirBeforeAll(
-        miroirConfig as MiroirConfig,
-        setupServer,
-      );
-      if (wrapped && wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
-        reduxStore = wrapped.reduxStore;
-        miroirContext = wrapped.miroirContext;
-        domainController = wrapped.domainController;
+    const wrapped = await miroirBeforeAll(
+      miroirConfig as MiroirConfig,
+      setupServer,
+    );
+    if (wrapped) {
+      if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
         localMiroirStoreController = wrapped.localMiroirStoreController;
         localAppStoreController = wrapped.localAppStoreController;
-        localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
-        localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
-      } else {
-        throw new Error("beforeAll failed initialization!");
       }
-    // }
+      reduxStore = wrapped.reduxStore;
+      miroirContext = wrapped.miroirContext;
+      domainController = wrapped.domainController;
+      localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+      localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
+    } else {
+      throw new Error("beforeAll failed initialization!");
+    }
   }
 )
 

@@ -13,6 +13,7 @@ import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   ConfigurationService,
+  createStoreControllers,
   defaultLevels,
   defaultMiroirMetaModel,
   DomainController,
@@ -26,6 +27,7 @@ import {
   MiroirLoggerFactory,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
+  startLocalStoreControllers,
   StoreControllerManager
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
@@ -76,28 +78,20 @@ const miroirConfigFiles: {[k: string]: MiroirConfig} = {
   "miroirConfigRealServer": miroirConfigRealServer as any as MiroirConfig
 }
 
-  // log.info("start current process.env:",process); 
-  
-  
-  // ##############################################################################################
-  // ##############################################################################################
-  const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
-  // const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
-  // ##############################################################################################
-  // ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
+// ##############################################################################################
+// ##############################################################################################
 
-  const currentMiroirConfig: MiroirConfig =
-    currentMiroirConfigName && miroirConfigFiles[currentMiroirConfigName]
-      ? miroirConfigFiles[currentMiroirConfigName ?? ""]
-      : (miroirConfig as unknown as MiroirConfig);
+const currentMiroirConfig: MiroirConfig =
+  currentMiroirConfigName && miroirConfigFiles[currentMiroirConfigName]
+    ? miroirConfigFiles[currentMiroirConfigName ?? ""]
+    : (miroirConfig as unknown as MiroirConfig);
 
-  log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
-  // const currentMiroirConfig: MiroirConfig = miroirConfig as unknown as MiroirConfig;
+log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
 
-// logger.info("current process.env:",process); 
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-indexedDb.json', import.meta.url)).toString());
-
-log.log("entityDefinitionEntityDefinition", JSON.stringify(entityDefinitionEntityDefinition));
 const container = document.getElementById("root");
 
 const router = createBrowserRouter([
@@ -148,7 +142,6 @@ async function start(root:Root) {
   if (process.env.NODE_ENV === "development") {
     const {
       reduxStore: mReduxStore,
-      // domainController,
       miroirContext: myMiroirContext,
     } = await createReduxStoreAndRestClient(currentMiroirConfig, window.fetch.bind(window));
 
@@ -160,24 +153,13 @@ async function start(root:Root) {
     );
 
     if (currentMiroirConfig.emulateServer) {
-      await storeControllerManager.addStoreController(
-        "miroir",
-        "miroir",
-        applicationDeploymentMiroir.uuid,
-        currentMiroirConfig.miroirServerConfig
-      );
-      await storeControllerManager.addStoreController(
-        "library",
-        "app",
-        applicationDeploymentLibrary.uuid,
-        currentMiroirConfig.appServerConfig
-      );
+      await createStoreControllers(storeControllerManager, currentMiroirConfig);
 
-      // const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      // const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      // if (!localMiroirStoreController || !localAppStoreController) {
-      //   throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      // } 
+      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      if (!localMiroirStoreController || !localAppStoreController) {
+        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      } 
 
       const {
         localDataStoreWorker, // browser
@@ -187,8 +169,6 @@ async function start(root:Root) {
         'browser',
         restServerDefaultHandlers,
         storeControllerManager,
-        // localMiroirStoreController,
-        // localAppStoreController,
         setupWorker
       );
   
@@ -196,29 +176,7 @@ async function start(root:Root) {
         log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
         localDataStoreWorker?.start();
       }
-      if (localMiroirStoreController) {
-        // log.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
-        await localMiroirStoreController?.open();
-        try {
-          await localMiroirStoreController?.bootFromPersistedState(
-            defaultMiroirMetaModel.entities,
-            defaultMiroirMetaModel.entityDefinitions
-          );
-        } catch (error) {
-          log.log('could not load persisted state from localMiroirStoreController, datastore could be empty (this is not a problem)');
-        }
-      }
-      if (localAppStoreController) {
-        await localAppStoreController?.open();
-        try {
-          await localAppStoreController?.bootFromPersistedState(
-            defaultMiroirMetaModel.entities,
-            defaultMiroirMetaModel.entityDefinitions
-          );
-        } catch (error) {
-          log.log('could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
-        }
-      }
+      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
     }
 
     const theme = createTheme({

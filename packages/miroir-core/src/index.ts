@@ -361,7 +361,7 @@ export {
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,
-} from './3_controllers/ModelActionRunner.js';
+} from './3_controllers/ActionRunner.js';
 export {
   modelInitialize,
   applicationModelEntities,
@@ -387,6 +387,10 @@ export {
 export {
   restServerDefaultHandlers
 } from './4_services/RestServer.js';
+export {
+  createStoreControllers,
+  startLocalStoreControllers,
+} from './4_services/storeControllerTools.js';
 export {
   StoreControllerManager
 } from './4_services/StoreControllerManager.js';

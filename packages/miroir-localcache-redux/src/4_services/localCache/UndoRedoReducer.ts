@@ -286,7 +286,7 @@ export function createUndoRedoReducer(
   ): ReduxStateWithUndoRedo => {
     const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches, queriesResultsCache } = state;
   
-    log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
+    // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
     
     switch (action.type) {
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction: {
@@ -453,7 +453,7 @@ export function createUndoRedoReducer(
         break;
       }
       default: {
-        log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
+        // log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
         // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
         return callNextReducer(innerReducer, state, action as any); //useful? this is an unknown action!
       }

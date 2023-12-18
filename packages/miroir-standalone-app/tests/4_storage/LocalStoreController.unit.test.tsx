@@ -3,19 +3,16 @@ import { describe, expect } from 'vitest';
 // import { miroirStoreFileSystemStartup } from "../dist/bundle";
 import {
   CUDActionName,
-  ConfigurationService,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   IStoreController,
   MetaEntity,
+  MiroirConfig,
   MiroirLoggerFactory,
   ModelCUDInstanceUpdate,
   ModelEntityActionTransformer,
   ModelEntityUpdate,
-  StoreControllerManager,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
   author1,
   defaultLevels,
   entityAuthor,
@@ -27,11 +24,12 @@ import {
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;
 
-import { miroirStoreFileSystemStartup } from "miroir-store-filesystem/src/startup";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { loadTestConfigFiles, miroirBeforeEach } from "../utils/tests-utils";
+import { loadTestConfigFiles, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
+import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
+import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
+import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -48,30 +46,64 @@ MiroirLoggerFactory.setEffectiveLoggerFactory(
 console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // ################################################################################################
+// beforeAll(
+//   async () => {
+//     miroirStoreFileSystemStartup();
+//     miroirStoreIndexedDbStartup();
+//     miroirStorePostgresStartup();
+
+//     if (miroirConfig.emulateServer) {
+//       const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+
+//       await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
+//       await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
+
+//       const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+//       const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+//       if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
+//         throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+//       } else {
+//         localMiroirStoreController = localMiroirStoreControllerTmp;
+//         localAppStoreController = localAppStoreControllerTmp;
+//       }
+//     } else {
+//       throw new Error("LocalStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
+      
+//     }
+
+//     await localMiroirStoreController?.open();
+//     await localAppStoreController?.open();
+//   }
+// )
 beforeAll(
   async () => {
+    // Establish requests interception layer before all tests.
     miroirStoreFileSystemStartup();
     miroirStoreIndexedDbStartup();
     miroirStorePostgresStartup();
-
-    if (miroirConfig.emulateServer) {
-      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
-
-      await storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
-      await storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
-
-      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+    if (!miroirConfig.emulateServer) {
+      throw new Error("LocalStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
+    } else {
+      const wrapped = await miroirBeforeAll(
+        miroirConfig as MiroirConfig,
+        setupServer,
+      );
+      if (wrapped) {
+        if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
+          localMiroirStoreController = wrapped.localMiroirStoreController;
+          localAppStoreController = wrapped.localAppStoreController;
+        }
+        // reduxStore = wrapped.reduxStore;
+        // miroirContext = wrapped.miroirContext;
+        // domainController = wrapped.domainController;
+        // localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
+        // localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
       } else {
-        localMiroirStoreController = localMiroirStoreControllerTmp;
-        localAppStoreController = localAppStoreControllerTmp;
+        throw new Error("beforeAll failed initialization!");
       }
     }
 
-    await localMiroirStoreController?.open();
-    await localAppStoreController?.open();
+    return Promise.resolve();
   }
 )
 

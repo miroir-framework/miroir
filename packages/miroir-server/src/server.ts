@@ -11,16 +11,17 @@ import {
   StoreControllerManager,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  createStoreControllers,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
-  restServerDefaultHandlers
+  restServerDefaultHandlers,
+  startLocalStoreControllers
 } from "miroir-core";
 
-import { packageName, cleanLevel } from "./constants";
+import { cleanLevel, packageName } from "./constants";
 
 // import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
-import { startServer } from './startServer';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -29,7 +30,6 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 }
 
 import log from 'loglevelnext';
-import { exit } from 'process';
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
@@ -55,10 +55,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 
-import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
+import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 // myLogger.info('configFileContents',configFileContents)
 
 const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
@@ -84,20 +84,18 @@ miroirStorePostgresStartup();
 
 
 if (miroirConfig.emulateServer) {
-  storeControllerManager.addStoreController('miroir','miroir', applicationDeploymentMiroir.uuid, miroirConfig.miroirServerConfig)
+  await createStoreControllers(storeControllerManager, miroirConfig)
   .then(
-    async ()=>{
-      return storeControllerManager.addStoreController('library','app', applicationDeploymentLibrary.uuid, miroirConfig.appServerConfig)
-    }
-  ).then(
     async () => {
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreController || !localAppStoreController) {
         throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } 
+      }
 
-      await startServer(localMiroirStoreController, localAppStoreController);
+      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController);
+
+      myLogger.info(`local store controllers started ${localMiroirStoreController}, ${localAppStoreController}`);
 
       // ##############################################################################################
       // CREATING ENDPOINTS SERVICING CRUD HANDLERS
@@ -110,8 +108,8 @@ if (miroirConfig.emulateServer) {
 
           await op.handler(
             (response: any) => response.json.bind(response),
-            localMiroirStoreController,
-            localAppStoreController,
+            storeControllerManager,
+            miroirConfig,
             op.method,
             response, 
             request.originalUrl, 

@@ -1,15 +1,19 @@
+import { MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { ModelAction, EntityDefinition, DeploymentAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
+
+import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
+import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
+import { createStoreControllers } from "../4_services/storeControllerTools.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelActionRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -258,16 +262,19 @@ export async function modelActionRunner(
  * @returns 
  */
 export async function actionRunner(
-  // miroirDataStoreProxy:IStoreController,
-  // appDataStoreProxy:IStoreController,
-  // deploymentUuid: string,
   actionName:string,
-  body:any
+  body:any,
+  storeControllerManager: StoreControllerManagerInterface,
+  miroirConfig:MiroirConfig,
 ):Promise<void> {
   log.info('###################################### modelActionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
   const update: DeploymentAction = body;
+
+  // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
+  await createStoreControllers(storeControllerManager,miroirConfig);
+
   log.info('actionRunner action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
     case "deployApplication": {

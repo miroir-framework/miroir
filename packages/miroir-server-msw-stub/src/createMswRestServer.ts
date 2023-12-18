@@ -40,8 +40,6 @@ export async function createMswRestServer(
   platformType: "browser" | "nodejs",
   restServerHandlers: RestServiceHandler[],
   storeControllerManager: StoreControllerManagerInterface,
-  // localMiroirStoreController: IStoreController,
-  // localAppStoreController: IStoreController,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   log.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
@@ -59,8 +57,8 @@ export async function createMswRestServer(
     const restServerStub: RestServerStub = new RestServerStub(
       miroirConfig.rootApiUrl,
       restServerHandlers,
-      localMiroirStoreController,
-      localAppStoreController
+      storeControllerManager,
+      miroirConfig,
     );
     log.warn("######################### createMswRestServer handling operations", restServerHandlers);
 

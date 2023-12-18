@@ -18,7 +18,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export class FileSystemDataSectionStore extends MixedFileSystemInstanceStore implements IDataSectionStore {
-  public logHeader: string;
+  // public logHeader: string;
 
   // #############################################################################################
   constructor(

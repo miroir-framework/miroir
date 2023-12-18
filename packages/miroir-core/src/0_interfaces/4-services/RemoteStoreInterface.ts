@@ -1,4 +1,5 @@
 import { HttpMethod } from "../1_core/Http.js";
+import { MiroirConfig } from "../1_core/MiroirConfig.js";
 import {
   ApplicationSection,
   ModelAction,
@@ -15,6 +16,7 @@ import {
 } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { IStoreController } from "./StoreControllerInterface.js";
+import { StoreControllerManagerInterface } from "./StoreControllerManagerInterface.js";
 
 
 // ################################################################################################
@@ -33,8 +35,8 @@ export interface HttpResponseBodyFormat {
 // ################################################################################################
 export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  storeControllerManager: StoreControllerManagerInterface,
+  miroirConfig:MiroirConfig,
   method: HttpMethod | undefined, // unused!
   response: any,
   effectiveUrl: string, // log only, to remove?

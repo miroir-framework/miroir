@@ -2,11 +2,12 @@ import { HttpResponse, http } from "msw";
 
 import {
   HttpRequestBodyFormat,
-  IStoreController,
   LoggerInterface,
+  MiroirConfig,
   MiroirLoggerFactory,
   RestServiceHandler,
-  getLoggerName,
+  StoreControllerManagerInterface,
+  getLoggerName
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants";
 
@@ -31,15 +32,15 @@ export class RestServerStub {
   constructor(
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
-    private localMiroirStoreController: IStoreController,
-    private localAppStoreController: IStoreController
+    storeControllerManager: StoreControllerManagerInterface,
+    miroirConfig: MiroirConfig,
   ) {
     log.log(
       "RestServerStub constructor rootApiUrl",
       rootApiUrl,
       "localIndexedDbDataStores",
-      localMiroirStoreController,
-      localAppStoreController
+      // localMiroirStoreController,
+      // localAppStoreController
     );
 
 
@@ -61,8 +62,8 @@ export class RestServerStub {
           try {
             return h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
-              localMiroirStoreController,
-              localAppStoreController,
+              storeControllerManager,
+              miroirConfig,
               h.method /* method */,
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               // this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",

@@ -96,12 +96,14 @@ beforeAll(
       setupServer,
     );
 
-    if (wrapped && wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
+    if (wrapped) {
+      if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
+        localMiroirStoreController = wrapped.localMiroirStoreController;
+        localAppStoreController = wrapped.localAppStoreController;
+      }
       reduxStore = wrapped.reduxStore;
       miroirContext = wrapped.miroirContext;
       domainController = wrapped.domainController;
-      localMiroirStoreController = wrapped.localMiroirStoreController;
-      localAppStoreController = wrapped.localAppStoreController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
       localDataStoreServer = wrapped.localDataStoreServer as SetupServerApi;
     } else {
