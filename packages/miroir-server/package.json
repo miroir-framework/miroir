@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "dependencies": {
-    "@miroir-framework/jzod": "^0.6.0",
-    "@miroir-framework/jzod-ts": "^0.6.0",
+    "@miroir-framework/jzod": "^0.6.1",
+    "@miroir-framework/jzod-ts": "^0.6.1",
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.4",
     "isomorphic-git": "^1.23.0",

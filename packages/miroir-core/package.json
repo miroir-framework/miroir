@@ -22,8 +22,8 @@
   "author": "Arnaud Bailly <miroir-framework@protonmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@miroir-framework/jzod": "0.6.0",
-    "@miroir-framework/jzod-ts": "^0.6.0",
+    "@miroir-framework/jzod": "0.6.1",
+    "@miroir-framework/jzod-ts": "^0.6.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
