@@ -44,7 +44,7 @@ import {
   reportBookInstance,
 } from "miroir-core";
 
-import { useDomainControllerService } from './MiroirContextReactProvider';
+import { useDomainControllerService, useMiroirContext, useMiroirContextService } from './MiroirContextReactProvider';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
@@ -169,6 +169,8 @@ export const RootComponent = (props: RootComponentProps) => {
   };
 
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const context = useMiroirContext();
+  const miroirConfig = context.getMiroirConfig();
 
   return (
     <div> 
@@ -333,34 +335,33 @@ export const RootComponent = (props: RootComponentProps) => {
             <button
               onClick={async () => {
                 const remoteStore = domainController.getRemoteStore();
-                await remoteStore.handleRemoteAction("",{
-                  actionType: "storeAction",
-                  actionName: "openStore",
-                  endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                  configuration: {
-                    [applicationDeploymentMiroir.uuid]: {
-                      "model": {
-                        "emulatedServerType": "indexedDb",
-                        "indexedDbName":"miroir-uuid-indexedDb"
-                      },
-                      "data": {
-                        "emulatedServerType": "indexedDb",
-                        "indexedDbName":"miroir-uuid-indexedDb"
-                      }
+                if (!miroirConfig) {
+                  throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
+                }
+                if (miroirConfig && miroirConfig.emulateServer) {
+                  await remoteStore.handleRemoteAction("",{
+                    actionType: "storeAction",
+                    actionName: "openStore",
+                    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    configuration: {
+                      [applicationDeploymentMiroir.uuid]: miroirConfig.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: miroirConfig.appServerConfig,
                     },
-                    [applicationDeploymentLibrary.uuid]: {
-                      "model": {
-                        "emulatedServerType": "indexedDb",
-                        "indexedDbName":"library-uuid-indexedDb"
-                      },
-                      "data": {
-                        "emulatedServerType": "indexedDb",
-                        "indexedDbName":"library-uuid-indexedDb"
-                      }
-                    }
-                  },
-                  deploymentUuid: applicationDeploymentMiroir.uuid,
-                })
+                    deploymentUuid: applicationDeploymentMiroir.uuid,
+                  })
+                } else {
+                  await remoteStore.handleRemoteAction("",{
+                    actionType: "storeAction",
+                    actionName: "openStore",
+                    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    configuration: {
+                      [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeConfiguration.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeConfiguration.appServerConfig,
+                    },
+                    deploymentUuid: applicationDeploymentMiroir.uuid,
+                  })
+                  
+                }
 
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                   actionType: "DomainTransactionalAction",

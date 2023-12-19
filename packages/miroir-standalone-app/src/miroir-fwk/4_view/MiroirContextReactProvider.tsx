@@ -65,7 +65,7 @@ export function MiroirContextReactProvider(props: {
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
     () => ({
-      miroirContext: props.miroirContext || new MiroirContext(),
+      miroirContext: props.miroirContext || new MiroirContext(undefined),
       domainController: props.domainController,
       deploymentUuid,
       // setDeploymentUuid:(...args)=>{log.log('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
@@ -97,6 +97,11 @@ export function useMiroirContextInnerFormOutput() {
 // #############################################################################################
 export function useMiroirContextService() {
   return useContext(miroirReactContext);
+}
+
+// #############################################################################################
+export function useMiroirContext() {
+  return useContext(miroirReactContext).miroirContext;
 }
 
 // #############################################################################################

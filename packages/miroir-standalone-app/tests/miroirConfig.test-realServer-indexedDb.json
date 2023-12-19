@@ -1,0 +1,42 @@
+{
+  "emulateServer": false,
+  "serverConfig":{
+    "rootApiUrl":"http://localhost:3080",
+    "dataflowConfiguration": {
+      "type":"singleNode",
+      "metaModel": {
+        "location": {
+          "side":"server",
+          "type": "filesystem",
+          "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+        }
+      }
+    },
+    "storeConfiguration": {
+      "miroirServerConfig": {
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"indexedDb-miroir"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"indexedDb-miroir"
+        }
+      },
+      "appServerConfig": {
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"indexedDb-app"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"indexedDb-app"
+        }
+      }
+    }
+  },
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false,
+  "versionControlForDataConceptLevel": false
+}

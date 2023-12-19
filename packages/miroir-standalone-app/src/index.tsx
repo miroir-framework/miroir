@@ -47,7 +47,8 @@ import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServer from "./assets/miroirConfig-realServer.json";
+import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
+import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-Filesystem.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
 
@@ -75,13 +76,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 const miroirConfigFiles: {[k: string]: MiroirConfig} = {
   "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfig,
-  "miroirConfigRealServer": miroirConfigRealServer as any as MiroirConfig
+  "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfig,
+  "miroirConfigRealServerFilesystem": miroirConfigRealServerFilesystem as any as MiroirConfig,
 }
 
 // ##############################################################################################
 // ##############################################################################################
 // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
-const currentMiroirConfigName: string | undefined = "miroirConfigRealServer"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystem"
 // ##############################################################################################
 // ##############################################################################################
 

@@ -10,8 +10,8 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  StoreConfiguration,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { EmulatedServerConfig } from '../1_core/MiroirConfig.js';
 
 // ###########################################################################################
 // Abstract store interfaces
@@ -87,7 +87,7 @@ export type StoreFactory = (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
-  config: EmulatedServerConfig,
+  config: StoreConfiguration,
   dataStore?: IDataSectionStore,
 )=>Promise<IDataOrModelStore>;
 

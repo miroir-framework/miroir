@@ -2,13 +2,13 @@
 import { promise } from "zod";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import { EmulatedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
   ApplicationSection,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  StoreConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   ModelReplayableUpdate,
@@ -53,7 +53,7 @@ export async function storeFactory (
   appName: string,
   dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
-  config: EmulatedServerConfig,
+  config: StoreConfiguration,
   dataStore?: IDataSectionStore,
 ):Promise<IDataSectionStore | IModelSectionStore> {
   log.debug('storeFactory called for',appName, dataStoreApplicationType, section, config);

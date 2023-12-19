@@ -1,5 +1,5 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { EmulatedPartitionedServerConfig } from "../0_interfaces/1_core/MiroirConfig";
+import { StoreUnitConfiguration } from "../0_interfaces/1_core/MiroirConfig";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
 import { IDataSectionStore, IModelSectionStore, IStoreController, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
@@ -36,7 +36,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     applicationName: string,
     dataStoreType: DataStoreApplicationType,
     deploymentUuid: string,
-    config:EmulatedPartitionedServerConfig,
+    config:StoreUnitConfiguration,
   ): Promise<void> {
     if (this.storeControllers[deploymentUuid]) {
       log.info("addStoreController for", deploymentUuid,"already exists, doing nothing!")

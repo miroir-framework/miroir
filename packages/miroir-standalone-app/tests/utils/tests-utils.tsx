@@ -162,33 +162,14 @@ export async function miroirBeforeAll(
 
     if (!miroirConfig.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-      // creating localStoreControllers
       const remoteStore = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
         actionType: "storeAction",
         actionName: "openStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: {
-            "model": {
-              "emulatedServerType": "indexedDb",
-              "indexedDbName":"miroir-uuid-indexedDb"
-            },
-            "data": {
-              "emulatedServerType": "indexedDb",
-              "indexedDbName":"miroir-uuid-indexedDb"
-            }
-          },
-          [applicationDeploymentLibrary.uuid]: {
-            "model": {
-              "emulatedServerType": "indexedDb",
-              "indexedDbName":"library-uuid-indexedDb"
-            },
-            "data": {
-              "emulatedServerType": "indexedDb",
-              "indexedDbName":"library-uuid-indexedDb"
-            }
-          }
+          [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeConfiguration.miroirServerConfig,
+          [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeConfiguration.appServerConfig,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })

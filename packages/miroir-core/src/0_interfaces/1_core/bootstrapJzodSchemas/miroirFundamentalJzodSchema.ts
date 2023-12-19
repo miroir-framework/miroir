@@ -1081,6 +1081,45 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "indexedDbStoreConfiguration": {
+        "type": "object",
+        "definition": {
+          "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
+          "indexedDbName": { "type": "simpleType", "definition": "string" }
+        }
+      },
+      "filesystemDbStoreConfiguration": {
+        "type": "object",
+        "definition": {
+          "emulatedServerType": { "type":"literal", "definition": "filesystem" },
+          "directory": { "type": "simpleType", "definition": "string" }
+        }
+      },
+      "sqlDbStoreConfiguration": {
+        "type": "object",
+        "definition": {
+          "emulatedServerType": { "type":"literal", "definition": "sql" },
+          "connectionString": { "type": "simpleType", "definition": "string" },
+          "schema": { "type": "simpleType", "definition": "string" }
+        }
+      },
+      "storeConfiguration": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "indexedDbStoreConfiguration"}
+          },
+          {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "filesystemDbStoreConfiguration"}
+          },
+          {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "sqlDbStoreConfiguration"}
+          },
+        ]
+      },
       "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "actionTransformer": {
         "type": "object",

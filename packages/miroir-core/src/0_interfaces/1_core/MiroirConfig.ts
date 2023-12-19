@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ApplicationDeploymentSchema } from "../../0_interfaces/1_core/StorageConfiguration.js";
-import { entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { StoreConfiguration, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
 
@@ -13,36 +13,25 @@ declare interface MiroirConfigRoot {
 
 }
 
-export interface EmulatedServerConfigIndexedDb {
-  emulatedServerType: 'indexedDb';
-  indexedDbName: string;
-}
-export interface EmulatedServerConfigSql {
-  emulatedServerType: 'sql';
-  connectionString: string;
-  schema: string;
-}
-
-export interface EmulatedServerConfigFileSystem {
-  emulatedServerType: 'filesystem';
-  directory: string;
-}
-
-export type EmulatedServerConfig = EmulatedServerConfigIndexedDb | EmulatedServerConfigSql | EmulatedServerConfigFileSystem;
-export interface EmulatedPartitionedServerConfig {
-  model: EmulatedServerConfig;
-  data: EmulatedServerConfig;
-}
-export interface MiroirConfigForMsw extends MiroirConfigRoot{
-  emulateServer: true;
-  rootApiUrl: string;
-  miroirServerConfig:EmulatedPartitionedServerConfig;
-  appServerConfig:EmulatedPartitionedServerConfig;
+export interface StoreUnitConfiguration {
+  model: StoreConfiguration;
+  data: StoreConfiguration;
 }
 
 export interface ServerConfig {
   rootApiUrl: string;
   dataflowConfiguration:z.infer<typeof ApplicationDeploymentSchema>;
+  storeConfiguration: {
+    miroirServerConfig:StoreUnitConfiguration;
+    appServerConfig:StoreUnitConfiguration;
+  }
+}
+
+export interface MiroirConfigForMsw extends MiroirConfigRoot{
+  emulateServer: true;
+  rootApiUrl: string;
+  miroirServerConfig:StoreUnitConfiguration;
+  appServerConfig:StoreUnitConfiguration;
 }
 
 export interface MiroirConfigForRest extends MiroirConfigRoot{

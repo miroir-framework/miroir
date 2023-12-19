@@ -3,7 +3,7 @@ import {
   ConfigurationService,
   DataStoreApplicationType,
   IDataSectionStore,
-  EmulatedServerConfig,
+  StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
   IModelSectionStore,
@@ -32,7 +32,7 @@ export function miroirStoreIndexedDbStartup() {
       appName: string,
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
-      config: EmulatedServerConfig,
+      config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataOrModelStore> => {
       log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
@@ -53,7 +53,7 @@ export function miroirStoreIndexedDbStartup() {
       appName: string,
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
-      config: EmulatedServerConfig,
+      config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataOrModelStore> => {
       log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);

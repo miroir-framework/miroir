@@ -280,7 +280,7 @@ export async function actionRunner(
   log.info('actionRunner action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
     case "openStore": {
-      log.info('actionRunner openStore',miroirConfig);
+      // log.info('actionRunner openStore',miroirConfig);
 
       const actionMiroirConfig:MiroirConfig = {
         emulateServer: true, // TODO: correct this!
@@ -293,7 +293,9 @@ export async function actionRunner(
         "versionControlForDataConceptLevel": false
       }
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      // await createStoreControllers(storeControllerManager,miroirConfig);
+      for (const deploymentUuid of Object.keys(update.configuration)) {
+        await storeControllerManager.deleteStoreController(deploymentUuid);
+      }
       await createStoreControllers(storeControllerManager,actionMiroirConfig);
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
@@ -304,8 +306,6 @@ export async function actionRunner(
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
       log.info('actionRunner openStore DONE!', storeControllerManager.getStoreControllers());
-      // await targetProxy.createEntity(update.entity, update.entityDefinition);
-      // await createStoreControllers(storeControllerManager, miroirConfig)
 
       break;
     }
@@ -314,18 +314,8 @@ export async function actionRunner(
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
       await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
-      // await createStoreControllers(storeControllerManager,miroirConfig);
-      // const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      // const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      // if (!localMiroirStoreController || !localAppStoreController) {
-      //   throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      // } 
-    
-      // await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
-      log.info('actionRunner openStore DONE!', storeControllerManager.getStoreControllers());
-      // await targetProxy.createEntity(update.entity, update.entityDefinition);
-      // await createStoreControllers(storeControllerManager, miroirConfig)
+      log.info('actionRunner closeStore DONE!', storeControllerManager.getStoreControllers());
 
       break;
     }

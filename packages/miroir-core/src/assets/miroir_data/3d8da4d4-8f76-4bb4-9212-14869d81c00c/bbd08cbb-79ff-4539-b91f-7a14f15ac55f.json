@@ -23,26 +23,15 @@
                 "definition": {
                   "type": "object",
                   "definition": {
-                    "model": {
-                      "type": "object",
-                      "definition": {
-                        "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
-                        "indexedDbName": { "type": "simpleType", "definition": "string" }
-                      }
-                    },
-                    "data": {
-                      "type": "object",
-                      "definition": {
-                        "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
-                        "indexedDbName": { "type": "simpleType", "definition": "string" }
-                      }
-                    }
+                    "model": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeConfiguration"} },
+                    "data": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeConfiguration"} }
                   }
                 }
               },
               "deploymentUuid": {
                 "type": "simpleType",
                 "definition": "string",
+                "optional": true,
                 "validations": [{ "type": "uuid" }],
                 "extra": { "defaultLabel": "Application Uuid", "editable": false }
               }

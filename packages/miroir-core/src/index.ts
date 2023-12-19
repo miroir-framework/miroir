@@ -24,6 +24,8 @@ export {
   LocalCacheAction,
   MiroirFundamentalType,
   MiroirAllFundamentalTypesUnion,
+  StoreConfiguration,
+  storeConfiguration,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -72,11 +74,7 @@ export {
 } from './0_interfaces/1_core/JzodSchemaDefinition.js';
 export {
   DeploymentMode,
-  EmulatedPartitionedServerConfig,
-  EmulatedServerConfig,
-  EmulatedServerConfigFileSystem,
-  EmulatedServerConfigIndexedDb,
-  EmulatedServerConfigSql,
+  StoreUnitConfiguration,
   MiroirConfigForMsw,
   MiroirConfigForRest,
   MiroirConfig,

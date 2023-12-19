@@ -1,0 +1,42 @@
+{
+  "emulateServer": false,
+  "serverConfig":{
+    "rootApiUrl":"http://localhost:3080",
+    "dataflowConfiguration": {
+      "type":"singleNode",
+      "metaModel": {
+        "location": {
+          "side":"server",
+          "type": "filesystem",
+          "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+        }
+      }
+    },
+    "storeConfiguration": {
+      "miroirServerConfig":{
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/miroir_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/miroir_data"
+        }
+      },
+      "appServerConfig": {
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/library_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-standalone-app/tests/tmp/library_data"
+        }
+      }
+    }
+  },
+  "deploymentMode":"monoUser",
+  "monoUserAutentification": false,
+  "monoUserVersionControl": false,
+  "versionControlForDataConceptLevel": false
+}

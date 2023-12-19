@@ -3,7 +3,7 @@ import {
   ConfigurationService,
   DataStoreApplicationType,
   IDataSectionStore,
-  EmulatedServerConfig,
+  StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
   IModelSectionStore,
@@ -31,7 +31,7 @@ export function miroirStorePostgresStartup() {
       appName: string,
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
-      config: EmulatedServerConfig,
+      config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       log.log('called registerStoreFactory function for',appName, section, 'filesystem');
@@ -55,7 +55,7 @@ export function miroirStorePostgresStartup() {
       appName: string,
       dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
-      config: EmulatedServerConfig,
+      config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
       log.log('called registerStoreFactory function for',appName, section, 'filesystem');

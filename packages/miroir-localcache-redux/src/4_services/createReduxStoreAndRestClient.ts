@@ -32,7 +32,7 @@ export function createReduxStoreAndRestClient(
   reduxStore: ReduxStore,
   // domainController: DomainControllerInterface,
 } {
-  const miroirContext = new MiroirContext();
+  const miroirContext = new MiroirContext(miroirConfig);
 
     
   const client: RestClient = new RestClient(fetch);
