@@ -1,18 +1,15 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { EmulatedPartitionedServerConfig, MiroirConfig } from "../0_interfaces/1_core/MiroirConfig";
+import { EmulatedPartitionedServerConfig } from "../0_interfaces/1_core/MiroirConfig";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
 import { IDataSectionStore, IModelSectionStore, IStoreController, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
-import { defaultMiroirMetaModel } from "../1_core/Model";
 import { StoreController, storeFactory } from "./StoreController";
 
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
+import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;

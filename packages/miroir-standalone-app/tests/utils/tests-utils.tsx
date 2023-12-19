@@ -166,9 +166,31 @@ export async function miroirBeforeAll(
       const remoteStore = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
         actionType: "deploymentAction",
-        actionName: "deployApplication",
+        actionName: "openDeployment",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        applicationUuid: applicationDeploymentMiroir.uuid,
+        configuration: {
+          [applicationDeploymentMiroir.uuid]: {
+            "model": {
+              "emulatedServerType": "indexedDb",
+              "indexedDbName":"miroir-uuid-indexedDb"
+            },
+            "data": {
+              "emulatedServerType": "indexedDb",
+              "indexedDbName":"miroir-uuid-indexedDb"
+            }
+          },
+          [applicationDeploymentLibrary.uuid]: {
+            "model": {
+              "emulatedServerType": "indexedDb",
+              "indexedDbName":"library-uuid-indexedDb"
+            },
+            "data": {
+              "emulatedServerType": "indexedDb",
+              "indexedDbName":"library-uuid-indexedDb"
+            }
+          }
+        },
+        deploymentUuid: applicationDeploymentMiroir.uuid,
       })
 
       return Promise.resolve({

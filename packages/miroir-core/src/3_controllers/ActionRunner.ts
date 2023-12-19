@@ -279,10 +279,22 @@ export async function actionRunner(
 
   log.info('actionRunner action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
-    case "deployApplication": {
-      log.info('actionRunner deployApplication',miroirConfig);
+    case "openDeployment": {
+      log.info('actionRunner openDeployment',miroirConfig);
+
+      const actionMiroirConfig:MiroirConfig = {
+        emulateServer: true, // TODO: correct this!
+        "rootApiUrl":"http://localhost:3080",
+        miroirServerConfig: update.configuration[applicationDeploymentMiroir.uuid],
+        appServerConfig: update.configuration[applicationDeploymentLibrary.uuid],
+        "deploymentMode":"monoUser",
+        "monoUserAutentification": false,
+        "monoUserVersionControl": false,
+        "versionControlForDataConceptLevel": false
+      }
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      await createStoreControllers(storeControllerManager,miroirConfig);
+      // await createStoreControllers(storeControllerManager,miroirConfig);
+      await createStoreControllers(storeControllerManager,actionMiroirConfig);
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreController || !localAppStoreController) {
@@ -291,7 +303,7 @@ export async function actionRunner(
     
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
-      log.info('actionRunner deployApplication DONE!', storeControllerManager.getStoreControllers());
+      log.info('actionRunner openDeployment DONE!', storeControllerManager.getStoreControllers());
       // await targetProxy.createEntity(update.entity, update.entityDefinition);
       // await createStoreControllers(storeControllerManager, miroirConfig)
 
@@ -311,7 +323,7 @@ export async function actionRunner(
     
       // await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
-      log.info('actionRunner deployApplication DONE!', storeControllerManager.getStoreControllers());
+      log.info('actionRunner openDeployment DONE!', storeControllerManager.getStoreControllers());
       // await targetProxy.createEntity(update.entity, update.entityDefinition);
       // await createStoreControllers(storeControllerManager, miroirConfig)
 
