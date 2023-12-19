@@ -94,7 +94,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     }
   
     return {
-      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]]??"post",
+      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]??"post"],
       url: rootApiUrl + (networkActionUrlMap[networkAction.actionName]??""),
       args: this.actionTypeArgsMap[networkAction.actionType]
         ? this.actionTypeArgsMap[networkAction.actionType]["*"]
