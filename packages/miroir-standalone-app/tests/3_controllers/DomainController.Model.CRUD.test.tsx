@@ -8,12 +8,9 @@ import { SetupWorkerApi } from "msw/browser";
 import { SetupServerApi, setupServer } from "msw/node";
 
 import {
-  ConfigurationService,
   DomainAction,
-  DomainController,
   DomainControllerInterface,
   DomainDataAction,
-  Endpoint,
   EntityDefinition,
   EntityInstance,
   IStoreController,
@@ -21,7 +18,6 @@ import {
   MiroirConfig,
   MiroirContext,
   MiroirLoggerFactory,
-  StoreControllerManager,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   author1,
@@ -40,7 +36,7 @@ import {
   miroirCoreStartup
 } from "miroir-core";
 
-import { ReduxStore, createReduxStoreAndRestClient } from "miroir-localcache-redux";
+import { ReduxStore } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,

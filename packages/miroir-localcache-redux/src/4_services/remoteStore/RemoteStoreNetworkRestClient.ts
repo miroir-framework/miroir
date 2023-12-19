@@ -17,20 +17,10 @@ import { cleanLevel } from "../constants";
 
 
 
-// export const actionHttpMethods: {[P in CRUDActionName]:HttpMethod} = {
-// export const actionHttpMethods: { [P in RemoteStoreActionName]: HttpMethod } = {
 export const actionHttpMethods: { [P in string]: HttpMethod } = {
-  create: "post",
-  createEntity: "post",
   read: "get",
   update: "put",
   delete: "delete",
-  resetModel: "post",
-  resetData: "post",
-  initModel: "post",
-  updateEntity: "post",
-  deployApplication: "post",
-  closeDeployment: "post",
 };
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RemoteStoreNetworkRestClient");
@@ -104,7 +94,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     }
   
     return {
-      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]],
+      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]]??"post",
       url: rootApiUrl + (networkActionUrlMap[networkAction.actionName]??""),
       args: this.actionTypeArgsMap[networkAction.actionType]
         ? this.actionTypeArgsMap[networkAction.actionType]["*"]

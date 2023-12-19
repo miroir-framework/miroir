@@ -17,13 +17,10 @@ import {
   book2,
   book3,
   book4,
-  ConfigurationService,
   defaultLevels,
   DomainAction,
-  DomainController,
   DomainControllerInterface,
   DomainDataAction,
-  Endpoint,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -36,8 +33,7 @@ import {
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
-  reportBookList,
-  StoreControllerManager
+  reportBookList
 } from "miroir-core";
 
 import {
@@ -58,7 +54,7 @@ import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
-import { createReduxStoreAndRestClient, ReduxStore } from "miroir-localcache-redux";
+import { ReduxStore } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';

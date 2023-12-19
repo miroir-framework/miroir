@@ -144,6 +144,7 @@ Foresee possible uses of Jzod.
 
 ### studies & design
 
+Global review of approach, reframed for the use of a meta-language (Jzod).
 
 ### development: 17 commits (miroir), 7 commits (jzod), 2 commits (jzod-ts)
 

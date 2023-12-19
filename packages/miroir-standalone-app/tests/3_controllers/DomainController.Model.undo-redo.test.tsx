@@ -6,18 +6,14 @@ import React from "react";
 import { describe, expect } from 'vitest';
 
 import {
-  ConfigurationService,
   DomainAction,
-  DomainController,
   DomainControllerInterface,
-  Endpoint,
   EntityDefinition,
   IStoreController,
   MetaEntity,
   MiroirConfig,
   MiroirContext,
   MiroirLoggerFactory,
-  StoreControllerManager,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
@@ -29,7 +25,7 @@ import {
   entityReport,
   miroirCoreStartup
 } from "miroir-core";
-import { ReduxStore, createReduxStoreAndRestClient } from "miroir-localcache-redux";
+import { ReduxStore } from "miroir-localcache-redux";
 
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
