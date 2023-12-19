@@ -8,7 +8,7 @@ import { all, call, takeEvery } from "typed-redux-saga";
 
 import {
   ApplicationSection,
-  DeploymentAction,
+  StoreAction,
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
@@ -172,12 +172,12 @@ export class RemoteStoreRestAccessReduxSaga {
     handleRemoteAction: {
       name: "handleRemoteAction",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-        { deploymentUuid: string; action: DeploymentAction },
+        { deploymentUuid: string; action: StoreAction },
         "handleRemoteAction"
       >("handleRemoteAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: DeploymentAction }>
+        p: PayloadAction<{ deploymentUuid: string; action: StoreAction }>
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {

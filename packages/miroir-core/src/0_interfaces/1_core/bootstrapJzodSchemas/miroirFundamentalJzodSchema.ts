@@ -1081,7 +1081,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
-      "deploymentAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "actionTransformer": {
         "type": "object",
         "definition": {

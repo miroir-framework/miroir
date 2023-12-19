@@ -1,5 +1,5 @@
 import { MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
-import { ModelAction, EntityDefinition, DeploymentAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ModelAction, EntityDefinition, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -274,13 +274,13 @@ export async function actionRunner(
   log.info('###################################### actionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
-  const update: DeploymentAction = body;
+  const update: StoreAction = body;
 
 
   log.info('actionRunner action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
-    case "openDeployment": {
-      log.info('actionRunner openDeployment',miroirConfig);
+    case "openStore": {
+      log.info('actionRunner openStore',miroirConfig);
 
       const actionMiroirConfig:MiroirConfig = {
         emulateServer: true, // TODO: correct this!
@@ -303,14 +303,14 @@ export async function actionRunner(
     
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
-      log.info('actionRunner openDeployment DONE!', storeControllerManager.getStoreControllers());
+      log.info('actionRunner openStore DONE!', storeControllerManager.getStoreControllers());
       // await targetProxy.createEntity(update.entity, update.entityDefinition);
       // await createStoreControllers(storeControllerManager, miroirConfig)
 
       break;
     }
-    case "closeDeployment": {
-      log.info('actionRunner closeDeployment',miroirConfig);
+    case "closeStore": {
+      log.info('actionRunner closeStore',miroirConfig);
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
       await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
@@ -323,7 +323,7 @@ export async function actionRunner(
     
       // await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
-      log.info('actionRunner openDeployment DONE!', storeControllerManager.getStoreControllers());
+      log.info('actionRunner openStore DONE!', storeControllerManager.getStoreControllers());
       // await targetProxy.createEntity(update.entity, update.entityDefinition);
       // await createStoreControllers(storeControllerManager, miroirConfig)
 

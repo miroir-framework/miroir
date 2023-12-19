@@ -333,9 +333,9 @@ export type InstanceAction = {
     applicationSection: ApplicationSection;
     objects: EntityInstanceCollection[];
 };
-export type DeploymentAction = {
-    actionType: "deploymentAction";
-    actionName: "openDeployment";
+export type StoreAction = {
+    actionType: "storeAction";
+    actionName: "openStore";
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     configuration: {
         [x: string]: {
@@ -351,8 +351,8 @@ export type DeploymentAction = {
     };
     deploymentUuid: string;
 } | {
-    actionType: "deploymentAction";
-    actionName: "closeDeployment";
+    actionType: "storeAction";
+    actionName: "closeStore";
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     deploymentUuid: string;
 };
@@ -417,7 +417,7 @@ export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), paren
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
 export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
 export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
-export const deploymentAction: z.ZodType<DeploymentAction> = z.union([z.object({actionType:z.literal("deploymentAction"), actionName:z.literal("openDeployment"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.object({model:z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict(), data:z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict()}).strict()), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("deploymentAction"), actionName:z.literal("closeDeployment"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
+export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.object({model:z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict(), data:z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict()}).strict()), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();

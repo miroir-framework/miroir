@@ -165,8 +165,8 @@ export async function miroirBeforeAll(
       // creating localStoreControllers
       const remoteStore = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
-        actionType: "deploymentAction",
-        actionName: "openDeployment",
+        actionType: "storeAction",
+        actionName: "openStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
           [applicationDeploymentMiroir.uuid]: {
@@ -361,8 +361,8 @@ export async function miroirAfterAll(
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
       const remoteStore = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
-        actionType: "deploymentAction",
-        actionName: "closeDeployment",
+        actionType: "storeAction",
+        actionName: "closeStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
