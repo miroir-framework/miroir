@@ -91,7 +91,8 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
         await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
 
         if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntity.uuid]) {
-          await this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel.upsert(entity as any);
+          const sequelizeModel = this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel
+          await sequelizeModel.upsert(entity as any);
         } else {
           log.error(
             this.logHeader,
@@ -105,7 +106,8 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
           );
         }
         if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntityDefinition.uuid]) {
-          await this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel.upsert(entityDefinition as any);
+          const sequelizeModel = this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel;
+          await sequelizeModel.upsert(entityDefinition as any);
         } else {
           log.error(
             this.logHeader,

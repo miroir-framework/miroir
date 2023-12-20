@@ -174,6 +174,7 @@ export async function miroirBeforeAll(
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
 
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
         domainController,
         miroirContext: wrappedReduxStore.miroirContext,
@@ -216,6 +217,7 @@ export async function miroirBeforeAll(
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
 
       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
         domainController,
         miroirContext: wrappedReduxStore.miroirContext,
@@ -231,7 +233,6 @@ export async function miroirBeforeAll(
     console.error('Error beforeAll',error);
     throw error;
   }
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
   // return Promise.resolve(undefined);
 }
 
@@ -292,10 +293,10 @@ export async function miroirBeforeEach(
       throw(error);
     }
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
-    console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
-    console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
-    console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
-    console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
+    // console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
+    // console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
+    // console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
+    // console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
   }
 
   document.body.innerHTML = '';
@@ -326,6 +327,7 @@ export async function miroirAfterEach(
   return Promise.resolve();
 }
 
+// ################################################################################################
 export async function miroirAfterAll(
   miroirConfig: MiroirConfig,
   domainController: DomainControllerInterface | undefined,

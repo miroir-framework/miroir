@@ -52,7 +52,8 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
       if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid] && this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel) {
         consoleLog('getInstances calling this.sqlEntities findall', parentUuid);
         try {
-          rawResult = (await this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel?.findAll()) as unknown as EntityInstance[]
+          const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
+          rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[]
           cleanResult = rawResult.map(i => i["dataValues"])
           consoleLog('getInstances result', cleanResult);
         } catch (e) {
@@ -66,7 +67,8 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
 
     // ##############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      const tmp = await this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel.upsert(instance as any);
+      const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel
+      const tmp = await sequelizeModel.upsert(instance as any);
       console.debug(
         "upsertInstance application",
         this.applicationName,
@@ -95,7 +97,8 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
       console.debug('deleteDataInstance', parentUuid,instance);
-      await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.destroy({where:{uuid:instance.uuid}});
+      const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel
+      await sequelizeModel.destroy({where:{uuid:instance.uuid}});
       return Promise.resolve();
     }
   }

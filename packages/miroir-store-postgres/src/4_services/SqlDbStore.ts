@@ -157,7 +157,8 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
       "creating data schema table",
       entity.name
     );
-    await this.sqlSchemaTableAccess[entity.uuid].sequelizeModel.sync({ force: true }); // TODO: replace sync!
+    const sequelizeModel = this.sqlSchemaTableAccess[entity.uuid].sequelizeModel
+    await sequelizeModel.sync({ force: true }); // TODO: replace sync!
     log.debug(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
@@ -178,7 +179,8 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
     entity: MetaEntity,
     entityDefinition: EntityDefinition
   ): Promise<void> {
-    await this.sequelize.getQueryInterface().renameTable({ tableName: oldName, schema: this.schema }, newName);
+    const queryInterface = this.sequelize.getQueryInterface();
+    await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
     // log.log(this.logHeader, 'renameEntity renameTable done.');
     // removing dataSequelize model with old name
     this.sequelize.modelManager.removeModel(this.sequelize.model(oldName));
