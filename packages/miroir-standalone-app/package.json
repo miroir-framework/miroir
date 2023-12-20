@@ -54,18 +54,17 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^4.1.0",
-    "@vitest/ui": "^0.34.6",
+    "@vitejs/plugin-react": "4.2.1",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "happy-dom": "^12.10.3",
     "miroir-store-filesystem": "*",
-    "msw": "^2.0.0",
+    "msw": "^2.0.11",
     "sequelize": "^6.29.0",
     "typescript": "^4.9.4",
-    "vite": "^4.5.0",
-    "vitest": "^1.0.0-beta.5"
+    "vite": "4.5.0",
+    "vitest": "1.0.0"
   },
   "scripts": {
     "dev": "vite --host --cors",
