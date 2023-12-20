@@ -70,7 +70,7 @@
   "scripts": {
     "dev": "vite --host --cors",
     "build": "vite build --emptyOutDir",
-    "build5": "vite build --emptyOutDir",
+    "build5": "npm run build",
     "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
   },
   "browserslist": {

@@ -48,7 +48,7 @@ import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
-import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-Filesystem.json";
+import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-filesystem.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
 
