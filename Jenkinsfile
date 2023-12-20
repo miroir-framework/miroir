@@ -45,7 +45,7 @@ pipeline {
             sh 'ls -ail ${build_dir}'
             sh 'ls -ail ${target_build_dir}'
             sh 'npm config ls -l'
-            sh 'cd "${target_build_dir}" && npm install'
+            sh 'cd "${target_build_dir}" && npm install --verbose'
           }
         }
       }
