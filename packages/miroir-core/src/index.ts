@@ -292,11 +292,11 @@ export {
   RestServiceHandler,
 } from "./0_interfaces/4-services/RemoteStoreInterface.js";
 export {
-  IAbstractStore,
-  IDataSectionStore,
-  IModelSectionStore,
-  IAbstractEntityStore,
-  IAbstractInstanceStore,
+  IAbstractStoreSection,
+  IDataStoreSection,
+  IModelStoreSection,
+  IAbstractEntityStoreSection,
+  IAbstractInstanceStoreSection,
   IStorageSpaceHandler,
   IDataOrModelStore,
   IStoreController,

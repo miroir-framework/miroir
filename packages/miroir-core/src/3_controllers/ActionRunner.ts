@@ -273,11 +273,10 @@ export async function actionRunner(
 ):Promise<void> {
   log.info('###################################### actionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
-  // const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
   const update: StoreAction = body;
 
 
-  log.info('actionRunner AAA action', JSON.stringify(update,undefined,2));
+  log.info('actionRunner action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
     case "openStore": {
       // log.info('actionRunner openStore',miroirConfig);
@@ -286,12 +285,8 @@ export async function actionRunner(
       for (const deploymentUuid of Object.keys(update.configuration)) {
         await storeControllerManager.deleteStoreController(deploymentUuid);
       }
-      // await createStoreControllers(storeControllerManager,actionMiroirConfig);
-
       for (const deployment of Object.entries(update.configuration)) {
         await storeControllerManager.addStoreController(
-          // deployment[1].model.applicationName,
-          // deployment[1].model.dataStoreType,
           deployment[0],
           deployment[1]
         );

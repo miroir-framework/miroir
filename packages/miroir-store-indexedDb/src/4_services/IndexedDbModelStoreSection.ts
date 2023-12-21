@@ -1,43 +1,43 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore,
-  IModelSectionStore,
+  IDataStoreSection,
+  IModelStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
 
-import { MixedIndexedDbEntityAndInstanceStore } from "./IndexedDbEntityStoreMixin.js";
+import { MixedIndexedDbEntityAndInstanceStoreSection } from "./IndexedDbEntityStoreSectionMixin.js";
 import { IndexedDb } from "./IndexedDbSnakeCase.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbModelSectionStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbModelStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class IndexedDbModelSectionStore extends MixedIndexedDbEntityAndInstanceStore implements IModelSectionStore {
+export class IndexedDbModelStoreSection extends MixedIndexedDbEntityAndInstanceStoreSection implements IModelStoreSection {
 
   // ##############################################################################################
   constructor(
     indexedDbStoreName: string,
     localUuidIndexedDb: IndexedDb,
-    dataStore: IDataSectionStore,
+    dataStore: IDataStoreSection,
   ) {
     super(
       indexedDbStoreName,
       localUuidIndexedDb,
-      "IndexedDbModelSectionStore " + indexedDbStoreName, // logheader
+      "IndexedDbModelStoreSection " + indexedDbStoreName, // logheader
       dataStore
     );
-    log.log("IndexedDbModelSectionStore " + indexedDbStoreName, dataStore)
+    log.log("IndexedDbModelStoreSection " + indexedDbStoreName, dataStore)
   }
 
   // ##############################################################################################
-  // TODO: also implemented in IndexedDbDataSectionStore => mix it up?
+  // TODO: also implemented in IndexedDbDataStoreSection => mix it up?
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     let result = {};
     log.log(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());

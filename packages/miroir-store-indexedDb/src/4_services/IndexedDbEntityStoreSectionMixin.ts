@@ -1,9 +1,9 @@
 import {
   EntityDefinition,
   EntityInstance,
-  IAbstractEntityStore,
-  IAbstractInstanceStore,
-  IDataSectionStore,
+  IAbstractEntityStoreSection,
+  IAbstractInstanceStoreSection,
+  IDataStoreSection,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -12,38 +12,38 @@ import {
   entityEntityDefinition,
   getLoggerName
 } from "miroir-core";
-import { IndexedDbInstanceStoreMixin, MixedIndexedDbInstanceStore } from "./IndexedDbInstanceStoreMixin.js";
-import { IndexedDbStore } from "./IndexedDbStore.js";
+import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
+import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbEntityStoreMixin");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbEntityStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
 // ################################################################################################
-export const MixedIndexedDbEntityAndInstanceStore = IndexedDbEntityStoreMixin(
-  IndexedDbInstanceStoreMixin(IndexedDbStore)
+export const MixedIndexedDbEntityAndInstanceStoreSection = IndexedDbEntityStoreSectionMixin(
+  IndexedDbInstanceStoreSectionMixin(IndexedDbStoreSection)
 );
 
 // ################################################################################################
-export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbInstanceStore>(Base: TBase) {
-  return class MixedIndexedDbEntityStore extends Base implements IAbstractEntityStore, IAbstractInstanceStore {
-    public dataStore: IDataSectionStore;
+export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndexedDbInstanceStoreSection>(Base: TBase) {
+  return class MixedIndexedDbEntityStoreSection extends Base implements IAbstractEntityStoreSection, IAbstractInstanceStoreSection {
+    public dataStore: IDataStoreSection;
 
     constructor(
       //   indexedDbStoreName: string,
       //   localUuidIndexedDb: IndexedDb,
       //   logHeader: string,
-      //   public dataStore: IDataSectionStore,
+      //   public dataStore: IDataStoreSection,
       ...args: any[]
     ) {
       super(...args.slice(0, 3));
       this.dataStore = args[3];
-      // log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
+      // log.log(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 
     // ##############################################################################################

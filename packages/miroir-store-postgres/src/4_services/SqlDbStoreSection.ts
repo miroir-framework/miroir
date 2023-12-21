@@ -1,7 +1,7 @@
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  IAbstractStore,
+  IAbstractStoreSection,
   IStorageSpaceHandler,
   LoggerInterface,
   MetaEntity,
@@ -15,7 +15,7 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -23,9 +23,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 
-export type MixableSqlDbStore = GConstructor<SqlDbStore>;
+export type MixableSqlDbStoreSection = GConstructor<SqlDbStoreSection>;
 
-export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
+export class SqlDbStoreSection implements IAbstractStoreSection, IStorageSpaceHandler {
   // public logHeader: string;
   public sqlDbStoreName: string; // used only for debugging purposes
   public connectionString: string;

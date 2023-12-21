@@ -5,14 +5,14 @@ import {
   StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
-  IDataSectionStore,
-  IModelSectionStore,
+  IDataStoreSection,
+  IModelStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
 } from "miroir-core";
-import { FileSystemDataSectionStore } from "./4_services/FileSystemDataSectionStore.js";
-import { FileSystemModelSectionStore } from "./4_services/FileSystemModelSectionStore.js";
+import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
+import { FileSystemModelStoreSection } from "./4_services/FileSystemModelStoreSection.js";
 import { cleanLevel } from "./4_services/constants";
 import { packageName } from "./constants";
 
@@ -22,23 +22,23 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export function miroirStoreFileSystemStartup() {
-  ConfigurationService.registerStoreFactory(
+export function miroirFileSystemStoreSectionStartup() {
+  ConfigurationService.registerStoreSectionFactory(
     "filesystem",
     "model",
     async (
       section: ApplicationSection, // TODO: remove!
       config: StoreConfiguration,
-      dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
+      dataStore?: IDataStoreSection
+    ): Promise<IDataStoreSection | IModelStoreSection> => {
       
       if (config.emulatedServerType == "filesystem" && dataStore) {
         const filesystemStoreName: string = config.directory
-        log.log('called registerStoreFactory function for',filesystemStoreName, 'filesystem');
+        log.log('called registerStoreSectionFactory function for',filesystemStoreName, 'filesystem');
         
         return Promise.resolve(
           config.emulatedServerType == "filesystem" && dataStore
-            ? new FileSystemModelSectionStore(filesystemStoreName, config.directory, dataStore)
+            ? new FileSystemModelStoreSection(filesystemStoreName, config.directory, dataStore)
             : new ErrorModelStore()
         )
       } else {
@@ -46,20 +46,20 @@ export function miroirStoreFileSystemStartup() {
       }
     }
   );
-  ConfigurationService.registerStoreFactory(
+  ConfigurationService.registerStoreSectionFactory(
     "filesystem",
     "data",
     async (
       section: ApplicationSection,
       config: StoreConfiguration,
-      dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
+      dataStore?: IDataStoreSection
+    ): Promise<IDataStoreSection | IModelStoreSection> => {
       if (config.emulatedServerType == "filesystem") {
-        log.log('called registerStoreFactory function for', 'filesystem');
+        log.log('called registerStoreSectionFactory function for', 'filesystem');
         const filesystemStoreName: string = config.directory
         return Promise.resolve(
           config.emulatedServerType == "filesystem"
-            ? new FileSystemDataSectionStore(filesystemStoreName, config.directory)
+            ? new FileSystemDataStoreSection(filesystemStoreName, config.directory)
             : new ErrorDataStore()
         )
       } else {

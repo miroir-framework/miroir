@@ -20,27 +20,3 @@ export async function startLocalStoreControllers(
     console.log('miroirBeforeAll: could not load persisted state from localAppStoreController, datastore could be empty (this is not a problem)');
   }
 }
-
-// ################################################################################################
-// export async function createStoreControllers(
-//   storeControllerManager: StoreControllerManagerInterface,
-//   miroirConfig: MiroirConfig,
-// ) {
-
-//   if (!miroirConfig.emulateServer) {
-//     console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-//   } else {
-//     await storeControllerManager.addStoreController(
-//       "miroir",
-//       "miroir",
-//       applicationDeploymentMiroir.uuid,
-//       miroirConfig.miroirServerConfig
-//     );
-//     await storeControllerManager.addStoreController(
-//       "library",
-//       "app",
-//       applicationDeploymentLibrary.uuid,
-//       miroirConfig.appServerConfig
-//     );
-//   }
-// }

@@ -51,7 +51,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 
-import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 import configFileContents from "../config/miroirConfig.server-indexedDb.json";
@@ -74,7 +74,7 @@ myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
 
 miroirCoreStartup();
-miroirStoreFileSystemStartup();
+miroirFileSystemStoreSectionStartup();
 miroirStoreIndexedDbStartup();
 miroirStorePostgresStartup();
 

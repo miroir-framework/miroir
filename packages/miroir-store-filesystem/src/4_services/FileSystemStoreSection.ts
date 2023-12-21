@@ -4,7 +4,7 @@ import * as path from "path";
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  IAbstractStore,
+  IAbstractStoreSection,
   IStorageSpaceHandler,
   LoggerInterface,
   MetaEntity,
@@ -16,7 +16,7 @@ import {
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -24,10 +24,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 
-export type MixableFileSystemDbStore = GConstructor<FileSystemStore>;
+export type MixableFileSystemDbStore = GConstructor<FileSystemStoreSection>;
 
 
-export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
+export class FileSystemStoreSection implements IAbstractStoreSection, IStorageSpaceHandler{
   public filesystemStoreName: string;
   public directory: string;
 

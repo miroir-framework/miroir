@@ -188,10 +188,6 @@ export async function miroirBeforeAll(
 
       const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
 
-      // await createStoreControllers(storeControllerManager, miroirConfig);
-      // throw new Error("BAAAAAAAAA!!!!");
-      
-      // const deployments = 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {
         [applicationDeploymentMiroir.uuid]: miroirConfig.miroirServerConfig,
@@ -199,8 +195,6 @@ export async function miroirBeforeAll(
       }
       for (const deployment of Object.entries(deployments)) {
         await storeControllerManager.addStoreController(
-          // deployment[1].model.applicationName,
-          // deployment[1].model.dataStoreType,
           deployment[0],
           deployment[1]
         );

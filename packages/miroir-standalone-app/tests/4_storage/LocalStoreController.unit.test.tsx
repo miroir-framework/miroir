@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 
-// import { miroirStoreFileSystemStartup } from "../dist/bundle";
+// import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
   CUDActionName,
   EntityDefinition,
@@ -27,7 +27,7 @@ let localAppStoreController: IStoreController;
 import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { loadTestConfigFiles, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
-import { miroirStoreFileSystemStartup } from 'miroir-store-filesystem';
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
 import { miroirStorePostgresStartup } from 'miroir-store-postgres';
 
@@ -49,7 +49,7 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
-    miroirStoreFileSystemStartup();
+    miroirFileSystemStoreSectionStartup();
     miroirStoreIndexedDbStartup();
     miroirStorePostgresStartup();
     if (!miroirConfig.emulateServer) {

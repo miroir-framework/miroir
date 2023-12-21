@@ -1,7 +1,6 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { StoreUnitConfiguration } from "../0_interfaces/1_core/MiroirConfig";
-import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface";
-import { IDataSectionStore, IModelSectionStore, IStoreController, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
+import { IDataStoreSection, IModelStoreSection, IStoreController, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeFactory } from "./StoreController";
 
@@ -21,7 +20,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // ################################################################################################
 export class StoreControllerManager implements StoreControllerManagerInterface {
-  // private storeControllers:{ [deploymentUuid: Uuid]: { [section in ApplicationSection]: IStoreController} } = {};
   private storeControllers:{ [deploymentUuid: Uuid]: IStoreController } = {};
 
   constructor(
@@ -33,8 +31,6 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
   // ################################################################################################
   async addStoreController(
-    // applicationName: string,
-    // dataStoreType: DataStoreApplicationType,
     deploymentUuid: string,
     config:StoreUnitConfiguration,
   ): Promise<void> {
@@ -43,20 +39,15 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     } else {
       const dataStore = (await storeFactory(
         this.storeFactoryRegister,
-        // applicationName,
-        // dataStoreType,
         "data",
         config.data
-      )) as IDataSectionStore;
+      )) as IDataStoreSection;
       const modelStore = (await storeFactory(
         this.storeFactoryRegister,
-        // applicationName,
-        // dataStoreType,
         "model",
         config.model,
         dataStore
-      )) as IModelSectionStore;
-      // this.storeControllers[deploymentUuid] = new StoreController(applicationName, dataStoreType, modelStore, dataStore);
+      )) as IModelStoreSection;
       this.storeControllers[deploymentUuid] = new StoreController(modelStore, dataStore);
     }
   }

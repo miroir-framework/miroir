@@ -1,9 +1,9 @@
 export {
-  FileSystemDataSectionStore,
-} from './4_services/FileSystemDataSectionStore.js'
+  FileSystemDataStoreSection,
+} from './4_services/FileSystemDataStoreSection.js'
 export {
-  FileSystemModelSectionStore as FileSystemModelStore,
-} from './4_services/FileSystemModelSectionStore.js'
+  FileSystemModelStoreSection,
+} from './4_services/FileSystemModelStoreSection.js'
 export {
-  miroirStoreFileSystemStartup,
+  miroirFileSystemStoreSectionStartup,
 } from './startup.js'

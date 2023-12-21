@@ -4,18 +4,18 @@ import * as path from "path";
 import {
   EntityInstance,
   EntityInstanceCollection,
-  IAbstractInstanceStore,
+  IAbstractInstanceStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
-import { FileSystemStore, MixableFileSystemDbStore } from "./FileSystemStore.js";
+import { FileSystemStoreSection, MixableFileSystemDbStore } from "./FileSystemStoreSection.js";
 import { cleanLevel } from "./constants.js";
 
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreMixin");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemInstanceStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -29,10 +29,10 @@ export function extractName(fullName: string) {
   return fullName.substring(fullName.length - 5);
 }
 
-export const MixedFileSystemInstanceStore = FileSystemInstanceStoreMixin(FileSystemStore);
+export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectionMixin(FileSystemStoreSection);
 
-export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
-  return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
+export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements IAbstractInstanceStoreSection {
     // ##############################################################################################
     constructor(
       // ...args stands for:

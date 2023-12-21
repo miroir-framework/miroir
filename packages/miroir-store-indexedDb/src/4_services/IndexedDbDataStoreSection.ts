@@ -1,24 +1,24 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore,
+  IDataStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
-import { MixedIndexedDbInstanceStore } from "./IndexedDbInstanceStoreMixin.js";
+import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDb } from "./IndexedDbSnakeCase.js";
 
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbDataSectionStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbDataStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore implements IDataSectionStore {
+export class IndexedDbDataStoreSection extends MixedIndexedDbInstanceStoreSection implements IDataStoreSection {
 
   // ##############################################################################################
   constructor(
@@ -28,7 +28,7 @@ export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore imple
     super(
       indexedDbStoreName,
       localUuidIndexedDb,
-      "IndexedDbDataSectionStore " + indexedDbStoreName
+      "IndexedDbDataStoreSection " + indexedDbStoreName
     );
   }
 

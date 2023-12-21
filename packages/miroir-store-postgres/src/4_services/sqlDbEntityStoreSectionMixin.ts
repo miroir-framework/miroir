@@ -1,9 +1,9 @@
 import {
   EntityDefinition,
   EntityInstance,
-  IAbstractEntityStore,
-  IAbstractInstanceStore,
-  IDataSectionStore,
+  IAbstractEntityStoreSection,
+  IAbstractInstanceStoreSection,
+  IDataStoreSection,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -12,8 +12,8 @@ import {
   entityEntityDefinition,
   getLoggerName,
 } from "miroir-core";
-import { SqlDbStore } from "./SqlDbStore.js";
-import { MixedSqlDbInstanceStore, SqlDbInstanceStoreMixin } from "./sqlDbInstanceStoreMixin.js";
+import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
+import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 
 import { packageName } from "../constants.js";
@@ -25,23 +25,23 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export const MixedSqlDbEntityAndInstanceStore = SqlDbEntityStoreMixin(SqlDbInstanceStoreMixin(SqlDbStore));
+export const MixedSqlDbEntityAndInstanceStoreSection = SqlDbEntityStoreMixin(SqlDbInstanceStoreSectionMixin(SqlDbStoreSection));
 
-export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceStore>(Base: TBase) {
-  return class MixedSqlDbEntityStore extends Base implements IAbstractEntityStore, IAbstractInstanceStore {
-    public dataStore: IDataSectionStore;
+export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(Base: TBase) {
+  return class MixedSqlDbEntityStoreSection extends Base implements IAbstractEntityStoreSection, IAbstractInstanceStoreSection {
+    public dataStore: IDataStoreSection;
 
     constructor(
       // sqlDbStoreName: string,
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
-      //   public dataStore: IDataSectionStore,
+      //   public dataStore: IDataStoreSection,
       ...args: any[]
     ) {
       super(...args.slice(0, 4));
       this.dataStore = args[4];
-      // log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
+      // log.log(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 
     // ##############################################################################################

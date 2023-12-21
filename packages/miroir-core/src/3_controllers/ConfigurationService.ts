@@ -48,8 +48,8 @@ export class ConfigurationService {
     this.packages.push(packageConfiguration);
   }
 
-  public static registerStoreFactory(storageType:StorageType, section: ApplicationSection, storeFactory: StoreFactory) {
-    log.info("ConfigurationService registerStoreFactory",this.storeFactoryRegister);
+  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeFactory: StoreFactory) {
+    log.info("ConfigurationService registerStoreSectionFactory",this.storeFactoryRegister);
     this.storeFactoryRegister.set(
       JSON.stringify({storageType, section}), storeFactory
     );

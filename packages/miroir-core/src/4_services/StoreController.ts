@@ -17,8 +17,8 @@ import {
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
-  IDataSectionStore,
-  IModelSectionStore,
+  IDataStoreSection,
+  IModelStoreSection,
   IStoreController,
   StoreFactoryRegister,
 } from "../0_interfaces/4-services/StoreControllerInterface.js";
@@ -54,21 +54,19 @@ export async function storeFactory (
   // dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
   config: StoreConfiguration,
-  dataStore?: IDataSectionStore,
-):Promise<IDataSectionStore | IModelSectionStore> {
+  dataStore?: IDataStoreSection,
+):Promise<IDataStoreSection | IModelStoreSection> {
   log.info('storeFactory called for', section, config);
   if (section == 'model' && !dataStore) {
     throw new Error('storeFactory model section factory must receive data section store.')
   }
   const storeFactoryRegisterKey:string = JSON.stringify({storageType:config.emulatedServerType,section});
-  const foundStoreFactory = storeFactoryRegister.get(storeFactoryRegisterKey);
-  if (foundStoreFactory) {
+  const foundStoreSectionFactory = storeFactoryRegister.get(storeFactoryRegisterKey);
+  if (foundStoreSectionFactory) {
     if (section == 'model') {
-      // return foundStoreFactory(appName,dataStoreApplicationType,section,config,dataStore)
-      return foundStoreFactory(section,config,dataStore)
+      return foundStoreSectionFactory(section,config,dataStore)
     } else {
-      // return foundStoreFactory(appName,dataStoreApplicationType,section,config)
-      return foundStoreFactory(section,config)
+      return foundStoreSectionFactory(section,config)
     }
   } else {
     throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)
@@ -85,8 +83,8 @@ export class StoreController implements IStoreController{
   constructor(
     // public applicationName: string,
     // public dataStoreType: DataStoreApplicationType,
-    private modelSectionStore:IModelSectionStore,
-    private dataSectionStore:IDataSectionStore,
+    private modelSectionStore:IModelStoreSection,
+    private dataSectionStore:IDataStoreSection,
   ){
     this.logHeader = 'StoreController '+ modelSectionStore.getStoreName();
   }

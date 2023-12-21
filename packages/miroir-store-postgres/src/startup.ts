@@ -2,17 +2,17 @@ import {
   ApplicationSection,
   ConfigurationService,
   DataStoreApplicationType,
-  IDataSectionStore,
+  IDataStoreSection,
   StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
-  IModelSectionStore,
+  IModelStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
 } from "miroir-core";
-import { SqlDbModelStore } from "./4_services/SqlDbModelSectionStore.js";
-import { SqlDbDataStore } from "./4_services/SqlDbDataStore.js";
+import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
+import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_services/constants.js";
@@ -24,21 +24,21 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export function miroirStorePostgresStartup() {
-  ConfigurationService.registerStoreFactory(
+  ConfigurationService.registerStoreSectionFactory(
     "sql",
     "model",
     async (
       section: ApplicationSection,
       config: StoreConfiguration,
-      dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for', section, 'sql', config);
+      dataStore?: IDataStoreSection
+    ): Promise<IDataStoreSection | IModelStoreSection> => {
+      log.log('called registerStoreSectionFactory function for', section, 'sql', config);
       
       if (config.emulatedServerType == "sql" && dataStore) {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql" && dataStore
-            ? new SqlDbModelStore(sqlDbStoreName, config.connectionString, config.schema, dataStore)
+            ? new SqlDbModelStoreSection(sqlDbStoreName, config.connectionString, config.schema, dataStore)
             : new ErrorModelStore()
         )
       } else {
@@ -47,20 +47,20 @@ export function miroirStorePostgresStartup() {
 
     }
   );
-  ConfigurationService.registerStoreFactory(
+  ConfigurationService.registerStoreSectionFactory(
     "sql",
     "data",
     async (
       section: ApplicationSection,
       config: StoreConfiguration,
-      dataStore?: IDataSectionStore
-    ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for', section, 'sql', config);
+      dataStore?: IDataStoreSection
+    ): Promise<IDataStoreSection | IModelStoreSection> => {
+      log.log('called registerStoreSectionFactory function for', section, 'sql', config);
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql"
-            ? new SqlDbDataStore(sqlDbStoreName, config.connectionString, config.schema)
+            ? new SqlDbDataStoreSection(sqlDbStoreName, config.connectionString, config.schema)
             : new ErrorDataStore()
         );
       } else {

@@ -16,7 +16,7 @@ import {
 
 // ###########################################################################################
 // Abstract store interfaces
-export interface IAbstractStore {
+export interface IAbstractStoreSection {
   getStoreName(): string;
   open():Promise<void>;
   close():Promise<void>;
@@ -49,7 +49,7 @@ export interface IStorageSpaceHandler {
 }
 
 // ###########################################################################################
-export interface IAbstractInstanceStore {
+export interface IAbstractInstanceStoreSection {
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstances(parentUuid: string): Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
@@ -58,7 +58,7 @@ export interface IAbstractInstanceStore {
 }
 
 // ###########################################################################################
-export interface IAbstractEntityStore {
+export interface IAbstractEntityStoreSection {
   existsEntity(entityUuid:string):boolean;
 
   createEntity(
@@ -72,17 +72,17 @@ export interface IAbstractEntityStore {
 
 // ###############################################################################################################
 // Data and Model sections
-export interface IModelSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore, IAbstractEntityStore {
+export interface IModelStoreSection extends IAbstractStoreSection, IStorageSpaceHandler, IAbstractInstanceStoreSection, IAbstractEntityStoreSection {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
-export interface IDataSectionStore extends IAbstractStore, IStorageSpaceHandler, IAbstractInstanceStore {
+export interface IDataStoreSection extends IAbstractStoreSection, IStorageSpaceHandler, IAbstractInstanceStoreSection {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
 
 // ###############################################################################################################
-export type IDataOrModelStore = IDataSectionStore | IModelSectionStore;
+export type IDataOrModelStore = IDataStoreSection | IModelStoreSection;
 
 // ###############################################################################################################
 export type StoreFactory = (
@@ -90,7 +90,7 @@ export type StoreFactory = (
   // dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
   config: StoreConfiguration,
-  dataStore?: IDataSectionStore,
+  dataStore?: IDataStoreSection,
 )=>Promise<IDataOrModelStore>;
 
 export type StoreFactoryRegister = Map<string,StoreFactory>;
@@ -98,7 +98,7 @@ export type StoreFactoryRegister = Map<string,StoreFactory>;
 
 // ###############################################################################################################
 // store Controller
-export interface IStoreController extends IAbstractStore, IAbstractEntityStore /**, IAbstractInstanceStore */ {
+export interface IStoreController extends IAbstractStoreSection, IAbstractEntityStoreSection /**, IAbstractInstanceStoreSection */ {
   initApplication(
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
@@ -125,7 +125,7 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore /
   getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 
-  // instance interface differs from the one in IAbstractInstanceStore: it has an ApplicationSection as first parameter
+  // instance interface differs from the one in IAbstractInstanceStoreSection: it has an ApplicationSection as first parameter
   getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<EntityInstance | undefined>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;

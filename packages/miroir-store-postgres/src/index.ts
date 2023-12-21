@@ -1,9 +1,9 @@
 export {
-  SqlDbDataStore,
-} from './4_services/SqlDbDataStore.js'
+  SqlDbDataStoreSection,
+} from './4_services/SqlDbDataStoreSection.js'
 export {
-  SqlDbModelStore,
-} from './4_services/SqlDbModelSectionStore.js'
+  SqlDbModelStoreSection,
+} from './4_services/SqlDbModelStoreSection.js'
 export {
   miroirStorePostgresStartup,
 } from './startup.js'

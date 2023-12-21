@@ -1,38 +1,41 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore,
+  IDataStoreSection,
+  IModelStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
 
-import { MixedFileSystemInstanceStore } from "./FileSystemInstanceStoreMixin.js";
+import { MixedFileSystemDbEntityAndInstanceStoreSection } from "./FileSystemEntityStoreSectionMixin.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemDataSectionStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemModelStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class FileSystemDataSectionStore extends MixedFileSystemInstanceStore implements IDataSectionStore {
-  // public logHeader: string;
+export class FileSystemModelStoreSection extends MixedFileSystemDbEntityAndInstanceStoreSection implements IModelStoreSection {
 
   // #############################################################################################
   constructor(
     filesystemStoreName: string,
     directory: string,
+    dataStore: IDataStoreSection,
   ) {
     super(
       filesystemStoreName,
       directory,
-      'FileSystemDataSectionStore' + filesystemStoreName 
-    );
+      'FileSystemModelStoreSection ' + filesystemStoreName, // logheader
+      dataStore
+    )
   }
 
   // #############################################################################################
+  // TODO: also implemented in FileSystemDataStoreSection => mix it up?
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
     let result = {};
     log.log(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
@@ -46,4 +49,5 @@ export class FileSystemDataSectionStore extends MixedFileSystemInstanceStore imp
     }
     return Promise.resolve(result);
   }
+  
 }

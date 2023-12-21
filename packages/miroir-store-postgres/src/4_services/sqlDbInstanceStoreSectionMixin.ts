@@ -1,21 +1,21 @@
-import { EntityInstance, IAbstractInstanceStore, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core"
-import { MixableSqlDbStore, SqlDbStore } from "./SqlDbStore.js"
+import { EntityInstance, IAbstractInstanceStoreSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core"
+import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js"
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const consoleLog:any = console.log.bind(console, packageName,cleanLevel,"SqlDbInstanceStoreMixin")
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbInstanceStoreMixin");
+const consoleLog:any = console.log.bind(console, packageName,cleanLevel,"SqlDbInstanceStoreSectionMixin")
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbInstanceStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export const MixedSqlDbInstanceStore = SqlDbInstanceStoreMixin(SqlDbStore)
+export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection)
 
 
-export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: TBase) {
-  return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
+export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements IAbstractInstanceStoreSection {
     // ##############################################################################################
     constructor(
       // actual arguments are:

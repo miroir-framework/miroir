@@ -37,7 +37,7 @@ import {
 import { JzodElementEditor, JzodElementFormEditorProps } from "../../src/miroir-fwk/4_view/JzodElementEditor";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test.json";
@@ -55,7 +55,7 @@ const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirStoreFileSystemStartup();
+miroirFileSystemStoreSectionStartup();
 miroirStoreIndexedDbStartup();
 // miroirStorePostgresStartup();
 

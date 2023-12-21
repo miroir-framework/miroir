@@ -1,41 +1,38 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore,
-  IModelSectionStore,
+  IDataStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
 
-import { MixedFileSystemDbEntityAndInstanceStore } from "./FileSystemEntityStoreMixin.js";
+import { MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemModelSectionStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemDataStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class FileSystemModelSectionStore extends MixedFileSystemDbEntityAndInstanceStore implements IModelSectionStore {
+export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSection implements IDataStoreSection {
+  // public logHeader: string;
 
   // #############################################################################################
   constructor(
     filesystemStoreName: string,
     directory: string,
-    dataStore: IDataSectionStore,
   ) {
     super(
       filesystemStoreName,
       directory,
-      'FileSystemModelSectionStore ' + filesystemStoreName, // logheader
-      dataStore
-    )
+      'FileSystemDataStoreSection' + filesystemStoreName 
+    );
   }
 
   // #############################################################################################
-  // TODO: also implemented in FileSystemDataSectionStore => mix it up?
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
     let result = {};
     log.log(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
@@ -49,5 +46,4 @@ export class FileSystemModelSectionStore extends MixedFileSystemDbEntityAndInsta
     }
     return Promise.resolve(result);
   }
-  
 }

@@ -1,22 +1,22 @@
-import { EntityInstance, IAbstractInstanceStore, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
-import { IndexedDbStore, MixableIndexedDbStore } from "./IndexedDbStore.js";
+import { EntityInstance, IAbstractInstanceStoreSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
 
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbInstanceStoreMixin");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"IndexedDbInstanceStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
 
-export const MixedIndexedDbInstanceStore = IndexedDbInstanceStoreMixin(IndexedDbStore)
+export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionMixin(IndexedDbStoreSection)
 
 
-export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>(Base: TBase) {
-  return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
+export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedDbStoreSection>(Base: TBase) {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements IAbstractInstanceStoreSection {
     constructor(
       // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;
@@ -24,7 +24,7 @@ export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>
       ...args:any[]
     ) {
       super(...args)
-      // log.log(this.logHeader,'MixedIndexedDbInstanceStore constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+      // log.log(this.logHeader,'MixedIndexedDbInstanceStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
     }
 
     // #############################################################################################

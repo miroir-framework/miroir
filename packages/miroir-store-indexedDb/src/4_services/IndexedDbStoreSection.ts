@@ -1,7 +1,7 @@
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  IAbstractStore,
+  IAbstractStoreSection,
   IStorageSpaceHandler,
   LoggerInterface,
   MetaEntity,
@@ -12,7 +12,7 @@ import { packageName } from "../constants";
 import { IndexedDb } from "./IndexedDbSnakeCase";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -20,10 +20,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 
-export type MixableIndexedDbStore = GConstructor<IndexedDbStore>;
+export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 
 // base class for IndexedDb store mixins
-export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
+export class IndexedDbStoreSection implements IAbstractStoreSection, IStorageSpaceHandler {
   public indexedDbStoreName: string;
   public localUuidIndexedDb: IndexedDb;
   public logHeader: string;
@@ -38,7 +38,7 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     this.indexedDbStoreName = args[0];
     this.localUuidIndexedDb = args[1];
     this.logHeader = args[2];
-    // log.log(this.logHeader,'IndexedDbStore constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+    // log.log(this.logHeader,'IndexedDbStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
 
     // #########################################################################################

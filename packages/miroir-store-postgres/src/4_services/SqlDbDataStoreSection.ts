@@ -1,43 +1,40 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataSectionStore,
-  IModelSectionStore,
+  IDataStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
-import { MixedSqlDbEntityAndInstanceStore } from "./sqlDbEntityStoreMixin.js";
-
+import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbModelSectionStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbDataStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export class SqlDbModelStore extends MixedSqlDbEntityAndInstanceStore implements IModelSectionStore {
 
+export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implements IDataStoreSection {
   // ##############################################################################################
   constructor(
     sqlDbStoreName: string, // used only for debugging purposes
-    connectionString:string,
-    schema:string,
-    sqlDbDataStore: IDataSectionStore,
+    // applicationName: string, // used only for debugging purposes
+    // dataStoreType: DataStoreApplicationType, // used only for debugging purposes
+    dataConnectionString:string,
+    dataSchema:string,
   ) {
     super(
       sqlDbStoreName,
-      connectionString,
-      schema,
-      "SqlDbModelStore " + sqlDbStoreName  + ' section model',
-      sqlDbDataStore,
+      dataConnectionString,
+      dataSchema,
+      'SqlDbDataStoreSection ' + sqlDbStoreName + ' section data'
     )
   }
 
   // ##############################################################################################
-  // TODO: also defined in SqlDbDataStore => mix it up?
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
     let result = {};
     log.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
@@ -45,12 +42,11 @@ export class SqlDbModelStore extends MixedSqlDbEntityAndInstanceStore implements
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
       const dbInstances = await this.getInstances(parentUuid);
-      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:dbInstances};
+      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
       // log.log(this.logHeader,'getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});
     }
     return Promise.resolve(result);
   }
-
 }

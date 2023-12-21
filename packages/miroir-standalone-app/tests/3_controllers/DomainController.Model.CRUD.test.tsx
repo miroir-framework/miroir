@@ -49,7 +49,7 @@ import {
 } from "../utils/tests-utils";
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
-import { miroirStoreFileSystemStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
 import { miroirStorePostgresStartup } from "miroir-store-postgres";
 
@@ -71,7 +71,7 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 miroirAppStartup();
 miroirCoreStartup();
-miroirStoreFileSystemStartup();
+miroirFileSystemStoreSectionStartup();
 miroirStoreIndexedDbStartup();
 miroirStorePostgresStartup();
 
