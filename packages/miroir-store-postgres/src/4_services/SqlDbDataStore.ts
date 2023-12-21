@@ -20,17 +20,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class SqlDbDataStore extends MixedSqlDbInstanceStore implements IDataSectionStore {
   // ##############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    sqlDbStoreName: string, // used only for debugging purposes
+    // applicationName: string, // used only for debugging purposes
+    // dataStoreType: DataStoreApplicationType, // used only for debugging purposes
     dataConnectionString:string,
     dataSchema:string,
   ) {
     super(
-      applicationName,
-      dataStoreType,
+      sqlDbStoreName,
       dataConnectionString,
       dataSchema,
-      'SqlDbDataStore' + ' Application '+ applicationName +' dataStoreType ' + dataStoreType + ' section data'
+      'SqlDbDataStore ' + sqlDbStoreName + ' section data'
     )
   }
 

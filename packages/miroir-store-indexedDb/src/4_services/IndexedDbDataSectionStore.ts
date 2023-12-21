@@ -22,15 +22,13 @@ export class IndexedDbDataSectionStore extends MixedIndexedDbInstanceStore imple
 
   // ##############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    indexedDbStoreName: string,
     localUuidIndexedDb: IndexedDb
   ) {
     super(
-      applicationName,
-      dataStoreType,
+      indexedDbStoreName,
       localUuidIndexedDb,
-      "IndexedDbDataSectionStore" + " Application " + applicationName + " dataStoreType " + dataStoreType
+      "IndexedDbDataSectionStore " + indexedDbStoreName
     );
   }
 

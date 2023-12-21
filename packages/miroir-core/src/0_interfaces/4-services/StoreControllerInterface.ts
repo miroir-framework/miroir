@@ -10,12 +10,14 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  StoreAction,
   StoreConfiguration,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ###########################################################################################
 // Abstract store interfaces
 export interface IAbstractStore {
+  getStoreName(): string;
   open():Promise<void>;
   close():Promise<void>;
   bootFromPersistedState(
@@ -84,8 +86,8 @@ export type IDataOrModelStore = IDataSectionStore | IModelSectionStore;
 
 // ###############################################################################################################
 export type StoreFactory = (
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
+  // appName: string,
+  // dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
   config: StoreConfiguration,
   dataStore?: IDataSectionStore,
@@ -130,6 +132,7 @@ export interface IStoreController extends IAbstractStore, IAbstractEntityStore /
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;
 
+  // handleAction(storeAction: StoreAction): Promise<any>;
 
   applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>;
 }

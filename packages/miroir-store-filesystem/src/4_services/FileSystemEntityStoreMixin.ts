@@ -35,7 +35,7 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
     public dataStore: IDataSectionStore;
 
     constructor(
-    // public applicationName: string,
+    // public applicationName: string, // used only for debugging purposes
     // public dataStoreType: DataStoreApplicationType,
     // private directory: string,
     // public logHeader: string;

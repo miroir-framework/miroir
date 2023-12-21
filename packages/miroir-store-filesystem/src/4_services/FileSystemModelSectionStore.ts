@@ -22,16 +22,13 @@ export class FileSystemModelSectionStore extends MixedFileSystemDbEntityAndInsta
 
   // #############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    filesystemStoreName: string,
     directory: string,
     dataStore: IDataSectionStore,
   ) {
     super(
-      applicationName,
-      dataStoreType,
       directory,
-      'FileSystemModelSectionStore ' + applicationName + ' dataStoreType ' + dataStoreType,
+      'FileSystemModelSectionStore ' + filesystemStoreName, // logheader
       dataStore
     )
   }

@@ -1,5 +1,5 @@
 import { MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
-import { ModelAction, EntityDefinition, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityDefinition, ModelAction, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -10,12 +10,12 @@ import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
 
-import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
+import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
+import { startLocalStoreControllers } from "../4_services/storeControllerTools.js";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import { createStoreControllers, startLocalStoreControllers } from "../4_services/storeControllerTools.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelActionRunner");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -277,26 +277,26 @@ export async function actionRunner(
   const update: StoreAction = body;
 
 
-  log.info('actionRunner action', JSON.stringify(update,undefined,2));
+  log.info('actionRunner AAA action', JSON.stringify(update,undefined,2));
   switch (update.actionName) {
     case "openStore": {
       // log.info('actionRunner openStore',miroirConfig);
 
-      const actionMiroirConfig:MiroirConfig = {
-        emulateServer: true, // TODO: correct this!
-        "rootApiUrl":"http://localhost:3080",
-        miroirServerConfig: update.configuration[applicationDeploymentMiroir.uuid],
-        appServerConfig: update.configuration[applicationDeploymentLibrary.uuid],
-        "deploymentMode":"monoUser",
-        "monoUserAutentification": false,
-        "monoUserVersionControl": false,
-        "versionControlForDataConceptLevel": false
-      }
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       for (const deploymentUuid of Object.keys(update.configuration)) {
         await storeControllerManager.deleteStoreController(deploymentUuid);
       }
-      await createStoreControllers(storeControllerManager,actionMiroirConfig);
+      // await createStoreControllers(storeControllerManager,actionMiroirConfig);
+
+      for (const deployment of Object.entries(update.configuration)) {
+        await storeControllerManager.addStoreController(
+          // deployment[1].model.applicationName,
+          // deployment[1].model.dataStoreType,
+          deployment[0],
+          deployment[1]
+        );
+      }
+
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreController || !localAppStoreController) {

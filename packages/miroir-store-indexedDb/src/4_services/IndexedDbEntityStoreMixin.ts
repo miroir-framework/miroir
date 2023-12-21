@@ -35,15 +35,14 @@ export function IndexedDbEntityStoreMixin<TBase extends typeof MixedIndexedDbIns
     public dataStore: IDataSectionStore;
 
     constructor(
-      //   applicationName: string,
-      //   dataStoreType: DataStoreApplicationType,
+      //   indexedDbStoreName: string,
       //   localUuidIndexedDb: IndexedDb,
       //   logHeader: string,
       //   public dataStore: IDataSectionStore,
       ...args: any[]
     ) {
-      super(...args.slice(0, 4));
-      this.dataStore = args[4];
+      super(...args.slice(0, 3));
+      this.dataStore = args[3];
       // log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
     }
 

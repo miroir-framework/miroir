@@ -6,6 +6,9 @@ import { IModelSectionStore } from "../../0_interfaces/4-services/StoreControlle
 export class ErrorModelStore implements IModelSectionStore {
   constructor() {}
   
+  getStoreName(): string {
+    throw new Error("Method not implemented.");
+  }
   open(): Promise<void> {
     throw new Error("Method not implemented.");
   }

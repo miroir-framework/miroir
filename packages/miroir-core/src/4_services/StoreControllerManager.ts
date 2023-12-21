@@ -33,8 +33,8 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
   // ################################################################################################
   async addStoreController(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    // applicationName: string,
+    // dataStoreType: DataStoreApplicationType,
     deploymentUuid: string,
     config:StoreUnitConfiguration,
   ): Promise<void> {
@@ -43,20 +43,21 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     } else {
       const dataStore = (await storeFactory(
         this.storeFactoryRegister,
-        applicationName,
-        dataStoreType,
+        // applicationName,
+        // dataStoreType,
         "data",
         config.data
       )) as IDataSectionStore;
       const modelStore = (await storeFactory(
         this.storeFactoryRegister,
-        applicationName,
-        dataStoreType,
+        // applicationName,
+        // dataStoreType,
         "model",
         config.model,
         dataStore
       )) as IModelSectionStore;
-      this.storeControllers[deploymentUuid] = new StoreController(applicationName, dataStoreType, modelStore, dataStore);
+      // this.storeControllers[deploymentUuid] = new StoreController(applicationName, dataStoreType, modelStore, dataStore);
+      this.storeControllers[deploymentUuid] = new StoreController(modelStore, dataStore);
     }
   }
 

@@ -28,18 +28,17 @@ export function miroirStorePostgresStartup() {
     "sql",
     "model",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      log.log('called registerStoreFactory function for', section, 'sql', config);
       
       if (config.emulatedServerType == "sql" && dataStore) {
+        const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql" && dataStore
-            ? new SqlDbModelStore(appName, dataStoreApplicationType, config.connectionString, config.schema, dataStore)
+            ? new SqlDbModelStore(sqlDbStoreName, config.connectionString, config.schema, dataStore)
             : new ErrorModelStore()
         )
       } else {
@@ -52,17 +51,16 @@ export function miroirStorePostgresStartup() {
     "sql",
     "data",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
+      log.log('called registerStoreFactory function for', section, 'sql', config);
       if (config.emulatedServerType == "sql") {
+        const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql"
-            ? new SqlDbDataStore(appName, dataStoreApplicationType, config.connectionString, config.schema)
+            ? new SqlDbDataStore(sqlDbStoreName, config.connectionString, config.schema)
             : new ErrorDataStore()
         );
       } else {

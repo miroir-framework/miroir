@@ -28,8 +28,7 @@ export type MixableFileSystemDbStore = GConstructor<FileSystemStore>;
 
 
 export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
-  public applicationName: string;
-  public dataStoreType: DataStoreApplicationType;
+  public filesystemStoreName: string;
   public directory: string;
 
   public logHeader: string;
@@ -37,16 +36,22 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
   // ##############################################################################################
   constructor(
     // public applicationName: string,
+    // public applicationName: string,
     // public dataStoreType: DataStoreApplicationType,
     // private directory: string,
     // public logHeader: string;
     ...args:any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    this.applicationName = args[0];
-    this.dataStoreType = args[1];
-    this.directory = args[2];
-    this.logHeader = args[3];
+    this.filesystemStoreName = args[0];
+    this.directory = args[1];
+    this.logHeader = args[2];
   }
+
+  // #########################################################################################
+  getStoreName(): string {
+    return this.filesystemStoreName;
+  }
+
   // #########################################################################################
   open(): Promise<void> {
     // const entityDirectories = fs.readdirSync(this.directory);

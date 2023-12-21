@@ -18,8 +18,7 @@ export const MixedIndexedDbInstanceStore = IndexedDbInstanceStoreMixin(IndexedDb
 export function IndexedDbInstanceStoreMixin<TBase extends MixableIndexedDbStore>(Base: TBase) {
   return class MixedIndexedDbInstanceStore extends Base implements IAbstractInstanceStore {
     constructor(
-      // public applicationName: string;
-      // public dataStoreType: DataStoreApplicationType;
+      // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;
       // public logHeader: string;
       ...args:any[]

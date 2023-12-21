@@ -36,8 +36,7 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
     // ##############################################################################################
     constructor(
       // ...args stands for:
-      // public applicationName: string,
-      // public dataStoreType: DataStoreApplicationType,
+      // public filesystemStoreName: string,
       // private directory: string,
       // public logHeader: string,
       ...args: any[]
@@ -54,10 +53,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
     // #########################################################################################
     async getInstances(entityUuid: string): Promise<EntityInstance[]> {
       log.log(
-        "FileSystemInstanceStore getInstances application",
-        this.applicationName,
-        "dataStoreType",
-        this.dataStoreType,
+        this.logHeader,
+        "FileSystemInstanceStore getInstances",
         "entityUuid",
         entityUuid,
         "directory",
@@ -68,10 +65,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
       if (fs.existsSync(entityInstancesPath)) {
         const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
         log.debug(
-          "FileSystemInstanceStore getInstances application",
-          this.applicationName,
-          "dataStoreType",
-          this.dataStoreType,
+          this.logHeader,
+          "FileSystemInstanceStore getInstances",
           "entityUuid",
           entityUuid,
           "directory",
@@ -86,10 +81,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
           ),
         } as EntityInstanceCollection;
         log.debug(
-          "FileSystemInstanceStore getInstances application",
-          this.applicationName,
-          "dataStoreType",
-          this.dataStoreType,
+          this.logHeader,
+          "FileSystemInstanceStore getInstances",
           "entityUuid",
           entityUuid,
           "directory",
@@ -100,10 +93,8 @@ export function FileSystemInstanceStoreMixin<TBase extends MixableFileSystemDbSt
         return Promise.resolve(entityInstances.instances);
       } else {
         log.warn(
-          "FileSystemInstanceStore getInstances application",
-          this.applicationName,
-          "dataStoreType",
-          this.dataStoreType,
+          this.logHeader,
+          "FileSystemInstanceStore getInstances",
           "entityUuid",
           entityUuid,
           "could not find path",

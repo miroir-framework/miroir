@@ -22,15 +22,13 @@ export class FileSystemDataSectionStore extends MixedFileSystemInstanceStore imp
 
   // #############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    filesystemStoreName: string,
     directory: string,
   ) {
     super(
-      applicationName,
-      dataStoreType,
+      filesystemStoreName,
       directory,
-      'FileSystemDataSectionStore' + ' Application '+ applicationName +' dataStoreType ' + dataStoreType
+      'FileSystemDataSectionStore' + filesystemStoreName 
     );
   }
 

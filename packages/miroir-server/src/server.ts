@@ -9,14 +9,10 @@ import {
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   StoreControllerManager,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
-  createStoreControllers,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
-  restServerDefaultHandlers,
-  startLocalStoreControllers
+  restServerDefaultHandlers
 } from "miroir-core";
 
 import { cleanLevel, packageName } from "./constants";

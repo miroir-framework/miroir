@@ -5,8 +5,8 @@ import { IStoreController } from "./StoreControllerInterface";
 
 export interface StoreControllerManagerInterface {
   addStoreController(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    // applicationName: string,
+    // dataStoreType: DataStoreApplicationType,
     deploymentUuid: Uuid,
     config: StoreUnitConfiguration
   ): Promise<void>;

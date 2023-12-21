@@ -27,37 +27,44 @@ export function miroirStoreFileSystemStartup() {
     "filesystem",
     "model",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
-      section: ApplicationSection,
+      section: ApplicationSection, // TODO: remove!
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
       
-      return Promise.resolve(
-        config.emulatedServerType == "filesystem" && dataStore
-          ? new FileSystemModelSectionStore(appName, dataStoreApplicationType, config.directory, dataStore)
-          : new ErrorModelStore()
-      )
+      if (config.emulatedServerType == "filesystem" && dataStore) {
+        const filesystemStoreName: string = config.directory
+        log.log('called registerStoreFactory function for',filesystemStoreName, 'filesystem');
+        
+        return Promise.resolve(
+          config.emulatedServerType == "filesystem" && dataStore
+            ? new FileSystemModelSectionStore(filesystemStoreName, config.directory, dataStore)
+            : new ErrorModelStore()
+        )
+      } else {
+        return Promise.resolve(new ErrorModelStore())
+      }
     }
   );
   ConfigurationService.registerStoreFactory(
     "filesystem",
     "data",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
       section: ApplicationSection,
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataSectionStore | IModelSectionStore> => {
-      log.log('called registerStoreFactory function for',appName, section, 'filesystem');
-      return Promise.resolve(
-        config.emulatedServerType == "filesystem"
-          ? new FileSystemDataSectionStore(appName, dataStoreApplicationType, config.directory)
-          : new ErrorDataStore()
-      )
+      if (config.emulatedServerType == "filesystem") {
+        log.log('called registerStoreFactory function for', 'filesystem');
+        const filesystemStoreName: string = config.directory
+        return Promise.resolve(
+          config.emulatedServerType == "filesystem"
+            ? new FileSystemDataSectionStore(filesystemStoreName, config.directory)
+            : new ErrorDataStore()
+        )
+      } else {
+        return Promise.resolve(new ErrorDataStore());
+      }
     }
   );
 }

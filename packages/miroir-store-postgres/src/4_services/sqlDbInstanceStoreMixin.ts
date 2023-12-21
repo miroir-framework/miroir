@@ -19,8 +19,8 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
     // ##############################################################################################
     constructor(
       // actual arguments are:
-      // public applicationName: string,
-      // public dataStoreType: DataStoreApplicationType,
+      // public applicationName: string, // used only for debugging purposes
+      // public dataStoreType: DataStoreApplicationType, // used only for debugging purposes
       // public dataConnectionString:string,
       // public dataSchema:string,
       // public logHeader: string,
@@ -36,11 +36,11 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
           const result:EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
           return Promise.resolve(result);
         } else {
-          console.warn('getInstance',this.applicationName,this.dataStoreType,'could not find entityUuid',parentUuid);
+          console.warn(this.logHeader, 'getInstance','could not find entityUuid',parentUuid);
           return Promise.resolve(undefined);
         }
       } catch (error) {
-        console.warn('getInstance',this.applicationName,this.dataStoreType,'could not fetch instance from db: parentId',parentUuid,"uuid",uuid);
+        console.warn(this.logHeader, 'getInstance', 'could not fetch instance from db: parentId',parentUuid,"uuid",uuid);
         return Promise.resolve(undefined);
       }
     }
@@ -57,10 +57,10 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
           cleanResult = rawResult.map(i => i["dataValues"])
           consoleLog('getInstances result', cleanResult);
         } catch (e) {
-          console.warn('getInstances',this.applicationName,this.dataStoreType,'failed to fetch instances of entityUuid',parentUuid);
+          console.warn(this.logHeader, 'getInstances', 'failed to fetch instances of entityUuid',parentUuid);
         }
       } else {
-        console.warn('getInstances',this.applicationName,this.dataStoreType,'could not find entity in database: entityUuid',parentUuid);
+        console.warn(this.logHeader, 'getInstances', 'could not find entity in database: entityUuid',parentUuid);
       }
       return Promise.resolve(cleanResult);
     }
@@ -70,8 +70,8 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
       const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel
       const tmp = await sequelizeModel.upsert(instance as any);
       console.debug(
-        "upsertInstance application",
-        this.applicationName,
+        this.logHeader, 
+        "upsertInstance",
         "upserting into Parent",
         instance["parentUuid"],
         "named",
@@ -96,7 +96,7 @@ export function SqlDbInstanceStoreMixin<TBase extends MixableSqlDbStore>(Base: T
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      console.debug('deleteDataInstance', parentUuid,instance);
+      console.debug(this.logHeader, 'deleteDataInstance', parentUuid,instance);
       const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel
       await sequelizeModel.destroy({where:{uuid:instance.uuid}});
       return Promise.resolve();

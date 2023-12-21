@@ -27,8 +27,7 @@ export type MixableSqlDbStore = GConstructor<SqlDbStore>;
 
 export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
   // public logHeader: string;
-  public applicationName: string;
-  public dataStoreType: DataStoreApplicationType;
+  public sqlDbStoreName: string; // used only for debugging purposes
   public connectionString: string;
   public schema: string;
 
@@ -39,31 +38,30 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
   // ##############################################################################################
   constructor(
     // actual arguments are:
-    // public applicationName: string,
-    // public dataStoreType: DataStoreApplicationType,
+    // public sqlDbStoreName: string, // used only for debugging purposes
     // public connectionString:string,
     // public schema:string,
     // public logHeader: string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    this.applicationName = args[0];
-    this.dataStoreType = args[1];
-    this.connectionString = args[2];
-    this.schema = args[3];
-    this.logHeader = args[4];
-    // this.logHeader = 'SqlDbDataStore' + ' Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.sqlDbStoreName = args[0];
+    this.connectionString = args[1];
+    this.schema = args[2];
+    this.logHeader = args[3];
     this.sequelize = new Sequelize(this.connectionString, { schema: this.schema }); // Example for postgres
   }
 
+    // #########################################################################################
+    getStoreName(): string {
+      return this.sqlDbStoreName;
+    }
+  
   // ##############################################################################################
   public async open(): Promise<void> {
     try {
       await this.sequelize.authenticate();
       log.log(
-        "Application",
-        this.applicationName,
-        "dataStoreType",
-        this.dataStoreType,
+        this.logHeader,
         "data Connection to postgres data schema",
         this.schema,
         "has been established successfully."
@@ -150,10 +148,6 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
     log.log(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
-      "Application",
-      this.applicationName,
-      "dataStoreType",
-      this.dataStoreType,
       "creating data schema table",
       entity.name
     );
@@ -162,10 +156,6 @@ export class SqlDbStore implements IAbstractStore, IStorageSpaceHandler {
     log.debug(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
-      "Application",
-      this.applicationName,
-      "dataStoreType",
-      this.dataStoreType,
       "done creating data schema table",
       entity.name
     );

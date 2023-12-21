@@ -29,16 +29,16 @@ export function miroirStoreIndexedDbStartup() {
     "indexedDb",
     "model",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
-      section: ApplicationSection,
+      section: ApplicationSection, // TODO: remove?
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataOrModelStore> => {
-      log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
+      log.log('called registerStoreFactory function for',section, config.emulatedServerType);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
-        const db = new IndexedDbModelSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-model'), dataStore)
+        const indexedDbStoreName = config.indexedDbName + '-model'
+        // const db = new IndexedDbModelSectionStore(appName, dataStoreApplicationType, new IndexedDb(indexedDbStoreName), dataStore)
+        const db = new IndexedDbModelSectionStore(indexedDbStoreName, new IndexedDb(indexedDbStoreName), dataStore)
         // db.open()
         return db;
       } else {
@@ -50,18 +50,18 @@ export function miroirStoreIndexedDbStartup() {
     "indexedDb",
     "data",
     async (
-      appName: string,
-      dataStoreApplicationType: DataStoreApplicationType,
-      section: ApplicationSection,
+      section: ApplicationSection, // TODO: remove?
       config: StoreConfiguration,
       dataStore?: IDataSectionStore
     ): Promise<IDataOrModelStore> => {
-      log.log('called registerStoreFactory function for',appName, section, config.emulatedServerType);
       if (config.emulatedServerType == "indexedDb") {
-        const db = new IndexedDbDataSectionStore(appName, dataStoreApplicationType, new IndexedDb(config.indexedDbName + '-data'))
+        log.log('called registerStoreFactory function for', config.emulatedServerType, config.indexedDbName);
+        const indexedDbStoreName = config.indexedDbName + '-data'
+        const db = new IndexedDbDataSectionStore(indexedDbStoreName, new IndexedDb(indexedDbStoreName))
         // db.open()
         return db;
       } else {
+        log.warn('called registerStoreFactory data for', config);
         return new ErrorDataStore()
       }
     }

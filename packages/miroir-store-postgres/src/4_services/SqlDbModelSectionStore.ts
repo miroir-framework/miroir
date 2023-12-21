@@ -22,18 +22,16 @@ export class SqlDbModelStore extends MixedSqlDbEntityAndInstanceStore implements
 
   // ##############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    sqlDbStoreName: string, // used only for debugging purposes
     connectionString:string,
     schema:string,
     sqlDbDataStore: IDataSectionStore,
   ) {
     super(
-      applicationName,
-      dataStoreType,
+      sqlDbStoreName,
       connectionString,
       schema,
-      "SqlDbModelStore" + " Application " + applicationName + " dataStoreType " + dataStoreType  + ' section model',
+      "SqlDbModelStore " + sqlDbStoreName  + ' section model',
       sqlDbDataStore,
     )
   }

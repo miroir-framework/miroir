@@ -30,7 +30,6 @@ import {
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
   applicationVersionLibraryInitialVersion,
-  createStoreControllers,
   defaultMiroirMetaModel,
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
@@ -189,7 +188,23 @@ export async function miroirBeforeAll(
 
       const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
 
-      await createStoreControllers(storeControllerManager, miroirConfig);
+      // await createStoreControllers(storeControllerManager, miroirConfig);
+      // throw new Error("BAAAAAAAAA!!!!");
+      
+      // const deployments = 
+      log.info("miroirBeforeAll emulated server config",miroirConfig)
+      const deployments = {
+        [applicationDeploymentMiroir.uuid]: miroirConfig.miroirServerConfig,
+        [applicationDeploymentLibrary.uuid]: miroirConfig.appServerConfig,
+      }
+      for (const deployment of Object.entries(deployments)) {
+        await storeControllerManager.addStoreController(
+          // deployment[1].model.applicationName,
+          // deployment[1].model.dataStoreType,
+          deployment[0],
+          deployment[1]
+        );
+      }
 
       const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);

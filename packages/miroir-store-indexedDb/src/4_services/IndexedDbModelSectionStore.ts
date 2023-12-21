@@ -23,19 +23,17 @@ export class IndexedDbModelSectionStore extends MixedIndexedDbEntityAndInstanceS
 
   // ##############################################################################################
   constructor(
-    applicationName: string,
-    dataStoreType: DataStoreApplicationType,
+    indexedDbStoreName: string,
     localUuidIndexedDb: IndexedDb,
     dataStore: IDataSectionStore,
   ) {
     super(
-      applicationName,
-      dataStoreType,
+      indexedDbStoreName,
       localUuidIndexedDb,
-      "IndexedDbModelSectionStore" + " Application " + applicationName + " dataStoreType " + dataStoreType,
+      "IndexedDbModelSectionStore " + indexedDbStoreName, // logheader
       dataStore
     );
-    log.log("IndexedDbModelSectionStore"+" Application " + applicationName + " dataStoreType " + dataStoreType,'dataStore',dataStore)
+    log.log("IndexedDbModelSectionStore " + indexedDbStoreName, dataStore)
   }
 
   // ##############################################################################################

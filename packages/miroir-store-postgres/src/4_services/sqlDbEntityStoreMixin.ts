@@ -32,16 +32,15 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
     public dataStore: IDataSectionStore;
 
     constructor(
-      //   applicationName: string,
-      //   dataStoreType: DataStoreApplicationType,
+      // sqlDbStoreName: string,
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
       //   public dataStore: IDataSectionStore,
       ...args: any[]
     ) {
-      super(...args.slice(0, 5));
-      this.dataStore = args[5];
+      super(...args.slice(0, 4));
+      this.dataStore = args[4];
       // log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',this.dataStore);
     }
 
@@ -97,10 +96,6 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
           log.error(
             this.logHeader,
             "createEntity",
-            "Application",
-            this.applicationName,
-            "dataStoreType",
-            this.dataStoreType,
             "could not insert in model schema for entity",
             entity
           );
@@ -112,10 +107,6 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
           log.error(
             this.logHeader,
             "createEntity",
-            "Application",
-            this.applicationName,
-            "dataStoreType",
-            this.dataStoreType,
             "could not insert in model schema for entityDefinition",
             entityDefinition
           );
@@ -161,7 +152,7 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
     }
     // ##############################################################################################
     async dropEntities(entityUuids: string[]) {
-      log.log("dropEntities parentUuid", entityUuids);
+      log.log(this.logHeader, "dropEntities parentUuid", entityUuids);
       for (const e of entityUuids) {
         await this.dropEntity(e);
       }

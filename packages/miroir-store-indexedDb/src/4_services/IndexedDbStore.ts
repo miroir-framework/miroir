@@ -24,26 +24,29 @@ export type MixableIndexedDbStore = GConstructor<IndexedDbStore>;
 
 // base class for IndexedDb store mixins
 export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
-  public applicationName: string;
-  public dataStoreType: DataStoreApplicationType;
+  public indexedDbStoreName: string;
   public localUuidIndexedDb: IndexedDb;
   public logHeader: string;
 
   // ##############################################################################################
   constructor(
-    // public applicationName: string;
-    // public dataStoreType: DataStoreApplicationType;
+    // public indexedDbStoreName: string; // used only for debugging purposes
     // public localUuidIndexedDb: IndexedDb;
     // public logHeader: string;
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    this.applicationName = args[0];
-    this.dataStoreType = args[1];
-    this.localUuidIndexedDb = args[2];
-    this.logHeader = args[3];
+    this.indexedDbStoreName = args[0];
+    this.localUuidIndexedDb = args[1];
+    this.logHeader = args[2];
     // log.log(this.logHeader,'IndexedDbStore constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
 
+    // #########################################################################################
+    getStoreName(): string {
+      return this.indexedDbStoreName;
+    }
+  
+  
   // ##################################################################################################
   async open(): Promise<void> {
     log.log(this.logHeader, "open(): opening");
@@ -82,8 +85,6 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
     log.log(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
-      // "dataStoreType",
-      // this.dataStoreType,
       "input: entity",
       entity,
       "entityDefinition",
@@ -96,10 +97,6 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
-        "Application",
-        this.applicationName,
-        "dataStoreType",
-        this.dataStoreType,
         "inconsistent input: given entityDefinition is not related to given entity."
       );
     } else {
@@ -110,8 +107,6 @@ export class IndexedDbStore implements IAbstractStore, IStorageSpaceHandler {
         log.debug(
           this.logHeader,
           "createStorageSpaceForInstancesOfEntity",
-          "dataStoreType",
-          this.dataStoreType,
           "input: entity",
           entity,
           "entityDefinition",

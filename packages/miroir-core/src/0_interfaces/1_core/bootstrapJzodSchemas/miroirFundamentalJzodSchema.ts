@@ -52,6 +52,19 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         ]
       },
+      "dataStoreApplicationType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "literal",
+            "definition": "miroir"
+          },
+          {
+            "type": "literal",
+            "definition": "app"
+          }
+        ]
+      },
       "entityInstance": {
         "type": "object",
         "nonStrict": true,

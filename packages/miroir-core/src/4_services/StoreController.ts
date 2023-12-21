@@ -50,13 +50,13 @@ export interface StoreControllerFactoryReturnType {
 // #######################################################################################################################
 export async function storeFactory (
   storeFactoryRegister:StoreFactoryRegister,
-  appName: string,
-  dataStoreApplicationType: DataStoreApplicationType,
+  // appName: string,
+  // dataStoreApplicationType: DataStoreApplicationType,
   section:ApplicationSection,
   config: StoreConfiguration,
   dataStore?: IDataSectionStore,
 ):Promise<IDataSectionStore | IModelSectionStore> {
-  log.debug('storeFactory called for',appName, dataStoreApplicationType, section, config);
+  log.info('storeFactory called for', section, config);
   if (section == 'model' && !dataStore) {
     throw new Error('storeFactory model section factory must receive data section store.')
   }
@@ -64,9 +64,11 @@ export async function storeFactory (
   const foundStoreFactory = storeFactoryRegister.get(storeFactoryRegisterKey);
   if (foundStoreFactory) {
     if (section == 'model') {
-      return foundStoreFactory(appName,dataStoreApplicationType,section,config,dataStore)
+      // return foundStoreFactory(appName,dataStoreApplicationType,section,config,dataStore)
+      return foundStoreFactory(section,config,dataStore)
     } else {
-      return foundStoreFactory(appName,dataStoreApplicationType,section,config)
+      // return foundStoreFactory(appName,dataStoreApplicationType,section,config)
+      return foundStoreFactory(section,config)
     }
   } else {
     throw new Error('foundStoreFactory is undefined for ' + config.emulatedServerType + ', section ' + section)
@@ -81,14 +83,18 @@ export class StoreController implements IStoreController{
   private logHeader: string;
 
   constructor(
-    public applicationName: string,
-    public dataStoreType: DataStoreApplicationType,
+    // public applicationName: string,
+    // public dataStoreType: DataStoreApplicationType,
     private modelSectionStore:IModelSectionStore,
     private dataSectionStore:IDataSectionStore,
   ){
-    this.logHeader = 'Application '+ this.applicationName +' dataStoreType ' + this.dataStoreType;
+    this.logHeader = 'StoreController '+ modelSectionStore.getStoreName();
   }
 
+    // #########################################################################################
+    getStoreName(): string {
+      return this.modelSectionStore.getStoreName();
+    }
 
   // #############################################################################################
   async initApplication(
@@ -284,7 +290,7 @@ export class StoreController implements IStoreController{
   
   // ##############################################################################################
   async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
-    log.info(this.logHeader,'upsertInstance','section',section,'type',this.dataStoreType,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
+    log.info(this.logHeader,'upsertInstance','section',section,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
     
     // if (this.getEntityUuids().includes(parentUuid)) {
     if (section == 'data') {

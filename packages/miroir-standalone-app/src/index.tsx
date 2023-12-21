@@ -10,16 +10,11 @@ import {
 } from "react-router-dom";
 
 import {
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
   ConfigurationService,
-  createStoreControllers,
   defaultLevels,
-  defaultMiroirMetaModel,
   DomainController,
   DomainControllerInterface,
   Endpoint,
-  entityDefinitionEntityDefinition,
   getLoggerName,
   LoggerInterface,
   MiroirConfig,
@@ -27,7 +22,6 @@ import {
   MiroirLoggerFactory,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  startLocalStoreControllers,
   StoreControllerManager
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
@@ -47,8 +41,8 @@ import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-filesystem.json";
+import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
 

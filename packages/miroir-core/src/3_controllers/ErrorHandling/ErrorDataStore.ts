@@ -4,6 +4,9 @@ import { IDataSectionStore } from "../../0_interfaces/4-services/StoreController
 
 export class ErrorDataStore implements IDataSectionStore {
   constructor() {}
+  getStoreName(): string {
+    throw new Error("Method not implemented.");
+  }
   open(): Promise<void> {
     throw new Error("Method not implemented.");
   }
