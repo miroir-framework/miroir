@@ -35,9 +35,7 @@ export class FileSystemStore implements IAbstractStore, IStorageSpaceHandler{
 
   // ##############################################################################################
   constructor(
-    // public applicationName: string,
-    // public applicationName: string,
-    // public dataStoreType: DataStoreApplicationType,
+    // public filesystemStoreName: string,
     // private directory: string,
     // public logHeader: string;
     ...args:any[] // mixin constructors are limited to args:any[] parameters

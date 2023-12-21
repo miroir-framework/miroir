@@ -43,6 +43,7 @@ import { cleanLevel } from "./miroir-fwk/4_view/constants";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-filesystem.json";
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
+import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
 
@@ -72,13 +73,15 @@ const miroirConfigFiles: {[k: string]: MiroirConfig} = {
   "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfig,
   "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfig,
   "miroirConfigRealServerFilesystem": miroirConfigRealServerFilesystem as any as MiroirConfig,
+  "miroirConfigRealServerSql": miroirConfigRealServerSql as any as MiroirConfig,
 }
 
 // ##############################################################################################
 // ##############################################################################################
 // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
-const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystem"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystem"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
 // ##############################################################################################
 

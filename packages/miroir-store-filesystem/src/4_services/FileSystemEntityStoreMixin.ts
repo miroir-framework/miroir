@@ -35,14 +35,18 @@ export function FileSystemDbEntityStoreMixin<TBase extends typeof MixedFileSyste
     public dataStore: IDataSectionStore;
 
     constructor(
-    // public applicationName: string, // used only for debugging purposes
-    // public dataStoreType: DataStoreApplicationType,
-    // private directory: string,
-    // public logHeader: string;
+    // filesystemStoreName: string,
+    // directory: string,
+    // logHeader: string,
+    // dataStore: IDataSectionStore,
     ...args:any[]
     ) { 
-      super(...args.slice(0,4));
-      this.dataStore = args[4];
+      super(
+        // public filesystemStoreName: string, // used only for debugging purposes
+        // private directory: string,
+        // public logHeader: string;
+        ...args.slice(0,3));
+      this.dataStore = args[3];
       log.log(this.logHeader,'MixedIndexedDbEntityStore constructor',args);
     }
 

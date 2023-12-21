@@ -15,22 +15,26 @@
     "storeConfiguration": {
       "miroirServerConfig":{
         "model": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/miroir_model"
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "miroir"
         },
         "data": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/miroir_data"
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "miroir"
         }
       },
       "appServerConfig": {
         "model": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/library_model"
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "library"
         },
         "data": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/library_data"
+          "emulatedServerType": "sql",
+          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "library"
         }
       }
     }
