@@ -167,8 +167,8 @@ export async function miroirBeforeAll(
         actionName: "openStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeConfiguration.miroirServerConfig,
-          [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeConfiguration.appServerConfig,
+          [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+          [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
@@ -186,7 +186,7 @@ export async function miroirBeforeAll(
     } else {
       let localMiroirStoreController, localAppStoreController;
 
-      const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+      const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {
@@ -253,6 +253,7 @@ export async function miroirBeforeEach(
   localAppStoreController: IStoreController,
 ):Promise<void> {
   
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
   if (!miroirConfig.emulateServer) {
     // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
     if (domainController) {
@@ -262,7 +263,6 @@ export async function miroirBeforeEach(
     }
   } else {
     try {
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
       await localAppStoreController.clear();
       await localMiroirStoreController.clear();
       try {
@@ -301,13 +301,13 @@ export async function miroirBeforeEach(
       console.error('beforeEach',error);
       throw(error);
     }
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
     // console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
     // console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
     // console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
     // console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
   }
 
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
   document.body.innerHTML = '';
 
   return Promise.resolve();

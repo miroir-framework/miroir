@@ -355,8 +355,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     actionName: "openStore",
                     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                     configuration: {
-                      [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeConfiguration.miroirServerConfig,
-                      [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeConfiguration.appServerConfig,
+                      [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
                     },
                     deploymentUuid: applicationDeploymentMiroir.uuid,
                   })

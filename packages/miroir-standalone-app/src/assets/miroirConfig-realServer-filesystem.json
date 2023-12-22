@@ -12,7 +12,7 @@
         }
       }
     },
-    "storeConfiguration": {
+    "storeSectionConfiguration": {
       "miroirServerConfig":{
         "model": {
           "emulatedServerType": "filesystem",

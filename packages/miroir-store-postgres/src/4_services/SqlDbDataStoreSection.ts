@@ -21,8 +21,6 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
   // ##############################################################################################
   constructor(
     sqlDbStoreName: string, // used only for debugging purposes
-    // applicationName: string, // used only for debugging purposes
-    // dataStoreType: DataStoreApplicationType, // used only for debugging purposes
     dataConnectionString:string,
     dataSchema:string,
   ) {

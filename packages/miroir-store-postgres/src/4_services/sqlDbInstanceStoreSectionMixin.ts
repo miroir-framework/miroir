@@ -19,8 +19,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     constructor(
       // actual arguments are:
-      // public applicationName: string, // used only for debugging purposes
-      // public dataStoreType: DataStoreApplicationType, // used only for debugging purposes
+      // public sqlDbStoreName: string,
       // public dataConnectionString:string,
       // public dataSchema:string,
       // public logHeader: string,
@@ -96,7 +95,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
 
     // ##############################################################################################
     async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      console.debug(this.logHeader, 'deleteDataInstance', parentUuid,instance);
+      console.debug(this.logHeader, 'deleteInstance', parentUuid,instance);
       const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel
       await sequelizeModel.destroy({where:{uuid:instance.uuid}});
       return Promise.resolve();

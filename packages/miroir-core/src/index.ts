@@ -26,6 +26,8 @@ export {
   MiroirAllFundamentalTypesUnion,
   StoreConfiguration,
   storeConfiguration,
+  StoreSectionConfiguration,
+  storeSectionConfiguration,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -300,8 +302,8 @@ export {
   IStorageSpaceHandler,
   IDataOrModelStore,
   IStoreController,
-  StoreFactory,
-  StoreFactoryRegister,
+  StoreSectionFactory,
+  StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { DomainController } from './3_controllers/DomainController';

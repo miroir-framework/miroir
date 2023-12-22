@@ -105,8 +105,8 @@ export async function refreshAllInstancesTest(
       );
 
       const createInstancesAction: DomainDataAction = {
-        actionName: "create",
         actionType: "DomainDataAction",
+        actionName: "create",
         objects: [
           {
             parentName: entityAuthor.name,
@@ -138,6 +138,8 @@ export async function refreshAllInstancesTest(
       );
     }
 
+    log.info("Refresh all Instances setup is finished.")
+
     // log.log(
     //   'after test preparation',
     //   await localAppStoreController?.getState()
@@ -155,6 +157,8 @@ export async function refreshAllInstancesTest(
       />,
       { store: reduxStore.getInnerStore() }
     );
+
+    log.info("Refresh all Instances setup is finished.")
 
     await act(async () => {
       await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {

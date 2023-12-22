@@ -51,8 +51,8 @@ import { refreshAllInstancesTest } from "./DomainController.Data.CRUD.functions"
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { ReduxStore } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
@@ -87,8 +87,8 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
-miroirStoreIndexedDbStartup();
-miroirStorePostgresStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
 
 
 let localMiroirStoreController: IStoreController;

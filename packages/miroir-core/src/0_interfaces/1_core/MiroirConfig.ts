@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ApplicationDeploymentSchema } from "../../0_interfaces/1_core/StorageConfiguration.js";
-import { StoreConfiguration, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { StoreSectionConfiguration, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export type DeploymentMode = 'monoUser' | 'multiUser';
 
@@ -14,14 +14,14 @@ declare interface MiroirConfigRoot {
 }
 
 export interface StoreUnitConfiguration {
-  model: StoreConfiguration;
-  data: StoreConfiguration;
+  model: StoreSectionConfiguration;
+  data: StoreSectionConfiguration;
 }
 
 export interface ServerConfig {
   rootApiUrl: string;
   dataflowConfiguration:z.infer<typeof ApplicationDeploymentSchema>;
-  storeConfiguration: {
+  storeSectionConfiguration: {
     miroirServerConfig:StoreUnitConfiguration;
     appServerConfig:StoreUnitConfiguration;
   }

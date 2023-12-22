@@ -37,8 +37,6 @@ export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 export type RemoteStoreRestAccessReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
 
 export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreRestAccessReduxSagaReturnType>;
-// export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType>;
-// export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreActionReturnType | RestClientCallReturnType>;
 
 
 export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {

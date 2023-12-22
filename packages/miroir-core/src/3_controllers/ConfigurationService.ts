@@ -4,7 +4,7 @@
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { StoreFactory, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -34,7 +34,7 @@ export interface PackageConfiguration {
  */
 export class ConfigurationService {
   static packages:PackageConfiguration[] = [];
-  static storeFactoryRegister:StoreFactoryRegister = new Map();
+  static StoreSectionFactoryRegister:StoreSectionFactoryRegister = new Map();
 
   constructor() {
     
@@ -48,10 +48,10 @@ export class ConfigurationService {
     this.packages.push(packageConfiguration);
   }
 
-  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeFactory: StoreFactory) {
-    log.info("ConfigurationService registerStoreSectionFactory",this.storeFactoryRegister);
-    this.storeFactoryRegister.set(
-      JSON.stringify({storageType, section}), storeFactory
+  public static registerStoreSectionFactory(storageType:StorageType, section: ApplicationSection, storeSectionFactory: StoreSectionFactory) {
+    log.info("ConfigurationService registerStoreSectionFactory",this.StoreSectionFactoryRegister);
+    this.StoreSectionFactoryRegister.set(
+      JSON.stringify({storageType, section}), storeSectionFactory
     );
   }
 

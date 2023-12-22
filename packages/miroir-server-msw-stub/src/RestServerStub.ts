@@ -39,8 +39,6 @@ export class RestServerStub {
       "RestServerStub constructor rootApiUrl",
       rootApiUrl,
       "localIndexedDbDataStores",
-      // localMiroirStoreController,
-      // localAppStoreController
     );
 
 
@@ -63,10 +61,8 @@ export class RestServerStub {
             return h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
               storeControllerManager,
-              miroirConfig,
               h.method /* method */,
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
-              // this.rootApiUrl + "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
               this.rootApiUrl + h.url,
               body, // body
               params

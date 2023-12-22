@@ -8,5 +8,5 @@ export {
   IndexedDb
 } from './4_services/IndexedDbSnakeCase.js';
 export {
-  miroirStoreIndexedDbStartup
+  miroirIndexedDbStoreSectionStartup
 } from './startup.js';

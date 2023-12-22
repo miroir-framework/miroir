@@ -354,7 +354,7 @@ export class DomainController implements DomainControllerInterface {
       // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
-        log.debug(
+        log.info(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction sending to remote storage instances",
           instances.parentName, instances.instances
         );
@@ -368,8 +368,8 @@ export class DomainController implements DomainControllerInterface {
             objects: instances.instances,
           });
       }
-      log.debug(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction calling handleLocalCacheCUDAction", domainAction
+      log.info(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction done calling handleRemoteStoreRestCRUDAction", domainAction
       );
       if (domainAction.actionName == "create") {
         const instanceAction: InstanceAction = {
@@ -383,7 +383,7 @@ export class DomainController implements DomainControllerInterface {
         // await this.localCache.handleEndpointAction(instanceAction);
         // await this.localCache.createInstance(deploymentUuid, domainAction.objects[0].applicationSection, domainAction.objects);
         // await this.endpoint.handleAction(instanceAction);
-        this.endpoint.handleAction(instanceAction);
+        await this.endpoint.handleAction(instanceAction);
         
       } else {
         const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
@@ -399,9 +399,9 @@ export class DomainController implements DomainControllerInterface {
         await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
       }
 
-      log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
+      log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction end", domainAction);
     } else {
-      log.error(
+      log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction could not handle action name",
         domainAction.actionName,
         "for action",

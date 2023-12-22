@@ -263,21 +263,21 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
-      "indexedDbStoreConfiguration": {
+      "indexedDbStoreSectionConfiguration": {
         "type": "object",
         "definition": {
           "emulatedServerType": { "type":"literal", "definition": "indexedDb" },
           "indexedDbName": { "type": "simpleType", "definition": "string" }
         }
       },
-      "filesystemDbStoreConfiguration": {
+      "filesystemDbStoreSectionConfiguration": {
         "type": "object",
         "definition": {
           "emulatedServerType": { "type":"literal", "definition": "filesystem" },
           "directory": { "type": "simpleType", "definition": "string" }
         }
       },
-      "sqlDbStoreConfiguration": {
+      "sqlDbStoreSectionConfiguration": {
         "type": "object",
         "definition": {
           "emulatedServerType": { "type":"literal", "definition": "sql" },
@@ -285,22 +285,38 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "schema": { "type": "simpleType", "definition": "string" }
         }
       },
-      "storeConfiguration": {
+      "storeSectionConfiguration": {
         "type": "union",
         "definition": [
           {
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "indexedDbStoreConfiguration"}
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "indexedDbStoreSectionConfiguration"}
           },
           {
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "filesystemDbStoreConfiguration"}
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "filesystemDbStoreSectionConfiguration"}
           },
           {
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "sqlDbStoreConfiguration"}
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "sqlDbStoreSectionConfiguration"}
           },
         ]
+      },
+      "storeConfiguration": {
+        "type": "record",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "model": {
+              "type": "schemaReference",
+              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+            },
+            "data": {
+              "type": "schemaReference",
+              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+            }
+          }
+        }
       },
       "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "actionTransformer": {

@@ -50,8 +50,8 @@ import {
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
 
@@ -72,8 +72,8 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
-miroirStoreIndexedDbStartup();
-miroirStorePostgresStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
 
 
 let localMiroirStoreController: IStoreController;
@@ -686,8 +686,6 @@ describe.sequential(
                 modelEntityUpdate: {
                   updateActionType: "ModelEntityUpdate",
                   updateActionName: "createEntity",
-                  // parentName: entityDefinitionEntityDefinition.name,
-                  // parentUuid: entityDefinitionEntityDefinition.uuid,
                   entities: [
                     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
                     {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
@@ -699,6 +697,11 @@ describe.sequential(
             await act(
               async () => {
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleDomainTransactionalAction(
+                  applicationDeploymentLibrary.uuid,
+                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
               }
             );
               
@@ -734,46 +737,46 @@ describe.sequential(
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
               }
             );
-  
-          }
+          } // end if (miroirConfig.emulateServer)
     
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-            }
-          );
+          // // refresh current LocalStore
+          // await act(
+          //   async () => {
+          //     await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+          //     await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+          //   }
+          // );
 
-          const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
-            update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
-              modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
-              },
-            }
-          };
+          // const createAction: DomainAction = {
+          //   actionType:"DomainTransactionalAction",
+          //   actionName: "updateEntity",
+          //   update: {
+          //     updateActionName:"WrappedTransactionalEntityUpdate",
+          //     modelEntityUpdate: {
+          //       updateActionType: "ModelEntityUpdate",
+          //       updateActionName: "createEntity",
+          //       entities: [
+          //         {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+          //       ],
+          //     },
+          //   }
+          // };
 
-          console.log('update Author entity setup: adding Author entity locally.');
-          console.log('reduxStore',reduxStore);
-          console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+          // console.log('update Author entity setup: adding Author entity locally.');
+          // console.log('reduxStore',reduxStore);
+          // console.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid).',reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          // await act(
+          //   async () => {
+          //     await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          //   }
+          // );
 
-          console.log('update Author entity setup: adding Author entity remotely by commit.')
-          await act(
-            async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-            }
-          );
+          // console.log('update Author entity setup: adding Author entity remotely by commit.')
+          // await act(
+          //   async () => {
+          //     await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          //   }
+          // );
   
   
           const {

@@ -32,7 +32,7 @@ export async function restMethodGetHandler
 (
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod | undefined, // unused!
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -40,7 +40,7 @@ export async function restMethodGetHandler
   params: any,
 ) {
   // const localParams = params ?? request.params;
-  log.debug(
+  log.info(
     "restMethodGetHandler get miroirWithDeployment/ called using",
     "method",
     method,
@@ -70,7 +70,7 @@ export async function restMethodGetHandler
   const targetStoreController =
     deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
-  log.trace(
+  log.info(
     "restMethodGetHandler get miroirWithDeployment/ using application",
     (targetStoreController as any)["applicationName"],
     "deployment",
@@ -84,8 +84,12 @@ export async function restMethodGetHandler
       { section, parentUuid },
       ["section", "parentUuid"],
       [],
-      async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> =>
-        wrapResults(await targetStoreController.getInstances.bind(targetStoreController)(section, parentUuid)),
+      async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+        const getInstancesFunction = targetStoreController.getInstances.bind(targetStoreController);
+        const results = await getInstancesFunction(section, parentUuid)
+        log.info("restMethodGetHandler found results", results)
+        return wrapResults(results);
+      },
       continuationFunction(response)
     );
   } catch (error) {
@@ -107,7 +111,7 @@ export async function restMethodGetHandler
 export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -163,7 +167,7 @@ export async function restMethodsPostPutDeleteHandler(
 export async function restMethodModelOLDActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -202,7 +206,7 @@ export async function restMethodModelOLDActionRunnerHandler(
 export async function restMethodEntityActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -237,7 +241,7 @@ export async function restMethodEntityActionRunnerHandler(
 export async function restActionRunner(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -264,7 +268,7 @@ export async function restActionRunner(
     actionName,
     body,
     storeControllerManager,
-    miroirConfig,
+    // miroirConfig,
   );
   return continuationFunction(response)(result)
 }

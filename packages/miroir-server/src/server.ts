@@ -5,7 +5,6 @@ import {
   ConfigurationService,
   LoggerFactoryInterface,
   LoggerInterface,
-  MiroirConfig,
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   StoreControllerManager,
@@ -15,14 +14,19 @@ import {
   restServerDefaultHandlers
 } from "miroir-core";
 
+import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+
 import { cleanLevel, packageName } from "./constants";
 
 // import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
+  "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
   // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
-  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined}
+  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
 }
 
 import log from 'loglevelnext';
@@ -51,13 +55,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
-import { miroirStorePostgresStartup } from 'miroir-store-postgres';
-import configFileContents from "../config/miroirConfig.server-indexedDb.json";
+// import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 // myLogger.info('configFileContents',configFileContents)
 
-const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+// const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
 
 myLogger.info("server starting log:", myLogger);
 
@@ -71,48 +72,47 @@ const users = [];
 
 myLogger.info(`Server being set-up, going to execute on the port::${port}`);
 
-const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
 
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
-miroirStoreIndexedDbStartup();
-miroirStorePostgresStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
 
 
-if (miroirConfig.emulateServer) { // _TODO: spurious test, the MiroirConfig type must be corrected.
-      // ##############################################################################################
-      // CREATING ENDPOINTS SERVICING CRUD HANDLERS
-      for (const op of restServerDefaultHandlers) {
-        (app as any)[op.method](op.url, async (request:Request<{}, any, any, any, Record<string, any>>, response:any, context:any) => {
-          const body = request.body;
-          
-          // console.log("received", op.method, op.url, "body", body)
-          // console.log("received", op.method, op.url, "request", request)
+// if (miroirConfig.emulateServer) { // _TODO: spurious test, the MiroirConfig type must be corrected.
+// ##############################################################################################
+// CREATING ENDPOINTS SERVICING CRUD HANDLERS
+for (const op of restServerDefaultHandlers) {
+  (app as any)[op.method](op.url, async (request:Request<{}, any, any, any, Record<string, any>>, response:any, context:any) => {
+    const body = request.body;
+    
+    // console.log("received", op.method, op.url, "body", body)
+    // console.log("received", op.method, op.url, "request", request)
 
-          const result = await op.handler(
-            (response: any) => response.json.bind(response),
-            storeControllerManager,
-            miroirConfig,
-            op.method,
-            response, 
-            request.originalUrl, 
-            body, 
-            request.params
-          );
-          return result;
-        });
-      }
-
-      // ##############################################################################################
-      app.get('/', (req,res) => {
-        res.send('App Works !!!!');
-      });
-          
-      // ##############################################################################################
-      app.listen(port, () => {
-          myLogger.info(`Server listening on the port::${port}`);
-      });
-} else {
-  throw new Error("Configuration has emulateServer = false");
-  // exit(1);
+    const result = await op.handler(
+      (response: any) => response.json.bind(response),
+      storeControllerManager,
+      op.method,
+      response, 
+      request.originalUrl, 
+      body, 
+      request.params
+    );
+    return result;
+  });
 }
+
+// ##############################################################################################
+app.get('/', (req,res) => {
+  res.send('App Works !!!!');
+});
+    
+// ##############################################################################################
+app.listen(port, () => {
+    myLogger.info(`Server listening on the port::${port}`);
+});
+// } else {
+//   throw new Error("Configuration has emulateServer = false");
+//   // exit(1);
+// }

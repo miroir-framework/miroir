@@ -334,30 +334,31 @@ export type InstanceAction = {
     applicationSection: ApplicationSection;
     objects: EntityInstanceCollection[];
 };
-export type IndexedDbStoreConfiguration = {
+export type IndexedDbStoreSectionConfiguration = {
     emulatedServerType: "indexedDb";
     indexedDbName: string;
 };
-export type FilesystemDbStoreConfiguration = {
+export type FilesystemDbStoreSectionConfiguration = {
     emulatedServerType: "filesystem";
     directory: string;
 };
-export type SqlDbStoreConfiguration = {
+export type SqlDbStoreSectionConfiguration = {
     emulatedServerType: "sql";
     connectionString: string;
     schema: string;
 };
-export type StoreConfiguration = IndexedDbStoreConfiguration | FilesystemDbStoreConfiguration | SqlDbStoreConfiguration;
+export type StoreSectionConfiguration = IndexedDbStoreSectionConfiguration | FilesystemDbStoreSectionConfiguration | SqlDbStoreSectionConfiguration;
+export type StoreConfiguration = {
+    [x: string]: {
+        model: StoreSectionConfiguration;
+        data: StoreSectionConfiguration;
+    };
+};
 export type StoreAction = {
     actionType: "storeAction";
     actionName: "openStore";
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    configuration: {
-        [x: string]: {
-            model: StoreConfiguration;
-            data: StoreConfiguration;
-        };
-    };
+    configuration: StoreConfiguration;
     deploymentUuid?: string | undefined;
 } | {
     actionType: "storeAction";
@@ -427,11 +428,12 @@ export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), paren
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
 export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
 export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
-export const indexedDbStoreConfiguration: z.ZodType<IndexedDbStoreConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
-export const filesystemDbStoreConfiguration: z.ZodType<FilesystemDbStoreConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
-export const sqlDbStoreConfiguration: z.ZodType<SqlDbStoreConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string()}).strict();
-export const storeConfiguration: z.ZodType<StoreConfiguration> = z.union([z.lazy(() =>indexedDbStoreConfiguration), z.lazy(() =>filesystemDbStoreConfiguration), z.lazy(() =>sqlDbStoreConfiguration)]);
-export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.object({model:z.lazy(() =>storeConfiguration), data:z.lazy(() =>storeConfiguration)}).strict()), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
+export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
+export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
+export const sqlDbStoreSectionConfiguration: z.ZodType<SqlDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string()}).strict();
+export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z.union([z.lazy(() =>indexedDbStoreSectionConfiguration), z.lazy(() =>filesystemDbStoreSectionConfiguration), z.lazy(() =>sqlDbStoreSectionConfiguration)]);
+export const storeConfiguration: z.ZodType<StoreConfiguration> = z.record(z.string(),z.object({model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict());
+export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();

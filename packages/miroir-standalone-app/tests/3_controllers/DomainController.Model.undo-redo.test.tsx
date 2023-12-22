@@ -40,8 +40,8 @@ import {
 
 import { miroirAppStartup } from "miroir-standalone-app/src/startup";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
-import { miroirStorePostgresStartup } from "miroir-store-postgres";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
 
@@ -73,8 +73,8 @@ console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 miroirAppStartup();
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
-miroirStoreIndexedDbStartup();
-miroirStorePostgresStartup();
+miroirIndexedDbStoreSectionStartup();
+miroirPostgresStoreSectionStartup();
 
 let localMiroirStoreController: IStoreController;
 let localAppStoreController: IStoreController;

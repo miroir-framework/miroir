@@ -36,7 +36,7 @@ export interface HttpResponseBodyFormat {
 export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
   method: HttpMethod | undefined, // unused!
   response: any,
   effectiveUrl: string, // log only, to remove?

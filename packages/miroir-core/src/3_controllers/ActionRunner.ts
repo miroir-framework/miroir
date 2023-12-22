@@ -1,4 +1,3 @@
-import { MiroirConfig } from "../0_interfaces/1_core/MiroirConfig.js";
 import { EntityDefinition, ModelAction, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
@@ -269,7 +268,7 @@ export async function actionRunner(
   actionName:string,
   body:any,
   storeControllerManager: StoreControllerManagerInterface,
-  miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfig,
 ):Promise<void> {
   log.info('###################################### actionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
@@ -305,7 +304,7 @@ export async function actionRunner(
       break;
     }
     case "closeStore": {
-      log.info('actionRunner closeStore',miroirConfig);
+      log.info('actionRunner closeStore');
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
       await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);

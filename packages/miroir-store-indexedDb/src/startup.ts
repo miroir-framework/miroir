@@ -1,19 +1,17 @@
 import {
   ApplicationSection,
   ConfigurationService,
-  DataStoreApplicationType,
-  IDataStoreSection,
-  StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
-  IModelStoreSection,
+  IDataOrModelStore,
+  IDataStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
-  IDataOrModelStore,
+  StoreSectionConfiguration,
+  getLoggerName
 } from "miroir-core";
-import { IndexedDbModelStoreSection } from "./4_services/IndexedDbModelStoreSection.js";
 import { IndexedDbDataStoreSection } from "./4_services/IndexedDbDataStoreSection.js";
+import { IndexedDbModelStoreSection } from "./4_services/IndexedDbModelStoreSection.js";
 import { IndexedDb } from "./4_services/IndexedDbSnakeCase.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
@@ -24,13 +22,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export function miroirStoreIndexedDbStartup() {
+export function miroirIndexedDbStoreSectionStartup() {
   ConfigurationService.registerStoreSectionFactory(
     "indexedDb",
     "model",
     async (
       section: ApplicationSection, // TODO: remove?
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataOrModelStore> => {
       log.log('called registerStoreSectionFactory function for',section, config.emulatedServerType);
@@ -50,7 +48,7 @@ export function miroirStoreIndexedDbStartup() {
     "data",
     async (
       section: ApplicationSection, // TODO: remove?
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataOrModelStore> => {
       if (config.emulatedServerType == "indexedDb") {

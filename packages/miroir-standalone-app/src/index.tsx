@@ -25,7 +25,7 @@ import {
   StoreControllerManager
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
-import { miroirStoreIndexedDbStartup } from "miroir-store-indexedDb";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from './loglevelnextImporter';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
@@ -134,9 +134,9 @@ async function start(root:Root) {
 
   miroirAppStartup();
   miroirCoreStartup();
-  miroirStoreIndexedDbStartup();
+  miroirIndexedDbStoreSectionStartup();
 
-  const storeControllerManager = new StoreControllerManager(ConfigurationService.storeFactoryRegister)
+  const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
 
 
   if (process.env.NODE_ENV === "development") {

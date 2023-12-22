@@ -19,15 +19,15 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbEntityStoreMixin");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbEntityStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
 });
 
-export const MixedSqlDbEntityAndInstanceStoreSection = SqlDbEntityStoreMixin(SqlDbInstanceStoreSectionMixin(SqlDbStoreSection));
+export const MixedSqlDbEntityAndInstanceStoreSection = SqlDbEntityStoreSectionMixin(SqlDbInstanceStoreSectionMixin(SqlDbStoreSection));
 
-export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(Base: TBase) {
+export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(Base: TBase) {
   return class MixedSqlDbEntityStoreSection extends Base implements IAbstractEntityStoreSection, IAbstractInstanceStoreSection {
     public dataStore: IDataStoreSection;
 
@@ -36,7 +36,7 @@ export function SqlDbEntityStoreMixin<TBase extends typeof MixedSqlDbInstanceSto
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
-      //   public dataStore: IDataStoreSection,
+      // dataStore: IDataStoreSection,
       ...args: any[]
     ) {
       super(...args.slice(0, 4));

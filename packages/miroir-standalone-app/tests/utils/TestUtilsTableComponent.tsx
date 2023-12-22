@@ -72,8 +72,8 @@ export const TestUtilsTableComponent = (
     Report:deploymentReports,
   }
 
-  log.debug("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
-  log.debug("TestUtilsTableComponent libraryAppEntities",entitiesOfDataSection, "deploymentReports", deploymentReports);
+  log.info("TestUtilsTableComponent display instances of entity named",props.entityName, 'uuid', props.entityUuid);
+  log.info("TestUtilsTableComponent libraryAppEntities",entitiesOfDataSection, "deploymentReports", deploymentReports);
 
   // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
   let instancesToDisplay:EntityInstance[];
@@ -88,7 +88,8 @@ export const TestUtilsTableComponent = (
     currentMiroirEntity = entitiesOfDataSection?.find(e=>e?.uuid === props.entityUuid) as MetaEntity;
     currentMiroirEntityDefinition = entityDefinitionsOfDataSection?.find(e=>e?.entityUuid === currentMiroirEntity?.uuid) as EntityDefinition;
 
-    selectInstanceArrayForDeploymentSectionEntity
+
+    // selectInstanceArrayForDeploymentSectionEntity
     // const instancesToDisplaySelectorParams:LocalCacheEntityInstancesSelectorParams = React.useMemo(
     const instancesToDisplaySelectorParams:LocalCacheQueryParams = React.useMemo(
       () => ({
@@ -106,14 +107,14 @@ export const TestUtilsTableComponent = (
       selectInstanceArrayForDeploymentSectionEntity(state, instancesToDisplaySelectorParams)
     ) as EntityInstanceWithName[];
   }
-  log.debug("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
-  log.debug("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
+  log.info("TestUtilsTableComponent currentMiroirEntity",JSON.stringify(currentMiroirEntity));
+  log.info("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(currentMiroirEntityDefinition));
   
-  log.debug("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
+  log.info("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
   // const currentAttributes = currentMiroirEntityDefinition?.attributes ? currentMiroirEntityDefinition?.attributes?.filter(a=>a.name!=='parentUuid'):[];
   const currentAttributes = currentMiroirEntityDefinition?.jzodSchema ? Object.entries(currentMiroirEntityDefinition?.jzodSchema.definition)?.filter(a=>a[0]!=='parentUuid'):[];
-  log.debug("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
+  log.info("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>
       {/* <span>

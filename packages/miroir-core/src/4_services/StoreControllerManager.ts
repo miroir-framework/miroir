@@ -1,8 +1,8 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { StoreUnitConfiguration } from "../0_interfaces/1_core/MiroirConfig";
-import { IDataStoreSection, IModelStoreSection, IStoreController, StoreFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
+import { IDataStoreSection, IModelStoreSection, IStoreController, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
-import { StoreController, storeFactory } from "./StoreController";
+import { StoreController, storeSectionFactory } from "./StoreController";
 
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { packageName } from "../constants";
@@ -23,7 +23,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
   private storeControllers:{ [deploymentUuid: Uuid]: IStoreController } = {};
 
   constructor(
-    private storeFactoryRegister:StoreFactoryRegister,
+    private StoreSectionFactoryRegister:StoreSectionFactoryRegister,
   ) {
     
   }
@@ -37,13 +37,13 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     if (this.storeControllers[deploymentUuid]) {
       log.info("addStoreController for", deploymentUuid,"already exists, doing nothing!")
     } else {
-      const dataStore = (await storeFactory(
-        this.storeFactoryRegister,
+      const dataStore = (await storeSectionFactory(
+        this.StoreSectionFactoryRegister,
         "data",
         config.data
       )) as IDataStoreSection;
-      const modelStore = (await storeFactory(
-        this.storeFactoryRegister,
+      const modelStore = (await storeSectionFactory(
+        this.StoreSectionFactoryRegister,
         "model",
         config.model,
         dataStore

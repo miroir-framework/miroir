@@ -34,7 +34,7 @@ export const generateRestServiceResponse = async (
   method: (...params: any)=>Promise<HttpResponseBodyFormat>, // async method, returns promise
   returnJsonResultContinuation:(a:any)=>any,
 ) => {
-  log.debug('generateRestServiceResponse called with params',params);
+  log.info('generateRestServiceResponse called with params',params);
   
   let localData: HttpResponseBodyFormat = {instances:[]};
   let paramVals: string[] = [];

@@ -184,6 +184,6 @@ export async function modelInitialize(
   }
 
 
-  log.info(logHeader, 'modelInitialize done',await storeController.getState());
+  log.info(logHeader, 'modelInitialize done', JSON.stringify({model: await storeController.getModelState(), data: await storeController.getDataState()}));
   return Promise.resolve(undefined);
 }

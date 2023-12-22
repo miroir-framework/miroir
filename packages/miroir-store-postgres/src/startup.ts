@@ -1,21 +1,20 @@
 import {
   ApplicationSection,
   ConfigurationService,
-  DataStoreApplicationType,
-  IDataStoreSection,
-  StoreConfiguration,
   ErrorDataStore,
   ErrorModelStore,
+  IDataStoreSection,
   IModelStoreSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName,
+  StoreSectionConfiguration,
+  getLoggerName
 } from "miroir-core";
-import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
+import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
 
-import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_services/constants.js";
+import { packageName } from "./constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"startup");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -23,13 +22,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export function miroirStorePostgresStartup() {
+export function miroirPostgresStoreSectionStartup() {
   ConfigurationService.registerStoreSectionFactory(
     "sql",
     "model",
     async (
       section: ApplicationSection,
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
       log.log('called registerStoreSectionFactory function for', section, 'sql', config);
@@ -52,7 +51,7 @@ export function miroirStorePostgresStartup() {
     "data",
     async (
       section: ApplicationSection,
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
       log.log('called registerStoreSectionFactory function for', section, 'sql', config);

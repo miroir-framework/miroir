@@ -28,8 +28,8 @@ import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { loadTestConfigFiles, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirStoreIndexedDbStartup } from 'miroir-store-indexedDb';
-import { miroirStorePostgresStartup } from 'miroir-store-postgres';
+import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
+import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 const env:any = (import.meta as any).env
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -50,8 +50,8 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     miroirFileSystemStoreSectionStartup();
-    miroirStoreIndexedDbStartup();
-    miroirStorePostgresStartup();
+    miroirIndexedDbStoreSectionStartup();
+    miroirPostgresStoreSectionStartup();
     if (!miroirConfig.emulateServer) {
       throw new Error("LocalStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
     } else {

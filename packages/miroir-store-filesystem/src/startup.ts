@@ -1,8 +1,7 @@
 import {
   ApplicationSection,
   ConfigurationService,
-  DataStoreApplicationType,
-  StoreConfiguration,
+  StoreSectionConfiguration,
   ErrorDataStore,
   ErrorModelStore,
   IDataStoreSection,
@@ -28,7 +27,7 @@ export function miroirFileSystemStoreSectionStartup() {
     "model",
     async (
       section: ApplicationSection, // TODO: remove!
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
       
@@ -51,7 +50,7 @@ export function miroirFileSystemStoreSectionStartup() {
     "data",
     async (
       section: ApplicationSection,
-      config: StoreConfiguration,
+      config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
       if (config.emulatedServerType == "filesystem") {

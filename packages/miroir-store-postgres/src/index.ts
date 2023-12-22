@@ -5,5 +5,5 @@ export {
   SqlDbModelStoreSection,
 } from './4_services/SqlDbModelStoreSection.js'
 export {
-  miroirStorePostgresStartup,
+  miroirPostgresStoreSectionStartup,
 } from './startup.js'
