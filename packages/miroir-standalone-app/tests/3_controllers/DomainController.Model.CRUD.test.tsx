@@ -15,7 +15,7 @@ import {
   EntityInstance,
   IStoreController,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
   applicationDeploymentLibrary,
@@ -88,7 +88,7 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
+      miroirConfig as MiroirConfigClient,
       setupServer,
     );
 
@@ -667,7 +667,7 @@ describe.sequential(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityReport.name}/>
           const user = userEvent.setup()
   
-          if (miroirConfig.emulateServer) {
+          if (miroirConfig.client.emulateServer) {
             await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
             await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
             // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
@@ -737,7 +737,7 @@ describe.sequential(
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
               }
             );
-          } // end if (miroirConfig.emulateServer)
+          } // end if (miroirConfig.client.emulateServer)
     
           // // refresh current LocalStore
           // await act(

@@ -8,7 +8,7 @@ import {
   EntityDefinition,
   EntityInstance,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   applicationDeploymentMiroir,
   miroirCoreStartup
 } from "miroir-core";
@@ -51,7 +51,7 @@ import { JzodElementRecord, JzodEnumSchemaToJzodElementResolver, getCurrentEnumJ
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-mixed_indexedDb-sql.json";
 // import configFileContents from "miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json";
 
-const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
 
 miroirAppStartup();
 miroirCoreStartup();

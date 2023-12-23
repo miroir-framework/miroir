@@ -1,10 +1,12 @@
 {
-  "emulateServer": false,
-  "serverConfig":{
-    "rootApiUrl":"http://localhost:3080"
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+  "client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080"
+    },
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
 }

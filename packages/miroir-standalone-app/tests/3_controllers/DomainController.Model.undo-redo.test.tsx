@@ -11,7 +11,7 @@ import {
   EntityDefinition,
   IStoreController,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
   applicationDeploymentLibrary,
@@ -87,7 +87,7 @@ let miroirContext: MiroirContext;
 beforeAll(
   async () => {
     const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
+      miroirConfig as MiroirConfigClient,
       setupServer,
     );
     if (wrapped) {

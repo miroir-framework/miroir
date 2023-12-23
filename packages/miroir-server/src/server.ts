@@ -30,6 +30,7 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 }
 
 import log from 'loglevelnext';
+import { readFileSync } from 'fs';
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
@@ -53,12 +54,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(fs.readFileSync(new URL('../config/miroirConfig.server-indexedDb.json')).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 
 // import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 // myLogger.info('configFileContents',configFileContents)
 
-// const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+// const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
 
 myLogger.info("server starting log:", myLogger);
 
@@ -80,16 +81,12 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-// if (miroirConfig.emulateServer) { // _TODO: spurious test, the MiroirConfig type must be corrected.
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
   (app as any)[op.method](op.url, async (request:Request<{}, any, any, any, Record<string, any>>, response:any, context:any) => {
     const body = request.body;
     
-    // console.log("received", op.method, op.url, "body", body)
-    // console.log("received", op.method, op.url, "request", request)
-
     const result = await op.handler(
       (response: any) => response.json.bind(response),
       storeControllerManager,
@@ -112,7 +109,3 @@ app.get('/', (req,res) => {
 app.listen(port, () => {
     myLogger.info(`Server listening on the port::${port}`);
 });
-// } else {
-//   throw new Error("Configuration has emulateServer = false");
-//   // exit(1);
-// }

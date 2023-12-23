@@ -27,7 +27,7 @@ import {
   IStoreController,
   LoggerInterface,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
   reportBookList
@@ -51,7 +51,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 export async function refreshAllInstancesTest(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   reduxStore: ReduxStore,
@@ -65,7 +65,7 @@ export async function refreshAllInstancesTest(
 
     // await localDataStore.clear();
     // await localDataStore.initModel();
-    if (miroirConfig.emulateServer) {
+    if (miroirConfig.client.emulateServer) {
       await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
       await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
       await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);

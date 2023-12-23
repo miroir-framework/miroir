@@ -1,42 +1,44 @@
 {
-  "emulateServer": false,
-  "serverConfig":{
-    "rootApiUrl":"http://localhost:3080",
-    "dataflowConfiguration": {
-      "type":"singleNode",
-      "metaModel": {
-        "location": {
-          "side":"server",
-          "type": "filesystem",
-          "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+  "client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080",
+      "dataflowConfiguration": {
+        "type":"singleNode",
+        "metaModel": {
+          "location": {
+            "side":"server",
+            "type": "filesystem",
+            "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+          }
+        }
+      },
+      "storeSectionConfiguration": {
+        "miroirServerConfig":{
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/miroir_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/miroir_data"
+          }
+        },
+        "appServerConfig": {
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/library_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/library_data"
+          }
         }
       }
     },
-    "storeSectionConfiguration": {
-      "miroirServerConfig":{
-        "model": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/miroir_model"
-        },
-        "data": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/miroir_data"
-        }
-      },
-      "appServerConfig": {
-        "model": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/library_model"
-        },
-        "data": {
-          "emulatedServerType": "filesystem",
-          "directory":"../miroir-standalone-app/tests/tmp/library_data"
-        }
-      }
-    }
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
 }

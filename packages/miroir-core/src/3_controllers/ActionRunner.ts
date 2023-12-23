@@ -268,7 +268,7 @@ export async function actionRunner(
   actionName:string,
   body:any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfig,
+  // miroirConfig:MiroirConfigClient,
 ):Promise<void> {
   log.info('###################################### actionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());

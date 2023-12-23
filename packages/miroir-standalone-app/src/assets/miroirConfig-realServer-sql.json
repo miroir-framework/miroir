@@ -1,46 +1,48 @@
 {
-  "emulateServer": false,
-  "serverConfig":{
-    "rootApiUrl":"http://localhost:3080",
-    "dataflowConfiguration": {
-      "type":"singleNode",
-      "metaModel": {
-        "location": {
-          "side":"server",
-          "type": "filesystem",
-          "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+"client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080",
+      "dataflowConfiguration": {
+        "type":"singleNode",
+        "metaModel": {
+          "location": {
+            "side":"server",
+            "type": "filesystem",
+            "location":"C:/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/assets"
+          }
+        }
+      },
+      "storeSectionConfiguration": {
+        "miroirServerConfig":{
+          "model": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "miroir"
+          },
+          "data": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "miroir"
+          }
+        },
+        "appServerConfig": {
+          "model": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "library"
+          },
+          "data": {
+            "emulatedServerType": "sql",
+            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+            "schema": "library"
+          }
         }
       }
     },
-    "storeSectionConfiguration": {
-      "miroirServerConfig":{
-        "model": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "miroir"
-        },
-        "data": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "miroir"
-        }
-      },
-      "appServerConfig": {
-        "model": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "library"
-        },
-        "data": {
-          "emulatedServerType": "sql",
-          "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-          "schema": "library"
-        }
-      }
-    }
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
 }

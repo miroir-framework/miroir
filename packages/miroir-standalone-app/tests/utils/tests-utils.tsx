@@ -16,7 +16,7 @@ import {
   Endpoint,
   IStoreController,
   LoggerInterface,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
   StoreControllerManager,
@@ -122,12 +122,12 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ############################################################################################################
 // ############################################################################################################
 // ############################################################################################################
-export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: MiroirConfig) {
+export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: MiroirConfigClient) {
   let result:MiroirIntegrationTestEnvironment = {} as MiroirIntegrationTestEnvironment;
 
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
+      miroirConfig as MiroirConfigClient,
       setupServer,
     );
     if (wrapped) {
@@ -141,14 +141,14 @@ export async function miroirIntegrationTestEnvironmentFactory(miroirConfig: Miro
 
 // ################################################################################################
 export async function miroirBeforeAll(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any,
 ):Promise< BeforeAllReturnType | undefined > {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
 
     const wrappedReduxStore = await createReduxStoreAndRestClient(
-      miroirConfig as MiroirConfig,
+      miroirConfig as MiroirConfigClient,
       fetch,
     );
 
@@ -159,7 +159,7 @@ export async function miroirBeforeAll(
       new Endpoint(wrappedReduxStore.reduxStore)
     );
 
-    if (!miroirConfig.emulateServer) {
+    if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
       const remoteStore = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
@@ -167,8 +167,8 @@ export async function miroirBeforeAll(
         actionName: "openStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
-          [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+          [applicationDeploymentMiroir.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig,
+          [applicationDeploymentLibrary.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
@@ -190,8 +190,8 @@ export async function miroirBeforeAll(
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {
-        [applicationDeploymentMiroir.uuid]: miroirConfig.miroirServerConfig,
-        [applicationDeploymentLibrary.uuid]: miroirConfig.appServerConfig,
+        [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
+        [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
       }
       for (const deployment of Object.entries(deployments)) {
         await storeControllerManager.addStoreController(
@@ -247,14 +247,14 @@ export async function miroirBeforeAll(
 
 // ###############################################################################################
 export async function miroirBeforeEach(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
 ):Promise<void> {
   
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
-  if (!miroirConfig.emulateServer) {
+  if (!miroirConfig.client.emulateServer) {
     // throw new Error('emulateServer must be true in miroirConfig, tests must be independent of server.'); // TODO: really???
     if (domainController) {
       await resetAndInitMiroirAndApplicationDatabase(domainController);
@@ -315,13 +315,13 @@ export async function miroirBeforeEach(
 
 // #################################################################################################################
 export async function miroirAfterEach(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
-  if (!miroirConfig.emulateServer) {
+  if (!miroirConfig.client.emulateServer) {
     console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: empty clear / reset datastore
   } else {
     try {
@@ -338,14 +338,14 @@ export async function miroirAfterEach(
 
 // ################################################################################################
 export async function miroirAfterAll(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
   localMiroirStoreController: IStoreController,
   localAppStoreController: IStoreController,
   localDataStoreServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
-  if (!miroirConfig.emulateServer) {
+  if (!miroirConfig.client.emulateServer) {
     console.log('miroirAfterAll emulateServer is false in miroirConfig, a real server is used, nothing to do on client side.'); // TODO: really???
     if (!domainController) {
       throw new Error("miroirAfterAll could not close store controller: DomainController is undefined");
@@ -374,7 +374,7 @@ export async function miroirAfterAll(
 }
 
 // ################################################################################################
-export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfig> {
+export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
   const pwd = process.env["PWD"]??""
   log.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
   // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
@@ -384,7 +384,7 @@ export async function loadTestSingleConfigFile( fileName:string): Promise<Miroir
   const configFileContents = await import(configFilePath);
   log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
 
-  const miroirConfig:MiroirConfig = configFileContents as MiroirConfig;
+  const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
 
   log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
   return miroirConfig;
@@ -392,7 +392,7 @@ export async function loadTestSingleConfigFile( fileName:string): Promise<Miroir
 // ################################################################################################
 // export async function loadTestConfigFiles(env:any, loglevelnext: any, defaultLevels: any) {
 export async function loadTestConfigFiles(env:any) {
-  let miroirConfig:MiroirConfig
+  let miroirConfig:MiroirConfigClient
   if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
     miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
     console.log("@@@@@@@@@@@@@@@@@@ config file contents:", miroirConfig)

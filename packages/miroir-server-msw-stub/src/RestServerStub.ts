@@ -3,7 +3,7 @@ import { HttpResponse, http } from "msw";
 import {
   HttpRequestBodyFormat,
   LoggerInterface,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirLoggerFactory,
   RestServiceHandler,
   StoreControllerManagerInterface,
@@ -33,7 +33,7 @@ export class RestServerStub {
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
     storeControllerManager: StoreControllerManagerInterface,
-    miroirConfig: MiroirConfig,
+    miroirConfig: MiroirConfigClient,
   ) {
     log.log(
       "RestServerStub constructor rootApiUrl",

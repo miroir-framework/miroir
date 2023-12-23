@@ -5,7 +5,7 @@ import process from "process";
 import {
   IStoreController,
   LoggerInterface,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirLoggerFactory,
   RestServiceHandler,
   StoreControllerManagerInterface,
@@ -28,15 +28,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // TODO: MOVE TO miroir-server-msw-stub
 // ################################################################################################
 export interface CreateMswRestServerReturnType {
-  // localMiroirStoreController: IStoreController | undefined,
-  // localAppStoreController: IStoreController | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: any /**SetupServerApi*/ | undefined,
 }
 
 // ################################################################################################
 export async function createMswRestServer(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   platformType: "browser" | "nodejs",
   restServerHandlers: RestServiceHandler[],
   storeControllerManager: StoreControllerManagerInterface,
@@ -45,10 +43,10 @@ export async function createMswRestServer(
   log.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
   log.log("createMswRestServer process.browser", (process as any)["browser"]);
 
-  if (miroirConfig.emulateServer) {
+  if (miroirConfig.client.emulateServer) {
 
     const restServerStub: RestServerStub = new RestServerStub(
-      miroirConfig.rootApiUrl,
+      miroirConfig.client.rootApiUrl,
       restServerHandlers,
       storeControllerManager,
       miroirConfig,
@@ -69,7 +67,7 @@ export async function createMswRestServer(
       localDataStoreServer,
     });
   } else {
-    log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig["serverConfig"].rootApiUrl);
+    log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig.client.serverConfig.rootApiUrl);
     return Promise.resolve({
       localMiroirStoreController: undefined,
       localAppStoreController: undefined,

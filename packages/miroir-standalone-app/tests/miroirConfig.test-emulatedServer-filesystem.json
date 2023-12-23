@@ -1,28 +1,30 @@
 {
-  "emulateServer": true,
-  "rootApiUrl":"http://localhost:3080",
-  "miroirServerConfig":{
-    "model": {
-      "emulatedServerType": "filesystem",
-      "directory":"./tests/tmp/miroir_model"
+  "client": {
+    "emulateServer": true,
+    "rootApiUrl":"http://localhost:3080",
+    "miroirServerConfig":{
+      "model": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/miroir_model"
+      },
+      "data": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/miroir_data"
+      }
     },
-    "data": {
-      "emulatedServerType": "filesystem",
-      "directory":"./tests/tmp/miroir_data"
-    }
-  },
-  "appServerConfig": {
-    "model": {
-      "emulatedServerType": "filesystem",
-      "directory":"./tests/tmp/library_model"
+    "appServerConfig": {
+      "model": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/library_model"
+      },
+      "data": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/library_data"
+      }
     },
-    "data": {
-      "emulatedServerType": "filesystem",
-      "directory":"./tests/tmp/library_data"
-    }
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
 }

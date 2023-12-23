@@ -8,7 +8,7 @@ import {
   EntityInstanceCollection,
   IStoreController,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirLoggerFactory,
   ModelCUDInstanceUpdate,
   ModelEntityActionTransformer,
@@ -52,11 +52,11 @@ beforeAll(
     miroirFileSystemStoreSectionStartup();
     miroirIndexedDbStoreSectionStartup();
     miroirPostgresStoreSectionStartup();
-    if (!miroirConfig.emulateServer) {
+    if (!miroirConfig.client.emulateServer) {
       throw new Error("LocalStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.");
     } else {
       const wrapped = await miroirBeforeAll(
-        miroirConfig as MiroirConfig,
+        miroirConfig as MiroirConfigClient,
         setupServer,
       );
       if (wrapped) {

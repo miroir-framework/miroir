@@ -3,7 +3,7 @@ import {
   DomainControllerInterface,
   Endpoint,
   LoggerInterface,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
   RestClient,
@@ -25,7 +25,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 // #############################################################################################
 export function createReduxStoreAndRestClient(
-  miroirConfig: MiroirConfig,
+  miroirConfig: MiroirConfigClient,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
 ):{
   miroirContext:MiroirContext,
@@ -37,7 +37,7 @@ export function createReduxStoreAndRestClient(
     
   const client: RestClient = new RestClient(fetch);
   const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(
-    miroirConfig.emulateServer ? miroirConfig.rootApiUrl : miroirConfig["serverConfig"].rootApiUrl,
+    miroirConfig.client.emulateServer ? miroirConfig.client.rootApiUrl : miroirConfig.client["serverConfig"].rootApiUrl,
     client
   );
 

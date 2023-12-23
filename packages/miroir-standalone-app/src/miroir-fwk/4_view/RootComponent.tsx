@@ -40,6 +40,7 @@ import {
   DomainControllerInterface,
   getLoggerName,
   LoggerInterface,
+  MiroirConfigForRest,
   MiroirLoggerFactory,
   reportBookInstance,
 } from "miroir-core";
@@ -338,25 +339,26 @@ export const RootComponent = (props: RootComponentProps) => {
                 if (!miroirConfig) {
                   throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                 }
-                if (miroirConfig && miroirConfig.emulateServer) {
+                if (miroirConfig && miroirConfig.client.emulateServer) {
                   await remoteStore.handleRemoteAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
                     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                     configuration: {
-                      [applicationDeploymentMiroir.uuid]: miroirConfig.miroirServerConfig,
-                      [applicationDeploymentLibrary.uuid]: miroirConfig.appServerConfig,
+                      [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
                     },
                     deploymentUuid: applicationDeploymentMiroir.uuid,
                   })
                 } else {
+                  const localMiroirConfig = miroirConfig.client as MiroirConfigForRest;
                   await remoteStore.handleRemoteAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
                     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                     configuration: {
-                      [applicationDeploymentMiroir.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
-                      [applicationDeploymentLibrary.uuid]: miroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+                      [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
                     },
                     deploymentUuid: applicationDeploymentMiroir.uuid,
                   })

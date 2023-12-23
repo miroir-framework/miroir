@@ -1,32 +1,34 @@
 {
-  "emulateServer": true,
-  "rootApiUrl":"http://localhost:3080",
-  "miroirServerConfig":{
-    "model": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-      "schema": "miroir"
+  "client": {
+    "emulateServer": true,
+    "rootApiUrl":"http://localhost:3080",
+    "miroirServerConfig":{
+      "model": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+        "schema": "miroir"
+      },
+      "data": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+        "schema": "miroir"
+      }
     },
-    "data": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-      "schema": "miroir"
-    }
-  },
-  "appServerConfig": {
-    "model": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-      "schema": "library"
+    "appServerConfig": {
+      "model": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+        "schema": "library"
+      },
+      "data": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
+        "schema": "library"
+      }
     },
-    "data": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@host.docker.internal:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
 }

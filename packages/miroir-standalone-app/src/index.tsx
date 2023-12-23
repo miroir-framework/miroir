@@ -17,7 +17,7 @@ import {
   Endpoint,
   getLoggerName,
   LoggerInterface,
-  MiroirConfig,
+  MiroirConfigClient,
   miroirCoreStartup,
   MiroirLoggerFactory,
   restServerDefaultHandlers,
@@ -69,11 +69,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-const miroirConfigFiles: {[k: string]: MiroirConfig} = {
-  "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfig,
-  "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfig,
-  "miroirConfigRealServerFilesystem": miroirConfigRealServerFilesystem as any as MiroirConfig,
-  "miroirConfigRealServerSql": miroirConfigRealServerSql as any as MiroirConfig,
+const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
+  "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
+  "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfigClient,
+  "miroirConfigRealServerFilesystem": miroirConfigRealServerFilesystem as any as MiroirConfigClient,
+  "miroirConfigRealServerSql": miroirConfigRealServerSql as any as MiroirConfigClient,
 }
 
 // ##############################################################################################
@@ -85,10 +85,10 @@ const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFiles
 // ##############################################################################################
 // ##############################################################################################
 
-const currentMiroirConfig: MiroirConfig =
+const currentMiroirConfig: MiroirConfigClient =
   currentMiroirConfigName && miroirConfigFiles[currentMiroirConfigName]
     ? miroirConfigFiles[currentMiroirConfigName ?? ""]
-    : (miroirConfig as unknown as MiroirConfig);
+    : (miroirConfig as unknown as MiroirConfigClient);
 
 log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
 
@@ -152,7 +152,7 @@ async function start(root:Root) {
       new Endpoint(mReduxStore)
     );
 
-    if (currentMiroirConfig.emulateServer) {
+    if (currentMiroirConfig.client.emulateServer) {
       const {
         localDataStoreWorker, // browser
         localDataStoreServer, // nodejs

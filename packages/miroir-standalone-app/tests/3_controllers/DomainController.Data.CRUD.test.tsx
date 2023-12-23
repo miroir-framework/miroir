@@ -29,7 +29,7 @@ import {
   EntityInstance,
   IStoreController,
   MetaEntity,
-  MiroirConfig,
+  MiroirConfigClient,
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
@@ -103,7 +103,7 @@ beforeAll(
   async () => {
     // Establish requests interception layer before all tests.
     const wrapped = await miroirBeforeAll(
-      miroirConfig as MiroirConfig,
+      miroirConfig as MiroirConfigClient,
       setupServer,
     );
     if (wrapped) {
@@ -176,7 +176,7 @@ describe.sequential(
   
           // await localDataStore.clear();
           // await localDataStore.initModel();
-          if (miroirConfig.emulateServer) {
+          if (miroirConfig.client.emulateServer) {
             await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
             await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
             await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
@@ -371,7 +371,7 @@ describe.sequential(
           const displayLoadingInfo=<DisplayLoadingInfo reportUuid={entityBook.uuid}/>
           const user = userEvent.setup()
 
-          if (miroirConfig.emulateServer) {
+          if (miroirConfig.client.emulateServer) {
             await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
             await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
             await localAppStoreController.upsertInstance('model', reportBookList as EntityInstance);
@@ -562,7 +562,7 @@ describe.sequential(
 
           // await localDataStore.clear();
           // await localDataStore.initModel();
-          if (miroirConfig.emulateServer) {
+          if (miroirConfig.client.emulateServer) {
             await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
             await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
             await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);

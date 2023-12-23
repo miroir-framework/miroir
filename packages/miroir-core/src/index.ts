@@ -79,6 +79,8 @@ export {
   StoreUnitConfiguration,
   MiroirConfigForMsw,
   MiroirConfigForRest,
+  MiroirConfigClient,
+  MiroirConfigServer,
   MiroirConfig,
   ServerConfig,
   StoreBasedConfigurationSchema,

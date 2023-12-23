@@ -39,7 +39,17 @@ export interface MiroirConfigForRest extends MiroirConfigRoot{
   serverConfig: ServerConfig;
 }
 
-export type MiroirConfig = MiroirConfigForMsw | MiroirConfigForRest;
+// export type MiroirConfigClient = MiroirConfigForMsw | MiroirConfigForRest;
+export type MiroirConfigClient = {
+  client: MiroirConfigForMsw | MiroirConfigForRest
+};
+
+export type MiroirConfigServer = {
+  server: any
+};
+
+
+export type MiroirConfig = MiroirConfigClient | MiroirConfigServer;
 
 export const StoreBasedConfigurationSchema = entityInstance.extend({
   definition: z.object({currentModelVersion: z.string()})
