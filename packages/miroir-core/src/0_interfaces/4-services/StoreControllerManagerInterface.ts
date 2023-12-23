@@ -1,5 +1,5 @@
 import { Uuid } from "../1_core/EntityDefinition";
-import { StoreUnitConfiguration } from "../1_core/MiroirConfig";
+import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface";
 import { IStoreController } from "./StoreControllerInterface";
 

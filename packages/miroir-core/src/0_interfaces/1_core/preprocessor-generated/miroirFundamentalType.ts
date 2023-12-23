@@ -348,6 +348,33 @@ export type SqlDbStoreSectionConfiguration = {
     schema: string;
 };
 export type StoreSectionConfiguration = IndexedDbStoreSectionConfiguration | FilesystemDbStoreSectionConfiguration | SqlDbStoreSectionConfiguration;
+export type StoreUnitConfiguration = {
+    model: StoreSectionConfiguration;
+    data: StoreSectionConfiguration;
+};
+export type ServerConfigForClientConfig = {
+    rootApiUrl: string;
+    dataflowConfiguration?: any;
+    storeSectionConfiguration: {
+        miroirServerConfig: StoreSectionConfiguration;
+        appServerConfig: StoreSectionConfiguration;
+    };
+};
+export type MiroirConfigForMsw = {
+    emulateServer: "true";
+    rootApiUrl: string;
+    miroirServerConfig: StoreSectionConfiguration;
+    appServerConfig: StoreSectionConfiguration;
+};
+export type MiroirConfigForRest = {
+    emulateServer: "false";
+    serverConfig: ServerConfigForClientConfig;
+};
+export type MiroirConfigClient = "miroirConfigForMsw" | "miroirConfigForRest";
+export type MiroirConfigServer = {
+    transformerType?: any;
+};
+export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";
 export type StoreConfiguration = {
     [x: string]: {
         model: StoreSectionConfiguration;
@@ -432,6 +459,13 @@ export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSection
 export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
 export const sqlDbStoreSectionConfiguration: z.ZodType<SqlDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string()}).strict();
 export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z.union([z.lazy(() =>indexedDbStoreSectionConfiguration), z.lazy(() =>filesystemDbStoreSectionConfiguration), z.lazy(() =>sqlDbStoreSectionConfiguration)]);
+export const storeUnitConfiguration: z.ZodType<StoreUnitConfiguration> = z.object({model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict();
+export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig> = z.object({rootApiUrl:z.string(), dataflowConfiguration:z.any(), storeSectionConfiguration:z.object({miroirServerConfig:z.lazy(() =>storeSectionConfiguration), appServerConfig:z.lazy(() =>storeSectionConfiguration)}).strict()}).strict();
+export const miroirConfigForMsw: z.ZodType<MiroirConfigForMsw> = z.object({emulateServer:z.literal("true"), rootApiUrl:z.string(), miroirServerConfig:z.lazy(() =>storeSectionConfiguration), appServerConfig:z.lazy(() =>storeSectionConfiguration)}).strict();
+export const miroirConfigForRest: z.ZodType<MiroirConfigForRest> = z.object({emulateServer:z.literal("false"), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
+export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.union([z.literal("miroirConfigForMsw"), z.literal("miroirConfigForRest")]);
+export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({transformerType:z.any()}).strict();
+export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const storeConfiguration: z.ZodType<StoreConfiguration> = z.record(z.string(),z.object({model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict());
 export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();

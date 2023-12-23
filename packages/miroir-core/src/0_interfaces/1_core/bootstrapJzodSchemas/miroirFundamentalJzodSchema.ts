@@ -302,6 +302,114 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           },
         ]
       },
+      "storeUnitConfiguration": {
+        "type": "object",
+        "definition": {
+          "model": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+          },
+          "data": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+          }
+        }
+      },
+      "serverConfigForClientConfig": {
+        "type": "object",
+        "definition": {
+          "rootApiUrl": {
+            "type": "simpleType",
+            "definition": "string",
+          },
+          "dataflowConfiguration": {
+            "type": "simpleType",
+            "definition": "any",
+          },
+          "storeSectionConfiguration": {
+            "type": "object",
+            "definition": {
+              "miroirServerConfig":{
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+              },
+              "appServerConfig":{
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+              }
+            }
+          }
+        }
+      },
+      "miroirConfigForMsw": {
+        "type": "object",
+        "definition": {
+          "emulateServer": {
+            "type": "literal",
+            "definition": "true",
+          },
+          "rootApiUrl": {
+            "type": "simpleType",
+            "definition": "string",
+          },
+          "miroirServerConfig":{
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+          },
+          "appServerConfig":{
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+          }
+        }
+      },
+      "miroirConfigForRest": {
+        "type": "object",
+        "definition": {
+          "emulateServer": {
+            "type": "literal",
+            "definition": "false",
+          },
+          "serverConfig": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "serverConfigForClientConfig"}
+          },
+        }
+      },
+      "miroirConfigClient": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "literal",
+            "definition": "miroirConfigForMsw"
+          },
+          {
+            "type": "literal",
+            "definition": "miroirConfigForRest"
+          }
+        ]
+      },
+      "miroirConfigServer": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "simpleType",
+            "definition": "any"
+          }
+        }
+      },
+      "miroirConfig": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "literal",
+            "definition": "miroirConfigClient"
+          },
+          {
+            "type": "literal",
+            "definition": "miroirConfigServer"
+          }
+        ]
+      },
       "storeConfiguration": {
         "type": "record",
         "definition": {

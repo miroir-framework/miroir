@@ -1,5 +1,4 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { StoreUnitConfiguration } from "../0_interfaces/1_core/MiroirConfig";
 import { IDataStoreSection, IModelStoreSection, IStoreController, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeSectionFactory } from "./StoreController";
@@ -9,6 +8,7 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
 import { cleanLevel } from "./constants";
+import { StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -22,12 +22,23 @@ export {
   entityInstanceCollection,
   InstanceCUDAction,
   LocalCacheAction,
+  MiroirConfigForMsw,
+  miroirConfigForMsw,
+  MiroirConfigForRest,
+  miroirConfigForRest,
+  MiroirConfigClient,
+  MiroirConfigServer,
+  MiroirConfig,
   MiroirFundamentalType,
   MiroirAllFundamentalTypesUnion,
+  ServerConfigForClientConfig,
+  serverConfigForClientConfig,
   StoreConfiguration,
   storeConfiguration,
   StoreSectionConfiguration,
   storeSectionConfiguration,
+  StoreUnitConfiguration,
+  storeUnitConfiguration,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -76,13 +87,6 @@ export {
 } from './0_interfaces/1_core/JzodSchemaDefinition.js';
 export {
   DeploymentMode,
-  StoreUnitConfiguration,
-  MiroirConfigForMsw,
-  MiroirConfigForRest,
-  MiroirConfigClient,
-  MiroirConfigServer,
-  MiroirConfig,
-  ServerConfig,
   StoreBasedConfigurationSchema,
   StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
