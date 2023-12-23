@@ -1,0 +1,49 @@
+{
+  "uuid": "7bd70033-4a18-4752-b617-4a901807e7d6",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
+  "conceptLevel": "Model",
+  "name": "Deployment",
+  "description": "Deployment",
+  "icon": "building",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+      },
+      "applicationVersion": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id":5, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }
+      },
+      "storeConfiguration": {
+        "type": "simpleType",
+        "definition": "any",
+        "extra": { "id":6, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }
+      }
+    }
+  }
+}

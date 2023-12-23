@@ -21,10 +21,6 @@
         "emulatedServerType": "indexedDb",
         "indexedDbName":"library-uuid-indexedDb_data"
       }
-    },
-    "deploymentMode":"monoUser",
-    "monoUserAutentification": false,
-    "monoUserVersionControl": false,
-    "versionControlForDataConceptLevel": false
+    }
   }
 }

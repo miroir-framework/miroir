@@ -1,0 +1,9 @@
+{
+  "uuid":"84bda435-3b9c-46ca-aa74-19d3a2511b24",
+  "parentName":"Entity",
+  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "application": "",
+  "name":"Deployment",
+  "conceptLevel":"Model",
+  "description": "Deployment Entity."
+}

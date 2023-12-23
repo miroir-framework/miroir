@@ -1,0 +1,34 @@
+{
+  "uuid": "b4e77c3e-e1ee-4d14-892d-ad3e1d1275b3",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel":"Model",
+  "name":"DeploymentDetails",
+  "defaultLabel": "Detailed information about a Deployment",
+  "definition": {
+    "fetchData": {
+      "select": {
+        "deployments": {
+          "type": "objectQuery",
+          "parentName": "Deployment",
+          "parentUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
+          "paramReference": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Available Deployments",
+            "parentName": "Book",
+            "parentUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
+            "fetchedDataReference": "deployments"
+          }
+        }
+      ]
+    }
+  }
+}

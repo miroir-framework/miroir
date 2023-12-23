@@ -3,19 +3,16 @@ import { SetupWorkerApi } from "msw/browser";
 import process from "process";
 
 import {
-  IStoreController,
   LoggerInterface,
   MiroirConfigClient,
   MiroirLoggerFactory,
   RestServiceHandler,
   StoreControllerManagerInterface,
-  applicationDeploymentLibrary,
-  applicationDeploymentMiroir,
-  getLoggerName,
+  getLoggerName
 } from "miroir-core";
 
-import { packageName, cleanLevel } from "./constants";
 import { RestServerStub } from "./RestServerStub";
+import { cleanLevel, packageName } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"createMswRestServer");
 let log:LoggerInterface = console as any as LoggerInterface;

@@ -5,6 +5,7 @@ import {
   ConfigurationService,
   LoggerFactoryInterface,
   LoggerInterface,
+  MiroirConfigServer,
   MiroirLoggerFactory,
   SpecificLoggerOptionsMap,
   StoreControllerManager,
@@ -57,29 +58,40 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 
 // import configFileContents from "../config/miroirConfig.server-indexedDb.json";
-// myLogger.info('configFileContents',configFileContents)
 
-// const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
+const miroirConfig:MiroirConfigServer = configFileContents as MiroirConfigServer;
+// myLogger.info('configFileContents',configFileContents, miroirConfig.server.rootApiUrl.lastIndexOf(":"))
+myLogger.info('miroirConfig',miroirConfig, miroirConfig.server.rootApiUrl.lastIndexOf(":"), miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":")))
 
-myLogger.info("server starting log:", myLogger);
+// myLogger.info("server starting log:", myLogger);
 
-const app = express(),
-      port = 3080;
+const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
+
+
+const app = express();
 app.use(express.json());
+myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
 // placeholder for the data
 const users = [];
 
 
-myLogger.info(`Server being set-up, going to execute on the port::${port}`);
-
-const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
 
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
+
+const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
+await storeControllerManager.addStoreController(
+  "xxx",
+  miroirConfig.server.miroirAdminConfig
+);
+
+const localAdminStoreController = storeControllerManager.getStoreController("xxx");
+
+myLogger.info("found entity uuids:", await localAdminStoreController?.getEntityUuids());
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
@@ -106,6 +118,6 @@ app.get('/', (req,res) => {
 });
     
 // ##############################################################################################
-app.listen(port, () => {
-    myLogger.info(`Server listening on the port::${port}`);
+app.listen(portFromConfig, () => {
+    myLogger.info(`Server listening on the port::${portFromConfig}`);
 });

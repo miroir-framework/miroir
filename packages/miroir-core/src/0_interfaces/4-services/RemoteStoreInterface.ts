@@ -1,5 +1,4 @@
 import { HttpMethod } from "../1_core/Http.js";
-import { MiroirConfigClient } from "../1_core/MiroirConfig.js";
 import {
   ApplicationSection,
   ModelAction,
@@ -36,7 +35,6 @@ export interface HttpResponseBodyFormat {
 export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod | undefined, // unused!
   response: any,
   effectiveUrl: string, // log only, to remove?

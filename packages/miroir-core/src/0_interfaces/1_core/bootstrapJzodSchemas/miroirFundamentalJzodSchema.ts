@@ -331,11 +331,11 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "definition": {
               "miroirServerConfig":{
                 "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
               },
               "appServerConfig":{
                 "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
               }
             }
           }
@@ -346,7 +346,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         "definition": {
           "emulateServer": {
             "type": "literal",
-            "definition": "true",
+            "definition": true,
           },
           "rootApiUrl": {
             "type": "simpleType",
@@ -354,11 +354,11 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           },
           "miroirServerConfig":{
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
           },
           "appServerConfig":{
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
           }
         }
       },
@@ -367,33 +367,47 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         "definition": {
           "emulateServer": {
             "type": "literal",
-            "definition": "false",
+            "definition": false,
           },
           "serverConfig": {
             "type": "schemaReference",
             "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "serverConfigForClientConfig"}
-          },
+          }
         }
       },
       "miroirConfigClient": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "literal",
-            "definition": "miroirConfigForMsw"
-          },
-          {
-            "type": "literal",
-            "definition": "miroirConfigForRest"
+        "type": "object",
+        "definition": {
+          "client": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForMsw"}
+              },
+              {
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRest"}
+              }
+            ]
           }
-        ]
+        }
       },
       "miroirConfigServer": {
         "type": "object",
         "definition": {
-          "transformerType": {
-            "type": "simpleType",
-            "definition": "any"
+          "server": {
+            "type": "object",
+            "definition": {
+              "rootApiUrl": {
+                "type": "simpleType",
+                "definition": "string",
+              },
+              "miroirAdminConfig": {
+                "type": "schemaReference",
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
+              }
+            }
           }
         }
       },

@@ -1,32 +1,15 @@
 {
-  "emulateServer": true,
-  "rootApiUrl":"http://localhost:3080",
-  "miroirServerConfig":{
-    "model": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
-    },
-    "data": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "miroir"
+  "server": {
+    "rootApiUrl":"http://localhost:3080",
+    "miroirAdminConfig":{
+      "model": {
+        "emulatedServerType": "filesystem",
+        "directory":"./config/miroirAdmin/model"
+        },
+      "data": {
+        "emulatedServerType": "filesystem",
+        "directory":"./config/miroirAdmin/data"
+      }
     }
-  },
-  "appServerConfig": {
-    "model": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    },
-    "data": {
-      "emulatedServerType": "sql",
-      "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "deploymentMode":"monoUser",
-  "monoUserAutentification": false,
-  "monoUserVersionControl": false,
-  "versionControlForDataConceptLevel": false
+  }
 }

@@ -1,10 +1,9 @@
 import { ErrorLogServiceInterface } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
-import { MiroirConfigClient } from "../1_core/MiroirConfig";
+import { MiroirConfigClient } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // }
 export interface MiroirContextInterface {
   errorLogService:ErrorLogServiceInterface,
-  // domainController: DomainControllerInterface;
   getMiroirConfig(): MiroirConfigClient | undefined,
 }
 

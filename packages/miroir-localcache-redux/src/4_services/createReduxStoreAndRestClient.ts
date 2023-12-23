@@ -1,7 +1,4 @@
 import {
-  DomainController,
-  DomainControllerInterface,
-  Endpoint,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
@@ -10,10 +7,10 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
 import { RemoteStoreRestAccessReduxSaga } from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { packageName } from "../constants";
 import { ReduxStore } from "./ReduxStore";
+import { cleanLevel } from "./constants";
 import RemoteStoreNetworkRestClient from "./remoteStore/RemoteStoreNetworkRestClient";
 
 

@@ -13,7 +13,6 @@ import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
-import { MiroirConfigClient } from "../0_interfaces/1_core/MiroirConfig";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestTools");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -32,7 +31,6 @@ export async function restMethodGetHandler
 (
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod | undefined, // unused!
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -111,7 +109,6 @@ export async function restMethodGetHandler
 export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -167,7 +164,6 @@ export async function restMethodsPostPutDeleteHandler(
 export async function restMethodModelOLDActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -206,7 +202,6 @@ export async function restMethodModelOLDActionRunnerHandler(
 export async function restMethodEntityActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?
@@ -241,7 +236,6 @@ export async function restMethodEntityActionRunnerHandler(
 export async function restActionRunner(
   continuationFunction: (response:any) =>(arg0: any) => any,
   storeControllerManager: StoreControllerManagerInterface,
-  // miroirConfig:MiroirConfigClient,
   method: HttpMethod,
   response: any,
   effectiveUrl: string, // log only, to remove?

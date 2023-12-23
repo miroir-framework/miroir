@@ -1,0 +1,8 @@
+{
+  "uuid": "b596c119-8e2f-40cc-9226-ebf4761ac085",
+  "parentName":"Application",
+  "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
+  "name":"Administration",
+  "defaultLabel": "The Administration application.",
+  "description": "The model and data of the Administration application."
+}

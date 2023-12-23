@@ -1,0 +1,9 @@
+{
+  "uuid":"89f85d9a-f701-42a6-b541-1b638920a676",
+  "parentName":"ApplicationModelBranch",
+  "parentUuid":"cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "application":"b596c119-8e2f-40cc-9226-ebf4761ac085",
+  "headVersion":"48c4a2d9-7e33-4ba9-93e0-0d3d8d798085",
+  "name":"master",
+  "description": "The master Branch of the Administration Application"
+}

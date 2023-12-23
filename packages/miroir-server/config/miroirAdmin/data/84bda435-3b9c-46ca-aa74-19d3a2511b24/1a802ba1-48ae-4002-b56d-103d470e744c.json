@@ -1,0 +1,10 @@
+{
+  "uuid":"1a802ba1-48ae-4002-b56d-103d470e744c",
+  "parentName":"Deployment",
+  "parentUuid":"84bda435-3b9c-46ca-aa74-19d3a2511b24",
+  "application": "b596c119-8e2f-40cc-9226-ebf4761ac085",
+  "name":"administrationApplicationDeployment",
+  "conceptLevel":"Model",
+  "description": "Administration Application Deployment.",
+  "storeConfiguration": {}
+}
