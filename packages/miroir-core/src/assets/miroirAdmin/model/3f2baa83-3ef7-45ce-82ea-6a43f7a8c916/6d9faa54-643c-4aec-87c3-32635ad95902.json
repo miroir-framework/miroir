@@ -2,9 +2,11 @@
   "uuid": "b4e77c3e-e1ee-4d14-892d-ad3e1d1275b3",
   "parentName":"Report",
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "parentDefinitionVersionUuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "application": "b596c119-8e2f-40cc-9226-ebf4761ac085",
   "conceptLevel":"Model",
-  "name":"DeploymentDetails",
-  "defaultLabel": "Detailed information about a Deployment",
+  "name":"DeploymentList",
+  "defaultLabel": "List of Deployments",
   "definition": {
     "fetchData": {
       "select": {

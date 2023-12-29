@@ -73,6 +73,9 @@
     "build5": "npm run build",
     "test": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
   },
+  "msw": {
+    "workerDirectory": "public"
+  },
   "browserslist": {
     "production": [
       ">0.2%",

@@ -137,7 +137,7 @@ export class DomainController implements DomainControllerInterface {
               name: domainTransactionalAction.label
                 ? domainTransactionalAction.label
                 : "No label was given to this version.",
-              previousVersion: currentModel?.configuration[0]?.definition?.currentModelVersion,
+              previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
               // branch: applicationModelBranchMiroirMasterBranch.uuid,
               branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
@@ -245,7 +245,7 @@ export class DomainController implements DomainControllerInterface {
     
             // this.localCache.handleDomainTransactionalAction(deploymentUuid, domainTransactionalAction);// commit clears transaction information, locally.
     
-            const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentModelVersion": newModelVersionUuid}})
+            const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentApplicationVersion": newModelVersionUuid}})
             log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
             const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
               actionType:'RemoteStoreCRUDAction',

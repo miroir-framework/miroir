@@ -30,9 +30,6 @@
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "jest --verbose --silent=false -t"
   },
-  "msw": {
-    "workerDirectory": "public"
-  },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"
 }

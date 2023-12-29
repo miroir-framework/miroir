@@ -2,7 +2,8 @@
   "uuid":"84bda435-3b9c-46ca-aa74-19d3a2511b24",
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  "application": "",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "application": "b596c119-8e2f-40cc-9226-ebf4761ac085",
   "name":"Deployment",
   "conceptLevel":"Model",
   "description": "Deployment Entity."

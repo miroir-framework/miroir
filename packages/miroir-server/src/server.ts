@@ -51,20 +51,19 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-
+// DEFUNCT (?)
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
+// import configFileContents from "../config/miroirConfig.server-indexedDb.json";
+
+
 // const configFileContents = JSON.parse(fs.readFileSync(new URL('../config/miroirConfig.server-indexedDb.json')).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
 const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem-new.json', import.meta.url)).toString());
 
-// import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 
 const miroirConfig:MiroirConfigServer = configFileContents as MiroirConfigServer;
-// myLogger.info('configFileContents',configFileContents, miroirConfig.server.rootApiUrl.lastIndexOf(":"))
-myLogger.info('miroirConfig',miroirConfig, miroirConfig.server.rootApiUrl.lastIndexOf(":"), miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":")))
-
-// myLogger.info("server starting log:", myLogger);
+myLogger.info('miroirConfig',miroirConfig)
 
 const portFromConfig: number = Number(miroirConfig.server.rootApiUrl.substring(miroirConfig.server.rootApiUrl.lastIndexOf(":") + 1));
 
@@ -85,14 +84,14 @@ miroirPostgresStoreSectionStartup();
 
 
 const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
-await storeControllerManager.addStoreController(
-  "xxx",
-  miroirConfig.server.miroirAdminConfig
-);
+// await storeControllerManager.addStoreController(
+//   "xxx",
+//   miroirConfig.server.miroirAdminConfig
+// );
 
-const localAdminStoreController = storeControllerManager.getStoreController("xxx");
+// const localAdminStoreController = storeControllerManager.getStoreController("xxx");
 
-myLogger.info("found entity uuids:", await localAdminStoreController?.getEntityUuids());
+// myLogger.info("found entity uuids:", await localAdminStoreController?.getEntityUuids());
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS

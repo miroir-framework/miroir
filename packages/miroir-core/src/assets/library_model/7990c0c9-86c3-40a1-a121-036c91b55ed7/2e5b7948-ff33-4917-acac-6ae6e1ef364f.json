@@ -4,5 +4,5 @@
   "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
   "name":"Reference",
   "defaultLabel": "The reference configuration for the Library application database schemas.",
-  "definition": {"currentModelVersion":"TBD"}
+  "definition": {"currentApplicationVersion":"TBD"}
 }

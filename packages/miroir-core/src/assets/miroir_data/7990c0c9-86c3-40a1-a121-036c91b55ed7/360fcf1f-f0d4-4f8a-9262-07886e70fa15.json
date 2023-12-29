@@ -4,5 +4,5 @@
   "parentUuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
   "name":"Reference",
   "defaultLabel": "The reference configuration for the database.",
-  "definition": {"currentModelVersion":"695826c2-aefa-4f5f-a131-dee46fe21c13"}
+  "definition": {"currentApplicationVersion":"695826c2-aefa-4f5f-a131-dee46fe21c13"}
 }

@@ -154,7 +154,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
 
 
 export function getCurrentEntityDefinition(metaModel:MiroirApplicationModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
-  const currentApplicationVersionUuid:string = metaModel.configuration[0].definition.currentModelVersion;
+  const currentApplicationVersionUuid:string = metaModel.configuration[0].definition.currentApplicationVersion;
   const currentApplicationVersion = metaModel.applicationVersions.find(av=>av.uuid == currentApplicationVersionUuid);
   const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(e=>e.applicationVersion == currentApplicationVersionUuid);
   const currentEntityDefinitions = currentApplicationVersionCrossEntityDefinitions.map(e=>metaModel.entityDefinitions.find(x=>x.uuid == e.uuid));

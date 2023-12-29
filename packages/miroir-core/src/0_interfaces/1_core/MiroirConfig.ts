@@ -14,11 +14,11 @@ declare interface MiroirConfigRoot {
 
 
 export const StoreBasedConfigurationSchema = entityInstance.extend({
-  definition: z.object({currentModelVersion: z.string()})
+  definition: z.object({currentApplicationVersion: z.string()})
 })
 
 export type StoreBasedConfiguration = z.infer<typeof StoreBasedConfigurationSchema>
 
 // export interface StoreBasedConfiguration extends EntityInstance {
-//   definition:{"currentModelVersion":string}
+//   definition:{"currentApplicationVersion":string}
 // }
