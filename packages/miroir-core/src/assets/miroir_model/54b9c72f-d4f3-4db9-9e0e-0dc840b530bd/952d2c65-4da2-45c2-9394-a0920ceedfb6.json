@@ -2,6 +2,7 @@
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel":"Model",
   "name":"Report",
@@ -27,34 +28,41 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
+        "extra": { "id":7, "defaultLabel": "Default Label", "editable": true }
       },
       "type": {
         "type": "enum",
         "definition": ["list","grid"],
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Type of Report", "editable": true }
+        "extra": { "id":8, "defaultLabel": "Type of Report", "editable": true }
       },
       "application": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
+        "extra": { "id":9, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
       },
       "definition": {
         "type": "schemaReference",

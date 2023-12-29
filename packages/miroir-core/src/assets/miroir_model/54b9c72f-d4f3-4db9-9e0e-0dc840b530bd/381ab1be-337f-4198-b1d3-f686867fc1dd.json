@@ -2,6 +2,7 @@
   "uuid":"381ab1be-337f-4198-b1d3-f686867fc1dd",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name":"Entity",
   "conceptLevel":"MetaModel",
@@ -27,36 +28,43 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "application": {
         "type": "simpleType",
         "optional": true,
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id": 5, "defaultLabel": "Application", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":7, "defaultLabel": "Name", "editable": true }
       },
       "author": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
+        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
       }
     }
   }

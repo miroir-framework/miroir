@@ -40,7 +40,7 @@ import {
   DomainControllerInterface,
   getLoggerName,
   LoggerInterface,
-  MiroirConfigForRest,
+  MiroirConfigForRestClient,
   MiroirLoggerFactory,
   reportBookInstance,
 } from "miroir-core";
@@ -351,7 +351,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     deploymentUuid: applicationDeploymentMiroir.uuid,
                   })
                 } else {
-                  const localMiroirConfig = miroirConfig.client as MiroirConfigForRest;
+                  const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
                   await remoteStore.handleRemoteAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",

@@ -290,7 +290,6 @@ export async function actionRunner(
           deployment[1]
         );
       }
-
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreController || !localAppStoreController) {

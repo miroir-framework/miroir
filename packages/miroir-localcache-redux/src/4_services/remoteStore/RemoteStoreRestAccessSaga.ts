@@ -100,7 +100,7 @@ export class RemoteStoreRestAccessReduxSaga {
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, section, action } = p.payload;
         try {
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction param",p);
+          log.info("handleRemoteStoreRestCRUDAction param",p);
           const clientResult : RestClientCallReturnType
             = yield* call(
               () => 
@@ -111,7 +111,7 @@ export class RemoteStoreRestAccessReduxSaga {
                 )
             );
 
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received clientResult",clientResult);
+          log.debug("handleRemoteStoreRestCRUDAction received clientResult",clientResult);
           const result:RemoteStoreActionReturnType = {
             status: "ok",
             instanceCollection: clientResult.data.instances,
@@ -120,7 +120,7 @@ export class RemoteStoreRestAccessReduxSaga {
           // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received result", result);
           return yield result;
         } catch (e: any) {
-          log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction exception", e);
+          log.error("handleRemoteStoreRestCRUDAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -142,22 +142,22 @@ export class RemoteStoreRestAccessReduxSaga {
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelEntityAction on action",action);
+          log.info("handleRemoteStoreModelEntityAction on action",action);
           const clientResult: RestClientCallReturnType
            = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelEntityAction(deploymentUuid, action)
           );
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelEntityAction received clientResult", clientResult);
+          log.debug("handleRemoteStoreModelEntityAction received clientResult", clientResult);
 
           const result: RemoteStoreActionReturnType = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelEntityAction received result", result.status);
+          log.debug("handleRemoteStoreModelEntityAction received result", result.status);
           return yield result;
         } catch (e: any) {
-          log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreModelEntityAction exception", e);
+          log.error("handleRemoteStoreModelEntityAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -179,22 +179,22 @@ export class RemoteStoreRestAccessReduxSaga {
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteAction on action",action);
+          log.info("handleRemoteAction on action",action);
           const clientResult: RestClientCallReturnType
            = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteAction(deploymentUuid, action)
           );
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteAction received clientResult", clientResult);
+          log.debug("handleRemoteAction received clientResult", clientResult);
 
           const result: RemoteStoreActionReturnType = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteAction received result", result.status);
+          log.debug("handleRemoteAction received result", result.status);
           return yield result;
         } catch (e: any) {
-          log.error("RemoteStoreRestAccessReduxSaga handleRemoteAction exception", e);
+          log.error("handleRemoteAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",
@@ -216,22 +216,22 @@ export class RemoteStoreRestAccessReduxSaga {
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
-          log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreOLDModelAction on action",action);
+          log.info("handleRemoteStoreOLDModelAction on action",action);
           const clientResult: RestClientCallReturnType
           = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreOLDModelAction(deploymentUuid, action)
           );
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreOLDModelAction received clientResult", clientResult);
+          log.debug("handleRemoteStoreOLDModelAction received clientResult", clientResult);
 
           const result: RemoteStoreActionReturnType = {
             status: "ok",
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
-          log.debug("RemoteStoreRestAccessReduxSaga handleRemoteStoreOLDModelAction received result", result.status);
+          log.debug("handleRemoteStoreOLDModelAction received result", result.status);
           return yield result;
         } catch (e: any) {
-          log.error("RemoteStoreRestAccessReduxSaga handleRemoteStoreOLDModelAction exception", e);
+          log.error("handleRemoteStoreOLDModelAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
           return {
             status: "error",

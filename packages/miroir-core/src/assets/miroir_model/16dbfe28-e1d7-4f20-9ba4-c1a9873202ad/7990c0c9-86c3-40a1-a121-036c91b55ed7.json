@@ -2,6 +2,7 @@
   "uuid":"7990c0c9-86c3-40a1-a121-036c91b55ed7",
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "name":"StoreBasedConfiguration",
   "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel":"Model",

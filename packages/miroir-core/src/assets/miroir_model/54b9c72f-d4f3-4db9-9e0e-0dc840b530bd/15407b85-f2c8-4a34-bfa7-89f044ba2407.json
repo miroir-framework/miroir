@@ -2,6 +2,7 @@
   "uuid": "15407b85-f2c8-4a34-bfa7-89f044ba2407",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
   "conceptLevel":"Model",
   "name":"JzodSchema",
@@ -26,28 +27,35 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Concept Level", "editable": false }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Default Label", "editable": true }
+        "extra": { "id": 7, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
       },
       "definition": {
         "type": "schemaReference",
@@ -76,7 +84,7 @@
           "relativePath": "jzodObjectOrReference"
         },
         "optional": true,
-        "extra": { "id": 8, "defaultLabel": "Definition", "editable": true }
+        "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }
       }
     }
   }

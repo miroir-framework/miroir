@@ -2,6 +2,7 @@
   "uuid": "6796e19e-8bbd-4b96-b505-76fe49ed5c6a",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "757595aa-7e4a-43c0-b561-ae545360ab2d",
   "name": "Endpoint",
   "conceptLevel": "MetaModel",
@@ -26,16 +27,23 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 5, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
       }
     }
   }

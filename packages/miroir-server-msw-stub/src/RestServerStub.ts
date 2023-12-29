@@ -58,7 +58,7 @@ export class RestServerStub {
           }
           // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
-            return h.handler(
+            const result = await h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
               storeControllerManager,
               h.method /* method */,
@@ -67,6 +67,7 @@ export class RestServerStub {
               body, // body
               params
             );
+            return result;
           } catch (error) {
             log.warn("RestServerStub get handler", "rootApiUrl", rootApiUrl, "failed with error", error);
             return Promise.resolve(undefined);

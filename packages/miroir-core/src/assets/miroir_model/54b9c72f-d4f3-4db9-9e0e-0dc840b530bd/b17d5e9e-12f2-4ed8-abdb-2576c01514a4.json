@@ -2,6 +2,7 @@
   "uuid":"b17d5e9e-12f2-4ed8-abdb-2576c01514a4",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "73bb0c69-e636-4e3b-a230-51f25469c089",
   "name":"Commit",
   "conceptLevel":"MetaModel",
@@ -27,49 +28,56 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "date": {
         "type": "simpleType",
         "definition": "date",
-        "extra": { "id": 4, "defaultLabel": "Date", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Date", "editable": false }
       },
       "application": {
         "type": "simpleType",
         "optional": true,
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id": 5, "defaultLabel": "Application", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":7, "defaultLabel": "Name", "editable": true }
       },
       "preceding": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Previous Commit", "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089", "editable": false }
+        "extra": { "id":8, "defaultLabel": "Previous Commit", "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089", "editable": false }
       },
       "branch": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":7, "defaultLabel": "Author", "targetEntity": "", "editable": true }
+        "extra": { "id":9, "defaultLabel": "Author", "targetEntity": "", "editable": true }
       },
       "author": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Author", "targetEntity": "", "editable": true }
+        "extra": { "id":10, "defaultLabel": "Author", "targetEntity": "", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 11, "defaultLabel": "Description", "editable": true }
       }
     }
   }

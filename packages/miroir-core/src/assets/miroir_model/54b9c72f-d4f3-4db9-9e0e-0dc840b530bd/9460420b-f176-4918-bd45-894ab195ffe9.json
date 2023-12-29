@@ -2,6 +2,7 @@
   "uuid": "9460420b-f176-4918-bd45-894ab195ffe9",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
   "conceptLevel":"Model",
   "name":"Application",
@@ -27,21 +28,28 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
+        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":6, "defaultLabel": "Description", "editable": true }
+        "extra": { "id":7, "defaultLabel": "Description", "editable": true }
       }
     }
   }

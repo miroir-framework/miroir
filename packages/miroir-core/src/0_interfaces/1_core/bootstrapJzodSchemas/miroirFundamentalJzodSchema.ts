@@ -263,6 +263,20 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "_____________configuration_and_bundles__________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
+      },
       "indexedDbStoreSectionConfiguration": {
         "type": "object",
         "definition": {
@@ -341,7 +355,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "miroirConfigForMsw": {
+      "miroirConfigForMswClient": {
         "type": "object",
         "definition": {
           "emulateServer": {
@@ -362,7 +376,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "miroirConfigForRest": {
+      "miroirConfigForRestClient": {
         "type": "object",
         "definition": {
           "emulateServer": {
@@ -383,11 +397,11 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "definition": [
               {
                 "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForMsw"}
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForMswClient"}
               },
               {
                 "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRest"}
+                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "miroirConfigForRestClient"}
               }
             ]
           }
@@ -439,6 +453,20 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             }
           }
         }
+      },
+      "_____________actions__________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
       },
       "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "actionTransformer": {

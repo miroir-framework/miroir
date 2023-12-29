@@ -2,6 +2,7 @@
   "uuid": "69bf7c03-a1df-4d1c-88c1-44363feeea87",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
   "conceptLevel":"Model",
   "name":"ApplicationModelBranch",
@@ -27,41 +28,48 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "targetEntityApplicationSection":"model", "targetEntity":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":6, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":7, "defaultLabel": "Name", "editable": true }
       },
       "application": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":7, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
+        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
       },
       "headVersion": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Head Version", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": true }
+        "extra": { "id":9, "defaultLabel": "Head Version", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": true }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 9, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 10, "defaultLabel": "Description", "editable": true }
       }
     }
   }

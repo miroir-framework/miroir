@@ -2,6 +2,7 @@
   "uuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "name": "EntityDefinition",
   "conceptLevel": "MetaModel",
@@ -26,28 +27,35 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id": 4, "defaultLabel": "Name", "editable": false }
+        "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
       },
       "entityUuid": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id": 5, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Entity Uuid of the Entity which this definition is the definition", "editable": false }
       },
       "conceptLevel": {
         "type": "enum",
         "definition": ["MetaModel", "Model", "Data"],
         "optional": true,
-        "extra": { "id": 6, "defaultLabel": "Concept Level", "editable": false }
+        "extra": { "id": 7, "defaultLabel": "Concept Level", "editable": false }
       },
       "description": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id": 7, "defaultLabel": "Description", "editable": true }
+        "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
       },
       "jzodSchema": {
         "type": "schemaReference",
@@ -55,7 +63,7 @@
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject"
         },
-        "extra": { "id": 8, "defaultLabel": "Jzod Schema", "editable": true }
+        "extra": { "id": 9, "defaultLabel": "Jzod Schema", "editable": true }
       }
     }
   }

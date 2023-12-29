@@ -2,6 +2,7 @@
   "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
   "parentName":"EntityDefinition",
   "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
   "conceptLevel":"Model",
   "name":"StoreBasedConfiguration",
@@ -27,20 +28,27 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "extra": { "id":5, "defaultLabel": "Name", "editable": true }
       },
       "defaultLabel": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":5, "defaultLabel": "Default Label", "editable": true }
+        "extra": { "id":6, "defaultLabel": "Default Label", "editable": true }
       },
       "definition": {
         "type": "schemaReference",
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "The configuration itself", "editable": true },
+        "extra": { "id":7, "defaultLabel": "The configuration itself", "editable": true },
         "definition": { 
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
           "relativePath": "jzodObject" 

@@ -55,7 +55,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
 // const configFileContents = JSON.parse(fs.readFileSync(new URL('../config/miroirConfig.server-indexedDb.json')).toString());
 // const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
-const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
+// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem-new.json', import.meta.url)).toString());
 
 // import configFileContents from "../config/miroirConfig.server-indexedDb.json";
 
