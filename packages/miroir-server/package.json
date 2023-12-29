@@ -23,7 +23,7 @@
     "type": "git",
     "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
   },
-  "author": "Arnaud Bailly",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXX/issues"

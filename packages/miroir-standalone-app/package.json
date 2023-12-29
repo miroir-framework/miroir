@@ -90,9 +90,6 @@
     "path": false,
     "os": false
   },
-  "msw": {
-    "workerDirectory": "public"
-  },
   "nx": {
     "targets": {
       "build": {

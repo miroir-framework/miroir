@@ -24,6 +24,6 @@
     "build": "rimraf dist && rollup --config",
     "test": "jest --silent=false -t"
   },
-  "author": "Arnaud Bailly",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"
 }
