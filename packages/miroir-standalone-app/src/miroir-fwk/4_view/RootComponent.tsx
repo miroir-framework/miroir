@@ -362,7 +362,6 @@ export const RootComponent = (props: RootComponentProps) => {
                     },
                     deploymentUuid: applicationDeploymentMiroir.uuid,
                   })
-                  
                 }
 
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
@@ -411,6 +410,19 @@ export const RootComponent = (props: RootComponentProps) => {
               }}
             >
               Init database
+            </button>
+            <button
+              onClick={async () => {
+                log.log("creating bundle")
+                const remoteStore = domainController.getRemoteStore();
+                await remoteStore.handleRemoteAction("",{
+                  actionType: "bundleAction",
+                  actionName: "createBundle",
+                })
+              }
+            }
+            >
+              create bundle
             </button>
           </span>
           <p />

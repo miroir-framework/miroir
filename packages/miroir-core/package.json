@@ -16,7 +16,7 @@
     "build5": "npm run devBuild",
     "devBuild": "npm run preBuild && npm run copy-files && rollup --config",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.ts --rootDir . --baseUrl . --module ESnext --target ES2017 --moduleResolution node --allowSyntheticDefaultImports --outdir ./tmp/ || node ./src/generate-ts-types.mjs",
+    "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.ts --rootDir . --baseUrl . --module ESnext --target ES2017 --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || node ./src/generate-ts-types.mjs",
     "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
   },
   "author": "Arnaud Bailly <miroir-framework@protonmail.com>",

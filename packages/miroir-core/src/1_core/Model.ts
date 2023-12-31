@@ -1,6 +1,6 @@
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
-import entityApplicationDeployment from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
+import entityApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
 import EntityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
@@ -11,7 +11,7 @@ import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 
 import entityDefinitionApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
-import entityDefinitionApplicationDeployment from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
+import entityDefinitionApplicationDeploymentConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
 import entityDefinitionApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
 import entityDefinitionApplicationVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionEntity from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
@@ -28,7 +28,7 @@ import reportConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82
 import reportApplicationModelBranchList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json';
 import reportJzodSchemaList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json';
 import reportEntityList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json';
-import reportApplicationDeploymentList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json';
+import reportApplicationDeploymentConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json';
 import reportEntityDefinitionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/17adb534-1dcb-4874-a4ef-6c1e03b31c4e.json';
 import applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition from '../assets/miroir_data/8bec933d-6287-4de7-8a88-5c24216de9f4/48644159-66d4-426d-b38d-d083fd455e7b.json';
@@ -53,7 +53,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
   configuration: [instanceConfigurationReference],
   entities: [
     entityApplication as MetaEntity,
-    entityApplicationDeployment as MetaEntity,
+    entityApplicationDeploymentConfiguration as MetaEntity,
     entityApplicationModelBranch as MetaEntity,
     entityApplicationVersion as MetaEntity,
     entityEntity as MetaEntity,
@@ -65,7 +65,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
   ],
   entityDefinitions: [
     entityDefinitionApplication as EntityDefinition,
-    entityDefinitionApplicationDeployment as EntityDefinition,
+    entityDefinitionApplicationDeploymentConfiguration as EntityDefinition,
     entityDefinitionApplicationModelBranch as EntityDefinition,
     entityDefinitionApplicationVersion as EntityDefinition,
     entityDefinitionEntity as EntityDefinition,
@@ -81,7 +81,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
     applicationVersionInitialMiroirVersion
   ],
   reports: [
-    reportApplicationDeploymentList as Report,
+    reportApplicationDeploymentConfigurationList as Report,
     reportApplicationList as Report,
     reportApplicationModelBranchList as Report,
     reportApplicationVersionList as Report,
@@ -109,7 +109,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
 //   configuration: [instanceConfigurationReference],
 //   entities: [
 //     entityApplication as MetaEntity,
-//     entityApplicationDeployment as MetaEntity,
+//     entityApplicationDeploymentConfiguration as MetaEntity,
 //     entityApplicationModelBranch as MetaEntity,
 //     entityApplicationVersion as MetaEntity,
 //     entityEntity as MetaEntity,
@@ -120,7 +120,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
 //   ],
 //   entityDefinitions: [
 //     entityDefinitionApplication as EntityDefinition,
-//     entityDefinitionApplicationDeployment as EntityDefinition,
+//     entityDefinitionApplicationDeploymentConfiguration as EntityDefinition,
 //     entityDefinitionApplicationModelBranch as EntityDefinition,
 //     entityDefinitionApplicationVersion as EntityDefinition,
 //     entityDefinitionEntity as EntityDefinition,
@@ -132,7 +132,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
 
 //   ],
 //   reports: [
-//     reportApplicationDeploymentList as Report,
+//     reportApplicationDeploymentConfigurationList as Report,
 //     reportApplicationList as Report,
 //     reportApplicationModelBranchList as Report,
 //     reportApplicationVersionList as Report,

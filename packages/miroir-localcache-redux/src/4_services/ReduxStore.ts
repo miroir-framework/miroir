@@ -38,7 +38,8 @@ import {
   getLoggerName,
   InstanceAction,
   EntityInstanceCollection,
-  StoreAction
+  StoreAction,
+  MiroirAction
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -284,7 +285,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   // ###############################################################################
   async handleRemoteAction(
     deploymentUuid: string,
-    action: StoreAction,
+    action: MiroirAction,
   ): Promise<RemoteStoreActionReturnType> {
     const result: RemoteStoreActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas

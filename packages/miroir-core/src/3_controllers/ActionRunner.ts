@@ -1,4 +1,4 @@
-import { EntityDefinition, ModelAction, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { MiroirAction, EntityDefinition, ModelAction, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
@@ -261,30 +261,33 @@ export async function modelActionRunner(
 /**
  * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
  * @param actionName 
- * @param body 
+ * @param action 
  * @returns 
  */
 export async function actionRunner(
   actionName:string,
-  body:any,
+  action:MiroirAction,
   storeControllerManager: StoreControllerManagerInterface,
   // miroirConfig:MiroirConfigClient,
 ):Promise<void> {
   log.info('###################################### actionRunner started ', 'actionName',actionName);
   // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
-  const update: StoreAction = body;
+  // const update: StoreAction = action;
 
 
-  log.info('actionRunner action', JSON.stringify(update,undefined,2));
-  switch (update.actionName) {
+  log.info('actionRunner action', JSON.stringify(action,undefined,2));
+  switch (action.actionName) {
+    // case "createBundle":
+    // case "deleteBundle":
+    //   break;
     case "openStore": {
       // log.info('actionRunner openStore',miroirConfig);
 
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      for (const deploymentUuid of Object.keys(update.configuration)) {
+      for (const deploymentUuid of Object.keys(action.configuration)) {
         await storeControllerManager.deleteStoreController(deploymentUuid);
       }
-      for (const deployment of Object.entries(update.configuration)) {
+      for (const deployment of Object.entries(action.configuration)) {
         await storeControllerManager.addStoreController(
           deployment[0],
           deployment[1]

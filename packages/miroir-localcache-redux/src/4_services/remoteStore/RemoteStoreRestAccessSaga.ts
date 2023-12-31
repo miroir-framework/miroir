@@ -18,7 +18,8 @@ import {
   RemoteStoreOLDModelAction,
   RestClientCallReturnType,
   getLoggerName,
-  stringTuple
+  stringTuple,
+  MiroirAction
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -170,7 +171,7 @@ export class RemoteStoreRestAccessReduxSaga {
     handleRemoteAction: {
       name: "handleRemoteAction",
       creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-        { deploymentUuid: string; action: StoreAction },
+        { deploymentUuid: string; action: MiroirAction },
         "handleRemoteAction"
       >("handleRemoteAction"),
       generator: function* (

@@ -5,6 +5,12 @@ import { JzodObject, jzodReference } from "@miroir-framework/jzod-ts";
 
 // import entityDefinitionEntity from 'assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
 
+// const entityDefinitionBundle = JSON.parse(readFileSync(new URL('../../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json', import.meta.url)).toString());
+// const entityDefinitionBundleV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json', import.meta.url)).toString());
+import entityDefinitionBundleV1 from "../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
+
+const entityDefinitionApplicationV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json', import.meta.url)).toString());
+const entityDefinitionApplicationVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json', import.meta.url)).toString());
 const entityDefinitionEntity = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json', import.meta.url)).toString());
 const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
 const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json', import.meta.url)).toString());
@@ -127,130 +133,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "instanceCUDAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"create"},
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"update"},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to update", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"delete"},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to delete", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"replaceLocalCache"},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "localCacheAction": {
-        "type": "object",
-        "definition": {
-          "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-          "actionName": {"type": "literal", "definition":"replaceLocalCache"},
-          "objects": {
-            "type": "array",
-            "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
-            "definition": {
-              "type": "schemaReference",
-              "optional": false,
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstanceCollection"
-              }
-            }
-          }
-        }
-      },
       "conceptLevel": {
         "type": "enum",
         "definition": [
@@ -259,7 +141,24 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "Data"
         ]
       },
-      "entity":entityDefinitionEntity.jzodSchema as JzodObject,
+      "_____________entities__________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
+      },
+      "application": entityDefinitionApplicationV1.jzodSchema as JzodObject,
+      "applicationVersion": entityDefinitionApplicationVersionV1.jzodSchema as JzodObject,
+      "bundle": entityDefinitionBundleV1.jzodSchema as JzodObject,
+      "entity": entityDefinitionEntity.jzodSchema as JzodObject,
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
       "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
@@ -454,39 +353,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "_____________actions__________": {
-        "type": "simpleType",
-        "definition": "never"
-
-
-
-
-
-
-
-
-
-
-      },
-      "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
-      "actionTransformer": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "actionTransformer"
-          }
-        }
-      },
-      "dataTransformer": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "dataTransformer"
-          }
-        }
-      },
       "commit": {
         "type": "object",
         "definition": {
@@ -553,7 +419,214 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             }
           }
         ]
-      }
+      },
+      "_____________actions__________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
+      },
+      "instanceCUDAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+              "actionName": {"type": "literal", "definition":"create"},
+              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": true },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+              "actionName": {"type": "literal", "definition":"update"},
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to update", "editable": true },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+              "actionName": {"type": "literal", "definition":"delete"},
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to delete", "editable": true },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+              "actionName": {"type": "literal", "definition":"replaceLocalCache"},
+              "objects": {
+                "type": "array",
+                "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+                "definition": {
+                  "type": "schemaReference",
+                  "optional": false,
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstanceCollection"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "localCacheAction": {
+        "type": "object",
+        "definition": {
+          "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
+          "actionName": {"type": "literal", "definition":"replaceLocalCache"},
+          "objects": {
+            "type": "array",
+            "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+            "definition": {
+              "type": "schemaReference",
+              "optional": false,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstanceCollection"
+              }
+            }
+          }
+        }
+      },
+      "storeAction": deploymentEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "bundleAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "bundleAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "createBundle"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "definition": "bundleAction"
+              },
+              "actionName": {
+                "type": "literal",
+                "definition": "deleteBundle"
+              }
+            }
+          }
+        ]
+      },
+      "miroirAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "bundleAction"
+            }
+          }
+        ]
+      },
+      "actionTransformer": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "actionTransformer"
+          }
+        }
+      },
+      "dataTransformer": {
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "dataTransformer"
+          }
+        }
+      },
     },
     "definition": {
       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

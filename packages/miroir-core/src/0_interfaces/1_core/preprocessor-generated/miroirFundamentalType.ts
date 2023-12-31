@@ -270,35 +270,45 @@ export type EntityInstanceCollection = {
     applicationSection: ApplicationSection;
     instances: EntityInstance[];
 };
-export type InstanceCUDAction = {
-    actionType: "InstanceCUDAction";
-    actionName: "create";
-    includeInTransaction?: boolean | undefined;
-    applicationSection: ApplicationSection;
-    objects: EntityInstanceCollection[];
-} | {
-    actionType: "InstanceCUDAction";
-    actionName: "update";
-    applicationSection: ApplicationSection;
-    includeInTransaction?: boolean | undefined;
-    objects: EntityInstanceCollection[];
-} | {
-    actionType: "InstanceCUDAction";
-    actionName: "delete";
-    applicationSection: ApplicationSection;
-    includeInTransaction?: boolean | undefined;
-    objects: EntityInstanceCollection[];
-} | {
-    actionType: "InstanceCUDAction";
-    actionName: "replaceLocalCache";
-    objects: EntityInstanceCollection[];
-};
-export type LocalCacheAction = {
-    actionType: "InstanceCUDAction";
-    actionName: "replaceLocalCache";
-    objects: EntityInstanceCollection[];
-};
 export type ConceptLevel = "MetaModel" | "Model" | "Data";
+export type _____________entities__________ = never;
+export type Application = {
+    uuid: string;
+    parentName?: string | undefined;
+    parentUuid: string;
+    parentDefinitionVersionUuid?: string | undefined;
+    name: string;
+    defaultLabel: string;
+    description?: string | undefined;
+};
+export type ApplicationVersion = {
+    uuid: string;
+    parentName?: string | undefined;
+    parentUuid: string;
+    parentDefinitionVersionUuid?: string | undefined;
+    name: string;
+    defaultLabel?: string | undefined;
+    description?: string | undefined;
+    type?: string | undefined;
+    application: string;
+    branch: string;
+    previousVersion: string;
+    modelStructureMigration?: JzodObject | undefined;
+    modelCUDMigration?: JzodObject | undefined;
+};
+export type Bundle = {
+    uuid: string;
+    parentName?: string | undefined;
+    parentUuid: string;
+    parentDefinitionVersionUuid: string;
+    name: string;
+    contents: {
+        type: "runtime";
+    } | {
+        type: "development";
+        applicationVersion: ApplicationVersion;
+    };
+};
 export type Entity = {
     uuid: string;
     parentName?: string | undefined;
@@ -389,25 +399,6 @@ export type StoreConfiguration = {
         data: StoreSectionConfiguration;
     };
 };
-export type _____________actions__________ = never;
-export type StoreAction = {
-    actionType: "storeAction";
-    actionName: "openStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    configuration: StoreConfiguration;
-    deploymentUuid?: string | undefined;
-} | {
-    actionType: "storeAction";
-    actionName: "closeStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    deploymentUuid: string;
-};
-export type ActionTransformer = {
-    transformerType: "actionTransformer";
-};
-export type DataTransformer = {
-    transformerType: "dataTransformer";
-};
 export type Commit = {
     uuid: string;
     parentName?: string | undefined;
@@ -427,6 +418,61 @@ export type Commit = {
     patches: any[];
 };
 export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceCUDAction;
+export type _____________actions__________ = never;
+export type InstanceCUDAction = {
+    actionType: "InstanceCUDAction";
+    actionName: "create";
+    includeInTransaction?: boolean | undefined;
+    applicationSection: ApplicationSection;
+    objects: EntityInstanceCollection[];
+} | {
+    actionType: "InstanceCUDAction";
+    actionName: "update";
+    applicationSection: ApplicationSection;
+    includeInTransaction?: boolean | undefined;
+    objects: EntityInstanceCollection[];
+} | {
+    actionType: "InstanceCUDAction";
+    actionName: "delete";
+    applicationSection: ApplicationSection;
+    includeInTransaction?: boolean | undefined;
+    objects: EntityInstanceCollection[];
+} | {
+    actionType: "InstanceCUDAction";
+    actionName: "replaceLocalCache";
+    objects: EntityInstanceCollection[];
+};
+export type LocalCacheAction = {
+    actionType: "InstanceCUDAction";
+    actionName: "replaceLocalCache";
+    objects: EntityInstanceCollection[];
+};
+export type StoreAction = {
+    actionType: "storeAction";
+    actionName: "openStore";
+    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    configuration: StoreConfiguration;
+    deploymentUuid?: string | undefined;
+} | {
+    actionType: "storeAction";
+    actionName: "closeStore";
+    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    deploymentUuid: string;
+};
+export type BundleAction = {
+    actionType: "bundleAction";
+    actionName: "createBundle";
+} | {
+    actionType: "bundleAction";
+    actionName: "deleteBundle";
+};
+export type MiroirAction = StoreAction | BundleAction;
+export type ActionTransformer = {
+    transformerType: "actionTransformer";
+};
+export type DataTransformer = {
+    transformerType: "dataTransformer";
+};
 export type MiroirFundamentalType = MiroirAllFundamentalTypesUnion;
 
 export const jzodBaseObject: z.ZodType<JzodBaseObject> = z.object({optional:z.boolean().optional(), nullable:z.boolean().optional(), extra:z.object({id:z.number(), defaultLabel:z.string(), editable:z.boolean()}).strict().optional()}).strict();
@@ -458,9 +504,11 @@ export const applicationSection: z.ZodType<ApplicationSection> = z.union([z.lite
 export const dataStoreApplicationType: z.ZodType<DataStoreApplicationType> = z.union([z.literal("miroir"), z.literal("app")]);
 export const entityInstance = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()});
 export const entityInstanceCollection: z.ZodType<EntityInstanceCollection> = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
-export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
-export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const conceptLevel: z.ZodType<ConceptLevel> = z.enum(["MetaModel","Model","Data"]);
+export const _____________entities__________: z.ZodType<_____________entities__________> = z.never();
+export const application: z.ZodType<Application> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();
+export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), type:z.string().optional(), application:z.string().uuid(), branch:z.string().uuid(), previousVersion:z.string().uuid(), modelStructureMigration:z.lazy(() =>jzodObject).optional(), modelCUDMigration:z.lazy(() =>jzodObject).optional()}).strict();
+export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
 export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
@@ -478,10 +526,14 @@ export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({clien
 export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({server:z.object({rootApiUrl:z.string(), miroirAdminConfig:z.lazy(() =>storeUnitConfiguration)}).strict()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const storeConfiguration: z.ZodType<StoreConfiguration> = z.record(z.string(),z.object({model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration)}).strict());
-export const _____________actions__________: z.ZodType<_____________actions__________> = z.never();
-export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
-export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
-export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
+export const _____________actions__________: z.ZodType<_____________actions__________> = z.never();
+export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
+export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
+export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
+export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle")}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle")}).strict()]);
+export const miroirAction: z.ZodType<MiroirAction> = z.union([z.lazy(() =>storeAction), z.lazy(() =>bundleAction)]);
+export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
+export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);

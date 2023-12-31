@@ -10,7 +10,8 @@ import {
   RestClientCallReturnType,
   RestClientInterface,
   getLoggerName,
-  StoreAction
+  StoreAction,
+  MiroirAction,
 } from "miroir-core";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -181,7 +182,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   async handleNetworkRemoteAction(
     deploymentUuid: string,
-    action: StoreAction
+    action: MiroirAction
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,
