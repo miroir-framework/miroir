@@ -3,7 +3,7 @@ import { Params, useParams } from 'react-router-dom';
 
 import {
   ApplicationSection,
-  DomainFetchQueryParams,
+  DomainManyQueriesParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   FetchedData,
   LoggerInterface,
@@ -13,7 +13,7 @@ import {
   Uuid,
   getLoggerName,
   selectFetchQueryJzodSchemaFromDomainState,
-  selectFetchedDataFromDomainState
+  selectByDomainManyQueriesFromDomainState
 } from "miroir-core";
 
 
@@ -59,7 +59,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.reportSection?.fetchData
   );
 
-  const fetchedDataEntriesParams: DomainFetchQueryParams = useMemo(() => (
+  const domainFetchQueryParams: DomainManyQueriesParams = useMemo(() => (
     {
       type: "DomainManyQueries",
       deploymentUuid: props.deploymentUuid,
@@ -70,7 +70,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     }
   ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
 
-  const fetchedData: FetchedData | undefined = useDomainStateSelector(selectFetchedDataFromDomainState, fetchedDataEntriesParams);
+  const fetchedData: FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
 
   const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
     type: "getFetchParamsJzodSchema",
@@ -80,8 +80,8 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       deploymentUuid: props.deploymentUuid,
       instanceUuid: props.instanceUuid,
     },
-    fetchParams: fetchedDataEntriesParams,
-  }),[fetchedDataEntriesParams])
+    fetchParams: domainFetchQueryParams,
+  }),[domainFetchQueryParams])
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
 

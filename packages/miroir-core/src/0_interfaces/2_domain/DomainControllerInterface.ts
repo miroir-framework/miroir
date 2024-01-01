@@ -14,6 +14,7 @@ import { ApplicationSchema } from "../1_core/Application.js";
 import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import {
   EntityInstance,
+  EntityInstancesUuidIndex,
   entityInstance,
   entityInstanceCollection
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -236,10 +237,10 @@ export type DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
 
 
 // ###################################################################################
-export const entityInstancesUuidIndexSchema = z.record(entityInstance)
+// export const entityInstancesUuidIndexSchema = z.record(entityInstance)
 
 
-export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSchema>;
+// export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSchema>;
 // export interface EntityInstancesUuidIndex {
 //   [uuid: string]: EntityInstance;
 // }

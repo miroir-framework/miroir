@@ -19,7 +19,8 @@ const modelEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../asse
 const instanceEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json', import.meta.url)).toString());
 const deploymentEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json', import.meta.url)).toString());
 // const configFileContents = await import(configFilePath);
-const jzodSchemajzodMiroirBootstrapSchema = JSON.parse(readFileSync(new URL("../../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json", import.meta.url)).toString());
+// const jzodSchemajzodMiroirBootstrapSchema = JSON.parse(readFileSync(new URL("../../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json", import.meta.url)).toString());
+import jzodSchemajzodMiroirBootstrapSchema from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json"  assert { type: "json" };
 
 // console.log("###################### action version:",actionModelerVersionV1.definition.definition);
 
@@ -44,7 +45,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
   "definition": {
     "type": "schemaReference",
     "context": {
-      ...jzodSchemajzodMiroirBootstrapSchema.definition.context,
+      ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
       "applicationSection": {
         "type": "union",
         "definition": [
@@ -420,7 +421,77 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         ]
       },
-      "_____________actions__________": {
+      "______________________________________________queries_____________________________________________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
+      },
+      "entityInstancesUuidIndex": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityInstance"
+          }
+        }
+      },
+      "FetchedData": {
+        "type": "record",
+        "definition": {
+          "type": "union",
+          "definition": [
+            {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstance"
+              }
+            },
+            {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstancesUuidIndex"
+              }
+            },
+            {
+              "type": "record",
+              "definition": {
+                "type": "simpleType",
+                "definition": "any"
+              }
+            },
+            {
+              "type": "simpleType",
+              "definition": "undefined"
+            }
+          ]
+        }
+      },
+      "miroirCustomQueryParams": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "jsonata"
+          },
+          "definition": {
+            "type": "simpleType",
+            "definition": "string"
+          }
+        }
+      },
+      "______________________________________________actions_____________________________________________": {
         "type": "simpleType",
         "definition": "never"
 

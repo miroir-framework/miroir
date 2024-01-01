@@ -145,7 +145,10 @@ const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: M
 };
 
 //#########################################################################################
-export const selectModelForDeployment: () => (state: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => any = () =>
+export const selectModelForDeployment: () => (
+  state: ReduxStateWithUndoRedo,
+  params: MiroirSelectorQueryParams
+) => any = () =>
   createSelector(
     [
       selectApplicationVersions,

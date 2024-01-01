@@ -1,14 +1,13 @@
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { MiroirSelectQuery, SelectObjectInstanceQuery } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
-import { DomainState, EntityInstancesUuidIndex } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
-  DomainFetchQueryParams,
+  DomainManyQueriesParams,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
-  DomainModelQueryParams,
+  DomainModelQueryJzodSchemaParams,
   DomainSingleSelectQuery,
-  FetchedData,
+  // FetchedData,
   RecordOfJzodElement,
   RecordOfJzodObject
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
@@ -19,7 +18,15 @@ import { MiroirLoggerFactory } from "../4_services/Logger";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
-import { EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  EntityDefinition,
+  EntityInstance,
+  EntityInstancesUuidIndex,
+  FetchedData,
+  JzodElement,
+  JzodObject,
+  MiroirCustomQueryParams,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -32,14 +39,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState = (
   domainState: DomainState,
-  // pageParams: Record<string, any>,
-  // fetchedData: FetchedData,
   selectorParams: DomainSingleSelectQuery
 ): EntityInstancesUuidIndex | undefined => {
 
-  // if (selectorParams.type == "LocalCacheEntityInstancesSelectorParams") {
-  //   throw new Error("selectEntityInstanceUuidIndexFromDomainState can not handle LocalCacheEntityInstancesSelectorParams")
-  // }
   const deploymentUuid =
     selectorParams.select.type == "objectListQuery"
       ? selectorParams.deploymentUuid
@@ -65,6 +67,12 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
 };
 
 // ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param domainState 
+ * @param selectorParams 
+ * @returns 
+ */
 export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   // selectorParams: DomainSingleSelectQuery
@@ -108,6 +116,12 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
 };
 
 // ################################################################################################
+/**
+ * returns an Entity Instance (Object) from and ObjectQuery
+ * @param domainState 
+ * @param query 
+ * @returns 
+ */
 export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
   query: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
@@ -197,12 +211,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
 };
 
 // ################################################################################################
-export const selectFetchedDataFromDomainState = (
+export const selectByDomainManyQueriesFromDomainState = (
   domainState: DomainState,
-  query: DomainFetchQueryParams,
+  query: DomainManyQueriesParams,
 ): FetchedData | undefined => {
 
-  // log.info("########## DomainSelector selectFetchedDataFromDomainState begin");
+  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin");
 
   const newFetchedData:FetchedData = query.fetchedData??{};
 
@@ -241,13 +255,14 @@ export const selectFetchedDataFromDomainState = (
       }
     }
     newFetchedData[entry[0]] = result;
-    log.info("DomainSelector selectFetchedDataFromDomainState set", entry[0], "query", entry[1], result);
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState set", entry[0], "query", entry[1], result);
   }
 
   
   if (query.combine) {
-    log.info("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState combine", query.combine);
 
+    // performs a cross-join
     newFetchedData["combine"] = Object.fromEntries(
       Object.values(newFetchedData[query.combine?.a ?? ""] ?? {}).flatMap((a) =>
         Object.values(newFetchedData[query.combine?.b ?? ""] ?? {}).map((b) => [
@@ -262,11 +277,8 @@ export const selectFetchedDataFromDomainState = (
     );
   }
 
-
-  // log.info("########## DomainSelector selectFetchedDataFromDomainState end");
-
   log.info(
-    "DomainSelector selectFetchedDataFromDomainState",
+    "DomainSelector selectByDomainManyQueriesFromDomainState",
     "query",
     query,
     "domainState",
@@ -277,6 +289,18 @@ export const selectFetchedDataFromDomainState = (
   return newFetchedData;
 };
 
+
+// ################################################################################################
+export const selectByCustomQueryFromDomainState = (
+  domainState: DomainState,
+  query: MiroirCustomQueryParams,
+): FetchedData | undefined => {
+  return undefined
+}
+// ################################################################################################
+// ################################################################################################
+// JZOD SCHEMAs
+// ################################################################################################
 // ################################################################################################
 export const selectSingleSelectQueryJzodSchemaFromDomainState = (
   domainState: DomainState,
@@ -332,7 +356,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   query: DomainModelGetFetchParamJzodSchemaQueryParams
 // ):  RecordOfJzodElement | undefined => {
 ):  RecordOfJzodObject | undefined => {
-  const localFetchParams: DomainFetchQueryParams = query.fetchParams
+  const localFetchParams: DomainManyQueriesParams = query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
   
   const fetchQueryJzodSchema = Object.fromEntries(
@@ -350,7 +374,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   );
 
   if (localFetchParams.combine) {
-    // log.info("DomainSelector selectFetchedDataFromDomainState combine", query.combine);
+    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState combine", query.combine);
 
     fetchQueryJzodSchema["combine"] = {
       type: "object",
@@ -372,9 +396,9 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
 };
 
 // ################################################################################################
-export const selectDomainModelMetaInformationFromDomainState = (
+export const selectDomainModelQueryParamsJzodSchemaFromDomainState = (
   domainState: DomainState,
-  query: DomainModelQueryParams
+  query: DomainModelQueryJzodSchemaParams
 ): RecordOfJzodElement | JzodElement | undefined => {
   switch (query.type) {
     case "getEntityDefinition":{ 
