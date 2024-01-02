@@ -37,6 +37,16 @@ export {
   miroirCustomQueryParams,
   MiroirFundamentalType,
   MiroirAllFundamentalTypesUnion,
+  MiroirCombineQuery,
+  miroirCombineQuery,
+  MiroirFetchQuery,
+  miroirFetchQuery,
+  MiroirSelectQueriesRecord,
+  miroirSelectQueriesRecord,
+  SelectObjectInstanceQuery,
+  selectObjectInstanceQuery,
+  SelectObjectListQuery,
+  selectObjectListQuery,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
   StoreConfiguration,
@@ -45,6 +55,20 @@ export {
   storeSectionConfiguration,
   StoreUnitConfiguration,
   storeUnitConfiguration,
+  GridReportSection,
+  gridReportSection,
+  ListReportSection,
+  listReportSection,
+  ObjectInstanceReportSection,
+  objectInstanceReportSection,
+  ObjectListReportSection,
+  objectListReportSection,
+  Report,
+  report,
+  ReportSection,
+  reportSection,
+  RootReportSection,
+  rootReportSection,
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
@@ -194,14 +218,15 @@ export {
   // remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
-  LocalCacheEntityInstancesSelectorParams,
   DomainManyQueriesParams,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelGetSingleSelectQueryQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
-  DomainSingleSelectQuery,
+  DomainSingleSelectQueryWithDeployment,
+  DomainStateSelector,
+  LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   MiroirSelectorQueryParams,
   RecordOfJzodElement,
@@ -315,7 +340,7 @@ export {
 } from './2_domain/DomainDataAccess.js';
 export {
   selectByDomainManyQueriesFromDomainState,
-  selectDomainModelQueryParamsJzodSchemaFromDomainState,
+  selectJzodSchemaByDomainModelQueryFromDomainState,
   selectEntityJzodSchemaFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
@@ -390,33 +415,6 @@ export {
 } from './4_services/RestTools.js';
 export { miroirCoreStartup } from './startup.js';
 export { stringTuple, circularReplacer, getLoggerName } from './tools.js';
-
-export {
-  GridReportSection,
-  ListReportSection,
-  MiroirCombineQuery,
-  MiroirFetchQuery,
-  MiroirSelectQueriesRecord,
-  MiroirSelectQuery,
-  ObjectInstanceReportSection,
-  ObjectListReportSection,
-  Report,
-  ReportSection,
-  RootReportSection,
-  SelectObjectListQuery,
-  SelectObjectInstanceQuery,
-  gridReportSection,
-  listReportSection,
-  objectListReportSection,
-  report,
-  reportSection,
-  rootReportSection,
-  miroirFetchQuery,
-  miroirCombineQuery,
-  miroirSelectQueriesRecord,
-  miroirSelectQuery,
-  selectObjectListQuery,
-} from "./0_interfaces/1_core/preprocessor-generated/server-generated.js";
 
 export {applicationDeploymentLibrary} from "./ApplicationDeploymentLibrary.js"
 

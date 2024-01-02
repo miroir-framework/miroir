@@ -1,0 +1,51 @@
+{
+  "name": "miroir-query-jsonata",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The Miroir component providing the capability to use jsonata queries.",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npm run copy-files && tsup",
+    "build1": "npm run devBuild",
+    "build2": "npm run devBuild",
+    "build3": "npm run devBuild",
+    "build4": "npm run devBuild",
+    "build5": "npm run devBuild",
+    "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
+  },
+  "tsup": {
+    "dts": true,
+    "clean": false,
+    "bundle": true,
+    "treeshake": true,
+    "target": "node20",
+    "format": [
+      "esm"
+    ],
+    "entry": [
+      "src/index.ts"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "jsonata": "^2.0.3"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@types/jest": "^29.2.4",
+    "copyfiles": "^2.4.1",
+    "tsup": "^8.0.1",
+    "typescript": "^4.9.4"
+  }
+}

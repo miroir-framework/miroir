@@ -1,4 +1,3 @@
-import { MiroirSelectQuery, SelectObjectInstanceQuery } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   DomainManyQueriesParams,
@@ -7,8 +6,9 @@ import {
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelGetSingleSelectQueryQueryParams,
   DomainModelQueryJzodSchemaParams,
-  DomainSingleSelectQuery,
-  // FetchedData,
+  DomainSingleSelectQueryWithDeployment,
+  DomainStateSelector,
+  MiroirSelectorQueryParams,
   RecordOfJzodElement,
   RecordOfJzodObject
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
@@ -27,6 +27,8 @@ import {
   JzodElement,
   JzodObject,
   MiroirCustomQueryParams,
+  MiroirSelectQuery,
+  SelectObjectInstanceQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
@@ -38,9 +40,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-export const selectEntityInstanceUuidIndexFromDomainState = (
+export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<DomainSingleSelectQueryWithDeployment, EntityInstancesUuidIndex | undefined> = (
   domainState: DomainState,
-  selectorParams: DomainSingleSelectQuery
+  selectorParams: DomainSingleSelectQueryWithDeployment
 ): EntityInstancesUuidIndex | undefined => {
 
   const deploymentUuid =
@@ -76,7 +78,7 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
  */
 export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
-  // selectorParams: DomainSingleSelectQuery
+  // selectorParams: DomainSingleSelectQueryWithDeployment
   selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
@@ -230,6 +232,7 @@ export const selectByDomainManyQueriesFromDomainState = (
           fetchedData: newFetchedData,
           pageParams: query.pageParams,
           singleSelectQuery: {
+            queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: query.deploymentUuid,
             applicationSection: query.applicationSection,
             select: entry[1],
@@ -243,6 +246,7 @@ export const selectByDomainManyQueriesFromDomainState = (
           fetchedData: newFetchedData,
           pageParams: query.pageParams,
           singleSelectQuery: {
+            queryType: "domainSingleSelectQueryWithDeployment",
             applicationSection: query.applicationSection,
             deploymentUuid: query.deploymentUuid,
             select: entry[1],
@@ -298,6 +302,35 @@ export const selectByCustomQueryFromDomainState = (
 ): FetchedData | undefined => {
   return undefined
 }
+
+// ################################################################################################
+export const selectByDomainModelQueryFromDomainState = (
+  domainState: DomainState,
+  query: MiroirSelectorQueryParams
+): any => {
+  switch (query.queryType) {
+    case "domainSingleSelectQueryWithDeployment":
+    case "getSingleSelectQuery":
+    case "DomainManyQueries":
+    case "LocalCacheEntityInstancesSelectorParams":
+    case "custom":
+    // case "getEntityDefinition":{ 
+    //   return selectEntityJzodSchemaFromDomainState(domainState, query);
+    //   break;
+    // }
+    // case "getFetchParamsJzodSchema": {
+    //   return selectFetchQueryJzodSchemaFromDomainState(domainState, query)
+    //   break;
+    // }
+    // case "getSingleSelectQueryJzodSchema": {
+    //   return selectJzodSchemaBySingleSelectQueryFromDomainState(domainState, query)
+    //   break;
+    // }
+    default:
+      return undefined;
+      break;
+  }
+};
 
 
 // ################################################################################################
@@ -368,6 +401,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
       selectJzodSchemaBySingleSelectQueryFromDomainState(domainState, {
           queryType: "getSingleSelectQueryJzodSchema",
           singleSelectQuery: {
+            queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: localFetchParams.deploymentUuid,
             applicationSection: localFetchParams.applicationSection,
             select: entry[1],
@@ -399,7 +433,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
 };
 
 // ################################################################################################
-export const selectDomainModelQueryParamsJzodSchemaFromDomainState = (
+export const selectJzodSchemaByDomainModelQueryFromDomainState = (
   domainState: DomainState,
   query: DomainModelQueryJzodSchemaParams
 ): RecordOfJzodElement | JzodElement | undefined => {

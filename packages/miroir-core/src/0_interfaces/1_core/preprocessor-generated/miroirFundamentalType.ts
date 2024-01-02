@@ -271,6 +271,9 @@ export type EntityInstanceCollection = {
     instances: EntityInstance[];
 };
 export type ConceptLevel = "MetaModel" | "Model" | "Data";
+export type EntityInstancesUuidIndex = {
+    [x: string]: EntityInstance;
+};
 export type _____________entities__________ = never;
 export type Application = {
     uuid: string;
@@ -331,22 +334,67 @@ export type EntityDefinition = {
     description?: string | undefined;
     jzodSchema: JzodObject;
 };
-export type ModelAction = {
-    actionType: "modelAction";
-    actionName: "createEntity";
-    endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e";
-    entity: Entity;
-    entityDefinition: EntityDefinition;
+export type ObjectInstanceReportSection = {
+    type: "objectInstanceReportSection";
+    fetchData?: MiroirFetchQuery | undefined;
+    selectData?: MiroirSelectQueriesRecord | undefined;
+    combineData?: MiroirCombineQuery | undefined;
+    definition: {
+        label?: string | undefined;
+        parentUuid: string;
+        fetchedDataReference?: string | undefined;
+        query?: SelectObjectInstanceQuery | undefined;
+    };
 };
-export type InstanceAction = {
-    actionType: "instanceAction";
-    actionName: "createInstance";
-    endpointVersion: "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    deploymentUuid: string;
-    applicationSection: ApplicationSection;
-    objects: EntityInstanceCollection[];
+export type ObjectListReportSection = {
+    type: "objectListReportSection";
+    definition: SelectObjectListQuery;
 };
-export type _____________configuration_and_bundles__________ = never;
+export type GridReportSection = {
+    type: "grid";
+    fetchData?: MiroirFetchQuery | undefined;
+    selectData?: MiroirSelectQueriesRecord | undefined;
+    combineData?: MiroirCombineQuery | undefined;
+    definition: ReportSection[][];
+};
+export type ListReportSection = {
+    type: "list";
+    fetchData?: MiroirFetchQuery | undefined;
+    selectData?: MiroirSelectQueriesRecord | undefined;
+    combineData?: MiroirCombineQuery | undefined;
+    definition: ReportSection[];
+};
+export type ReportSection = GridReportSection | ListReportSection | ObjectListReportSection | ObjectInstanceReportSection;
+export type RootReportSection = {
+    parameters?: {
+        [x: string]: any;
+    } | undefined;
+    fetchData?: MiroirFetchQuery | undefined;
+    selectData?: MiroirSelectQueriesRecord | undefined;
+    combineData?: MiroirCombineQuery | undefined;
+    section: ReportSection;
+};
+export type Report = {
+    uuid: string;
+    parentName?: string | undefined;
+    parentUuid: string;
+    parentDefinitionVersionUuid?: string | undefined;
+    conceptLevel?: ("MetaModel" | "Model" | "Data") | undefined;
+    name: string;
+    defaultLabel: string;
+    type?: ("list" | "grid") | undefined;
+    application?: string | undefined;
+    definition: {
+        parameters?: {
+            [x: string]: any;
+        } | undefined;
+        fetchData?: MiroirFetchQuery | undefined;
+        selectData?: MiroirSelectQueriesRecord | undefined;
+        combineData?: MiroirCombineQuery | undefined;
+        section: ReportSection;
+    };
+};
+export type _________________________________configuration_and_bundles_________________________________ = never;
 export type IndexedDbStoreSectionConfiguration = {
     emulatedServerType: "indexedDb";
     indexedDbName: string;
@@ -419,8 +467,38 @@ export type Commit = {
 };
 export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceCUDAction;
 export type ______________________________________________queries_____________________________________________ = never;
-export type EntityInstancesUuidIndex = {
-    [x: string]: EntityInstance;
+export type SelectObjectInstanceQuery = {
+    type: "objectQuery";
+    label?: string | undefined;
+    parentName?: string | undefined;
+    parentUuid: string;
+    instanceUuid?: string | undefined;
+    rootObjectAttribute?: string | undefined;
+    fetchedDataReference?: string | undefined;
+    fetchedDataReferenceAttribute?: string | undefined;
+    paramReference?: string | undefined;
+    paramReferenceAttribute?: string | undefined;
+};
+export type SelectObjectListQuery = {
+    type: "objectListQuery";
+    label?: string | undefined;
+    parentName?: string | undefined;
+    parentUuid: string;
+    rootObjectUuid?: string | undefined;
+    rootObjectAttribute?: string | undefined;
+    fetchedDataReference?: string | undefined;
+};
+export type MiroirSelectQuery = SelectObjectListQuery | SelectObjectInstanceQuery;
+export type MiroirSelectQueriesRecord = {
+    [x: string]: MiroirSelectQuery;
+};
+export type MiroirCombineQuery = {
+    a: string;
+    b: string;
+};
+export type MiroirFetchQuery = {
+    select: MiroirSelectQueriesRecord;
+    combine?: MiroirCombineQuery | undefined;
 };
 export type FetchedData = {
     [x: string]: EntityInstance | EntityInstancesUuidIndex | {
@@ -433,6 +511,21 @@ export type MiroirCustomQueryParams = {
     definition: string;
 };
 export type ______________________________________________actions_____________________________________________ = never;
+export type ModelAction = {
+    actionType: "modelAction";
+    actionName: "createEntity";
+    endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e";
+    entity: Entity;
+    entityDefinition: EntityDefinition;
+};
+export type InstanceAction = {
+    actionType: "instanceAction";
+    actionName: "createInstance";
+    endpointVersion: "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    deploymentUuid: string;
+    applicationSection: ApplicationSection;
+    objects: EntityInstanceCollection[];
+};
 export type InstanceCUDAction = {
     actionType: "InstanceCUDAction";
     actionName: "create";
@@ -519,15 +612,21 @@ export const dataStoreApplicationType: z.ZodType<DataStoreApplicationType> = z.u
 export const entityInstance = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()});
 export const entityInstanceCollection: z.ZodType<EntityInstanceCollection> = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
 export const conceptLevel: z.ZodType<ConceptLevel> = z.enum(["MetaModel","Model","Data"]);
+export const entityInstancesUuidIndex: z.ZodType<EntityInstancesUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstance));
 export const _____________entities__________: z.ZodType<_____________entities__________> = z.never();
 export const application: z.ZodType<Application> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();
 export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), type:z.string().optional(), application:z.string().uuid(), branch:z.string().uuid(), previousVersion:z.string().uuid(), modelStructureMigration:z.lazy(() =>jzodObject).optional(), modelCUDMigration:z.lazy(() =>jzodObject).optional()}).strict();
 export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
-export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
-export const _____________configuration_and_bundles__________: z.ZodType<_____________configuration_and_bundles__________> = z.never();
+export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectInstanceQuery).optional()}).strict()}).strict();
+export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.lazy(() =>selectObjectListQuery)}).strict();
+export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
+export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.literal("list"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.array(z.lazy(() =>reportSection))}).strict();
+export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>gridReportSection), z.lazy(() =>listReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection)]);
+export const rootReportSection: z.ZodType<RootReportSection> = z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), section:z.lazy(() =>reportSection)}).strict();
+export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), application:z.string().uuid().optional(), definition:z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), section:z.lazy(() =>reportSection)}).strict()}).strict();
+export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
 export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
 export const sqlDbStoreSectionConfiguration: z.ZodType<SqlDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("sql"), connectionString:z.string(), schema:z.string()}).strict();
@@ -543,10 +642,17 @@ export const storeConfiguration: z.ZodType<StoreConfiguration> = z.record(z.stri
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
 export const ______________________________________________queries_____________________________________________: z.ZodType<______________________________________________queries_____________________________________________> = z.never();
-export const entityInstancesUuidIndex: z.ZodType<EntityInstancesUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstance));
+export const selectObjectInstanceQuery: z.ZodType<SelectObjectInstanceQuery> = z.object({type:z.literal("objectQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional(), fetchedDataReferenceAttribute:z.string().optional(), paramReference:z.string().optional(), paramReferenceAttribute:z.string().optional()}).strict();
+export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.object({type:z.literal("objectListQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), rootObjectUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional()}).strict();
+export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectInstanceQuery)]);
+export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
+export const miroirCombineQuery: z.ZodType<MiroirCombineQuery> = z.object({a:z.string(), b:z.string()}).strict();
+export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({select:z.lazy(() =>miroirSelectQueriesRecord), combine:z.lazy(() =>miroirCombineQuery).optional()}).strict();
 export const FetchedData: z.ZodType<FetchedData> = z.record(z.string(),z.union([z.lazy(() =>entityInstance), z.lazy(() =>entityInstancesUuidIndex), z.record(z.string(),z.any()), z.undefined()]));
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
+export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
+export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);

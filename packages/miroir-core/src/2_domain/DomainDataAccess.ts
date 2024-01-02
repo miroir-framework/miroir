@@ -10,10 +10,6 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
-import {
-  Report
-} from "../0_interfaces/1_core/preprocessor-generated/server-generated.js";
-
 import { StoreBasedConfiguration } from "../0_interfaces/1_core/MiroirConfig.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
@@ -34,7 +30,7 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityDefinition, EntityInstance, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");
 let log:LoggerInterface = console as any as LoggerInterface;

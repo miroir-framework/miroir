@@ -62,11 +62,6 @@ const jzodSchemaConversion
 //   // jzodSchemaVariableName:string,
 // }[]
 = [
-  // {
-  //   jzodObject: entityDefinitionReport.jzodSchema as any as JzodObject,
-  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/server-generated.ts",
-  //   jzodSchemaVariableName: "report",
-  // },
   {
     jzodElement: miroirFundamentalJzodSchema.definition,
     targetFileName: "./src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",

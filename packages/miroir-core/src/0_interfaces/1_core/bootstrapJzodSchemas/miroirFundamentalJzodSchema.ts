@@ -21,6 +21,7 @@ const deploymentEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../..
 // const configFileContents = await import(configFilePath);
 // const jzodSchemajzodMiroirBootstrapSchema = JSON.parse(readFileSync(new URL("../../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json", import.meta.url)).toString());
 import jzodSchemajzodMiroirBootstrapSchema from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json"  assert { type: "json" };
+import entityDefinitionReportV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json"  assert { type: "json" };
 
 // console.log("###################### action version:",actionModelerVersionV1.definition.definition);
 
@@ -142,6 +143,16 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "Data"
         ]
       },
+      "entityInstancesUuidIndex": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityInstance"
+          }
+        }
+      },
       "_____________entities__________": {
         "type": "simpleType",
         "definition": "never"
@@ -161,9 +172,20 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "bundle": entityDefinitionBundleV1.jzodSchema as JzodObject,
       "entity": entityDefinitionEntity.jzodSchema as JzodObject,
       "entityDefinition": entityDefinitionEntityDefinition.jzodSchema as JzodObject,
-      "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
-      "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
-      "_____________configuration_and_bundles__________": {
+      ...Object.fromEntries(
+        Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
+          [
+            "objectInstanceReportSection",
+            "objectListReportSection",
+            "gridReportSection",
+            "listReportSection",
+            "reportSection",
+            "rootReportSection",
+          ].includes(e[0])
+        )
+      ),
+      "report": (entityDefinitionReportV1 as any).jzodSchema,
+      "_________________________________configuration_and_bundles_________________________________": {
         "type": "simpleType",
         "definition": "never"
 
@@ -435,16 +457,18 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
 
       },
-      "entityInstancesUuidIndex": {
-        "type": "record",
-        "definition": {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "entityInstance"
-          }
-        }
-      },
+      ...Object.fromEntries(
+        Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
+          [
+            "selectObjectInstanceQuery",
+            "selectObjectListQuery",
+            "miroirSelectQuery",
+            "miroirSelectQueriesRecord",
+            "miroirCombineQuery",
+            "miroirFetchQuery",
+          ].includes(e[0])
+        )
+      ),
       "FetchedData": {
         "type": "record",
         "definition": {
@@ -509,6 +533,8 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
 
       },
+      "modelAction": modelEndpointVersionV1.definition.definition.actionParameter as JzodObject,
+      "instanceAction": instanceEndpointVersionV1.definition.definition.actionParameter as JzodObject,
       "instanceCUDAction": {
         "type": "union",
         "definition": [

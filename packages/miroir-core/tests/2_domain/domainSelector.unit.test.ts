@@ -8,7 +8,7 @@ import {
   MiroirSelectorQueryParams,
   RecordOfJzodElement
 } from "../../src/0_interfaces/2_domain/DomainSelectorInterface";
-import { selectDomainModelQueryParamsJzodSchemaFromDomainState, selectByDomainManyQueriesFromDomainState } from "../../src/2_domain/DomainSelector";
+import { selectJzodSchemaByDomainModelQueryFromDomainState, selectByDomainManyQueriesFromDomainState } from "../../src/2_domain/DomainSelector";
 
 import domainStateImport from "./domainState.json";
 import { EntityDefinition, JzodElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -124,7 +124,7 @@ describe("domainSelector", () => {
         entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     };
 
-    const result: RecordOfJzodElement | JzodElement | undefined = selectDomainModelQueryParamsJzodSchemaFromDomainState(domainState, queryParam);
+    const result: RecordOfJzodElement | JzodElement | undefined = selectJzodSchemaByDomainModelQueryFromDomainState(domainState, queryParam);
 
     expect(result).toBe(
       (domainState[applicationDeploymentLibrary.uuid]["model"]["54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"][

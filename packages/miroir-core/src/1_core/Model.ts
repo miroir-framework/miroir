@@ -6,7 +6,6 @@ import EntityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a
 import entityApplication from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json';
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityApplicationModelBranch from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json';
-// import entityModelVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
 
@@ -45,8 +44,7 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 
 // import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
-import { Report } from "../0_interfaces/1_core/preprocessor-generated/server-generated";
-import { EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityDefinition, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // TODO: define current configuration!
 export const defaultMiroirMetaModel:MiroirApplicationModel = {

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
-  DomainState,
+  DomainStateSelector,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -42,16 +42,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
-export function useDomainStateSelector<T = any>(
-  domainStateSelector:(
-    domainState: DomainState,
-    query: MiroirSelectorQueryParams
-  ) => T,
-  query:MiroirSelectorQueryParams,
+export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T = any>(
+  domainStateSelector:DomainStateSelector<P,T>,
+  query:P,
+  // query:MiroirSelectorQueryParams,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
   // const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
-  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), [domainStateSelector]);
+  const innerSelector = useMemo(() => applyDomainStateSelector(domainStateSelector), [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, query)
   );
