@@ -4,7 +4,7 @@ import {
   ApplicationDeploymentSchema,
   MetaEntitySchema,
   entityDefinition,
-  entityInstancesUuidIndexSchema
+  entityInstancesUuidIndex,
 } from "miroir-core";
 
 export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"]);
@@ -22,7 +22,7 @@ export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 export const tableComponentCorePropsSchema = z.object({
   columnDefs: z.object({ columnDefs: z.array(z.any()) }),
-  instancesToDisplay: entityInstancesUuidIndexSchema.optional(), // TODO: lower it down to TableCompnentEntityInstancePropsSchema, this should not appear in TableComponentJsonArrayPropsSchema
+  instancesToDisplay: entityInstancesUuidIndex.optional(), // TODO: lower it down to TableCompnentEntityInstancePropsSchema, this should not appear in TableComponentJsonArrayPropsSchema
   styles: z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),

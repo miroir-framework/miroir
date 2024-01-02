@@ -46,8 +46,6 @@ import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-in
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-indexedDb.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
-
-
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
   // "5_miroir-core_DomainController": {level:defaultLevels.TRACE},
