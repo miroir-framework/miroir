@@ -33,6 +33,8 @@ export {
   MiroirConfigClient,
   MiroirConfigServer,
   MiroirConfig,
+  MiroirCustomQueryParams,
+  miroirCustomQueryParams,
   MiroirFundamentalType,
   MiroirAllFundamentalTypesUnion,
   ServerConfigForClientConfig,
@@ -101,22 +103,6 @@ export {
 export {
   MiroirApplicationVersion,
 } from './0_interfaces/1_core/ModelVersion.js';
-// export {
-//   ReportSchema,
-//   Report,
-//   ReportGridType,
-//   ReportGridTypeSchema,
-//   ReportListType,
-//   ReportListTypeSchema,
-//   ReportSectionObjectDetails,
-//   ReportSectionObjectDetailsSchema,
-//   ReportSectionListDefinitionSchema,
-//   ReportSectionListDefinition,
-//   ReportSection,
-//   ReportSectionList,
-//   ReportSectionListSchema,
-//   ReportSectionSchema,
-// } from './0_interfaces/1_core/Report.js';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
@@ -197,27 +183,22 @@ export {
   EntitiesDomainStateReducer,
   EntitiesDomainStateEntityInstanceArraySelector,
   EntitiesDomainStateTransformer,
-  // entityInstancesUuidIndexSchema,
-  // EntityInstancesUuidIndex,
   UndoRedoActionNamesSchema,
   UndoRedoActionName,
   UndoRedoActionNamesArray,
-  // undoRedoActionNamesObject,
   ModelEntityUpdateActionName,
   ModelEntityUpdateActionNamesArray,
   ModelEntityUpdateActionNamesArrayString,
-  // ModelEntityUpdateActionNamesObject,
   RemoteStoreActionName,
   remoteStoreActionNamesArray,
   // remoteStoreActionNamesObject,
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
   LocalCacheEntityInstancesSelectorParams,
-  // ObjectQueryParams,
-  // FetchedData,
   DomainManyQueriesParams,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
+  DomainModelGetSingleSelectQueryQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
   DomainSingleSelectQuery,
@@ -340,7 +321,7 @@ export {
   selectEntityInstanceFromObjectQueryAndDomainState,
   selectEntityInstancesFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainState,
-  selectSingleSelectQueryJzodSchemaFromDomainState,
+  selectJzodSchemaBySingleSelectQueryFromDomainState,
 } from './2_domain/DomainSelector.js';
 export {
   ModelEntityActionTransformer

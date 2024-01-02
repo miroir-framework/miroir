@@ -61,7 +61,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const domainFetchQueryParams: DomainManyQueriesParams = useMemo(() => (
     {
-      type: "DomainManyQueries",
+      queryType: "DomainManyQueries",
       deploymentUuid: props.deploymentUuid,
       applicationSection: props.applicationSection,
       pageParams: params,
@@ -73,7 +73,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   const fetchedData: FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
 
   const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
-    type: "getFetchParamsJzodSchema",
+    queryType: "getFetchParamsJzodSchema",
     fetchedData: {},
     pageParams: {
       applicationSection: props.applicationSection,

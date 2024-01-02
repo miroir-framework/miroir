@@ -49,7 +49,7 @@ export const TestUtilsTableComponent = (
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = React.useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = React.useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: props.deploymentUuid,
       }
@@ -93,7 +93,7 @@ export const TestUtilsTableComponent = (
     // const instancesToDisplaySelectorParams:LocalCacheEntityInstancesSelectorParams = React.useMemo(
     const instancesToDisplaySelectorParams:LocalCacheQueryParams = React.useMemo(
       () => ({
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid:props.deploymentUuid,
           applicationSection: props.instancesApplicationSection?props.instancesApplicationSection:'data',

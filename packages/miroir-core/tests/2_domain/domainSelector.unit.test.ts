@@ -22,7 +22,7 @@ describe("domainSelector", () => {
     () => {
 
       const queryParam: DomainManyQueriesParams = {
-        type: "DomainManyQueries",
+        queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         select: {
@@ -47,7 +47,7 @@ describe("domainSelector", () => {
     () => {
 
       const queryParam: DomainManyQueriesParams = {
-        type: "DomainManyQueries",
+        queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         "select": {
@@ -79,7 +79,7 @@ describe("domainSelector", () => {
     () => {
 
       const queryParam: DomainManyQueriesParams = {
-        type: "DomainManyQueries",
+        queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         "select": {
@@ -119,7 +119,7 @@ describe("domainSelector", () => {
   // ###########################################################################################
   it("getEntityDefinition query: get entity definition from entity Uuid", () => {
     const queryParam: DomainModelQueryJzodSchemaParams = {
-        type: "getEntityDefinition",
+        queryType: "getEntityDefinition",
         deploymentUuid: applicationDeploymentLibrary.uuid,
         entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     };

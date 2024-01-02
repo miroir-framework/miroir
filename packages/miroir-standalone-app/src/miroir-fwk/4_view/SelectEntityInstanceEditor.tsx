@@ -65,7 +65,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: context.deploymentUuid,
       }
@@ -83,7 +83,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid,
         applicationSection: "data",
@@ -171,7 +171,7 @@ export const SelectEntityInstanceEditor = memo(
     // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
       () => ({
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid: context.deploymentUuid,
         }
@@ -193,7 +193,7 @@ export const SelectEntityInstanceEditor = memo(
     // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
     const selectorParams:LocalCacheQueryParams = useMemo(
       () => ({
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection: "data",

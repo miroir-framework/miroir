@@ -13,6 +13,7 @@ import {
   LocalCacheQueryParams,
   LoggerInterface,
   MiroirApplicationModel,
+  MiroirCustomQueryParams,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
   Uuid,
@@ -46,20 +47,23 @@ export function useDomainStateSelector<T = any>(
     domainState: DomainState,
     query: MiroirSelectorQueryParams
   ) => T,
-  query:MiroirSelectorQueryParams
+  query:MiroirSelectorQueryParams,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
-  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
+  // const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
+  const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, query)
   );
   return result
 }
+
 // ################################################################################################
 export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid,
       }
@@ -98,7 +102,7 @@ export function useLocalCacheEntityDefinitions(): EntityDefinition[] {
   selectInstanceArrayForDeploymentSectionEntity(
       state, 
       {
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid:applicationDeploymentMiroir.uuid,
           applicationSection: "model",
@@ -119,7 +123,7 @@ export function useLocalCacheSectionEntityDefinitions(
   selectInstanceArrayForDeploymentSectionEntity(
       state, 
       {
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection: section,
@@ -142,7 +146,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     selectInstanceArrayForDeploymentSectionEntity(
       state,
       {
-        type: "LocalCacheEntityInstancesSelectorParams",
+        queryType: "LocalCacheEntityInstancesSelectorParams",
         definition: {
           deploymentUuid,
           applicationSection,

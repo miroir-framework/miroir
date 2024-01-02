@@ -75,7 +75,7 @@ export const EntityInstancePage = () => {
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }
@@ -125,7 +125,7 @@ export const EntityInstancePage = () => {
 
   const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: params.deploymentUuid,
         applicationSection: params.applicationSection as ApplicationSection,
@@ -138,7 +138,7 @@ export const EntityInstancePage = () => {
 
   const booksUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
     {
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: params.deploymentUuid,
         applicationSection: params.applicationSection as ApplicationSection,

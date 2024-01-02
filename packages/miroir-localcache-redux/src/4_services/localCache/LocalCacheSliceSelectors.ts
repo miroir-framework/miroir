@@ -106,7 +106,7 @@ export const selectEntityInstanceUuidIndexFromLocalCache = (
   reduxState: ReduxStateWithUndoRedo,
   params: MiroirSelectorQueryParams
 ): EntityInstancesUuidIndex | undefined => {
-  if (params.type == "LocalCacheEntityInstancesSelectorParams") {
+  if (params.queryType == "LocalCacheEntityInstancesSelectorParams") {
     const localEntityIndex = getLocalCacheSliceIndex(
       params.definition.deploymentUuid,
       params.definition.applicationSection,

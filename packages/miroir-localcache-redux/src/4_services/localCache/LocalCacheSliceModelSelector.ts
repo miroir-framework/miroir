@@ -35,10 +35,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 const selectEntities = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection: "model",
       entityUuid: entityEntity.uuid,
     },
@@ -50,10 +50,10 @@ const selectEntities = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelect
 // ################################################################################################
 const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection: "model",
       entityUuid: entityEntityDefinition.uuid,
     },
@@ -65,12 +65,12 @@ const selectEntityDefinitions = (reduxState: ReduxStateWithUndoRedo, params: Mir
 // ################################################################################################
 const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection:
-        params.type == "LocalCacheEntityInstancesSelectorParams"
+        params.queryType == "LocalCacheEntityInstancesSelectorParams"
           ? params.definition.deploymentUuid == applicationDeploymentMiroir.uuid
             ? "data"
             : "model"
@@ -85,12 +85,12 @@ const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo, params: MiroirSel
 // ################################################################################################
 const selectReports = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection:
-        params.type == "LocalCacheEntityInstancesSelectorParams"
+        params.queryType == "LocalCacheEntityInstancesSelectorParams"
           ? params.definition.deploymentUuid == applicationDeploymentMiroir.uuid
             ? "data"
             : "model"
@@ -105,12 +105,12 @@ const selectReports = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelecto
 // ################################################################################################
 const selectConfigurations = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection:
-        params.type == "LocalCacheEntityInstancesSelectorParams"
+        params.queryType == "LocalCacheEntityInstancesSelectorParams"
           ? params.definition.deploymentUuid == applicationDeploymentMiroir.uuid
             ? "data"
             : "model"
@@ -126,12 +126,12 @@ const selectConfigurations = (reduxState: ReduxStateWithUndoRedo, params: Miroir
 // ################################################################################################
 const selectApplicationVersions = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
-    type: "LocalCacheEntityInstancesSelectorParams",
+    queryType: "LocalCacheEntityInstancesSelectorParams",
     definition: {
       deploymentUuid:
-        params.type == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
       applicationSection:
-        params.type == "LocalCacheEntityInstancesSelectorParams"
+        params.queryType == "LocalCacheEntityInstancesSelectorParams"
           ? params.definition.deploymentUuid == applicationDeploymentMiroir.uuid
             ? "data"
             : "model"

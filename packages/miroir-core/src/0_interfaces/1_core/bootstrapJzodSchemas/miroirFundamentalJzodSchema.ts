@@ -483,6 +483,10 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         "definition": {
           "queryType": {
             "type": "literal",
+            "definition": "custom"
+          },
+          "name": {
+            "type": "literal",
             "definition": "jsonata"
           },
           "definition": {

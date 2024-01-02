@@ -43,7 +43,7 @@ export const ReportInstanceLink = (props: EntityInstanceLinkProps) => {
 
   // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
   //   {
-  //     type: "LocalCacheEntityInstancesSelectorParams",
+  //     queryType: "LocalCacheEntityInstancesSelectorParams",
   //     definition: {
   //       deploymentUuid: props.deploymentUuid,
   //       applicationSection: props.applicationSection as ApplicationSection,

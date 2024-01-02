@@ -5,6 +5,7 @@ import {
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
+  DomainModelGetSingleSelectQueryQueryParams,
   DomainModelQueryJzodSchemaParams,
   DomainSingleSelectQuery,
   // FetchedData,
@@ -76,7 +77,7 @@ export const selectEntityInstanceUuidIndexFromDomainState = (
 export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   // selectorParams: DomainSingleSelectQuery
-  selectorParams: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
+  selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
   if (selectorParams.singleSelectQuery.select.type == "objectListQuery") {
@@ -124,7 +125,7 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
-  query: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
+  query: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstance | undefined => {
   const querySelectorParams: SelectObjectInstanceQuery | undefined =
     query.singleSelectQuery.select.type == "objectQuery" ? query.singleSelectQuery.select : undefined;
@@ -225,7 +226,7 @@ export const selectByDomainManyQueriesFromDomainState = (
     switch (entry[1].type) {
       case "objectListQuery": {
         result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
-          type: "getSingleSelectQueryJzodSchema",
+          queryType: "getSingleSelectQuery",
           fetchedData: newFetchedData,
           pageParams: query.pageParams,
           singleSelectQuery: {
@@ -238,7 +239,7 @@ export const selectByDomainManyQueriesFromDomainState = (
       }
       case "objectQuery": {
         result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, {
-          type: "getSingleSelectQueryJzodSchema",
+          queryType: "getSingleSelectQuery",
           fetchedData: newFetchedData,
           pageParams: query.pageParams,
           singleSelectQuery: {
@@ -297,18 +298,20 @@ export const selectByCustomQueryFromDomainState = (
 ): FetchedData | undefined => {
   return undefined
 }
+
+
 // ################################################################################################
 // ################################################################################################
-// JZOD SCHEMAs
+// JZOD SCHEMAs selectors
 // ################################################################################################
 // ################################################################################################
-export const selectSingleSelectQueryJzodSchemaFromDomainState = (
+export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
   domainState: DomainState,
   query: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
 // ): JzodElement | undefined => {
 ): JzodObject | undefined => {
   return selectEntityJzodSchemaFromDomainState(domainState, {
-    type: "getEntityDefinition",
+    queryType: "getEntityDefinition",
     deploymentUuid: query.singleSelectQuery.deploymentUuid??"",
     entityUuid: query.singleSelectQuery.select.parentUuid,
   })
@@ -362,8 +365,8 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
       entry[0],
-      selectSingleSelectQueryJzodSchemaFromDomainState(domainState, {
-          type: "getSingleSelectQueryJzodSchema",
+      selectJzodSchemaBySingleSelectQueryFromDomainState(domainState, {
+          queryType: "getSingleSelectQueryJzodSchema",
           singleSelectQuery: {
             deploymentUuid: localFetchParams.deploymentUuid,
             applicationSection: localFetchParams.applicationSection,
@@ -400,7 +403,7 @@ export const selectDomainModelQueryParamsJzodSchemaFromDomainState = (
   domainState: DomainState,
   query: DomainModelQueryJzodSchemaParams
 ): RecordOfJzodElement | JzodElement | undefined => {
-  switch (query.type) {
+  switch (query.queryType) {
     case "getEntityDefinition":{ 
       return selectEntityJzodSchemaFromDomainState(domainState, query);
       break;
@@ -410,7 +413,7 @@ export const selectDomainModelQueryParamsJzodSchemaFromDomainState = (
       break;
     }
     case "getSingleSelectQueryJzodSchema": {
-      return selectSingleSelectQueryJzodSchemaFromDomainState(domainState, query)
+      return selectJzodSchemaBySingleSelectQueryFromDomainState(domainState, query)
       break;
     }
     default:

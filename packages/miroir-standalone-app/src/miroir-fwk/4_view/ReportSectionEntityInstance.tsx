@@ -56,7 +56,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
     () => ({
-      type: "LocalCacheEntityInstancesSelectorParams",
+      queryType: "LocalCacheEntityInstancesSelectorParams",
       definition: {
         deploymentUuid: applicationDeploymentLibrary.uuid,
       }

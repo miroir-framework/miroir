@@ -237,15 +237,6 @@ export type DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
 
 
 // ###################################################################################
-// export const entityInstancesUuidIndexSchema = z.record(entityInstance)
-
-
-// export type EntityInstancesUuidIndex = z.infer<typeof entityInstancesUuidIndexSchema>;
-// export interface EntityInstancesUuidIndex {
-//   [uuid: string]: EntityInstance;
-// }
-
-// ###################################################################################
 export interface EntitiesDomainState {
   // TODO: to use in redux, this should be the structure of the state manipulated by the client. Right now, the type is duplicated internally within miroir-localcache-redux.
   [entityUuid: string]: EntityInstancesUuidIndex;

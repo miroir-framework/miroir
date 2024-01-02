@@ -1,6 +1,6 @@
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { Uuid } from "../1_core/EntityDefinition";
-import { ApplicationSection, FetchedData } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { ApplicationSection, FetchedData, MiroirCustomQueryParams } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import {
   MiroirCombineQuery,
   MiroirSelectQueriesRecord,
@@ -18,25 +18,31 @@ export interface LocalCacheEntityInstancesSelectorParams {
   instanceUuid?: Uuid,
 }
 
-
+// ################################################################################################
 export type DomainSingleSelectQuery = {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   select: MiroirSelectQuery;
 }
 
-export type LocalCacheQueryParams = {
-  type: "LocalCacheEntityInstancesSelectorParams";
-  definition: LocalCacheEntityInstancesSelectorParams;
-};
-
+// ################################################################################################
 export interface DomainModelRootQuery {
   pageParams?: Record<string, any>,
   fetchedData?: FetchedData,
 }
 
+export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelRootQuery {
+  queryType: "getSingleSelectQuery",
+  singleSelectQuery: DomainSingleSelectQuery,
+};
+
+export type LocalCacheQueryParams = {
+  queryType: "LocalCacheEntityInstancesSelectorParams";
+  definition: LocalCacheEntityInstancesSelectorParams;
+};
+
 export interface DomainManyQueriesParams extends DomainModelRootQuery {
-  type: "DomainManyQueries";
+  queryType: "DomainManyQueries";
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   select: MiroirSelectQueriesRecord;
@@ -47,20 +53,21 @@ export interface DomainManyQueriesParams extends DomainModelRootQuery {
 // JZOD SCHEMAs
 // ################################################################################################
 export interface DomainModelGetEntityDefinitionQueryParams extends DomainModelRootQuery {
-  type: "getEntityDefinition",
+  queryType: "getEntityDefinition",
   deploymentUuid: Uuid,
   entityUuid: Uuid,
 };
 
 export interface DomainModelGetFetchParamJzodSchemaQueryParams extends DomainModelRootQuery  {
-  type: "getFetchParamsJzodSchema",
+  queryType: "getFetchParamsJzodSchema",
   fetchParams: DomainManyQueriesParams,
 };
 
 export interface DomainModelGetSingleSelectQueryJzodSchemaQueryParams extends DomainModelRootQuery {
-  type: "getSingleSelectQueryJzodSchema",
+  queryType: "getSingleSelectQueryJzodSchema",
   singleSelectQuery: DomainSingleSelectQuery,
 };
+
 
 export type DomainModelQueryJzodSchemaParams =
   | DomainModelGetEntityDefinitionQueryParams
@@ -69,4 +76,9 @@ export type DomainModelQueryJzodSchemaParams =
 ;
 
 
-export type MiroirSelectorQueryParams = LocalCacheQueryParams | DomainManyQueriesParams | DomainModelQueryJzodSchemaParams;
+export type MiroirSelectorQueryParams =
+  | DomainModelGetSingleSelectQueryQueryParams
+  | DomainManyQueriesParams
+  | LocalCacheQueryParams
+  | MiroirCustomQueryParams
+  | DomainModelQueryJzodSchemaParams;
