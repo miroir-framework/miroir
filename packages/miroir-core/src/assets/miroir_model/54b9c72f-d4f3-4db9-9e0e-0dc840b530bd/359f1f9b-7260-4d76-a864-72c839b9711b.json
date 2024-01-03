@@ -1,0 +1,222 @@
+{
+  "uuid": "359f1f9b-7260-4d76-a864-72c839b9711b",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "QueryVersion",
+  "conceptLevel": "MetaModel",
+  "description": "a version of a Query",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+      },
+      "parentName": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+      },
+      "parentUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+      },
+      "parentDefinitionVersionUuid": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "validations": [{ "type": "uuid" }],
+        "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+      },
+      "name": {
+        "type": "simpleType",
+        "definition": "string",
+        "extra": { "id": 5, "defaultLabel": "Name", "editable": false }
+      },
+      "description": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 6, "defaultLabel": "Description", "editable": true }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "extra": { "id": 7, "defaultLabel": "Query Version definition", "editable": true },
+        "context": {
+          "selectObjectInstanceQuery": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "objectQuery"
+              },
+              "label": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+              },
+              "parentName": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":2, "defaultLabel": "Parent Name", "editable": false }
+              },
+              "parentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+              },
+              "instanceUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
+              },
+              "rootObjectAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 6, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "fetchedDataReference": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 7, "defaultLabel": "Fetched Data Reference", "editable": false }
+              },
+              "fetchedDataReferenceAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 8, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "paramReference": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 9, "defaultLabel": "Param Reference", "editable": false }
+              },
+              "paramReferenceAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 10, "defaultLabel": "Param Attribute", "editable": false }
+              }
+            }
+          },
+          "selectObjectListQuery": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "objectListQuery"
+              },
+              "label": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+              },
+              "parentName": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id":2, "defaultLabel": "Parent Name", "editable": false }
+              },
+              "parentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+              },
+              "rootObjectUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":4, "defaultLabel": "Root Object Uuid", "editable": false }
+              },
+              "rootObjectAttribute": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 5, "defaultLabel": "Root Object Attribute", "editable": false }
+              },
+              "fetchedDataReference": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "extra": { "id": 6, "defaultLabel": "Fetched Data Reference", "editable": false }
+              }
+            }
+          },
+          "miroirSelectQuery": {
+            "type": "union",
+            "discriminator": "type",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectListQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectInstanceQuery"
+                }
+              }
+            ]
+          },
+          "miroirSelectQueriesRecord": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "miroirSelectQuery"
+              }
+            }
+          },
+          "miroirCombineQuery": {
+            "type": "object",
+            "definition": {
+              "a": { "type": "simpleType", "definition": "string"},
+              "b": { "type": "simpleType", "definition": "string"}
+            }
+          },
+          "miroirFetchQuery": {
+            "type": "object",
+            "definition": {
+              "select": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "miroirSelectQueriesRecord"
+                }
+              },
+              "combine": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirCombineQuery"
+                }
+              }
+            }
+          }
+        },
+        "definition": {
+          "eager": true,
+          "relativePath": "rootReportSection"
+        }
+      }
+    }
+  }
+}

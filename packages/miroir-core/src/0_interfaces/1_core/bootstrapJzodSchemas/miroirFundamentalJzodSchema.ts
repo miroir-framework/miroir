@@ -22,6 +22,7 @@ const deploymentEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../..
 // const jzodSchemajzodMiroirBootstrapSchema = JSON.parse(readFileSync(new URL("../../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json", import.meta.url)).toString());
 import jzodSchemajzodMiroirBootstrapSchema from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json"  assert { type: "json" };
 import entityDefinitionReportV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json"  assert { type: "json" };
+import entityDefinitionQueryVersionV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json"  assert { type: "json" };
 
 // console.log("###################### action version:",actionModelerVersionV1.definition.definition);
 
@@ -458,7 +459,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
       },
       ...Object.fromEntries(
-        Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
+        Object.entries((entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context).filter(e => 
           [
             "selectObjectInstanceQuery",
             "selectObjectListQuery",
@@ -469,6 +470,18 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           ].includes(e[0])
         )
       ),
+      // ...Object.fromEntries(
+      //   Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
+      //     [
+      //       "selectObjectInstanceQuery",
+      //       "selectObjectListQuery",
+      //       "miroirSelectQuery",
+      //       "miroirSelectQueriesRecord",
+      //       "miroirCombineQuery",
+      //       "miroirFetchQuery",
+      //     ].includes(e[0])
+      //   )
+      // ),
       "FetchedData": {
         "type": "record",
         "definition": {
