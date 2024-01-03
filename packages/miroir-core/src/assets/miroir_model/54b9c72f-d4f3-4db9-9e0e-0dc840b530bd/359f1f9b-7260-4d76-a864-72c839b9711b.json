@@ -52,7 +52,7 @@
           "selectObjectInstanceQuery": {
             "type": "object",
             "definition": {
-              "type": {
+              "queryType": {
                 "type": "literal",
                 "definition": "objectQuery"
               },
@@ -116,7 +116,7 @@
           "selectObjectListQuery": {
             "type": "object",
             "definition": {
-              "type": {
+              "queryType": {
                 "type": "literal",
                 "definition": "objectListQuery"
               },
@@ -189,6 +189,10 @@
           "miroirCombineQuery": {
             "type": "object",
             "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "combineQuery"
+              },
               "a": { "type": "simpleType", "definition": "string"},
               "b": { "type": "simpleType", "definition": "string"}
             }

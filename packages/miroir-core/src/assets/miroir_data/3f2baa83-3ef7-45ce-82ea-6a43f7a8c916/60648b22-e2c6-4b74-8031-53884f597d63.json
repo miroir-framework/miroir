@@ -9,7 +9,7 @@
     "fetchData": {
       "select": {
         "applicationModelBranches": {
-          "type": "objectListQuery",
+          "queryType": "objectListQuery",
           "parentName": "StoreBasedConfiguration",
           "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1"
         }

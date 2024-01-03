@@ -46,15 +46,15 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<D
 ): EntityInstancesUuidIndex | undefined => {
 
   const deploymentUuid =
-    selectorParams.select.type == "objectListQuery"
+    selectorParams.select.queryType == "objectListQuery"
       ? selectorParams.deploymentUuid
       : undefined;
   const applicationSection =
-    selectorParams.select.type == "objectListQuery"
+    selectorParams.select.queryType == "objectListQuery"
       ? selectorParams.applicationSection
       : undefined;
   const entityUuid =
-    selectorParams.select.type == "objectListQuery"
+    selectorParams.select.queryType == "objectListQuery"
       ? selectorParams.select.parentUuid
       : undefined;
 
@@ -82,18 +82,18 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
   selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
 
-  if (selectorParams.singleSelectQuery.select.type == "objectListQuery") {
+  if (selectorParams.singleSelectQuery.select.queryType == "objectListQuery") {
     const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery)
     const result = Object.fromEntries(
       Object.entries(selectedInstances ?? {}).filter(
         (i: [string, EntityInstance]) =>
           (i[1] as any)[
-            selectorParams.singleSelectQuery.select.type == "objectListQuery"
+            selectorParams.singleSelectQuery.select.queryType == "objectListQuery"
             // selectorParams.type == "EntityInstanceListQueryParams"
               ? selectorParams.singleSelectQuery.select.rootObjectAttribute ?? "dummy"
               : "dummy"
           ] ===
-          (selectorParams.singleSelectQuery.select.type == "objectListQuery"
+          (selectorParams.singleSelectQuery.select.queryType == "objectListQuery"
           // (selectorParams.type == "EntityInstanceListQueryParams"
             ? selectorParams.singleSelectQuery.select.fetchedDataReference && (selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""]
               ? ((selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""] as any)["uuid"]
@@ -130,11 +130,11 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
   query: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstance | undefined => {
   const querySelectorParams: SelectObjectInstanceQuery | undefined =
-    query.singleSelectQuery.select.type == "objectQuery" ? query.singleSelectQuery.select : undefined;
+    query.singleSelectQuery.select.queryType == "objectQuery" ? query.singleSelectQuery.select : undefined;
 
-  const deploymentUuid = querySelectorParams?.type == "objectQuery" ? query.singleSelectQuery.deploymentUuid : undefined;
+  const deploymentUuid = querySelectorParams?.queryType == "objectQuery" ? query.singleSelectQuery.deploymentUuid : undefined;
   const applicationSection =
-    query.singleSelectQuery.select.type == "objectQuery" ? query.singleSelectQuery.applicationSection : undefined;
+    query.singleSelectQuery.select.queryType == "objectQuery" ? query.singleSelectQuery.applicationSection : undefined;
 
   let result = undefined;
   if (deploymentUuid && applicationSection) {
@@ -225,7 +225,7 @@ export const selectByDomainManyQueriesFromDomainState = (
 
   for (const entry of Object.entries(query.select??{})) {
     let result = undefined;
-    switch (entry[1].type) {
+    switch (entry[1].queryType) {
       case "objectListQuery": {
         result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
           queryType: "getSingleSelectQuery",

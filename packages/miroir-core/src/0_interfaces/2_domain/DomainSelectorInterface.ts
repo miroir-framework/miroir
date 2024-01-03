@@ -22,12 +22,23 @@ export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
 ) => T;
 
 // ################################################################################################
+export interface DomainModelRootQuery {
+  pageParams?: Record<string, any>,
+  fetchedData?: FetchedData,
+}
+
+// ################################################################################################
 export interface LocalCacheEntityInstancesSelectorParams {
   deploymentUuid?: Uuid,
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
   instanceUuid?: Uuid,
 }
+
+export type LocalCacheQueryParams = {
+  queryType: "LocalCacheEntityInstancesSelectorParams";
+  definition: LocalCacheEntityInstancesSelectorParams;
+};
 
 // ################################################################################################
 export type DomainSingleSelectQueryWithDeployment = {
@@ -37,22 +48,13 @@ export type DomainSingleSelectQueryWithDeployment = {
   select: MiroirSelectQuery;
 }
 
-// ################################################################################################
-export interface DomainModelRootQuery {
-  pageParams?: Record<string, any>,
-  fetchedData?: FetchedData,
-}
-
 export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelRootQuery {
   queryType: "getSingleSelectQuery",
   singleSelectQuery: DomainSingleSelectQueryWithDeployment,
 };
 
-export type LocalCacheQueryParams = {
-  queryType: "LocalCacheEntityInstancesSelectorParams";
-  definition: LocalCacheEntityInstancesSelectorParams;
-};
 
+// ################################################################################################
 export interface DomainManyQueriesParams extends DomainModelRootQuery {
   queryType: "DomainManyQueries";
   deploymentUuid?: Uuid,
@@ -94,5 +96,5 @@ export type MiroirSelectorQueryParams =
   | DomainManyQueriesParams
   | LocalCacheQueryParams
   | MiroirCustomQueryParams
-  // | DomainModelQueryJzodSchemaParams
+  | DomainModelQueryJzodSchemaParams
 ;

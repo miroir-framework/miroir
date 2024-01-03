@@ -468,7 +468,7 @@ export type Commit = {
 export type MiroirAllFundamentalTypesUnion = ApplicationSection | EntityInstance | EntityInstanceCollection | InstanceCUDAction;
 export type ______________________________________________queries_____________________________________________ = never;
 export type SelectObjectInstanceQuery = {
-    type: "objectQuery";
+    queryType: "objectQuery";
     label?: string | undefined;
     parentName?: string | undefined;
     parentUuid: string;
@@ -480,7 +480,7 @@ export type SelectObjectInstanceQuery = {
     paramReferenceAttribute?: string | undefined;
 };
 export type SelectObjectListQuery = {
-    type: "objectListQuery";
+    queryType: "objectListQuery";
     label?: string | undefined;
     parentName?: string | undefined;
     parentUuid: string;
@@ -493,6 +493,7 @@ export type MiroirSelectQueriesRecord = {
     [x: string]: MiroirSelectQuery;
 };
 export type MiroirCombineQuery = {
+    queryType: "combineQuery";
     a: string;
     b: string;
 };
@@ -642,11 +643,11 @@ export const storeConfiguration: z.ZodType<StoreConfiguration> = z.record(z.stri
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
 export const ______________________________________________queries_____________________________________________: z.ZodType<______________________________________________queries_____________________________________________> = z.never();
-export const selectObjectInstanceQuery: z.ZodType<SelectObjectInstanceQuery> = z.object({type:z.literal("objectQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional(), fetchedDataReferenceAttribute:z.string().optional(), paramReference:z.string().optional(), paramReferenceAttribute:z.string().optional()}).strict();
-export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.object({type:z.literal("objectListQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), rootObjectUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional()}).strict();
+export const selectObjectInstanceQuery: z.ZodType<SelectObjectInstanceQuery> = z.object({queryType:z.literal("objectQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), instanceUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional(), fetchedDataReferenceAttribute:z.string().optional(), paramReference:z.string().optional(), paramReferenceAttribute:z.string().optional()}).strict();
+export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.object({queryType:z.literal("objectListQuery"), label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), rootObjectUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional()}).strict();
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectInstanceQuery)]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
-export const miroirCombineQuery: z.ZodType<MiroirCombineQuery> = z.object({a:z.string(), b:z.string()}).strict();
+export const miroirCombineQuery: z.ZodType<MiroirCombineQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();
 export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({select:z.lazy(() =>miroirSelectQueriesRecord), combine:z.lazy(() =>miroirCombineQuery).optional()}).strict();
 export const FetchedData: z.ZodType<FetchedData> = z.record(z.string(),z.union([z.lazy(() =>entityInstance), z.lazy(() =>entityInstancesUuidIndex), z.record(z.string(),z.any()), z.undefined()]));
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();

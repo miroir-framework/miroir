@@ -27,7 +27,7 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         select: {
           "book": {
-            "type": "objectQuery",
+            "queryType": "objectQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
@@ -52,13 +52,13 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         "select": {
           "book": {
-            "type": "objectQuery",
+            "queryType": "objectQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "type": "objectQuery",
+            "queryType": "objectQuery",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",
@@ -84,20 +84,20 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         "select": {
           "book": {
-            "type": "objectQuery",
+            "queryType": "objectQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "type": "objectQuery",
+            "queryType": "objectQuery",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",
             "fetchedDataReferenceAttribute": "publisher"
           },
           "booksOfPublisher": {
-            "type": "objectListQuery",
+            "queryType": "objectListQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
