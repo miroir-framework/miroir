@@ -1,0 +1,8 @@
+{
+  "uuid": "5d7be714-d16d-4e31-97cd-8a27249792ee",
+  "parentName":"Query",
+  "parentUuid":"c0ce8936-abf8-492f-80bf-addd6e6b6227",
+  "name":"BundleProducer",
+  "defaultLabel": "Query producing a bundle.",
+  "description": "This query produces a bundle for a given application."
+}

@@ -1,0 +1,27 @@
+{
+  "uuid": "62735cfb-e231-4419-a0eb-b19d5701e45a",
+  "parentName":"Report",
+  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name":"QueryList",
+  "defaultLabel": "List of Queries",
+  "definition": {
+    "parameters": {},
+    "fetchData": {
+      "select": {
+        "queries": {
+          "queryType": "objectListQuery",
+          "parentName": "Query",
+          "parentUuid": "c0ce8936-abf8-492f-80bf-addd6e6b6227"
+        }
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "Query",
+        "parentUuid": "c0ce8936-abf8-492f-80bf-addd6e6b6227",
+        "fetchedDataReference": "queries"
+      }
+    }
+  }
+}

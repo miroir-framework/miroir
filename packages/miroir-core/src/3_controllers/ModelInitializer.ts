@@ -11,6 +11,8 @@ import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import entityJzodSchema from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import entityReport from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import entityStoreBasedConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
+import entityQuery from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c0ce8936-abf8-492f-80bf-addd6e6b6227.json';
+import entityQueryVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 // import entityModelVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 
 import entityDefinitionApplication from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
@@ -27,6 +29,8 @@ import entityDefinitionJzodSchema from '../assets/miroir_model/54b9c72f-d4f3-4db
 import entityDefinitionReport from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
 // import entityDefinitionModelVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionStoreBasedConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
+import entityDefinitionQuery from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/5be645c3-892e-44e3-9358-dfe27c4da74c.json';
+import entityDefinitionQueryVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
 
 import reportApplicationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json';
 import reportApplicationDeploymentConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json';
@@ -40,6 +44,11 @@ import reportEndpointVersionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-
 import reportEntityList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json';
 import reportEntityDefinitionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import reportReportList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
+import reportQueryList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/62735cfb-e231-4419-a0eb-b19d5701e45a.json';
+import reportQueryVersionList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json';
+
+import queryBundleProducer from '../assets/miroir_data/c0ce8936-abf8-492f-80bf-addd6e6b6227/5d7be714-d16d-4e31-97cd-8a27249792ee.json';
+import queryVersionBundleProducerV1 from '../assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json';
 
 import applicationEndpoint from '../assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/a04f7b8a-cdec-4f43-b08c-388f70fdd6ba.json';
 import deploymentEndpoint from '../assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/b1c4d5d7-56d3-41e2-9574-300d821ecf4c.json';
@@ -145,13 +154,21 @@ export async function modelInitialize(
     await storeController.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
     log.info(logHeader, 'created entity StoreBasedConfiguration',storeController.getEntityUuids());
     
-    // bootstrap EntityStoreBasedConfiguration
+    // bootstrap EntityJzodSchema
     await storeController.createEntity(entityJzodSchema as MetaEntity, entityDefinitionJzodSchema as EntityDefinition);
     log.info(logHeader, 'created entity JzodSchema',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
     log.info(logHeader, 'created entity EntityReport',storeController.getEntityUuids());
+    
+    // bootstrap EntityQuery
+    await storeController.createEntity(entityQuery as MetaEntity, entityDefinitionQuery as EntityDefinition);
+    log.info(logHeader, 'created entity Query',storeController.getEntityUuids());
+    
+    // bootstrap EntityQueryVersion
+    await storeController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQueryVersion as EntityDefinition);
+    log.info(logHeader, 'created entity QueryVersion',storeController.getEntityUuids());
     
     await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
     await storeController.upsertInstance('data', reportEndpointList as EntityInstance);
@@ -164,7 +181,9 @@ export async function modelInitialize(
     await storeController.upsertInstance('data', reportApplicationVersionList as EntityInstance);
     await storeController.upsertInstance('data', reportReportList as EntityInstance);
     await storeController.upsertInstance('data', reportJzodSchema as EntityInstance);
-
+    await storeController.upsertInstance('data', reportQueryList as EntityInstance);
+    await storeController.upsertInstance('data', reportQueryVersionList as EntityInstance);
+    
 
     await storeController.upsertInstance('data', application);
     await storeController.upsertInstance('data', applicationDeploymentConfiguration);
@@ -180,6 +199,9 @@ export async function modelInitialize(
     await storeController.upsertInstance('data', instanceEndpointV1);
     await storeController.upsertInstance('data', modelEndpoint);
     await storeController.upsertInstance('data', modelEndpointV1);
+
+    await storeController.upsertInstance('data', queryBundleProducer);
+    await storeController.upsertInstance('data', queryVersionBundleProducerV1);
   }
 
   if (dataStoreType == 'app') {

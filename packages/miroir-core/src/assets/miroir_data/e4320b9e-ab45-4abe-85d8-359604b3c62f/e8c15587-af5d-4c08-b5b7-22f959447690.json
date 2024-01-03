@@ -1,0 +1,13 @@
+{
+  "uuid": "e8c15587-af5d-4c08-b5b7-22f959447690",
+  "parentName":"Query",
+  "parentUuid":"e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name":"BundleProducer",
+  "defaultLabel": "Query producing a bundle.",
+  "description": "This query produces a bundle for a given application.",
+  "definition": {
+    "queryType": "objectListQuery",
+    "parentName": "ApplicationVersion",
+    "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+  }
+}

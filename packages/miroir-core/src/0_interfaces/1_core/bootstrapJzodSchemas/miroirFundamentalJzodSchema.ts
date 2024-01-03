@@ -458,30 +458,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
 
       },
-      ...Object.fromEntries(
-        Object.entries((entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context).filter(e => 
-          [
-            "selectObjectInstanceQuery",
-            "selectObjectListQuery",
-            "miroirSelectQuery",
-            "miroirSelectQueriesRecord",
-            "miroirCombineQuery",
-            "miroirFetchQuery",
-          ].includes(e[0])
-        )
-      ),
-      // ...Object.fromEntries(
-      //   Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 
-      //     [
-      //       "selectObjectInstanceQuery",
-      //       "selectObjectListQuery",
-      //       "miroirSelectQuery",
-      //       "miroirSelectQueriesRecord",
-      //       "miroirCombineQuery",
-      //       "miroirFetchQuery",
-      //     ].includes(e[0])
-      //   )
-      // ),
+      ...(entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context,
       "FetchedData": {
         "type": "record",
         "definition": {

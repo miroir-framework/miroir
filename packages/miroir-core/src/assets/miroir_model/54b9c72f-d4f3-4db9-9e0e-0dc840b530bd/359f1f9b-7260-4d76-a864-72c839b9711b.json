@@ -218,7 +218,7 @@
         },
         "definition": {
           "eager": true,
-          "relativePath": "rootReportSection"
+          "relativePath": "miroirSelectQuery"
         }
       }
     }

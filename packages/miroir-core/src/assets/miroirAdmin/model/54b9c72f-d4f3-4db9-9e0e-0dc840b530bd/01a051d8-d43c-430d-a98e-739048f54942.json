@@ -43,6 +43,7 @@
       },
       "contents": {
         "type": "union", 
+        "extra": { "id":6, "defaultLabel": "Contents of the bundle", "editable": true },
         "definition": [
           {
             "type": "object",
@@ -70,8 +71,7 @@
               }
             }
           }
-        ],
-        "extra": { "id":6, "defaultLabel": "Contents of the bundle", "editable": true }
+        ]
       }
     }
   }
