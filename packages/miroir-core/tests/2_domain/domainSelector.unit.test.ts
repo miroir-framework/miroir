@@ -2,13 +2,16 @@ import { applicationDeploymentLibrary } from "../../src/ApplicationDeploymentLib
 
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import {
-  DomainManyQueriesParams,
+  DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
   MiroirSelectorQueryParams,
   RecordOfJzodElement
 } from "../../src/0_interfaces/2_domain/DomainSelectorInterface";
-import { selectJzodSchemaByDomainModelQueryFromDomainState, selectByDomainManyQueriesFromDomainState } from "../../src/2_domain/DomainSelector";
+import {
+  selectJzodSchemaByDomainModelQueryFromDomainState,
+  selectByDomainManyQueriesFromDomainState,
+} from "../../src/2_domain/DomainSelector";
 
 import domainStateImport from "./domainState.json";
 import { EntityDefinition, JzodElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -21,13 +24,13 @@ describe("domainSelector", () => {
     'simplest query: select 1 object from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesParams = {
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         select: {
           "book": {
-            "queryType": "objectQuery",
+            "queryType": "selectObjectByUuidQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
@@ -46,19 +49,19 @@ describe("domainSelector", () => {
     'select 1 object from the uuid found in an attribute of another object from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesParams = {
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         "select": {
           "book": {
-            "queryType": "objectQuery",
+            "queryType": "selectObjectByUuidQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "objectQuery",
+            "queryType": "selectObjectByOtherWayQuery",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",
@@ -78,19 +81,19 @@ describe("domainSelector", () => {
     'select Books of Publisher of given Book from Domain State',
     () => {
 
-      const queryParam: DomainManyQueriesParams = {
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
         "applicationSection": "data",
         "select": {
           "book": {
-            "queryType": "objectQuery",
+            "queryType": "selectObjectByUuidQuery",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "objectQuery",
+            "queryType": "selectObjectByOtherWayQuery",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",

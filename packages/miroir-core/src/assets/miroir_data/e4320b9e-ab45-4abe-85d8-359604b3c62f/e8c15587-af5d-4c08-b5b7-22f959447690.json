@@ -6,8 +6,12 @@
   "defaultLabel": "Query producing a bundle.",
   "description": "This query produces a bundle for a given application.",
   "definition": {
-    "queryType": "objectListQuery",
-    "parentName": "ApplicationVersion",
-    "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+    "select": {
+      "applicationVersion": {
+        "queryType": "objectListQuery",
+        "parentName": "ApplicationVersion",
+        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
+      }
+    }
   }
 }

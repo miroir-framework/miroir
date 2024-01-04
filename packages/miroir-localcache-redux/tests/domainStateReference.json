@@ -547,7 +547,7 @@
                   "selectObjectInstanceQuery": {
                     "type": "object",
                     "definition": {
-                      "type": { "type": "literal", "definition": "objectQuery" },
+                      "type": { "type": "literal", "definition": "selectObjectByOtherWayQuery" },
                       "label": {
                         "type": "simpleType",
                         "definition": "string",

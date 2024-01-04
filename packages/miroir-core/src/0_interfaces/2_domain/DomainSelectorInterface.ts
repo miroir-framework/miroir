@@ -43,8 +43,8 @@ export type LocalCacheQueryParams = {
 // ################################################################################################
 export type DomainSingleSelectQueryWithDeployment = {
   queryType: "domainSingleSelectQueryWithDeployment"
-  deploymentUuid?: Uuid,
-  applicationSection?: ApplicationSection,
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
   select: MiroirSelectQuery;
 }
 
@@ -55,10 +55,10 @@ export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelR
 
 
 // ################################################################################################
-export interface DomainManyQueriesParams extends DomainModelRootQuery {
+export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuery {
   queryType: "DomainManyQueries";
-  deploymentUuid?: Uuid,
-  applicationSection?: ApplicationSection,
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
   select: MiroirSelectQueriesRecord;
   combine?: MiroirCombineQuery
 };
@@ -74,7 +74,7 @@ export interface DomainModelGetEntityDefinitionQueryParams extends DomainModelRo
 
 export interface DomainModelGetFetchParamJzodSchemaQueryParams extends DomainModelRootQuery  {
   queryType: "getFetchParamsJzodSchema",
-  fetchParams: DomainManyQueriesParams,
+  fetchParams: DomainManyQueriesWithDeploymentUuid,
 };
 
 export interface DomainModelGetSingleSelectQueryJzodSchemaQueryParams extends DomainModelRootQuery {
@@ -93,7 +93,7 @@ export type DomainModelQueryJzodSchemaParams =
 export type MiroirSelectorQueryParams =
   | DomainSingleSelectQueryWithDeployment
   | DomainModelGetSingleSelectQueryQueryParams
-  | DomainManyQueriesParams
+  | DomainManyQueriesWithDeploymentUuid
   | LocalCacheQueryParams
   | MiroirCustomQueryParams
   | DomainModelQueryJzodSchemaParams

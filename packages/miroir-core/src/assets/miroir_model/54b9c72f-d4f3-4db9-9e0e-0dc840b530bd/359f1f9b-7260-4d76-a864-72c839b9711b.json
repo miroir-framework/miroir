@@ -49,13 +49,9 @@
         "type": "schemaReference",
         "extra": { "id": 7, "defaultLabel": "Query Version definition", "editable": true },
         "context": {
-          "selectObjectInstanceQuery": {
+          "selectRootQuery": {
             "type": "object",
             "definition": {
-              "queryType": {
-                "type": "literal",
-                "definition": "objectQuery"
-              },
               "label": {
                 "type": "simpleType",
                 "definition": "string",
@@ -73,6 +69,22 @@
                 "definition": "string",
                 "validations": [{ "type": "uuid" }],
                 "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+              }
+            }
+          },
+          "selectObjectInstanceByUuidQuery": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "selectRootQuery"
+              }
+            },
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "selectObjectByUuidQuery"
               },
               "instanceUuid": {
                 "type": "simpleType",
@@ -80,6 +92,22 @@
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
                 "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
+              }
+            }
+          },
+          "selectObjectInstanceOtherQuery": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "selectRootQuery"
+              }
+            },
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "selectObjectByOtherWayQuery"
               },
               "rootObjectAttribute": {
                 "type": "simpleType",
@@ -99,7 +127,7 @@
                 "optional": true,
                 "extra": { "id": 8, "defaultLabel": "Root Object Attribute", "editable": false }
               },
-              "paramReference": {
+              "queryParamReference": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
@@ -112,6 +140,24 @@
                 "extra": { "id": 10, "defaultLabel": "Param Attribute", "editable": false }
               }
             }
+          },
+          "selectObjectInstanceQuery": {
+            "type": "union",
+            "discriminator": "type",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectInstanceByUuidQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectInstanceOtherQuery"
+                }
+              }
+            ]
           },
           "selectObjectListQuery": {
             "type": "object",
@@ -218,7 +264,7 @@
         },
         "definition": {
           "eager": true,
-          "relativePath": "miroirSelectQuery"
+          "relativePath": "miroirFetchQuery"
         }
       }
     }

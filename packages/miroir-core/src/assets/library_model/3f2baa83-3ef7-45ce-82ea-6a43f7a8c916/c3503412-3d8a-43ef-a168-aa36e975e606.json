@@ -9,20 +9,20 @@
     "fetchData": {
       "select": {
         "book": {
-          "queryType": "objectQuery",
+          "queryType": "selectObjectByOtherWayQuery",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          "paramReference": "instanceUuid"
+          "queryParamReference": "instanceUuid"
         },
         "publisher": {
-          "queryType": "objectQuery",
+          "queryType": "selectObjectByOtherWayQuery",
           "parentName": "Publisher",
           "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
           "fetchedDataReference": "book",
           "fetchedDataReferenceAttribute": "publisher"
         },
         "author": {
-          "queryType": "objectQuery",
+          "queryType": "selectObjectByOtherWayQuery",
           "parentName": "Publisher",
           "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           "fetchedDataReference": "book",

@@ -3,7 +3,7 @@ import { Params, useParams } from 'react-router-dom';
 
 import {
   ApplicationSection,
-  DomainManyQueriesParams,
+  DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
   FetchedData,
   LoggerInterface,
@@ -13,7 +13,13 @@ import {
   Uuid,
   getLoggerName,
   selectFetchQueryJzodSchemaFromDomainState,
-  selectByDomainManyQueriesFromDomainState
+  selectByDomainManyQueriesFromDomainState,
+  MiroirSelectQuery,
+  queryVersionBundleProducerV1,
+  SelectObjectListQuery,
+  DomainSingleSelectQueryWithDeployment,
+  selectEntityInstanceUuidIndexFromDomainState,
+  MiroirSelectQueriesRecord
 } from "miroir-core";
 
 
@@ -51,7 +57,6 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
   log.log(
-    "RootReportSectionView",
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
@@ -59,7 +64,18 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.reportSection?.fetchData
   );
 
-  const domainFetchQueryParams: DomainManyQueriesParams = useMemo(() => (
+  // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
+  const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
+    queryType: "DomainManyQueries",
+    deploymentUuid: props.deploymentUuid,
+    applicationSection: props.applicationSection,
+    select: queryVersionBundleProducerV1.definition.select as MiroirSelectQueriesRecord
+  }),[])
+
+  const producedBundle : FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+
+  log.info("producedBundle",producedBundle)
+  const domainFetchQueryParams: DomainManyQueriesWithDeploymentUuid = useMemo(() => (
     {
       queryType: "DomainManyQueries",
       deploymentUuid: props.deploymentUuid,
