@@ -11,10 +11,10 @@
     "fetchData": {
       "select": {
         "deployments": {
-          "queryType": "selectObjectByOtherWayQuery",
+          "queryType": "selectObjectByParameterValue",
           "parentName": "Deployment",
           "parentUuid": "84bda435-3b9c-46ca-aa74-19d3a2511b24",
-          "queryParamReference": "instanceUuid"
+          "queryParameterName": "instanceUuid"
         }
       }
     },

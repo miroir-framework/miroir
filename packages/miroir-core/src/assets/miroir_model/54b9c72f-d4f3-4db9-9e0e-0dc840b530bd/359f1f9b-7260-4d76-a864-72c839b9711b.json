@@ -72,7 +72,7 @@
               }
             }
           },
-          "selectObjectInstanceByUuidQuery": {
+          "selectObjectByUuidQuery": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -84,7 +84,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByUuidQuery"
+                "definition": "selectObjectByUuid"
               },
               "instanceUuid": {
                 "type": "simpleType",
@@ -95,7 +95,7 @@
               }
             }
           },
-          "selectObjectInstanceOtherQuery": {
+          "selectObjectByFetchedObjectRelationQuery": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -107,13 +107,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByOtherWayQuery"
-              },
-              "rootObjectAttribute": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Root Object Attribute", "editable": false }
+                "definition": "selectObjectByFetchedObjectRelation"
               },
               "fetchedDataReference": {
                 "type": "simpleType",
@@ -126,14 +120,30 @@
                 "definition": "string",
                 "optional": true,
                 "extra": { "id": 8, "defaultLabel": "Root Object Attribute", "editable": false }
+              }
+            }
+          },
+          "selectObjectByParameterValueQuery": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "selectRootQuery"
+              }
+            },
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "selectObjectByParameterValue"
               },
-              "queryParamReference": {
+              "queryParameterName": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
                 "extra": { "id": 9, "defaultLabel": "Param Reference", "editable": false }
               },
-              "paramReferenceAttribute": {
+              "queryParameterAttribute": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
@@ -148,13 +158,19 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectInstanceByUuidQuery"
+                  "relativePath": "selectObjectByUuidQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectInstanceOtherQuery"
+                  "relativePath": "selectObjectByFetchedObjectRelationQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectByParameterValueQuery"
                 }
               }
             ]
@@ -164,7 +180,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "objectListQuery"
+                "definition": "selectObjectList"
               },
               "label": {
                 "type": "simpleType",

@@ -191,7 +191,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         "section": {
           "type":"objectListReportSection",
           "definition": {
-            "queryType": "objectListQuery",
+            "queryType": "selectObjectList",
             "parentName": "Fountain",
             "parentUuid": newEntity.uuid
           }

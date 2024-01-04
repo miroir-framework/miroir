@@ -9,13 +9,13 @@
     "fetchData": {
       "select": {
         "author": {
-          "queryType": "selectObjectByOtherWayQuery",
+          "queryType": "selectObjectByParameterValue",
           "parentName": "Author",
           "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          "queryParamReference": "instanceUuid"
+          "queryParameterName": "instanceUuid"
         },
         "booksOfAuthor": {
-          "queryType": "objectListQuery",
+          "queryType": "selectObjectList",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           "rootObjectAttribute": "author",

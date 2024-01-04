@@ -21,7 +21,7 @@ const domainState: DomainState = domainStateImport as DomainState;
 describe("domainSelector", () => {
   // ###########################################################################################
   it(
-    'simplest query: select 1 object from Domain State',
+    'error on non-existing Entity',
     () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
@@ -30,7 +30,53 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         select: {
           "book": {
-            "queryType": "selectObjectByUuidQuery",
+            "queryType": "selectObjectByUuid",
+            "parentName": "Book",
+            "parentUuid": "XXXXXX",
+            "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+          }
+        }
+      };
+
+      expect(()=>selectByDomainManyQueriesFromDomainState(domainState, queryParam)).toThrowError("selectEntityInstanceFromObjectQueryAndDomainState could not resolve query")
+    }
+  )
+
+  // ###########################################################################################
+  it(
+    'error on non-existing object uuid',
+    () => {
+
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
+        queryType: "DomainManyQueries",
+        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "applicationSection": "data",
+        select: {
+          "book": {
+            "queryType": "selectObjectByUuid",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "instanceUuid": "XXXXXXXXX"
+          }
+        }
+      };
+
+      expect(()=>selectByDomainManyQueriesFromDomainState(domainState, queryParam)).toThrowError("selectEntityInstanceFromObjectQueryAndDomainState could not resolve query")
+    }
+  )
+
+  // ###########################################################################################
+  it(
+    'select 1 object from Domain State',
+    () => {
+
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
+        queryType: "DomainManyQueries",
+        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "applicationSection": "data",
+        select: {
+          "book": {
+            "queryType": "selectObjectByUuid",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
@@ -55,13 +101,13 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         "select": {
           "book": {
-            "queryType": "selectObjectByUuidQuery",
+            "queryType": "selectObjectByUuid",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "selectObjectByOtherWayQuery",
+            "queryType": "selectObjectByFetchedObjectRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",
@@ -87,20 +133,20 @@ describe("domainSelector", () => {
         "applicationSection": "data",
         "select": {
           "book": {
-            "queryType": "selectObjectByUuidQuery",
+            "queryType": "selectObjectByUuid",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "selectObjectByOtherWayQuery",
+            "queryType": "selectObjectByFetchedObjectRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "book",
             "fetchedDataReferenceAttribute": "publisher"
           },
           "booksOfPublisher": {
-            "queryType": "objectListQuery",
+            "queryType": "selectObjectList",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",

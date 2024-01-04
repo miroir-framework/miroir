@@ -9,34 +9,34 @@
     "fetchData": {
       "select": {
         "book": {
-          "queryType": "selectObjectByOtherWayQuery",
+          "queryType": "selectObjectByParameterValue",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          "queryParamReference": "instanceUuid"
+          "queryParameterName": "instanceUuid"
         },
         "publisher": {
-          "queryType": "selectObjectByOtherWayQuery",
+          "queryType": "selectObjectByFetchedObjectRelation",
           "parentName": "Publisher",
           "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
           "fetchedDataReference": "book",
           "fetchedDataReferenceAttribute": "publisher"
         },
         "author": {
-          "queryType": "selectObjectByOtherWayQuery",
+          "queryType": "selectObjectByFetchedObjectRelation",
           "parentName": "Publisher",
           "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           "fetchedDataReference": "book",
           "fetchedDataReferenceAttribute": "author"
         },
         "booksOfPublisher": {
-          "queryType": "objectListQuery",
+          "queryType": "selectObjectList",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           "fetchedDataReference": "publisher",
           "rootObjectAttribute": "publisher"
         },
         "booksOfAuthor": {
-          "queryType": "objectListQuery",
+          "queryType": "selectObjectList",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           "fetchedDataReference": "author",
