@@ -110,8 +110,8 @@ describe("domainSelector", () => {
             "queryType": "selectObjectByFetchedObjectRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedDataReference": "book",
-            "fetchedDataReferenceAttribute": "publisher"
+            "fetchedObjectReference": "book",
+            "fetchedObjectAttribute": "publisher"
           }
         }
       };
@@ -142,11 +142,11 @@ describe("domainSelector", () => {
             "queryType": "selectObjectByFetchedObjectRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedDataReference": "book",
-            "fetchedDataReferenceAttribute": "publisher"
+            "fetchedObjectReference": "book",
+            "fetchedObjectAttribute": "publisher"
           },
           "booksOfPublisher": {
-            "queryType": "selectObjectList",
+            "queryType": "selectObjectListByOtherWay",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",

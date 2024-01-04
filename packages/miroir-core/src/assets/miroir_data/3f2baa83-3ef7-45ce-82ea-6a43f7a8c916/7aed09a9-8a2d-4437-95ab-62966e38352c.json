@@ -9,7 +9,7 @@
     "fetchData": {
       "select": {
         "queryVersions": {
-          "queryType": "selectObjectList",
+          "queryType": "selectObjectListByEntity",
           "parentName": "QueryVersion",
           "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
         }
