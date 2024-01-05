@@ -175,6 +175,61 @@ describe("domainSelector", () => {
   )
 
   // ###########################################################################################
+  it(
+    'select custom-built result: Books of Publisher of given Book from Domain State',
+    () => {
+
+      const queryParam: DomainManyQueriesWithDeploymentUuid = {
+        queryType: "DomainManyQueries",
+        "deploymentUuid": applicationDeploymentLibrary.uuid,
+        "applicationSection": "data",
+        "select": {
+          "book": {
+            "queryType": "selectObjectByUuid",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+          },
+          "publisher": {
+            "queryType": "selectObjectByRelation",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "objectReference": {
+              "referenceType": "queryContextReference",
+              "referenceName": "book"
+            },
+            "AttributeOfObjectToCompareToReferenceUuid": "publisher",
+          },
+          "booksOfPublisher": {
+            "queryType": "selectObjectListByRelation",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectReference": {
+              "referenceType": "constant",
+              "referenceUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+            },
+            "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+          }
+        },
+        "result": {
+          "queryResultType":"object",
+          "definition": {
+            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {queryResultType: "queryContextReference", "referenceName":"booksOfPublisher"}
+          }
+        }
+      };
+
+      const result:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+
+      expect(result.result["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"]).toEqual({
+        "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+      })
+    }
+  )
+
+  // ###########################################################################################
   it("getEntityDefinition query: get entity definition from entity Uuid", () => {
     const queryParam: DomainModelQueryJzodSchemaParams = {
         queryType: "getEntityDefinition",

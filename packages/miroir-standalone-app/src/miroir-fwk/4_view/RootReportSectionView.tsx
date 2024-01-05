@@ -82,7 +82,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       applicationSection: props.applicationSection,
       pageParams: params,
       select: props.reportSection?.fetchData?.select ?? {},
-      combine: props.reportSection?.fetchData?.combine ?? { queryType: "combineQuery", a:"", b: "" }
+      crossJoin: props.reportSection?.fetchData?.crossJoin ?? { queryType: "combineQuery", a:"", b: "" }
     }
   ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
 

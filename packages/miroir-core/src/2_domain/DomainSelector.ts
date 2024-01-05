@@ -27,6 +27,7 @@ import {
   JzodElement,
   JzodObject,
   MiroirCustomQueryParams,
+  MiroirQueryResult,
   MiroirSelectQuery,
   SelectObjectQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -331,13 +332,36 @@ export const selectByDomainManyQueriesFromDomainState = (
   }
 
   
-  if (query.combine) {
-    log.info("DomainSelector selectByDomainManyQueriesFromDomainState combine", query.combine);
+  if (query.result) {
+    const buildQueryResult = (resultDescription: MiroirQueryResult): any=> {
+      switch (resultDescription.queryResultType) {
+        case "object": {
+          return Object.fromEntries(
+            Object.entries(resultDescription.definition).map((e: [string,MiroirQueryResult])=>[e[0],buildQueryResult(e[1])])
+          )
+        }
+        case "queryContextReference": {
+          return newFetchedData[resultDescription.referenceName]
+        }
+        case "list": {
+          return resultDescription.definition.map(e => buildQueryResult(e))
+        }
+        default: {
+          throw new Error("buildQueryResult could not handle resultDescription: " + JSON.stringify(resultDescription, undefined, 2));
+          
+        }
+      }
+    }
+    newFetchedData["result"] = buildQueryResult(query.result)
+  }
+  
+  if (query.crossJoin) {
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState crossJoin", query.crossJoin);
 
     // performs a cross-join
-    newFetchedData["combine"] = Object.fromEntries(
-      Object.values(newFetchedData[query.combine?.a ?? ""] ?? {}).flatMap((a) =>
-        Object.values(newFetchedData[query.combine?.b ?? ""] ?? {}).map((b) => [
+    newFetchedData["crossJoin"] = Object.fromEntries(
+      Object.values(newFetchedData[query.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
+        Object.values(newFetchedData[query.crossJoin?.b ?? ""] ?? {}).map((b) => [
           a.uuid + "-" + b.uuid,
           Object.fromEntries(
             Object.entries(a)
@@ -477,18 +501,18 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
     ])
   );
 
-  if (localFetchParams.combine) {
-    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState combine", query.combine);
+  if (localFetchParams.crossJoin) {
+    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState crossJoin", query.crossJoin);
 
-    fetchQueryJzodSchema["combine"] = {
+    fetchQueryJzodSchema["crossJoin"] = {
       type: "object",
       definition: Object.fromEntries(
-      Object.entries(fetchQueryJzodSchema[localFetchParams.combine?.a ?? ""]?.definition ?? {}).map((a) => [
+      Object.entries(fetchQueryJzodSchema[localFetchParams.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
         "a-" + a[0],
         a[1]
       ]
       ).concat(
-        Object.entries(fetchQueryJzodSchema[localFetchParams.combine?.b ?? ""]?.definition ?? {}).map((b) => [
+        Object.entries(fetchQueryJzodSchema[localFetchParams.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
           "b-" + b[0], b[1]
         ])
       )

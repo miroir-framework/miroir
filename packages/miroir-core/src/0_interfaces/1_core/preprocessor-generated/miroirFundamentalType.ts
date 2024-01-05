@@ -338,7 +338,7 @@ export type ObjectInstanceReportSection = {
     type: "objectInstanceReportSection";
     fetchData?: MiroirFetchQuery | undefined;
     selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCombineQuery | undefined;
+    combineData?: MiroirCrossJoinQuery | undefined;
     definition: {
         label?: string | undefined;
         parentUuid: string;
@@ -354,14 +354,14 @@ export type GridReportSection = {
     type: "grid";
     fetchData?: MiroirFetchQuery | undefined;
     selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCombineQuery | undefined;
+    combineData?: MiroirCrossJoinQuery | undefined;
     definition: ReportSection[][];
 };
 export type ListReportSection = {
     type: "list";
     fetchData?: MiroirFetchQuery | undefined;
     selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCombineQuery | undefined;
+    combineData?: MiroirCrossJoinQuery | undefined;
     definition: ReportSection[];
 };
 export type ReportSection = GridReportSection | ListReportSection | ObjectListReportSection | ObjectInstanceReportSection;
@@ -371,7 +371,7 @@ export type RootReportSection = {
     } | undefined;
     fetchData?: MiroirFetchQuery | undefined;
     selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCombineQuery | undefined;
+    combineData?: MiroirCrossJoinQuery | undefined;
     section: ReportSection;
 };
 export type Report = {
@@ -390,7 +390,7 @@ export type Report = {
         } | undefined;
         fetchData?: MiroirFetchQuery | undefined;
         selectData?: MiroirSelectQueriesRecord | undefined;
-        combineData?: MiroirCombineQuery | undefined;
+        combineData?: MiroirCrossJoinQuery | undefined;
         section: ReportSection;
     };
 };
@@ -525,14 +525,27 @@ export type MiroirSelectQuery = SelectObjectListQuery | SelectObjectQuery;
 export type MiroirSelectQueriesRecord = {
     [x: string]: MiroirSelectQuery;
 };
-export type MiroirCombineQuery = {
+export type MiroirCrossJoinQuery = {
     queryType: "combineQuery";
     a: string;
     b: string;
 };
+export type MiroirQueryResult = {
+    queryResultType: "queryContextReference";
+    referenceName: string;
+} | {
+    queryResultType: "object";
+    definition: {
+        [x: string]: MiroirQueryResult;
+    };
+} | {
+    queryResultType: "list";
+    definition: MiroirQueryResult[];
+};
 export type MiroirFetchQuery = {
     select: MiroirSelectQueriesRecord;
-    combine?: MiroirCombineQuery | undefined;
+    crossJoin?: MiroirCrossJoinQuery | undefined;
+    result?: MiroirQueryResult | undefined;
 };
 export type FetchedData = {
     [x: string]: EntityInstance | EntityInstancesUuidIndex | {
@@ -653,13 +666,13 @@ export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:
 export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
+export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
 export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.lazy(() =>selectObjectListQuery)}).strict();
-export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
-export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.literal("list"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), definition:z.array(z.lazy(() =>reportSection))}).strict();
+export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
+export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.literal("list"), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.array(z.lazy(() =>reportSection))}).strict();
 export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>gridReportSection), z.lazy(() =>listReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection)]);
-export const rootReportSection: z.ZodType<RootReportSection> = z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), section:z.lazy(() =>reportSection)}).strict();
-export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), application:z.string().uuid().optional(), definition:z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCombineQuery).optional(), section:z.lazy(() =>reportSection)}).strict()}).strict();
+export const rootReportSection: z.ZodType<RootReportSection> = z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), section:z.lazy(() =>reportSection)}).strict();
+export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), application:z.string().uuid().optional(), definition:z.object({parameters:z.record(z.string(),z.any()).optional(), fetchData:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), section:z.lazy(() =>reportSection)}).strict()}).strict();
 export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
 export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
@@ -687,8 +700,9 @@ export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelati
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectQuery)]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
-export const miroirCombineQuery: z.ZodType<MiroirCombineQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();
-export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({select:z.lazy(() =>miroirSelectQueriesRecord), combine:z.lazy(() =>miroirCombineQuery).optional()}).strict();
+export const miroirCrossJoinQuery: z.ZodType<MiroirCrossJoinQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();
+export const miroirQueryResult: z.ZodType<MiroirQueryResult> = z.union([z.object({queryResultType:z.literal("queryContextReference"), referenceName:z.string()}).strict(), z.object({queryResultType:z.literal("object"), definition:z.record(z.string(),z.lazy(() =>miroirQueryResult))}).strict(), z.object({queryResultType:z.literal("list"), definition:z.array(z.lazy(() =>miroirQueryResult))}).strict()]);
+export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({select:z.lazy(() =>miroirSelectQueriesRecord), crossJoin:z.lazy(() =>miroirCrossJoinQuery).optional(), result:z.lazy(() =>miroirQueryResult).optional()}).strict();
 export const FetchedData: z.ZodType<FetchedData> = z.record(z.string(),z.union([z.lazy(() =>entityInstance), z.lazy(() =>entityInstancesUuidIndex), z.record(z.string(),z.any()), z.undefined()]));
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();

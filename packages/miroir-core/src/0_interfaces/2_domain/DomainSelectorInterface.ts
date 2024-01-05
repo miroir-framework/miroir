@@ -3,8 +3,9 @@ import { Uuid } from "../1_core/EntityDefinition";
 import {
   ApplicationSection,
   FetchedData,
-  MiroirCombineQuery,
+  MiroirCrossJoinQuery,
   MiroirCustomQueryParams,
+  MiroirQueryResult,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -56,11 +57,12 @@ export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelR
 
 // ################################################################################################
 export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuery {
-  queryType: "DomainManyQueries";
+  queryType: "DomainManyQueries",
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
-  select: MiroirSelectQueriesRecord;
-  combine?: MiroirCombineQuery
+  select: MiroirSelectQueriesRecord,
+  crossJoin?: MiroirCrossJoinQuery,
+  result?: MiroirQueryResult,
 };
 
 // ################################################################################################

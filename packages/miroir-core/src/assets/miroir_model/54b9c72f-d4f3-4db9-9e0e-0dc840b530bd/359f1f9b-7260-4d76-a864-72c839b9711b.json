@@ -304,7 +304,7 @@
               }
             }
           },
-          "miroirCombineQuery": {
+          "miroirCrossJoinQuery": {
             "type": "object",
             "definition": {
               "queryType": {
@@ -315,6 +315,60 @@
               "b": { "type": "simpleType", "definition": "string"}
             }
           },
+          "miroirQueryResult": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "queryResultType": {
+                    "type": "literal",
+                    "definition": "queryContextReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryResultType": {
+                    "type": "literal",
+                    "definition": "object"
+                  },
+                  "definition": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirQueryResult"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryResultType": {
+                    "type": "literal",
+                    "definition": "list"
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirQueryResult"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
           "miroirFetchQuery": {
             "type": "object",
             "definition": {
@@ -324,11 +378,18 @@
                   "relativePath": "miroirSelectQueriesRecord"
                 }
               },
-              "combine": {
+              "crossJoin": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
-                  "relativePath": "miroirCombineQuery"
+                  "relativePath": "miroirCrossJoinQuery"
+                }
+              },
+              "result": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "miroirQueryResult"
                 }
               }
             }

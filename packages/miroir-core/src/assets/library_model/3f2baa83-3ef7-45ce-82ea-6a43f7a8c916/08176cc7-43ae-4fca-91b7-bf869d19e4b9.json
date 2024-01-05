@@ -15,7 +15,7 @@
           "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
         }
       },
-      "combine": {
+      "crossJoin": {
         "a": "countries",
         "b": "countries"
       }
@@ -38,7 +38,7 @@
             "label": "Countries Cross Product",
             "parentName": "Country",
             "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-            "fetchedDataReference": "combine"
+            "fetchedDataReference": "crossJoin"
           }
         }
       ]
