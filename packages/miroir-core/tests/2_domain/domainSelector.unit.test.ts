@@ -146,7 +146,7 @@ describe("domainSelector", () => {
             "fetchedObjectAttribute": "publisher"
           },
           "booksOfPublisher": {
-            "queryType": "selectObjectListByOtherWay",
+            "queryType": "selectObjectListByRelation",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667",

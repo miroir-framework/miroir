@@ -584,7 +584,7 @@
                   "selectObjectListQuery": {
                     "type": "object",
                     "definition": {
-                      "type": { "type": "literal", "definition": "selectObjectListByOtherWay" },
+                      "type": { "type": "literal", "definition": "selectObjectListByRelation" },
                       "label": {
                         "type": "simpleType",
                         "definition": "string",
@@ -2565,17 +2565,17 @@
                 "type": "objectListReportSection",
                 "selectData": {
                   "books": {
-                    "queryType": "selectObjectListByOtherWay",
+                    "queryType": "selectObjectListByRelation",
                     "parentName": "Book",
                     "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
                   },
                   "publisher": {
-                    "queryType": "selectObjectListByOtherWay",
+                    "queryType": "selectObjectListByRelation",
                     "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
                     "rootObjectUuid": "516a7366-39e7-4998-82cb-80199a7fa667"
                   },
                   "booksOfPublisher": {
-                    "queryType": "selectObjectListByOtherWay",
+                    "queryType": "selectObjectListByRelation",
                     "parentName": "Book",
                     "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
                     "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

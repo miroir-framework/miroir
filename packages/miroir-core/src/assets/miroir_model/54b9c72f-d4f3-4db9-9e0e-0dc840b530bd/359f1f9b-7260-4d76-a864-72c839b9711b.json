@@ -191,7 +191,7 @@
               }
             }
           },
-          "selectObjectListByOtherWayQuery": {
+          "selectObjectListByRelationQuery": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -203,7 +203,7 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectListByOtherWay"
+                "definition": "selectObjectListByRelation"
               },
               "rootObjectUuid": {
                 "type": "simpleType",
@@ -239,7 +239,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectListByOtherWayQuery"
+                  "relativePath": "selectObjectListByRelationQuery"
                 }
               }
             ]

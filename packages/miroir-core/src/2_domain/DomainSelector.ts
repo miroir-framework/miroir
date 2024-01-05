@@ -71,19 +71,19 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
- const listQueryTypes = [ "selectObjectListByOtherWay", "selectObjectListByEntity"]
+ const listQueryTypes = [ "selectObjectListByRelation", "selectObjectListByEntity"]
   if (listQueryTypes.includes(selectorParams.singleSelectQuery.select.queryType)) {
     const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery)
     const result = Object.fromEntries(
       Object.entries(selectedInstances ?? {}).filter(
         (i: [string, EntityInstance]) =>
           (i[1] as any)[
-            selectorParams.singleSelectQuery.select.queryType == "selectObjectListByOtherWay"
+            selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
             // selectorParams.type == "EntityInstanceListQueryParams"
               ? selectorParams.singleSelectQuery.select.rootObjectAttribute ?? "dummy"
               : "dummy"
           ] ===
-          (selectorParams.singleSelectQuery.select.queryType == "selectObjectListByOtherWay"
+          (selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
           // (selectorParams.type == "EntityInstanceListQueryParams"
             ? selectorParams.singleSelectQuery.select.fetchedDataReference && (selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""]
               ? ((selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""] as any)["uuid"]
@@ -233,7 +233,7 @@ export const selectByDomainManyQueriesFromDomainState = (
     let result = undefined;
     switch (entry[1].queryType) {
       case "selectObjectListByEntity":
-      case "selectObjectListByOtherWay": {
+      case "selectObjectListByRelation": {
         result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
           queryType: "getSingleSelectQuery",
           fetchedData: newFetchedData,
