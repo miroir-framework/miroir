@@ -15,18 +15,24 @@
           "queryParameterName": "instanceUuid"
         },
         "publisher": {
-          "queryType": "selectObjectByFetchedObjectRelation",
+          "queryType": "selectObjectByRelation",
           "parentName": "Publisher",
           "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-          "fetchedObjectReference": "book",
-          "fetchedObjectAttribute": "publisher"
+          "objectReference": {
+            "referenceType": "queryContextReference",
+            "referenceName": "book"
+          },
+          "AttributeOfObjectToCompareToReferenceUuid": "publisher"
         },
         "author": {
-          "queryType": "selectObjectByFetchedObjectRelation",
+          "queryType": "selectObjectByRelation",
           "parentName": "Publisher",
           "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          "fetchedObjectReference": "book",
-          "fetchedObjectAttribute": "author"
+          "objectReference": {
+            "referenceType": "queryContextReference",
+            "referenceName": "book"
+          },
+          "AttributeOfObjectToCompareToReferenceUuid": "author"
         },
         "booksOfPublisher": {
           "queryType": "selectObjectListByRelation",

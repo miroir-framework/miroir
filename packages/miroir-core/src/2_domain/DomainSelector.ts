@@ -174,8 +174,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
   const applicationSection = query.singleSelectQuery.applicationSection;
 
   switch (querySelectorParams?.queryType) {
-    case "selectObjectByFetchedObjectRelation": {
-      if (querySelectorParams?.fetchedObjectReference && querySelectorParams.fetchedObjectAttribute) {
+    case "selectObjectByRelation": {
+      if (
+        querySelectorParams?.objectReference && 
+        querySelectorParams.AttributeOfObjectToCompareToReferenceUuid && 
+        querySelectorParams.objectReference.referenceType == "queryContextReference"
+      ) {
         // resolving by fetchDataReference, fetchDataReferenceAttribute
         if (
           domainState &&
@@ -185,14 +189,19 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
         ) {
           result =
             domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-              (query.fetchedData as any)[querySelectorParams.fetchedObjectReference][
-                querySelectorParams.fetchedObjectAttribute
+              (query.fetchedData as any)[querySelectorParams.objectReference.referenceName][
+                querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
               ]
             ];
+        } else {
+          throw new Error(
+            "selectEntityInstanceFromObjectQueryAndDomainState can not resolve objectReference in selectObjectByRelation objectReference, query=" +
+            JSON.stringify(query, undefined, 2)
+          );
         }
       } else {
         throw new Error(
-          "selectEntityInstanceFromObjectQueryAndDomainState can not resolve selectObjectByFetchedObjectRelation query=" +
+          "selectEntityInstanceFromObjectQueryAndDomainState can not resolve objectReference in selectObjectByRelation query=" +
           JSON.stringify(query, undefined, 2)
         );
       }
@@ -297,7 +306,7 @@ export const selectByDomainManyQueriesFromDomainState = (
         break;
       }
       case "selectObjectByUuid":
-      case "selectObjectByFetchedObjectRelation":
+      case "selectObjectByRelation":
       case "selectObjectByParameterValue": {
         result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, {
           queryType: "getSingleSelectQuery",

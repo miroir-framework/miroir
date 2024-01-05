@@ -107,11 +107,14 @@ describe("domainSelector", () => {
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "selectObjectByFetchedObjectRelation",
+            "queryType": "selectObjectByRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedObjectReference": "book",
-            "fetchedObjectAttribute": "publisher"
+            "objectReference": {
+              "referenceType": "queryContextReference",
+              "referenceName": "book"
+            },
+            "AttributeOfObjectToCompareToReferenceUuid": "publisher",
           }
         }
       };
@@ -139,11 +142,14 @@ describe("domainSelector", () => {
             "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
           },
           "publisher": {
-            "queryType": "selectObjectByFetchedObjectRelation",
+            "queryType": "selectObjectByRelation",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedObjectReference": "book",
-            "fetchedObjectAttribute": "publisher"
+            "objectReference": {
+              "referenceType": "queryContextReference",
+              "referenceName": "book"
+            },
+            "AttributeOfObjectToCompareToReferenceUuid": "publisher",
           },
           "booksOfPublisher": {
             "queryType": "selectObjectListByRelation",

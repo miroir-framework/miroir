@@ -72,6 +72,50 @@
               }
             }
           },
+          "queryObjectReference": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "constant"
+                  },
+                  "referenceUuid": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "queryContextReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "queryParameterReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              }
+            ]
+          },
           "selectObjectByUuidQuery": {
             "type": "object",
             "extend": {
@@ -95,7 +139,7 @@
               }
             }
           },
-          "selectObjectByFetchedObjectRelationQuery": {
+          "selectObjectByRelationQuery": {
             "type": "object",
             "extend": {
               "type": "schemaReference",
@@ -107,19 +151,17 @@
             "definition": {
               "queryType": {
                 "type": "literal",
-                "definition": "selectObjectByFetchedObjectRelation"
+                "definition": "selectObjectByRelation"
               },
-              "fetchedObjectReference": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 7, "defaultLabel": "Fetched Object Reference", "editable": false }
+              "objectReference": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryObjectReference"
+                }
               },
-              "fetchedObjectAttribute": {
+              "AttributeOfObjectToCompareToReferenceUuid": {
                 "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 8, "defaultLabel": "Fetched Object Attribute", "editable": false }
+                "definition": "string"
               }
             }
           },
@@ -164,7 +206,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "selectObjectByFetchedObjectRelationQuery"
+                  "relativePath": "selectObjectByRelationQuery"
                 }
               },
               {
@@ -190,50 +232,6 @@
                 "definition": "selectObjectListByEntity"
               }
             }
-          },
-          "queryObjectReference": {
-            "type": "union",
-            "definition": [
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "constant"
-                  },
-                  "referenceUuid": {
-                    "type": "simpleType",
-                    "definition": "string"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "queryContextReference"
-                  },
-                  "referenceName": {
-                    "type": "simpleType",
-                    "definition": "string"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "definition": {
-                  "referenceType": {
-                    "type": "literal",
-                    "definition": "queryParameterReference"
-                  },
-                  "referenceName": {
-                    "type": "simpleType",
-                    "definition": "string"
-                  }
-                }
-              }
-            ]
           },
           "selectObjectListByRelationQuery": {
             "type": "object",
