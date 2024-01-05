@@ -5,9 +5,10 @@ import {
   FetchedData,
   MiroirCrossJoinQuery,
   MiroirCustomQueryParams,
-  MiroirQueryResult,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
+  SelectObjectListQuery,
+  SelectObjectQuery,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "./DomainControllerInterface";
 
@@ -42,12 +43,37 @@ export type LocalCacheQueryParams = {
 };
 
 // ################################################################################################
+
+export type DomainSingleSelectObjectQueryWithDeployment = {
+  queryType: "domainSingleSelectQueryWithDeployment"
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
+  select: SelectObjectQuery;
+}
+
+export type DomainSingleSelectObjectListQueryWithDeployment = {
+  queryType: "domainSingleSelectQueryWithDeployment"
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
+  select: SelectObjectListQuery;
+}
+
 export type DomainSingleSelectQueryWithDeployment = {
   queryType: "domainSingleSelectQueryWithDeployment"
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   select: MiroirSelectQuery;
-}
+};
+
+export interface DomainModelGetSingleSelectObjectQueryQueryParams extends DomainModelRootQuery {
+  queryType: "getSingleSelectQuery",
+  singleSelectQuery: DomainSingleSelectObjectQueryWithDeployment,
+};
+
+export interface DomainModelGetSingleSelectObjectListQueryQueryParams extends DomainModelRootQuery {
+  queryType: "getSingleSelectQuery",
+  singleSelectQuery: DomainSingleSelectObjectListQueryWithDeployment,
+};
 
 export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelRootQuery {
   queryType: "getSingleSelectQuery",
@@ -62,7 +88,6 @@ export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuer
   applicationSection: ApplicationSection,
   select: MiroirSelectQueriesRecord,
   crossJoin?: MiroirCrossJoinQuery,
-  result?: MiroirQueryResult,
 };
 
 // ################################################################################################

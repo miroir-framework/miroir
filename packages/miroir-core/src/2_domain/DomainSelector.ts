@@ -3,9 +3,11 @@ import {
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetEntityDefinitionQueryParams,
   DomainModelGetFetchParamJzodSchemaQueryParams,
+  DomainModelGetSingleSelectObjectListQueryQueryParams,
+  DomainModelGetSingleSelectObjectQueryQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
-  DomainModelGetSingleSelectQueryQueryParams,
   DomainModelQueryJzodSchemaParams,
+  DomainSingleSelectObjectListQueryWithDeployment,
   DomainSingleSelectQueryWithDeployment,
   DomainStateSelector,
   MiroirSelectorQueryParams,
@@ -23,7 +25,6 @@ import {
   JzodElement,
   JzodObject,
   MiroirCustomQueryParams,
-  MiroirQueryResult,
   MiroirSelectQuery,
   SelectObjectQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -45,23 +46,24 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<DomainSingleSelectQueryWithDeployment, EntityInstancesUuidIndex | undefined> = (
   domainState: DomainState,
-  selectorParams: DomainSingleSelectQueryWithDeployment
+  // selectorParams: DomainSingleSelectQueryWithDeployment
+  selectorParams: DomainSingleSelectObjectListQueryWithDeployment
 ): EntityInstancesUuidIndex | undefined => {
 
   const deploymentUuid = selectorParams.deploymentUuid;
   const applicationSection = selectorParams.applicationSection;
-  if (
-    selectorParams.select.queryType !== "selectObjectListByEntity" &&
-    selectorParams.select.queryType !== "selectObjectListByRelation"
-  ) {
-    // TODO: make sure that we get the correct type!
-    throw new Error(
-      "selectEntityInstanceUuidIndexFromDomainState could not handle query with queryType:" +
-        selectorParams.select.queryType +
-        ", query=" +
-        JSON.stringify(selectorParams, undefined, 2)
-    );
-  }
+  // if (
+  //   selectorParams.select.queryType !== "selectObjectListByEntity" &&
+  //   selectorParams.select.queryType !== "selectObjectListByRelation"
+  // ) {
+  //   // TODO: make sure that we get the correct type!
+  //   throw new Error(
+  //     "selectEntityInstanceUuidIndexFromDomainState could not handle query with queryType:" +
+  //       selectorParams.select.queryType +
+  //       ", query=" +
+  //       JSON.stringify(selectorParams, undefined, 2)
+  //   );
+  // }
   const entityUuid = selectorParams.select.parentUuid;
 
   const result = 
@@ -84,7 +86,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<D
  */
 export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
-  selectorParams: DomainModelGetSingleSelectQueryQueryParams
+  selectorParams: DomainModelGetSingleSelectObjectListQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
     const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery);
     let result
@@ -147,7 +149,10 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
         break;
       }
       default: {
-        throw new Error("selectEntityInstancesFromListQueryAndDomainState could not handle query, selectorParams.singleSelectQuery.select.queryType=" + selectorParams.singleSelectQuery.select.queryType);
+        throw new Error(
+          "selectEntityInstancesFromListQueryAndDomainState could not handle query, selectorParams=" +
+            JSON.stringify(selectorParams.singleSelectQuery.select, undefined, 2)
+        );
         break;
       }
     }
@@ -178,7 +183,7 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState = (
   domainState: DomainState,
-  query: DomainModelGetSingleSelectQueryQueryParams
+  query: DomainModelGetSingleSelectObjectQueryQueryParams
 ): EntityInstance | undefined => {
   let result = undefined;
   const querySelectorParams: SelectObjectQuery = query.singleSelectQuery.select as SelectObjectQuery;
@@ -292,15 +297,23 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
 
 
 // ################################################################################################
-export const innerSelectElementFromQueryAndDomainState = (
+export type ElementsFromQuery =
+  | ElementsFromQuery[]
+  | { [k: string]: ElementsFromQuery }
+  | EntityInstancesUuidIndex
+  | EntityInstance
+  | undefined;
+
+  export const innerSelectElementFromQueryAndDomainState = (
   domainState: DomainState,
   newFetchedData:FetchedData,
   pageParams: Record<string, any>,
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   query: MiroirSelectQuery
-): EntityInstancesUuidIndex | EntityInstance | undefined => {
-  let result: EntityInstancesUuidIndex | EntityInstance | undefined;
+): ElementsFromQuery => {
+// ): EntityInstancesUuidIndex | EntityInstance | undefined => {
+  let result: ElementsFromQuery;
   switch (query.queryType) {
     case "selectObjectListByEntity":
     case "selectObjectListByRelation": {
@@ -313,7 +326,7 @@ export const innerSelectElementFromQueryAndDomainState = (
           deploymentUuid: deploymentUuid,
           applicationSection: applicationSection,
           select: query,
-        }
+        },
       });
       break;
     }
@@ -329,12 +342,41 @@ export const innerSelectElementFromQueryAndDomainState = (
           applicationSection: applicationSection,
           deploymentUuid: deploymentUuid,
           select: query,
-        }
+        },
       });
       break;
     }
+    case "wrapperReturningObject": {
+      result = Object.fromEntries(
+        Object.entries(query.definition).map((e: [string, MiroirSelectQuery]) => [
+          e[0],
+          innerSelectElementFromQueryAndDomainState(
+            domainState,
+            newFetchedData,
+            pageParams ?? {},
+            deploymentUuid,
+            applicationSection,
+            e[1]
+          ),
+        ])
+      );
+      break;
+    }
+    case "wrapperReturningList": {
+      result = query.definition.map((e) =>
+        innerSelectElementFromQueryAndDomainState(
+          domainState,
+          newFetchedData,
+          pageParams ?? {},
+          deploymentUuid,
+          applicationSection,
+          e
+        )
+      );
+      break;
+    }
     case "queryContextReference": {
-      result = newFetchedData[query.referenceName]
+      result = newFetchedData[query.referenceName];
       break;
     }
     default: {
@@ -365,30 +407,6 @@ export const selectByDomainManyQueriesFromDomainState = (
     );
     newFetchedData[entry[0]] = result;
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
-  }
-
-  
-  if (query.result) {
-    const buildQueryResult = (resultDescription: MiroirQueryResult): any=> {
-      switch (resultDescription.queryResultType) {
-        case "object": {
-          return Object.fromEntries(
-            Object.entries(resultDescription.definition).map((e: [string,MiroirQueryResult])=>[e[0],buildQueryResult(e[1])])
-          )
-        }
-        case "queryContextReference": {
-          return newFetchedData[resultDescription.referenceName]
-        }
-        case "list": {
-          return resultDescription.definition.map(e => buildQueryResult(e))
-        }
-        default: {
-          throw new Error("buildQueryResult could not handle resultDescription: " + JSON.stringify(resultDescription, undefined, 2));
-          
-        }
-      }
-    }
-    newFetchedData["result"] = buildQueryResult(query.result)
   }
 
   if (query.crossJoin) {
@@ -470,7 +488,11 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
   query: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
 // ): JzodElement | undefined => {
 ): JzodObject | undefined => {
-  if (query.singleSelectQuery.select.queryType=="queryContextReference") {
+  if (
+    query.singleSelectQuery.select.queryType=="queryContextReference" ||
+    query.singleSelectQuery.select.queryType=="wrapperReturningObject" ||
+    query.singleSelectQuery.select.queryType=="wrapperReturningList"
+  ) {
     throw new Error("selectJzodSchemaBySingleSelectQueryFromDomainState can not deal with context reference: query=" + JSON.stringify(query, undefined, 2));
   } else {
     return selectEntityJzodSchemaFromDomainState(domainState, {

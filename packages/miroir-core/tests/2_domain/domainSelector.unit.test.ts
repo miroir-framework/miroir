@@ -3,18 +3,16 @@ import { applicationDeploymentLibrary } from "../../src/ApplicationDeploymentLib
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import {
   DomainManyQueriesWithDeploymentUuid,
-  DomainModelGetFetchParamJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
-  MiroirSelectorQueryParams,
   RecordOfJzodElement
 } from "../../src/0_interfaces/2_domain/DomainSelectorInterface";
 import {
-  selectJzodSchemaByDomainModelQueryFromDomainState,
   selectByDomainManyQueriesFromDomainState,
+  selectJzodSchemaByDomainModelQueryFromDomainState,
 } from "../../src/2_domain/DomainSelector";
 
-import domainStateImport from "./domainState.json";
 import { EntityDefinition, JzodElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;
 
@@ -238,23 +236,35 @@ describe("domainSelector", () => {
               "referenceUuid": "516a7366-39e7-4998-82cb-80199a7fa667",
             },
             "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
-          }
-        },
-        "result": {
-          "queryResultType":"object",
-          "definition": {
-            "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {queryResultType: "queryContextReference", "referenceName":"booksOfPublisher"}
+          },
+          "result1": {
+            "queryType":"wrapperReturningObject",
+            "definition": {
+              "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {"queryType": "queryContextReference", "referenceName":"booksOfPublisher"}
+            }
+          },
+          "result2": {
+            "queryType":"wrapperReturningList",
+            "definition": [
+              {"queryType": "queryContextReference", "referenceName":"booksOfPublisher"},
+              {"queryType": "queryContextReference", "referenceName":"booksOfPublisher"},
+            ]
           }
         }
       };
 
       const result:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      expect(result.result["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"]).toEqual({
+      const expectedValue = {
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
         "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-      })
+      };
+
+      expect(result.result1["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"]).toEqual(expectedValue)
+      
+      expect(result.result2[0]).toEqual(expectedValue);
+      expect(result.result2[1]).toEqual(expectedValue);
     }
   )
 
