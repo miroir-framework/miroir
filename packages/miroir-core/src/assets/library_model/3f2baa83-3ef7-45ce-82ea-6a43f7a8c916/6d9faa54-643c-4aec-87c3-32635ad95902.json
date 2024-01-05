@@ -18,8 +18,11 @@
           "queryType": "selectObjectListByRelation",
           "parentName": "Book",
           "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          "rootObjectAttribute": "author",
-          "fetchedDataReference": "author"
+          "objectReference": {
+            "referenceType": "queryContextReference",
+            "referenceName": "author"
+          },
+          "AttributeOfListObjectToCompareToReferenceUuid": "author"
         }
       }
     },

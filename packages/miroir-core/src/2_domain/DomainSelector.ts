@@ -71,26 +71,75 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
- const listQueryTypes = [ "selectObjectListByRelation", "selectObjectListByEntity"]
-  if (listQueryTypes.includes(selectorParams.singleSelectQuery.select.queryType)) {
-    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery)
-    const result = Object.fromEntries(
-      Object.entries(selectedInstances ?? {}).filter(
-        (i: [string, EntityInstance]) =>
-          (i[1] as any)[
-            selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
-            // selectorParams.type == "EntityInstanceListQueryParams"
-              ? selectorParams.singleSelectQuery.select.rootObjectAttribute ?? "dummy"
-              : "dummy"
-          ] ===
-          (selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
-          // (selectorParams.type == "EntityInstanceListQueryParams"
-            ? selectorParams.singleSelectQuery.select.fetchedDataReference && (selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""]
-              ? ((selectorParams?.fetchedData??{})[selectorParams.singleSelectQuery.select.fetchedDataReference??""] as any)["uuid"]
-              : selectorParams.singleSelectQuery.select.rootObjectUuid
-            : undefined)
-      )
-    );
+  const listQueryTypes = [ "selectObjectListByRelation", "selectObjectListByEntity"]
+  // if (listQueryTypes.includes(selectorParams.singleSelectQuery.select.queryType)) {
+    // select ALL instances of specified Entity
+    const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery);
+    let result
+    switch (selectorParams.singleSelectQuery.select.queryType) {
+      case "selectObjectListByEntity":{
+        result = selectedInstances;
+        break;
+      }
+      case "selectObjectListByRelation":{
+        // if (selectorParams.singleSelectQuery.select.objectReference) {
+        result = Object.fromEntries(
+          Object.entries(selectedInstances ?? {}).filter(
+            (i: [string, EntityInstance]) =>
+              (i[1] as any)[
+                selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
+                  ? // selectorParams.type == "EntityInstanceListQueryParams"
+                    selectorParams.singleSelectQuery.select.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy"
+                  : "dummy"
+              ] ===
+              (selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
+                ? // (selectorParams.type == "EntityInstanceListQueryParams"
+                  selectorParams.singleSelectQuery.select.objectReference?.referenceType == "queryContextReference" &&
+                  (selectorParams?.fetchedData ?? {})[selectorParams.singleSelectQuery.select.objectReference.referenceName ?? ""]
+                  ? (
+                      (selectorParams?.fetchedData ?? {})[
+                        selectorParams.singleSelectQuery.select.objectReference.referenceName ?? ""
+                      ] as any
+                    )["uuid"]
+                  : selectorParams.singleSelectQuery.select.objectReference?.referenceType == "queryParameterReference"?
+                    undefined
+                  : selectorParams.singleSelectQuery.select.objectReference?.referenceType == "constant"?
+                    selectorParams.singleSelectQuery.select.objectReference?.referenceUuid : undefined
+                : undefined)
+          )
+        );
+        // } else {
+        //   result = Object.fromEntries(
+        //     Object.entries(selectedInstances ?? {}).filter(
+        //       (i: [string, EntityInstance]) =>
+        //         (i[1] as any)[
+        //           selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
+        //             ? // selectorParams.type == "EntityInstanceListQueryParams"
+        //               selectorParams.singleSelectQuery.select.rootObjectAttribute ?? "dummy"
+        //             : "dummy"
+        //         ] ===
+        //         (selectorParams.singleSelectQuery.select.queryType == "selectObjectListByRelation"
+        //           ? // (selectorParams.type == "EntityInstanceListQueryParams"
+        //             selectorParams.singleSelectQuery.select.fetchedDataReference &&
+        //             (selectorParams?.fetchedData ?? {})[selectorParams.singleSelectQuery.select.fetchedDataReference ?? ""]
+        //             ? (
+        //                 (selectorParams?.fetchedData ?? {})[
+        //                   selectorParams.singleSelectQuery.select.fetchedDataReference ?? ""
+        //                 ] as any
+        //               )["uuid"]
+        //             : selectorParams.singleSelectQuery.select.rootObjectUuid
+        //           : undefined)
+        //     )
+        //   );
+        // }
+        break;
+      }
+      default: {
+        throw new Error("selectEntityInstancesFromListQueryAndDomainState could not handle query, selectorParams.singleSelectQuery.select.queryType=" + selectorParams.singleSelectQuery.select.queryType);
+        break;
+      }
+    }
+    // filter selectedInstances
     log.info(
       "DomainSelector selectEntityInstancesFromListQueryAndDomainState",
       "selectorParams",
@@ -103,9 +152,9 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
       result
     );
     return result;
-  } else {
-    return {}
-  }
+  // } else {
+  //   return {}
+  // }
 };
 
 // ################################################################################################

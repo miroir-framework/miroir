@@ -502,14 +502,23 @@ export type SelectObjectListByEntityQuery = {
     parentUuid: string;
     queryType: "selectObjectListByEntity";
 };
+export type QueryObjectReference = {
+    referenceType: "constant";
+    referenceUuid: string;
+} | {
+    referenceType: "queryContextReference";
+    referenceName: string;
+} | {
+    referenceType: "queryParameterReference";
+    referenceName: string;
+};
 export type SelectObjectListByRelationQuery = {
     label?: string | undefined;
     parentName?: string | undefined;
     parentUuid: string;
     queryType: "selectObjectListByRelation";
-    rootObjectUuid?: string | undefined;
-    rootObjectAttribute?: string | undefined;
-    fetchedDataReference?: string | undefined;
+    objectReference: QueryObjectReference;
+    AttributeOfListObjectToCompareToReferenceUuid: string;
 };
 export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery;
 export type MiroirSelectQuery = SelectObjectListQuery | SelectObjectQuery;
@@ -673,7 +682,8 @@ export const selectObjectByFetchedObjectRelationQuery: z.ZodType<SelectObjectByF
 export const selectObjectByParameterValueQuery: z.ZodType<SelectObjectByParameterValueQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectByParameterValue"), queryParameterName:z.string().optional(), queryParameterAttribute:z.string().optional()}).strict();
 export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy(() =>selectObjectByUuidQuery), z.lazy(() =>selectObjectByFetchedObjectRelationQuery), z.lazy(() =>selectObjectByParameterValueQuery)]);
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
-export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByRelation"), rootObjectUuid:z.string().uuid().optional(), rootObjectAttribute:z.string().optional(), fetchedDataReference:z.string().optional()}).strict();
+export const queryObjectReference: z.ZodType<QueryObjectReference> = z.union([z.object({referenceType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({referenceType:z.literal("queryContextReference"), referenceName:z.string()}).strict(), z.object({referenceType:z.literal("queryParameterReference"), referenceName:z.string()}).strict()]);
+export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectQuery)]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));

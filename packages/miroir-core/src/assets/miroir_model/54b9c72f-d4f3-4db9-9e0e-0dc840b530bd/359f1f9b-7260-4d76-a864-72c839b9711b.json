@@ -191,6 +191,50 @@
               }
             }
           },
+          "queryObjectReference": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "constant"
+                  },
+                  "referenceUuid": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "queryContextReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "referenceType": {
+                    "type": "literal",
+                    "definition": "queryParameterReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
+              }
+            ]
+          },
           "selectObjectListByRelationQuery": {
             "type": "object",
             "extend": {
@@ -205,24 +249,15 @@
                 "type": "literal",
                 "definition": "selectObjectListByRelation"
               },
-              "rootObjectUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "validations": [{ "type": "uuid" }],
-                "extra": { "id":4, "defaultLabel": "Root Object Uuid", "editable": false }
+              "objectReference": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryObjectReference"
+                }
               },
-              "rootObjectAttribute": {
+              "AttributeOfListObjectToCompareToReferenceUuid": {
                 "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 5, "defaultLabel": "Root Object Attribute", "editable": false }
-              },
-              "fetchedDataReference": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 6, "defaultLabel": "Fetched Data Reference", "editable": false }
+                "definition": "string"
               }
             }
           },
