@@ -331,7 +331,7 @@ export {
   getCurrentEntityDefinition,
  } from './1_core/Model.js';
 export {
-  getReportSectionTargetEntityUuid,
+  // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
   selectEntityInstances,

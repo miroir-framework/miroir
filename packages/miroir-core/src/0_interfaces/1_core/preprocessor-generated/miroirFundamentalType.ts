@@ -521,7 +521,10 @@ export type SelectObjectListByRelationQuery = {
     AttributeOfListObjectToCompareToReferenceUuid: string;
 };
 export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery;
-export type MiroirSelectQuery = SelectObjectListQuery | SelectObjectQuery;
+export type MiroirSelectQuery = SelectObjectListQuery | SelectObjectQuery | {
+    queryType: "queryContextReference";
+    referenceName: string;
+};
 export type MiroirSelectQueriesRecord = {
     [x: string]: MiroirSelectQuery;
 };
@@ -698,7 +701,7 @@ export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy((
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
 export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);
-export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectQuery)]);
+export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectQuery), z.object({queryType:z.literal("queryContextReference"), referenceName:z.string()}).strict()]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
 export const miroirCrossJoinQuery: z.ZodType<MiroirCrossJoinQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();
 export const miroirQueryResult: z.ZodType<MiroirQueryResult> = z.union([z.object({queryResultType:z.literal("queryContextReference"), referenceName:z.string()}).strict(), z.object({queryResultType:z.literal("object"), definition:z.record(z.string(),z.lazy(() =>miroirQueryResult))}).strict(), z.object({queryResultType:z.literal("list"), definition:z.array(z.lazy(() =>miroirQueryResult))}).strict()]);

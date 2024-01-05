@@ -12,20 +12,22 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export function getReportSectionTargetEntityUuid(
-  reportDefinition:Report, reportSectionIndex: number,
-) {
-  if (
-    reportDefinition &&
-    reportDefinition.definition?.section?.type === "objectListReportSection" &&
-    reportDefinition.definition.section?.definition?.parentUuid
-  ) {
-    log.log('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)
-    return reportDefinition.definition.section?.definition.parentUuid;
-  } else {
-    return undefined;
-  }
-}
+// TODO: still used?
+// export function getReportSectionTargetEntityUuid(
+//   reportDefinition:Report, reportSectionIndex: number,
+// ) {
+//   if (
+//     reportDefinition &&
+//     reportDefinition.definition?.section?.type === "objectListReportSection" &&
+//     reportDefinition.definition.section.definition.queryType == "selectObjectListByEntity" &&
+//     reportDefinition.definition.section?.definition?.parentUuid
+//   ) {
+//     log.log('getReportSectionTargetEntityUuid for entityUuid', reportDefinition.uuid, 'reportSectionIndex', reportSectionIndex)
+//     return reportDefinition.definition.section?.definition.parentUuid;
+//   } else {
+//     return undefined;
+//   }
+// }
 // function ReportgetDataInstancesToDispay (
 //     report:Report,
 //     miroirEntities:EntityDefinition[],

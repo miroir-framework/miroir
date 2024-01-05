@@ -13,13 +13,9 @@ import {
   RecordOfJzodObject
 } from "../0_interfaces/2_domain/DomainSelectorInterface";
 
-import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/Logger";
-import { packageName } from "../constants";
-import { getLoggerName } from "../tools";
-import { cleanLevel } from "./constants";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
+  ApplicationSection,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -31,6 +27,12 @@ import {
   MiroirSelectQuery,
   SelectObjectQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/Logger";
+import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
+import { packageName } from "../constants";
+import { getLoggerName } from "../tools";
+import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -48,6 +50,18 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<D
 
   const deploymentUuid = selectorParams.deploymentUuid;
   const applicationSection = selectorParams.applicationSection;
+  if (
+    selectorParams.select.queryType !== "selectObjectListByEntity" &&
+    selectorParams.select.queryType !== "selectObjectListByRelation"
+  ) {
+    // TODO: make sure that we get the correct type!
+    throw new Error(
+      "selectEntityInstanceUuidIndexFromDomainState could not handle query with queryType:" +
+        selectorParams.select.queryType +
+        ", query=" +
+        JSON.stringify(selectorParams, undefined, 2)
+    );
+  }
   const entityUuid = selectorParams.select.parentUuid;
 
   const result = 
@@ -72,9 +86,6 @@ export const selectEntityInstancesFromListQueryAndDomainState = (
   domainState: DomainState,
   selectorParams: DomainModelGetSingleSelectQueryQueryParams
 ): EntityInstancesUuidIndex | undefined => {
-  const listQueryTypes = [ "selectObjectListByRelation", "selectObjectListByEntity"]
-  // if (listQueryTypes.includes(selectorParams.singleSelectQuery.select.queryType)) {
-    // select ALL instances of specified Entity
     const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams.singleSelectQuery);
     let result
     switch (selectorParams.singleSelectQuery.select.queryType) {
@@ -278,6 +289,61 @@ export const selectEntityInstanceFromObjectQueryAndDomainState = (
   return result;
 };
 
+
+
+// ################################################################################################
+export const innerSelectElementFromQueryAndDomainState = (
+  domainState: DomainState,
+  newFetchedData:FetchedData,
+  pageParams: Record<string, any>,
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
+  query: MiroirSelectQuery
+): EntityInstancesUuidIndex | EntityInstance | undefined => {
+  let result: EntityInstancesUuidIndex | EntityInstance | undefined;
+  switch (query.queryType) {
+    case "selectObjectListByEntity":
+    case "selectObjectListByRelation": {
+      result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
+        queryType: "getSingleSelectQuery",
+        fetchedData: newFetchedData,
+        pageParams: pageParams,
+        singleSelectQuery: {
+          queryType: "domainSingleSelectQueryWithDeployment",
+          deploymentUuid: deploymentUuid,
+          applicationSection: applicationSection,
+          select: query,
+        }
+      });
+      break;
+    }
+    case "selectObjectByUuid":
+    case "selectObjectByRelation":
+    case "selectObjectByParameterValue": {
+      result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, {
+        queryType: "getSingleSelectQuery",
+        fetchedData: newFetchedData,
+        pageParams: pageParams,
+        singleSelectQuery: {
+          queryType: "domainSingleSelectQueryWithDeployment",
+          applicationSection: applicationSection,
+          deploymentUuid: deploymentUuid,
+          select: query,
+        }
+      });
+      break;
+    }
+    case "queryContextReference": {
+      result = newFetchedData[query.referenceName]
+      break;
+    }
+    default: {
+      result = undefined;
+      break;
+    }
+  }
+  return result;
+}
 // ################################################################################################
 export const selectByDomainManyQueriesFromDomainState = (
   domainState: DomainState,
@@ -289,44 +355,14 @@ export const selectByDomainManyQueriesFromDomainState = (
   const newFetchedData:FetchedData = query.fetchedData??{};
 
   for (const entry of Object.entries(query.select??{})) {
-    let result = undefined;
-    switch (entry[1].queryType) {
-      case "selectObjectListByEntity":
-      case "selectObjectListByRelation": {
-        result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
-          queryType: "getSingleSelectQuery",
-          fetchedData: newFetchedData,
-          pageParams: query.pageParams,
-          singleSelectQuery: {
-            queryType: "domainSingleSelectQueryWithDeployment",
-            deploymentUuid: query.deploymentUuid,
-            applicationSection: query.applicationSection,
-            select: entry[1],
-          }
-        });
-        break;
-      }
-      case "selectObjectByUuid":
-      case "selectObjectByRelation":
-      case "selectObjectByParameterValue": {
-        result = selectEntityInstanceFromObjectQueryAndDomainState(domainState, {
-          queryType: "getSingleSelectQuery",
-          fetchedData: newFetchedData,
-          pageParams: query.pageParams,
-          singleSelectQuery: {
-            queryType: "domainSingleSelectQueryWithDeployment",
-            applicationSection: query.applicationSection,
-            deploymentUuid: query.deploymentUuid,
-            select: entry[1],
-          }
-        });
-        break;
-      }
-      default: {
-        result = undefined;
-        break;
-      }
-    }
+    let result = innerSelectElementFromQueryAndDomainState(
+      domainState,
+      newFetchedData,
+      query.pageParams ?? {},
+      query.deploymentUuid,
+      query.applicationSection,
+      entry[1]
+    );
     newFetchedData[entry[0]] = result;
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
   }
@@ -354,7 +390,7 @@ export const selectByDomainManyQueriesFromDomainState = (
     }
     newFetchedData["result"] = buildQueryResult(query.result)
   }
-  
+
   if (query.crossJoin) {
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState crossJoin", query.crossJoin);
 
@@ -434,11 +470,15 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
   query: DomainModelGetSingleSelectQueryJzodSchemaQueryParams
 // ): JzodElement | undefined => {
 ): JzodObject | undefined => {
-  return selectEntityJzodSchemaFromDomainState(domainState, {
-    queryType: "getEntityDefinition",
-    deploymentUuid: query.singleSelectQuery.deploymentUuid??"",
-    entityUuid: query.singleSelectQuery.select.parentUuid,
-  })
+  if (query.singleSelectQuery.select.queryType=="queryContextReference") {
+    throw new Error("selectJzodSchemaBySingleSelectQueryFromDomainState can not deal with context reference: query=" + JSON.stringify(query, undefined, 2));
+  } else {
+    return selectEntityJzodSchemaFromDomainState(domainState, {
+      queryType: "getEntityDefinition",
+      deploymentUuid: query.singleSelectQuery.deploymentUuid??"",
+      entityUuid:  query.singleSelectQuery.select.parentUuid,
+    })
+  }
 }
 
 // ################################################################################################

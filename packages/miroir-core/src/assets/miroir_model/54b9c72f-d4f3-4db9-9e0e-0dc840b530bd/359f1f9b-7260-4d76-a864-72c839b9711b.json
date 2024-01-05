@@ -292,6 +292,19 @@
                 "definition": {
                   "relativePath": "selectObjectQuery"
                 }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "queryType": {
+                    "type": "literal",
+                    "definition": "queryContextReference"
+                  },
+                  "referenceName": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  }
+                }
               }
             ]
           },
