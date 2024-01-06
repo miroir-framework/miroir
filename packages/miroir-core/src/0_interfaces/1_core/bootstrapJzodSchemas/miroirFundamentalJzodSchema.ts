@@ -487,6 +487,10 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             },
             {
               "type": "simpleType",
+              "definition": "string"
+            },
+            {
+              "type": "simpleType",
               "definition": "undefined"
             }
           ]

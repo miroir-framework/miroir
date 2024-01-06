@@ -5,8 +5,8 @@
   "name":"EndpointList",
   "defaultLabel": "List of Endpoints",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "endpoints": {
           "queryType": "selectObjectListByEntity",

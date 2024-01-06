@@ -5,8 +5,8 @@
   "name":"ApplicationDeploymentList",
   "defaultLabel": "List of Application Deployments",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "ApplicationDeployments": {
           "queryType": "selectObjectListByEntity",

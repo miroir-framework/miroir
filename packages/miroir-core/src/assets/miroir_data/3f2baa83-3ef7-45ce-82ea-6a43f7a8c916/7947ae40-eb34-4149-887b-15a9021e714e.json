@@ -6,8 +6,8 @@
   "defaultLabel": "List of Commits",
   "type": "list",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "commits": {
           "queryType": "selectObjectListByEntity",

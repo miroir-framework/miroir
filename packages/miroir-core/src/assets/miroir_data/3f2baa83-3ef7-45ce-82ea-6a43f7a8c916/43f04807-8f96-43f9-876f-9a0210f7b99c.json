@@ -5,8 +5,8 @@
   "name":"StoreBasedConfigurationList",
   "defaultLabel": "Store-based Configuration",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "storeBasedConfigurations": {
           "queryType": "selectObjectListByEntity",

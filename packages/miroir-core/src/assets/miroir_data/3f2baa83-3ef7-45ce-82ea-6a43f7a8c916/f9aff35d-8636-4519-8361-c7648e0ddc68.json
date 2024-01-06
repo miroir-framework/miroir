@@ -5,8 +5,8 @@
   "name":"EntityDefinitionList",
   "defaultLabel": "List of Entity Definitions",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "entityDefinitions": {
           "queryType": "selectObjectListByEntity",

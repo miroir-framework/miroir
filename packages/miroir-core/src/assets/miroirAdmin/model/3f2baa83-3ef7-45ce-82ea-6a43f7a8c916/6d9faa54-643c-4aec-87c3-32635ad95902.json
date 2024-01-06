@@ -8,7 +8,7 @@
   "name":"DeploymentList",
   "defaultLabel": "List of Deployments",
   "definition": {
-    "fetchData": {
+    "fetchQuery": {
       "select": {
         "deployments": {
           "queryType": "selectObjectByParameterValue",

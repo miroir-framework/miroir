@@ -6,8 +6,8 @@
   "defaultLabel": "List of Reports",
   "type": "list",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "reports": {
           "queryType": "selectObjectListByEntity",

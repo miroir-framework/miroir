@@ -6,7 +6,7 @@
   "name":"BookDetails",
   "defaultLabel": "Detailed information about a Book",
   "definition": {
-    "fetchData": {
+    "fetchQuery": {
       "select": {
         "book": {
           "queryType": "selectObjectByParameterValue",

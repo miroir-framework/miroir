@@ -74,7 +74,7 @@
                 "type": "literal",
                 "definition": "objectInstanceReportSection"
               },
-              "fetchData": {
+              "fetchQuery": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -154,7 +154,7 @@
                 "type": "literal",
                 "definition": "grid"
               },
-              "fetchData": {
+              "fetchQuery": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -199,7 +199,7 @@
                 "type": "literal",
                 "definition": "list"
               },
-              "fetchData": {
+              "fetchQuery": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -267,7 +267,7 @@
           "rootReportSection": {
             "type": "object",
             "definition": {
-              "parameters": {
+              "reportParameters": {
                 "type": "record",
                 "optional": true,
                 "definition": {
@@ -275,7 +275,7 @@
                   "definition": "any"
                 }
               },
-              "fetchData": {
+              "fetchQuery": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {

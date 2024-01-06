@@ -5,6 +5,7 @@ import {
   FetchedData,
   MiroirCrossJoinQuery,
   MiroirCustomQueryParams,
+  MiroirFetchQuery,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
   SelectObjectListQuery,
@@ -22,12 +23,6 @@ export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
   params: P
   // params: MiroirSelectorQueryParams
 ) => T;
-
-// ################################################################################################
-export interface DomainModelRootQuery {
-  pageParams?: Record<string, any>,
-  fetchedData?: FetchedData,
-}
 
 // ################################################################################################
 export interface LocalCacheEntityInstancesSelectorParams {
@@ -65,6 +60,12 @@ export type DomainSingleSelectQueryWithDeployment = {
   select: MiroirSelectQuery;
 };
 
+// ################################################################################################
+export interface DomainModelRootQuery {
+  pageParams?: Record<string, any>,
+  fetchedData?: FetchedData,
+}
+
 export interface DomainModelGetSingleSelectObjectQueryQueryParams extends DomainModelRootQuery {
   queryType: "getSingleSelectQuery",
   singleSelectQuery: DomainSingleSelectObjectQueryWithDeployment,
@@ -86,7 +87,8 @@ export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuer
   queryType: "DomainManyQueries",
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
-  select: MiroirSelectQueriesRecord,
+  fetchQuery?: MiroirFetchQuery,
+  select?: MiroirSelectQueriesRecord,
   crossJoin?: MiroirCrossJoinQuery,
 };
 

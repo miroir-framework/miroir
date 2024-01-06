@@ -12,14 +12,8 @@ import {
   RootReportSection,
   Uuid,
   getLoggerName,
-  selectFetchQueryJzodSchemaFromDomainState,
   selectByDomainManyQueriesFromDomainState,
-  MiroirSelectQuery,
-  queryVersionBundleProducerV1,
-  SelectObjectListQuery,
-  DomainSingleSelectQueryWithDeployment,
-  selectEntityInstanceUuidIndexFromDomainState,
-  MiroirSelectQueriesRecord
+  selectFetchQueryJzodSchemaFromDomainState
 } from "miroir-core";
 
 
@@ -53,38 +47,26 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   // const errorLog = useErrorLogService();
 
-  log.log("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
+  log.info("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
 
   // const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
-  log.log(
+  log.info(
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    "fetchData",
-    props.reportSection?.fetchData
+    "fetchQuery",
+    props.reportSection?.fetchQuery
   );
 
-  // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
-  const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
-    queryType: "DomainManyQueries",
-    deploymentUuid: props.deploymentUuid,
-    applicationSection: props.applicationSection,
-    select: queryVersionBundleProducerV1.definition.select as MiroirSelectQueriesRecord
-  }),[])
-
-  const producedBundle : FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
-
-  log.info("producedBundle",producedBundle)
   const domainFetchQueryParams: DomainManyQueriesWithDeploymentUuid = useMemo(() => (
     {
       queryType: "DomainManyQueries",
       deploymentUuid: props.deploymentUuid,
       applicationSection: props.applicationSection,
       pageParams: params,
-      select: props.reportSection?.fetchData?.select ?? {},
-      crossJoin: props.reportSection?.fetchData?.crossJoin ?? { queryType: "combineQuery", a:"", b: "" }
+      fetchQuery: props.reportSection?.fetchQuery
     }
-  ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchData]);
+  ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
 
   const fetchedData: FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
 
@@ -101,8 +83,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
 
-  log.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
-  // log.log("RootReportSectionView props.reportSection?.fetchData",props.reportSection?.fetchData,"fetchedData", fetchedData);
+  log.log("RootReportSectionView props.reportSection?.fetchQuery",props.reportSection?.fetchQuery,"fetchedData", fetchedData, "fetchedDataJzodSchema", fetchedDataJzodSchema);
   log.log('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {

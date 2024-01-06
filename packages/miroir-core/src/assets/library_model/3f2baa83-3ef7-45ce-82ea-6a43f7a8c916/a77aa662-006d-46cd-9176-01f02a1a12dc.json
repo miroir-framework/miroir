@@ -7,8 +7,8 @@
   "defaultLabel": "List of Publishers",
   "type": "list",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "publishers": {
           "queryType": "selectObjectListByEntity",

@@ -5,8 +5,8 @@
   "name":"ApplicationModelBranchList",
   "defaultLabel": "List of Application Model Branches",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "applicationModelBranches": {
           "queryType": "selectObjectListByEntity",

@@ -12,12 +12,16 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
+  DomainManyQueriesWithDeploymentUuid,
   EntityDefinition,
   EntityInstance,
+  FetchedData,
   LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
+  MiroirFetchQuery,
   MiroirLoggerFactory,
+  MiroirSelectQueriesRecord,
   ObjectListReportSection,
   Report,
   applicationDeploymentLibrary,
@@ -26,10 +30,12 @@ import {
   entityAuthor,
   entityBook,
   getLoggerName,
+  queryVersionBundleProducerV1,
   reportEntityDefinitionList,
   reportEntityList,
   reportReportList,
-  resetAndInitMiroirAndApplicationDatabase
+  resetAndInitMiroirAndApplicationDatabase,
+  selectByDomainManyQueriesFromDomainState
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -39,7 +45,7 @@ import {
   useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 import { Importer } from './Importer';
-import { useCurrentModel } from "./ReduxHooks";
+import { useCurrentModel, useDomainStateSelector } from "./ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -194,6 +200,18 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedReportUuid("");
   };
 
+    // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
+    const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
+      queryType: "DomainManyQueries",
+      deploymentUuid: displayedDeploymentUuid,
+      applicationSection: displayedApplicationSection??"data",
+      fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
+    }),[displayedDeploymentUuid, displayedApplicationSection])
+  
+    const producedBundle : FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+  
+    log.info("producedBundle1",producedBundle)
+  
 
   return (
     <div>
@@ -564,7 +582,7 @@ export const HomePage = (props: RootComponentProps) => {
         displayedDeploymentUuid &&
         displayedApplicationSection ? (
           <div>
-            {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
+            <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div>
             <RootReportSectionView
               fetchedData={{}}
               reportSection={currentMiroirReport?.definition}

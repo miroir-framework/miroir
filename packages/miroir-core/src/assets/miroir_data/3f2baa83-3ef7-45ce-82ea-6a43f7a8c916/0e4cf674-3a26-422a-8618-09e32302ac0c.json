@@ -5,8 +5,8 @@
   "name":"ApplicationList",
   "defaultLabel": "List of Applications",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "applications": {
           "queryType": "selectObjectListByEntity",

@@ -5,8 +5,8 @@
   "name":"QueryVersionList",
   "defaultLabel": "List of Query Versions",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "queryVersions": {
           "queryType": "selectObjectListByEntity",

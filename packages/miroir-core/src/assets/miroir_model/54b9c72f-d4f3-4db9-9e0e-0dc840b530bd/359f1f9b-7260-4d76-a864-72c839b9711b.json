@@ -296,6 +296,13 @@
               {
                 "type": "object",
                 "definition": {
+                  "queryType": { "type": "literal", "definition": "literal" },
+                  "definition": { "type": "simpleType", "definition": "string" }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
                   "queryType": {
                     "type": "literal",
                     "definition": "queryContextReference"
@@ -367,6 +374,14 @@
           "miroirFetchQuery": {
             "type": "object",
             "definition": {
+              "parameterSchema": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "jzodObject"
+                }
+              },
               "select": {
                 "type": "schemaReference",
                 "definition": {

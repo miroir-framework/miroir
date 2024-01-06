@@ -6,8 +6,8 @@
   "name":"CountryList",
   "defaultLabel": "List of Countries",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "countries": {
           "queryType": "selectObjectListByEntity",

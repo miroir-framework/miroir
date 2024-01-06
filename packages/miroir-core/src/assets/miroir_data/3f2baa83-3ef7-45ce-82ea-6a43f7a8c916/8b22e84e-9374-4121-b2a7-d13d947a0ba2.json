@@ -5,8 +5,8 @@
   "name":"JzodSchemaList",
   "defaultLabel": "List of Jzod Schemas",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "jzodSchemas": {
           "queryType": "selectObjectListByEntity",

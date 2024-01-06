@@ -46,24 +46,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<DomainSingleSelectQueryWithDeployment, EntityInstancesUuidIndex | undefined> = (
   domainState: DomainState,
-  // selectorParams: DomainSingleSelectQueryWithDeployment
   selectorParams: DomainSingleSelectObjectListQueryWithDeployment
 ): EntityInstancesUuidIndex | undefined => {
 
   const deploymentUuid = selectorParams.deploymentUuid;
   const applicationSection = selectorParams.applicationSection;
-  // if (
-  //   selectorParams.select.queryType !== "selectObjectListByEntity" &&
-  //   selectorParams.select.queryType !== "selectObjectListByRelation"
-  // ) {
-  //   // TODO: make sure that we get the correct type!
-  //   throw new Error(
-  //     "selectEntityInstanceUuidIndexFromDomainState could not handle query with queryType:" +
-  //       selectorParams.select.queryType +
-  //       ", query=" +
-  //       JSON.stringify(selectorParams, undefined, 2)
-  //   );
-  // }
   const entityUuid = selectorParams.select.parentUuid;
 
   const result = 
@@ -302,6 +289,7 @@ export type ElementsFromQuery =
   | { [k: string]: ElementsFromQuery }
   | EntityInstancesUuidIndex
   | EntityInstance
+  | string
   | undefined;
 
   export const innerSelectElementFromQueryAndDomainState = (
@@ -312,9 +300,12 @@ export type ElementsFromQuery =
   applicationSection: ApplicationSection,
   query: MiroirSelectQuery
 ): ElementsFromQuery => {
-// ): EntityInstancesUuidIndex | EntityInstance | undefined => {
   let result: ElementsFromQuery;
   switch (query.queryType) {
+    case "literal": {
+      result = query.definition;
+      break;
+    }
     case "selectObjectListByEntity":
     case "selectObjectListByRelation": {
       result = selectEntityInstancesFromListQueryAndDomainState(domainState, {
@@ -396,26 +387,41 @@ export const selectByDomainManyQueriesFromDomainState = (
 
   const newFetchedData:FetchedData = query.fetchedData??{};
 
-  for (const entry of Object.entries(query.select??{})) {
-    let result = innerSelectElementFromQueryAndDomainState(
-      domainState,
-      newFetchedData,
-      query.pageParams ?? {},
-      query.deploymentUuid,
-      query.applicationSection,
-      entry[1]
-    );
-    newFetchedData[entry[0]] = result;
-    log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
+  if (query.fetchQuery) {
+    for (const entry of Object.entries(query.fetchQuery.select??{})) {
+      let result = innerSelectElementFromQueryAndDomainState(
+        domainState,
+        newFetchedData,
+        query.pageParams ?? {},
+        query.deploymentUuid,
+        query.applicationSection,
+        entry[1]
+      );
+      newFetchedData[entry[0]] = result;
+      log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
+    }
+  } else {
+    for (const entry of Object.entries(query.select??{})) {
+      let result = innerSelectElementFromQueryAndDomainState(
+        domainState,
+        newFetchedData,
+        query.pageParams ?? {},
+        query.deploymentUuid,
+        query.applicationSection,
+        entry[1]
+      );
+      newFetchedData[entry[0]] = result;
+      log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
+    }
   }
 
-  if (query.crossJoin) {
-    log.info("DomainSelector selectByDomainManyQueriesFromDomainState crossJoin", query.crossJoin);
+  if (query.fetchQuery?.crossJoin) {
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState fetchQuery?.crossJoin", query.fetchQuery?.crossJoin);
 
     // performs a cross-join
     newFetchedData["crossJoin"] = Object.fromEntries(
-      Object.values(newFetchedData[query.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
-        Object.values(newFetchedData[query.crossJoin?.b ?? ""] ?? {}).map((b) => [
+      Object.values(newFetchedData[query.fetchQuery?.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
+        Object.values(newFetchedData[query.fetchQuery?.crossJoin?.b ?? ""] ?? {}).map((b) => [
           a.uuid + "-" + b.uuid,
           Object.fromEntries(
             Object.entries(a)
@@ -489,6 +495,7 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
 // ): JzodElement | undefined => {
 ): JzodObject | undefined => {
   if (
+    query.singleSelectQuery.select.queryType=="literal" ||
     query.singleSelectQuery.select.queryType=="queryContextReference" ||
     query.singleSelectQuery.select.queryType=="wrapperReturningObject" ||
     query.singleSelectQuery.select.queryType=="wrapperReturningList"
@@ -534,7 +541,7 @@ export const selectEntityJzodSchemaFromDomainState = (
 
 // ################################################################################################
 /**
- * the FetchData and FetchQueryJzodSchema should depend only on the instance of Report at hand
+ * the fetchQuery and FetchQueryJzodSchema should depend only on the instance of Report at hand
  * then on the instance of the required entities (which can change over time, on refresh!! Problem: their number can vary!!)
  * @param domainState 
  * @param query 
@@ -543,13 +550,12 @@ export const selectEntityJzodSchemaFromDomainState = (
 export const selectFetchQueryJzodSchemaFromDomainState = (
   domainState: DomainState,
   query: DomainModelGetFetchParamJzodSchemaQueryParams
-// ):  RecordOfJzodElement | undefined => {
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: DomainManyQueriesWithDeploymentUuid = query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
   
   const fetchQueryJzodSchema = Object.fromEntries(
-    Object.entries(localFetchParams?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
+    Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, MiroirSelectQuery]) => [
       entry[0],
       selectJzodSchemaBySingleSelectQueryFromDomainState(domainState, {
           queryType: "getSingleSelectQueryJzodSchema",
@@ -563,25 +569,23 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
     ])
   );
 
-  if (localFetchParams.crossJoin) {
-    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState crossJoin", query.crossJoin);
-
+  if (localFetchParams.fetchQuery?.crossJoin) {
     fetchQueryJzodSchema["crossJoin"] = {
       type: "object",
       definition: Object.fromEntries(
-      Object.entries(fetchQueryJzodSchema[localFetchParams.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
+      Object.entries(fetchQueryJzodSchema[localFetchParams.fetchQuery?.crossJoin?.a ?? ""]?.definition ?? {}).map((a) => [
         "a-" + a[0],
         a[1]
       ]
       ).concat(
-        Object.entries(fetchQueryJzodSchema[localFetchParams.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
+        Object.entries(fetchQueryJzodSchema[localFetchParams.fetchQuery?.crossJoin?.b ?? ""]?.definition ?? {}).map((b) => [
           "b-" + b[0], b[1]
         ])
       )
     )};
   }
 
-
+  log.info("selectFetchQueryJzodSchemaFromDomainState query", JSON.stringify(query, undefined, 2), "fetchQueryJzodSchema", fetchQueryJzodSchema)
   return fetchQueryJzodSchema;
 };
 

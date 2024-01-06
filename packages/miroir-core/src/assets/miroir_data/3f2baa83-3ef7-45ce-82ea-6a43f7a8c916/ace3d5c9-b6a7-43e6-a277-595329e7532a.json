@@ -5,8 +5,8 @@
   "name":"EndpointVersionList",
   "defaultLabel": "List of Endpoint Versions",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "endpointVersions": {
           "queryType": "selectObjectListByEntity",

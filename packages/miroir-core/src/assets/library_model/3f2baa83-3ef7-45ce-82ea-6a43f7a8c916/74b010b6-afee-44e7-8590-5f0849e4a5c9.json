@@ -6,10 +6,10 @@
   "name":"BookList",
   "defaultLabel": "List of Books",
   "definition": {
-    "parameters": {
+    "reportParameters": {
 
     },
-    "fetchData": {
+    "fetchQuery": {
       "select": {
         "books": {
           "queryType": "selectObjectListByEntity",

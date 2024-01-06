@@ -6,8 +6,8 @@
   "name":"AuthorList",
   "defaultLabel": "List of Authors",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "authors": {
           "queryType": "selectObjectListByEntity",

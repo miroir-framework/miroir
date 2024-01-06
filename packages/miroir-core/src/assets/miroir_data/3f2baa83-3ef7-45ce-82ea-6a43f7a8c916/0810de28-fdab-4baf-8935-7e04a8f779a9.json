@@ -6,8 +6,8 @@
   "defaultLabel": "List of Application Versions",
   "type": "list",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "applicationVersions": {
           "queryType": "selectObjectListByEntity",

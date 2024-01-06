@@ -5,8 +5,8 @@
   "name":"QueryList",
   "defaultLabel": "List of Queries",
   "definition": {
-    "parameters": {},
-    "fetchData": {
+    "reportParameters": {},
+    "fetchQuery": {
       "select": {
         "queries": {
           "queryType": "selectObjectListByEntity",
