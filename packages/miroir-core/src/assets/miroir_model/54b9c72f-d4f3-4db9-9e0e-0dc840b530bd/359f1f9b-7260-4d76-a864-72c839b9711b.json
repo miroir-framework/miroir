@@ -49,6 +49,43 @@
         "type": "schemaReference",
         "extra": { "id": 7, "defaultLabel": "Query Version definition", "editable": true },
         "context": {
+          "queryFailed": {
+            "type": "object",
+            "definition": {
+              "queryFailureReason": {
+                "type": "enum",
+                "definition": [ "DomainStateNotLoaded", "IncorrectParameters", "DeploymentNotFound", "ApplicationSectionNotFound", "EntityNotFound", "InstanceNotFound" ]
+              },
+              "queryParameters": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "any"
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "entityUuid": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
+              },
+              "instanceUuid": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
+              }
+            }
+          },
           "selectRootQuery": {
             "type": "object",
             "definition": {
@@ -133,7 +170,6 @@
               "instanceUuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "optional": true,
                 "validations": [{ "type": "uuid" }],
                 "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
               }

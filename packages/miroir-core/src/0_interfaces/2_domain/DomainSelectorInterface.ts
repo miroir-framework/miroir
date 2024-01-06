@@ -8,6 +8,7 @@ import {
   MiroirFetchQuery,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
+  QueryFailed,
   SelectObjectListQuery,
   SelectObjectQuery,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -22,7 +23,7 @@ export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
   domainState: DomainState,
   params: P
   // params: MiroirSelectorQueryParams
-) => T;
+) => T | QueryFailed;
 
 // ################################################################################################
 export interface LocalCacheEntityInstancesSelectorParams {

@@ -203,10 +203,10 @@ export const HomePage = (props: RootComponentProps) => {
     // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
     const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
       queryType: "DomainManyQueries",
-      deploymentUuid: displayedDeploymentUuid,
-      applicationSection: displayedApplicationSection??"data",
+      deploymentUuid: applicationDeploymentMiroir.uuid,
+      applicationSection: "data",
       fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
-    }),[displayedDeploymentUuid, displayedApplicationSection])
+    }),[miroirMetaModel])
   
     const producedBundle : FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
   
