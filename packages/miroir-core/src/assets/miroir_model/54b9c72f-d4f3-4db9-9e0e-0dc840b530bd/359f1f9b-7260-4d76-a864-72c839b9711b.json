@@ -243,6 +243,28 @@
               }
             }
           },
+          "selectObjectByDirectReferenceQuery": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "selectRootQuery"
+              }
+            },
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "selectObjectByDirectReference"
+              },
+              "objectReference": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryObjectReference"
+                }
+              }
+            }
+          },
           "selectObjectQuery": {
             "type": "union",
             "discriminator": "type",
@@ -263,6 +285,12 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "selectObjectByParameterValueQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectByDirectReferenceQuery"
                 }
               }
             ]

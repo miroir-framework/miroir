@@ -9,6 +9,7 @@ export {
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
 export {
   applyDomainStateSelector,
+  applyDomainStateCleanSelector,
   selectDomainState,
   selectDomainStatePlain,
   selectEntityInstanceUuidIndexFromLocalCache,

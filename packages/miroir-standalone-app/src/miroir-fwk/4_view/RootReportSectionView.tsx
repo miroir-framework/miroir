@@ -56,7 +56,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.deploymentUuid,
     props.applicationSection,
     "fetchQuery",
-    props.reportSection?.fetchQuery
+    props.reportSection.fetchQuery
   );
 
   const domainFetchQueryParams: DomainManyQueriesWithDeploymentUuid = useMemo(() => (
@@ -66,7 +66,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       applicationSection: props.applicationSection,
       pageParams: params,
       contextResults: { resultType: "object", resultValue: {} },
-      fetchQuery: props.reportSection?.fetchQuery
+      fetchQuery: props.reportSection.fetchQuery
     }
   ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
 

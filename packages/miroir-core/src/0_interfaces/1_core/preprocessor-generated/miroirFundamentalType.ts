@@ -337,8 +337,6 @@ export type EntityDefinition = {
 export type ObjectInstanceReportSection = {
     type: "objectInstanceReportSection";
     fetchQuery?: MiroirFetchQuery | undefined;
-    selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCrossJoinQuery | undefined;
     definition: {
         label?: string | undefined;
         parentUuid: string;
@@ -371,12 +369,13 @@ export type ListReportSection = {
 };
 export type ReportSection = GridReportSection | ListReportSection | ObjectListReportSection | ObjectInstanceReportSection;
 export type RootReportSection = {
+    reportParametersToFetchQueryParametersTransformer?: {
+        [x: string]: any;
+    } | undefined;
     reportParameters?: {
         [x: string]: any;
     } | undefined;
-    fetchQuery?: MiroirFetchQuery | undefined;
-    selectData?: MiroirSelectQueriesRecord | undefined;
-    combineData?: MiroirCrossJoinQuery | undefined;
+    fetchQuery: MiroirFetchQuery;
     section: ReportSection;
 };
 export type Report = {
@@ -390,12 +389,13 @@ export type Report = {
     type?: ("list" | "grid") | undefined;
     application?: string | undefined;
     definition: {
+        reportParametersToFetchQueryParametersTransformer?: {
+            [x: string]: any;
+        } | undefined;
         reportParameters?: {
             [x: string]: any;
         } | undefined;
-        fetchQuery?: MiroirFetchQuery | undefined;
-        selectData?: MiroirSelectQueriesRecord | undefined;
-        combineData?: MiroirCrossJoinQuery | undefined;
+        fetchQuery: MiroirFetchQuery;
         section: ReportSection;
     };
 };
@@ -519,7 +519,14 @@ export type SelectObjectByParameterValueQuery = {
     queryParameterName?: string | undefined;
     queryParameterAttribute?: string | undefined;
 };
-export type SelectObjectQuery = SelectObjectByUuidQuery | SelectObjectByRelationQuery | SelectObjectByParameterValueQuery;
+export type SelectObjectByDirectReferenceQuery = {
+    label?: string | undefined;
+    parentName?: string | undefined;
+    parentUuid: string;
+    queryType: "selectObjectByDirectReference";
+    objectReference: QueryObjectReference;
+};
+export type SelectObjectQuery = SelectObjectByUuidQuery | SelectObjectByRelationQuery | SelectObjectByParameterValueQuery | SelectObjectByDirectReferenceQuery;
 export type SelectObjectListByEntityQuery = {
     label?: string | undefined;
     parentName?: string | undefined;
@@ -699,13 +706,13 @@ export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:
 export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid(), name:z.string(), contents:z.union([z.object({type:z.literal("runtime")}).strict(), z.object({type:z.literal("development"), applicationVersion:z.lazy(() =>applicationVersion)}).strict()])}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), application:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional()}).strict();
 export const entityDefinition: z.ZodType<EntityDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), entityUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), description:z.string().optional(), jzodSchema:z.lazy(() =>jzodObject)}).strict();
-export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
+export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
 export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.object({label:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>selectObjectQuery).optional()}).strict()}).strict();
 export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
 export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.literal("list"), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), definition:z.array(z.lazy(() =>objectListReportSection))}).strict();
 export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>gridReportSection), z.lazy(() =>listReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection)]);
-export const rootReportSection: z.ZodType<RootReportSection> = z.object({reportParameters:z.record(z.string(),z.any()).optional(), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), section:z.lazy(() =>reportSection)}).strict();
-export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), application:z.string().uuid().optional(), definition:z.object({reportParameters:z.record(z.string(),z.any()).optional(), fetchQuery:z.lazy(() =>miroirFetchQuery).optional(), selectData:z.lazy(() =>miroirSelectQueriesRecord).optional(), combineData:z.lazy(() =>miroirCrossJoinQuery).optional(), section:z.lazy(() =>reportSection)}).strict()}).strict();
+export const rootReportSection: z.ZodType<RootReportSection> = z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), fetchQuery:z.lazy(() =>miroirFetchQuery), section:z.lazy(() =>reportSection)}).strict();
+export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), application:z.string().uuid().optional(), definition:z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), fetchQuery:z.lazy(() =>miroirFetchQuery), section:z.lazy(() =>reportSection)}).strict()}).strict();
 export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();
 export const filesystemDbStoreSectionConfiguration: z.ZodType<FilesystemDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("filesystem"), directory:z.string()}).strict();
@@ -728,7 +735,8 @@ export const queryObjectReference: z.ZodType<QueryObjectReference> = z.union([z.
 export const selectObjectByUuidQuery: z.ZodType<SelectObjectByUuidQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectByUuid"), instanceUuid:z.string().uuid()}).strict();
 export const selectObjectByRelationQuery: z.ZodType<SelectObjectByRelationQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectByParameterValueQuery: z.ZodType<SelectObjectByParameterValueQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectByParameterValue"), queryParameterName:z.string().optional(), queryParameterAttribute:z.string().optional()}).strict();
-export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy(() =>selectObjectByUuidQuery), z.lazy(() =>selectObjectByRelationQuery), z.lazy(() =>selectObjectByParameterValueQuery)]);
+export const selectObjectByDirectReferenceQuery: z.ZodType<SelectObjectByDirectReferenceQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectByDirectReference"), objectReference:z.lazy(() =>queryObjectReference)}).strict();
+export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy(() =>selectObjectByUuidQuery), z.lazy(() =>selectObjectByRelationQuery), z.lazy(() =>selectObjectByParameterValueQuery), z.lazy(() =>selectObjectByDirectReferenceQuery)]);
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
 export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid()}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);

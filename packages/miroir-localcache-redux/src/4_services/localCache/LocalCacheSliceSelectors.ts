@@ -15,6 +15,7 @@ import {
   getLoggerName,
   DomainStateSelector,
   ResultsFromQuery,
+  cleanupResultsFromQuery,
 } from "miroir-core";
 import { getLocalCacheSliceIndex, localCacheStateToDomainState } from "./LocalCacheSlice";
 import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheReduxSliceInterface";
@@ -87,6 +88,25 @@ export function applyDomainStateSelector<P extends MiroirSelectorQueryParams, T>
   return createSelector(
     [selectDomainStatePlain, selectSelectorParams],
     domainStateSelector
+  )
+}
+
+// ################################################################################################
+export function applyDomainStateCleanSelector<P extends MiroirSelectorQueryParams>( // TODO: memoize?
+  domainStateSelector: DomainStateSelector<P, ResultsFromQuery>
+): (
+  reduxState: ReduxStateWithUndoRedo,
+  params: MiroirSelectorQueryParams
+) => any { 
+  const cleanupFunction = (domainState: DomainState, params: P):ResultsFromQuery => {
+    const partial:ResultsFromQuery = domainStateSelector(domainState, params);
+    const result:any = cleanupResultsFromQuery(partial)
+    return result;
+  }
+
+  return createSelector(
+    [selectDomainStatePlain, selectSelectorParams],
+    cleanupFunction
   )
 }
 

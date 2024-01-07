@@ -345,6 +345,7 @@ export {
   selectReportDefinitionFromReportUuid,
 } from './2_domain/DomainDataAccess.js';
 export {
+  cleanupResultsFromQuery,
   selectByDomainManyQueriesFromDomainState,
   selectJzodSchemaByDomainModelQueryFromDomainState,
   selectEntityJzodSchemaFromDomainState,

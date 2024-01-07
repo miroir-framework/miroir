@@ -26,6 +26,7 @@ import {
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateSelector,
+  applyDomainStateCleanSelector,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -48,7 +49,26 @@ export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T >(
   query:P,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
-  const innerSelector = useMemo(() => applyDomainStateSelector(domainStateSelector), [domainStateSelector]);
+  const innerSelector = useMemo(
+    () => {
+      return applyDomainStateSelector(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, query)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDomainStateCleanSelector<P extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelector<P, ResultsFromQuery>,
+  query:P,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
+): T {
+  const innerSelector = useMemo(
+    () => {
+      return applyDomainStateCleanSelector(domainStateSelector);
+    }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, query)
   );

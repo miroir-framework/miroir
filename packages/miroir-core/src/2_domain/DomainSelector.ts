@@ -46,6 +46,30 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
+export function cleanupResultsFromQuery(r:ResultsFromQuery): any {
+  switch (r.resultType) {
+    case "string":
+    case "instanceUuidIndex":
+    case "instance": {
+      return r.resultValue
+    }
+    case "object": {
+      return Object.fromEntries(Object.entries(r.resultValue).map(e => [e[0], cleanupResultsFromQuery(e[1])]))
+    }
+    case "array": {
+      return r.resultValue.map(e => cleanupResultsFromQuery(e))
+    }
+    case "failure": {
+      return undefined
+      break;
+    }
+    default: {
+      throw new Error("could not handle Results from query: " + JSON.stringify(r,undefined,2));
+      break;
+    }
+  }
+}
+
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
   DomainSingleSelectQueryWithDeployment, ResultsFromQuery
@@ -243,8 +267,58 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
         }};
       } else {
         return {resultType: "instance", resultValue: domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-          (query.pageParams ?? {})[querySelectorParams?.queryParameterName]
+          (query.queryParams ?? query.pageParams ?? {})[querySelectorParams?.queryParameterName]
         ]};
+      }
+      break;
+    }
+    case "selectObjectByDirectReference": {
+      const instanceUuid =
+        querySelectorParams.objectReference.referenceType == "queryParameterReference" &&
+        (query.queryParams as any)[querySelectorParams?.objectReference.referenceName]
+          ? (query.queryParams as any)[querySelectorParams?.objectReference.referenceName]
+          : querySelectorParams.objectReference.referenceType == "queryContextReference"
+          ? query.contextResults.resultValue[querySelectorParams?.objectReference.referenceName]
+          : querySelectorParams.objectReference.referenceType == "constant"
+          ? querySelectorParams.objectReference.referenceUuid
+          : undefined;
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState instanceUuid", instanceUuid);
+      if (
+        // resolving by queryParameterName
+        !querySelectorParams?.objectReference || !instanceUuid
+      ) {
+        return {
+          resultType: "failure",
+          resultValue: {
+            queryFailure: "IncorrectParameters",
+            queryParameters: query.pageParams,
+          },
+        };
+      } else if (!domainState) {
+        return { resultType: "failure", resultValue: { queryFailure: "DomainStateNotLoaded" } };
+      } else if (!domainState[deploymentUuid]) {
+        return { resultType: "failure", resultValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+      } else if (!domainState[deploymentUuid][applicationSection]) {
+        return {
+          resultType: "failure",
+          resultValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
+        };
+      } else if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
+        return {
+          resultType: "failure",
+          resultValue: {
+            queryFailure: "EntityNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: querySelectorParams.parentUuid,
+          },
+        };
+      } else {
+        return {
+          resultType: "instance",
+          resultValue:
+            domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][instanceUuid],
+        };
       }
       break;
     }
@@ -291,13 +365,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
   }
 };
 
-
-
 // ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = (
   domainState: DomainState,
   newFetchedData:ResultsFromQueryObject,
   pageParams: Record<string, any>,
+  queryParams: Record<string, any>,
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
   query: MiroirSelectQuery
@@ -313,6 +386,7 @@ export const innerSelectElementFromQueryAndDomainState = (
         queryType: "getSingleSelectQuery",
         contextResults: newFetchedData,
         pageParams: pageParams,
+        queryParams,
         singleSelectQuery: {
           queryType: "domainSingleSelectQueryWithDeployment",
           deploymentUuid: deploymentUuid,
@@ -324,11 +398,13 @@ export const innerSelectElementFromQueryAndDomainState = (
     }
     case "selectObjectByUuid":
     case "selectObjectByRelation":
-    case "selectObjectByParameterValue": {
+    case "selectObjectByParameterValue":
+    case "selectObjectByDirectReference": {
       return selectEntityInstanceFromObjectQueryAndDomainState(domainState, {
         queryType: "getSingleSelectQuery",
         contextResults: newFetchedData,
         pageParams: pageParams,
+        queryParams,
         singleSelectQuery: {
           queryType: "domainSingleSelectQueryWithDeployment",
           applicationSection: applicationSection,
@@ -348,6 +424,7 @@ export const innerSelectElementFromQueryAndDomainState = (
               domainState,
               newFetchedData,
               pageParams ?? {},
+              queryParams ?? {},
               deploymentUuid,
               applicationSection,
               e[1]
@@ -365,6 +442,7 @@ export const innerSelectElementFromQueryAndDomainState = (
             domainState,
             newFetchedData,
             pageParams ?? {},
+            queryParams ?? {},
             deploymentUuid,
             applicationSection,
             e
@@ -398,35 +476,21 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
   const newFetchedData:ResultsFromQueryObject = {resultType: "object", resultValue: {...query.contextResults.resultValue}};
   log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", newFetchedData);
   
-  if (query.fetchQuery) {
-    for (const entry of Object.entries(query.fetchQuery.select??{})) {
-      let result = innerSelectElementFromQueryAndDomainState(
-        domainState,
-        newFetchedData,
-        query.pageParams ?? {},
-        query.deploymentUuid,
-        query.applicationSection,
-        entry[1]
-      );
-      newFetchedData.resultValue[entry[0]] = result;
-      log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
-    }
-  } else {
-    for (const entry of Object.entries(query.select??{})) {
-      let result = innerSelectElementFromQueryAndDomainState(
-        domainState,
-        newFetchedData,
-        query.pageParams ?? {},
-        query.deploymentUuid,
-        query.applicationSection,
-        entry[1]
-      );
-      newFetchedData.resultValue[entry[0]] = result;
-      log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
-    }
+  for (const entry of Object.entries(query.fetchQuery.select??{})) {
+    let result = innerSelectElementFromQueryAndDomainState(
+      domainState,
+      newFetchedData,
+      query.pageParams ?? {},
+      query.queryParams ?? {},
+      query.deploymentUuid,
+      query.applicationSection,
+      entry[1]
+    );
+    newFetchedData.resultValue[entry[0]] = result;
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
-  if (query.fetchQuery?.crossJoin) {
+  if (query.fetchQuery.crossJoin) {
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState fetchQuery?.crossJoin", query.fetchQuery?.crossJoin);
 
     // performs a cross-join

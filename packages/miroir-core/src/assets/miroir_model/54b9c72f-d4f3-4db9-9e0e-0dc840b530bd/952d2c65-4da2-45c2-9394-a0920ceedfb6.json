@@ -82,22 +82,6 @@
                   "relativePath": "miroirFetchQuery"
                 }
               },
-              "selectData": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
-                }
-              },
-              "combineData": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirCrossJoinQuery"
-                }
-              },
               "definition": {
                 "type": "object",
                 "definition": {
@@ -288,9 +272,21 @@
               }
             ]
           },
+          "parameterTransformer": {
+            "type": "simpleType",
+            "definition": "any"
+          },
           "rootReportSection": {
             "type": "object",
             "definition": {
+              "reportParametersToFetchQueryParametersTransformer": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "simpleType",
+                  "definition": "any"
+                }
+              },
               "reportParameters": {
                 "type": "record",
                 "optional": true,
@@ -301,26 +297,9 @@
               },
               "fetchQuery": {
                 "type": "schemaReference",
-                "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirFetchQuery"
-                }
-              },
-              "selectData": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirSelectQueriesRecord"
-                }
-              },
-              "combineData": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirCrossJoinQuery"
                 }
               },
               "section": {

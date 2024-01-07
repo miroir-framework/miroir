@@ -15,15 +15,14 @@ import {
   DomainManyQueriesWithDeploymentUuid,
   EntityDefinition,
   EntityInstance,
-  ResultsFromQuery,
   LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
   MiroirFetchQuery,
   MiroirLoggerFactory,
-  MiroirSelectQueriesRecord,
   ObjectListReportSection,
   Report,
+  ResultsFromQuery,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
@@ -45,7 +44,7 @@ import {
   useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 import { Importer } from './Importer';
-import { useCurrentModel, useDomainStateSelector } from "./ReduxHooks";
+import { useCurrentModel, useDomainStateCleanSelector, useDomainStateSelector } from "./ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -206,10 +205,12 @@ export const HomePage = (props: RootComponentProps) => {
       deploymentUuid: applicationDeploymentMiroir.uuid,
       applicationSection: "data",
       contextResults: { resultType: "object", resultValue: {} },
+      queryParams: { "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13"},
       fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
     }),[miroirMetaModel])
   
-    const producedBundle : ResultsFromQuery = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    // const producedBundle : ResultsFromQuery = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
   
     log.info("producedBundle1",producedBundle)
   

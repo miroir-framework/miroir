@@ -62,6 +62,7 @@ export type DomainSingleSelectQueryWithDeployment = {
 // ################################################################################################
 export interface DomainModelRootQuery {
   pageParams?: Record<string, any>,
+  queryParams?: Record<string, any>,
   contextResults: ResultsFromQueryObject,
 }
 
@@ -86,9 +87,7 @@ export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuer
   queryType: "DomainManyQueries",
   deploymentUuid: Uuid,
   applicationSection: ApplicationSection,
-  fetchQuery?: MiroirFetchQuery,
-  select?: MiroirSelectQueriesRecord,
-  crossJoin?: MiroirCrossJoinQuery,
+  fetchQuery: MiroirFetchQuery,
 };
 
 // ################################################################################################
