@@ -24,7 +24,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       ...args:any[]
     ) {
       super(...args)
-      // log.log(this.logHeader,'MixedIndexedDbInstanceStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+      // log.info(this.logHeader,'MixedIndexedDbInstanceStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
     }
 
     // #############################################################################################
@@ -41,7 +41,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
   
     // #############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      log.log(this.logHeader, "upsertInstance", instance.parentUuid, instance);
+      log.info(this.logHeader, "upsertInstance", instance.parentUuid, instance);
   
       if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
         await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
@@ -56,7 +56,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
   
     // #############################################################################################
     async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-      log.log(this.logHeader, "deleteInstances", parentUuid, instances);
+      log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         // await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
         await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);

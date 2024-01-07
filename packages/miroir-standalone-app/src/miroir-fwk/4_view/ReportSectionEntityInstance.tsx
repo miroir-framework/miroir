@@ -73,7 +73,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.log("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeploymentConfiguration)
@@ -83,7 +83,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
-  log.log(
+  log.info(
     "ReportPage currentReportDefinitionDeployment",
     currentReportDefinitionDeployment,
     "currentReportDefinitionApplicationSection",
@@ -93,7 +93,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  log.log("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
+  log.info("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
 
   const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
@@ -115,8 +115,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [currentMiroirModel]
   );
 
-  log.log('ReportSectionEntityInstance instance',instance);
-  log.log('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
+  log.info('ReportSectionEntityInstance instance',instance);
+  log.info('ReportSectionEntityInstance entityJzodSchema',entityJzodSchemaDefinition);
   
   if (instance) {
     return (

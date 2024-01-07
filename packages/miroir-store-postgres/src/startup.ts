@@ -31,7 +31,7 @@ export function miroirPostgresStoreSectionStartup() {
       config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
-      log.log('called registerStoreSectionFactory function for', section, 'sql', config);
+      log.info('called registerStoreSectionFactory function for', section, 'sql', config);
       
       if (config.emulatedServerType == "sql" && dataStore) {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
@@ -54,7 +54,7 @@ export function miroirPostgresStoreSectionStartup() {
       config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
-      log.log('called registerStoreSectionFactory function for', section, 'sql', config);
+      log.info('called registerStoreSectionFactory function for', section, 'sql', config);
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(

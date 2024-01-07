@@ -23,7 +23,7 @@ export async function generateZodSchemaFileFromJzodSchema(
   // targetFileName: string,
   // jzodSchemaVariableName:string,
 ) {
-  // log.log("generateZodSchemaFileFromJzodSchema called!");
+  // log.info("generateZodSchemaFileFromJzodSchema called!");
  
   const generateTypeAnotationsForSchema =
     // jzodElement.type == "schemaReference" ? Object.keys(jzodElement.context) : [];

@@ -59,7 +59,7 @@ export async function refreshAllInstancesTest(
   miroirContext: MiroirContext
 ) {
   try {
-    log.log("Refresh all Instances start");
+    log.info("Refresh all Instances start");
     const displayLoadingInfo = <DisplayLoadingInfo />;
     const user = userEvent.setup();
 
@@ -140,7 +140,7 @@ export async function refreshAllInstancesTest(
 
     log.info("Refresh all Instances setup is finished.")
 
-    // log.log(
+    // log.info(
     //   'after test preparation',
     //   await localAppStoreController?.getState()
     // );
@@ -171,7 +171,7 @@ export async function refreshAllInstancesTest(
       });
     });
 
-    log.log("Refresh all Instances start", JSON.stringify(reduxStore.getState()));
+    log.info("Refresh all Instances start", JSON.stringify(reduxStore.getState()));
     
     await act(()=>user.click(screen.getByRole("button")));
 

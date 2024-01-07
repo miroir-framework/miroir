@@ -37,8 +37,8 @@ export async function createMswRestServer(
   storeControllerManager: StoreControllerManagerInterface,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
-  log.log("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
-  log.log("createMswRestServer process.browser", (process as any)["browser"]);
+  log.info("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
+  log.info("createMswRestServer process.browser", (process as any)["browser"]);
 
   if (miroirConfig.client.emulateServer) {
 

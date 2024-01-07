@@ -38,7 +38,7 @@ export class IndexedDbStoreSection implements IAbstractStoreSection, IStorageSpa
     this.indexedDbStoreName = args[0];
     this.localUuidIndexedDb = args[1];
     this.logHeader = args[2];
-    // log.log(this.logHeader,'IndexedDbStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
+    // log.info(this.logHeader,'IndexedDbStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
 
     // #########################################################################################
@@ -49,23 +49,23 @@ export class IndexedDbStoreSection implements IAbstractStoreSection, IStorageSpa
   
   // ##################################################################################################
   async open(): Promise<void> {
-    log.log(this.logHeader, "open(): opening");
+    log.info(this.logHeader, "open(): opening");
     await this.localUuidIndexedDb.openObjectStore();
-    log.log(this.logHeader, "open(): opened");
+    log.info(this.logHeader, "open(): opened");
     return Promise.resolve();
   }
 
   // ##############################################################################################
   async close(): Promise<void> {
-    log.log(this.logHeader, "close(): closing");
+    log.info(this.logHeader, "close(): closing");
     await this.localUuidIndexedDb.closeObjectStore();
-    log.log(this.logHeader, "close(): closed");
+    log.info(this.logHeader, "close(): closed");
     return Promise.resolve();
   }
 
   // ##################################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    log.log(this.logHeader, "bootFromPersistedState does nothing!");
+    log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve();
   }
 
@@ -82,7 +82,7 @@ export class IndexedDbStoreSection implements IAbstractStoreSection, IStorageSpa
 
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
-    log.log(
+    log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "input: entity",

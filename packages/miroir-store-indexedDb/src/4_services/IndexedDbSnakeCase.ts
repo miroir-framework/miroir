@@ -23,12 +23,12 @@ export class IndexedDb {
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     if (this.db?.status =='open' ) {
-      log.log(this.logHeader,'closeObjectStore closing db...', this.db?.status);
+      log.info(this.logHeader,'closeObjectStore closing db...', this.db?.status);
       await this.db?.close();
     } else {
-      log.log(this.logHeader, 'closeObjectStore db already closed...', this.db?.status);
+      log.info(this.logHeader, 'closeObjectStore db already closed...', this.db?.status);
     }
-    // log.log('IndexedDb closeObjectStore db closed!');
+    // log.info('IndexedDb closeObjectStore db closed!');
     this.db = undefined;
     this.subLevels?.clear();
     return Promise.resolve(undefined);
@@ -36,7 +36,7 @@ export class IndexedDb {
 
   // #############################################################################################
   public async openObjectStore():Promise<void> {
-    log.log(this.logHeader, 'openObjectStore');
+    log.info(this.logHeader, 'openObjectStore');
     if(this.db !== undefined) {
       await this.db?.open();
     } else {
@@ -47,7 +47,7 @@ export class IndexedDb {
 
   // #############################################################################################
   public async clearObjectStore():Promise<void> {
-    log.log(this.logHeader, 'clearObjectStore, does nothing! (missing API to list all existing sublevels)');
+    log.info(this.logHeader, 'clearObjectStore, does nothing! (missing API to list all existing sublevels)');
     // return this.db?.clear();
     return Promise.resolve(undefined);
   }
@@ -57,7 +57,7 @@ export class IndexedDb {
     try {
       if(this.db !== undefined) {
         await this.db.open();
-        log.log(this.logHeader, 'createObjectStore opened db')
+        log.info(this.logHeader, 'createObjectStore opened db')
         this.subLevels = this.createSubLevels(this.db,tableNames);
         return Promise.resolve(undefined);
       } else {
@@ -76,8 +76,8 @@ export class IndexedDb {
 
   // #############################################################################
   public addSubLevels(tableNames:string[]) {
-    log.log(this.logHeader, 'addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
-    // log.log('indexedDb addSubLevels db:',this.db);
+    log.info(this.logHeader, 'addSubLevels:',tableNames,'existing sublevels',this.getSubLevels());
+    // log.info('indexedDb addSubLevels db:',this.db);
     this.subLevels = new Map<string, any>([
       ...this.subLevels.entries(),
       ...tableNames.filter(n=>!this.subLevels.has(n)).map(
@@ -145,7 +145,7 @@ export class IndexedDb {
     } else {
       log.error(this.logHeader, 'getValue table for parentUuid not found:',parentUuid);
     }
-    // log.log('IndexedDb getValue ', tableName, result);
+    // log.info('IndexedDb getValue ', tableName, result);
     return Promise.resolve(result);
   }
 
@@ -162,7 +162,7 @@ export class IndexedDb {
     const store = this.subLevels.get(parentUuid);
     log.debug('IndexedDb in store',store,'hasSubLevel(',parentUuid,')', this.hasSubLevel(parentUuid),'PutValue of entity', parentUuid, 'value',value);
     const result1 = store?await store.put(value.uuid, value, {valueEncoding: 'json'}):[];
-    // log.log('IndexedDb PutValue written', tableName,);
+    // log.info('IndexedDb PutValue written', tableName,);
     return Promise.resolve(result1);
   }
 
@@ -180,7 +180,7 @@ export class IndexedDb {
   // #############################################################################################
   public async deleteValue(tableUuid: string, uuid: string):Promise<any> {
     // const tx = this.db.transaction(tableName, 'readwrite');
-    log.log(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
+    log.info(this.logHeader, 'deleteValue called for entity', tableUuid, "instance", uuid);
     if (this.getSubLevels().includes(tableUuid)) {
       const store = this.subLevels.get(tableUuid);
       try {

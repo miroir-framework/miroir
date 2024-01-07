@@ -68,7 +68,7 @@ let count=0
 let prevProps:TableComponentProps;
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-  log.log("MTableComponent",props);
+  log.info("MTableComponent",props);
   
 
   // const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
@@ -76,14 +76,14 @@ export const MTableComponent = (props: TableComponentProps) => {
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
   const errorLog = useErrorLogService();
-  // log.log('MTableComponent 5');
+  // log.info('MTableComponent 5');
   // const domainController: DomainControllerInterface = useDomainControllerService();
-  // log.log('MTableComponent 6');
+  // log.info('MTableComponent 6');
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  // log.log('MTableComponent 7');
+  // log.info('MTableComponent 7');
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  // log.log('MTableComponent 8');
+  // log.info('MTableComponent 8');
 
   const instancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] } = useMemo(
     () => ({
@@ -105,11 +105,11 @@ export const MTableComponent = (props: TableComponentProps) => {
     }),
     [props?.instancesToDisplay]
   );
-  log.log("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+  log.info("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
 
   
   const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  log.log("MTableComponent currentModel", currentModel);
+  log.info("MTableComponent currentModel", currentModel);
 
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
     // event?.stopPropagation();
@@ -137,7 +137,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //   );
         
     // } else {
-    //   log.log("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
+    //   log.info("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
     //   // sending DataUpdates
     //   await domainController.handleDomainAction(
     //     contextDeploymentUuid,
@@ -162,7 +162,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
     // event?.stopPropagation();
-    log.log('MTableComponent onSubmitTableRowFormDialog called with data',data);
+    log.info('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
     if (props.type == 'EntityInstance' && props?.onRowEdit) {
       await props.onRowEdit(data);
@@ -174,23 +174,23 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const handleDialogTableRowFormOpen = useCallback((a?:any,event?:any) => {
     event?.stopPropagation();
-    log.log('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
+    log.info('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:{});
-      log.log('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      log.info('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      log.log('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      log.info('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
   },[]);
 
   const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
-    log.log('ReportComponent handleDialogTableRowFormClose',value);
+    log.info('ReportComponent handleDialogTableRowFormClose',value);
     
     setdialogFormIsOpen(false);
   },[]);
@@ -219,7 +219,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
   
-  log.log(
+  log.info(
     "MTableComponent started count",
     count++,
     "with props",
@@ -249,7 +249,7 @@ export const MTableComponent = (props: TableComponentProps) => {
           }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
-        log.log('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
+        log.info('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
       }
     }
   },[props,])
@@ -326,7 +326,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
                 // rowData={gridData}
                 getRowId={(params) => {
-                  // log.log("MtableComponent getRowId", params);
+                  // log.info("MtableComponent getRowId", params);
                   return params.data?.uuid ? params.data?.uuid : params.data?.id;
                 }}
                 defaultColDef={defaultColDef}
@@ -354,7 +354,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             // rowData={props.rowData}
             // rowData={gridData}
             getRowId={(params:any) => {
-              log.log("MtableComponent getRowId", params);
+              log.info("MtableComponent getRowId", params);
               return params?.data["uuid"]
                 ? params?.data["uuid"]
                 : params.data["id"]

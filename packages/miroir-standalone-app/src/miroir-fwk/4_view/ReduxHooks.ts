@@ -153,7 +153,7 @@ export function useLocalCacheInstancesForJzodAttribute(
       }
     )
   );
-  log.log('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
+  log.info('useLocalCacheInstancesForJzodAttribute',deploymentUuid,applicationSection,jzodSchema,entityUuid,miroirEntities);
   // return Object.values(miroirEntities) as EntityInstance[];
   return miroirEntities as EntityInstance[];
 }

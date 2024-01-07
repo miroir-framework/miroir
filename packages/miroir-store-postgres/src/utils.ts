@@ -70,7 +70,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       ];
     })
   );
-  log.log("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition","jzodSchema",entityDefinition.jzodSchema, "result", result);
+  log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition","jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
 // // ##############################################################################################

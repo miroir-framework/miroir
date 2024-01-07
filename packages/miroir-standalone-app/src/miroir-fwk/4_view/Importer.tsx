@@ -72,16 +72,16 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         if (result && !isCancel) {
           setFileDataURL(result);
           const workBook: XLSX.WorkBook = XLSX.read(result, {type: 'binary'});
-          log.log('found excel workbook',workBook);
+          log.info('found excel workbook',workBook);
           const workSheetName: string = workBook.SheetNames[0];
-          log.log('found excel workSheetName',workSheetName);
+          log.info('found excel workSheetName',workSheetName);
           const workSheet: XLSX.WorkSheet = workBook.Sheets[workSheetName];
-          log.log('found excel workSheet',workSheet);
+          log.info('found excel workSheet',workSheet);
           const data: any = XLSX.utils.sheet_to_json(workSheet, {header:"A"});
           // headers = data[0];
           setFileData(data);
           setCurrentWorkSheet(workSheet)
-          log.log('found excel data',data);
+          log.info('found excel data',data);
           
         }
 
@@ -232,7 +232,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         }
       ) 
     ;
-    log.log('adding instances',instances);
+    log.info('adding instances',instances);
     
     const createRowsAction: DomainDataAction = {
       actionName:'create',

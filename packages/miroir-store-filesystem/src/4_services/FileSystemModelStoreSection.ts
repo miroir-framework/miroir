@@ -38,12 +38,12 @@ export class FileSystemModelStoreSection extends MixedFileSystemDbEntityAndInsta
   // TODO: also implemented in FileSystemDataStoreSection => mix it up?
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection; }> {
     let result = {};
-    log.log(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
+    log.info(this.logHeader, 'getState this.getEntityUuids()',this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, 'getState getting instances for',parentUuid);
       const instances = await this.getInstances(parentUuid);
-      // log.log(this.logHeader, 'getState found instances',parentUuid,instances);
+      // log.info(this.logHeader, 'getState found instances',parentUuid,instances);
 
       Object.assign(result,{[parentUuid]:instances});
     }

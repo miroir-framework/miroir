@@ -181,7 +181,7 @@ export const JzodElementEditor = (
 
   const usedIndentLevel: number = props.indentLevel?props.indentLevel:0;
 
-  log.log(
+  log.info(
     "JzodElementEditor rendering",
     props.listKey,
     "type=",
@@ -198,7 +198,7 @@ export const JzodElementEditor = (
 
   switch (elementJzodSchema?.type) {
     case "array":{
-      log.log();
+      log.info();
       
       // const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
       //   ((elementJzodSchema as JzodArray).definition
@@ -214,7 +214,7 @@ export const JzodElementEditor = (
       // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
 
-      log.log("JzodElementEditor array","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
+      log.info("JzodElementEditor array","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 
       
       return (
@@ -240,7 +240,7 @@ export const JzodElementEditor = (
                   // ? props.currentEnumJzodSchemaResolver[attribute.type]
                   ? props.currentEnumJzodSchemaResolver(attribute.type, attribute.definition)
                   : targetJzodSchema; // Union of jzodElements
-              log.log(
+              log.info(
                 "JzodElementEditor array [",
                 index,
                 "]",
@@ -267,7 +267,7 @@ export const JzodElementEditor = (
                       const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
                       newItemsOrder.splice(currentItemIndex+1, 0, cutOut);
                       setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
-                      log.log("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
+                      log.info("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
                       setItemsOrder(newItemsOrder);
                     }}
                   >
@@ -285,7 +285,7 @@ export const JzodElementEditor = (
                       const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
                       newItemsOrder.splice(currentItemIndex-1, 0, cutOut);
                       setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
-                      log.log("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
+                      log.info("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
                       setItemsOrder(newItemsOrder);
                     }}
                   >
@@ -320,10 +320,10 @@ export const JzodElementEditor = (
     }
     case "schemaReference": {
       const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema, currentModel)
-      log.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema);
+      log.info("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema);
 
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
-      log.log("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
+      log.info("JzodElementEditor schemaReference","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 
       return (
         targetJzodSchema?
@@ -347,13 +347,13 @@ export const JzodElementEditor = (
       break;
     }
     case "record": {
-      // log.log("JzodElementEditor record","jzodSchema",jzodSchema);
+      // log.info("JzodElementEditor record","jzodSchema",jzodSchema);
       const targetJzodSchema =
         elementJzodSchema.definition.type == "schemaReference"
           // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.innerProps.rootJzodSchema)
           ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, {} as JzodObject)
           : elementJzodSchema.definition;
-      // log.log("JzodElementEditor record targetJzodSchema", targetJzodSchema);
+      // log.info("JzodElementEditor record targetJzodSchema", targetJzodSchema);
       // const discriminants=getUnionDiscriminantValues(targetJzodSchema, props.innerProps.rootJzodSchema, currentModel)
       return (
         <div style={{ display: "inline-flex", flexDirection: "column", marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
@@ -362,7 +362,7 @@ export const JzodElementEditor = (
               (attribute:[string,JzodElement]) => {
                 // const currentAttributeJzodSchema:JzodElement = props.currentEnumJzodSchemaResolver[attribute[1].type]; // Union of jzodElements 
                 const currentAttributeJzodSchema:JzodElement = props.currentEnumJzodSchemaResolver(attribute[1].type, attribute[1].definition); // Union of jzodElements 
-                log.log(
+                log.info(
                   "JzodElementEditor record",
                   attribute[0],
                   "type",
@@ -390,7 +390,7 @@ export const JzodElementEditor = (
                             currentApplicationSection:props.innerProps.currentApplicationSection,
                             elementJzodSchema:currentAttributeJzodSchema,
                             rootJzodSchema:props.innerProps.rootJzodSchema,
-                            // onSubmit:(data:any,event:any)=>{log.log("onSubmit called", data, event)},
+                            // onSubmit:(data:any,event:any)=>{log.info("onSubmit called", data, event)},
                           }}
                         />
                       </div>
@@ -420,7 +420,7 @@ export const JzodElementEditor = (
       } else {
         definitionWithExtend = elementJzodSchema;
       }
-      log.log("JzodElementEditor", props.listKey, "found definitionWithExtend:",definitionWithExtend);
+      log.info("JzodElementEditor", props.listKey, "found definitionWithExtend:",definitionWithExtend);
       
       return (
         <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
@@ -486,8 +486,8 @@ export const JzodElementEditor = (
               // value={props.formState.defaultValues?props.formState.defaultValues[props.listKey]:{label:props.name,value:'no value found!'}}
               value={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
               defaultValue={props.innerProps.initialValuesObject?{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}:{label:props.name,value:'no value found!'}}
-              // onChange={(e)=>{log.log("onChange!",e);props.setValue(label,e?.value)}}
-              onChange={(e)=>{log.log("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
+              // onChange={(e)=>{log.info("onChange!",e);props.setValue(label,e?.value)}}
+              onChange={(e)=>{log.info("JzodElementEditor boolean onChange! defaultValues",formState.defaultValues,e);setValue(props.listKey,e?.value);}}
             />
           </>
         )
@@ -500,7 +500,7 @@ export const JzodElementEditor = (
                 {...props.register(props.listKey, {required:true})}
                 form={"form." + props.name}
                 name={props.name}
-                onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);props.setValue(props.name,e.target.value)}}
+                onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);props.setValue(props.name,e.target.value)}}
                 defaultValue={props.innerProps.initialValuesObject}
               /> */}
           </>
@@ -509,7 +509,7 @@ export const JzodElementEditor = (
     break;
     }
     case "enum": {
-      // log.log("JzodElementEditor enum! value",props.innerProps.initialValuesObject,"schema",elementJzodSchema);
+      // log.info("JzodElementEditor enum! value",props.innerProps.initialValuesObject,"schema",elementJzodSchema);
       return (
         <span>
           {/* {displayedLabel}:{" "} */}
@@ -528,8 +528,8 @@ export const JzodElementEditor = (
                     name={props.name}
                     value={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
                     defaultValue={{label:props.innerProps.initialValuesObject,value:props.innerProps.initialValuesObject}}
-                    // onChange={(e)=>{log.log("JzodElementEditor boolean onChange! defaultValues",props.formState.defaultValues,e);props.setValue(props.listKey,e?.value);}}
-                    onChange={(event,value) => {log.log("JzodElementEditor onChange",event,value);setValue(props.listKey,value)}}
+                    // onChange={(e)=>{log.info("JzodElementEditor boolean onChange! defaultValues",props.formState.defaultValues,e);props.setValue(props.listKey,e?.value);}}
+                    onChange={(event,value) => {log.info("JzodElementEditor onChange",event,value);setValue(props.listKey,value)}}
                   />
                 </td>
               </tr>
@@ -555,7 +555,7 @@ export const JzodElementEditor = (
                   form={"form." + props.name}
                   id={props.listKey}
                   name={props.name}
-                  onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
+                  onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
                   // value={props.innerProps.initialValuesObject}
                   defaultValue={props.innerProps.initialValuesObject}
                 />
@@ -564,7 +564,7 @@ export const JzodElementEditor = (
           break;
         }
         case "boolean":{
-          // log.log("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
+          // log.info("JzodElementEditor boolean!",props.listKey,"formState",props.formState)
           return (
             <>
             <table>
@@ -589,7 +589,7 @@ export const JzodElementEditor = (
         }
         case "number": {
           const defaultValue:number | undefined=props.innerProps.initialValuesObject?(props.innerProps.initialValuesObject as any as number):undefined;
-          // log.log("JzodElementEditor number!",props.listKey,"props.innerProps.initialValuesObject",props.innerProps.initialValuesObject)
+          // log.info("JzodElementEditor number!",props.listKey,"props.innerProps.initialValuesObject",props.innerProps.initialValuesObject)
           return (
             <>
                 {/* {props.listKey} - {label}:{" "} */}
@@ -599,7 +599,7 @@ export const JzodElementEditor = (
                 {...register(props.listKey)}
                 form={"form." + props.name}
                 name={props.name}
-                onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
+                onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
                 defaultValue={defaultValue}
               />
             </>
@@ -621,7 +621,7 @@ export const JzodElementEditor = (
                   id={props.listKey}
                   form={"form." + props.name}
                   name={props.name}
-                  onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
+                  onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
                   defaultValue={defaultValue}
                 />
             </>
@@ -644,7 +644,7 @@ export const JzodElementEditor = (
               form={"form." + props.name}
               id={props.listKey}
               name={props.name}
-              onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
+              onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
               defaultValue={defaultValue}
             />
             <div>b</div>
@@ -664,7 +664,7 @@ export const JzodElementEditor = (
                 {...register(props.listKey)}
                 form={"form." + props.name}
                 name={props.name}
-                onChange={(e)=>{log.log("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
+                onChange={(e)=>{log.info("JzodElementEditor onChange!",props.name,e.target.value);setValue(props.listKey,e.target.value)}}
                 defaultValue={defaultValue}
               />
           </>

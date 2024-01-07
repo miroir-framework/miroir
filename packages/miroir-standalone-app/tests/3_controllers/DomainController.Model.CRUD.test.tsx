@@ -412,7 +412,7 @@ describe.sequential(
   
           // ##########################################################################################################
           console.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
-          // log.log('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
+          // log.info('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
               await domainController.handleDomainAction(

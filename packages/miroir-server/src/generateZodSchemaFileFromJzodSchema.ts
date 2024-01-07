@@ -18,7 +18,7 @@ export async function generateZodSchemaFileFromJzodSchema(
   targetFileName: string,
   jzodSchemaVariableName:string,
 ) {
-  // log.log("generateZodSchemaFileFromJzodSchema called!");
+  // log.info("generateZodSchemaFileFromJzodSchema called!");
  
   const newFileContentsNotFormated = jzodToTsCode(jzodElement, true, jzodSchemaVariableName)
   const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
@@ -28,10 +28,10 @@ ${newFileContentsNotFormated}
   if (targetFileName && fs.existsSync(targetFileName)) {
     const oldFileContents = fs.readFileSync(targetFileName).toString()
     if (newFileContents != oldFileContents)  {
-      log.log("generateZodSchemaFileFromJzodSchema newFileContents",newFileContents);
+      log.info("generateZodSchemaFileFromJzodSchema newFileContents",newFileContents);
       fs.writeFileSync(targetFileName,newFileContents);
     } else {
-      log.log("generateZodSchemaFileFromJzodSchema entityDefinitionReport old contents equal new contents, no file generation needed.");
+      log.info("generateZodSchemaFileFromJzodSchema entityDefinitionReport old contents equal new contents, no file generation needed.");
     }
   } else {
     fs.writeFileSync(targetFileName,newFileContents);

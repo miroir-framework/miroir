@@ -43,7 +43,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     ) {
       super(...args.slice(0, 3));
       this.dataStore = args[3];
-      // log.log(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
+      // log.info(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 
     // ##############################################################################################
@@ -51,7 +51,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       // drop data anq model Entities
       // await this.dataStore.clear();
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
-      log.log(this.logHeader, "clear DONE", this.getEntityUuids());
+      log.info(this.logHeader, "clear DONE", this.getEntityUuids());
       return Promise.resolve();
     }
 
@@ -117,7 +117,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       ) {
         const cudUpdate = update.equivalentModelCUDUpdates[0];
         const currentValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
-        log.log(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
+        log.info(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
         const updatedValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
@@ -136,7 +136,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
 
     // #############################################################################################
     async dropEntity(entityUuid: string): Promise<void> {
-      log.log(this.logHeader, "dropEntity entity", entityEntity.uuid);
+      log.info(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {

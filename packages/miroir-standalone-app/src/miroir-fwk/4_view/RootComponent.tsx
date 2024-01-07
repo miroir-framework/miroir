@@ -311,7 +311,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <span>
             <button
               onClick={async () => {
-                log.log("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+                log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
                 await domainController.handleDomainAction(
                   applicationDeploymentMiroir.uuid,
                   {
@@ -413,7 +413,7 @@ export const RootComponent = (props: RootComponentProps) => {
             </button>
             <button
               onClick={async () => {
-                log.log("creating bundle")
+                log.info("creating bundle")
                 const remoteStore = domainController.getRemoteStore();
                 await remoteStore.handleRemoteAction("",{
                   actionType: "bundleAction",

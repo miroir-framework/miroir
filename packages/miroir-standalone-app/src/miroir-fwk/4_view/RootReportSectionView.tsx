@@ -85,7 +85,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
 
   const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(selectFetchQueryJzodSchemaFromDomainState, fetchedDataJzodSchemaParams);
 
-  log.log(
+  log.info(
     "RootReportSectionView props.reportSection?.fetchQuery",
     props.reportSection?.fetchQuery,
     "resultsFromQuery",
@@ -93,7 +93,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     "fetchedDataJzodSchema",
     fetchedDataJzodSchema
   );
-  log.log('RootReportSectionView props.reportSection',props.reportSection);
+  log.info('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {
     return (

@@ -34,7 +34,7 @@ const KEY_TAB = 'Tab';
 
 export const GenderCellEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    log.log('GenderCellEditor2',props,ref);
+    log.info('GenderCellEditor2',props,ref);
     const isFemale = (value: string) => value === 'Female';
 
     const [ready, setReady] = useState(false);
@@ -57,7 +57,7 @@ export const GenderCellEditor = memo(
 
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      log.log('GenderCellEditor2 ready for edit',props,ref);
+      log.info('GenderCellEditor2 ready for edit',props,ref);
 
       setReady(true);
     }, []);
@@ -145,7 +145,7 @@ export const GenderCellEditor = memo(
           onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
-            log.log('GenderCellEditor2 renderOption props',props,'option',option);
+            log.info('GenderCellEditor2 renderOption props',props,'option',option);
             return (
               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                 <img

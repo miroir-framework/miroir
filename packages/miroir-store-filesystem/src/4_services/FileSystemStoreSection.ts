@@ -57,20 +57,20 @@ export class FileSystemStoreSection implements IAbstractStoreSection, IStorageSp
       log.debug(this.logHeader, 'open checked that directory exist:', this.directory);
     } else {
       fs.mkdirSync(this.directory,{recursive: true})
-      log.log(this.logHeader, 'open created directory:',this.directory);
+      log.info(this.logHeader, 'open created directory:',this.directory);
     }
     return Promise.resolve();
   }
 
   // #############################################################################################
   close(): Promise<void> {
-    log.log(this.logHeader, 'close does nothing!');
+    log.info(this.logHeader, 'close does nothing!');
     return Promise.resolve();
   }
 
   // #############################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    log.log(this.logHeader, 'bootFromPersistedState does nothing!');
+    log.info(this.logHeader, 'bootFromPersistedState does nothing!');
     return Promise.resolve();
   }
 
@@ -82,7 +82,7 @@ export class FileSystemStoreSection implements IAbstractStoreSection, IStorageSp
 
   // #############################################################################################
   async clear(): Promise<void> {
-    log.log(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
+    log.info(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, 'clear for entity',parentUuid);
@@ -93,7 +93,7 @@ export class FileSystemStoreSection implements IAbstractStoreSection, IStorageSp
  
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    log.log(this.logHeader, 'createStorageSpaceForInstancesOfEntity', entity);
+    log.info(this.logHeader, 'createStorageSpaceForInstancesOfEntity', entity);
     const entityInstancesPath = path.join(this.directory,entity.uuid)
     if (!fs.existsSync(entityInstancesPath)) {
       fs.mkdirSync(entityInstancesPath)
@@ -116,7 +116,7 @@ export class FileSystemStoreSection implements IAbstractStoreSection, IStorageSp
 
   // #############################################################################################
   renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
-    log.log(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
+    log.info(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
     return Promise.resolve();
   }
   

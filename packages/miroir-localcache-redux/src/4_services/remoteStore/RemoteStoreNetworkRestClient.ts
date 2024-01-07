@@ -195,7 +195,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       callParams
     );
     const result = await callParams.operation(callParams.url, callParams.args);
-    log.log(
+    log.info(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
       action,
       "result",

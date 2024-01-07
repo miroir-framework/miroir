@@ -52,7 +52,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
 
     // #########################################################################################
     async getInstances(entityUuid: string): Promise<EntityInstance[]> {
-      log.log(
+      log.info(
         this.logHeader,
         "FileSystemInstanceStore getInstances",
         "entityUuid",
@@ -113,7 +113,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
 
     // #############################################################################################
     async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
-      log.log(this.logHeader, "deleteInstances", parentUuid, instances);
+      log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
       }

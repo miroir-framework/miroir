@@ -34,7 +34,7 @@ export interface EntityInstanceLinkProps {
 // ###############################################################################################################
 export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
 
-  log.log('EntityInstanceLink props',props);
+  log.info('EntityInstanceLink props',props);
   
   const navigate = useNavigate();
 

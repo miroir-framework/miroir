@@ -40,13 +40,13 @@ export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSect
   // TODO: also defined in SqlDbDataStoreSection => mix it up?
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in StoreController
     let result = {};
-    log.log(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
+    log.info(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
     
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
       const dbInstances = await this.getInstances(parentUuid);
       const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:dbInstances};
-      // log.log(this.logHeader,'getState found instances',parentUuid,instances);
+      // log.info(this.logHeader,'getState found instances',parentUuid,instances);
       
       Object.assign(result,{[parentUuid]:instances});
     }

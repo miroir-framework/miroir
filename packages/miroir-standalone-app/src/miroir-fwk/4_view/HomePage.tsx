@@ -80,7 +80,7 @@ export const HomePage = (props: RootComponentProps) => {
   const domainController: DomainControllerInterface = useDomainControllerService();
   
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
-  // log.log("RootComponent deployments",deployments);
+  // log.info("RootComponent deployments",deployments);
 
   // context utility functions
   const displayedDeploymentUuid = context.deploymentUuid;
@@ -96,7 +96,7 @@ export const HomePage = (props: RootComponentProps) => {
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
-  log.log("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
+  log.info("HomePage displayedDeploymentDefinition",displayedDeploymentDefinition);
   // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = displayedDeploymentDefinition
   // ;
   // const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined = 
@@ -108,12 +108,12 @@ export const HomePage = (props: RootComponentProps) => {
 
   const currentModel = displayedDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:defaultMiroirMetaModel;
   // const currentModel = libraryAppModel;
-  log.log("HomePage currentModel",currentModel);
+  log.info("HomePage currentModel",currentModel);
 
   // const currentReportDefinitionApplicationSection: ApplicationSection | undefined = 
   //   currentReportDefinitionDeployment?.applicationModelLevel == "metamodel"? 'data':'model'
   ;
-  log.log(
+  log.info(
     "HomePage displayedDeploymentDefinition",
     displayedDeploymentDefinition?.uuid,
     "displayedApplicationSection",
@@ -156,13 +156,13 @@ export const HomePage = (props: RootComponentProps) => {
       ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
 
-      log.log("HomePage availableReports",availableReports);
+      log.info("HomePage availableReports",availableReports);
 
   const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
     currentMiroirReport?.definition?.section?.type == "objectListReportSection"? currentMiroirReport?.definition?.section: undefined
   ;
-  log.log("HomePage currentMiroirReport", currentMiroirReport);
+  log.info("HomePage currentMiroirReport", currentMiroirReport);
   
   // const currentMiroirReportSectionObjectList: ReportSectionListDefinition | undefined =
   //   currentMiroirReport?.type == "list" &&
@@ -193,9 +193,9 @@ export const HomePage = (props: RootComponentProps) => {
 
   const handleChangeDisplayedDeployment = (event: SelectChangeEvent) => {
     event.stopPropagation();
-    log.log('handleChangeDisplayedDeployment',event);
+    log.info('handleChangeDisplayedDeployment',event);
     setDisplayedDeploymentUuid(event.target.value);
-    log.log('handleChangeDisplayedDeployment',displayedDeploymentUuid);
+    log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
     setDisplayedApplicationSection('data');
     setDisplayedReportUuid("");
   };
@@ -300,7 +300,7 @@ export const HomePage = (props: RootComponentProps) => {
           //     actionType: "DomainTransactionalAction",
           //     actionName: "resetModel",
           //   });
-          //   log.log(
+          //   log.info(
           //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
           //   );
           //   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
@@ -324,7 +324,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "DomainTransactionalAction",
               actionName: "resetData",
             });
-            log.log(
+            log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
@@ -369,7 +369,7 @@ export const HomePage = (props: RootComponentProps) => {
             // TODO: transactional action must not autocommit! initModel neither?!
             // .then(
             // async () => {
-            log.log(
+            log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
@@ -390,7 +390,7 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            log.log("fetching instances from datastore for deployment", applicationDeploymentMiroir);
+            log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
               actionType: "DomainTransactionalAction",
               actionName: "rollback",

@@ -52,7 +52,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         ...args.slice(0, 3)
       );
       this.dataStore = args[3];
-      log.log(this.logHeader, "MixedIndexedDbEntityStoreSection constructor", args);
+      log.info(this.logHeader, "MixedIndexedDbEntityStoreSection constructor", args);
     }
 
     // #########################################################################################
@@ -145,7 +145,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
 
     // #########################################################################################
     async dropEntities(entityUuids: string[]): Promise<void> {
-      log.log(this.logHeader, "dropEntities", entityUuids);
+      log.info(this.logHeader, "dropEntities", entityUuids);
       for (const entityUuid of entityUuids) {
         await this.dropEntity(entityUuid);
       }
@@ -155,7 +155,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     // #########################################################################################
     async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
-      log.log(this.logHeader, "renameEntity", update);
+      log.info(this.logHeader, "renameEntity", update);
       // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
       if (
         update.equivalentModelCUDUpdates.length &&

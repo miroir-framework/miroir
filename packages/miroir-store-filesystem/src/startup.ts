@@ -33,7 +33,7 @@ export function miroirFileSystemStoreSectionStartup() {
       
       if (config.emulatedServerType == "filesystem" && dataStore) {
         const filesystemStoreName: string = config.directory
-        log.log('called registerStoreSectionFactory function for',filesystemStoreName, 'filesystem');
+        log.info('called registerStoreSectionFactory function for',filesystemStoreName, 'filesystem');
         
         return Promise.resolve(
           config.emulatedServerType == "filesystem" && dataStore
@@ -54,7 +54,7 @@ export function miroirFileSystemStoreSectionStartup() {
       dataStore?: IDataStoreSection
     ): Promise<IDataStoreSection | IModelStoreSection> => {
       if (config.emulatedServerType == "filesystem") {
-        log.log('called registerStoreSectionFactory function for', 'filesystem');
+        log.info('called registerStoreSectionFactory function for', 'filesystem');
         const filesystemStoreName: string = config.directory
         return Promise.resolve(
           config.emulatedServerType == "filesystem"

@@ -41,7 +41,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     ) {
       super(...args.slice(0, 4));
       this.dataStore = args[4];
-      // log.log(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
+      // log.info(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 
     // ##############################################################################################
@@ -69,7 +69,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
-      log.log(
+      log.info(
         this.logHeader,
         "createEntity",
         "input: entity",
@@ -119,7 +119,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     async dropEntity(entityUuid: string) {
-      log.log("dropEntity entityUuid", entityUuid);
+      log.info("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
@@ -152,7 +152,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
     // ##############################################################################################
     async dropEntities(entityUuids: string[]) {
-      log.log(this.logHeader, "dropEntities parentUuid", entityUuids);
+      log.info(this.logHeader, "dropEntities parentUuid", entityUuids);
       for (const e of entityUuids) {
         await this.dropEntity(e);
       }

@@ -23,7 +23,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:string,jzodSchema: JzodElement): ColDef<any> {
   switch (name) {
     case "gender": {
-      log.log("column gender", name, jzodSchema);
+      log.info("column gender", name, jzodSchema);
 
       return ({
         field: "gender",
@@ -35,7 +35,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "publisher": {
-      log.log("column publisher", name, jzodSchema);
+      log.info("column publisher", name, jzodSchema);
 
       return {
         field: "publisher",
@@ -54,7 +54,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "author": {
-      log.log("column author", name, jzodSchema);
+      log.info("column author", name, jzodSchema);
 
       return {
         field: "author",
@@ -73,14 +73,14 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       break;
     }
     case "conceptLevel": {
-      log.log("column conceptLevel", name, jzodSchema);
+      log.info("column conceptLevel", name, jzodSchema);
       return {
         field: name,
         headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
       };
     }
     default: {
-      log.log("column default", name, jzodSchema);
+      log.info("column default", name, jzodSchema);
       return {
         field: name,
         cellRenderer: DefaultCellRenderer2,
@@ -111,7 +111,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   // return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
   //   switch (e[0]) {
   //     case "gender": {
-  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
+  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
 
   //       return {
   //         field: "gender",
@@ -123,7 +123,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "publisher": {
-  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
+  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
 
   //       return {
   //         field: "publisher",
@@ -142,7 +142,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "author": {
-  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
+  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
 
   //       return {
   //         field: "author",
@@ -161,14 +161,14 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSch
   //       break;
   //     }
   //     case "conceptLevel": {
-  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
+  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
   //       return {
   //         field: e[1].name,
   //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
   //       };
   //     }
   //     default: {
-  //       log.log("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
+  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
   //       return {
   //         field: e[0],
   //         cellRenderer: DefaultCellRenderer,

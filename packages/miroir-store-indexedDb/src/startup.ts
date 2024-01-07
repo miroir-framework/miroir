@@ -31,7 +31,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       config: StoreSectionConfiguration,
       dataStore?: IDataStoreSection
     ): Promise<IDataOrModelStore> => {
-      log.log('called registerStoreSectionFactory function for',section, config.emulatedServerType);
+      log.info('called registerStoreSectionFactory function for',section, config.emulatedServerType);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
         const indexedDbStoreName = config.indexedDbName + '-model'
@@ -52,7 +52,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       dataStore?: IDataStoreSection
     ): Promise<IDataOrModelStore> => {
       if (config.emulatedServerType == "indexedDb") {
-        log.log('called registerStoreSectionFactory function for', config.emulatedServerType, config.indexedDbName);
+        log.info('called registerStoreSectionFactory function for', config.emulatedServerType, config.indexedDbName);
         const indexedDbStoreName = config.indexedDbName + '-data'
         const db = new IndexedDbDataStoreSection(indexedDbStoreName, new IndexedDb(indexedDbStoreName))
         return db;

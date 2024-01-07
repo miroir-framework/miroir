@@ -35,7 +35,7 @@ export class RestServerStub {
     storeControllerManager: StoreControllerManagerInterface,
     miroirConfig: MiroirConfigClient,
   ) {
-    log.log(
+    log.info(
       "RestServerStub constructor rootApiUrl",
       rootApiUrl,
       "localIndexedDbDataStores",
@@ -46,7 +46,7 @@ export class RestServerStub {
       (h:RestServiceHandler)=> (http as any)[h.method](this.rootApiUrl + h.url,
         async (p:{ request: any/* StrictRequest<DefaultBodyType> */, params: any /*PathParams*/}) => {
           const { request, params} = p;
-          // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
+          // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url,"request", request, "params", params);
           
           let body: HttpRequestBodyFormat = {}
           if (h.method !== "get") {
@@ -56,7 +56,7 @@ export class RestServerStub {
               log.error("RestServerStub could not read body for", h.method,h.url,":",e);
             }
           }
-          // log.log("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
+          // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
             const result = await h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),

@@ -16,10 +16,10 @@ const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
 export default forwardRef((props:ICellEditorParams, ref) => {
-  log.log('EntityEditor forwardRef props',props,'ref',ref);
+  log.info('EntityEditor forwardRef props',props,'ref',ref);
 
   const createInitialState = useCallback(() => {
-    // log.log('EntityEditor forwardRef createInitialState props',props,'ref',ref);
+    // log.info('EntityEditor forwardRef createInitialState props',props,'ref',ref);
     let startValue;
 
     if (props.eventKey === KEY_BACKSPACE) {
@@ -74,7 +74,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   };
 
   function inputHandler(e:any) {
-    log.log('EntityEditor inputHandler',e);
+    log.info('EntityEditor inputHandler',e);
     setValue(e.target.value);
   }
 
@@ -84,7 +84,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    log.log('onKeyDown char typed', event.key)
+    log.info('onKeyDown char typed', event.key)
     if (isLeftOrRight(event) || isBackspace(event)) {
       event.stopPropagation();
       return;
@@ -93,21 +93,21 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     // if (!finishedEditingPressed(event)) {
     //   if (event.preventDefault) event.preventDefault();
     // } else {
-    //   log.log('char typed', event.key)
+    //   log.info('char typed', event.key)
     // }
   };
 
   useImperativeHandle(
     ref,
     () => {
-      log.log('EntityEditor useImperativeHandle called');
+      log.info('EntityEditor useImperativeHandle called');
       return {
         getValue: () => {
-          log.log('EntityEditor useImperativeHandle getValue', value);
+          log.info('EntityEditor useImperativeHandle getValue', value);
           return value;
         },
         // afterGuiAttached: () => {
-        //   log.log('EntityEditor useImperativeHandle afterGuiAttached');
+        //   log.info('EntityEditor useImperativeHandle afterGuiAttached');
         //   setValue(props.value);
         //   inputRef.current.focus();
         //   // inputRef.current.select();

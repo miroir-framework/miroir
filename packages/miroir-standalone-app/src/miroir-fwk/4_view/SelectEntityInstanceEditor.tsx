@@ -114,7 +114,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
   const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
-  log.log("DefaultCellRenderer",valueToDisplay, props);
+  log.info("DefaultCellRenderer",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -141,7 +141,7 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
     props.colDef?.field && props.data && props.data[props.colDef?.field]
       ? props.data[props.colDef?.field]
       : `attribute ${props.colDef?.field} does not exist on object`;
-  log.log("DefaultCellRenderer2",valueToDisplay, props);
+  log.info("DefaultCellRenderer2",valueToDisplay, props);
 
   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
     return (
@@ -164,7 +164,7 @@ export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
 // ################################################################################################
 export const SelectEntityInstanceEditor = memo(
   forwardRef((props: ICellEditorParams, ref) => {
-    log.log('SelectEntityInstanceEditor',props,ref);
+    log.info('SelectEntityInstanceEditor',props,ref);
     const context = useMiroirContextService();
     const deploymentUuid = context.deploymentUuid;
 
@@ -215,7 +215,7 @@ export const SelectEntityInstanceEditor = memo(
 
     useEffect(() => {
       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      log.log('SelectEntityInstanceEditor ready for edit',props,ref);
+      log.info('SelectEntityInstanceEditor ready for edit',props,ref);
 
       setReady(true);
     }, []);
@@ -289,7 +289,7 @@ export const SelectEntityInstanceEditor = memo(
           onChange={(event,value,reason,details) => value?.onClick()}
           isOptionEqualToValue={(o,v)=>o.key == v.key}
           renderOption={(props, option) => {
-            log.log('SelectEntityInstanceEditor renderOption props',props,'option',option);
+            log.info('SelectEntityInstanceEditor renderOption props',props,'option',option);
             return (
               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                 <img

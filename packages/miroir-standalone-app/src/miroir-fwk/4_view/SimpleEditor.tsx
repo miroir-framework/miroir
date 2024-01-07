@@ -16,7 +16,7 @@ export default forwardRef((props:ICellEditorParams, ref) => {
     const [value, setValue] = useState('');
 
     function inputHandler(e:any) {
-      log.log('SimpleEditor inputHandler',e);
+      log.info('SimpleEditor inputHandler',e);
       setValue(e.target.value);
     }
 
@@ -25,11 +25,11 @@ export default forwardRef((props:ICellEditorParams, ref) => {
       () => {
         return {
           getValue: () => {
-            log.log('SimpleEditor useImperativeHandle getValue', value);
+            log.info('SimpleEditor useImperativeHandle getValue', value);
             return value;
           },
           afterGuiAttached: () => {
-            log.log('SimpleEditor useImperativeHandle afterGuiAttached');
+            log.info('SimpleEditor useImperativeHandle afterGuiAttached');
             setValue(props.value);
             inputRef.current.focus();
             inputRef.current.select();

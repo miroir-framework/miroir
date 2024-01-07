@@ -50,18 +50,18 @@ export const ReportPage = () => {
   const context = useMiroirContextService();
 
   count++;
-  log.log("ReportPage count",count,"params", params,);
+  log.info("ReportPage count",count,"params", params,);
   useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
   const errorLog = useErrorLogService();
   const currentModel: MiroirApplicationModel = useCurrentModel(params.deploymentUuid);
 
-  log.log("ReportPage currentModel", currentModel);
+  log.info("ReportPage currentModel", currentModel);
 
   const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
 
   if (params.applicationSection) {
-    log.log("ReportPage rendering count",count,"params", params,);
+    log.info("ReportPage rendering count",count,"params", params,);
     return (
       <div>
         <Box>

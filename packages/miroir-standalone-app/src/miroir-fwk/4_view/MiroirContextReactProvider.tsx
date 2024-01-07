@@ -68,7 +68,7 @@ export function MiroirContextReactProvider(props: {
       miroirContext: props.miroirContext || new MiroirContext(undefined),
       domainController: props.domainController,
       deploymentUuid,
-      // setDeploymentUuid:(...args)=>{log.log('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
+      // setDeploymentUuid:(...args)=>{log.info('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
       setDeploymentUuid,
       reportUuid,
       setReportUuid,

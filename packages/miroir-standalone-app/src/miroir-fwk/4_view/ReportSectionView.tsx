@@ -48,7 +48,7 @@ export interface ReportSectionEntityInstanceProps {
 export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   // const errorLog = useErrorLogService();
 
-  log.log("########################## ReportSectionView props", props);
+  log.info("########################## ReportSectionView props", props);
 
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
@@ -60,7 +60,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.log("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
 
@@ -100,7 +100,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
       ? mapping[displayedDeploymentDefinition?.uuid][props.applicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
 
-  log.log("ReportSectionView availableReports",availableReports);
+  log.info("ReportSectionView availableReports",availableReports);
 
   const currentReportTargetEntity: MetaEntity | undefined = props.reportSection?.type === "objectListReportSection"
     ? entities?.find((e) => e?.uuid === (props.reportSection?.definition as SelectObjectListQuery).parentUuid)
@@ -109,7 +109,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
   // computing current state #####################################################################
-  log.log(
+  log.info(
     "ReportSectionView displayedDeploymentDefinition",
     displayedDeploymentDefinition,
     "props.reportSection",
@@ -123,7 +123,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     width: "90vw",
   }),[])
 
-  log.log(
+  log.info(
     "ReportSectionView",
     "deploymentUuid",
     props.deploymentUuid,
@@ -132,8 +132,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     props.resultsFromQueryObject
   );
 
-  // log.log('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
-  log.log('ReportSectionView props.reportSection',props.reportSection);
+  // log.info('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
+  log.info('ReportSectionView props.reportSection',props.reportSection);
 
   const evaluateExpression = (expression: string | undefined) => {
     const parts = expression?.split(".");
@@ -142,14 +142,14 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
         ? (props.resultsFromQueryObject.resultValue as any)[parts[0]].resultValue
         : undefined;
     const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
-    log.log("evaluateExpression", expression, parts, props.resultsFromQueryObject, "object", object, "result", result);
+    log.info("evaluateExpression", expression, parts, props.resultsFromQueryObject, "object", object, "result", result);
     return result;
   };
 
   const interpolateExpression = (stringToInterpolate: string | undefined)=> {
     const reg = /\$\{([^}]*)\}/g
     const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no string"
-    log.log("interpolateExpression result",result);
+    log.info("interpolateExpression result",result);
     return result;
   }
 

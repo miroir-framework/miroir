@@ -60,7 +60,7 @@ export class SqlDbStoreSection implements IAbstractStoreSection, IStorageSpaceHa
   public async open(): Promise<void> {
     try {
       await this.sequelize.authenticate();
-      log.log(
+      log.info(
         this.logHeader,
         "data Connection to postgres data schema",
         this.schema,
@@ -86,17 +86,17 @@ export class SqlDbStoreSection implements IAbstractStoreSection, IStorageSpaceHa
 
   // ######################################################################################
   async clear(): Promise<void> {
-    log.log(this.logHeader, "clear start, entities", this.getEntityUuids());
+    log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
-    log.log(this.logHeader, "clear done, entities", this.getEntityUuids());
+    log.info(this.logHeader, "clear done, entities", this.getEntityUuids());
 
     return Promise.resolve();
   }
 
   // ##############################################################################################
   async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
-    log.log(
+    log.info(
       this.logHeader,
       "bootFromPersistedState called!",
       entities.map((e) => e.name + ":" + e.uuid)
@@ -145,7 +145,7 @@ export class SqlDbStoreSection implements IAbstractStoreSection, IStorageSpaceHa
       this.sqlSchemaTableAccess,
       this.getAccessToDataSectionEntity(entity, entityDefinition)
     );
-    log.log(
+    log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "creating data schema table",
@@ -171,7 +171,7 @@ export class SqlDbStoreSection implements IAbstractStoreSection, IStorageSpaceHa
   ): Promise<void> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
-    // log.log(this.logHeader, 'renameEntity renameTable done.');
+    // log.info(this.logHeader, 'renameEntity renameTable done.');
     // removing dataSequelize model with old name
     this.sequelize.modelManager.removeModel(this.sequelize.model(oldName));
     // creating dataSequelize model for the renamed entity

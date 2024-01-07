@@ -376,17 +376,17 @@ export async function miroirAfterAll(
 // ################################################################################################
 export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
   const pwd = process.env["PWD"]??""
-  log.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
-  // log.log("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
+  log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFile pwd", pwd, "fileName", fileName);
+  // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
   // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
   const configFilePath = path.join(pwd, fileName + ".json")
-  log.log("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
+  log.info("@@@@@@@@@@@@@@@@@@ configFilePath", configFilePath);
   const configFileContents = await import(configFilePath);
-  log.log("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
+  log.info("@@@@@@@@@@@@@@@@@@ configFileContents", configFileContents);
 
   const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
 
-  log.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
+  log.info("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
   return miroirConfig;
 }
 // ################################################################################################
