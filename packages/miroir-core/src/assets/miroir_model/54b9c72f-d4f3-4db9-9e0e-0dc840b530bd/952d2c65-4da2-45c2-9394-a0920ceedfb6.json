@@ -139,10 +139,34 @@
                 "definition": "objectListReportSection"
               },
               "definition": {
-                "type": "schemaReference",
+                "type": "object",
                 "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "selectObjectListQuery"
+                  "label": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id":1, "defaultLabel": "Label", "editable": false }
+                  },
+                  "parentUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [{ "type": "uuid" }],
+                    "extra": { "id":2, "defaultLabel": "Entity Uuid", "editable": false }
+                  },
+                  "fetchedDataReference": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "extra": { "id": 3, "defaultLabel": "Fetched Data Reference", "editable": false }
+                  },
+                  "query": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "selectObjectQuery"
+                    }
+                  }
                 }
               }
             }
@@ -228,7 +252,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "reportSection"
+                    "relativePath": "objectListReportSection"
                   }
                 }
               }

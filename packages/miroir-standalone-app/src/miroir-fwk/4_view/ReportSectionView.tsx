@@ -4,20 +4,21 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   EntityDefinition,
-  FetchedData,
   LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
   MiroirLoggerFactory,
   RecordOfJzodObject,
   ReportSection,
+  ResultsFromQueryObject,
   SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
   reportEntityDefinitionList,
-  reportEntityList
+  reportEntityList,
+  resultsFromQueryObject
 } from "miroir-core";
 
 
@@ -35,9 +36,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface ReportSectionEntityInstanceProps {
-  fetchedData: FetchedData | undefined,
+  // resultsFromQuery: ResultsFromQuery,
+  resultsFromQueryObject: ResultsFromQueryObject,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
-  reportSection: ReportSection | undefined,
+  reportSection: ReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
 }
@@ -126,20 +128,23 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    "fetchedData",
-    props.fetchedData
+    "resultsFromQuery",
+    props.resultsFromQueryObject
   );
 
   // log.log('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
   log.log('ReportSectionView props.reportSection',props.reportSection);
 
-  const evaluateExpression = (expression: string | undefined)=> {
+  const evaluateExpression = (expression: string | undefined) => {
     const parts = expression?.split(".");
-    const object = Array.isArray(parts) && parts.length > 0 && props.fetchedData?props.fetchedData[parts[0]]: undefined;
-    const result = object && Array.isArray(parts) && parts.length > 1?(object as any)[parts[1]]: undefined;
-    log.log("evaluateExpression",expression, parts, props.fetchedData, "object", object,"result",result);
+    const object =
+      Array.isArray(parts) && parts.length > 0 && props.resultsFromQueryObject.resultValue
+        ? (props.resultsFromQueryObject.resultValue as any)[parts[0]].resultValue
+        : undefined;
+    const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
+    log.log("evaluateExpression", expression, parts, props.resultsFromQueryObject, "object", object, "result", result);
     return result;
-  }
+  };
 
   const interpolateExpression = (stringToInterpolate: string | undefined)=> {
     const reg = /\$\{([^}]*)\}/g
@@ -207,7 +212,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                               <tr key={index}>
                                 <td>
                                   <ReportSectionView
-                                    fetchedData={props.fetchedData}
+                                    resultsFromQueryObject={props.resultsFromQueryObject}
                                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                                     deploymentUuid={props.deploymentUuid}
                                     applicationSection={props.applicationSection}
@@ -231,9 +236,10 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {
               props.reportSection.type === "objectListReportSection" ? (
                 <div>
+                  {JSON.stringify(props.resultsFromQueryObject, undefined, 2)}
                   {
                     (currentReportTargetEntity &&
-                    currentReportTargetEntityDefinition) || props.fetchedData ?
+                    currentReportTargetEntityDefinition) || props.resultsFromQueryObject ?
                       <ReportSectionListDisplay
                         tableComponentReportType="EntityInstance"
                         label={"EntityInstance-" + currentReportTargetEntity?.name}
@@ -241,9 +247,9 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                         styles={styles}
                         chosenApplicationSection={props.applicationSection as ApplicationSection}
                         displayedDeploymentDefinition={displayedDeploymentDefinition}
-                        fetchedData={props.fetchedData}
+                        resultsFromQueryObject={props.resultsFromQueryObject}
                         fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                        select={props.reportSection.definition}
+                        section={props.reportSection}
                         currentModel={currentModel}
                         // currentMiroirReportSectionObjectList={props.reportSection}
                         currentMiroirEntity={currentReportTargetEntity}
@@ -259,8 +265,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
               props.reportSection.type === "objectInstanceReportSection" ? (
                 <div>
                   <ReportSectionEntityInstance
-                    fetchedData={props.fetchedData}
-                    instance={props.fetchedData?props.fetchedData[props.reportSection.definition.fetchedDataReference??""]:undefined}
+                    resultsFromQuery={props.resultsFromQueryObject}
+                    instance={props.resultsFromQueryObject.resultValue?(props.resultsFromQueryObject.resultValue as any)[props.reportSection.definition.fetchedDataReference??""]:undefined}
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
                     entityUuid={props.reportSection.definition.parentUuid}

@@ -74,7 +74,7 @@ export const ReportPage = () => {
           ? (
             params.instanceUuid
               ? <RootReportSectionView
-                  fetchedData={{}}
+                  resultsFromQuery={{}}
                   reportSection={currentMiroirReport?.definition}
                   applicationSection={params.applicationSection as ApplicationSection}
                   deploymentUuid={params.deploymentUuid}

@@ -15,7 +15,7 @@ import {
   DomainManyQueriesWithDeploymentUuid,
   EntityDefinition,
   EntityInstance,
-  FetchedData,
+  ResultsFromQuery,
   LoggerInterface,
   MetaEntity,
   MiroirApplicationModel,
@@ -205,10 +205,11 @@ export const HomePage = (props: RootComponentProps) => {
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
       applicationSection: "data",
+      contextResults: { resultType: "object", resultValue: {} },
       fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
     }),[miroirMetaModel])
   
-    const producedBundle : FetchedData | undefined = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    const producedBundle : ResultsFromQuery = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
   
     log.info("producedBundle1",producedBundle)
   
@@ -584,7 +585,6 @@ export const HomePage = (props: RootComponentProps) => {
           <div>
             <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div>
             <RootReportSectionView
-              fetchedData={{}}
               reportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}
               deploymentUuid={displayedDeploymentUuid}

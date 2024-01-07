@@ -2,7 +2,7 @@ import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { Uuid } from "../1_core/EntityDefinition";
 import {
   ApplicationSection,
-  FetchedData,
+  ResultsFromQuery,
   MiroirCrossJoinQuery,
   MiroirCustomQueryParams,
   MiroirFetchQuery,
@@ -11,6 +11,7 @@ import {
   QueryFailed,
   SelectObjectListQuery,
   SelectObjectQuery,
+  ResultsFromQueryObject,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "./DomainControllerInterface";
 
@@ -19,11 +20,11 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 
 // ################################################################################################
-export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
+export type DomainStateSelector<P extends MiroirSelectorQueryParams> = (
   domainState: DomainState,
   params: P
   // params: MiroirSelectorQueryParams
-) => T | QueryFailed;
+) => ResultsFromQuery;
 
 // ################################################################################################
 export interface LocalCacheEntityInstancesSelectorParams {
@@ -64,7 +65,7 @@ export type DomainSingleSelectQueryWithDeployment = {
 // ################################################################################################
 export interface DomainModelRootQuery {
   pageParams?: Record<string, any>,
-  fetchedData?: FetchedData,
+  contextResults: ResultsFromQueryObject,
 }
 
 export interface DomainModelGetSingleSelectObjectQueryQueryParams extends DomainModelRootQuery {

@@ -11,7 +11,6 @@ export {
   storeAction,
   Entity,
   entity,
-  FetchedData,
   ModelAction,
   modelAction,
   InstanceAction,
@@ -69,6 +68,10 @@ export {
   report,
   ReportSection,
   reportSection,
+  ResultsFromQueryObject,
+  resultsFromQueryObject,
+  ResultsFromQuery,
+  resultsFromQuery,
   RootReportSection,
   rootReportSection,
 }

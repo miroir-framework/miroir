@@ -459,42 +459,120 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
       },
       ...(entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context,
-      "FetchedData": {
-        "type": "record",
+      "resultsFromQueryObject": {
+        "type": "object",
         "definition": {
-          "type": "union",
-          "definition": [
-            {
+          "resultType": {
+            "type": "literal",
+            "definition": "object"
+          },
+          "resultValue": 
+          {
+            "type": "record",
+            "definition": {
               "type": "schemaReference",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
+                "relativePath": "resultsFromQuery"
               }
-            },
-            {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstancesUuidIndex"
-              }
-            },
-            {
-              "type": "record",
-              "definition": {
-                "type": "simpleType",
-                "definition": "any"
-              }
-            },
-            {
-              "type": "simpleType",
-              "definition": "string"
-            },
-            {
-              "type": "simpleType",
-              "definition": "undefined"
             }
-          ]
+          }
         }
+      },
+      "resultsFromQuery": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "resultsFromQueryObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "resultType": {
+                "type": "literal",
+                "definition": "instance"
+              },
+              "resultValue": 
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstance"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "resultType": {
+                "type": "literal",
+                "definition": "instanceUuidIndex"
+              },
+              "resultValue": 
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstancesUuidIndex"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "resultType": {
+                "type": "literal",
+                "definition": "failure"
+              },
+              "resultValue": 
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "queryFailed"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "resultType": {
+                "type": "literal",
+                "definition": "string"
+              },
+              "resultValue": 
+              {
+                "type": "simpleType",
+                "definition": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "resultType": {
+                "type": "literal",
+                "definition": "array"
+              },
+              "resultValue": 
+              {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "resultsFromQuery"
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       "miroirCustomQueryParams": {
         "type": "object",

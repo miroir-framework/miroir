@@ -52,9 +52,23 @@
           "queryFailed": {
             "type": "object",
             "definition": {
-              "queryFailureReason": {
+              "queryFailure": {
                 "type": "enum",
-                "definition": [ "DomainStateNotLoaded", "IncorrectParameters", "DeploymentNotFound", "ApplicationSectionNotFound", "EntityNotFound", "InstanceNotFound" ]
+                "definition": [
+                  "QueryNotExecutable",
+                  "DomainStateNotLoaded",
+                  "IncorrectParameters",
+                  "DeploymentNotFound",
+                  "ApplicationSectionNotFound",
+                  "EntityNotFound",
+                  "InstanceNotFound",
+                  "ReferenceNotFound"
+                ]
+              },
+              "query": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "any"
               },
               "queryParameters": {
                 "type": "simpleType",
