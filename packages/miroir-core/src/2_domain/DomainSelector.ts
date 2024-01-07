@@ -48,7 +48,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // ################################################################################################
 export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
-  DomainSingleSelectQueryWithDeployment
+  DomainSingleSelectQueryWithDeployment, ResultsFromQuery
 > = (
   domainState: DomainState,
   selectorParams: DomainSingleSelectObjectListQueryWithDeployment
@@ -99,7 +99,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
  * @returns 
  */
 export const selectEntityInstancesFromListQueryAndDomainState: DomainStateSelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams
+  DomainModelGetSingleSelectObjectListQueryQueryParams, ResultsFromQuery
 > = (
   domainState: DomainState,
   selectorParams: DomainModelGetSingleSelectObjectListQueryQueryParams
@@ -114,7 +114,7 @@ export const selectEntityInstancesFromListQueryAndDomainState: DomainStateSelect
       // if (selectorParams.singleSelectQuery.select.objectReference) {
       const relationQuery: SelectObjectListByRelationQuery = selectorParams.singleSelectQuery.select;
       log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByRelation", JSON.stringify(selectedInstances))
-      return { "resultType": "instanceUuidIndex",  "resultValue": Object.fromEntries(
+      return { "resultType": "instanceUuidIndex", "resultValue": Object.fromEntries(
         Object.entries(selectedInstances.resultValue ?? {}).filter(
           (i: [string, EntityInstance]) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
@@ -156,7 +156,7 @@ export const selectEntityInstancesFromListQueryAndDomainState: DomainStateSelect
  * @returns 
  */
 export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelector<
-  DomainModelGetSingleSelectObjectQueryQueryParams
+  DomainModelGetSingleSelectObjectQueryQueryParams, ResultsFromQuery
 > = (
   domainState: DomainState,
   query: DomainModelGetSingleSelectObjectQueryQueryParams
@@ -386,7 +386,9 @@ export const innerSelectElementFromQueryAndDomainState = (
   }
 }
 // ################################################################################################
-export const selectByDomainManyQueriesFromDomainState = (
+export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
+  DomainManyQueriesWithDeploymentUuid, ResultsFromQueryObject
+> = (
   domainState: DomainState,
   query: DomainManyQueriesWithDeploymentUuid,
 ): ResultsFromQueryObject => {

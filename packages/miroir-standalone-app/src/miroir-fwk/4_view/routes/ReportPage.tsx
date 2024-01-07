@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Params, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 
@@ -9,6 +9,7 @@ import {
   MiroirApplicationModel,
   MiroirLoggerFactory,
   Report,
+  ResultsFromQueryObject,
   getLoggerName
 } from "miroir-core";
 import {
@@ -58,7 +59,27 @@ export const ReportPage = () => {
 
   log.info("ReportPage currentModel", currentModel);
 
-  const currentMiroirReport: Report | undefined = currentModel.reports?.find((r) => r.uuid === params.reportUuid);
+  const defaultReport: Report = useMemo(()=> ({
+    "uuid": "c0ba7e3d-3740-45a9-b183-20c3382b6419",
+    "parentName":"Report",
+    "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+    "conceptLevel":"Model",
+    "name":"DummyDefaultReport",
+    "defaultLabel": "No report to display!",
+    "type": "list",
+    "definition": {
+      "section": {
+        "type":"objectListReportSection",
+        "definition": {
+          "parentName": "Test",
+          "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
+        }
+      }
+    }
+  }), [])
+  const currentMiroirReport: Report = currentModel.reports?.find((r) => r.uuid === params.reportUuid)??defaultReport;
+
+  const emptyResultsFromQuery: ResultsFromQueryObject = useMemo(()=> ({ resultType: "object", resultValue: {}}), []);
 
   if (params.applicationSection) {
     log.info("ReportPage rendering count",count,"params", params,);
@@ -74,7 +95,6 @@ export const ReportPage = () => {
           ? (
             params.instanceUuid
               ? <RootReportSectionView
-                  resultsFromQuery={{}}
                   reportSection={currentMiroirReport?.definition}
                   applicationSection={params.applicationSection as ApplicationSection}
                   deploymentUuid={params.deploymentUuid}

@@ -2,16 +2,14 @@ import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
 import { Uuid } from "../1_core/EntityDefinition";
 import {
   ApplicationSection,
-  ResultsFromQuery,
   MiroirCrossJoinQuery,
   MiroirCustomQueryParams,
   MiroirFetchQuery,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
-  QueryFailed,
-  SelectObjectListQuery,
-  SelectObjectQuery,
   ResultsFromQueryObject,
+  SelectObjectListQuery,
+  SelectObjectQuery
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "./DomainControllerInterface";
 
@@ -20,11 +18,10 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 
 // ################################################################################################
-export type DomainStateSelector<P extends MiroirSelectorQueryParams> = (
+export type DomainStateSelector<P extends MiroirSelectorQueryParams, T> = (
   domainState: DomainState,
   params: P
-  // params: MiroirSelectorQueryParams
-) => ResultsFromQuery;
+) => T;
 
 // ################################################################################################
 export interface LocalCacheEntityInstancesSelectorParams {

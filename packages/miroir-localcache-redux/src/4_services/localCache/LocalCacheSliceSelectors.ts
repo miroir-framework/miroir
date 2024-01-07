@@ -6,7 +6,16 @@
 // TODO: should it memoize? Doen't this imply caching the whole value, which can be really large? Or is it just the selector?
 
 import { createSelector } from "@reduxjs/toolkit";
-import { MiroirSelectorQueryParams, DomainState, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, getLoggerName, DomainStateSelector } from "miroir-core";
+import {
+  MiroirSelectorQueryParams,
+  DomainState,
+  EntityInstancesUuidIndex,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName,
+  DomainStateSelector,
+  ResultsFromQuery,
+} from "miroir-core";
 import { getLocalCacheSliceIndex, localCacheStateToDomainState } from "./LocalCacheSlice";
 import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 import { packageName } from "../../constants";
@@ -70,7 +79,7 @@ export const selectDomainState: (
 
 // ################################################################################################
 export function applyDomainStateSelector<P extends MiroirSelectorQueryParams, T>( // TODO: memoize?
-  domainStateSelector: DomainStateSelector<P,T>
+  domainStateSelector: DomainStateSelector<P, T>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: MiroirSelectorQueryParams

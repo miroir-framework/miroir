@@ -16,6 +16,7 @@ import {
   MiroirCustomQueryParams,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  ResultsFromQuery,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -42,13 +43,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export type EntityInstanceUuidIndexSelectorParams = LocalCacheEntityInstancesSelectorParams;
 
 // ################################################################################################
-export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T = any>(
-  domainStateSelector:DomainStateSelector<P,T>,
+export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelector<P, T>,
   query:P,
-  // query:MiroirSelectorQueryParams,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {
-  // const innerSelector = useMemo(()=>applyDomainStateSelector(domainStateSelector), []);
   const innerSelector = useMemo(() => applyDomainStateSelector(domainStateSelector), [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, query)
