@@ -62,7 +62,9 @@
                   "ApplicationSectionNotFound",
                   "EntityNotFound",
                   "InstanceNotFound",
-                  "ReferenceNotFound"
+                  "ReferenceNotFound",
+                  "ReferenceFoundButUndefined",
+                  "ReferenceFoundButAttributeUndefinedOnFoundObject"
                 ]
               },
               "query": {
@@ -71,6 +73,11 @@
                 "definition": "any"
               },
               "queryParameters": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "any"
+              },
+              "queryContext": {
                 "type": "simpleType",
                 "optional": true,
                 "definition": "any"
@@ -215,34 +222,6 @@
               }
             }
           },
-          "selectObjectByParameterValueQuery": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "selectRootQuery"
-              }
-            },
-            "definition": {
-              "queryType": {
-                "type": "literal",
-                "definition": "selectObjectByParameterValue"
-              },
-              "queryParameterName": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 9, "defaultLabel": "Param Reference", "editable": false }
-              },
-              "queryParameterAttribute": {
-                "type": "simpleType",
-                "definition": "string",
-                "optional": true,
-                "extra": { "id": 10, "defaultLabel": "Param Attribute", "editable": false }
-              }
-            }
-          },
           "selectObjectByDirectReferenceQuery": {
             "type": "object",
             "extend": {
@@ -279,12 +258,6 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "selectObjectByRelationQuery"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "selectObjectByParameterValueQuery"
                 }
               },
               {

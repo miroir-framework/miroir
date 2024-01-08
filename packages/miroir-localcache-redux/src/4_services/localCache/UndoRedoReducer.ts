@@ -110,8 +110,8 @@ function callUndoRedoReducer(
   >
 ): { newSnapshot: LocalCacheSliceState; changes: Patch[]; inverseChanges: Patch[] } {
   // log.info('callUndoRedoReducer called with action', action, 'state', state);
-  log.info("callUndoRedoReducer called with action", JSON.stringify(action, undefined, 2));
-  log.info("callUndoRedoReducer undoableSliceUpdateActions", JSON.stringify(undoableSliceUpdateActions, undefined, 2));
+  // log.info("callUndoRedoReducer called with action", JSON.stringify(action, undefined, 2));
+  // log.info("callUndoRedoReducer undoableSliceUpdateActions", JSON.stringify(undoableSliceUpdateActions, undefined, 2));
 
   let changes: Patch[] = [];
   let inverseChanges: Patch[] = [];

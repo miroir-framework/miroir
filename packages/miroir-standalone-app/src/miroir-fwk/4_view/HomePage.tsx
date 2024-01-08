@@ -204,6 +204,7 @@ export const HomePage = (props: RootComponentProps) => {
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
       applicationSection: "data",
+      pageParams: {},
       contextResults: { resultType: "object", resultValue: {} },
       queryParams: { "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13"},
       fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery

@@ -15,6 +15,7 @@ import {
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
+  circularReplacer,
   getLoggerName,
   reportEntityDefinitionList,
   reportEntityList,
@@ -236,7 +237,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {
               props.reportSection.type === "objectListReportSection" ? (
                 <div>
-                  {JSON.stringify(props.resultsFromQueryObject, undefined, 2)}
+                  {JSON.stringify(props.resultsFromQueryObject, circularReplacer(), 2)}
                   {
                     (currentReportTargetEntity &&
                     currentReportTargetEntityDefinition) || props.resultsFromQueryObject ?

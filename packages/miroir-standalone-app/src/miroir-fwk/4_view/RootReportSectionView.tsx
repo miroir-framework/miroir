@@ -65,6 +65,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       deploymentUuid: props.deploymentUuid,
       applicationSection: props.applicationSection,
       pageParams: params,
+      queryParams: {},
       contextResults: { resultType: "object", resultValue: {} },
       fetchQuery: props.reportSection.fetchQuery
     }
@@ -79,6 +80,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       deploymentUuid: props.deploymentUuid,
       instanceUuid: props.instanceUuid,
     },
+    queryParams: {},
     contextResults: { resultType: "object", resultValue: {} },
     fetchParams: domainFetchQueryParams,
   }),[domainFetchQueryParams])

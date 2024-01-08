@@ -25,6 +25,16 @@
               "referenceType": "queryParameterReference",
               "referenceName": "applicationVersion"
             }
+          },
+          "entities": {
+            "queryType": "selectObjectListByEntity",
+            "parentName": "StoreBasedConfiguration",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+          },
+          "reports": {
+            "queryType": "selectObjectListByEntity",
+            "parentName": "Report",
+            "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
           }
         }
       }

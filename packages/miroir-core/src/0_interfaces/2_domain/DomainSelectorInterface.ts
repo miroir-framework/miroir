@@ -61,8 +61,8 @@ export type DomainSingleSelectQueryWithDeployment = {
 
 // ################################################################################################
 export interface DomainModelRootQuery {
-  pageParams?: Record<string, any>,
-  queryParams?: Record<string, any>,
+  pageParams: Record<string, any>,
+  queryParams: Record<string, any>,
   contextResults: ResultsFromQueryObject,
 }
 
