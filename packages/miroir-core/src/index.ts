@@ -434,8 +434,9 @@ import entityEntityDefinition from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba
 import entityJzodSchema from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json';
 import entityReport from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json';
 import entityStoreBasedConfiguration from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json';
-import entityQuery from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c0ce8936-abf8-492f-80bf-addd6e6b6227.json';
+// import entityQuery from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c0ce8936-abf8-492f-80bf-addd6e6b6227.json';
 import entityQueryVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
+import entityEndpointVersion from './assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json';
 
 import entityDefinitionApplication from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json';
 import entityDefinitionApplicationDeploymentConfiguration from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json';
@@ -445,8 +446,9 @@ import entityDefinitionEntity from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0
 import entityDefinitionEntityDefinition from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json';
 import entityDefinitionJzodSchema from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json';
 import entityDefinitionReport from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
-import entityDefinitionQuery from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/5be645c3-892e-44e3-9358-dfe27c4da74c.json';
-import entityDefinitionQueryVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
+// import entityDefinitionQuery from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/5be645c3-892e-44e3-9358-dfe27c4da74c.json';
+import entityDefinitionQueryVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
+import entityDefinitionEndpointVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
 
 import applicationMiroir from './assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
 import applicationDeploymentMiroir from './assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
@@ -458,12 +460,13 @@ import reportApplicationDeploymentConfigurationList from './assets/miroir_data/3
 import reportApplicationModelBranchList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json';
 import reportApplicationVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json';
 import reportConfigurationList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json';
+import reportEndpointVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json';
+import reportEntityDefinitionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
 import reportEntityList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json';
 import reportJzodSchemaList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8b22e84e-9374-4121-b2a7-d13d947a0ba2.json';
-import reportEntityDefinitionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json';
-import reportReportList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
-import reportQueryList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/62735cfb-e231-4419-a0eb-b19d5701e45a.json';
+// import reportQueryList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/62735cfb-e231-4419-a0eb-b19d5701e45a.json';
 import reportQueryVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json';
+import reportReportList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
 
 import queryBundleProducer from './assets/miroir_data/c0ce8936-abf8-492f-80bf-addd6e6b6227/5d7be714-d16d-4e31-97cd-8a27249792ee.json';
 import queryVersionBundleProducerV1 from './assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json';
@@ -498,10 +501,11 @@ export {
   entityApplicationDeploymentConfiguration,
   entityApplicationModelBranch,
   entityApplicationVersion,
+  entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
-  entityQuery,
+  // entityQuery,
   entityQueryVersion,
   entityReport,
   entityStoreBasedConfiguration,
@@ -510,11 +514,12 @@ export {
   entityDefinitionApplicationDeploymentConfiguration,
   entityDefinitionApplicationModelBranch,
   entityDefinitionApplicationVersion,
+  entityDefinitionEndpointVersion,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
   entityDefinitionStoreBasedConfiguration,
-  entityDefinitionQuery,
+  // entityDefinitionQuery,
   entityDefinitionQueryVersion,
   entityDefinitionReport,
   
@@ -537,11 +542,12 @@ export {
   reportApplicationModelBranchList,
   reportApplicationVersionList,
   reportConfigurationList,
+  reportEndpointVersionList,
   reportEntityList,
   reportEntityDefinitionList,
   reportJzodSchemaList,
   reportReportList,
-  reportQueryList,
+  // reportQueryList,
   reportQueryVersionList,
 };
 
