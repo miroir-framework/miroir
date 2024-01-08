@@ -30,6 +30,7 @@ import {
   SelectObjectQuery,
   SelectObjectListByRelationQuery,
   ResultsFromQueryObject,
+  SelectObjectByDirectReferenceQuery,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -78,10 +79,9 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
   selectorParams: DomainSingleSelectObjectListQueryWithDeployment
 ): ResultsFromQuery => {
   const deploymentUuid = selectorParams.deploymentUuid;
-  const applicationSection = selectorParams.applicationSection;
+  const applicationSection = selectorParams.select.applicationSection??"data";
   const entityUuid = selectorParams.select.parentUuid;
 
-  // let resultValue: EntityInstancesUuidIndex | QueryFailed | undefined = undefined;
   if (!deploymentUuid || !applicationSection || !entityUuid) {
     return {
       resultType: "failure",
@@ -173,6 +173,57 @@ export const selectEntityInstancesFromListQueryAndDomainState: DomainStateSelect
 };
 
 // ################################################################################################
+const checkContextReference = (
+  querySelectorParams: SelectObjectByDirectReferenceQuery,
+  queryParams: any,
+  contextResults: ResultsFromQuery,
+) => {
+  const reference =
+    querySelectorParams.objectReference.referenceType == "queryContextReference"
+      ? (contextResults.resultValue as any)[querySelectorParams.objectReference.referenceName]
+      : querySelectorParams.objectReference.referenceType == "queryParameterReference"
+      ? !queryParams[querySelectorParams.objectReference.referenceName]
+      : querySelectorParams.objectReference.referenceType == "constant"
+      ? querySelectorParams.objectReference.referenceUuid
+      : undefined;
+
+  if (
+    !contextResults.resultValue ||
+    (querySelectorParams.objectReference.referenceType == "queryContextReference" &&
+      !(contextResults.resultValue as any)[querySelectorParams.objectReference.referenceName]) || 
+    (querySelectorParams.objectReference.referenceType == "queryParameterReference" &&
+      !queryParams[querySelectorParams.objectReference.referenceName])
+  ) {
+    // checking that given reference does exist
+    return {
+      resultType: "failure",
+      resultValue: { queryFailure: "ReferenceNotFound", queryContext: contextResults },
+    };
+  }
+
+  if (
+    querySelectorParams.objectReference.referenceType == "queryContextReference" &&
+      !(contextResults.resultValue as any)[querySelectorParams.objectReference.referenceName].resultValue
+  ) { // checking that given reference does exist
+    return {
+      resultType: "failure",
+      resultValue: { queryFailure: "ReferenceFoundButUndefined", queryContext: contextResults },
+    };
+  }
+  
+  // if (
+  //   !(query.contextResults.resultValue as any)[querySelectorParams.objectReference.referenceName].resultValue[
+  //     querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
+  //   ]
+  // ) { // given reference does exist but does not have the wanted attribute querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
+  //   return {
+  //     resultType: "failure",
+  //     resultValue: { queryFailure: "ReferenceFoundButAttributeUndefinedOnFoundObject", query, queryContext: query.contextResults },
+  //   };
+  // }  
+}
+
+// ################################################################################################
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param domainState 
@@ -187,7 +238,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
 ): ResultsFromQuery => {
   const querySelectorParams: SelectObjectQuery = query.singleSelectQuery.select as SelectObjectQuery;
   const deploymentUuid = query.singleSelectQuery.deploymentUuid;
-  const applicationSection = query.singleSelectQuery.applicationSection;
+  const applicationSection = query.singleSelectQuery.select.applicationSection??"data";
 
   switch (querySelectorParams?.queryType) {
     case "selectObjectByRelation": {
@@ -278,36 +329,6 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
       };
       break;
     }
-    // case "selectObjectByParameterValue": {
-    //   if (
-    //     // resolving by queryParameterName
-    //     !querySelectorParams?.queryParameterName ||
-    //     (query.pageParams ?? {})[querySelectorParams?.queryParameterName]
-    //   ) {
-    //     return {resultType: "failure", resultValue:{
-    //       queryFailure: "IncorrectParameters",
-    //       queryParameters: query.pageParams,
-    //     }};
-    //   } else if (!domainState) {
-    //     return {resultType: "failure", resultValue:{ queryFailure: "DomainStateNotLoaded" }};
-    //   } else if (!domainState[deploymentUuid]) {
-    //     return {resultType: "failure", resultValue:{ queryFailure: "DeploymentNotFound", deploymentUuid }};
-    //   } else if (!domainState[deploymentUuid][applicationSection]) {
-    //     return {resultType: "failure", resultValue:{ queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection }};
-    //   } else if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
-    //     return {resultType: "failure", resultValue:{
-    //       queryFailure: "EntityNotFound",
-    //       deploymentUuid,
-    //       applicationSection,
-    //       entityUuid: querySelectorParams.parentUuid,
-    //     }};
-    //   } else {
-    //     return {resultType: "instance", resultValue: domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-    //       (query.queryParams ?? query.pageParams ?? {})[querySelectorParams?.queryParameterName]
-    //     ]};
-    //   }
-    //   break;
-    // }
     case "selectObjectByDirectReference": {
       const instanceUuid =
         querySelectorParams.objectReference.referenceType == "queryParameterReference" &&
@@ -319,27 +340,19 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
           ? querySelectorParams.objectReference.referenceUuid
           : undefined;
       log.info("selectEntityInstanceFromObjectQueryAndDomainState instanceUuid", instanceUuid);
-      if (
-        // resolving by queryParameterName
-        !querySelectorParams?.objectReference || !instanceUuid
-      ) {
-        return {
-          resultType: "failure",
-          resultValue: {
-            queryFailure: "IncorrectParameters",
-            queryParameters: query.pageParams,
-          },
-        };
-      } else if (!domainState) {
+      if (!domainState) {
         return { resultType: "failure", resultValue: { queryFailure: "DomainStateNotLoaded" } };
-      } else if (!domainState[deploymentUuid]) {
+      }
+      if (!domainState[deploymentUuid]) {
         return { resultType: "failure", resultValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-      } else if (!domainState[deploymentUuid][applicationSection]) {
+      }
+      if (!domainState[deploymentUuid][applicationSection]) {
         return {
           resultType: "failure",
           resultValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
         };
-      } else if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
+      }
+      if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
         return {
           resultType: "failure",
           resultValue: {
@@ -349,13 +362,12 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
             entityUuid: querySelectorParams.parentUuid,
           },
         };
-      } else {
-        return {
-          resultType: "instance",
-          resultValue:
-            domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][instanceUuid],
-        };
       }
+      return {
+        resultType: "instance",
+        resultValue:
+          domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][instanceUuid],
+      };
       break;
     }
     case "selectObjectByUuid": {
@@ -408,7 +420,6 @@ export const innerSelectElementFromQueryAndDomainState = (
   pageParams: Record<string, any>,
   queryParams: Record<string, any>,
   deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
   query: MiroirSelectQuery
 ): ResultsFromQuery => {
   switch (query.queryType) {
@@ -426,7 +437,6 @@ export const innerSelectElementFromQueryAndDomainState = (
         singleSelectQuery: {
           queryType: "domainSingleSelectQueryWithDeployment",
           deploymentUuid: deploymentUuid,
-          applicationSection: applicationSection,
           select: query,
         },
       });
@@ -443,7 +453,6 @@ export const innerSelectElementFromQueryAndDomainState = (
         queryParams,
         singleSelectQuery: {
           queryType: "domainSingleSelectQueryWithDeployment",
-          applicationSection: applicationSection,
           deploymentUuid: deploymentUuid,
           select: query,
         },
@@ -462,7 +471,6 @@ export const innerSelectElementFromQueryAndDomainState = (
               pageParams ?? {},
               queryParams ?? {},
               deploymentUuid,
-              applicationSection,
               e[1]
             ),
           ])
@@ -480,7 +488,6 @@ export const innerSelectElementFromQueryAndDomainState = (
             pageParams ?? {},
             queryParams ?? {},
             deploymentUuid,
-            applicationSection,
             e
           )
         ),
@@ -519,8 +526,8 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
       query.pageParams,
       {...query.pageParams, ...query.queryParams},
       query.deploymentUuid,
-      query.applicationSection,
       entry[1]
+
     );
     newFetchedData.resultValue[entry[0]] = result;
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
@@ -679,7 +686,6 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
           singleSelectQuery: {
             queryType: "domainSingleSelectQueryWithDeployment",
             deploymentUuid: localFetchParams.deploymentUuid,
-            applicationSection: localFetchParams.applicationSection,
             select: entry[1],
           },
       }),

@@ -41,21 +41,18 @@ export type LocalCacheQueryParams = {
 export type DomainSingleSelectObjectQueryWithDeployment = {
   queryType: "domainSingleSelectQueryWithDeployment"
   deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
   select: SelectObjectQuery;
 }
 
 export type DomainSingleSelectObjectListQueryWithDeployment = {
   queryType: "domainSingleSelectQueryWithDeployment"
   deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
   select: SelectObjectListQuery;
 }
 
 export type DomainSingleSelectQueryWithDeployment = {
   queryType: "domainSingleSelectQueryWithDeployment"
   deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
   select: MiroirSelectQuery;
 };
 
@@ -81,12 +78,10 @@ export interface DomainModelGetSingleSelectQueryQueryParams extends DomainModelR
   singleSelectQuery: DomainSingleSelectQueryWithDeployment,
 };
 
-
 // ################################################################################################
 export interface DomainManyQueriesWithDeploymentUuid extends DomainModelRootQuery {
   queryType: "DomainManyQueries",
   deploymentUuid: Uuid,
-  applicationSection: ApplicationSection,
   fetchQuery: MiroirFetchQuery,
 };
 

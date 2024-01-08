@@ -116,6 +116,14 @@
                 "optional": true,
                 "extra": { "id":1, "defaultLabel": "Label", "editable": false }
               },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
               "parentName": {
                 "type": "simpleType",
                 "definition": "string",
