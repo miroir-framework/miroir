@@ -363,6 +363,18 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
           },
         };
       }
+      if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][instanceUuid]) {
+        return {
+          resultType: "failure",
+          resultValue: {
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: querySelectorParams.parentUuid,
+            instanceUuid: instanceUuid,
+          },
+        };
+      }
       return {
         resultType: "instance",
         resultValue:
@@ -370,39 +382,39 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
       };
       break;
     }
-    case "selectObjectByUuid": {
-      if (!domainState) {
-        return {resultType: "failure", resultValue:{ queryFailure: "DomainStateNotLoaded" }};
-      } else if (!domainState[deploymentUuid]) {
-        return {resultType: "failure", resultValue:{ queryFailure: "DeploymentNotFound", deploymentUuid }};
-      } else if (!domainState[deploymentUuid][applicationSection]) {
-        return {resultType: "failure", resultValue:{ queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection }};
-      } else if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
-        return {resultType: "failure", resultValue:{
-          queryFailure: "EntityNotFound",
-          deploymentUuid,
-          applicationSection,
-          entityUuid: querySelectorParams.parentUuid,
-        }};
-      } else if (
-        !domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-          querySelectorParams.instanceUuid
-        ]
-      ) {
-        return {resultType: "failure", resultValue:{
-          queryFailure: "InstanceNotFound",
-          deploymentUuid,
-          applicationSection,
-          entityUuid: querySelectorParams.parentUuid,
-          instanceUuid: querySelectorParams.instanceUuid,
-        }};
-      } else {
-        return {resultType: "instance", resultValue: domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
-          querySelectorParams.instanceUuid
-        ]};
-      }
-      break;
-    }
+    // case "selectObjectByUuid": {
+    //   if (!domainState) {
+    //     return {resultType: "failure", resultValue:{ queryFailure: "DomainStateNotLoaded" }};
+    //   } else if (!domainState[deploymentUuid]) {
+    //     return {resultType: "failure", resultValue:{ queryFailure: "DeploymentNotFound", deploymentUuid }};
+    //   } else if (!domainState[deploymentUuid][applicationSection]) {
+    //     return {resultType: "failure", resultValue:{ queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection }};
+    //   } else if (!domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid]) {
+    //     return {resultType: "failure", resultValue:{
+    //       queryFailure: "EntityNotFound",
+    //       deploymentUuid,
+    //       applicationSection,
+    //       entityUuid: querySelectorParams.parentUuid,
+    //     }};
+    //   } else if (
+    //     !domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+    //       querySelectorParams.instanceUuid
+    //     ]
+    //   ) {
+    //     return {resultType: "failure", resultValue:{
+    //       queryFailure: "InstanceNotFound",
+    //       deploymentUuid,
+    //       applicationSection,
+    //       entityUuid: querySelectorParams.parentUuid,
+    //       instanceUuid: querySelectorParams.instanceUuid,
+    //     }};
+    //   } else {
+    //     return {resultType: "instance", resultValue: domainState[deploymentUuid][applicationSection][querySelectorParams.parentUuid][
+    //       querySelectorParams.instanceUuid
+    //     ]};
+    //   }
+    //   break;
+    // }
     default: {
       throw new Error(
         "selectEntityInstanceFromObjectQueryAndDomainState can not handle SelectObjectQuery query with queryType=" +
@@ -442,7 +454,7 @@ export const innerSelectElementFromQueryAndDomainState = (
       });
       break;
     }
-    case "selectObjectByUuid":
+    // case "selectObjectByUuid":
     case "selectObjectByRelation":
     // case "selectObjectByParameterValue":
     case "selectObjectByDirectReference": {

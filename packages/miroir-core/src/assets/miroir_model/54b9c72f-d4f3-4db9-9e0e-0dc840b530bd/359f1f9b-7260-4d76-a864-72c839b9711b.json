@@ -182,28 +182,7 @@
               }
             ]
           },
-          "selectObjectByUuidQuery": {
-            "type": "object",
-            "extend": {
-              "type": "schemaReference",
-              "definition": {
-                "eager": true,
-                "relativePath": "selectRootQuery"
-              }
-            },
-            "definition": {
-              "queryType": {
-                "type": "literal",
-                "definition": "selectObjectByUuid"
-              },
-              "instanceUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "extra": { "id":4, "defaultLabel": "Instance Uuid", "editable": false }
-              }
-            }
-          },
+
           "selectObjectByRelationQuery": {
             "type": "object",
             "extend": {
@@ -256,12 +235,6 @@
             "type": "union",
             "discriminator": "type",
             "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "selectObjectByUuidQuery"
-                }
-              },
               {
                 "type": "schemaReference",
                 "definition": {

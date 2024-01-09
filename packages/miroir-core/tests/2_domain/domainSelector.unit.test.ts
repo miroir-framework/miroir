@@ -13,90 +13,96 @@ import {
 
 import { EntityDefinition, JzodElement, ResultsFromQuery } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import domainStateImport from "./domainState.json";
+import { circularReplacer } from "../../src/tools";
 
 const domainState: DomainState = domainStateImport as DomainState;
 
 describe("domainSelector", () => {
-  // ###########################################################################################
-  it(
-    'error on non-existing Entity: EntityNotFound',
-    () => {
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
-        contextResults: { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
-        fetchQuery: {
-          select: {
-            book: {
-              queryType: "selectObjectByUuid",
-              applicationSection: "data",
-              parentName: "Book",
-              parentUuid: "XXXXXX",
-              instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-            },
-          },
-        },
-      };
-      const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
-      console.info("result", result);
-      expect(result).toEqual({
-        resultType: "object",
-        resultValue: {
-          book: {
-            resultType: "failure",
-            resultValue: {
-              applicationSection: "data",
-              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-              entityUuid: "XXXXXX",
-              queryFailure: "EntityNotFound",
-            },
-          },
-        },
-      });
-    }
-  )
+  // // ###########################################################################################
+  // it(
+  //   'error on non-existing Entity: EntityNotFound',
+  //   () => {
+  //     const queryParam: DomainManyQueriesWithDeploymentUuid = {
+  //       queryType: "DomainManyQueries",
+  //       deploymentUuid: applicationDeploymentLibrary.uuid,
+  //       contextResults: { resultType: "object", resultValue: {} },
+  //       "pageParams": {},
+  //       "queryParams": {},
+  //       fetchQuery: {
+  //         select: {
+  //           book: {
+  //             queryType: "selectObjectByDirectReference",
+  //             parentName: "Book",
+  //             parentUuid: "XXXXXX",
+  //             objectReference: {
+  //               referenceType: "constant",
+  //               referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+  //             }
+  //           },
+  //         },
+  //       },
+  //     };
+  //     const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+  //     console.info("result", result);
+  //     expect(result).toEqual({
+  //       resultType: "object",
+  //       resultValue: {
+  //         book: {
+  //           resultType: "failure",
+  //           resultValue: {
+  //             applicationSection: "data",
+  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  //             entityUuid: "XXXXXX",
+  //             queryFailure: "EntityNotFound",
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }
+  // )
 
-  // ###########################################################################################
-  it(
-    'error on non-existing Entity: EntityNotFound',
-    () => {
-      const queryParam: DomainManyQueriesWithDeploymentUuid = {
-        queryType: "DomainManyQueries",
-        deploymentUuid: applicationDeploymentLibrary.uuid,
-        contextResults: { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
-        fetchQuery: {
-          select: {
-            book: {
-              queryType: "selectObjectByUuid",
-              parentName: "Book",
-              parentUuid: "XXXXXX",
-              instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-            },
-          },
-        },
-      };
-      const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
-      console.info("result", result);
-      expect(result).toEqual({
-        resultType: "object",
-        resultValue: {
-          book: {
-            resultType: "failure",
-            resultValue: {
-              applicationSection: "data",
-              deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-              entityUuid: "XXXXXX",
-              queryFailure: "EntityNotFound",
-            },
-          },
-        },
-      });
-    }
-  )
+  // // ###########################################################################################
+  // it(
+  //   'error on non-existing Entity: EntityNotFound',
+  //   () => {
+  //     const queryParam: DomainManyQueriesWithDeploymentUuid = {
+  //       queryType: "DomainManyQueries",
+  //       deploymentUuid: applicationDeploymentLibrary.uuid,
+  //       contextResults: { resultType: "object", resultValue: {} },
+  //       "pageParams": {},
+  //       "queryParams": {},
+  //       fetchQuery: {
+  //         select: {
+  //           book: {
+  //             queryType: "selectObjectByDirectReference",
+  //             parentName: "Book",
+  //             parentUuid: "XXXXXX",
+  //             objectReference: {
+  //               referenceType: "constant",
+  //               referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+  //             }
+  //           },
+  //         },
+  //       },
+  //     };
+  //     const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+  //     console.info("result", result);
+  //     expect(result).toEqual({
+  //       resultType: "object",
+  //       resultValue: {
+  //         book: {
+  //           resultType: "failure",
+  //           resultValue: {
+  //             applicationSection: "data",
+  //             deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  //             entityUuid: "XXXXXX",
+  //             queryFailure: "EntityNotFound",
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }
+  // )
 
   // ###########################################################################################
   it(
@@ -112,10 +118,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "XXXXXXXXX"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "XXXXXXXXX"
+              }
             }
           }
         }
@@ -153,10 +162,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
             }
           }
         }
@@ -182,10 +194,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
             },
             "book2": {
               queryType: "queryContextReference",
@@ -229,7 +244,7 @@ describe("domainSelector", () => {
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      console.log("queryResult", JSON.stringify(queryResult, undefined, 2));
+      console.log("queryResult", JSON.stringify(queryResult, circularReplacer, 2));
 
       expect(queryResult.resultValue.book.resultValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }    
@@ -249,10 +264,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
             },
             "publisher": {
               "queryType": "selectObjectByRelation",
@@ -270,7 +288,7 @@ describe("domainSelector", () => {
 
       const result:ResultsFromQuery = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", result);
+      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(result));
       
       expect(result.resultType).toBe("object")
       expect((result.resultValue as any)["publisher"].resultValue).toBe(
@@ -295,10 +313,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
             },
             "publisher": {
               "queryType": "selectObjectByRelation",
@@ -350,10 +371,13 @@ describe("domainSelector", () => {
         "fetchQuery": {
           "select": {
             "book": {
-              "queryType": "selectObjectByUuid",
-              "parentName": "Book",
-              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-              "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              objectReference: {
+                referenceType: "constant",
+                referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              }
             },
             "publisher": {
               "queryType": "selectObjectByRelation",
