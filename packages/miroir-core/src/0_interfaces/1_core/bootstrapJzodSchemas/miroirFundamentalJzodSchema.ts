@@ -144,6 +144,10 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "Data"
         ]
       },
+      "entityInstanceUuid": {
+        "type": "simpleType",
+        "definition": "string"
+      },
       "entityInstancesUuidIndex": {
         "type": "record",
         "definition": {
@@ -151,6 +155,16 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "definition": {
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "relativePath": "entityInstance"
+          }
+        }
+      },
+      "entityInstancesUuidIndexUuidIndex": {
+        "type": "record",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityInstancesUuidIndex"
           }
         }
       },
@@ -459,44 +473,67 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
 
       },
       ...(entityDefinitionQueryVersionV1 as any).jzodSchema.definition.definition.context,
-      "resultsFromQueryObject": {
+      "domainElementObject": {
         "type": "object",
         "definition": {
-          "resultType": {
+          "elementType": {
             "type": "literal",
             "definition": "object"
           },
-          "resultValue": 
+          "elementValue": 
           {
             "type": "record",
             "definition": {
               "type": "schemaReference",
               "definition": {
-                "relativePath": "resultsFromQuery"
+                "relativePath": "domainElement"
               }
             }
           }
         }
       },
-      "resultsFromQuery": {
+      "domainElementUuidIndex": {
+        "type": "object",
+        "definition": {
+          "elementType": {
+            "type": "literal",
+            "definition": "instanceUuidIndex"
+          },
+          "elementValue": 
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityInstancesUuidIndex"
+            }
+          }
+        }
+      },
+      "domainElement": {
         "type": "union",
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "resultsFromQueryObject"
+              "relativePath": "domainElementObject"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementUuidIndex"
             }
           },
           {
             "type": "object",
             "definition": {
-              "resultType": {
+              "elementType": {
                 "type": "literal",
                 "definition": "instance"
               },
-              "resultValue": 
-              {
+              "elementValue": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -508,11 +545,27 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "resultType": {
+              "elementType": {
                 "type": "literal",
-                "definition": "instanceUuidIndex"
+                "definition": "instanceUuid"
               },
-              "resultValue": 
+              "elementValue": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstanceUuid"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "elementType": {
+                "type": "literal",
+                "definition": "instanceUuidIndexUuidIndex"
+              },
+              "elementValue": 
               {
                 "type": "schemaReference",
                 "definition": {
@@ -525,11 +578,11 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "resultType": {
+              "elementType": {
                 "type": "literal",
                 "definition": "failure"
               },
-              "resultValue": 
+              "elementValue": 
               {
                 "type": "schemaReference",
                 "definition": {
@@ -542,11 +595,11 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "resultType": {
+              "elementType": {
                 "type": "literal",
                 "definition": "string"
               },
-              "resultValue": 
+              "elementValue": 
               {
                 "type": "simpleType",
                 "definition": "string"
@@ -556,17 +609,17 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           {
             "type": "object",
             "definition": {
-              "resultType": {
+              "elementType": {
                 "type": "literal",
                 "definition": "array"
               },
-              "resultValue": 
+              "elementValue": 
               {
                 "type": "array",
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "relativePath": "resultsFromQuery"
+                    "relativePath": "domainElement"
                   }
                 }
               }

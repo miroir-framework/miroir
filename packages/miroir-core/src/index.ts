@@ -68,10 +68,10 @@ export {
   report,
   ReportSection,
   reportSection,
-  ResultsFromQueryObject,
-  resultsFromQueryObject,
-  ResultsFromQuery,
-  resultsFromQuery,
+  DomainElementObject,
+  domainElementObject,
+  DomainElement,
+  domainElement,
   RootReportSection,
   rootReportSection,
 }
@@ -351,7 +351,7 @@ export {
   selectEntityJzodSchemaFromDomainState,
   selectEntityInstanceUuidIndexFromDomainState,
   selectEntityInstanceFromObjectQueryAndDomainState,
-  selectEntityInstancesFromListQueryAndDomainState,
+  selectEntityInstanceListFromListQueryAndDomainState as selectEntityInstancesFromListQueryAndDomainState,
   selectFetchQueryJzodSchemaFromDomainState,
   selectJzodSchemaBySingleSelectQueryFromDomainState,
 } from './2_domain/DomainSelector.js';

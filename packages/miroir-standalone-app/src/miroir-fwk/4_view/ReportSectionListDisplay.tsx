@@ -127,7 +127,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   log.info('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
 
-  // log.info('ReportSectionListDisplay props.resultsFromQuery',props.resultsFromQuery);
+  // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
   log.info('ReportSectionListDisplay props',props);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -311,13 +311,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
 
   const instancesToDisplay: EntityInstancesUuidIndex = useMemo(() =>
-    props.resultsFromQueryObject &&
-    props.resultsFromQueryObject.resultType == "object" &&
+    props.domainElementObject &&
+    props.domainElementObject.elementType == "object" &&
     props.section.definition.fetchedDataReference &&
-    props.resultsFromQueryObject.resultValue[props.section.definition.fetchedDataReference] &&
-    props.resultsFromQueryObject.resultValue[props.section.definition.fetchedDataReference].resultType == "instanceUuidIndex" &&
-    props.resultsFromQueryObject.resultValue[props.section.definition.fetchedDataReference].resultValue
-      ? props.resultsFromQueryObject.resultValue[props.section.definition.fetchedDataReference].resultValue as EntityInstancesUuidIndex
+    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference] &&
+    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementType == "instanceUuidIndex" &&
+    props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue
+      ? props.domainElementObject.elementValue[props.section.definition.fetchedDataReference].elementValue as EntityInstancesUuidIndex
       : {}
     ,[props]
   );

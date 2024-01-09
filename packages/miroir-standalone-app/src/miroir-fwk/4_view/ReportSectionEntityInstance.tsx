@@ -40,7 +40,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export interface ReportSectionEntityInstanceProps {
   instance?: any,
-  resultsFromQuery?: Record<string,any>,
+  domainElement?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,

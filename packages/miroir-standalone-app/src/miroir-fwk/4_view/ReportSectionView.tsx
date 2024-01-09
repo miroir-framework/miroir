@@ -10,7 +10,7 @@ import {
   MiroirLoggerFactory,
   RecordOfJzodObject,
   ReportSection,
-  ResultsFromQueryObject,
+  DomainElementObject,
   SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
@@ -19,7 +19,7 @@ import {
   getLoggerName,
   reportEntityDefinitionList,
   reportEntityList,
-  resultsFromQueryObject
+  domainElementObject
 } from "miroir-core";
 
 
@@ -37,8 +37,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface ReportSectionEntityInstanceProps {
-  // resultsFromQuery: ResultsFromQuery,
-  resultsFromQueryObject: ResultsFromQueryObject,
+  // domainElement: DomainElement,
+  domainElementObject: DomainElementObject,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   reportSection: ReportSection,
   applicationSection: ApplicationSection,
@@ -129,8 +129,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     "deploymentUuid",
     props.deploymentUuid,
     props.applicationSection,
-    "resultsFromQuery",
-    props.resultsFromQueryObject
+    "domainElement",
+    props.domainElementObject
   );
 
   // log.info('ReportSectionView entityJzodSchema',entityJzodSchemaDefinition);
@@ -139,11 +139,11 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const evaluateExpression = (expression: string | undefined) => {
     const parts = expression?.split(".");
     const object =
-      Array.isArray(parts) && parts.length > 0 && props.resultsFromQueryObject.resultValue
-        ? (props.resultsFromQueryObject.resultValue as any)[parts[0]].resultValue
+      Array.isArray(parts) && parts.length > 0 && props.domainElementObject.elementValue
+        ? (props.domainElementObject.elementValue as any)[parts[0]].elementValue
         : undefined;
     const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
-    log.info("evaluateExpression", expression, parts, props.resultsFromQueryObject, "object", object, "result", result);
+    log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
     return result;
   };
 
@@ -213,7 +213,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                               <tr key={index}>
                                 <td>
                                   <ReportSectionView
-                                    resultsFromQueryObject={props.resultsFromQueryObject}
+                                    domainElementObject={props.domainElementObject}
                                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                                     deploymentUuid={props.deploymentUuid}
                                     applicationSection={props.applicationSection}
@@ -237,10 +237,10 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {
               props.reportSection.type === "objectListReportSection" ? (
                 <div>
-                  {JSON.stringify(props.resultsFromQueryObject, circularReplacer(), 2)}
+                  {JSON.stringify(props.domainElementObject, circularReplacer(), 2)}
                   {
                     (currentReportTargetEntity &&
-                    currentReportTargetEntityDefinition) || props.resultsFromQueryObject ?
+                    currentReportTargetEntityDefinition) || props.domainElementObject ?
                       <ReportSectionListDisplay
                         tableComponentReportType="EntityInstance"
                         label={"EntityInstance-" + currentReportTargetEntity?.name}
@@ -248,7 +248,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                         styles={styles}
                         chosenApplicationSection={props.applicationSection as ApplicationSection}
                         displayedDeploymentDefinition={displayedDeploymentDefinition}
-                        resultsFromQueryObject={props.resultsFromQueryObject}
+                        domainElementObject={props.domainElementObject}
                         fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                         section={props.reportSection}
                         currentModel={currentModel}
@@ -266,8 +266,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
               props.reportSection.type === "objectInstanceReportSection" ? (
                 <div>
                   <ReportSectionEntityInstance
-                    resultsFromQuery={props.resultsFromQueryObject}
-                    instance={props.resultsFromQueryObject.resultValue?(props.resultsFromQueryObject.resultValue as any)[props.reportSection.definition.fetchedDataReference??""]:undefined}
+                    domainElement={props.domainElementObject}
+                    instance={props.domainElementObject.elementValue?(props.domainElementObject.elementValue as any)[props.reportSection.definition.fetchedDataReference??""]:undefined}
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
                     entityUuid={props.reportSection.definition.parentUuid}

@@ -6,7 +6,7 @@ import {
   DomainTransactionalActionWithCUDUpdate,
   EntityDefinition,
   EntityInstanceCollection,
-  ResultsFromQuery,
+  DomainElement,
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
@@ -29,7 +29,7 @@ export interface ReduxStateChanges {
   action:DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment, changes:Patch[]; inverseChanges:Patch[];
 }
 
-export type QueriesResultsCache = {[k: string]: ResultsFromQuery};
+export type QueriesResultsCache = {[k: string]: DomainElement};
 
 /**
  * In the case of a remote deployment, the whole state goes into the indexedDb of the browser, playing the role of a cache.

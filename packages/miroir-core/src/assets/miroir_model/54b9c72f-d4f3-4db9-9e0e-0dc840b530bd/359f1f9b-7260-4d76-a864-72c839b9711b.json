@@ -229,7 +229,7 @@
                 "type": "literal",
                 "definition": "selectObjectByDirectReference"
               },
-              "objectReference": {
+              "instanceUuid": {
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "queryObjectReference"
@@ -290,6 +290,11 @@
                 "definition": {
                   "relativePath": "queryObjectReference"
                 }
+              },
+              "objectReferenceAttribute": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
               },
               "AttributeOfListObjectToCompareToReferenceUuid": {
                 "type": "simpleType",

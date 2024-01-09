@@ -16,7 +16,7 @@ import {
   MiroirCustomQueryParams,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
-  ResultsFromQuery,
+  DomainElement,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -61,7 +61,7 @@ export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T >(
 
 // ################################################################################################
 export function useDomainStateCleanSelector<P extends MiroirSelectorQueryParams, T >(
-  domainStateSelector:DomainStateSelector<P, ResultsFromQuery>,
+  domainStateSelector:DomainStateSelector<P, DomainElement>,
   query:P,
   customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
 ): T {

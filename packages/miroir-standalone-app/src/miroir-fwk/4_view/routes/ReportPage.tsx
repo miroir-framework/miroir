@@ -9,7 +9,7 @@ import {
   MiroirApplicationModel,
   MiroirLoggerFactory,
   Report,
-  ResultsFromQueryObject,
+  DomainElementObject,
   getLoggerName
 } from "miroir-core";
 import {
@@ -79,7 +79,7 @@ export const ReportPage = () => {
   }), [])
   const currentMiroirReport: Report = currentModel.reports?.find((r) => r.uuid === params.reportUuid)??defaultReport;
 
-  const emptyResultsFromQuery: ResultsFromQueryObject = useMemo(()=> ({ resultType: "object", resultValue: {}}), []);
+  const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
 
   if (params.applicationSection) {
     log.info("ReportPage rendering count",count,"params", params,);

@@ -271,8 +271,12 @@ export type EntityInstanceCollection = {
     instances: EntityInstance[];
 };
 export type ConceptLevel = "MetaModel" | "Model" | "Data";
+export type EntityInstanceUuid = string;
 export type EntityInstancesUuidIndex = {
     [x: string]: EntityInstance;
+};
+export type EntityInstancesUuidIndexUuidIndex = {
+    [x: string]: EntityInstancesUuidIndex;
 };
 export type _____________entities__________ = never;
 export type Application = {
@@ -514,7 +518,7 @@ export type SelectObjectByDirectReferenceQuery = {
     parentName?: string | undefined;
     parentUuid: QueryObjectReference;
     queryType: "selectObjectByDirectReference";
-    objectReference: QueryObjectReference;
+    instanceUuid: QueryObjectReference;
 };
 export type SelectObjectQuery = SelectObjectByRelationQuery | SelectObjectByDirectReferenceQuery;
 export type SelectObjectListByEntityQuery = {
@@ -531,6 +535,7 @@ export type SelectObjectListByRelationQuery = {
     parentUuid: QueryObjectReference;
     queryType: "selectObjectListByRelation";
     objectReference: QueryObjectReference;
+    objectReferenceAttribute?: string | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string;
 };
 export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery;
@@ -562,27 +567,34 @@ export type MiroirFetchQuery = {
     select: MiroirSelectQueriesRecord;
     crossJoin?: MiroirCrossJoinQuery | undefined;
 };
-export type ResultsFromQueryObject = {
-    resultType: "object";
-    resultValue: {
-        [x: string]: ResultsFromQuery;
+export type DomainElementObject = {
+    elementType: "object";
+    elementValue: {
+        [x: string]: DomainElement;
     };
 };
-export type ResultsFromQuery = ResultsFromQueryObject | {
-    resultType: "instance";
-    resultValue: EntityInstance;
+export type DomainElementUuidIndex = {
+    elementType: "instanceUuidIndex";
+    elementValue: EntityInstancesUuidIndex;
+};
+export type DomainElement = DomainElementObject | DomainElementUuidIndex | {
+    elementType: "instance";
+    elementValue: EntityInstance;
 } | {
-    resultType: "instanceUuidIndex";
-    resultValue: EntityInstancesUuidIndex;
+    elementType: "instanceUuid";
+    elementValue: EntityInstanceUuid;
 } | {
-    resultType: "failure";
-    resultValue: QueryFailed;
+    elementType: "instanceUuidIndexUuidIndex";
+    elementValue: EntityInstancesUuidIndex;
 } | {
-    resultType: "string";
-    resultValue: string;
+    elementType: "failure";
+    elementValue: QueryFailed;
 } | {
-    resultType: "array";
-    resultValue: ResultsFromQuery[];
+    elementType: "string";
+    elementValue: string;
+} | {
+    elementType: "array";
+    elementValue: DomainElement[];
 };
 export type MiroirCustomQueryParams = {
     queryType: "custom";
@@ -691,7 +703,9 @@ export const dataStoreApplicationType: z.ZodType<DataStoreApplicationType> = z.u
 export const entityInstance = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional()});
 export const entityInstanceCollection: z.ZodType<EntityInstanceCollection> = z.object({parentName:z.string().optional(), parentUuid:z.string(), applicationSection:z.lazy(() =>applicationSection), instances:z.array(z.lazy(() =>entityInstance))}).strict();
 export const conceptLevel: z.ZodType<ConceptLevel> = z.enum(["MetaModel","Model","Data"]);
+export const entityInstanceUuid: z.ZodType<EntityInstanceUuid> = z.string();
 export const entityInstancesUuidIndex: z.ZodType<EntityInstancesUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstance));
+export const entityInstancesUuidIndexUuidIndex: z.ZodType<EntityInstancesUuidIndexUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstancesUuidIndex));
 export const _____________entities__________: z.ZodType<_____________entities__________> = z.never();
 export const application: z.ZodType<Application> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();
 export const applicationVersion: z.ZodType<ApplicationVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), type:z.string().optional(), application:z.string().uuid(), branch:z.string().uuid(), previousVersion:z.string().uuid(), modelStructureMigration:z.lazy(() =>jzodObject).optional(), modelCUDMigration:z.lazy(() =>jzodObject).optional()}).strict();
@@ -725,17 +739,18 @@ export const queryFailed: z.ZodType<QueryFailed> = z.object({queryFailure:z.enum
 export const selectRootQuery: z.ZodType<SelectRootQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict();
 export const queryObjectReference: z.ZodType<QueryObjectReference> = z.union([z.object({referenceType:z.literal("constant"), referenceUuid:z.string()}).strict(), z.object({referenceType:z.literal("queryContextReference"), referenceName:z.string()}).strict(), z.object({referenceType:z.literal("queryParameterReference"), referenceName:z.string()}).strict()]);
 export const selectObjectByRelationQuery: z.ZodType<SelectObjectByRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfObjectToCompareToReferenceUuid:z.string()}).strict();
-export const selectObjectByDirectReferenceQuery: z.ZodType<SelectObjectByDirectReferenceQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectByDirectReference"), objectReference:z.lazy(() =>queryObjectReference)}).strict();
+export const selectObjectByDirectReferenceQuery: z.ZodType<SelectObjectByDirectReferenceQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectByDirectReference"), instanceUuid:z.lazy(() =>queryObjectReference)}).strict();
 export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy(() =>selectObjectByRelationQuery), z.lazy(() =>selectObjectByDirectReferenceQuery)]);
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
-export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
+export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectObjectQuery), z.object({queryType:z.literal("literal"), definition:z.string()}).strict(), z.object({queryType:z.literal("queryContextReference"), referenceName:z.string()}).strict(), z.object({queryType:z.literal("wrapperReturningObject"), definition:z.record(z.string(),z.lazy(() =>miroirSelectQuery))}).strict(), z.object({queryType:z.literal("wrapperReturningList"), definition:z.array(z.lazy(() =>miroirSelectQuery))}).strict()]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
 export const miroirCrossJoinQuery: z.ZodType<MiroirCrossJoinQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();
 export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({parameterSchema:z.lazy(() =>jzodObject).optional(), select:z.lazy(() =>miroirSelectQueriesRecord), crossJoin:z.lazy(() =>miroirCrossJoinQuery).optional()}).strict();
-export const resultsFromQueryObject: z.ZodType<ResultsFromQueryObject> = z.object({resultType:z.literal("object"), resultValue:z.record(z.string(),z.lazy(() =>resultsFromQuery))}).strict();
-export const resultsFromQuery: z.ZodType<ResultsFromQuery> = z.union([z.lazy(() =>resultsFromQueryObject), z.object({resultType:z.literal("instance"), resultValue:z.lazy(() =>entityInstance)}).strict(), z.object({resultType:z.literal("instanceUuidIndex"), resultValue:z.lazy(() =>entityInstancesUuidIndex)}).strict(), z.object({resultType:z.literal("failure"), resultValue:z.lazy(() =>queryFailed)}).strict(), z.object({resultType:z.literal("string"), resultValue:z.string()}).strict(), z.object({resultType:z.literal("array"), resultValue:z.array(z.lazy(() =>resultsFromQuery))}).strict()]);
+export const domainElementObject: z.ZodType<DomainElementObject> = z.object({elementType:z.literal("object"), elementValue:z.record(z.string(),z.lazy(() =>domainElement))}).strict();
+export const domainElementUuidIndex: z.ZodType<DomainElementUuidIndex> = z.object({elementType:z.literal("instanceUuidIndex"), elementValue:z.lazy(() =>entityInstancesUuidIndex)}).strict();
+export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>domainElementObject), z.lazy(() =>domainElementUuidIndex), z.object({elementType:z.literal("instance"), elementValue:z.lazy(() =>entityInstance)}).strict(), z.object({elementType:z.literal("instanceUuid"), elementValue:z.lazy(() =>entityInstanceUuid)}).strict(), z.object({elementType:z.literal("instanceUuidIndexUuidIndex"), elementValue:z.lazy(() =>entityInstancesUuidIndex)}).strict(), z.object({elementType:z.literal("failure"), elementValue:z.lazy(() =>queryFailed)}).strict(), z.object({elementType:z.literal("string"), elementValue:z.string()}).strict(), z.object({elementType:z.literal("array"), elementValue:z.array(z.lazy(() =>domainElement))}).strict()]);
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();

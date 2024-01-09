@@ -7,7 +7,7 @@ import {
   MiroirFetchQuery,
   MiroirSelectQueriesRecord,
   MiroirSelectQuery,
-  ResultsFromQueryObject,
+  DomainElementObject,
   SelectObjectListQuery,
   SelectObjectQuery
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -58,9 +58,11 @@ export type DomainSingleSelectQueryWithDeployment = {
 
 // ################################################################################################
 export interface DomainModelRootQuery {
-  pageParams: Record<string, any>,
-  queryParams: Record<string, any>,
-  contextResults: ResultsFromQueryObject,
+  pageParams: DomainElementObject,
+  queryParams: DomainElementObject,
+  // pageParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  contextResults: DomainElementObject,
 }
 
 export interface DomainModelGetSingleSelectObjectQueryQueryParams extends DomainModelRootQuery {

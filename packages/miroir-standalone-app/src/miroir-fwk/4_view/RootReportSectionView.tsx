@@ -5,7 +5,7 @@ import {
   ApplicationSection,
   DomainManyQueriesWithDeploymentUuid,
   DomainModelGetFetchParamJzodSchemaQueryParams,
-  ResultsFromQuery,
+  DomainElement,
   LoggerInterface,
   MiroirLoggerFactory,
   RecordOfJzodObject,
@@ -14,7 +14,7 @@ import {
   getLoggerName,
   selectByDomainManyQueriesFromDomainState,
   selectFetchQueryJzodSchemaFromDomainState,
-  ResultsFromQueryObject
+  DomainElementObject
 } from "miroir-core";
 
 
@@ -33,7 +33,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface ReportSectionEntityInstanceProps {
-  // resultsFromQuery: Record<string,any>,
+  // domainElement: Record<string,any>,
   reportSection: RootReportSection,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -66,12 +66,12 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       applicationSection: props.applicationSection,
       pageParams: params,
       queryParams: {},
-      contextResults: { resultType: "object", resultValue: {} },
+      contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: props.reportSection.fetchQuery
     }
   ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
 
-  const resultsFromQueryObject: ResultsFromQueryObject = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
+  const domainElementObject: DomainElementObject = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
 
   const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
     queryType: "getFetchParamsJzodSchema",
@@ -81,7 +81,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       instanceUuid: props.instanceUuid,
     },
     queryParams: {},
-    contextResults: { resultType: "object", resultValue: {} },
+    contextResults: { elementType: "object", elementValue: {} },
     fetchParams: domainFetchQueryParams,
   }),[domainFetchQueryParams])
 
@@ -90,8 +90,8 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   log.info(
     "RootReportSectionView props.reportSection?.fetchQuery",
     props.reportSection?.fetchQuery,
-    "resultsFromQuery",
-    resultsFromQueryObject,
+    "domainElement",
+    domainElementObject,
     "fetchedDataJzodSchema",
     fetchedDataJzodSchema
   );
@@ -102,7 +102,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       <div>
         <div>RootReportSectionView rendered {count}</div>
         <ReportSectionView
-          resultsFromQueryObject={resultsFromQueryObject}
+          domainElementObject={domainElementObject}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
           reportSection={props.reportSection?.section}
           applicationSection={props.applicationSection}

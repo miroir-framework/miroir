@@ -11,7 +11,7 @@ import {
   selectJzodSchemaByDomainModelQueryFromDomainState,
 } from "../../src/2_domain/DomainSelector";
 
-import { EntityDefinition, JzodElement, ResultsFromQuery } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityDefinition, JzodElement, DomainElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import domainStateImport from "./domainState.json";
 import { circularReplacer } from "../../src/tools";
 
@@ -25,9 +25,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         deploymentUuid: applicationDeploymentLibrary.uuid,
-        contextResults: { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {
             book: {
@@ -37,7 +37,7 @@ describe("domainSelector", () => {
                 referenceType: "constant",
                 referenceUuid: "XXXXXX"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -48,11 +48,11 @@ describe("domainSelector", () => {
       const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
       console.info("result", result);
       expect(result).toEqual({
-        resultType: "object",
-        resultValue: {
+        elementType: "object",
+        elementValue: {
           book: {
-            resultType: "failure",
-            resultValue: {
+            elementType: "failure",
+            elementValue: {
               applicationSection: "data",
               deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               entityUuid: "XXXXXX",
@@ -71,9 +71,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         deploymentUuid: applicationDeploymentLibrary.uuid,
-        contextResults: { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         fetchQuery: {
           select: {
             book: {
@@ -83,7 +83,7 @@ describe("domainSelector", () => {
                 "referenceType": "constant",
                 "referenceUuid": "XXXXXX"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -94,11 +94,11 @@ describe("domainSelector", () => {
       const result = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
       console.info("result", result);
       expect(result).toEqual({
-        resultType: "object",
-        resultValue: {
+        elementType: "object",
+        elementValue: {
           book: {
-            resultType: "failure",
-            resultValue: {
+            elementType: "failure",
+            elementValue: {
               applicationSection: "data",
               deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               entityUuid: "XXXXXX",
@@ -118,9 +118,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -130,7 +130,7 @@ describe("domainSelector", () => {
                 referenceType: "constant",
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "XXXXXXXXX"
               }
@@ -140,11 +140,11 @@ describe("domainSelector", () => {
       };
 
       expect(selectByDomainManyQueriesFromDomainState(domainState, queryParam)).toEqual({
-        resultType: "object",
-        resultValue: {
+        elementType: "object",
+        elementValue: {
           book: {
-            resultType: "failure",
-            resultValue: {
+            elementType: "failure",
+            elementValue: {
               applicationSection: "data",
               deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -165,9 +165,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -177,7 +177,7 @@ describe("domainSelector", () => {
                 referenceType: "constant",
                 "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -188,7 +188,7 @@ describe("domainSelector", () => {
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      expect(queryResult.resultValue.book.resultValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
   )
 
@@ -200,9 +200,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -212,7 +212,7 @@ describe("domainSelector", () => {
                 "referenceType": "constant",
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -227,7 +227,7 @@ describe("domainSelector", () => {
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      expect(queryResult.resultValue.book2.resultValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book2.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }
   )
 
@@ -238,33 +238,33 @@ describe("domainSelector", () => {
 
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
-        "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": { "wantedBookUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f" },
-        "fetchQuery": {
-          "select": {
-            "book": {
-              "queryType": "selectObjectByDirectReference",
-              "parentName": "Book",
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+        contextResults: { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: { wantedBookUuid: { elementType: "instanceUuid", elementValue:"caef8a59-39eb-48b5-ad59-a7642d3a1e8f" } } },
+        fetchQuery: {
+          select: {
+            book: {
+              queryType: "selectObjectByDirectReference",
+              parentName: "Book",
               parentUuid: {
-                "referenceType": "constant",
-                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                referenceType: "constant",
+                referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               },
-              "objectReference": {
-                "referenceType": "queryParameterReference",
-                "referenceName": "wantedBookUuid"
-              }
+              instanceUuid: {
+                referenceType: "queryParameterReference",
+                referenceName: "wantedBookUuid",
+              },
             },
-          }
-        }
+          },
+        },
       };
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      console.log("queryResult", JSON.stringify(queryResult, circularReplacer, 2));
+      console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
-      expect(queryResult.resultValue.book.resultValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
+      expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])
     }    
   )
 
@@ -276,9 +276,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -288,7 +288,7 @@ describe("domainSelector", () => {
                 "referenceType": "constant",
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -310,12 +310,12 @@ describe("domainSelector", () => {
         }
       };
 
-      const result:ResultsFromQuery = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
-      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(result));
+      console.log("result XXXXXXXXXXXXXXXXXXXXXXXXXXXXX", JSON.stringify(result, circularReplacer(), 2));
       
-      expect(result.resultType).toBe("object")
-      expect((result.resultValue as any)["publisher"].resultValue).toBe(
+      expect(result.elementType).toBe("object")
+      expect((result.elementValue as any)["publisher"].elementValue).toBe(
         domainState[applicationDeploymentLibrary.uuid]["data"]["a027c379-8468-43a5-ba4d-bf618be25cab"][
           "516a7366-39e7-4998-82cb-80199a7fa667"
         ]
@@ -331,9 +331,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -343,7 +343,7 @@ describe("domainSelector", () => {
                 "referenceType": "constant",
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -378,11 +378,11 @@ describe("domainSelector", () => {
         }
       };
 
-      const result:ResultsFromQuery = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
       console.log("result", result);
       
-      expect((result.resultValue as any)["booksOfPublisher"].resultValue).toEqual({
+      expect((result.elementValue as any)["booksOfPublisher"].elementValue).toEqual({
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
         "c6852e89-3c3c-447f-b827-4b5b9d830975": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
@@ -398,9 +398,9 @@ describe("domainSelector", () => {
       const queryParam: DomainManyQueriesWithDeploymentUuid = {
         queryType: "DomainManyQueries",
         "deploymentUuid": applicationDeploymentLibrary.uuid,
-        "contextResults": { resultType: "object", resultValue: {} },
-        "pageParams": {},
-        "queryParams": {},
+        "contextResults": { elementType: "object", elementValue: {} },
+        pageParams: { elementType: "object", elementValue: {} },
+        queryParams: { elementType: "object", elementValue: {} },
         "fetchQuery": {
           "select": {
             "book": {
@@ -410,7 +410,7 @@ describe("domainSelector", () => {
                 "referenceType": "constant",
                 referenceUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
               },
-              objectReference: {
+              instanceUuid: {
                 referenceType: "constant",
                 referenceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
               }
@@ -458,7 +458,7 @@ describe("domainSelector", () => {
         }
       };
 
-      const result:ResultsFromQuery = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
+      const result:DomainElement = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
 
       const expectedValue = {
         "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
@@ -466,10 +466,10 @@ describe("domainSelector", () => {
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
       };
 
-      expect((result.resultValue as any)["result1"].resultValue["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"].resultValue).toEqual(expectedValue)
+      expect((result.elementValue as any)["result1"].elementValue["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"].elementValue).toEqual(expectedValue)
       
-      expect((result.resultValue as any)["result2"].resultValue[0].resultValue).toEqual(expectedValue);
-      expect((result.resultValue as any)["result2"].resultValue[1].resultValue).toEqual(expectedValue);
+      expect((result.elementValue as any)["result2"].elementValue[0].elementValue).toEqual(expectedValue);
+      expect((result.elementValue as any)["result2"].elementValue[1].elementValue).toEqual(expectedValue);
     }
   )
 
@@ -477,9 +477,9 @@ describe("domainSelector", () => {
   it("getEntityDefinition query: get entity definition from entity Uuid", () => {
     const queryParam: DomainModelQueryJzodSchemaParams = {
       queryType: "getEntityDefinition",
-      "contextResults": { resultType: "object", resultValue: {} },
-      "pageParams": {},
-      "queryParams": {},
+      "contextResults": { elementType: "object", elementValue: {} },
+      pageParams: { elementType: "object", elementValue: {} },
+      queryParams: { elementType: "object", elementValue: {} },
       deploymentUuid: applicationDeploymentLibrary.uuid,
       entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     };
