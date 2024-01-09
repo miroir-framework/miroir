@@ -1,7 +1,0 @@
-{
-  "uuid": "b1c4d5d7-56d3-41e2-9574-300d821ecf4c",
-  "parentName": "Endpoint",
-  "parentUuid": "757595aa-7e4a-43c0-b561-ae545360ab2d",
-  "name": "DeploymentEndpoint",
-  "description": "Endpoint for Deployment Actions"
-}

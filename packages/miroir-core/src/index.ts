@@ -468,13 +468,13 @@ import reportJzodSchemaList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6
 import reportQueryVersionList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7aed09a9-8a2d-4437-95ab-62966e38352c.json';
 import reportReportList from './assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855.json';
 
-import queryBundleProducer from './assets/miroir_data/c0ce8936-abf8-492f-80bf-addd6e6b6227/5d7be714-d16d-4e31-97cd-8a27249792ee.json';
+// import queryBundleProducer from './assets/miroir_data/c0ce8936-abf8-492f-80bf-addd6e6b6227/5d7be714-d16d-4e31-97cd-8a27249792ee.json';
 import queryVersionBundleProducerV1 from './assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json';
 
-import applicationEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/a04f7b8a-cdec-4f43-b08c-388f70fdd6ba.json';
-import deploymentEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/b1c4d5d7-56d3-41e2-9574-300d821ecf4c.json';
-import instanceEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/3b31cf8d-5847-4b82-9dbf-22bc5fc9ae99.json';
-import modelEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/45132eed-f0a0-46df-b413-294b1472a46d.json';
+// import applicationEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/a04f7b8a-cdec-4f43-b08c-388f70fdd6ba.json';
+// import deploymentEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/b1c4d5d7-56d3-41e2-9574-300d821ecf4c.json';
+// import instanceEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/3b31cf8d-5847-4b82-9dbf-22bc5fc9ae99.json';
+// import modelEndpoint from './assets/miroir_data/757595aa-7e4a-43c0-b561-ae545360ab2d/45132eed-f0a0-46df-b413-294b1472a46d.json';
 import applicationEndpointV1 from './assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ddd9c928-2ceb-4f67-971b-5898090412d6.json';
 import deploymentEndpointV1 from './assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json';
 import instanceEndpointV1 from './assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json';
@@ -525,13 +525,13 @@ export {
   
   miroirJzodSchemaBootstrap,
   
-  queryBundleProducer,
+  // queryBundleProducer,
   queryVersionBundleProducerV1,
   
-  applicationEndpoint,
-  deploymentEndpoint,
-  instanceEndpoint,
-  modelEndpoint,
+  // applicationEndpoint,
+  // deploymentEndpoint,
+  // instanceEndpoint,
+  // modelEndpoint,
   applicationEndpointV1,
   deploymentEndpointV1,
   instanceEndpointV1,

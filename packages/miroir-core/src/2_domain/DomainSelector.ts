@@ -81,7 +81,7 @@ const resolveContextReference = (
   queryParams: DomainElementObject,
   contextResults: DomainElement,
 ) : DomainElement => {
-  
+  // log.info("resolveContextReference for", queryObjectReference)
   if (
     (queryObjectReference.referenceType == "queryContextReference" &&
       (!contextResults.elementValue ||
@@ -167,16 +167,15 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
   if (!domainState) {
     return { elementType: "failure", elementValue: { queryFailure: "DomainStateNotLoaded" } };
   }
+  if (!domainState[deploymentUuid]) {
+    return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
+  }
   if (!domainState[deploymentUuid][applicationSection]) {
     return {
       elementType: "failure",
       elementValue: { queryFailure: "ApplicationSectionNotFound", deploymentUuid, applicationSection },
     };
   }
-  if (!domainState[deploymentUuid]) {
-    return { elementType: "failure", elementValue: { queryFailure: "DeploymentNotFound", deploymentUuid } };
-  }
-
   switch (entityUuid.elementType) {
     case "string":
     case "instanceUuid": {
