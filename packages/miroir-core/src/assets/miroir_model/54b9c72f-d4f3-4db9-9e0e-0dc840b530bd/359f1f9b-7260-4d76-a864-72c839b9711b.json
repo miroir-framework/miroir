@@ -72,6 +72,11 @@
                 "optional": true,
                 "definition": "any"
               },
+              "queryReference": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "any"
+              },
               "queryParameters": {
                 "type": "simpleType",
                 "optional": true,
@@ -119,6 +124,7 @@
               "applicationSection": {
                 "type": "schemaReference",
                 "optional": true,
+                "extra": { "id":2, "defaultLabel": "Parent Uuid", "editable": false },
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -128,13 +134,14 @@
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "extra": { "id":2, "defaultLabel": "Parent Name", "editable": false }
+                "extra": { "id":3, "defaultLabel": "Parent Name", "editable": false }
               },
               "parentUuid": {
-                "type": "simpleType",
-                "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "extra": { "id":3, "defaultLabel": "Parent Uuid", "editable": false }
+                "type": "schemaReference",
+                "extra": { "id":4, "defaultLabel": "Parent Uuid", "editable": false },
+                "definition": {
+                  "relativePath": "queryObjectReference"
+                }
               }
             }
           },
@@ -182,7 +189,6 @@
               }
             ]
           },
-
           "selectObjectByRelationQuery": {
             "type": "object",
             "extend": {

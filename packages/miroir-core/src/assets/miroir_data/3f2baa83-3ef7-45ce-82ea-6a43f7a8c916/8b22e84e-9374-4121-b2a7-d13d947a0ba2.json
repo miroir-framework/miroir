@@ -11,7 +11,10 @@
         "jzodSchemas": {
           "queryType": "selectObjectListByEntity",
           "parentName": "JzodSchema",
-          "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf"
+          }
         }
       }
     },
