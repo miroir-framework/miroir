@@ -54,6 +54,31 @@
               "referenceType": "constant",
               "referenceUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
             }
+          },
+          "instancesOfEntities": {
+            "queryType": "queryCombiner",
+            "rootQuery": {
+              "queryType": "queryContextReference",
+              "queryReference": "entities"
+            },
+            "subQuery": {
+              "query": {
+                "queryType":"selectObjectListByEntity",
+                "parentUuid": {
+                  "referenceType": "queryParameterReference",
+                  "referenceName": "uuid"
+                }
+              },
+              "parameter": {
+                "transformerType": "recordOfTransformers",
+                "definition": {
+                  "uuid": {
+                    "transformerType": "objectTransformer",
+                    "attributeName": "uuid"
+                  }
+                }
+              }
+            }
           }
         }
       }

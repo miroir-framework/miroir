@@ -302,6 +302,39 @@
               }
             }
           },
+          "selectQueryCombinerQuery": {
+            "type": "object",
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "queryCombiner"
+              },
+              "rootQuery": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "miroirSelectQuery"
+                }
+              },
+              "subQuery": {
+                "type": "object",
+                "definition": {
+                  "query": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirSelectQuery"
+                    }
+                  },
+                  "parameter": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "recordOfTransformers"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "selectObjectListQuery": {
             "type": "union",
             "discriminator": "type",
@@ -333,6 +366,12 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "relativePath": "selectQueryCombinerQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
                   "relativePath": "selectObjectQuery"
                 }
               },
@@ -350,7 +389,7 @@
                     "type": "literal",
                     "definition": "queryContextReference"
                   },
-                  "referenceName": {
+                  "queryReference": {
                     "type": "simpleType",
                     "definition": "string"
                   }

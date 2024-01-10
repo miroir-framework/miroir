@@ -7,8 +7,6 @@ import {
   DomainModelGetSingleSelectObjectQueryQueryParams,
   DomainModelGetSingleSelectQueryJzodSchemaQueryParams,
   DomainModelQueryJzodSchemaParams,
-  DomainSingleSelectObjectListQueryWithDeployment,
-  DomainSingleSelectQueryWithDeployment,
   DomainStateSelector,
   MiroirSelectorQueryParams,
   RecordOfJzodElement,
@@ -17,21 +15,17 @@ import {
 
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
-  ApplicationSection,
+  DomainElement,
+  DomainElementObject,
   EntityDefinition,
   EntityInstance,
-  EntityInstancesUuidIndex,
-  DomainElement,
   JzodElement,
   JzodObject,
   MiroirCustomQueryParams,
   MiroirSelectQuery,
-  QueryFailed,
-  SelectObjectQuery,
-  SelectObjectListByRelationQuery,
-  DomainElementObject,
-  SelectObjectByDirectReferenceQuery,
   QueryObjectReference,
+  SelectObjectListByRelationQuery,
+  SelectObjectQuery
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/Logger";
@@ -39,6 +33,7 @@ import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9b
 import { packageName } from "../constants";
 import { circularReplacer, getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
+import { applyTransformer } from "./Transformers";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainSelector");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -252,7 +247,9 @@ export const selectEntityInstanceListFromListQueryAndDomainState: DomainStateSel
                   selectorParams?.contextResults.elementValue &&
                   selectorParams?.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
                 ) {
-                  otherIndex = (selectorParams?.contextResults?.elementValue[relationQuery.objectReference.referenceName].elementValue as any ?? {})[relationQuery.objectReferenceAttribute??"uuid"]
+                  otherIndex = ((selectorParams?.contextResults?.elementValue[
+                    relationQuery.objectReference.referenceName
+                  ].elementValue as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
                 } else if (relationQuery.objectReference?.referenceType == "constant") {
                   otherIndex = relationQuery.objectReference?.referenceUuid
                 }
@@ -520,9 +517,54 @@ export const innerSelectElementFromQueryAndDomainState = (
       };
       break;
     }
+    case "queryCombiner": {
+      const rootQueryResults = innerSelectElementFromQueryAndDomainState(
+        domainState,
+        newFetchedData,
+        pageParams,
+        queryParams,
+        deploymentUuid,
+        query.rootQuery
+      );
+      if (rootQueryResults.elementType == "instanceUuidIndex") {
+        const result: DomainElementObject = {
+          elementType: "object",
+          elementValue: Object.fromEntries(
+            Object.entries(rootQueryResults.elementValue).map((entry) => {
+              return [
+                entry[1].uuid,
+                innerSelectElementFromQueryAndDomainState(
+                  domainState,
+                  newFetchedData,
+                  pageParams,
+                  {
+                    elementType: "object",
+                    elementValue: {
+                      ...queryParams.elementValue,
+                      ...Object.fromEntries(
+                        Object.entries(applyTransformer(query.subQuery.parameter, entry[1])).map((e: [string, any]) => [
+                          e[0],
+                          { elementType: "instanceUuid", elementValue: e[1] },
+                        ])
+                      ),
+                    },
+                  },
+                  deploymentUuid,
+                  query.subQuery.query
+                ),
+              ];
+            })
+          ),
+        };
+        return result;
+      } else {
+        return { elementType: "failure", elementValue: { queryFailure: "IncorrectParameters", query: query.rootQuery } }
+      }
+      break;
+    }
     case "queryContextReference": {
-      return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.referenceName]
-        ? newFetchedData.elementValue[query.referenceName]
+      return newFetchedData && newFetchedData.elementType == "object" && newFetchedData.elementValue[query.queryReference]
+        ? newFetchedData.elementValue[query.queryReference]
         : { elementType: "failure", elementValue: { queryFailure: "ReferenceNotFound", query } };
       break;
     }
@@ -643,7 +685,8 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
     query.singleSelectQuery.select.queryType=="literal" ||
     query.singleSelectQuery.select.queryType=="queryContextReference" ||
     query.singleSelectQuery.select.queryType=="wrapperReturningObject" ||
-    query.singleSelectQuery.select.queryType=="wrapperReturningList"
+    query.singleSelectQuery.select.queryType=="wrapperReturningList" ||
+    query.singleSelectQuery.select.queryType=="queryCombiner" 
   ) {
     throw new Error("selectJzodSchemaBySingleSelectQueryFromDomainState can not deal with context reference: query=" + JSON.stringify(query, undefined, 2));
   } else {
