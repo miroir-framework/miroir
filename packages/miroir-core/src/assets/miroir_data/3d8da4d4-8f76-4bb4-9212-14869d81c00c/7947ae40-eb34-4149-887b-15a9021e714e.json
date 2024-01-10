@@ -1,11 +1,11 @@
 {
   "uuid": "7947ae40-eb34-4149-887b-15a9021e714e",
-  "parentName": "EndpointVersion",
+  "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
   "endpointUuid": "45132eed-f0a0-46df-b413-294b1472a46d",
-  "name": "ModelEndpointVersion",
+  "name": "ModelEndpoint",
   "version": "1",
-  "description": "Version of Model Endpoint",
+  "description": "The Model Endpoint",
   "definition": {
     "type": "object",
     "definition": {

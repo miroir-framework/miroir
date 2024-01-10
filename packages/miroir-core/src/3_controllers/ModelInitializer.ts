@@ -148,7 +148,7 @@ export async function modelInitialize(
     
     // bootstrap Endpoint version
     await storeController.createEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpointVersion as EntityDefinition);
-    log.info(logHeader, 'created entity EndpointVersion',storeController.getEntityUuids());
+    log.info(logHeader, 'created entity Endpoint',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
     await storeController.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
@@ -168,7 +168,7 @@ export async function modelInitialize(
     
     // bootstrap EntityQueryVersion
     await storeController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQueryVersion as EntityDefinition);
-    log.info(logHeader, 'created entity QueryVersion',storeController.getEntityUuids());
+    log.info(logHeader, 'created entity Query',storeController.getEntityUuids());
     
     await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
     // await storeController.upsertInstance('data', reportEndpointList as EntityInstance);
@@ -233,9 +233,9 @@ export async function modelInitialize(
     // await storeController.createModelStorageSpaceForInstancesOfEntity(entityEndpoint as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     // log.info(logHeader, 'app initialized entity Endpoint',storeController.getEntityUuids());
 
-    // bootstrap EndpointVersion
+    // bootstrap Endpoint
     await storeController.createModelStorageSpaceForInstancesOfEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpointVersion as EntityDefinition);
-    log.info(logHeader, 'app initialized entity EndpointVersion',storeController.getEntityUuids());
+    log.info(logHeader, 'app initialized entity Endpoint',storeController.getEntityUuids());
 
     // bootstrap EntityReport
     await storeController.createModelStorageSpaceForInstancesOfEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);

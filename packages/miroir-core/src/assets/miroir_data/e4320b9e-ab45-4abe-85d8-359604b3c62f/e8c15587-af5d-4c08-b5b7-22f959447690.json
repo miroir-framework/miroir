@@ -55,11 +55,32 @@
               "referenceUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
             }
           },
+          "queries": {
+            "queryType": "selectObjectListByEntity",
+            "parentName": "Query",
+            "parentUuid": {
+              "referenceType": "constant",
+              "referenceUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+            }
+          },
+          "endpoints": {
+            "queryType": "selectObjectListByEntity",
+            "parentName": "Query",
+            "parentUuid": {
+              "referenceType": "constant",
+              "referenceUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+            }
+          },
           "instancesOfEntities": {
             "queryType": "queryCombiner",
             "rootQuery": {
-              "queryType": "queryContextReference",
-              "queryReference": "entities"
+              "queryType": "selectObjectListByEntity",
+              "applicationSection": "model",
+              "parentName": "Entity",
+              "parentUuid": {
+                "referenceType": "constant",
+                "referenceUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+              }
             },
             "subQuery": {
               "query": {
