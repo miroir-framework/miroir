@@ -38,6 +38,7 @@ const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeConstructo
   boolean: DataTypes.BOOLEAN,
   entity_instance_uuid: DataTypes.STRING,
   object: DataTypes.JSONB, 
+  record: DataTypes.JSONB, 
   string: DataTypes.STRING,
   uuid: DataTypes.STRING,
   schemaReference: DataTypes.JSONB, 
@@ -62,15 +63,22 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       return [
         [a[0]],
         {
-          type: a[1].type == "simpleType" ? dataTypesMapping[a[1].definition] : a[1].type == "schemaReference"? dataTypesMapping[a[1].type] :DataTypes.STRING,
+          type:
+            a[1].type == "simpleType"
+              ? dataTypesMapping[a[1].definition]
+              : a[1].type == "schemaReference"
+              ? dataTypesMapping[a[1].type]
+              : a[1].type == "array" || a[1].type == "object"
+              ? dataTypesMapping[a[1].type]
+              : DataTypes.STRING,
           // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
-          allowNull: (a[1] as any)["optional"]??false,
+          allowNull: (a[1] as any)["optional"] ?? false,
           primaryKey: a[0] == "uuid",
         },
       ];
     })
   );
-  log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition","jzodSchema",entityDefinition.jzodSchema, "result", result);
+  log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
 // // ##############################################################################################

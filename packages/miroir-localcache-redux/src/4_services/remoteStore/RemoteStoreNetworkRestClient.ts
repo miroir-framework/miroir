@@ -61,7 +61,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
     "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
     "modelAction": {"*": {action: true}},
-    "storeAction": {"*": {action: true}},
+    "storeAction": {"*": {action: true}}, // TODO: remove, there must be no impact when adding/removing an actionType
     // "localCacheModelActionWithDeployment": {"*": {action: true}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     "DomainTransactionalAction": {
@@ -101,7 +101,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
         ? this.actionTypeArgsMap[networkAction.actionType]["*"]
           ? 
           this.actionTypeArgsMap[networkAction.actionType]["*"]?.action?
-          networkAction
+          networkAction // for an action, the whole action itself is passed as payload
           :
           {
               [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[

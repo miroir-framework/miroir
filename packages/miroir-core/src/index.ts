@@ -316,7 +316,8 @@ export {
   RestServiceHandler,
 } from "./0_interfaces/4-services/RemoteStoreInterface.js";
 export {
-  IAbstractStoreSection,
+  AbstractStoreInterface,
+  AbstractStoreSectionInterface,
   IDataStoreSection,
   IModelStoreSection,
   IAbstractEntityStoreSection,
@@ -447,8 +448,8 @@ import entityDefinitionEntityDefinition from './assets/miroir_model/54b9c72f-d4f
 import entityDefinitionJzodSchema from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json';
 import entityDefinitionReport from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
 // import entityDefinitionQuery from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/5be645c3-892e-44e3-9358-dfe27c4da74c.json';
-import entityDefinitionQueryVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
-import entityDefinitionEndpointVersion from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
+import entityDefinitionEndpoint from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
+import entityDefinitionQuery from './assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
 
 import applicationMiroir from './assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json';
 import applicationDeploymentMiroir from './assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
@@ -514,13 +515,13 @@ export {
   entityDefinitionApplicationDeploymentConfiguration,
   entityDefinitionApplicationModelBranch,
   entityDefinitionApplicationVersion,
-  entityDefinitionEndpointVersion,
+  entityDefinitionEndpoint,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
   entityDefinitionStoreBasedConfiguration,
   // entityDefinitionQuery,
-  entityDefinitionQueryVersion,
+  entityDefinitionQuery,
   entityDefinitionReport,
   
   miroirJzodSchemaBootstrap,

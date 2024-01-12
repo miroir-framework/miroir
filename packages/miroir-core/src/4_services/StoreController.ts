@@ -130,7 +130,7 @@ export class StoreController implements IStoreController{
 
   // #############################################################################################
   async open():Promise<void> {
-    await this.dataStoreSection.open(); // replace by open?
+    await this.dataStoreSection.open();
     await this.modelStoreSection.open();
     return Promise.resolve();
   }

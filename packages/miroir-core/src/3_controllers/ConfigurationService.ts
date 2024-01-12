@@ -2,9 +2,9 @@
 // TODO: put in ConfigurationServiceInterface
 
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
-import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { AdminStoreInterface, IDataOrModelStore, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -29,12 +29,27 @@ export interface PackageConfiguration {
   packageVersion: string;
 }
 
+
+// ###############################################################################################################
+// export type AdminStoreFactory = (config: StoreSectionConfiguration,
+//   ) => AdminStoreInterface
+
+export type AdminStoreFactory = (
+  section:ApplicationSection,
+  config: StoreSectionConfiguration,
+)=>Promise<AdminStoreInterface>;
+
+export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
+
+
+// ###############################################################################################################
 /**
  * Allows Miroir packages to inject (and access?) configuration information.
  */
 export class ConfigurationService {
   static packages:PackageConfiguration[] = [];
   static StoreSectionFactoryRegister:StoreSectionFactoryRegister = new Map();
+  static adminStoreFactoryRegister:AdminStoreFactoryRegister = new Map();
 
   constructor() {
     
@@ -52,6 +67,13 @@ export class ConfigurationService {
     log.info("ConfigurationService registerStoreSectionFactory",this.StoreSectionFactoryRegister);
     this.StoreSectionFactoryRegister.set(
       JSON.stringify({storageType, section}), storeSectionFactory
+    );
+  }
+
+  public static registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: AdminStoreFactory) {
+    log.info("ConfigurationService registerAdminStoreFactory",this.StoreSectionFactoryRegister);
+    this.adminStoreFactoryRegister.set(
+      JSON.stringify({storageType}), adminStoreFactory
     );
   }
 

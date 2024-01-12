@@ -77,11 +77,13 @@
             "extra": { "id": 11, "defaultLabel": "Endpoint Definition", "editable": true }
           },
           "actionTransformer": {
-            "type": "simpleType", 
+            "type": "simpleType",
+            "optional": true,
             "definition": "any"
           },
           "actionMigrations": {
             "type": "simpleType", 
+            "optional": true,
             "definition": "any"
           }
         }

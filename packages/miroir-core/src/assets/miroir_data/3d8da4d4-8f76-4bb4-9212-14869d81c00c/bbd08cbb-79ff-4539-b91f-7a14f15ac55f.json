@@ -16,6 +16,36 @@
             "type": "object",
             "definition": {
               "actionType": {"type": "literal", "definition":"storeAction"},
+              "actionName": {"type": "literal", "definition":"createStore"},
+              "endpointVersion": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
+              "configuration": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeConfiguration"} },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true,
+                "validations": [{ "type": "uuid" }],
+                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"storeAction"},
+              "actionName": {"type": "literal", "definition":"deleteStore"},
+              "endpointVersion": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {"type": "literal", "definition":"storeAction"},
               "actionName": {"type": "literal", "definition":"openStore"},
               "endpointVersion": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
               "configuration": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeConfiguration"} },
@@ -44,8 +74,16 @@
           }
         ]
       },
-      "actionTransformer": {},
-      "actionMigrations": {}
+      "actionTransformer": {
+        "type": "simpleType",
+        "optional": true,
+        "definition": "any"
+      },
+      "actionMigrations": {
+        "type": "simpleType",
+        "optional": true,
+        "definition": "any"
+      }
     }
   }
 }

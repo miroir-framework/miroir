@@ -22,7 +22,7 @@ import entityDefinitionApplicationVersionCrossEntityDeployment from '../assets/m
 import entityDefinitionApplicationModelBranch from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json';
 import entityDefinitionCommit from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json';
 // import entityDefinitionEndpoint from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/6796e19e-8bbd-4b96-b505-76fe49ed5c6a.json';
-import entityDefinitionEndpointVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
+import entityDefinitionEndpoint from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json';
 import entityDefinitionEntityDefinition from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json';
 import entityDefinitionEntity from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json';
 import entityDefinitionJzodSchema from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json';
@@ -30,7 +30,7 @@ import entityDefinitionReport from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e
 // import entityDefinitionModelVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json';
 import entityDefinitionStoreBasedConfiguration from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
 // import entityDefinitionQuery from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/5be645c3-892e-44e3-9358-dfe27c4da74c.json';
-import entityDefinitionQueryVersion from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
+import entityDefinitionQuery from '../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
 
 import reportApplicationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json';
 import reportApplicationDeploymentConfigurationList from '../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json';
@@ -147,7 +147,7 @@ export async function modelInitialize(
     // log.info(logHeader, 'created entity Endpoint',storeController.getEntityUuids());
     
     // bootstrap Endpoint version
-    await storeController.createEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpointVersion as EntityDefinition);
+    await storeController.createEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     log.info(logHeader, 'created entity Endpoint',storeController.getEntityUuids());
     
     // bootstrap EntityStoreBasedConfiguration
@@ -167,7 +167,7 @@ export async function modelInitialize(
     // log.info(logHeader, 'created entity Query',storeController.getEntityUuids());
     
     // bootstrap EntityQueryVersion
-    await storeController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQueryVersion as EntityDefinition);
+    await storeController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQuery as EntityDefinition);
     log.info(logHeader, 'created entity Query',storeController.getEntityUuids());
     
     await storeController.upsertInstance('data', reportConfigurationList as EntityInstance);
@@ -234,7 +234,7 @@ export async function modelInitialize(
     // log.info(logHeader, 'app initialized entity Endpoint',storeController.getEntityUuids());
 
     // bootstrap Endpoint
-    await storeController.createModelStorageSpaceForInstancesOfEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpointVersion as EntityDefinition);
+    await storeController.createModelStorageSpaceForInstancesOfEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     log.info(logHeader, 'app initialized entity Endpoint',storeController.getEntityUuids());
 
     // bootstrap EntityReport

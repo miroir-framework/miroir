@@ -41,9 +41,7 @@
             }
           }
         }
-      },
-      "actionTransformer": {},
-      "actionMigrations": {}
+      }
     }
   }
 }

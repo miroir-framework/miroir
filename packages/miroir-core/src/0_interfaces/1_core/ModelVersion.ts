@@ -7,8 +7,10 @@ export const MiroirApplicationVersionSchema = EntityInstanceWithNameSchema.exten
   description: z.string().optional(),
   application: z.string(),
   branch: z.string(),
-  previousVersion: z.string(),
+  previousVersion: z.string().optional(),
   modelCUDMigration: z.array(ModelReplayableUpdateSchema).optional(),
   modelStructureMigration: z.array(z.union([ModelReplayableUpdateSchema, LocalCacheEntityActionWithDeploymentSchema])).optional(),
+  // modelCUDMigration: z.array(z.any()).optional(),
+  // modelStructureMigration: z.array(z.any()).optional(),
 });
 export type MiroirApplicationVersion = z.infer<typeof MiroirApplicationVersionSchema>;

@@ -280,6 +280,12 @@ export async function actionRunner(
     // case "createBundle":
     // case "deleteBundle":
     //   break;
+    case "createStore": {
+      break;
+    }
+    case "deleteStore": {
+      break;
+    }
     case "openStore": {
       // log.info('actionRunner openStore',miroirConfig);
 

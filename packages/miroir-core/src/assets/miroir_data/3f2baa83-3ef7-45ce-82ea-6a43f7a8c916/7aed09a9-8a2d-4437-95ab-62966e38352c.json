@@ -8,7 +8,7 @@
     "reportParameters": {},
     "fetchQuery": {
       "select": {
-        "queryVersions": {
+        "queries": {
           "queryType": "selectObjectListByEntity",
           "parentName": "Query",
           "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
@@ -20,7 +20,7 @@
       "definition": {
         "parentName": "Query",
         "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-        "fetchedDataReference": "queryVersions"
+        "fetchedDataReference": "queries"
       }
     }
   }

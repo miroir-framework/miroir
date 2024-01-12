@@ -17,7 +17,23 @@ import {
 
 // ###########################################################################################
 // Abstract store interfaces
-export interface IAbstractStoreSection {
+export interface AbstractStoreInterface {
+  getStoreName(): string;
+  open():Promise<void>;
+  close():Promise<void>;
+}
+
+// ###########################################################################################
+// Abstract store interfaces
+export interface AdminStoreInterface extends AbstractStoreInterface {
+  // getStoreName(): string;
+  createStore():Promise<void>;
+  deleteStore():Promise<void>;
+}
+
+// ###########################################################################################
+// Abstract store interfaces
+export interface AbstractStoreSectionInterface extends AbstractStoreInterface {
   getStoreName(): string;
   open():Promise<void>;
   close():Promise<void>;
@@ -73,11 +89,11 @@ export interface IAbstractEntityStoreSection {
 
 // ###############################################################################################################
 // Data and Model sections
-export interface IModelStoreSection extends IAbstractStoreSection, IStorageSpaceHandler, IAbstractInstanceStoreSection, IAbstractEntityStoreSection {
+export interface IModelStoreSection extends AbstractStoreSectionInterface, IStorageSpaceHandler, IAbstractInstanceStoreSection, IAbstractEntityStoreSection {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
-export interface IDataStoreSection extends IAbstractStoreSection, IStorageSpaceHandler, IAbstractInstanceStoreSection {
+export interface IDataStoreSection extends AbstractStoreSectionInterface, IStorageSpaceHandler, IAbstractInstanceStoreSection {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
@@ -97,7 +113,7 @@ export type StoreSectionFactoryRegister = Map<string,StoreSectionFactory>;
 
 // ###############################################################################################################
 // store Controller
-export interface IStoreController extends IAbstractStoreSection, IAbstractEntityStoreSection /**, IAbstractInstanceStoreSection */ {
+export interface IStoreController extends AbstractStoreSectionInterface, IAbstractEntityStoreSection /**, IAbstractInstanceStoreSection */ {
   initApplication(
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,

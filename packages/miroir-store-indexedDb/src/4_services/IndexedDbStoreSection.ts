@@ -1,7 +1,7 @@
 import {
   DataStoreApplicationType,
   EntityDefinition,
-  IAbstractStoreSection,
+  AbstractStoreSectionInterface,
   IStorageSpaceHandler,
   LoggerInterface,
   MetaEntity,
@@ -23,7 +23,7 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 
 // base class for IndexedDb store mixins
-export class IndexedDbStoreSection implements IAbstractStoreSection, IStorageSpaceHandler {
+export class IndexedDbStoreSection implements AbstractStoreSectionInterface, IStorageSpaceHandler {
   public indexedDbStoreName: string;
   public localUuidIndexedDb: IndexedDb;
   public logHeader: string;
