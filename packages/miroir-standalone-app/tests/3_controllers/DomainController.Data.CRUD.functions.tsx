@@ -24,7 +24,7 @@ import {
   entityDefinitionBook,
   EntityInstance,
   getLoggerName,
-  IStoreController,
+  StoreControllerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
@@ -52,8 +52,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export async function refreshAllInstancesTest(
   miroirConfig: MiroirConfigClient,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
   reduxStore: ReduxStore,
   domainController: DomainControllerInterface,
   miroirContext: MiroirContext

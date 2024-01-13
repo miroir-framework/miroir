@@ -27,8 +27,12 @@ export interface AbstractStoreInterface {
 // Abstract store interfaces
 export interface AdminStoreInterface extends AbstractStoreInterface {
   // getStoreName(): string;
-  createStore():Promise<void>;
-  deleteStore():Promise<void>;
+  createStore(
+    // section: ApplicationSection,
+    config: StoreSectionConfiguration
+    // dataStore?: StoreDataSectionInterface
+  ): Promise<void>;
+  deleteStore(config: StoreSectionConfiguration): Promise<void>;
 }
 
 // ###########################################################################################
@@ -47,7 +51,7 @@ export interface AbstractStoreSectionInterface extends AbstractStoreInterface {
 
 
 // ###########################################################################################
-export interface IStorageSpaceHandler {
+export interface StorageSpaceHandlerInterface {
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
   ): Promise<void>;
@@ -66,7 +70,7 @@ export interface IStorageSpaceHandler {
 }
 
 // ###########################################################################################
-export interface IAbstractInstanceStoreSection {
+export interface AbstractInstanceStoreSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstances(parentUuid: string): Promise<EntityInstance[]>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
@@ -75,7 +79,7 @@ export interface IAbstractInstanceStoreSection {
 }
 
 // ###########################################################################################
-export interface IAbstractEntityStoreSection {
+export interface AbstractEntityStoreSectionInterface {
   existsEntity(entityUuid:string):boolean;
 
   createEntity(
@@ -89,31 +93,38 @@ export interface IAbstractEntityStoreSection {
 
 // ###############################################################################################################
 // Data and Model sections
-export interface IModelStoreSection extends AbstractStoreSectionInterface, IStorageSpaceHandler, IAbstractInstanceStoreSection, IAbstractEntityStoreSection {
+export interface StoreModelSectionInterface extends AbstractStoreSectionInterface, StorageSpaceHandlerInterface, AbstractInstanceStoreSectionInterface, AbstractEntityStoreSectionInterface {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
-export interface IDataStoreSection extends AbstractStoreSectionInterface, IStorageSpaceHandler, IAbstractInstanceStoreSection {
+export interface StoreDataSectionInterface extends AbstractStoreSectionInterface, StorageSpaceHandlerInterface, AbstractInstanceStoreSectionInterface {
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 }
 
 
 // ###############################################################################################################
-export type IDataOrModelStore = IDataStoreSection | IModelStoreSection;
+export type DataOrModelStoreInterface = StoreDataSectionInterface | StoreModelSectionInterface;
 
 // ###############################################################################################################
 export type StoreSectionFactory = (
   section:ApplicationSection,
   config: StoreSectionConfiguration,
-  dataStore?: IDataStoreSection,
-)=>Promise<IDataOrModelStore>;
+  dataStore?: StoreDataSectionInterface,
+)=>Promise<DataOrModelStoreInterface>;
 
 export type StoreSectionFactoryRegister = Map<string,StoreSectionFactory>;
+
+// ###############################################################################################################
+export type AdminStoreFactory = (
+  config: StoreSectionConfiguration,
+)=>Promise<AdminStoreInterface>;
+
+export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
 
 
 // ###############################################################################################################
 // store Controller
-export interface IStoreController extends AbstractStoreSectionInterface, IAbstractEntityStoreSection /**, IAbstractInstanceStoreSection */ {
+export interface StoreControllerInterface extends AbstractStoreSectionInterface, AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
   initApplication(
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
@@ -140,7 +151,7 @@ export interface IStoreController extends AbstractStoreSectionInterface, IAbstra
   getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 
-  // instance interface differs from the one in IAbstractInstanceStoreSection: it has an ApplicationSection as first parameter
+  // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
   getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<EntityInstance | undefined>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;

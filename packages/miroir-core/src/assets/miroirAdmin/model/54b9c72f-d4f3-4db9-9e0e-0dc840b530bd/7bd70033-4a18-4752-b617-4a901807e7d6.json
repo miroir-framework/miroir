@@ -41,7 +41,7 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id":5, "defaultLabel": "Deployed Application Version", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": false }
       },
-      "storeConfiguration": {
+      "storeUnitConfiguration": {
         "type": "schemaReference",
         "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
       }

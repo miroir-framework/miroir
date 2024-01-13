@@ -1,5 +1,11 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { IDataStoreSection, IModelStoreSection, IStoreController, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface";
+import {
+  StoreDataSectionInterface,
+  StoreModelSectionInterface,
+  StoreControllerInterface,
+  StoreSectionFactoryRegister,
+  AdminStoreFactoryRegister,
+} from "../0_interfaces/4-services/StoreControllerInterface";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeSectionFactory } from "./StoreController";
 
@@ -20,10 +26,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // ################################################################################################
 export class StoreControllerManager implements StoreControllerManagerInterface {
-  private storeControllers:{ [deploymentUuid: Uuid]: IStoreController } = {};
+  private storeControllers:{ [deploymentUuid: Uuid]: StoreControllerInterface } = {};
 
   constructor(
-    private StoreSectionFactoryRegister:StoreSectionFactoryRegister,
+    private adminStoreFactoryRegister:AdminStoreFactoryRegister,
+    private storeSectionFactoryRegister:StoreSectionFactoryRegister,
   ) {
     
   }
@@ -37,18 +44,24 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     if (this.storeControllers[deploymentUuid]) {
       log.info("addStoreController for", deploymentUuid,"already exists, doing nothing!")
     } else {
+      const adminStoreFactory = this.adminStoreFactoryRegister.get(JSON.stringify({storageType: config.admin.emulatedServerType}))
+      if (!adminStoreFactory) {
+        log.info("addStoreController no admin store factory found for", deploymentUuid, JSON.stringify(this.adminStoreFactoryRegister, undefined, 2));
+        throw new Error("addStoreController no admin store factory found for server type " + config.admin.emulatedServerType);
+      }
+      const adminStore = await adminStoreFactory(config.admin)
       const dataStore = (await storeSectionFactory(
-        this.StoreSectionFactoryRegister,
+        this.storeSectionFactoryRegister,
         "data",
         config.data
-      )) as IDataStoreSection;
+      )) as StoreDataSectionInterface;
       const modelStore = (await storeSectionFactory(
-        this.StoreSectionFactoryRegister,
+        this.storeSectionFactoryRegister,
         "model",
         config.model,
         dataStore
-      )) as IModelStoreSection;
-      this.storeControllers[deploymentUuid] = new StoreController(modelStore, dataStore);
+      )) as StoreModelSectionInterface;
+      this.storeControllers[deploymentUuid] = new StoreController(adminStore, modelStore, dataStore);
     }
   }
 
@@ -59,7 +72,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
 
   // ################################################################################################
-  getStoreController(deploymentUuid: string): IStoreController | undefined {
+  getStoreController(deploymentUuid: string): StoreControllerInterface | undefined {
     return this.storeControllers[deploymentUuid];
   }
 

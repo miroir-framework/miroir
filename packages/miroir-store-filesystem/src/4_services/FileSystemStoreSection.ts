@@ -5,7 +5,7 @@ import {
   DataStoreApplicationType,
   EntityDefinition,
   AbstractStoreSectionInterface,
-  IStorageSpaceHandler,
+  StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -15,6 +15,7 @@ import {
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { FileSystemStore } from "./FileSystemStore";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"FileSystemStoreSection");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -27,11 +28,11 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableFileSystemDbStore = GConstructor<FileSystemStoreSection>;
 
 
-export class FileSystemStoreSection implements AbstractStoreSectionInterface, IStorageSpaceHandler{
-  public filesystemStoreName: string;
-  public directory: string;
+export class FileSystemStoreSection extends FileSystemStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface{
+  // public filesystemStoreName: string;
+  // public directory: string;
 
-  public logHeader: string;
+  // public logHeader: string;
 
   // ##############################################################################################
   constructor(
@@ -40,33 +41,34 @@ export class FileSystemStoreSection implements AbstractStoreSectionInterface, IS
     // public logHeader: string;
     ...args:any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    this.filesystemStoreName = args[0];
-    this.directory = args[1];
-    this.logHeader = args[2];
+    super(args[0], args[1], args[2])
+    // this.filesystemStoreName = args[0];
+    // this.directory = args[1];
+    // this.logHeader = args[2];
   }
 
-  // #########################################################################################
-  getStoreName(): string {
-    return this.filesystemStoreName;
-  }
+  // // #########################################################################################
+  // getStoreName(): string {
+  //   return this.filesystemStoreName;
+  // }
 
-  // #########################################################################################
-  open(): Promise<void> {
-    // const entityDirectories = fs.readdirSync(this.directory);
-    if (fs.existsSync(this.directory)) {
-      log.debug(this.logHeader, 'open checked that directory exist:', this.directory);
-    } else {
-      fs.mkdirSync(this.directory,{recursive: true})
-      log.info(this.logHeader, 'open created directory:',this.directory);
-    }
-    return Promise.resolve();
-  }
+  // // #########################################################################################
+  // open(): Promise<void> {
+  //   // const entityDirectories = fs.readdirSync(this.directory);
+  //   if (fs.existsSync(this.directory)) {
+  //     log.debug(this.logHeader, 'open checked that directory exist:', this.directory);
+  //   } else {
+  //     fs.mkdirSync(this.directory,{recursive: true})
+  //     log.info(this.logHeader, 'open created directory:',this.directory);
+  //   }
+  //   return Promise.resolve();
+  // }
 
-  // #############################################################################################
-  close(): Promise<void> {
-    log.info(this.logHeader, 'close does nothing!');
-    return Promise.resolve();
-  }
+  // // #############################################################################################
+  // close(): Promise<void> {
+  //   log.info(this.logHeader, 'close does nothing!');
+  //   return Promise.resolve();
+  // }
 
   // #############################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {

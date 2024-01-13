@@ -2,6 +2,7 @@
   "uuid":"e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   "parentName":"Entity",
   "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "name":"Book",
   "conceptLevel":"Model",

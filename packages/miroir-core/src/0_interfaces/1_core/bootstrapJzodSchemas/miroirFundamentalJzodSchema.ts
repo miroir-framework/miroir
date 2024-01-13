@@ -258,6 +258,10 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "storeUnitConfiguration": {
         "type": "object",
         "definition": {
+          "admin": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
+          },
           "model": {
             "type": "schemaReference",
             "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
@@ -376,22 +380,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "definition": "miroirConfigServer"
           }
         ]
-      },
-      "storeConfiguration": {
-        "type": "record",
-        "definition": {
-          "type": "object",
-          "definition": {
-            "model": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
-            },
-            "data": {
-              "type": "schemaReference",
-              "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeSectionConfiguration"}
-            }
-          }
-        }
       },
       "commit": {
         "type": "object",

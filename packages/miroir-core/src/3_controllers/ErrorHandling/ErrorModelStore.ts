@@ -1,9 +1,9 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection, EntityInstance, EntityDefinition } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { IModelStoreSection } from "../../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreModelSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
-export class ErrorModelStore implements IModelStoreSection {
+export class ErrorModelStore implements StoreModelSectionInterface {
   constructor() {}
   
   getStoreName(): string {

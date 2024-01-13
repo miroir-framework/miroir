@@ -1,8 +1,8 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceCollection, EntityInstance, EntityDefinition } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { IDataStoreSection } from "../../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreDataSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
-export class ErrorDataStore implements IDataStoreSection {
+export class ErrorDataStore implements StoreDataSectionInterface {
   constructor() {}
   getStoreName(): string {
     throw new Error("Method not implemented.");

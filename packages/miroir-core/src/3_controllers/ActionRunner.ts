@@ -2,7 +2,7 @@ import { MiroirAction, EntityDefinition, ModelAction, StoreAction } from "../0_i
 import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { StoreControllerInterface } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
@@ -28,8 +28,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export async function initApplicationDeployment(
   deploymentUuid: string,
   actionName:string,
-  miroirStoreController:IStoreController,
-  appStoreController:IStoreController,
+  miroirStoreController:StoreControllerInterface,
+  appStoreController:StoreControllerInterface,
   params:DomainModelInitActionParams
 ) {
   log.info("ActionRunner.ts initApplicationDeployment model/initModel params",params);
@@ -62,7 +62,7 @@ export async function initApplicationDeployment(
 
 // ##############################################################################################
 export async function applyModelEntityUpdate(
-  storeController:IStoreController,
+  storeController:StoreControllerInterface,
   update:ModelReplayableUpdate
 ):Promise<void>{
   // log.info('ModelActionRunner applyModelEntityUpdate for',update);
@@ -146,8 +146,8 @@ export async function applyModelEntityUpdate(
  * @returns 
  */
 export async function modelOLDActionRunner(
-  miroirDataStoreProxy:IStoreController,
-  appDataStoreProxy:IStoreController,
+  miroirDataStoreProxy:StoreControllerInterface,
+  appDataStoreProxy:StoreControllerInterface,
   deploymentUuid: string,
   actionName:string,
   body:any
@@ -232,15 +232,15 @@ export async function modelOLDActionRunner(
  * @returns 
  */
 export async function modelActionRunner(
-  miroirDataStoreProxy:IStoreController,
-  appDataStoreProxy:IStoreController,
+  miroirDataStoreProxy:StoreControllerInterface,
+  appDataStoreProxy:StoreControllerInterface,
   deploymentUuid: string,
   actionName:string,
   body:any
 ):Promise<void> {
   log.info('###################################### modelActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
   log.debug('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
-  const targetProxy:IStoreController = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
+  const targetProxy:StoreControllerInterface = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
   const update: ModelAction = body;
   log.info('modelActionRunner action', JSON.stringify(update,undefined,2));
   switch (actionName) {
@@ -289,16 +289,25 @@ export async function actionRunner(
     case "openStore": {
       // log.info('actionRunner openStore',miroirConfig);
 
-      // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      for (const deploymentUuid of Object.keys(action.configuration)) {
-        await storeControllerManager.deleteStoreController(deploymentUuid);
-      }
-      for (const deployment of Object.entries(action.configuration)) {
-        await storeControllerManager.addStoreController(
-          deployment[0],
-          deployment[1]
-        );
-      }
+      // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
+      // TODO: addStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
+      await storeControllerManager.deleteStoreController(
+        "model",
+        // action.deploymentUuid
+      );
+      await storeControllerManager.deleteStoreController(
+        "data",
+      );
+      await storeControllerManager.addStoreController(
+        "model",
+        // action.deploymentUuid
+        action.configuration[action.deploymentUuid??""]
+      );
+      await storeControllerManager.addStoreController(
+        "data",
+        action.configuration[action.deploymentUuid??""]
+      );
+      // }
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
       const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
       if (!localMiroirStoreController || !localAppStoreController) {

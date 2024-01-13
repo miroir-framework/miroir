@@ -2,7 +2,7 @@ import {
   DataStoreApplicationType,
   EntityDefinition,
   AbstractStoreSectionInterface,
-  IStorageSpaceHandler,
+  StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -15,6 +15,7 @@ import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDef
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { SqlDbStore } from "./SqlDbStore.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -24,83 +25,16 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 type GConstructor<T = {}> = new (...args: any[]) => T;
 
-// export type MixableSqlDbStoreSection = GConstructor<SqlDbStoreSection>;
 export type MixableSqlDbStoreSection = GConstructor<SqlDbStoreSection>;
 
-export class SqlDbStore implements AbstractStoreInterface {
-  // public logHeader: string;
-  // public sqlDbStoreName: string; // used only for debugging purposes
-  // public connectionString: string;
-  // public schema: string;
 
-  public sqlSchemaTableAccess: SqlUuidEntityDefinition = {};
-  public sequelize: Sequelize;
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface {
 
   // ##############################################################################################
   constructor(
-    // actual arguments are:
-    public sqlDbStoreName: string, // used only for debugging purposes
-    public connectionString:string,
-    public schema:string,
-    public logHeader: string,
-    // ...args: any[] // mixin constructors are limited to args:any[] parameters
-  ) {
-    // this.sqlDbStoreName = args[0];
-    // this.connectionString = args[1];
-    // this.schema = args[2];
-    // this.logHeader = args[3];
-    this.sequelize = new Sequelize(this.connectionString, { schema: this.schema }); // Example for postgres
-  }
-
-  // ##############################################################################################
-  async close(): Promise<void> {
-    await this.sequelize.close();
-    return Promise.resolve();
-    // disconnect from DB?
-  }
-
-  // ##############################################################################################
-  getStoreName(): string {
-    return this.sqlDbStoreName;
-  }
-
-  // ##############################################################################################
-  public async open(): Promise<void> {
-    try {
-      await this.sequelize.authenticate();
-      log.info(
-        this.logHeader,
-        "data Connection to postgres data schema",
-        this.schema,
-        "has been established successfully."
-      );
-    } catch (error) {
-      log.error("Unable to connect data", this.schema, " to the postgres database:", error);
-    }
-    return Promise.resolve();
-  }
-}
-
-// ##############################################################################################
-// ##############################################################################################
-// ##############################################################################################
-// export class SqlDbStoreSection implements AbstractStoreSectionInterface, IStorageSpaceHandler {
-export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectionInterface, IStorageSpaceHandler {
-  // public sqlDbStoreName: string; // used only for debugging purposes
-  // public connectionString: string;
-  // public schema: string;
-
-  // public sqlSchemaTableAccess: SqlUuidEntityDefinition = {};
-  // public sequelize: Sequelize;
-  // public logHeader: string;
-
-  // ##############################################################################################
-  constructor(
-    // actual arguments are:
-    // public sqlDbStoreName: string, // used only for debugging purposes
-    // public connectionString:string,
-    // public schema:string,
-    // public logHeader: string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
     super(
@@ -109,39 +43,6 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
       args[2],
       args[3],
     )
-    // this.sqlDbStoreName = args[0];
-    // this.connectionString = args[1];
-    // this.schema = args[2];
-    // this.logHeader = args[3];
-    // this.sequelize = new Sequelize(this.connectionString, { schema: this.schema }); // Example for postgres
-  }
-
-  // #########################################################################################
-  getStoreName(): string {
-    return this.sqlDbStoreName;
-  }
-  
-  // ##############################################################################################
-  public async open(): Promise<void> {
-    try {
-      await this.sequelize.authenticate();
-      log.info(
-        this.logHeader,
-        "data Connection to postgres data schema",
-        this.schema,
-        "has been established successfully."
-      );
-    } catch (error) {
-      log.error("Unable to connect data", this.schema, " to the postgres database:", error);
-    }
-    return Promise.resolve();
-  }
-
-  // ##############################################################################################
-  async close(): Promise<void> {
-    await this.sequelize.close();
-    return Promise.resolve();
-    // disconnect from DB?
   }
 
   // ##############################################################################################

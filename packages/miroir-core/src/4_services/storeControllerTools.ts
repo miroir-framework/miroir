@@ -1,11 +1,11 @@
-import { IStoreController } from "../0_interfaces/4-services/StoreControllerInterface";
+import { StoreControllerInterface } from "../0_interfaces/4-services/StoreControllerInterface";
 import { defaultMiroirMetaModel } from "../1_core/Model";
 
 
 // ################################################################################################
 export async function startLocalStoreControllers(
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
 ) {
   await localMiroirStoreController?.open();
   await localAppStoreController?.open();

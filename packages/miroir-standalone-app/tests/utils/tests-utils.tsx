@@ -14,7 +14,7 @@ import {
   DomainController,
   DomainControllerInterface,
   Endpoint,
-  IStoreController,
+  StoreControllerInterface,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
@@ -34,7 +34,8 @@ import {
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalStoreControllers
+  startLocalStoreControllers,
+  StoreUnitConfiguration
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
@@ -54,8 +55,8 @@ export interface BeforeAllReturnType {
   reduxStore: ReduxStore,
   miroirContext: MiroirContext,
   domainController: DomainControllerInterface,
-  localMiroirStoreController: IStoreController | undefined,
-  localAppStoreController: IStoreController | undefined,
+  localMiroirStoreController: StoreControllerInterface | undefined,
+  localAppStoreController: StoreControllerInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: any /**SetupServerApi*/ | undefined,
 }
@@ -63,8 +64,8 @@ export interface BeforeAllReturnType {
 
 // ################################################################################################
 export interface MiroirIntegrationTestEnvironment {
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
   localDataStoreWorker?: SetupWorkerApi,
   localDataStoreServer?: any /**SetupServerApi*/,
   reduxStore: ReduxStore,
@@ -167,8 +168,8 @@ export async function miroirBeforeAll(
         actionName: "openStore",
         endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig,
-          [applicationDeploymentLibrary.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig,
+          [applicationDeploymentMiroir.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentLibrary.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig as StoreUnitConfiguration,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
@@ -186,7 +187,10 @@ export async function miroirBeforeAll(
     } else {
       let localMiroirStoreController, localAppStoreController;
 
-      const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
+      const storeControllerManager = new StoreControllerManager(
+        ConfigurationService.adminStoreFactoryRegister,
+        ConfigurationService.StoreSectionFactoryRegister
+      );
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {
@@ -249,8 +253,8 @@ export async function miroirBeforeAll(
 export async function miroirBeforeEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
 ):Promise<void> {
   
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
@@ -317,8 +321,8 @@ export async function miroirBeforeEach(
 export async function miroirAfterEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.client.emulateServer) {
@@ -340,8 +344,8 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
   localDataStoreServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');

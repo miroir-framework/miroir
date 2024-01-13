@@ -2,7 +2,7 @@ import {
   DataStoreApplicationType,
   EntityDefinition,
   AbstractStoreSectionInterface,
-  IStorageSpaceHandler,
+  StorageSpaceHandlerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -11,6 +11,7 @@ import {
 import { packageName } from "../constants";
 import { IndexedDb } from "./IndexedDbSnakeCase";
 import { cleanLevel } from "./constants";
+import { IndexedDbStore } from "./IndexedDbStore";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStoreSection");
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -23,10 +24,10 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 
 // base class for IndexedDb store mixins
-export class IndexedDbStoreSection implements AbstractStoreSectionInterface, IStorageSpaceHandler {
-  public indexedDbStoreName: string;
-  public localUuidIndexedDb: IndexedDb;
-  public logHeader: string;
+export class IndexedDbStoreSection extends IndexedDbStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface {
+  // public indexedDbStoreName: string;
+  // public localUuidIndexedDb: IndexedDb;
+  // public logHeader: string;
 
   // ##############################################################################################
   constructor(
@@ -35,33 +36,34 @@ export class IndexedDbStoreSection implements AbstractStoreSectionInterface, ISt
     // public logHeader: string;
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    this.indexedDbStoreName = args[0];
-    this.localUuidIndexedDb = args[1];
-    this.logHeader = args[2];
+    super(args[0], args[1], args[2])
+    // this.indexedDbStoreName = args[0];
+    // this.localUuidIndexedDb = args[1];
+    // this.logHeader = args[2];
     // log.info(this.logHeader,'IndexedDbStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
 
-    // #########################################################################################
-    getStoreName(): string {
-      return this.indexedDbStoreName;
-    }
+  //   // #########################################################################################
+  //   getStoreName(): string {
+  //     return this.indexedDbStoreName;
+  //   }
   
   
-  // ##################################################################################################
-  async open(): Promise<void> {
-    log.info(this.logHeader, "open(): opening");
-    await this.localUuidIndexedDb.openObjectStore();
-    log.info(this.logHeader, "open(): opened");
-    return Promise.resolve();
-  }
+  // // ##################################################################################################
+  // async open(): Promise<void> {
+  //   log.info(this.logHeader, "open(): opening");
+  //   await this.localUuidIndexedDb.openObjectStore();
+  //   log.info(this.logHeader, "open(): opened");
+  //   return Promise.resolve();
+  // }
 
-  // ##############################################################################################
-  async close(): Promise<void> {
-    log.info(this.logHeader, "close(): closing");
-    await this.localUuidIndexedDb.closeObjectStore();
-    log.info(this.logHeader, "close(): closed");
-    return Promise.resolve();
-  }
+  // // ##############################################################################################
+  // async close(): Promise<void> {
+  //   log.info(this.logHeader, "close(): closing");
+  //   await this.localUuidIndexedDb.closeObjectStore();
+  //   log.info(this.logHeader, "close(): closed");
+  //   return Promise.resolve();
+  // }
 
   // ##################################################################################################
   bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {

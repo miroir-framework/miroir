@@ -62,7 +62,7 @@ import modelEndpointV1 from '../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
-import { IStoreController } from '../0_interfaces/4-services/StoreControllerInterface.js';
+import { StoreControllerInterface } from '../0_interfaces/4-services/StoreControllerInterface.js';
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -96,7 +96,7 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(e
 
 export async function modelInitialize(
   metaModel:MiroirApplicationModel,
-  storeController:IStoreController,
+  storeController:StoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
   application: Application,
   applicationDeploymentConfiguration: EntityInstance,

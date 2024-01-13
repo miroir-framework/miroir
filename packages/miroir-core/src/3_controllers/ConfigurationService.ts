@@ -4,7 +4,7 @@
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { AdminStoreInterface, IDataOrModelStore, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { AdminStoreFactory, AdminStoreFactoryRegister, AdminStoreInterface, DataOrModelStoreInterface, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -29,17 +29,6 @@ export interface PackageConfiguration {
   packageVersion: string;
 }
 
-
-// ###############################################################################################################
-// export type AdminStoreFactory = (config: StoreSectionConfiguration,
-//   ) => AdminStoreInterface
-
-export type AdminStoreFactory = (
-  section:ApplicationSection,
-  config: StoreSectionConfiguration,
-)=>Promise<AdminStoreInterface>;
-
-export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
 
 
 // ###############################################################################################################
@@ -71,10 +60,11 @@ export class ConfigurationService {
   }
 
   public static registerAdminStoreFactory(storageType:StorageType, adminStoreFactory: AdminStoreFactory) {
-    log.info("ConfigurationService registerAdminStoreFactory",this.StoreSectionFactoryRegister);
+    log.info("ConfigurationService registerAdminStoreFactory in",this.adminStoreFactoryRegister);
     this.adminStoreFactoryRegister.set(
       JSON.stringify({storageType}), adminStoreFactory
-    );
+      );
+    log.info("ConfigurationService registered in registerAdminStoreFactory",this.adminStoreFactoryRegister);
   }
 
 }

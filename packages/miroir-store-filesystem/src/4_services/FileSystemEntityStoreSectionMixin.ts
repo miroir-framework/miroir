@@ -4,9 +4,9 @@ import * as path from "path";
 import {
   EntityDefinition,
   EntityInstance,
-  IAbstractEntityStoreSection,
-  IAbstractInstanceStoreSection,
-  IDataStoreSection,
+  AbstractEntityStoreSectionInterface,
+  AbstractInstanceStoreSectionInterface,
+  StoreDataSectionInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -35,14 +35,14 @@ export const MixedFileSystemDbEntityAndInstanceStoreSection = FileSystemDbEntity
 export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFileSystemInstanceStoreSection>(
   Base: TBase
 ) {
-  return class MixedSqlDbEntityStoreSection extends Base implements IAbstractEntityStoreSection, IAbstractInstanceStoreSection {
-    public dataStore: IDataStoreSection;
+  return class MixedSqlDbEntityStoreSection extends Base implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface {
+    public dataStore: StoreDataSectionInterface;
 
     constructor(
       // filesystemStoreName: string,
       // directory: string,
       // logHeader: string,
-      // dataStore: IDataStoreSection,
+      // dataStore: StoreDataSectionInterface,
       ...args: any[]
     ) {
       super(

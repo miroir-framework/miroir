@@ -16,9 +16,10 @@ import {
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
-  IDataStoreSection,
-  IModelStoreSection,
-  IStoreController,
+  AdminStoreInterface,
+  StoreDataSectionInterface,
+  StoreModelSectionInterface,
+  StoreControllerInterface,
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
@@ -41,8 +42,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // #######################################################################################################################
 export interface StoreControllerFactoryReturnType {
-  localMiroirStoreController: IStoreController,
-  localAppStoreController: IStoreController,
+  localMiroirStoreController: StoreControllerInterface,
+  localAppStoreController: StoreControllerInterface,
 }
 
 
@@ -51,8 +52,8 @@ export async function storeSectionFactory (
   StoreSectionFactoryRegister:StoreSectionFactoryRegister,
   section:ApplicationSection,
   config: StoreSectionConfiguration,
-  dataStore?: IDataStoreSection,
-):Promise<IDataStoreSection | IModelStoreSection> {
+  dataStore?: StoreDataSectionInterface,
+):Promise<StoreDataSectionInterface | StoreModelSectionInterface> {
   log.info('storeSectionFactory called for', section, config);
   if (section == 'model' && !dataStore) {
     throw new Error('storeSectionFactory model section factory must receive data section store.')
@@ -74,12 +75,13 @@ export async function storeSectionFactory (
 // #######################################################################################################################
 // MAIN CLASS: StoreController
 // #######################################################################################################################
-export class StoreController implements IStoreController{
+export class StoreController implements StoreControllerInterface{
   private logHeader: string;
 
   constructor(
-    private modelStoreSection:IModelStoreSection,
-    private dataStoreSection:IDataStoreSection,
+    private adminStore: AdminStoreInterface,
+    private modelStoreSection:StoreModelSectionInterface,
+    private dataStoreSection:StoreDataSectionInterface,
   ){
     this.logHeader = 'StoreController '+ modelStoreSection.getStoreName();
   }

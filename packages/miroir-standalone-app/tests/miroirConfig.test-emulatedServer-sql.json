@@ -3,6 +3,11 @@
     "emulateServer": true,
     "rootApiUrl":"http://localhost:3080",
     "miroirServerConfig":{
+      "admin": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "miroir"
+      },
       "model": {
         "emulatedServerType": "sql",
         "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
@@ -15,6 +20,11 @@
       }
     },
     "appServerConfig": {
+      "admin": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "miroir"
+      },
       "model": {
         "emulatedServerType": "sql",
         "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",

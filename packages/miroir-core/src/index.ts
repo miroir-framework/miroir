@@ -50,8 +50,9 @@ export {
   selectObjectListQuery,
   ServerConfigForClientConfig,
   serverConfigForClientConfig,
-  StoreConfiguration,
-  storeConfiguration,
+  SqlDbStoreSectionConfiguration,
+  IndexedDbStoreSectionConfiguration,
+  FilesystemDbStoreSectionConfiguration,
   StoreSectionConfiguration,
   storeSectionConfiguration,
   StoreUnitConfiguration,
@@ -318,13 +319,16 @@ export {
 export {
   AbstractStoreInterface,
   AbstractStoreSectionInterface,
-  IDataStoreSection,
-  IModelStoreSection,
-  IAbstractEntityStoreSection,
-  IAbstractInstanceStoreSection,
-  IStorageSpaceHandler,
-  IDataOrModelStore,
-  IStoreController,
+  AdminStoreInterface,
+  AdminStoreFactory,
+  AdminStoreFactoryRegister,
+  StoreDataSectionInterface,
+  StoreModelSectionInterface,
+  AbstractEntityStoreSectionInterface,
+  AbstractInstanceStoreSectionInterface,
+  StorageSpaceHandlerInterface,
+  DataOrModelStoreInterface,
+  StoreControllerInterface,
   StoreSectionFactory,
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/StoreControllerInterface.js";
@@ -369,6 +373,9 @@ export {
 export {
   Endpoint
 } from './3_controllers/Endpoint.js';
+export {
+  ErrorAdminStore
+} from './3_controllers/ErrorHandling/ErrorAdminStore.js';
 export {
   ErrorDataStore
 } from './3_controllers/ErrorHandling/ErrorDataStore.js';

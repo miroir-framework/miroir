@@ -1,8 +1,8 @@
 import {
   DataStoreApplicationType,
   EntityInstanceCollection,
-  IDataStoreSection,
-  IModelStoreSection,
+  StoreDataSectionInterface,
+  StoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
@@ -18,14 +18,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSection implements IModelStoreSection {
+export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSection implements StoreModelSectionInterface {
 
   // ##############################################################################################
   constructor(
     sqlDbStoreName: string, // used only for debugging purposes
     connectionString:string,
     schema:string,
-    sqlDbDataStore: IDataStoreSection,
+    sqlDbDataStore: StoreDataSectionInterface,
   ) {
     super(
       sqlDbStoreName,

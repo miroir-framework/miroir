@@ -16,7 +16,7 @@ import {
   DomainTransactionalResetModelAction,
 } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
-import { IStoreController } from "./StoreControllerInterface.js";
+import { StoreControllerInterface } from "./StoreControllerInterface.js";
 import { StoreControllerManagerInterface } from "./StoreControllerManagerInterface.js";
 
 

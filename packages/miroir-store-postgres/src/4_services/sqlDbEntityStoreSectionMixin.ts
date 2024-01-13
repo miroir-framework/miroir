@@ -1,9 +1,9 @@
 import {
   EntityDefinition,
   EntityInstance,
-  IAbstractEntityStoreSection,
-  IAbstractInstanceStoreSection,
-  IDataStoreSection,
+  AbstractEntityStoreSectionInterface,
+  AbstractInstanceStoreSectionInterface,
+  StoreDataSectionInterface,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -28,15 +28,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export const MixedSqlDbEntityAndInstanceStoreSection = SqlDbEntityStoreSectionMixin(SqlDbInstanceStoreSectionMixin(SqlDbStoreSection));
 
 export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(Base: TBase) {
-  return class MixedSqlDbEntityStoreSection extends Base implements IAbstractEntityStoreSection, IAbstractInstanceStoreSection {
-    public dataStore: IDataStoreSection;
+  return class MixedSqlDbEntityStoreSection extends Base implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface {
+    public dataStore: StoreDataSectionInterface;
 
     constructor(
       // sqlDbStoreName: string,
       // dataConnectionString:string,
       // dataSchema:string,
       // logHeader:string,
-      // dataStore: IDataStoreSection,
+      // dataStore: StoreDataSectionInterface,
       ...args: any[]
     ) {
       super(...args.slice(0, 4));

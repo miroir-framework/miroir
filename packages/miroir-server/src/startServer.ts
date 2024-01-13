@@ -8,7 +8,7 @@ import {
 } from "miroir-core";
 
 import {
-  IStoreController
+  StoreControllerInterface
 } from "miroir-core";
 
 import { packageName, cleanLevel } from "./constants";
@@ -23,8 +23,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 // // TODO: factorize similar function in standalone-app index.tsx?
 // export async function startServer(
-//   localMiroirStoreController:IStoreController,
-//   localAppStoreController:IStoreController,
+//   localMiroirStoreController:StoreControllerInterface,
+//   localAppStoreController:StoreControllerInterface,
 // ) {
 //   try {
 //     await localMiroirStoreController?.open();

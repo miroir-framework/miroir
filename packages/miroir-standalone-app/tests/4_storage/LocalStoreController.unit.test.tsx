@@ -6,7 +6,7 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
-  IStoreController,
+  StoreControllerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
@@ -21,8 +21,8 @@ import {
   entityEntityDefinition
 } from "miroir-core";
 
-let localMiroirStoreController: IStoreController;
-let localAppStoreController: IStoreController;
+let localMiroirStoreController: StoreControllerInterface;
+let localAppStoreController: StoreControllerInterface;
 
 import { setupServer, SetupServerApi } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
@@ -73,12 +73,14 @@ beforeAll(
   }
 )
 
+// ################################################################################################
 beforeEach(
   async  () => {
     await miroirBeforeEach(miroirConfig, undefined, localMiroirStoreController,localAppStoreController);
   }
 )
 
+// ################################################################################################
 afterEach(
   async () => {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach")
@@ -93,6 +95,7 @@ afterEach(
   }
 )
 
+// ################################################################################################
 afterAll(
   async () => {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
@@ -115,6 +118,7 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
 
 describe.sequential("localStoreController.unit.test", () => {
 
+  // ################################################################################################
   it("get Miroir Entities", async () => {
     const rawResult = (await localMiroirStoreController.getInstances("model",entityEntity.uuid))
     
@@ -128,20 +132,23 @@ describe.sequential("localStoreController.unit.test", () => {
     
     expect(testResult).toEqual(
     [
-      '16dbfe28-e1d7-4f20-9ba4-c1a9873202ad',
-      '35c5608a-7678-4f07-a4ec-76fc5bc35424',
-      '3f2baa83-3ef7-45ce-82ea-6a43f7a8c916',
-      '54b9c72f-d4f3-4db9-9e0e-0dc840b530bd',
-      '5e81e1b9-38be-487c-b3e5-53796c57fccf',
-      '7990c0c9-86c3-40a1-a121-036c91b55ed7',
-      'a659d350-dd97-4da9-91de-524fa01745dc',
-      'c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24',
-      'cdb0aec6-b848-43ac-a058-fe2dbe5811f1'
+      "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+      "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+      "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+      "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+      "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+      "a659d350-dd97-4da9-91de-524fa01745dc",
+      "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+      "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+      "e4320b9e-ab45-4abe-85d8-359604b3c62f",
     ]
     );
   });
 
 
+  // ################################################################################################
   it("get Library Entities", async () => {
     expect(
       await localAppStoreController.getInstances("model",entityEntity.uuid)
@@ -154,6 +161,7 @@ describe.sequential("localStoreController.unit.test", () => {
     );
   });
 
+  // ################################################################################################
   it("create Author Entity", async () => {
     await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
@@ -169,6 +177,7 @@ describe.sequential("localStoreController.unit.test", () => {
     );
   });
 
+  // ################################################################################################
   it("rename Author Entity", async () => {
 
     // setup
@@ -181,9 +190,8 @@ describe.sequential("localStoreController.unit.test", () => {
       entityUuid: entityAuthor.uuid, 
       entityName: entityAuthor.name,
       targetValue: entityAuthor.name + "ssss"
-     };
+    };
 
-    
     const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
     const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
 
@@ -220,6 +228,7 @@ describe.sequential("localStoreController.unit.test", () => {
     );
   });
 
+  // ################################################################################################
   it("delete Author Entity", async () => {
 
     // setup
@@ -261,6 +270,7 @@ describe.sequential("localStoreController.unit.test", () => {
     expect(testResult).toEqual([]);
   });
 
+  // ################################################################################################
   it("add Author Instance", async () => {
     // setup
     await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
@@ -273,6 +283,7 @@ describe.sequential("localStoreController.unit.test", () => {
     expect(testResult).toEqual([author1],);
   });
 
+  // ################################################################################################
   it("update Author Instance", async () => {
     // setup
     await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
@@ -284,6 +295,7 @@ describe.sequential("localStoreController.unit.test", () => {
     expect(testResult).toEqual([{...author1, "name": author1.name + "ssss"}],);
   });
 
+  // ################################################################################################
   it("delete Author Instance", async () => {
     // setup
     await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)

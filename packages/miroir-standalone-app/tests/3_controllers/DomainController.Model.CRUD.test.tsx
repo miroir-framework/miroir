@@ -13,7 +13,7 @@ import {
   DomainDataAction,
   EntityDefinition,
   EntityInstance,
-  IStoreController,
+  StoreControllerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirContext,
@@ -76,8 +76,8 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-let localMiroirStoreController: IStoreController;
-let localAppStoreController: IStoreController;
+let localMiroirStoreController: StoreControllerInterface;
+let localAppStoreController: StoreControllerInterface;
 let localDataStoreWorker: SetupWorkerApi | undefined;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let reduxStore: ReduxStore;

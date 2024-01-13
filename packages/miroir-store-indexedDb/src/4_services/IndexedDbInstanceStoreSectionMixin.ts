@@ -1,4 +1,4 @@
-import { EntityInstance, IAbstractInstanceStoreSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { EntityInstance, AbstractInstanceStoreSectionInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
 
@@ -16,7 +16,7 @@ export const MixedIndexedDbInstanceStoreSection = IndexedDbInstanceStoreSectionM
 
 
 export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedDbStoreSection>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements IAbstractInstanceStoreSection {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements AbstractInstanceStoreSectionInterface {
     constructor(
       // public indexedDbStoreName: string;
       // public localUuidIndexedDb: IndexedDb;

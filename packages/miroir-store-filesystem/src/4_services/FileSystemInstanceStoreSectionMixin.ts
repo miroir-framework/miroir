@@ -4,7 +4,7 @@ import * as path from "path";
 import {
   EntityInstance,
   EntityInstanceCollection,
-  IAbstractInstanceStoreSection,
+  AbstractInstanceStoreSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName
@@ -32,7 +32,7 @@ export function extractName(fullName: string) {
 export const MixedFileSystemInstanceStoreSection = FileSystemInstanceStoreSectionMixin(FileSystemStoreSection);
 
 export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSystemDbStore>(Base: TBase) {
-  return class MixedIndexedDbInstanceStoreSection extends Base implements IAbstractInstanceStoreSection {
+  return class MixedIndexedDbInstanceStoreSection extends Base implements AbstractInstanceStoreSectionInterface {
     // ##############################################################################################
     constructor(
       // ...args stands for:

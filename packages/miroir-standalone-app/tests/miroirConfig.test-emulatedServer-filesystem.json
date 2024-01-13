@@ -3,6 +3,10 @@
     "emulateServer": true,
     "rootApiUrl":"http://localhost:3080",
     "miroirServerConfig":{
+      "admin": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/miroir_admin"
+      },
       "model": {
         "emulatedServerType": "filesystem",
         "directory":"./tests/tmp/miroir_model"
@@ -13,6 +17,10 @@
       }
     },
     "appServerConfig": {
+      "admin": {
+        "emulatedServerType": "filesystem",
+        "directory":"./tests/tmp/miroir_admin"
+      },
       "model": {
         "emulatedServerType": "filesystem",
         "directory":"./tests/tmp/library_model"
