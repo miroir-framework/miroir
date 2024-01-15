@@ -34,12 +34,6 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
       },
-      "endpointUuid": {
-        "type": "simpleType",
-        "definition": "string",
-        "validations": [{ "type": "uuid" }],
-        "extra": { "id": 5, "defaultLabel": "Entity Uuid", "editable": false }
-      },
       "name": {
         "type": "simpleType",
         "definition": "string",
@@ -61,10 +55,46 @@
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true },
         "definition": {
           "actionParameter": {
-            "type": "schemaReference",
+            "type": "union",
             "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObject"
+              "type": "object",
+              "definition": {
+                "actionType": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodLiteral"
+                  }
+                },
+                "actionName": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodLiteral"
+                  }
+                },
+                "endpointVersion": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodLiteral"
+                  }
+                },
+                "configuration": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodElement"
+                  }
+                },
+                "deploymentUuid": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    "relativePath": "jzodAttributeStringWithValidations"
+                  }
+                }
+              }
             },
             "extra": { "id": 10, "defaultLabel": "Endpoint Parameter", "editable": true }
           },

@@ -1,3 +1,4 @@
+import { StoreSectionConfiguration } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { AdminStoreInterface } from "../../0_interfaces/4-services/StoreControllerInterface";
 
 export class ErrorAdminStore implements AdminStoreInterface {
@@ -5,10 +6,10 @@ export class ErrorAdminStore implements AdminStoreInterface {
     
   }
 
-  createStore(): Promise<void> {
+  createStore(config: StoreSectionConfiguration): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  deleteStore(): Promise<void> {
+  deleteStore(config: StoreSectionConfiguration): Promise<void> {
     throw new Error("Method not implemented.");
   }
   getStoreName(): string {

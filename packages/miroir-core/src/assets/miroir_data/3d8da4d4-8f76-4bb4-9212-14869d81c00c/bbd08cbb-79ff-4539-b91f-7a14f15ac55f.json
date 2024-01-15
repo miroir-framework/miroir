@@ -2,7 +2,6 @@
   "uuid": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "endpointUuid": "b1c4d5d7-56d3-41e2-9574-300d821ecf4c",
   "name": "DeploymentEndpoint",
   "version": "1",
   "description": "Deployment Endpoint",
@@ -24,7 +23,7 @@
                 "definition": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+                "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
               }
             }
           },
@@ -38,7 +37,7 @@
                 "type": "simpleType",
                 "definition": "string",
                 "validations": [{ "type": "uuid" }],
-                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+                "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
               }
             }
           },
@@ -63,7 +62,7 @@
                 "definition": "string",
                 "optional": true,
                 "validations": [{ "type": "uuid" }],
-                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+                "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
               }
             }
           },
@@ -77,7 +76,7 @@
                 "type": "simpleType",
                 "definition": "string",
                 "validations": [{ "type": "uuid" }],
-                "extra": { "defaultLabel": "Application Uuid", "editable": false }
+                "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
               }
             }
           }

@@ -86,10 +86,10 @@ export class StoreController implements StoreControllerInterface{
     this.logHeader = 'StoreController '+ modelStoreSection.getStoreName();
   }
 
-    // #########################################################################################
-    getStoreName(): string {
-      return this.modelStoreSection.getStoreName();
-    }
+  // #########################################################################################
+  getStoreName(): string {
+    return this.modelStoreSection.getStoreName();
+  }
 
   // #############################################################################################
   async initApplication(
@@ -132,6 +132,7 @@ export class StoreController implements StoreControllerInterface{
 
   // #############################################################################################
   async open():Promise<void> {
+    await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
     return Promise.resolve();
@@ -139,9 +140,20 @@ export class StoreController implements StoreControllerInterface{
   
   // ##############################################################################################
   async close():Promise<void> {
+    await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
     return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  async createStore(config: StoreSectionConfiguration): Promise<void> {
+    return this.adminStore.createStore(config);
+  }
+  
+  // ##############################################################################################
+  async deleteStore(config: StoreSectionConfiguration): Promise<void> {
+    return this.adminStore.deleteStore(config);
   }
 
   // ##############################################################################################

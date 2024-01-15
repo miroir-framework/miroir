@@ -26,12 +26,7 @@ export interface AbstractStoreInterface {
 // ###########################################################################################
 // Abstract store interfaces
 export interface AdminStoreInterface extends AbstractStoreInterface {
-  // getStoreName(): string;
-  createStore(
-    // section: ApplicationSection,
-    config: StoreSectionConfiguration
-    // dataStore?: StoreDataSectionInterface
-  ): Promise<void>;
+  createStore(config: StoreSectionConfiguration): Promise<void>;
   deleteStore(config: StoreSectionConfiguration): Promise<void>;
 }
 
@@ -121,6 +116,15 @@ export type AdminStoreFactory = (
 
 export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
 
+export interface InitApplicationParameters {
+  metaModel:MiroirApplicationModel, 
+  dataStoreType: DataStoreApplicationType,
+  application: Application,
+  applicationDeploymentConfiguration: EntityInstance,
+  applicationModelBranch: EntityInstance,
+  applicationVersion: EntityInstance,
+  applicationStoreBasedConfiguration: EntityInstance,
+}
 
 // ###############################################################################################################
 // store Controller
@@ -134,6 +138,9 @@ export interface StoreControllerInterface extends AbstractStoreSectionInterface,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
   ):Promise<void>;
+
+  createStore(config: StoreSectionConfiguration): Promise<void>;
+  deleteStore(config: StoreSectionConfiguration): Promise<void>;
 
   createModelStorageSpaceForInstancesOfEntity(
     entity:Entity,

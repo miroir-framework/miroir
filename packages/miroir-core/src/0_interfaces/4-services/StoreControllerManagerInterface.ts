@@ -1,12 +1,11 @@
 import { Uuid } from "../1_core/EntityDefinition";
-import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { StoreSectionConfiguration, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface";
-import { StoreControllerInterface } from "./StoreControllerInterface";
+import { InitApplicationParameters, StoreControllerInterface } from "./StoreControllerInterface";
+
 
 export interface StoreControllerManagerInterface {
   addStoreController(
-    // applicationName: string,
-    // dataStoreType: DataStoreApplicationType,
     deploymentUuid: Uuid,
     config: StoreUnitConfiguration
   ): Promise<void>;
@@ -14,4 +13,12 @@ export interface StoreControllerManagerInterface {
   getStoreControllers(): string[];
   getStoreController(deploymentUuid: Uuid): StoreControllerInterface | undefined;
   deleteStoreController(deploymentUuid: Uuid): Promise<void>;
+
+  deployModule(
+    adminStoreController: StoreControllerInterface,
+    newMiroirDeploymentUuid: Uuid,
+    // storeSectionConfiguration: StoreSectionConfiguration,
+    storeUnitConfiguration: StoreUnitConfiguration,
+    initApplicationParameters: InitApplicationParameters,
+  ): Promise<void>;
 }
