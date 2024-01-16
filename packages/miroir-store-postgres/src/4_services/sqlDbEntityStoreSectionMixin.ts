@@ -11,6 +11,8 @@ import {
   entityEntity,
   entityEntityDefinition,
   getLoggerName,
+  ActionReturnType,
+  ACTION_OK,
 } from "miroir-core";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
@@ -68,7 +70,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
       log.info(
         this.logHeader,
         "createEntity",
@@ -114,11 +116,11 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         // }
       }
       log.debug(this.logHeader, "createEntity", "done for", entity.name);
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // ##############################################################################################
-    async dropEntity(entityUuid: string) {
+    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
       log.info("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -148,18 +150,18 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           log.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
         }
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
     // ##############################################################################################
-    async dropEntities(entityUuids: string[]) {
+    async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
       log.info(this.logHeader, "dropEntities parentUuid", entityUuids);
       for (const e of entityUuids) {
         await this.dropEntity(e);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
     // ##############################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate) {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
       if (
         update.equivalentModelCUDUpdates.length &&
         update.equivalentModelCUDUpdates[0] &&
@@ -196,7 +198,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         log.error("renameEntity could not execute update", update);
       }
       log.debug(this.logHeader, "renameEntity done.");
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
   };
 }

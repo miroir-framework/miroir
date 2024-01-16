@@ -9,6 +9,7 @@ import {
   Uuid,
   getLoggerName,
   AbstractStoreInterface,
+  ActionReturnType,
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
@@ -51,17 +52,17 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   }
 
   // ######################################################################################
-  async clear(): Promise<void> {
+  async clear(): Promise<ActionReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
     log.info(this.logHeader, "clear done, entities", this.getEntityUuids());
 
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
-  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "bootFromPersistedState called!",
@@ -83,8 +84,8 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
           return prev;
         }
       }, {});
-    return Promise.resolve();
-  }
+      return Promise.resolve( { status: "ok" } );
+    }
 
   // ##############################################################################################
   getAccessToDataSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
@@ -105,7 +106,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   }
 
   // ##############################################################################################
-  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
@@ -125,7 +126,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
       "done creating data schema table",
       entity.name
     );
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
@@ -134,7 +135,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<void> {
+  ): Promise<ActionReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
     // log.info(this.logHeader, 'renameEntity renameTable done.');
@@ -149,11 +150,11 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
         entityDefinition
       )
     );
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<void> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<ActionReturnType> {
     if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
       const model = this.sqlSchemaTableAccess[entityUuid];
       log.debug(
@@ -169,6 +170,6 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     } else {
       log.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
     }
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 }

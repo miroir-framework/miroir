@@ -337,6 +337,7 @@ export {
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/StoreControllerInterface.js";
 export { } from './1_core/Report.js';
+export { ACTION_OK } from './1_core/constants.js';
 export { DomainController } from './3_controllers/DomainController';
 export { DomainInstanceUuidIndexToArray } from './1_core/DomainState.js';
 export {

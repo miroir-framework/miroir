@@ -1,4 +1,5 @@
 import {
+  ACTION_OK,
   ActionReturnType,
   AdminStoreInterface,
   LoggerInterface,
@@ -29,13 +30,13 @@ export class FileSystemAdminStore extends FileSystemStore implements AdminStoreI
   // ##############################################################################################
   async createStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
     // does not need to do anything, new IndexedDb() is done in the storeSectionFactory, thus called by StoreControllerManager.addStoreController, where storeSectionFactory is called
-    return Promise.resolve({ status: "ok"})
+    return Promise.resolve(ACTION_OK)
   }
 
   // ##############################################################################################
   async deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
     // TODO: remove directory when on server?
     // return clear ()
-    return Promise.resolve({ status: "ok"})
+    return Promise.resolve(ACTION_OK)
   }
 }

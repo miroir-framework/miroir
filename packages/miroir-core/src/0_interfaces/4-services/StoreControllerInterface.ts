@@ -20,8 +20,8 @@ import {
 // Abstract store interfaces
 export interface AbstractStoreInterface {
   getStoreName(): string;
-  open():Promise<void>;
-  close():Promise<void>;
+  open():Promise<ActionReturnType>;
+  close():Promise<ActionReturnType>;
 }
 
 // ###########################################################################################
@@ -34,15 +34,12 @@ export interface AdminStoreInterface extends AbstractStoreInterface {
 // ###########################################################################################
 // Abstract store interfaces
 export interface AbstractStoreSectionInterface extends AbstractStoreInterface {
-  getStoreName(): string;
-  open():Promise<void>;
-  close():Promise<void>;
   bootFromPersistedState(
     entities : Entity[],
     entityDefinitions : EntityDefinition[],
-  ):Promise<void>;
+  ):Promise<ActionReturnType>;
   getEntityUuids():string[];
-  clear():Promise<void>;
+  clear():Promise<ActionReturnType>;
 }
 
 
@@ -50,19 +47,19 @@ export interface AbstractStoreSectionInterface extends AbstractStoreInterface {
 export interface StorageSpaceHandlerInterface {
   dropStorageSpaceForInstancesOfEntity(
     entityUuid:Uuid,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 
   createStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
     entity: Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 }
 
 // ###########################################################################################
@@ -81,10 +78,10 @@ export interface AbstractEntityStoreSectionInterface {
   createEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
-  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void>;
-  dropEntity(parentUuid:string): Promise<void>;
-  dropEntities(parentUuid:string[]): Promise<void>;
+  ): Promise<ActionReturnType>;
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType>;
+  dropEntity(parentUuid:string): Promise<ActionReturnType>;
+  dropEntities(parentUuid:string[]): Promise<ActionReturnType>;
 }
 
 // ###############################################################################################################
@@ -139,7 +136,7 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
-  ):Promise<void>;
+  ):Promise<ActionReturnType>;
 
   createStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
   deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
@@ -147,14 +144,14 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
   createModelStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 
   createDataStorageSpaceForInstancesOfEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 
-  clearDataInstances():Promise<void>;
+  clearDataInstances():Promise<ActionReturnType>;
 
   getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
   getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
@@ -169,5 +166,5 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
 
   // handleAction(storeAction: StoreAction): Promise<any>;
 
-  applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>;
+  applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionReturnType>;
 }

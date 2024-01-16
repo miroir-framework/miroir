@@ -1,5 +1,5 @@
 import { Uuid } from "../1_core/EntityDefinition";
-import { StoreSectionConfiguration, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, StoreSectionConfiguration, StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DataStoreApplicationType } from "../3_controllers/ApplicationControllerInterface";
 import { InitApplicationParameters, StoreControllerInterface } from "./StoreControllerInterface";
 
@@ -20,5 +20,5 @@ export interface StoreControllerManagerInterface {
     // storeSectionConfiguration: StoreSectionConfiguration,
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
-  ): Promise<void>;
+  ): Promise<ActionReturnType>;
 }

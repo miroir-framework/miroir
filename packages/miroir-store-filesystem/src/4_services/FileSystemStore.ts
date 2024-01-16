@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import { AbstractStoreInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -21,7 +21,7 @@ export class FileSystemStore implements AbstractStoreInterface {
   }
 
   // #########################################################################################
-  open(): Promise<void> {
+  open(): Promise<ActionReturnType> {
     // const entityDirectories = fs.readdirSync(this.directory);
     if (fs.existsSync(this.directory)) {
       log.debug(this.logHeader, "open checked that directory exist:", this.directory);
@@ -29,12 +29,12 @@ export class FileSystemStore implements AbstractStoreInterface {
       fs.mkdirSync(this.directory, { recursive: true });
       log.info(this.logHeader, "open created directory:", this.directory);
     }
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // #############################################################################################
-  close(): Promise<void> {
+  close(): Promise<ActionReturnType> {
     log.info(this.logHeader, "close does nothing!");
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 }

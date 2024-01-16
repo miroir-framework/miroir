@@ -1,4 +1,4 @@
-import { AbstractStoreInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition } from "../utils";
 import { packageName } from "../constants";
@@ -27,9 +27,9 @@ export class SqlDbStore implements AbstractStoreInterface {
   }
 
   // ##############################################################################################
-  async close(): Promise<void> {
+  async close(): Promise<ActionReturnType> {
     await this.sequelize.close();
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
     // disconnect from DB?
   }
 
@@ -39,7 +39,7 @@ export class SqlDbStore implements AbstractStoreInterface {
   }
 
   // ##############################################################################################
-  public async open(): Promise<void> {
+  public async open(): Promise<ActionReturnType> {
     try {
       await this.sequelize.authenticate();
       log.info(
@@ -51,6 +51,6 @@ export class SqlDbStore implements AbstractStoreInterface {
     } catch (error) {
       log.error("Unable to connect data", this.schema, " to the postgres database:", error);
     }
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 }

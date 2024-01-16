@@ -3,6 +3,7 @@ import { describe, expect } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
+  ACTION_OK,
   ActionReturnType,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -177,69 +178,47 @@ const miroir2Config:MiroirConfigClient = { // TODO: have test configuration for 
 describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
-  it(
-    "Create new store or remove existing store",
-    async () => { // TODO: test failure cases!
-      if (miroir2Config.client.emulateServer) {
-        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
-        expect(testResult).toEqual({ status: "ok"})
-      } else {
-        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-      }
-    }
-  );
+  // it(
+  //   "Delete miroir2 store or remove existing store",
+  //   async () => { // TODO: test failure cases!
+  //     if (miroir2Config.client.emulateServer) {
+  //       const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+  //       const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+  //       expect(testResult).toEqual({ status: "ok"})
+  //       expect(testResult2).toEqual({ status: "ok"})
+  //     } else {
+  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //     }
+  //   }
+  // );
+
+  // // ################################################################################################
+  // it(
+  //   "Create miroir2 store",
+  //   async () => { // TODO: test failure cases!
+  //     if (miroir2Config.client.emulateServer) {
+  //       const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+  //       const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+  //       //cleanup
+  //       const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+  //       // test
+  //       expect(testResult).toEqual({ status: "ok"})
+  //       expect(testResult2).toEqual({ status: "ok"})
+  //       expect(testResult3).toEqual({ status: "ok"})
+  //     } else {
+  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //     }
+  //   }
+  // );
 
   // // ################################################################################################
   // it("deploy Miroir and Library modules.", async () => {
-    
-  //   const miroir2Config:MiroirConfigClient = {
-  //     "client": {
-  //       "emulateServer": true,
-  //       "rootApiUrl":"http://localhost:3080",
-  //       "miroirServerConfig":{
-  //         "admin": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "miroir2"
-  //         },
-  //         "model": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "miroir2"
-  //         },
-  //         "data": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "miroir2"
-  //         }
-  //       },
-  //       "appServerConfig": {
-  //         "admin": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "library2"
-  //         },
-  //         "model": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "library2"
-  //         },
-  //         "data": {
-  //           "emulatedServerType": "sql",
-  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-  //           "schema": "library2"
-  //         }
-  //       },
-  //     }
-  //   }
-
-    
   //   if (miroir2Config.client.emulateServer) {
   //     if (storeControllerManager) {
   //       const newMiroirDeploymentUuid = uuidv4();
   //       const newLibraryDeploymentUuid = uuidv4();
 
-  //       await storeControllerManager.deployModule(
+  //       const deployMiroir = await storeControllerManager.deployModule(
   //         localMiroirStoreController,
   //         newMiroirDeploymentUuid,
   //         miroir2Config.client.miroirServerConfig,
@@ -253,7 +232,7 @@ describe.sequential("localStoreController.unit.test", () => {
   //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
   //         }
   //       );
-  //       await storeControllerManager.deployModule(
+  //       const deployApp = await storeControllerManager.deployModule(
   //         localMiroirStoreController,
   //         newLibraryDeploymentUuid,
   //         miroir2Config.client.appServerConfig,
@@ -267,6 +246,8 @@ describe.sequential("localStoreController.unit.test", () => {
   //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
   //         }
   //       );
+  //       expect(deployMiroir).toEqual( { status: "ok" } )
+  //       expect(deployApp).toEqual( { status: "ok" } )
   //     }
   //   } else {
   //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
@@ -317,151 +298,166 @@ describe.sequential("localStoreController.unit.test", () => {
   //   );
   // });
 
-  // // ################################################################################################
-  // it("create Author Entity", async () => {
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+  // ################################################################################################
+  it("create Author Entity", async () => {
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
-  //   const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid);
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances as any??[])
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
-  //   // console.log("create Author Entity rawResult", rawResult);
-  //   // console.log("create Author Entity testResult", testResult);
-  //   expect(testResult).toEqual(
-  //     [
-  //       entityAuthor
-  //     ],
-  //   );
-  // });
+    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid);
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances as any??[])
 
-  // // ################################################################################################
-  // it("rename Author Entity", async () => {
+    // console.log("create Author Entity rawResult", rawResult);
+    // console.log("create Author Entity testResult", testResult);
+    expect(testResult).toEqual(
+      [
+        entityAuthor
+      ],
+    );
+  });
 
-  //   // setup
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+  // ################################################################################################
+  it("rename Author Entity", async () => {
 
-  //   // test starts
-  //   const modelEntityUpdate:ModelEntityUpdate =  {
-  //     updateActionType: "ModelEntityUpdate",
-  //     updateActionName: "renameEntity",
-  //     entityUuid: entityAuthor.uuid, 
-  //     entityName: entityAuthor.name,
-  //     targetValue: entityAuthor.name + "ssss"
-  //   };
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
-  //   const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
-  //   const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+    // test starts
+    const modelEntityUpdate:ModelEntityUpdate =  {
+      updateActionType: "ModelEntityUpdate",
+      updateActionName: "renameEntity",
+      entityUuid: entityAuthor.uuid, 
+      entityName: entityAuthor.name,
+      targetValue: entityAuthor.name + "ssss"
+    };
 
-  //   const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-  //     ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
-  //   console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
+    const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
+    const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
 
-  //   await localAppStoreController.applyModelEntityUpdate(
-  //     {
-  //       updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-  //       modelEntityUpdate,
-  //       "equivalentModelCUDUpdates": [
-  //         {
-  //           updateActionType:"ModelCUDInstanceUpdate",
-  //           updateActionName:cudUpdate?.actionName??"update",
-  //           objects: cudUpdate?.objects??[]
-  //         } as ModelCUDInstanceUpdate
-  //       ]
-  //     }
-  //   )
+    const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
+      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
+    console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
 
-  //   const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    const applyUpdate: ActionReturnType = await localAppStoreController.applyModelEntityUpdate(
+      {
+        updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
+        modelEntityUpdate,
+        "equivalentModelCUDUpdates": [
+          {
+            updateActionType:"ModelCUDInstanceUpdate",
+            updateActionName:cudUpdate?.actionName??"update",
+            objects: cudUpdate?.objects??[]
+          } as ModelCUDInstanceUpdate
+        ]
+      }
+    )
+
+    expect(applyUpdate, "failed to apply applyModelEntityUpdate action").toEqual(ACTION_OK);
+    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
     
-  //   expect(
-  //     testResult
-  //   ).toEqual(
-  //     [
-  //       {
-  //         ...entityAuthor,
-  //         name: entityAuthor.name + "ssss"
-  //       }
-  //     ],
-  //   );
-  // });
+    expect(
+      testResult
+    ).toEqual(
+      [
+        {
+          ...entityAuthor,
+          name: entityAuthor.name + "ssss"
+        }
+      ],
+    );
+  });
 
-  // // ################################################################################################
-  // it("delete Author Entity", async () => {
+  // ################################################################################################
+  it("delete Author Entity", async () => {
 
-  //   // setup
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
-  //   // test starts
-  //   const modelEntityUpdate:ModelEntityUpdate =  {
-  //     updateActionType: "ModelEntityUpdate",
-  //     updateActionName: "DeleteEntity",
-  //     entityUuid: entityAuthor.uuid, 
-  //     entityName: entityAuthor.name,
-  //    };
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+
+    // test starts
+    const modelEntityUpdate:ModelEntityUpdate =  {
+      updateActionType: "ModelEntityUpdate",
+      updateActionName: "DeleteEntity",
+      entityUuid: entityAuthor.uuid, 
+      entityName: entityAuthor.name,
+     };
 
     
-  //   const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
-  //   const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
+    const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
+    const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
 
-  //   const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-  //     ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
-  //   console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
+    const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
+      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
+    console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
 
-  //   await localAppStoreController.applyModelEntityUpdate(
-  //     {
-  //       updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-  //       modelEntityUpdate,
-  //       "equivalentModelCUDUpdates": [
-  //         {
-  //           updateActionType:"ModelCUDInstanceUpdate",
-  //           updateActionName:cudUpdate?.actionName??"delete",
-  //           objects: cudUpdate?.objects??[]
-  //         } as ModelCUDInstanceUpdate
-  //       ]
-  //     }
-  //   )
+    const applyUpdate = await localAppStoreController.applyModelEntityUpdate(
+      {
+        updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
+        modelEntityUpdate,
+        "equivalentModelCUDUpdates": [
+          {
+            updateActionType:"ModelCUDInstanceUpdate",
+            updateActionName:cudUpdate?.actionName??"delete",
+            objects: cudUpdate?.objects??[]
+          } as ModelCUDInstanceUpdate
+        ]
+      }
+    )
 
-  //   const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    expect(applyUpdate, "failed to apply applyModelEntityUpdate action").toEqual(ACTION_OK);
 
-  //   expect(testResult).toEqual([]);
-  // });
+    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
 
-  // // ################################################################################################
-  // it("add Author Instance", async () => {
-  //   // setup
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
-  //   await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    expect(testResult).toEqual([]);
+  });
 
-  //   // test
-  //   const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid)
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+  // ################################################################################################
+  it("add Author Instance", async () => {
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
-  //   expect(testResult).toEqual([author1],);
-  // });
+    // test
+    const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    // expect(instanceAdded, "failed to add Author instance").toEqual(ACTION_OK)
+    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid)
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
 
-  // // ################################################################################################
-  // it("update Author Instance", async () => {
-  //   // setup
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    expect(testResult).toEqual([author1],);
+  });
+
+  // ################################################################################################
+  it("update Author Instance", async () => {
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     
-  //   // test
-  //   await localAppStoreController?.upsertInstance('data', {...author1, "name": author1.name + "ssss"} as EntityInstance);
-  //   const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-  //   expect(testResult).toEqual([{...author1, "name": author1.name + "ssss"}],);
-  // });
+    // test
+    const instanceUpdated = await localAppStoreController?.upsertInstance('data', {...author1, "name": author1.name + "ssss"} as EntityInstance);
+    // expect(instanceUpdated, "failed to update Author instance").toEqual(ACTION_OK)
+    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    expect(testResult).toEqual([{...author1, "name": author1.name + "ssss"}],);
+  });
 
-  // // ################################################################################################
-  // it("delete Author Instance", async () => {
-  //   // setup
-  //   await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
-  //   await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+  // ################################################################################################
+  it("delete Author Instance", async () => {
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+    // expect(instanceAdded, "failed to setup test case").toEqual(ACTION_OK)
 
-  //   // test
-  //   await localAppStoreController?.deleteInstances('data', [author1]);
-  //   const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
-  //   const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-  //   expect(testResult).toEqual([],);
-  // });
+    // test
+    const instanceDeleted = await localAppStoreController?.deleteInstances('data', [author1]);
+    // expect(instanceDeleted, "failed to setup test case").toEqual(ACTION_OK)
+    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
+    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    expect(testResult).toEqual([],);
+  });
 
 });

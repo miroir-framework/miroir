@@ -821,7 +821,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "type": "union",
             "definition": deploymentEndpoint.definition.definition.actionParameter.definition.filter(e=>!!e.definition.errors).map(e =>e.definition.errors),
           },
-          "errorMessage": { "type": "simpleType", "definition": "string" }
+          "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" }
         }
       },
       "actionReturnType": {

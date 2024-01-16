@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { StoreModelSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
@@ -9,25 +9,25 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   getStoreName(): string {
     throw new Error("Method not implemented.");
   }
-  open(): Promise<void> {
+  open(): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  close():Promise<void> {
+  close():Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+  createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  clear(): Promise<void> {
+  clear(): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   getEntityUuids(): string[] {
@@ -39,16 +39,16 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   existsEntity(entityUuid: string): boolean {
     throw new Error("Method not implemented.");
   }
-  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void> {
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropEntity(parentUuid: string): Promise<void> {
+  dropEntity(parentUuid: string): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropEntities(parentUuid: string[]): Promise<void> {
+  dropEntities(parentUuid: string[]): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {

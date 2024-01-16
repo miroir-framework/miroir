@@ -32,6 +32,7 @@ import { cleanLevel } from "./constants.js";
 
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+import { ACTION_OK } from "../1_core/constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -106,7 +107,7 @@ export class StoreController implements StoreControllerInterface{
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
     applicationStoreBasedConfiguration: EntityInstance,
-  ):Promise<void>{
+  ):Promise<ActionReturnType>{
     await modelInitialize(
       metaModel,
       this,
@@ -117,7 +118,7 @@ export class StoreController implements StoreControllerInterface{
       applicationVersion,
       applicationStoreBasedConfiguration,
     );
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
 
@@ -125,7 +126,7 @@ export class StoreController implements StoreControllerInterface{
   async bootFromPersistedState(
     metaModelEntities : MetaEntity[],
     metaModelEntityDefinitions : EntityDefinition[],
-  ):Promise<void> {
+  ):Promise<ActionReturnType> {
     await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
     const dataEntities = await this.modelStoreSection.getInstances(entityEntity.uuid) as MetaEntity[];
     const dataEntityDefinitions = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid) as EntityDefinition[];
@@ -133,23 +134,23 @@ export class StoreController implements StoreControllerInterface{
       dataEntities.filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
       dataEntityDefinitions
     );
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
-  async open():Promise<void> {
+  async open():Promise<ActionReturnType> {
     await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
   
   // ##############################################################################################
-  async close():Promise<void> {
+  async close():Promise<ActionReturnType> {
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -163,15 +164,15 @@ export class StoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async clear():Promise<void> {
+  async clear():Promise<ActionReturnType> {
     log.info(this.logHeader,'clear',this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async clearDataInstances():Promise<void> {
+  async clearDataInstances():Promise<ActionReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
     const dataSectionEntityDefinitions: EntityInstanceCollection = await this.getInstances(
@@ -194,7 +195,7 @@ export class StoreController implements StoreControllerInterface{
         log.error(this.logHeader, "clearDataInstances could not find entity definition for Entity", entity);
       }
     }
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -216,7 +217,7 @@ export class StoreController implements StoreControllerInterface{
   async createModelStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ):Promise<void> {
+  ):Promise<ActionReturnType> {
     return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -224,7 +225,7 @@ export class StoreController implements StoreControllerInterface{
   async createDataStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ):Promise<void> {
+  ):Promise<ActionReturnType> {
     return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -232,23 +233,23 @@ export class StoreController implements StoreControllerInterface{
   async createEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ): Promise<void> {
+  ): Promise<ActionReturnType> {
     const result = await this.modelStoreSection.createEntity(entity,entityDefinition);
     return Promise.resolve(result);
   }
 
   // ##############################################################################################
-  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate){
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
     return this.modelStoreSection.renameEntity(update);
   }
 
   // ##############################################################################################
-  async dropEntity(entityUuid: string) {
+  async dropEntity(entityUuid: string): Promise<ActionReturnType> {
     return this.modelStoreSection.dropEntity(entityUuid);
   }
 
   // ##############################################################################################
-  async dropEntities(entityUuids: string[]) {
+  async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
     return this.modelStoreSection.dropEntities(entityUuids);
   }
 
@@ -349,9 +350,9 @@ export class StoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<void>{
+  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionReturnType>{
     log.info('StoreController applyModelEntityUpdate',update);
     await applyModelEntityUpdate(this,update);
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 }

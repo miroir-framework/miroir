@@ -10,7 +10,7 @@ import {
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeSectionFactory } from "./StoreController";
 
-import { StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
@@ -94,7 +94,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     newDeploymentUuid: Uuid,
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
-  ): Promise<void> {
+  ): Promise<ActionReturnType> {
     await adminStoreController.deleteStore(storeUnitConfiguration.admin);
     await adminStoreController.createStore(storeUnitConfiguration.admin);
     await this.addStoreController(
@@ -123,7 +123,9 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
       }
 
     } else { // TODO: inject interface to raise errors!
-      throw new Error("deployModule could not find storeController for " + newDeploymentUuid);
+      // throw new Error("deployModule could not find storeController for " + newDeploymentUuid);
+      return { status: "error", error: { errorType: "FailedToCreateStore" } }
     }
+    return { status: "ok"}
   }
 }

@@ -1,4 +1,4 @@
-import { ActionError, ActionReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
+import { ACTION_OK, ActionError, ActionReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
@@ -36,7 +36,7 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
     } catch (error) {
       return Promise.resolve({ status: "error", error: { errorType: "FailedToCreateStore", errorMessage: error}})
     }
-    return Promise.resolve({ status: "ok"})
+    return Promise.resolve(ACTION_OK)
   }
 
   // ##############################################################################################
@@ -51,6 +51,6 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
     } catch (error) {
       return Promise.resolve({ status: "error", error: { errorType: "FailedToDeleteStore", errorMessage: error}})
     }
-    return Promise.resolve({ status: "ok"})
+    return Promise.resolve(ACTION_OK)
   }
 }

@@ -1,4 +1,4 @@
-import { AbstractStoreInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { IndexedDb } from "./IndexedDbSnakeCase";
 import { cleanLevel } from "./constants";
@@ -29,19 +29,19 @@ export class IndexedDbStore implements AbstractStoreInterface {
   
   
   // ##################################################################################################
-  async open(): Promise<void> {
+  async open(): Promise<ActionReturnType> {
     log.info(this.logHeader, "open(): opening");
     await this.localUuidIndexedDb.openObjectStore();
     log.info(this.logHeader, "open(): opened");
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
-  async close(): Promise<void> {
+  async close(): Promise<ActionReturnType> {
     log.info(this.logHeader, "close(): closing");
     await this.localUuidIndexedDb.closeObjectStore();
     log.info(this.logHeader, "close(): closed");
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
 }

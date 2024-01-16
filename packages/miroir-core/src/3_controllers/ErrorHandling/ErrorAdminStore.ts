@@ -15,10 +15,10 @@ export class ErrorAdminStore implements AdminStoreInterface {
   getStoreName(): string {
     throw new Error("Method not implemented.");
   }
-  open(): Promise<void> {
+  open(): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  close(): Promise<void> {
+  close(): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
 

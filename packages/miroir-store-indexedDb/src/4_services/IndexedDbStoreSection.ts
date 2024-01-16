@@ -6,7 +6,8 @@ import {
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType
 } from "miroir-core";
 import { packageName } from "../constants";
 import { IndexedDb } from "./IndexedDbSnakeCase";
@@ -25,10 +26,6 @@ export type MixableIndexedDbStoreSection = GConstructor<IndexedDbStoreSection>;
 
 // base class for IndexedDb store mixins
 export class IndexedDbStoreSection extends IndexedDbStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface {
-  // public indexedDbStoreName: string;
-  // public localUuidIndexedDb: IndexedDb;
-  // public logHeader: string;
-
   // ##############################################################################################
   constructor(
     // public indexedDbStoreName: string; // used only for debugging purposes
@@ -37,44 +34,18 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
     super(args[0], args[1], args[2])
-    // this.indexedDbStoreName = args[0];
-    // this.localUuidIndexedDb = args[1];
-    // this.logHeader = args[2];
-    // log.info(this.logHeader,'IndexedDbStoreSection constructor','this.localUuidIndexedDb',this.localUuidIndexedDb)
   }
 
-  //   // #########################################################################################
-  //   getStoreName(): string {
-  //     return this.indexedDbStoreName;
-  //   }
-  
-  
-  // // ##################################################################################################
-  // async open(): Promise<void> {
-  //   log.info(this.logHeader, "open(): opening");
-  //   await this.localUuidIndexedDb.openObjectStore();
-  //   log.info(this.logHeader, "open(): opened");
-  //   return Promise.resolve();
-  // }
-
-  // // ##############################################################################################
-  // async close(): Promise<void> {
-  //   log.info(this.logHeader, "close(): closing");
-  //   await this.localUuidIndexedDb.closeObjectStore();
-  //   log.info(this.logHeader, "close(): closed");
-  //   return Promise.resolve();
-  // }
-
   // ##################################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<void> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
-  async clear(): Promise<void> {
+  async clear(): Promise<ActionReturnType> {
     await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
@@ -83,7 +54,7 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
   }
 
   // #############################################################################################
-  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
@@ -118,11 +89,11 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
         );
       }
     }
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<void> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionReturnType> {
     if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       await this.localUuidIndexedDb.removeSubLevels([entityUuid]);
       log.warn(
@@ -143,7 +114,7 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
         this.localUuidIndexedDb.getSubLevels()
       );
     }
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
@@ -152,7 +123,7 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<void> {
+  ): Promise<ActionReturnType> {
     log.warn(
       this.logHeader,
       "renameStorageSpaceForInstancesOfEntity does nothing for entity",
@@ -160,6 +131,6 @@ export class IndexedDbStoreSection extends IndexedDbStore implements AbstractSto
       ", since Entities are indexed by Uuid! Existing entities:",
       this.localUuidIndexedDb.getSubLevels()
     );
-    return Promise.resolve();
+    return Promise.resolve( { status: "ok" } );
   }
 }
