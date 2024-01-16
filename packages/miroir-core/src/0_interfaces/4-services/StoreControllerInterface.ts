@@ -5,6 +5,7 @@ import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } 
 import { Application } from '../1_core/Application.js';
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 import {
+  ActionReturnType,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -26,8 +27,8 @@ export interface AbstractStoreInterface {
 // ###########################################################################################
 // Abstract store interfaces
 export interface AdminStoreInterface extends AbstractStoreInterface {
-  createStore(config: StoreSectionConfiguration): Promise<void>;
-  deleteStore(config: StoreSectionConfiguration): Promise<void>;
+  createStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
+  deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
 }
 
 // ###########################################################################################
@@ -128,7 +129,8 @@ export interface InitApplicationParameters {
 
 // ###############################################################################################################
 // store Controller
-export interface StoreControllerInterface extends AbstractStoreSectionInterface, AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
+// TODO: remove AdminStoreInterface?
+export interface StoreControllerInterface extends AdminStoreInterface, AbstractStoreSectionInterface, AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
   initApplication(
     metaModel:MiroirApplicationModel, 
     dataStoreType: DataStoreApplicationType,
@@ -139,8 +141,8 @@ export interface StoreControllerInterface extends AbstractStoreSectionInterface,
     applicationStoreBasedConfiguration: EntityInstance,
   ):Promise<void>;
 
-  createStore(config: StoreSectionConfiguration): Promise<void>;
-  deleteStore(config: StoreSectionConfiguration): Promise<void>;
+  createStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
+  deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(
     entity:Entity,

@@ -1,6 +1,10 @@
 // export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
 
 export {
+  ActionError,
+  actionError,
+  ActionReturnType,
+  actionReturnType,
   ActionTransformer,
   actionTransformer,
   ApplicationSection,

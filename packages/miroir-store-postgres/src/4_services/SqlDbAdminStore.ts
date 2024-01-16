@@ -1,4 +1,4 @@
-import { AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
+import { ActionError, ActionReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
@@ -27,22 +27,30 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
   // ##############################################################################################
   async createStore(
     config: StoreSectionConfiguration,
-  ): Promise<void> {
-    if (config.emulatedServerType !== "sql") {
-      throw new Error(loggerName + " createStore failed for serverType " + config.emulatedServerType);
+  ): Promise<ActionReturnType> {
+    try {
+      if (config.emulatedServerType !== "sql") {
+        throw new Error(loggerName + " createStore failed for serverType " + config.emulatedServerType);
+      }
+      await this.sequelize.createSchema(config.schema,{});
+    } catch (error) {
+      return Promise.resolve({ status: "error", error: { errorType: "FailedToCreateStore", errorMessage: error}})
     }
-    await this.sequelize.createSchema(config.schema,{});
-    return Promise.resolve(undefined)
+    return Promise.resolve({ status: "ok"})
   }
 
   // ##############################################################################################
   async deleteStore(
     config: StoreSectionConfiguration,
-  ): Promise<void> {
-    if (config.emulatedServerType !== "sql") {
-      throw new Error(loggerName + " deleteStore failed for serverType " + config.emulatedServerType);
+  ): Promise<ActionReturnType> {
+    try {
+      if (config.emulatedServerType !== "sql") {
+        throw new Error(loggerName + " deleteStore failed for serverType " + config.emulatedServerType);
+      }
+      await this.sequelize.dropSchema(config.schema,{});
+    } catch (error) {
+      return Promise.resolve({ status: "error", error: { errorType: "FailedToDeleteStore", errorMessage: error}})
     }
-    await this.sequelize.dropSchema(config.schema,{});
-    return Promise.resolve(undefined)
+    return Promise.resolve({ status: "ok"})
   }
 }

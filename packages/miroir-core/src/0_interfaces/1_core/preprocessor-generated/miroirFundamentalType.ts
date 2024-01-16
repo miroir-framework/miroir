@@ -584,16 +584,6 @@ export type DomainElementUuidIndex = {
     elementType: "instanceUuidIndex";
     elementValue: EntityInstancesUuidIndex;
 };
-export type RecordOfTransformers = {
-    transformerType: "recordOfTransformers";
-    definition: {
-        [x: string]: Transformer;
-    };
-};
-export type Transformer = {
-    transformerType: "objectTransformer";
-    attributeName: string;
-} | RecordOfTransformers;
 export type DomainElement = DomainElementObject | DomainElementUuidIndex | {
     elementType: "instance";
     elementValue: EntityInstance;
@@ -613,6 +603,16 @@ export type DomainElement = DomainElementObject | DomainElementUuidIndex | {
     elementType: "array";
     elementValue: DomainElement[];
 };
+export type RecordOfTransformers = {
+    transformerType: "recordOfTransformers";
+    definition: {
+        [x: string]: Transformer;
+    };
+};
+export type Transformer = {
+    transformerType: "objectTransformer";
+    attributeName: string;
+} | RecordOfTransformers;
 export type MiroirCustomQueryParams = {
     queryType: "custom";
     name: "jsonata";
@@ -668,11 +668,13 @@ export type StoreAction = {
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     configuration: StoreUnitConfiguration;
     deploymentUuid?: string | undefined;
+    errors: "FailedToCreateStore";
 } | {
     actionType: "storeAction";
     actionName: "deleteStore";
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     deploymentUuid: string;
+    errors: "FailedToDeleteStore";
 } | {
     actionType: "storeAction";
     actionName: "openStore";
@@ -686,6 +688,17 @@ export type StoreAction = {
     actionName: "closeStore";
     endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
     deploymentUuid: string;
+};
+export type ActionError = {
+    errorType: "FailedToCreateStore" | "FailedToDeleteStore";
+    errorMessage: string;
+};
+export type ActionReturnType = {
+    status: "ok";
+    instanceCollection?: EntityInstanceCollection | undefined;
+} | {
+    status: "error";
+    error: ActionError;
 };
 export type BundleAction = {
     actionType: "bundleAction";
@@ -780,16 +793,18 @@ export const miroirCrossJoinQuery: z.ZodType<MiroirCrossJoinQuery> = z.object({q
 export const miroirFetchQuery: z.ZodType<MiroirFetchQuery> = z.object({parameterSchema:z.lazy(() =>jzodObject).optional(), select:z.lazy(() =>miroirSelectQueriesRecord), crossJoin:z.lazy(() =>miroirCrossJoinQuery).optional()}).strict();
 export const domainElementObject: z.ZodType<DomainElementObject> = z.object({elementType:z.literal("object"), elementValue:z.record(z.string(),z.lazy(() =>domainElement))}).strict();
 export const domainElementUuidIndex: z.ZodType<DomainElementUuidIndex> = z.object({elementType:z.literal("instanceUuidIndex"), elementValue:z.lazy(() =>entityInstancesUuidIndex)}).strict();
+export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>domainElementObject), z.lazy(() =>domainElementUuidIndex), z.object({elementType:z.literal("instance"), elementValue:z.lazy(() =>entityInstance)}).strict(), z.object({elementType:z.literal("instanceUuid"), elementValue:z.lazy(() =>entityInstanceUuid)}).strict(), z.object({elementType:z.literal("instanceUuidIndexUuidIndex"), elementValue:z.lazy(() =>entityInstancesUuidIndex)}).strict(), z.object({elementType:z.literal("failure"), elementValue:z.lazy(() =>queryFailed)}).strict(), z.object({elementType:z.literal("string"), elementValue:z.string()}).strict(), z.object({elementType:z.literal("array"), elementValue:z.array(z.lazy(() =>domainElement))}).strict()]);
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
-export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>domainElementObject), z.lazy(() =>domainElementUuidIndex), z.object({elementType:z.literal("instance"), elementValue:z.lazy(() =>entityInstance)}).strict(), z.object({elementType:z.literal("instanceUuid"), elementValue:z.lazy(() =>entityInstanceUuid)}).strict(), z.object({elementType:z.literal("instanceUuidIndexUuidIndex"), elementValue:z.lazy(() =>entityInstancesUuidIndex)}).strict(), z.object({elementType:z.literal("failure"), elementValue:z.lazy(() =>queryFailed)}).strict(), z.object({elementType:z.literal("string"), elementValue:z.string()}).strict(), z.object({elementType:z.literal("array"), elementValue:z.array(z.lazy(() =>domainElement))}).strict()]);
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
 export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
-export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("createStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("deleteStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
+export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("createStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid().optional(), errors:z.literal("FailedToCreateStore")}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("deleteStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), errors:z.literal("FailedToDeleteStore")}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
+export const actionError: z.ZodType<ActionError> = z.object({errorType:z.union([z.literal("FailedToCreateStore"), z.literal("FailedToDeleteStore")]), errorMessage:z.string()}).strict();
+export const actionReturnType: z.ZodType<ActionReturnType> = z.union([z.object({status:z.literal("ok"), instanceCollection:z.lazy(() =>entityInstanceCollection).optional()}).strict(), z.object({status:z.literal("error"), error:z.lazy(() =>actionError)}).strict()]);
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle")}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle")}).strict()]);
 export const miroirAction: z.ZodType<MiroirAction> = z.union([z.lazy(() =>storeAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();

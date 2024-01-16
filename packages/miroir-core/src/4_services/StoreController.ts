@@ -3,6 +3,7 @@ import { Application } from "../0_interfaces/1_core/Application.js";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
+  ActionReturnType,
   ApplicationSection,
   EntityDefinition,
   EntityInstance,
@@ -72,6 +73,11 @@ export async function storeSectionFactory (
 }
 
 
+// #######################################################################################################################
+// #######################################################################################################################
+// #######################################################################################################################
+// #######################################################################################################################
+// #######################################################################################################################
 // #######################################################################################################################
 // MAIN CLASS: StoreController
 // #######################################################################################################################
@@ -147,12 +153,12 @@ export class StoreController implements StoreControllerInterface{
   }
 
   // ##############################################################################################
-  async createStore(config: StoreSectionConfiguration): Promise<void> {
+  async createStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
     return this.adminStore.createStore(config);
   }
   
   // ##############################################################################################
-  async deleteStore(config: StoreSectionConfiguration): Promise<void> {
+  async deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
     return this.adminStore.deleteStore(config);
   }
 

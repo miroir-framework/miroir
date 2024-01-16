@@ -134,7 +134,10 @@ async function start(root:Root) {
   miroirCoreStartup();
   miroirIndexedDbStoreSectionStartup();
 
-  const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
+  const storeControllerManager = new StoreControllerManager(
+    ConfigurationService.adminStoreFactoryRegister,
+    ConfigurationService.StoreSectionFactoryRegister
+  );
 
 
   if (process.env.NODE_ENV === "development") {

@@ -83,7 +83,10 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-const storeControllerManager = new StoreControllerManager(ConfigurationService.StoreSectionFactoryRegister)
+const storeControllerManager = new StoreControllerManager(
+  ConfigurationService.adminStoreFactoryRegister,
+  ConfigurationService.StoreSectionFactoryRegister
+);
 // await storeControllerManager.addStoreController(
 //   "xxx",
 //   miroirConfig.server.miroirAdminConfig

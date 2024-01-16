@@ -493,51 +493,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
-      "recordOfTransformers":{
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "recordOfTransformers"
-          },
-          "definition": {
-            "type": "record",
-            "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "transformer"
-              }
-            }
-            
-          }
-        }
-      },
-      "transformer": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "transformerType": {
-                "type": "literal",
-                "definition": "objectTransformer"
-              },
-              "attributeName": {
-                "type": "simpleType",
-                "definition": "string"
-              }
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "recordOfTransformers"
-            }
-          }
-        ]
-      },
       "domainElement": {
         "type": "union",
         "definition": [
@@ -652,6 +607,51 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
                   }
                 }
               }
+            }
+          }
+        ]
+      },
+      "recordOfTransformers":{
+        "type": "object",
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "recordOfTransformers"
+          },
+          "definition": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformer"
+              }
+            }
+            
+          }
+        }
+      },
+      "transformer": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "literal",
+                "definition": "objectTransformer"
+              },
+              "attributeName": {
+                "type": "simpleType",
+                "definition": "string"
+              }
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "recordOfTransformers"
             }
           }
         ]
@@ -814,6 +814,35 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         }
       },
       "storeAction": deploymentEndpoint.definition.definition.actionParameter as JzodElement,
+      "actionError": {
+        "type": "object",
+        "definition": {
+          "errorType": {
+            "type": "union",
+            "definition": deploymentEndpoint.definition.definition.actionParameter.definition.filter(e=>!!e.definition.errors).map(e =>e.definition.errors),
+          },
+          "errorMessage": { "type": "simpleType", "definition": "string" }
+        }
+      },
+      "actionReturnType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "status": { "type": "literal", "definition": "ok" },
+              "instanceCollection": { "type": "schemaReference", "optional": true, "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "entityInstanceCollection" } }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "status": { "type": "literal", "definition": "error" },
+              "error": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" } }
+            }
+          }
+        ]
+      },
       "bundleAction": {
         "type": "union",
         "definition": [

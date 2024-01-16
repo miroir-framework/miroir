@@ -3,6 +3,7 @@ import { describe, expect } from 'vitest';
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
+  ActionReturnType,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
@@ -13,11 +14,23 @@ import {
   applicationStoreBasedConfigurationMiroir,
   applicationVersionInitialMiroirVersion,
   applicationVersionLibraryInitialVersion,
+  author1,
+  CUDActionName,
   defaultLevels,
   defaultMiroirMetaModel,
+  entityAuthor,
+  EntityDefinition,
+  entityDefinitionAuthor,
+  entityEntity,
+  entityEntityDefinition,
   EntityInstance,
+  EntityInstanceCollection,
+  MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
+  ModelCUDInstanceUpdate,
+  ModelEntityActionTransformer,
+  ModelEntityUpdate,
   StoreControllerInterface,
   StoreControllerManagerInterface
 } from "miroir-core";
@@ -84,34 +97,34 @@ beforeEach(
   }
 )
 
-// // ################################################################################################
-// afterEach(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach")
-//     try {
-//       // await localDataStore?.close();
-//       await localMiroirStoreController.clear();
-//       await localAppStoreController.clear();
-//     } catch (error) {
-//       console.error('Error afterEach',error);
-//     }
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterEach")
-//   }
-// )
+// ################################################################################################
+afterEach(
+  async () => {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach")
+    try {
+      // await localDataStore?.close();
+      await localMiroirStoreController.clear();
+      await localAppStoreController.clear();
+    } catch (error) {
+      console.error('Error afterEach',error);
+    }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterEach")
+  }
+)
 
-// // ################################################################################################
-// afterAll(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
-//     try {
-//       await localMiroirStoreController.close();
-//       await localAppStoreController.close();
-//     } catch (error) {
-//       console.error('Error afterAll',error);
-//     }
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
-//   }
-// )
+// ################################################################################################
+afterAll(
+  async () => {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
+    try {
+      await localMiroirStoreController.close();
+      await localAppStoreController.close();
+    } catch (error) {
+      console.error('Error afterAll',error);
+    }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterAll")
+  }
+)
 
 // ##############################################################################################
 // ##############################################################################################
@@ -120,92 +133,146 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
   return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
 }
 
+const miroir2Config:MiroirConfigClient = { // TODO: have test configuration for indexedDb and filesystem cases
+  "client": {
+    "emulateServer": true,
+    "rootApiUrl":"http://localhost:3080",
+    "miroirServerConfig":{
+      "admin": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "miroir2"
+      },
+      "model": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "miroir2"
+      },
+      "data": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "miroir2"
+      }
+    },
+    "appServerConfig": {
+      "admin": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "library2"
+      },
+      "model": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "library2"
+      },
+      "data": {
+        "emulatedServerType": "sql",
+        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+        "schema": "library2"
+      }
+    },
+  }
+}
+
 describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
-  it("Create new store or remove existing store", async () => {
-    
-    const miroir2Config:MiroirConfigClient = {
-      "client": {
-        "emulateServer": true,
-        "rootApiUrl":"http://localhost:3080",
-        "miroirServerConfig":{
-          "admin": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "miroir2"
-          },
-          "model": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "miroir2"
-          },
-          "data": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "miroir2"
-          }
-        },
-        "appServerConfig": {
-          "admin": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "library2"
-          },
-          "model": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "library2"
-          },
-          "data": {
-            "emulatedServerType": "sql",
-            "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-            "schema": "library2"
-          }
-        },
+  it(
+    "Create new store or remove existing store",
+    async () => { // TODO: test failure cases!
+      if (miroir2Config.client.emulateServer) {
+        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+        expect(testResult).toEqual({ status: "ok"})
+      } else {
+        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
       }
     }
+  );
+
+  // // ################################################################################################
+  // it("deploy Miroir and Library modules.", async () => {
+    
+  //   const miroir2Config:MiroirConfigClient = {
+  //     "client": {
+  //       "emulateServer": true,
+  //       "rootApiUrl":"http://localhost:3080",
+  //       "miroirServerConfig":{
+  //         "admin": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "miroir2"
+  //         },
+  //         "model": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "miroir2"
+  //         },
+  //         "data": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "miroir2"
+  //         }
+  //       },
+  //       "appServerConfig": {
+  //         "admin": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "library2"
+  //         },
+  //         "model": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "library2"
+  //         },
+  //         "data": {
+  //           "emulatedServerType": "sql",
+  //           "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
+  //           "schema": "library2"
+  //         }
+  //       },
+  //     }
+  //   }
 
     
-    if (miroir2Config.client.emulateServer) {
-      if (storeControllerManager) {
-        const newMiroirDeploymentUuid = uuidv4();
-        const newLibraryDeploymentUuid = uuidv4();
+  //   if (miroir2Config.client.emulateServer) {
+  //     if (storeControllerManager) {
+  //       const newMiroirDeploymentUuid = uuidv4();
+  //       const newLibraryDeploymentUuid = uuidv4();
 
-        await storeControllerManager.deployModule(
-          localMiroirStoreController,
-          newMiroirDeploymentUuid,
-          miroir2Config.client.miroirServerConfig,
-          {
-            metaModel: defaultMiroirMetaModel,
-            dataStoreType: 'miroir',
-            application: applicationMiroir,
-            applicationDeploymentConfiguration: applicationDeploymentMiroir,
-            applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-            applicationVersion: applicationVersionInitialMiroirVersion,
-            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-          }
-        );
-        await storeControllerManager.deployModule(
-          localMiroirStoreController,
-          newLibraryDeploymentUuid,
-          miroir2Config.client.appServerConfig,
-          {
-            metaModel: defaultMiroirMetaModel,
-            dataStoreType: 'app',
-            application: applicationLibrary,
-            applicationDeploymentConfiguration: applicationDeploymentLibrary,
-            applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-            applicationVersion: applicationVersionLibraryInitialVersion,
-            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-          }
-        );
-      }
-    } else {
-      expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-    }
-    expect(true).toEqual(true);
-  },10000);
+  //       await storeControllerManager.deployModule(
+  //         localMiroirStoreController,
+  //         newMiroirDeploymentUuid,
+  //         miroir2Config.client.miroirServerConfig,
+  //         {
+  //           metaModel: defaultMiroirMetaModel,
+  //           dataStoreType: 'miroir',
+  //           application: applicationMiroir,
+  //           applicationDeploymentConfiguration: applicationDeploymentMiroir,
+  //           applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+  //           applicationVersion: applicationVersionInitialMiroirVersion,
+  //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+  //         }
+  //       );
+  //       await storeControllerManager.deployModule(
+  //         localMiroirStoreController,
+  //         newLibraryDeploymentUuid,
+  //         miroir2Config.client.appServerConfig,
+  //         {
+  //           metaModel: defaultMiroirMetaModel,
+  //           dataStoreType: 'app',
+  //           application: applicationLibrary,
+  //           applicationDeploymentConfiguration: applicationDeploymentLibrary,
+  //           applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+  //           applicationVersion: applicationVersionLibraryInitialVersion,
+  //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+  //         }
+  //       );
+  //     }
+  //   } else {
+  //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //   }
+  //   expect(true).toEqual(true);
+  // },10000);
 
   // // ################################################################################################
   // it("get Miroir Entities", async () => {
