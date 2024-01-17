@@ -343,7 +343,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   await remoteStore.handleRemoteAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
-                    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                     configuration: {
                       [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
                       [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
@@ -355,7 +355,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   await remoteStore.handleRemoteAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
-                    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                     configuration: {
                       [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
                       [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,

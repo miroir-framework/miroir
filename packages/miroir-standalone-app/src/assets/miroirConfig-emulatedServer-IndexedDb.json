@@ -3,6 +3,10 @@
     "emulateServer": true,
     "rootApiUrl":"http://localhost:3080",
     "miroirServerConfig":{
+      "admin": {
+        "emulatedServerType": "indexedDb",
+        "indexedDbName":"miroir-uuid-indexedDb_model"
+      },
       "model": {
         "emulatedServerType": "indexedDb",
         "indexedDbName":"miroir-uuid-indexedDb_model"
@@ -13,6 +17,10 @@
       }
     },
     "appServerConfig": {
+      "admin": {
+        "emulatedServerType": "indexedDb",
+        "indexedDbName":"library-uuid-indexedDb_model"
+      },
       "model": {
         "emulatedServerType": "indexedDb",
         "indexedDbName":"library-uuid-indexedDb_model"

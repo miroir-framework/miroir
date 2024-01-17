@@ -468,7 +468,7 @@ export type Commit = {
     author?: string | undefined;
     description?: string | undefined;
     actions: {
-        endpointVersion: string;
+        endpoint: string;
         actionArguments: ModelAction;
     }[];
     patches: any[];
@@ -619,20 +619,72 @@ export type MiroirCustomQueryParams = {
     definition: string;
 };
 export type ______________________________________________actions_____________________________________________ = never;
+export type ActionError = {
+    status: "error";
+    error: {
+        errorType: ("FailedToCreateStore" | "FailedToDeployModule") | "FailedToDeleteStore" | "FailedToCreateInstance" | "FailedToGetInstance";
+        errorMessage?: string | undefined;
+    };
+};
+export type ActionSuccess = {
+    status: "ok";
+    instanceCollection?: EntityInstanceCollection | undefined;
+    returnedDomainElement?: DomainElement | undefined;
+};
+export type ActionReturnType = ActionError | ActionSuccess;
 export type ModelAction = {
     actionType: "modelAction";
     actionName: "createEntity";
-    endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e";
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
     entity: Entity;
     entityDefinition: EntityDefinition;
+} | {
+    actionType: "modelAction";
+    actionName: "dropEntity";
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
+    entityUuid: string;
+    entityDefinitionUuid: string;
 };
 export type InstanceAction = {
     actionType: "instanceAction";
     actionName: "createInstance";
-    endpointVersion: "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
     deploymentUuid: string;
     applicationSection: ApplicationSection;
     objects: EntityInstanceCollection[];
+} | {
+    actionType: "instanceAction";
+    actionName: "getInstance";
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    deploymentUuid: string;
+    applicationSection: ApplicationSection;
+    parentUuid: string;
+    uuid: string;
+};
+export type StoreAction = {
+    actionType: "storeAction";
+    actionName: "createStore";
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    configuration: StoreUnitConfiguration;
+    deploymentUuid?: string | undefined;
+} | {
+    actionType: "storeAction";
+    actionName: "deleteStore";
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    deploymentUuid: string;
+} | {
+    actionType: "storeAction";
+    actionName: "openStore";
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    configuration: {
+        [x: string]: StoreUnitConfiguration;
+    };
+    deploymentUuid: string;
+} | {
+    actionType: "storeAction";
+    actionName: "closeStore";
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+    deploymentUuid: string;
 };
 export type InstanceCUDAction = {
     actionType: "InstanceCUDAction";
@@ -661,44 +713,6 @@ export type LocalCacheAction = {
     actionType: "InstanceCUDAction";
     actionName: "replaceLocalCache";
     objects: EntityInstanceCollection[];
-};
-export type StoreAction = {
-    actionType: "storeAction";
-    actionName: "createStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    configuration: StoreUnitConfiguration;
-    deploymentUuid?: string | undefined;
-    errors: "FailedToCreateStore";
-} | {
-    actionType: "storeAction";
-    actionName: "deleteStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    deploymentUuid: string;
-    errors: "FailedToDeleteStore";
-} | {
-    actionType: "storeAction";
-    actionName: "openStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    configuration: {
-        [x: string]: StoreUnitConfiguration;
-    };
-    deploymentUuid?: string | undefined;
-} | {
-    actionType: "storeAction";
-    actionName: "closeStore";
-    endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
-    deploymentUuid: string;
-};
-export type ActionError = {
-    errorType: "FailedToCreateStore" | "FailedToDeleteStore";
-    errorMessage?: string | undefined;
-};
-export type ActionReturnType = {
-    status: "ok";
-    instanceCollection?: EntityInstanceCollection | undefined;
-} | {
-    status: "error";
-    error: ActionError;
 };
 export type BundleAction = {
     actionType: "bundleAction";
@@ -774,7 +788,7 @@ export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z
 export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({client:z.union([z.lazy(() =>miroirConfigForMswClient), z.lazy(() =>miroirConfigForRestClient)])}).strict();
 export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({server:z.object({rootApiUrl:z.string(), miroirAdminConfig:z.lazy(() =>storeUnitConfiguration)}).strict()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
-export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpointVersion:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
+export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceCUDAction)]);
 export const ______________________________________________queries_____________________________________________: z.ZodType<______________________________________________queries_____________________________________________> = z.never();
 export const queryFailed: z.ZodType<QueryFailed> = z.object({queryFailure:z.enum(["QueryNotExecutable","DomainStateNotLoaded","IncorrectParameters","DeploymentNotFound","ApplicationSectionNotFound","EntityNotFound","InstanceNotFound","ReferenceNotFound","ReferenceFoundButUndefined","ReferenceFoundButAttributeUndefinedOnFoundObject"]), query:z.any().optional(), queryReference:z.any().optional(), queryParameters:z.any().optional(), queryContext:z.any().optional(), deploymentUuid:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), entityUuid:z.string().optional(), instanceUuid:z.string().optional()}).strict();
@@ -798,13 +812,14 @@ export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({t
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
-export const modelAction: z.ZodType<ModelAction> = z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpointVersion:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict();
-export const instanceAction: z.ZodType<InstanceAction> = z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpointVersion:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
+export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToGetInstance")]), errorMessage:z.string().optional()}).strict()}).strict();
+export const actionSuccess: z.ZodType<ActionSuccess> = z.object({status:z.literal("ok"), instanceCollection:z.lazy(() =>entityInstanceCollection).optional(), returnedDomainElement:z.lazy(() =>domainElement).optional()}).strict();
+export const actionReturnType: z.ZodType<ActionReturnType> = z.union([z.lazy(() =>actionError), z.lazy(() =>actionSuccess)]);
+export const modelAction: z.ZodType<ModelAction> = z.union([z.object({actionType:z.literal("modelAction"), actionName:z.literal("createEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entity:z.lazy(() =>entity), entityDefinition:z.lazy(() =>entityDefinition)}).strict(), z.object({actionType:z.literal("modelAction"), actionName:z.literal("dropEntity"), endpoint:z.literal("7947ae40-eb34-4149-887b-15a9021e714e"), entityUuid:z.string(), entityDefinitionUuid:z.string()}).strict()]);
+export const instanceAction: z.ZodType<InstanceAction> = z.union([z.object({actionType:z.literal("instanceAction"), actionName:z.literal("createInstance"), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("instanceAction"), actionName:z.literal("getInstance"), endpoint:z.literal("ed520de4-55a9-4550-ac50-b1b713b72a89"), deploymentUuid:z.string().uuid(), applicationSection:z.lazy(() =>applicationSection), parentUuid:z.string().uuid(), uuid:z.string().uuid()}).strict()]);
+export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("createStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("deleteStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpoint:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
 export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
-export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType:z.literal("storeAction"), actionName:z.literal("createStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.lazy(() =>storeUnitConfiguration), deploymentUuid:z.string().uuid().optional(), errors:z.literal("FailedToCreateStore")}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("deleteStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid(), errors:z.literal("FailedToDeleteStore")}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("openStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), configuration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration)), deploymentUuid:z.string().uuid().optional()}).strict(), z.object({actionType:z.literal("storeAction"), actionName:z.literal("closeStore"), endpointVersion:z.literal("bbd08cbb-79ff-4539-b91f-7a14f15ac55f"), deploymentUuid:z.string().uuid()}).strict()]);
-export const actionError: z.ZodType<ActionError> = z.object({errorType:z.union([z.literal("FailedToCreateStore"), z.literal("FailedToDeleteStore")]), errorMessage:z.string().optional()}).strict();
-export const actionReturnType: z.ZodType<ActionReturnType> = z.union([z.object({status:z.literal("ok"), instanceCollection:z.lazy(() =>entityInstanceCollection).optional()}).strict(), z.object({status:z.literal("error"), error:z.lazy(() =>actionError)}).strict()]);
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle")}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle")}).strict()]);
 export const miroirAction: z.ZodType<MiroirAction> = z.union([z.lazy(() =>storeAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();

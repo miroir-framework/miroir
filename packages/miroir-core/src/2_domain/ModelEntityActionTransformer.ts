@@ -1,7 +1,11 @@
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
-import { ModelAction, EntityDefinition, EntityInstanceCollection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  ModelAction,
+  EntityDefinition,
+  EntityInstanceCollection,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   CUDActionName,
@@ -109,31 +113,69 @@ export class ModelEntityActionTransformer{
     deploymentUuid: Uuid,
     modelAction:ModelAction,
   ):LocalCacheCUDActionWithDeployment[] {
-    return [
-      {
-        actionType:"LocalCacheCUDActionWithDeployment",
-        deploymentUuid,
-        instanceCUDAction: {
-          actionType: "InstanceCUDAction",
-          actionName: "create",
-          applicationSection: "model",
-          objects: [
-            {
-              parentName:entityEntity.name,
-              parentUuid:entityEntity.uuid,
-              applicationSection:'model',
-              instances:[modelAction.entity]
-            },
-            {
-              parentName:entityEntityDefinition.name,
-              parentUuid:entityEntityDefinition.uuid,
-              applicationSection:'model', 
-              instances:[modelAction.entityDefinition]
-            },
-          ]
-        }
+    switch (modelAction.actionName) {
+      case "createEntity": {
+        return [
+          {
+            actionType:"LocalCacheCUDActionWithDeployment",
+            deploymentUuid,
+            instanceCUDAction: {
+              actionType: "InstanceCUDAction",
+              actionName: "create",
+              applicationSection: "model",
+              objects: [
+                {
+                  parentName:entityEntity.name,
+                  parentUuid:entityEntity.uuid,
+                  applicationSection:'model',
+                  instances:[modelAction.entity]
+                },
+                {
+                  parentName:entityEntityDefinition.name,
+                  parentUuid:entityEntityDefinition.uuid,
+                  applicationSection:'model', 
+                  instances:[modelAction.entityDefinition]
+                },
+              ]
+            }
+          }
+        ];
+        break;
       }
-    ]
+      case "dropEntity": {
+        return [
+          {
+            actionType: "LocalCacheCUDActionWithDeployment",
+            deploymentUuid,
+            instanceCUDAction: {
+              actionType: "InstanceCUDAction",
+              actionName: "delete",
+              applicationSection: "model",
+              objects: [
+                {
+                  parentName: entityEntity.name,
+                  parentUuid: entityEntity.uuid,
+                  applicationSection: "model",
+                  instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.entityUuid }],
+                },
+                {
+                  parentName: entityEntityDefinition.name,
+                  parentUuid: entityEntityDefinition.uuid,
+                  applicationSection: "model",
+                  instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
+                },
+              ],
+            },
+          },
+        ];
+        break;
+      }
+      default: {
+        throw new Error("modelActionToInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
+        break;
+      }
+    }
+    return [];
   }
 
   // ###################################################################################################

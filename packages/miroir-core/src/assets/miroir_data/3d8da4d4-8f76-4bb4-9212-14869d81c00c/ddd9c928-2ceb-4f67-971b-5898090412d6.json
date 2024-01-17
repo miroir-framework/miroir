@@ -7,28 +7,51 @@
   "version": "1",
   "description": "Application Endpoint",
   "definition": {
-    "type": "object",
-    "definition": {
-      "actionParameter": {
-        "type": "object",
-        "definition": {
-          "actionType": {"type": "literal", "definition":"applicationAction"},
-          "actionName": {"type": "literal", "definition":"createApplication"},
-          "endpointVersion": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
-          "objects": {
-            "type": "array",
-            "extra": { "defaultLabel": "Application Instance to create", "editable": true },
-            "definition": {
-              "type": "schemaReference",
-              "optional": false,
+    "actions": [
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"applicationAction"},
+            "actionName": {"type": "literal", "definition":"createApplication"},
+            "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
+            "objects": {
+              "type": "array",
+              "extra": { "defaultLabel": "Application Instance to create", "editable": true },
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityInstance"
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstance"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"applicationAction"},
+            "actionName": {"type": "literal", "definition":"deleteApplication"},
+            "endpoint": {"type": "literal", "definition":"ddd9c928-2ceb-4f67-971b-5898090412d6"},
+            "objects": {
+              "type": "array",
+              "extra": { "defaultLabel": "Application Instance to create", "editable": true },
+              "definition": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstance"
+                }
               }
             }
           }
         }
       }
-    }
+    ]
   }
 }

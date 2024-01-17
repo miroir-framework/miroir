@@ -9,6 +9,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   StoreSectionConfiguration,
+  actionReturnType,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   ModelReplayableUpdate,
@@ -56,11 +57,12 @@ export async function storeSectionFactory (
   config: StoreSectionConfiguration,
   dataStore?: StoreDataSectionInterface,
 ):Promise<StoreDataSectionInterface | StoreModelSectionInterface> {
-  log.info('storeSectionFactory called for', section, config);
+  log.info('StoreController storeSectionFactory called for', section, config, StoreSectionFactoryRegister);
   if (section == 'model' && !dataStore) {
-    throw new Error('storeSectionFactory model section factory must receive data section store.')
+    throw new Error('StoreController storeSectionFactory model section factory must receive data section store.')
   }
   const storeFactoryRegisterKey:string = JSON.stringify({storageType:config.emulatedServerType,section});
+  log.info("StoreController storeSectionFactory storeFactoryRegisterKey", storeFactoryRegisterKey);
   const foundStoreSectionFactory = StoreSectionFactoryRegister.get(storeFactoryRegisterKey);
   if (foundStoreSectionFactory) {
     if (section == 'model') {
@@ -82,7 +84,7 @@ export async function storeSectionFactory (
 // #######################################################################################################################
 // MAIN CLASS: StoreController
 // #######################################################################################################################
-export class StoreController implements StoreControllerInterface{
+export class StoreController implements StoreControllerInterface {
   private logHeader: string;
 
   constructor(
@@ -272,10 +274,12 @@ export class StoreController implements StoreControllerInterface{
   }
   
   // #############################################################################################
-  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<EntityInstance | undefined> {
+  // async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<EntityInstance | undefined> {
+  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<ActionReturnType> {
     log.info(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid);
     
-    let result: EntityInstance | undefined;
+    // let result: EntityInstance | undefined;
+    let result: ActionReturnType;
     if (section == 'data') {
       result = await this.dataStoreSection.getInstance(entityUuid,uuid);
     } else {

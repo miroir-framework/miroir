@@ -9,7 +9,18 @@ export class Endpoint implements EndpointInterface {
 
   handleAction(action: InstanceAction): void {
     // return this.localCache.handleEndpointAction(action);
-    this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
+    switch (action.actionName) {
+      case "createInstance": {
+        this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
+        break
+      }
+      case "getInstance": {
+        // TODO
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   async handleAsyncAction(action: InstanceAction): Promise<void> {

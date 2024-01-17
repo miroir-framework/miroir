@@ -37,7 +37,7 @@ export class ErrorDataStore implements StoreDataSectionInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
-  getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+  getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   getInstances(parentUuid: string): Promise<EntityInstance[]> {

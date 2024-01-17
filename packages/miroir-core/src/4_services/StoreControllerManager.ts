@@ -36,6 +36,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
   // ################################################################################################
   async addStoreController(deploymentUuid: string, config: StoreUnitConfiguration): Promise<void> {
+    log.info("addStoreController", deploymentUuid, config);
     if (this.storeControllers[deploymentUuid]) {
       log.info("addStoreController for", deploymentUuid, "already exists, doing nothing!");
     } else {
@@ -58,6 +59,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
         "data",
         config.data
       )) as StoreDataSectionInterface;
+      log.info("addStoreController found dataStore", dataStore)
       const modelStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "model",
@@ -124,7 +126,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
     } else { // TODO: inject interface to raise errors!
       // throw new Error("deployModule could not find storeController for " + newDeploymentUuid);
-      return { status: "error", error: { errorType: "FailedToCreateStore" } }
+      return { status: "error", error: { errorType: "FailedToDeployModule" } }
     }
     return { status: "ok"}
   }

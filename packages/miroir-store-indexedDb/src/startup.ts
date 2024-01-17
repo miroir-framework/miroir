@@ -29,10 +29,10 @@ export function miroirIndexedDbStoreSectionStartup() {
   ConfigurationService.registerAdminStoreFactory(
     "indexedDb",
     async (config: StoreSectionConfiguration): Promise<AdminStoreInterface> => {
-      if (config.emulatedServerType == "sql") {
-        const sqlDbStoreName: string = config.connectionString + ":" + config.schema
+      if (config.emulatedServerType == "indexedDb") {
+        const indexedDbStoreName: string = config.indexedDbName + '-model'
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new IndexedDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
+        return Promise.resolve(new IndexedDbAdminStore(indexedDbStoreName, new IndexedDb(indexedDbStoreName)))
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
@@ -46,15 +46,16 @@ export function miroirIndexedDbStoreSectionStartup() {
       config: StoreSectionConfiguration,
       dataStore?: StoreDataSectionInterface
     ): Promise<DataOrModelStoreInterface> => {
-      log.info('called registerStoreSectionFactory function for',section, config.emulatedServerType);
+      log.info('called registerStoreSectionFactory function for',section, config.emulatedServerType, dataStore);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
         const indexedDbStoreName = config.indexedDbName + '-model'
         const db = new IndexedDbModelStoreSection(indexedDbStoreName, new IndexedDb(indexedDbStoreName), dataStore)
         // db.open()
-        return db;
+        return Promise.resolve(db);
       } else {
-        return new ErrorModelStore()
+        log.warn('called registerStoreSectionFactory data for', section, config, dataStore, "returns ErrorDataStore!");
+        return Promise.resolve(new ErrorModelStore())
       }
     }
   );
@@ -67,13 +68,13 @@ export function miroirIndexedDbStoreSectionStartup() {
       dataStore?: StoreDataSectionInterface
     ): Promise<DataOrModelStoreInterface> => {
       if (config.emulatedServerType == "indexedDb") {
-        log.info('called registerStoreSectionFactory function for', config.emulatedServerType, config.indexedDbName);
+        log.info('called registerStoreSectionFactory function for', section, config);
         const indexedDbStoreName = config.indexedDbName + '-data'
         const db = new IndexedDbDataStoreSection(indexedDbStoreName, new IndexedDb(indexedDbStoreName))
-        return db;
+        return Promise.resolve(db);
       } else {
-        log.warn('called registerStoreSectionFactory data for', config);
-        return new ErrorDataStore()
+        log.warn('called registerStoreSectionFactory data for', section, config, "returns ErrorDataStore!");
+        return Promise.resolve(new ErrorDataStore())
       }
     }
   );

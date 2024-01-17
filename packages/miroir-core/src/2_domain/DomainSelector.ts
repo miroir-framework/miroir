@@ -76,7 +76,7 @@ const resolveContextReference = (
   queryParams: DomainElementObject,
   contextResults: DomainElement,
 ) : DomainElement => {
-  // log.info("resolveContextReference for", queryObjectReference)
+  log.info("resolveContextReference for", queryObjectReference, queryParams, contextResults)
   if (
     (queryObjectReference.referenceType == "queryContextReference" &&
       (!contextResults.elementValue ||
@@ -145,6 +145,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
 
   const entityUuid: DomainElement = resolveContextReference(selectorParams.singleSelectQuery.select.parentUuid, selectorParams.queryParams, selectorParams.contextResults);
 
+  log.info("selectEntityInstanceUuidIndexFromDomainState params", selectorParams, deploymentUuid, applicationSection, entityUuid);
 
   // if (entityUuid && typeof entityUuid == "object" && entityUuid.elementType == "failure") {
   //   return entityUuid //DomainElement, elementType == "failure"
@@ -301,6 +302,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
   const applicationSection = query.singleSelectQuery.select.applicationSection??"data";
 
   const entityUuidReference:DomainElement = resolveContextReference(querySelectorParams.parentUuid, query.queryParams, query.contextResults);
+
+  log.info("selectEntityInstanceFromObjectQueryAndDomainState params", querySelectorParams, deploymentUuid, applicationSection, entityUuidReference);
 
   log.info("selectEntityInstanceFromObjectQueryAndDomainState found entityUuidReference", JSON.stringify(entityUuidReference))
   if (entityUuidReference.elementType != "string" && entityUuidReference.elementType != "instanceUuid") {
@@ -582,11 +585,12 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
   query: DomainManyQueriesWithDeploymentUuid,
 ): DomainElementObject => {
 
-  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", JSON.stringify(query, circularReplacer, 2));
-  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", JSON.stringify(query, undefined, 2));
+  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", JSON.stringify(query, undefined, 2));
+  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", query);
   
   const newFetchedData:DomainElementObject = {elementType: "object", elementValue: {...query.contextResults.elementValue}};
-  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", JSON.stringify(newFetchedData,circularReplacer(), 2));
+  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", JSON.stringify(newFetchedData,circularReplacer(), 2));
+  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", newFetchedData);
   
   for (const entry of Object.entries(query.fetchQuery?.select??{})) {
     let result = innerSelectElementFromQueryAndDomainState(
@@ -599,7 +603,8 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
 
     );
     newFetchedData.elementValue[entry[0]] = result;
-    log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", JSON.stringify(result,circularReplacer(), 2));
+    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", JSON.stringify(result,circularReplacer(), 2));
+    log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
   if (query.fetchQuery?.crossJoin) {

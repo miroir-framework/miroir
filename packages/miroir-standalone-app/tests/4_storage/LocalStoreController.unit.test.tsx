@@ -178,125 +178,125 @@ const miroir2Config:MiroirConfigClient = { // TODO: have test configuration for 
 describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
-  // it(
-  //   "Delete miroir2 store or remove existing store",
-  //   async () => { // TODO: test failure cases!
-  //     if (miroir2Config.client.emulateServer) {
-  //       const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
-  //       const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
-  //       expect(testResult).toEqual({ status: "ok"})
-  //       expect(testResult2).toEqual({ status: "ok"})
-  //     } else {
-  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  //     }
-  //   }
-  // );
+  it(
+    "Delete miroir2 store or remove existing store",
+    async () => { // TODO: test failure cases!
+      if (miroir2Config.client.emulateServer) {
+        const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+        const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+        expect(testResult).toEqual(ACTION_OK)
+        expect(testResult2).toEqual(ACTION_OK)
+      } else {
+        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+      }
+    }
+  );
 
-  // // ################################################################################################
-  // it(
-  //   "Create miroir2 store",
-  //   async () => { // TODO: test failure cases!
-  //     if (miroir2Config.client.emulateServer) {
-  //       const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
-  //       const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
-  //       //cleanup
-  //       const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
-  //       // test
-  //       expect(testResult).toEqual({ status: "ok"})
-  //       expect(testResult2).toEqual({ status: "ok"})
-  //       expect(testResult3).toEqual({ status: "ok"})
-  //     } else {
-  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  //     }
-  //   }
-  // );
+  // ################################################################################################
+  it(
+    "Create miroir2 store",
+    async () => { // TODO: test failure cases!
+      if (miroir2Config.client.emulateServer) {
+        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+        const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+        //cleanup
+        const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+        // test
+        expect(testResult).toEqual(ACTION_OK)
+        expect(testResult2).toEqual(ACTION_OK)
+        expect(testResult3).toEqual(ACTION_OK)
+      } else {
+        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+      }
+    }
+  );
 
-  // // ################################################################################################
-  // it("deploy Miroir and Library modules.", async () => {
-  //   if (miroir2Config.client.emulateServer) {
-  //     if (storeControllerManager) {
-  //       const newMiroirDeploymentUuid = uuidv4();
-  //       const newLibraryDeploymentUuid = uuidv4();
+  // ################################################################################################
+  it("deploy Miroir and Library modules.", async () => {
+    if (miroir2Config.client.emulateServer) {
+      if (storeControllerManager) {
+        const newMiroirDeploymentUuid = uuidv4();
+        const newLibraryDeploymentUuid = uuidv4();
 
-  //       const deployMiroir = await storeControllerManager.deployModule(
-  //         localMiroirStoreController,
-  //         newMiroirDeploymentUuid,
-  //         miroir2Config.client.miroirServerConfig,
-  //         {
-  //           metaModel: defaultMiroirMetaModel,
-  //           dataStoreType: 'miroir',
-  //           application: applicationMiroir,
-  //           applicationDeploymentConfiguration: applicationDeploymentMiroir,
-  //           applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-  //           applicationVersion: applicationVersionInitialMiroirVersion,
-  //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-  //         }
-  //       );
-  //       const deployApp = await storeControllerManager.deployModule(
-  //         localMiroirStoreController,
-  //         newLibraryDeploymentUuid,
-  //         miroir2Config.client.appServerConfig,
-  //         {
-  //           metaModel: defaultMiroirMetaModel,
-  //           dataStoreType: 'app',
-  //           application: applicationLibrary,
-  //           applicationDeploymentConfiguration: applicationDeploymentLibrary,
-  //           applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-  //           applicationVersion: applicationVersionLibraryInitialVersion,
-  //           applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-  //         }
-  //       );
-  //       expect(deployMiroir).toEqual( { status: "ok" } )
-  //       expect(deployApp).toEqual( { status: "ok" } )
-  //     }
-  //   } else {
-  //     expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
-  //   }
-  //   expect(true).toEqual(true);
-  // },10000);
+        const deployMiroir = await storeControllerManager.deployModule(
+          localMiroirStoreController,
+          newMiroirDeploymentUuid,
+          miroir2Config.client.miroirServerConfig,
+          {
+            metaModel: defaultMiroirMetaModel,
+            dataStoreType: 'miroir',
+            application: applicationMiroir,
+            applicationDeploymentConfiguration: applicationDeploymentMiroir,
+            applicationModelBranch: applicationModelBranchMiroirMasterBranch,
+            applicationVersion: applicationVersionInitialMiroirVersion,
+            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
+          }
+        );
+        const deployApp = await storeControllerManager.deployModule(
+          localMiroirStoreController,
+          newLibraryDeploymentUuid,
+          miroir2Config.client.appServerConfig,
+          {
+            metaModel: defaultMiroirMetaModel,
+            dataStoreType: 'app',
+            application: applicationLibrary,
+            applicationDeploymentConfiguration: applicationDeploymentLibrary,
+            applicationModelBranch: applicationModelBranchLibraryMasterBranch,
+            applicationVersion: applicationVersionLibraryInitialVersion,
+            applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
+          }
+        );
+        expect(deployMiroir).toEqual( ACTION_OK )
+        expect(deployApp).toEqual( ACTION_OK )
+      }
+    } else {
+      expect(false, "could not test module deployment, configuration can not specify to use a real server, only emulated server makes sense in this case")
+    }
+    expect(true).toEqual(true);
+  },10000);
 
-  // // ################################################################################################
-  // it("get Miroir Entities", async () => {
-  //   const rawResult = (await localMiroirStoreController.getInstances("model",entityEntity.uuid))
+  // ################################################################################################
+  it("get Miroir Entities", async () => {
+    const rawResult = (await localMiroirStoreController.getInstances("model",entityEntity.uuid))
     
-  //   const testResult = (rawResult?.instances??[]).map(
-  //     (i: EntityInstance) => i["uuid"]
-  //   )
-  //   testResult.sort()
+    const testResult = (rawResult?.instances??[]).map(
+      (i: EntityInstance) => i["uuid"]
+    )
+    testResult.sort()
 
-  //   // console.log("!####################### raw result", result);
-  //   // console.log("!####################### test result", mapResult);
+    // console.log("!####################### raw result", result);
+    // console.log("!####################### test result", mapResult);
     
-  //   expect(testResult).toEqual(
-  //   [
-  //     "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-  //     "35c5608a-7678-4f07-a4ec-76fc5bc35424",
-  //     "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  //     "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  //     "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  //     "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-  //     "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-  //     "a659d350-dd97-4da9-91de-524fa01745dc",
-  //     "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-  //     "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-  //     "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-  //   ]
-  //   );
-  // });
+    expect(testResult).toEqual(
+    [
+      "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+      "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+      "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+      "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+      "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+      "a659d350-dd97-4da9-91de-524fa01745dc",
+      "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+      "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+      "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+    ]
+    );
+  });
 
 
-  // // ################################################################################################
-  // it("get Library Entities", async () => {
-  //   expect(
-  //     await localAppStoreController.getInstances("model",entityEntity.uuid)
-  //   ).toEqual(
-  //     {
-  //     "applicationSection": "model",
-  //     "instances": [],
-  //     "parentUuid": entityEntity.uuid,
-  //   }
-  //   );
-  // });
+  // ################################################################################################
+  it("get Library Entities", async () => {
+    expect(
+      await localAppStoreController.getInstances("model",entityEntity.uuid)
+    ).toEqual(
+      {
+      "applicationSection": "model",
+      "instances": [],
+      "parentUuid": entityEntity.uuid,
+    }
+    );
+  });
 
   // ################################################################################################
   it("create Author Entity", async () => {

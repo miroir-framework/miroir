@@ -7,7 +7,8 @@ import {
   AbstractInstanceStoreSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -45,9 +46,23 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    getInstance(entityUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    getInstance(entityUuid: string, uuid: string): Promise<ActionReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
-      return Promise.resolve(JSON.parse(fs.readFileSync(entityInstancePath).toString()) as EntityInstance);
+      try {
+        const fileContents = fs.readFileSync(entityInstancePath).toString();
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: { elementType: "instance", elementValue: JSON.parse(fileContents) },
+        });
+      } catch (error) {
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToCreateStore",
+            errorMessage: `failed to get instance ${uuid} of entity ${entityUuid}`,
+          },
+        });
+      }
     }
 
     // #########################################################################################

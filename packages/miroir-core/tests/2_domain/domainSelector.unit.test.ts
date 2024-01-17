@@ -261,7 +261,6 @@ describe("domainSelector", () => {
       };
 
       const queryResult:any = selectByDomainManyQueriesFromDomainState(domainState, queryParam);
-
       console.log("queryResult", JSON.stringify(queryResult, circularReplacer(), 2));
 
       expect(queryResult.elementValue.book.elementValue).toBe(domainState[applicationDeploymentLibrary.uuid]["data"]["e8ba151b-d68e-4cc3-9a83-3459d309ccf5"]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"])

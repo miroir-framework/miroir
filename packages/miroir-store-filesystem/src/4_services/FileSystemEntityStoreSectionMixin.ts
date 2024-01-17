@@ -14,6 +14,8 @@ import {
   entityEntity,
   entityEntityDefinition,
   getLoggerName,
+  ActionReturnType,
+  ACTION_OK,
 } from "miroir-core";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -62,7 +64,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<void> {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -98,11 +100,11 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       await this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
       // fs.writeFileSync(path.join(this.directory,entityEntity.uuid,fullName(entity.uuid)),JSON.stringify(entity))
       // fs.writeFileSync(path.join(this.directory,entityEntityDefinition.uuid,fullName(entityDefinition.uuid)),JSON.stringify(entityDefinition))
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #########################################################################################
-    async dropEntity(entityUuid: string): Promise<void> {
+    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
       // TODO: implementation ~ indexedDb case. share it?
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         // this.localUuidIndexedDb.removeSubLevels([entityUuid]);
@@ -140,20 +142,20 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           this.getEntityUuids()
         );
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #########################################################################################
-    async dropEntities(entityUuids: string[]): Promise<void> {
+    async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
       log.info(this.logHeader, "dropEntities", entityUuids);
       for (const entityUuid of entityUuids) {
         await this.dropEntity(entityUuid);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #########################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<void> {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntity", update);
       // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
@@ -187,7 +189,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       } else {
         throw new Error(this.logHeader + " renameEntity could not execute update " + update);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
   };
 }

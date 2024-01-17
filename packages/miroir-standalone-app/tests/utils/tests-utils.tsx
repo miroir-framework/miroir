@@ -167,7 +167,7 @@ export async function miroirBeforeAll(
       await remoteStore.handleRemoteAction("",{
         actionType: "storeAction",
         actionName: "openStore",
-        endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
           [applicationDeploymentMiroir.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.miroirServerConfig as StoreUnitConfiguration,
           [applicationDeploymentLibrary.uuid]: miroirConfig.client.serverConfig.storeSectionConfiguration.appServerConfig as StoreUnitConfiguration,
@@ -361,7 +361,7 @@ export async function miroirAfterAll(
       await remoteStore.handleRemoteAction("",{
         actionType: "storeAction",
         actionName: "closeStore",
-        endpointVersion: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: applicationDeploymentMiroir.uuid,
       })
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid, "DONE!"); // TODO: really???

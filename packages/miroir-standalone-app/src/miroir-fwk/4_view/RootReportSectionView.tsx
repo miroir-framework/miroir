@@ -46,6 +46,10 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   count++;
   const params:Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
 
+  const paramsAsdomainElements: DomainElementObject = {
+    "elementType": "object",
+    "elementValue": Object.fromEntries(Object.entries(params).map(e=>[e[0],{ elementType: "string", elementValue: e[1]??""}]))
+  }
   // const errorLog = useErrorLogService();
 
   log.info("########################## RootReportSectionView", count, "ReportSection", props.reportSection);
@@ -64,8 +68,9 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       queryType: "DomainManyQueries",
       deploymentUuid: props.deploymentUuid,
       applicationSection: props.applicationSection,
-      pageParams: params,
-      queryParams: {},
+      // pageParams: params,
+      pageParams: paramsAsdomainElements,
+      queryParams: { elementType: "object", elementValue: {}},
       contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: props.reportSection.fetchQuery
     }
@@ -76,11 +81,14 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
     queryType: "getFetchParamsJzodSchema",
     pageParams: {
-      applicationSection: props.applicationSection,
-      deploymentUuid: props.deploymentUuid,
-      instanceUuid: props.instanceUuid,
+      elementType: "object",
+      elementValue: {
+        applicationSection: {elementType: "string", elementValue: props.applicationSection},
+        deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid},
+        instanceUuid: {elementType: "string", elementValue: props.instanceUuid},
+      }
     },
-    queryParams: {},
+    queryParams: { elementType: "object", elementValue: {} },
     contextResults: { elementType: "object", elementValue: {} },
     fetchParams: domainFetchQueryParams,
   }),[domainFetchQueryParams])
@@ -90,7 +98,7 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   log.info(
     "RootReportSectionView props.reportSection?.fetchQuery",
     props.reportSection?.fetchQuery,
-    "domainElement",
+    "domainElementObject",
     domainElementObject,
     "fetchedDataJzodSchema",
     fetchedDataJzodSchema

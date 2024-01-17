@@ -242,8 +242,9 @@ export async function modelActionRunner(
   log.debug('modelActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   const targetProxy:StoreControllerInterface = deploymentUuid == applicationDeploymentMiroir.uuid?miroirDataStoreProxy:appDataStoreProxy;
   const update: ModelAction = body;
-  log.info('modelActionRunner action', JSON.stringify(update,undefined,2));
-  switch (actionName) {
+  // log.info('modelActionRunner action', JSON.stringify(update,undefined,2));
+  log.info('modelActionRunner action', update);
+  switch (update.actionName) {
     case "createEntity": {
       log.debug('modelActionRunner applyModelEntityUpdates createEntity inserting',update.entity.name);
       await targetProxy.createEntity(update.entity, update.entityDefinition);
@@ -292,20 +293,18 @@ export async function actionRunner(
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
       await storeControllerManager.deleteStoreController(
-        "model",
-        // action.deploymentUuid
+        applicationDeploymentMiroir.uuid,
       );
       await storeControllerManager.deleteStoreController(
-        "data",
+        applicationDeploymentLibrary.uuid,
       );
       await storeControllerManager.addStoreController(
-        "model",
-        // action.deploymentUuid
-        action.configuration[action.deploymentUuid??""]
+        applicationDeploymentMiroir.uuid,
+        action.configuration[applicationDeploymentMiroir.uuid]
       );
       await storeControllerManager.addStoreController(
-        "data",
-        action.configuration[action.deploymentUuid??""]
+        applicationDeploymentLibrary.uuid,
+        action.configuration[applicationDeploymentLibrary.uuid]
       );
       // }
       const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);

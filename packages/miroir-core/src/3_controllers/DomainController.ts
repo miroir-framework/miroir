@@ -171,7 +171,7 @@ export class DomainController implements DomainControllerInterface {
                         const modelAction: ModelAction = {
                             actionType: "modelAction",
                             actionName: 'createEntity',
-                            endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e",
+                            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                             entity: replayAction.update.modelEntityUpdate.entities[0].entity,
                             entityDefinition: replayAction.update.modelEntityUpdate.entities[0].entityDefinition as any as EntityDefinition,
                           // }
@@ -298,7 +298,7 @@ export class DomainController implements DomainControllerInterface {
                 modelAction: {
                   actionType: "modelAction",
                   actionName: "createEntity",
-                  endpointVersion: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entity: entity.entity,
                   entityDefinition: entity.entityDefinition
                 }
@@ -375,7 +375,7 @@ export class DomainController implements DomainControllerInterface {
         const instanceAction: InstanceAction = {
           actionType: "instanceAction",
           actionName: "createInstance",
-          endpointVersion: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           applicationSection: domainAction.objects[0].applicationSection,
           deploymentUuid,
           objects: domainAction.objects,

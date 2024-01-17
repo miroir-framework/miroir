@@ -7,30 +7,49 @@
   "version": "1",
   "description": "The Model Endpoint",
   "definition": {
-    "type": "object",
-    "definition": {
-      "actionParameter": {
-        "type": "object",
-        "definition": {
-          "actionType": {"type": "literal", "definition":"modelAction"},
-          "actionName": {"type": "literal", "definition":"createEntity"},
-          "endpointVersion": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-          "entity": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entity"
+    "actions": [
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"createEntity"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "entity": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entity"
+              }
+            },
+            "entityDefinition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityDefinition"
+              }
             }
-          },
-          "entityDefinition": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "entityDefinition"
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"dropEntity"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "entityUuid": {
+              "type": "simpleType",
+              "definition": "string"
+            },
+            "entityDefinitionUuid": {
+              "type": "simpleType",
+              "definition": "string"
             }
           }
         }
       }
-    }
+    ]
   }
 }

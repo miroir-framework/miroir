@@ -1,4 +1,4 @@
-import { EntityInstance, AbstractInstanceStoreSectionInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core"
+import { EntityInstance, AbstractInstanceStoreSectionInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName, ActionReturnType } from "miroir-core"
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js"
 
 import { packageName } from "../constants.js";
@@ -29,18 +29,20 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined> {
+    async getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
       try {
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
           const result:EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;
-          return Promise.resolve(result);
+          return Promise.resolve({ status: "ok", returnedDomainElement: { elementType:"instance", elementValue:result } } );
         } else {
+          // TODO: indicate exact reason!
           console.warn(this.logHeader, 'getInstance','could not find entityUuid',parentUuid);
-          return Promise.resolve(undefined);
+          return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } } );
         }
       } catch (error) {
+        // TODO: indicate exact reason!
         console.warn(this.logHeader, 'getInstance', 'could not fetch instance from db: parentId',parentUuid,"uuid",uuid);
-        return Promise.resolve(undefined);
+        return Promise.resolve({ status: "error", error: { errorType: "FailedToGetInstance" } } );
       }
     }
 

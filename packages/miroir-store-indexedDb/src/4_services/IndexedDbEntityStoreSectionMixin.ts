@@ -10,7 +10,9 @@ import {
   WrappedTransactionalEntityUpdateWithCUDUpdate,
   entityEntity,
   entityEntityDefinition,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType,
+  ACTION_OK
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -31,7 +33,10 @@ export const MixedIndexedDbEntityAndInstanceStoreSection = IndexedDbEntityStoreS
 
 // ################################################################################################
 export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndexedDbInstanceStoreSection>(Base: TBase) {
-  return class MixedIndexedDbEntityStoreSection extends Base implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface {
+  return class MixedIndexedDbEntityStoreSection
+    extends Base
+    implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface
+  {
     public dataStore: StoreDataSectionInterface;
 
     constructor(
@@ -47,12 +52,12 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // ##############################################################################################
-    async clear(): Promise<void> {
+    async clear(): Promise<ActionReturnType> {
       // drop data anq model Entities
       // await this.dataStore.clear();
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
       log.info(this.logHeader, "clear DONE", this.getEntityUuids());
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // ##################################################################################################
@@ -66,7 +71,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition) {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -101,10 +106,11 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           }
         }
       }
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate) {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<ActionReturnType> {
       // TODO: identical to the Filesystem implementation!
       if (
         update.equivalentModelCUDUpdates.length &&
@@ -131,11 +137,11 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       } else {
         throw new Error(this.logHeader + " renameEntity could not execute update " + update);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    async dropEntity(entityUuid: string): Promise<void> {
+    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
       log.info(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
@@ -144,11 +150,17 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        const entityDefinitions = (
-          (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
-        ).filter((i) => i.entityUuid == entityUuid);
-        log.debug(this.logHeader, "dropEntity entity", entityEntity.uuid,"found definitions to delete:", entityDefinitions);
-          
+        const entityDefinitions = ((await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]).filter(
+          (i) => i.entityUuid == entityUuid
+        );
+        log.debug(
+          this.logHeader,
+          "dropEntity entity",
+          entityEntity.uuid,
+          "found definitions to delete:",
+          entityDefinitions
+        );
+
         for (const entityDefinition of entityDefinitions) {
           await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
@@ -172,15 +184,15 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         );
       }
 
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    async dropEntities(entityUuids: string[]) {
+    async dropEntities(entityUuids: string[]):Promise<ActionReturnType> {
       for (const entityUuid of entityUuids) {
         await this.dropEntity(entityUuid);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
   };
 }
