@@ -13,7 +13,10 @@
       "select": {
         "books": {
           "queryType": "selectObjectListByEntity",
-          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          }
         }
       }
     },

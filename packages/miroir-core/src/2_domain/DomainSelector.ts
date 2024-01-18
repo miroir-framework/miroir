@@ -695,8 +695,10 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
   ) {
     throw new Error("selectJzodSchemaBySingleSelectQueryFromDomainState can not deal with context reference: query=" + JSON.stringify(query, undefined, 2));
   } else {
-    const entityUuid = resolveContextReference(query.singleSelectQuery.select.parentUuid, query.queryParams, query.contextResults);
-    if (typeof entityUuid != "string") {
+    const entityUuidDomainElement: DomainElement = resolveContextReference(query.singleSelectQuery.select.parentUuid, query.queryParams, query.contextResults);
+    log.info("selectJzodSchemaBySingleSelectQueryFromDomainState called",query, "found", entityUuidDomainElement)
+
+    if (typeof entityUuidDomainElement != "object" || entityUuidDomainElement.elementType != "instanceUuid") {
       return undefined
     }
 
@@ -706,7 +708,7 @@ export const selectJzodSchemaBySingleSelectQueryFromDomainState = (
       pageParams: query.pageParams,
       queryParams: query.queryParams,
       deploymentUuid: query.singleSelectQuery.deploymentUuid??"",
-      entityUuid:  entityUuid,
+      entityUuid:  entityUuidDomainElement.elementValue,
     })
   }
 }
@@ -754,6 +756,7 @@ export const selectFetchQueryJzodSchemaFromDomainState = (
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: DomainManyQueriesWithDeploymentUuid = query.fetchParams
   // log.info("selectFetchQueryJzodSchemaFromDomainState called", domainState === prevDomainState, query === prevQuery);
+  log.info("selectFetchQueryJzodSchemaFromDomainState called", query);
   
   const fetchQueryJzodSchema = Object.fromEntries(
     Object.entries(localFetchParams?.fetchQuery?.select??{}).map((entry: [string, MiroirSelectQuery]) => [

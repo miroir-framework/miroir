@@ -11,7 +11,10 @@
         "endpoints": {
           "queryType": "selectObjectListByEntity",
           "parentName": "Endpoint",
-          "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+          }
         }
       }
     },

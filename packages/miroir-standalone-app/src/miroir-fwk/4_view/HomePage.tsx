@@ -585,7 +585,7 @@ export const HomePage = (props: RootComponentProps) => {
         displayedDeploymentUuid &&
         displayedApplicationSection ? (
           <div>
-            <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div>
+            {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}

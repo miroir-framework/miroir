@@ -103,9 +103,13 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.info("ReportSectionView availableReports",availableReports);
 
-  const currentReportTargetEntity: MetaEntity | undefined = props.reportSection?.type === "objectListReportSection"
-    ? entities?.find((e) => e?.uuid === (props.reportSection?.definition as SelectObjectListQuery).parentUuid)
-    : undefined;
+  const currentReportTargetEntity: MetaEntity | undefined =
+    props.reportSection?.type === "objectListReportSection" 
+      ? entities?.find(
+          (e) =>
+            e?.uuid === (props.reportSection?.definition as any)["parentUuid"]
+        )
+      : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
@@ -237,7 +241,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
             {
               props.reportSection.type === "objectListReportSection" ? (
                 <div>
-                  {JSON.stringify(props.domainElementObject, circularReplacer(), 2)}
+                  {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
                   {
                     (currentReportTargetEntity &&
                     currentReportTargetEntityDefinition) || props.domainElementObject ?
@@ -267,7 +271,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                 <div>
                   <ReportSectionEntityInstance
                     domainElement={props.domainElementObject}
-                    instance={props.domainElementObject.elementValue?(props.domainElementObject.elementValue as any)[props.reportSection.definition.fetchedDataReference??""]:undefined}
+                    instance={props.domainElementObject.elementValue?(props.domainElementObject.elementValue as any)[props.reportSection.definition.fetchedDataReference??""].elementValue:undefined}
                     applicationSection={props.applicationSection as ApplicationSection}
                     deploymentUuid={props.deploymentUuid}
                     entityUuid={props.reportSection.definition.parentUuid}

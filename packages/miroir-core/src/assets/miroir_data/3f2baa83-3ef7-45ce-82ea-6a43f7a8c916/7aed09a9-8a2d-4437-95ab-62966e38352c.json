@@ -13,7 +13,7 @@
           "parentName": "Query",
           "parentUuid": {
             "referenceType": "constant",
-            "referenceName": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+            "referenceUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
           }
         }
       }

@@ -11,7 +11,10 @@
         "author": {
           "queryType": "selectObjectByDirectReference",
           "parentName": "Author",
-          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          },
           "instanceUuid": {
             "referenceType": "queryParameterReference",
             "referenceName": "instanceUuid"
@@ -20,7 +23,10 @@
         "booksOfAuthor": {
           "queryType": "selectObjectListByRelation",
           "parentName": "Book",
-          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
           "objectReference": {
             "referenceType": "queryContextReference",
             "referenceName": "author"

@@ -94,7 +94,7 @@ Some existing platform limitate the scope, horizontally or vertically:
 
 ### What you give
 
--  a structured model of the data you manipulate, which you have to maintain through an integrated versioning tool
+-  a structured model of the data you manipulate, which you have to maintain through versioning tool integrated to Miroir
 -  a definition for one or more Domain-Specific-Languages (DSL), encompassing actions for data edition and data transformation
 -  a set of queries used to retrieve the data relevant for display, written in one of the Miroir Query Languages (MQL)
 

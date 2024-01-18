@@ -12,7 +12,10 @@
         "countries": {
           "queryType": "selectObjectListByEntity",
           "parentName": "Country",
-          "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          }
         }
       },
       "crossJoin": {

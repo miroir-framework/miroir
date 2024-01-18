@@ -83,9 +83,9 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     pageParams: {
       elementType: "object",
       elementValue: {
-        applicationSection: {elementType: "string", elementValue: props.applicationSection},
-        deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid},
-        instanceUuid: {elementType: "string", elementValue: props.instanceUuid},
+        applicationSection: {elementType: "string", elementValue: props.applicationSection??"data"},
+        deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid??""},
+        instanceUuid: {elementType: "string", elementValue: props.instanceUuid??""},
       }
     },
     queryParams: { elementType: "object", elementValue: {} },

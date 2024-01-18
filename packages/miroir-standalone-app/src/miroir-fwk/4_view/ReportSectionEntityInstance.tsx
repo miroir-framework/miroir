@@ -15,7 +15,8 @@ import {
   defaultMiroirMetaModel,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  EntityInstance
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
@@ -39,7 +40,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export interface ReportSectionEntityInstanceProps {
-  instance?: any,
+  instance?: EntityInstance,
   domainElement?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -73,7 +74,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.info("ReportPage displayedDeploymentDefinition", displayedDeploymentDefinition);
+  log.info("ReportSectionEntityInstance displayedDeploymentDefinition", displayedDeploymentDefinition);
   const currentReportDefinitionDeployment: ApplicationDeploymentConfiguration | undefined =
     displayedDeploymentDefinition?.applicationModelLevel == "metamodel" || props.applicationSection == "model"
       ? (applicationDeploymentMiroir as ApplicationDeploymentConfiguration)
@@ -84,7 +85,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportDefinitionApplicationSection: ApplicationSection | undefined =
     currentReportDefinitionDeployment?.applicationModelLevel == "metamodel" ? "data" : "model";
   log.info(
-    "ReportPage currentReportDefinitionDeployment",
+    "ReportSectionEntityInstance currentReportDefinitionDeployment",
     currentReportDefinitionDeployment,
     "currentReportDefinitionApplicationSection",
     currentReportDefinitionApplicationSection
