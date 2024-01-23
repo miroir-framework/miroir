@@ -3,6 +3,7 @@ import { Application } from "../0_interfaces/1_core/Application.js";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
+  ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
   Entity,
@@ -140,8 +141,8 @@ export class StoreController implements StoreControllerInterface {
         },
       });
     }
-    const dataEntities:ActionReturnType = await this.modelStoreSection.getInstances(entityEntity.uuid);
-    const dataEntityDefinitions:ActionReturnType = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
+    const dataEntities:ActionEntityInstanceCollectionReturnType = await this.modelStoreSection.getInstances(entityEntity.uuid);
+    const dataEntityDefinitions:ActionEntityInstanceCollectionReturnType = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
     if (dataEntities.status != "ok" || dataEntityDefinitions.status != "ok") {
       return Promise.resolve({
         status: "error",
@@ -151,19 +152,19 @@ export class StoreController implements StoreControllerInterface {
         },
       });
     }
-    if (dataEntities.returnedDomainElement?.elementType != "instanceArray" || dataEntityDefinitions.returnedDomainElement?.elementType != "instanceArray") {
-      return Promise.resolve({
-        status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `bootFromPersistedState for entities wrong element type, expected "instanceArray", got getInstances(${entityEntity.uuid}) elementType: ${dataEntities.returnedDomainElement?.elementType}, getInstances(${entityEntityDefinition.uuid}) elementType: ${dataEntityDefinitions.returnedDomainElement?.elementType}`,
-        },
-      });
-    }
+    // if (dataEntities.returnedDomainElement?.elementType != "entityInstanceCollection" || dataEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+    //   return Promise.resolve({
+    //     status: "error",
+    //     error: {
+    //       errorType: "FailedToGetInstances",
+    //       errorMessage: `bootFromPersistedState for entities wrong element type, expected "instanceArray", got getInstances(${entityEntity.uuid}) elementType: ${dataEntities.returnedDomainElement?.elementType}, getInstances(${entityEntityDefinition.uuid}) elementType: ${dataEntityDefinitions.returnedDomainElement?.elementType}`,
+    //     },
+    //   });
+    // }
 
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
-      (dataEntities.returnedDomainElement?.elementValue as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-      dataEntityDefinitions.returnedDomainElement?.elementValue as EntityDefinition[]
+      (dataEntities.returnedDomainElement?.elementValue.instances as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+      dataEntityDefinitions.returnedDomainElement?.elementValue.instances as EntityDefinition[]
     );
     if (dataBootFromPersistedState.status != "ok") {
       return Promise.resolve({
@@ -216,7 +217,7 @@ export class StoreController implements StoreControllerInterface {
   async clearDataInstances():Promise<ActionReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     // const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
-    const dataSectionEntities: ActionReturnType = await this.getInstances("model", entityEntity.uuid);
+    const dataSectionEntities: ActionEntityInstanceCollectionReturnType = await this.getInstances("model", entityEntity.uuid);
     if (dataSectionEntities.status != "ok") {
       return Promise.resolve({
         status: "error",
@@ -226,16 +227,16 @@ export class StoreController implements StoreControllerInterface {
         },
       });
     }
-    if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
-      return Promise.resolve({
-        status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntities.returnedDomainElement?.elementType}`,
-        },
-      });
-    }
-    const dataSectionEntityDefinitions: ActionReturnType = await this.getInstances(
+    // if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
+    //   return Promise.resolve({
+    //     status: "error",
+    //     error: {
+    //       errorType: "FailedToGetInstances",
+    //       errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntities.returnedDomainElement?.elementType}`,
+    //     },
+    //   });
+    // }
+    const dataSectionEntityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(
       "model",
       entityEntityDefinition.uuid
     );
@@ -248,15 +249,15 @@ export class StoreController implements StoreControllerInterface {
         },
       });
     }
-    if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-      return Promise.resolve({
-        status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntityDefinitions.returnedDomainElement?.elementType}`,
-        },
-      });
-    }
+    // if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+    //   return Promise.resolve({
+    //     status: "error",
+    //     error: {
+    //       errorType: "FailedToGetInstances",
+    //       errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntityDefinitions.returnedDomainElement?.elementType}`,
+    //     },
+    //   });
+    // }
     const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as MetaEntity[]).filter(
       (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
     ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
@@ -367,13 +368,12 @@ export class StoreController implements StoreControllerInterface {
   
   // #############################################################################################
   // async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
-  async getInstances(section: ApplicationSection, entityUuid: string): Promise<ActionReturnType> {
+  async getInstances(section: ApplicationSection, entityUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid);
     
-    // let result: EntityInstanceCollection;
     const currentStore = section == 'data'?this.dataStoreSection:this.modelStoreSection;
-    const instances: ActionReturnType = await currentStore.getInstances(entityUuid);
+    const instances: ActionEntityInstanceCollectionReturnType = await currentStore.getInstances(entityUuid);
 
     if (instances.status != "ok") {
       return Promise.resolve({
@@ -384,16 +384,16 @@ export class StoreController implements StoreControllerInterface {
         },
       });
     }
-    if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
-      return Promise.resolve({
-        status: "error",
-        error: {
-          errorType: "FailedToGetInstances",
-          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${instances.returnedDomainElement?.elementType}`,
-        },
-      });
-    }
-    const result:ActionReturnType = {
+    // if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+    //   return Promise.resolve({
+    //     status: "error",
+    //     error: {
+    //       errorType: "FailedToGetInstances",
+    //       errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${instances.returnedDomainElement?.elementType}`,
+    //     },
+    //   });
+    // }
+    const result:ActionEntityInstanceCollectionReturnType = {
       status: "ok",
       returnedDomainElement: {
         elementType: "entityInstanceCollection",

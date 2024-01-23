@@ -275,12 +275,15 @@ function ReplaceInstancesForSectionEntity(
     state
   );
 
-  if (Object.keys(instanceCollection.instances).length > 0 && equalEntityInstances(instanceCollection.instances,state[instanceCollectionEntityIndex].entities)) {
+  if (
+    Object.keys(instanceCollection.instances).length > 0 &&
+    equalEntityInstances(instanceCollection.instances, state[instanceCollectionEntityIndex].entities)
+  ) {
     log.debug(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
-      entity ? (entity as any)["name"] : instanceCollection.parentName?instanceCollection.parentName:"unknown",
+      entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
       "uuid",
       instanceCollection.parentUuid,
       "nothing to be done, instances did not change."
@@ -290,12 +293,12 @@ function ReplaceInstancesForSectionEntity(
       "ReplaceInstancesForDeploymentEntity for deployment",
       deploymentUuid,
       "entity",
-      entity ? (entity as any)["name"] : instanceCollection.parentName?instanceCollection.parentName:"unknown",
+      entity ? (entity as any)["name"] : instanceCollection.parentName ? instanceCollection.parentName : "unknown",
       "uuid",
       instanceCollection.parentUuid,
       "new values",
       instanceCollection.instances,
-      "differ from old values.",
+      "differ from old values."
       // state[instanceCollectionEntityIndex].entities
     );
 

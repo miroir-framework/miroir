@@ -4,7 +4,8 @@ import {
   StoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionEntityInstanceCollectionReturnType
 } from "miroir-core";
 import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDb } from "./IndexedDb.js";
@@ -39,7 +40,7 @@ export class IndexedDbDataStoreSection extends MixedIndexedDbInstanceStoreSectio
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, "getState getting instances for", parentUuid);
-      const instances = await this.getInstances(parentUuid);
+      const instances: ActionEntityInstanceCollectionReturnType = await this.getInstances(parentUuid);
       // log.info(this.logHeader, "getState found instances", parentUuid, instances);
       // TODO: proper treatment of errors!
       if (instances.status != "ok") {

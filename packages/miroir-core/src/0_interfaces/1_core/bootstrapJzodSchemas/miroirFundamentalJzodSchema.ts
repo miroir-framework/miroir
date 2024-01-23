@@ -765,11 +765,28 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
+      "actionEntityInstanceCollectionSuccess": {
+        "type": "object",
+        "definition": {
+          "status": { "type": "literal", "definition": "ok" },
+          "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElementEntityInstanceCollection" } }
+        }
+      },
+      "actionEntityInstanceCollectionReturnType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+          },
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionEntityInstanceCollectionSuccess" }
+          }
+        ]
+      },
       "actionSuccess": {
         "type": "object",
         "definition": {
           "status": { "type": "literal", "definition": "ok" },
-          "instanceCollection": { "type": "schemaReference", "optional": true, "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "entityInstanceCollection" } },
           "returnedDomainElement": { "type": "schemaReference", "optional": true, "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElement" } }
         }
       },

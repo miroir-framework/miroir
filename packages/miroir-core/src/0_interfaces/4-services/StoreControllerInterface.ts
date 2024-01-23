@@ -5,6 +5,7 @@ import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } 
 import { Application } from '../1_core/Application.js';
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 import {
+  ActionEntityInstanceCollectionReturnType,
   ActionReturnType,
   ApplicationSection,
   Entity,
@@ -66,7 +67,7 @@ export interface StorageSpaceHandlerInterface {
 export interface AbstractInstanceStoreSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType>;
   // getInstances(parentUuid: string): Promise<EntityInstance[]>;
-  getInstances(parentUuid: string): Promise<ActionReturnType>;
+  getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
@@ -161,7 +162,7 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
   // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
   getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<ActionReturnType>;
   // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
-  getInstances(section: ApplicationSection, parentUuid:string):Promise<ActionReturnType>;
+  getInstances(section: ApplicationSection, parentUuid:string):Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;

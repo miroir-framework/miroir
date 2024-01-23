@@ -6,7 +6,8 @@ import {
   MiroirLoggerFactory,
   getLoggerName,
   ActionReturnType,
-  ApplicationSection
+  ApplicationSection,
+  ActionEntityInstanceCollectionReturnType
 } from "miroir-core";
 import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin.js";
 import { packageName } from "../constants.js";
@@ -43,7 +44,7 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
     
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
-      const instances: ActionReturnType = await this.getInstances(parentUuid);
+      const instances: ActionEntityInstanceCollectionReturnType = await this.getInstances(parentUuid);
       // const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
       // log.info(this.logHeader,'getState found instances',parentUuid,instances);
       if (instances.status != "ok") {

@@ -12,7 +12,8 @@ import {
   entityEntityDefinition,
   getLoggerName,
   ActionReturnType,
-  ACTION_OK
+  ACTION_OK,
+  ActionEntityInstanceCollectionReturnType
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -150,7 +151,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        const entityDefinitions: ActionReturnType = await this.getInstances(entityEntityDefinition.uuid);
+        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(entityEntityDefinition.uuid);
         if (entityDefinitions.status != "ok") {
           return Promise.resolve({
             status: "error",
@@ -160,15 +161,15 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
             },
           });
         }
-        if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-          return Promise.resolve({
-            status: "error",
-            error: {
-              errorType: "FailedToGetInstances", // TODO: correct errorType
-              errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-            },
-          });
-        }
+        // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        //   return Promise.resolve({
+        //     status: "error",
+        //     error: {
+        //       errorType: "FailedToGetInstances", // TODO: correct errorType
+        //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+        //     },
+        //   });
+        // }
 
         log.debug(
           this.logHeader,

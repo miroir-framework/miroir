@@ -1,10 +1,11 @@
 import {
-  EntityInstance,
   AbstractInstanceStoreSectionInterface,
+  ActionEntityInstanceCollectionReturnType,
+  ActionReturnType,
+  EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
-  ActionReturnType,
 } from "miroir-core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
@@ -51,7 +52,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async getInstances(parentUuid: string): Promise<ActionReturnType> {
+    async getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
       try {
         const result: EntityInstance[] = await this.localUuidIndexedDb.getAllValue(parentUuid);
         return Promise.resolve({

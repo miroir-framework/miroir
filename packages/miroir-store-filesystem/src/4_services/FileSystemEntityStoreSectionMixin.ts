@@ -16,6 +16,7 @@ import {
   getLoggerName,
   ActionReturnType,
   ACTION_OK,
+  ActionEntityInstanceCollectionReturnType,
 } from "miroir-core";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -129,7 +130,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
-        const entityDefinitions: ActionReturnType = await this.dataStore.getInstances(entityEntityDefinition.uuid);
+        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.dataStore.getInstances(entityEntityDefinition.uuid);
         if (entityDefinitions.status != "ok") {
           return Promise.resolve({
             status: "error",
@@ -139,15 +140,15 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
             },
           });
         }
-        if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-          return Promise.resolve({
-            status: "error",
-            error: {
-              errorType: "FailedToGetInstances", // TODO: correct errorType
-              errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-            },
-          });
-        }
+        // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        //   return Promise.resolve({
+        //     status: "error",
+        //     error: {
+        //       errorType: "FailedToGetInstances", // TODO: correct errorType
+        //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+        //     },
+        //   });
+        // }
 
         
         for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i:EntityDefinition) => i.entityUuid == entityUuid)) {

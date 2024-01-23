@@ -176,56 +176,14 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
   return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
 }
 
-const miroir2Config:MiroirConfigClient = { // TODO: have test configuration for indexedDb and filesystem cases
-  "client": {
-    "emulateServer": true,
-    "rootApiUrl":"http://localhost:3080",
-    "miroirServerConfig":{
-      "admin": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "miroir2"
-      },
-      "model": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "miroir2"
-      },
-      "data": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "miroir2"
-      }
-    },
-    "appServerConfig": {
-      "admin": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "library2"
-      },
-      "model": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "library2"
-      },
-      "data": {
-        "emulatedServerType": "sql",
-        "connectionString":"postgres://postgres:postgres@localhost:5432/postgres",
-        "schema": "library2"
-      }
-    },
-  }
-}
-
 describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
   it(
-    "Delete miroir2 store or remove existing store",
-    async () => { // TODO: test failure cases!
-      if (miroir2Config.client.emulateServer) {
-        const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
-        const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+    "Delete miroir2 store or remove existing store", async () => { // TODO: test failure cases!
+      if (miroirConfig.client.emulateServer) {
+        const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
+        const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
       } else {
@@ -236,13 +194,12 @@ describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
   it(
-    "Create miroir2 store",
-    async () => { // TODO: test failure cases!
-      if (miroir2Config.client.emulateServer) {
-        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
-        const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroir2Config.client.miroirServerConfig.admin)
+    "Create miroir2 store", async () => { // TODO: test failure cases!
+      if (miroirConfig.client.emulateServer) {
+        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.admin)
+        const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.admin)
         //cleanup
-        const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroir2Config.client.miroirServerConfig.admin)
+        const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
         // test
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
@@ -255,7 +212,7 @@ describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
   it("deploy Miroir and Library modules.", async () => {
-    if (miroir2Config.client.emulateServer) {
+    if (miroirConfig.client.emulateServer) {
       if (storeControllerManager) {
         const newMiroirDeploymentUuid = uuidv4();
         const newLibraryDeploymentUuid = uuidv4();
@@ -263,7 +220,7 @@ describe.sequential("localStoreController.unit.test", () => {
         const deployMiroir = await storeControllerManager.deployModule(
           localMiroirStoreController,
           newMiroirDeploymentUuid,
-          miroir2Config.client.miroirServerConfig,
+          miroirConfig.client.miroirServerConfig,
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'miroir',
@@ -277,7 +234,7 @@ describe.sequential("localStoreController.unit.test", () => {
         const deployApp = await storeControllerManager.deployModule(
           localMiroirStoreController,
           newLibraryDeploymentUuid,
-          miroir2Config.client.appServerConfig,
+          miroirConfig.client.appServerConfig,
           {
             metaModel: defaultMiroirMetaModel,
             dataStoreType: 'app',

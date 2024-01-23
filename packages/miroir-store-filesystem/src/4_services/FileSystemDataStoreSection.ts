@@ -6,7 +6,8 @@ import {
   MiroirLoggerFactory,
   getLoggerName,
   ActionReturnType,
-  ApplicationSection
+  ApplicationSection,
+  ActionEntityInstanceCollectionReturnType
 } from "miroir-core";
 
 import { MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -43,7 +44,7 @@ export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSect
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, 'getState getting instances for',parentUuid);
-      const instances: ActionReturnType = await this.getInstances(parentUuid);
+      const instances: ActionEntityInstanceCollectionReturnType = await this.getInstances(parentUuid);
       // log.info(this.logHeader, 'getState found instances',parentUuid,instances);
       // TODO: proper treatment of errors!
       if (instances.status != "ok") {

@@ -13,6 +13,7 @@ import {
   getLoggerName,
   ActionReturnType,
   ACTION_OK,
+  ActionEntityInstanceCollectionReturnType,
 } from "miroir-core";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
@@ -137,7 +138,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
           //remove all entity definitions for the dropped entity
-          const entityDefinitions: ActionReturnType = await this.getInstances(entityEntityDefinition.uuid);
+          const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.getInstances(entityEntityDefinition.uuid);
 
           log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
           if (entityDefinitions.status != "ok") {
@@ -149,15 +150,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
               },
             });
           }
-          if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
-            return Promise.resolve({
-              status: "error",
-              error: {
-                errorType: "FailedToGetInstances", // TODO: correct errorType
-                errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
-              },
-            });
-          }
+          // if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+          //   return Promise.resolve({
+          //     status: "error",
+          //     error: {
+          //       errorType: "FailedToGetInstances", // TODO: correct errorType
+          //       errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+          //     },
+          //   });
+          // }
   
           for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i: EntityDefinition) => i.entityUuid == entityUuid)) {
             await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
