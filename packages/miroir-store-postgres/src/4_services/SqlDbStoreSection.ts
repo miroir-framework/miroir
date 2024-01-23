@@ -10,6 +10,8 @@ import {
   getLoggerName,
   AbstractStoreInterface,
   ActionReturnType,
+  ActionVoidReturnType,
+  ACTION_OK,
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
@@ -58,17 +60,17 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   }
 
   // ######################################################################################
-  async clear(): Promise<ActionReturnType> {
+  async clear(): Promise<ActionVoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
     log.info(this.logHeader, "clear done, entities", this.getEntityUuids());
 
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve( ACTION_OK );
   }
 
   // ##############################################################################################
-  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
+  async bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
     log.info(
       this.logHeader,
       "bootFromPersistedState called!",
@@ -90,7 +92,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
           return prev;
         }
       }, {});
-      return Promise.resolve( { status: "ok" } );
+      return Promise.resolve( ACTION_OK );
     }
 
   // ##############################################################################################
@@ -112,7 +114,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   }
 
   // ##############################################################################################
-  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+  async createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
@@ -132,7 +134,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
       "done creating data schema table",
       entity.name
     );
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve( ACTION_OK );
   }
 
   // ##############################################################################################
@@ -141,7 +143,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     newName: string,
     entity: MetaEntity,
     entityDefinition: EntityDefinition
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
     // log.info(this.logHeader, 'renameEntity renameTable done.');
@@ -156,11 +158,11 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
         entityDefinition
       )
     );
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve( ACTION_OK );
   }
 
   // ##############################################################################################
-  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<ActionReturnType> {
+  async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<ActionVoidReturnType> {
     if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
       const model = this.sqlSchemaTableAccess[entityUuid];
       log.debug(
@@ -176,6 +178,6 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     } else {
       log.warn("dropStorageSpaceForInstancesOfEntity entityUuid", entityUuid, "NOT FOUND.");
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve( ACTION_OK );
   }
 }

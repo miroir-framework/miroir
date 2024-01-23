@@ -1,4 +1,4 @@
-import { ActionReturnType, StoreSectionConfiguration } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, ActionVoidReturnType, StoreSectionConfiguration } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { AdminStoreInterface } from "../../0_interfaces/4-services/StoreControllerInterface";
 
 export class ErrorAdminStore implements AdminStoreInterface {
@@ -6,19 +6,19 @@ export class ErrorAdminStore implements AdminStoreInterface {
     
   }
 
-  createStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
+  createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
+  deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
   getStoreName(): string {
     throw new Error("Method not implemented.");
   }
-  open(): Promise<ActionReturnType> {
+  open(): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  close(): Promise<ActionReturnType> {
+  close(): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
 

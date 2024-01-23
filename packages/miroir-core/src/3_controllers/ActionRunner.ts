@@ -64,7 +64,7 @@ export async function initApplicationDeployment(
 export async function applyModelEntityUpdate(
   storeController:StoreControllerInterface,
   update:ModelReplayableUpdate
-):Promise<void>{
+):Promise<void>{ // TODO: correct type!
   // log.info('ModelActionRunner applyModelEntityUpdate for',update);
   log.info('ActionRunner.ts applyModelEntityUpdate for',JSON.stringify(update, null, 2));
   const modelCUDupdate = update.updateActionName == 'WrappedTransactionalEntityUpdateWithCUDUpdate'? update.equivalentModelCUDUpdates[0]:update;

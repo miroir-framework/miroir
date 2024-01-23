@@ -7,28 +7,36 @@ export class ErrorDataStore implements StoreDataSectionInterface {
   getStoreName(): string {
     throw new Error("Method not implemented.");
   }
-  open(): Promise<ActionReturnType> {
+  open(): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
   connect(): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  close():Promise<ActionReturnType> {
+  close(): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  clear(): Promise<ActionReturnType> {
+  clear(): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+  createStorageSpaceForInstancesOfEntity(
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionReturnType> {
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+  renameStorageSpaceForInstancesOfEntity(
+    oldName: string,
+    newName: string,
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
   getEntityUuids(): string[] {

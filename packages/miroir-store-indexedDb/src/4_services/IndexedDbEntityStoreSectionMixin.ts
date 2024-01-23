@@ -14,7 +14,8 @@ import {
   ActionReturnType,
   ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType
+  ActionEntityInstanceReturnType,
+  ActionVoidReturnType
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -54,7 +55,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // ##############################################################################################
-    async clear(): Promise<ActionReturnType> {
+    async clear(): Promise<ActionVoidReturnType> {
       // drop data anq model Entities
       // await this.dataStore.clear();
       await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());

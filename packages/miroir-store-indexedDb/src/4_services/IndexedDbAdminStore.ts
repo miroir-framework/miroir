@@ -1,4 +1,4 @@
-import { ACTION_OK, ActionReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, StoreSectionConfiguration, getLoggerName } from "miroir-core";
+import { ACTION_OK, ActionReturnType, ActionVoidReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { IndexedDbStore } from "./IndexedDbStore";
 import { cleanLevel } from "./constants";
@@ -26,7 +26,7 @@ export class IndexedDbAdminStore extends IndexedDbStore implements AdminStoreInt
   // ##############################################################################################
   async createStore(
     config: StoreSectionConfiguration,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     // does not need to do anything, new IndexedDb() is done in the storeSectionFactory, thus called by StoreControllerManager.addStoreController, where storeSectionFactory is called
     return Promise.resolve(ACTION_OK)
   }
@@ -34,7 +34,7 @@ export class IndexedDbAdminStore extends IndexedDbStore implements AdminStoreInt
   // ##############################################################################################
   async deleteStore(
     config: StoreSectionConfiguration,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     // await this.sequelize.dropSchema(this.schema,{});
     // TODO: remove directory when on server?
     // return clear ()

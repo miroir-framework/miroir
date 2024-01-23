@@ -11,6 +11,8 @@ import {
   MiroirLoggerFactory,
   getLoggerName,
   ActionReturnType,
+  ActionVoidReturnType,
+  ACTION_OK,
 } from "miroir-core";
 
 
@@ -29,7 +31,10 @@ type GConstructor<T = {}> = new (...args: any[]) => T;
 export type MixableFileSystemDbStore = GConstructor<FileSystemStoreSection>;
 
 
-export class FileSystemStoreSection extends FileSystemStore implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface{
+export class FileSystemStoreSection
+  extends FileSystemStore
+  implements AbstractStoreSectionInterface, StorageSpaceHandlerInterface
+{
   // public filesystemStoreName: string;
   // public directory: string;
 
@@ -41,42 +46,15 @@ export class FileSystemStoreSection extends FileSystemStore implements AbstractS
     // public filesystemStoreName: string,
     // private directory: string,
     // public logHeader: string;
-    ...args:any[] // mixin constructors are limited to args:any[] parameters
+    ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    // super(args[0], args[1], args[2], args[3]);
     super(args[0], args[1], args[2], args[3]);
-    // this.filesystemStoreName = args[0];
-    // this.directory = args[1];
-    // this.logHeader = args[2];
   }
 
-  // // #########################################################################################
-  // getStoreName(): string {
-  //   return this.filesystemStoreName;
-  // }
-
-  // // #########################################################################################
-  // open(): Promise<ActionReturnType> {
-  //   // const entityDirectories = fs.readdirSync(this.directory);
-  //   if (fs.existsSync(this.directory)) {
-  //     log.debug(this.logHeader, 'open checked that directory exist:', this.directory);
-  //   } else {
-  //     fs.mkdirSync(this.directory,{recursive: true})
-  //     log.info(this.logHeader, 'open created directory:',this.directory);
-  //   }
-  //   return Promise.resolve();
-  // }
-
-  // // #############################################################################################
-  // close(): Promise<ActionReturnType> {
-  //   log.info(this.logHeader, 'close does nothing!');
-  //   return Promise.resolve();
-  // }
-
   // #############################################################################################
-  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionReturnType> {
-    log.info(this.logHeader, 'bootFromPersistedState does nothing!');
-    return Promise.resolve( { status: "ok" } );
+  bootFromPersistedState(entities: MetaEntity[], entityDefinitions: EntityDefinition[]): Promise<ActionVoidReturnType> {
+    log.info(this.logHeader, "bootFromPersistedState does nothing!");
+    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
@@ -86,43 +64,56 @@ export class FileSystemStoreSection extends FileSystemStore implements AbstractS
   }
 
   // #############################################################################################
-  async clear(): Promise<ActionReturnType> {
-    log.info(this.logHeader, 'clear this.getEntityUuids()',this.getEntityUuids());
+  async clear(): Promise<ActionVoidReturnType> {
+    log.info(this.logHeader, "clear this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {
-      log.debug(this.logHeader, 'clear for entity',parentUuid);
+      log.debug(this.logHeader, "clear for entity", parentUuid);
       await this.dropStorageSpaceForInstancesOfEntity(parentUuid);
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve(ACTION_OK);
   }
- 
+
   // #############################################################################################
-  createStorageSpaceForInstancesOfEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
-    log.info(this.logHeader, 'createStorageSpaceForInstancesOfEntity', entity);
-    const entityInstancesPath = path.join(this.directory,entity.uuid)
+  createStorageSpaceForInstancesOfEntity(
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
+    log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
+    const entityInstancesPath = path.join(this.directory, entity.uuid);
     if (!fs.existsSync(entityInstancesPath)) {
-      fs.mkdirSync(entityInstancesPath)
+      fs.mkdirSync(entityInstancesPath);
     } else {
-      log.debug(this.logHeader,'createStorageSpaceForInstancesOfEntity storage space already exists for',entity.uuid);
+      log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
-  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionReturnType> {
-    const entityInstancesPath = path.join(this.directory,entityUuid)
+  dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<ActionVoidReturnType> {
+    const entityInstancesPath = path.join(this.directory, entityUuid);
     if (fs.existsSync(entityInstancesPath)) {
-      fs.rmSync(entityInstancesPath,{ recursive: true, force: true })
+      fs.rmSync(entityInstancesPath, { recursive: true, force: true });
     } else {
-      log.debug(this.logHeader,'dropStorageSpaceForInstancesOfEntity storage space does not exist for',entityUuid,"entityInstancesPath", entityInstancesPath );
+      log.debug(
+        this.logHeader,
+        "dropStorageSpaceForInstancesOfEntity storage space does not exist for",
+        entityUuid,
+        "entityInstancesPath",
+        entityInstancesPath
+      );
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################
-  renameStorageSpaceForInstancesOfEntity(oldName: string, newName: string, entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
-    log.info(this.logHeader, 'renameStorageSpaceForInstancesOfEntity does nothing!');
-    return Promise.resolve( { status: "ok" } );
+  renameStorageSpaceForInstancesOfEntity(
+    oldName: string,
+    newName: string,
+    entity: MetaEntity,
+    entityDefinition: EntityDefinition
+  ): Promise<ActionVoidReturnType> {
+    log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");
+    return Promise.resolve(ACTION_OK);
   }
-  
 }

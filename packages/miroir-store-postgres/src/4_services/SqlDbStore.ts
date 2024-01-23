@@ -1,7 +1,15 @@
-import { AbstractStoreInterface, ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import {
+  ACTION_OK,
+  AbstractStoreInterface,
+  ActionVoidReturnType,
+  ApplicationSection,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  getLoggerName
+} from "miroir-core";
 import { Sequelize } from "sequelize";
-import { SqlUuidEntityDefinition } from "../utils";
 import { packageName } from "../constants";
+import { SqlUuidEntityDefinition } from "../utils";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
@@ -19,18 +27,18 @@ export class SqlDbStore implements AbstractStoreInterface {
     // actual arguments are:
     public applicationSection: ApplicationSection,
     public sqlDbStoreName: string, // used only for debugging purposes
-    public connectionString:string,
-    public schema:string,
-    public logHeader: string,
-    // ...args: any[] // mixin constructors are limited to args:any[] parameters
-  ) {
+    public connectionString: string,
+    public schema: string,
+    public logHeader: string
+  ) // ...args: any[] // mixin constructors are limited to args:any[] parameters
+  {
     this.sequelize = new Sequelize(this.connectionString, { schema: this.schema }); // Example for postgres
   }
 
   // ##############################################################################################
-  async close(): Promise<ActionReturnType> {
+  async close(): Promise<ActionVoidReturnType> {
     await this.sequelize.close();
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve(ACTION_OK);
     // disconnect from DB?
   }
 
@@ -40,7 +48,7 @@ export class SqlDbStore implements AbstractStoreInterface {
   }
 
   // ##############################################################################################
-  public async open(): Promise<ActionReturnType> {
+  public async open(): Promise<ActionVoidReturnType> {
     try {
       await this.sequelize.authenticate();
       log.info(
@@ -52,6 +60,6 @@ export class SqlDbStore implements AbstractStoreInterface {
     } catch (error) {
       log.error("Unable to connect data", this.schema, " to the postgres database:", error);
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve(ACTION_OK);
   }
 }

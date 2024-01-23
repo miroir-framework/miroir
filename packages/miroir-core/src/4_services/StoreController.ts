@@ -132,7 +132,7 @@ export class StoreController implements StoreControllerInterface {
   async bootFromPersistedState(
     metaModelEntities : MetaEntity[],
     metaModelEntityDefinitions : EntityDefinition[],
-  ):Promise<ActionReturnType> {
+  ):Promise<ActionVoidReturnType> {
     const modelBootFromPersistedState: ActionReturnType = await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
     if (modelBootFromPersistedState.status != "ok") {
       return Promise.resolve({
@@ -182,7 +182,7 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // #############################################################################################
-  async open():Promise<ActionReturnType> {
+  async open():Promise<ActionVoidReturnType> {
     await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
@@ -190,7 +190,7 @@ export class StoreController implements StoreControllerInterface {
   }
   
   // ##############################################################################################
-  async close():Promise<ActionReturnType> {
+  async close():Promise<ActionVoidReturnType> {
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
@@ -198,17 +198,17 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // ##############################################################################################
-  async createStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
+  async createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
     return this.adminStore.createStore(config);
   }
   
   // ##############################################################################################
-  async deleteStore(config: StoreSectionConfiguration): Promise<ActionReturnType> {
+  async deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
     return this.adminStore.deleteStore(config);
   }
 
   // ##############################################################################################
-  async clear():Promise<ActionReturnType> {
+  async clear():Promise<ActionVoidReturnType> {
     log.info(this.logHeader,'clear',this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
@@ -216,7 +216,7 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // ##############################################################################################
-  async clearDataInstances():Promise<ActionReturnType> {
+  async clearDataInstances():Promise<ActionVoidReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     // const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
     const dataSectionEntities: ActionEntityInstanceCollectionReturnType = await this.getInstances("model", entityEntity.uuid);
@@ -298,7 +298,7 @@ export class StoreController implements StoreControllerInterface {
   async createModelStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ):Promise<ActionReturnType> {
+  ):Promise<ActionVoidReturnType> {
     return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -306,7 +306,7 @@ export class StoreController implements StoreControllerInterface {
   async createDataStorageSpaceForInstancesOfEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ):Promise<ActionReturnType> {
+  ):Promise<ActionVoidReturnType> {
     return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
   }
 
@@ -449,7 +449,7 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // ##############################################################################################
-  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionReturnType>{
+  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionVoidReturnType>{
     log.info('StoreController applyModelEntityUpdate',update);
     await applyModelEntityUpdate(this,update);
     return Promise.resolve(ACTION_OK);

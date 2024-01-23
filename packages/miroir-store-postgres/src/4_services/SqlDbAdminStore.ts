@@ -1,4 +1,4 @@
-import { ACTION_OK, ActionError, ActionReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
+import { ACTION_OK, ActionError, ActionReturnType, ActionVoidReturnType, AdminStoreInterface, LoggerInterface, MiroirLoggerFactory, SqlDbStoreSectionConfiguration, StoreSectionConfiguration, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
@@ -28,7 +28,7 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
   // ##############################################################################################
   async createStore(
     config: StoreSectionConfiguration,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     try {
       if (config.emulatedServerType !== "sql") {
         throw new Error(loggerName + " createStore failed for serverType " + config.emulatedServerType);
@@ -43,7 +43,7 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
   // ##############################################################################################
   async deleteStore(
     config: StoreSectionConfiguration,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     try {
       if (config.emulatedServerType !== "sql") {
         throw new Error(loggerName + " deleteStore failed for serverType " + config.emulatedServerType);
