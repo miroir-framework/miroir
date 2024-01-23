@@ -22,9 +22,13 @@ export class FileSystemAdminStore extends FileSystemStore implements AdminStoreI
 
   // ##############################################################################################
   constructor(
+    // applicationSection: ApplicationSection,
+    // filesystemStoreName: string,
+    // directory: string,
+    // logHeader: string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(args[0], args[1], args[2]);
+    super(args[0], args[1], args[2], args[3]);
   }
 
   // ##############################################################################################

@@ -41,6 +41,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     public dataStore: StoreDataSectionInterface;
 
     constructor(
+      // applicationSection: ApplicationSection,
       // filesystemStoreName: string,
       // directory: string,
       // logHeader: string,
@@ -51,9 +52,9 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         // public filesystemStoreName: string, // used only for debugging purposes
         // private directory: string,
         // public logHeader: string;
-        ...args.slice(0, 3)
+        ...args.slice(0, 4)
       );
-      this.dataStore = args[3];
+      this.dataStore = args[4];
       log.info(this.logHeader, "MixedIndexedDbEntityStoreSection constructor", args);
     }
 
@@ -128,10 +129,28 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
-        const entityDefinitions = (
-          (await this.dataStore.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
-        ).filter((i) => i.entityUuid == entityUuid);
-        for (const entityDefinition of entityDefinitions) {
+        const entityDefinitions: ActionReturnType = await this.dataStore.getInstances(entityEntityDefinition.uuid);
+        if (entityDefinitions.status != "ok") {
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToDeleteStore",// TODO: correct errorType
+              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
+            },
+          });
+        }
+        if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToGetInstances", // TODO: correct errorType
+              errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+            },
+          });
+        }
+
+        
+        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i:EntityDefinition) => i.entityUuid == entityUuid)) {
           await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {

@@ -5,6 +5,7 @@ import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
   ActionReturnType,
   ApplicationSection,
+  Entity,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -129,13 +130,51 @@ export class StoreController implements StoreControllerInterface {
     metaModelEntities : MetaEntity[],
     metaModelEntityDefinitions : EntityDefinition[],
   ):Promise<ActionReturnType> {
-    await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
-    const dataEntities = await this.modelStoreSection.getInstances(entityEntity.uuid) as MetaEntity[];
-    const dataEntityDefinitions = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid) as EntityDefinition[];
-    await this.dataStoreSection.bootFromPersistedState(
-      dataEntities.filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-      dataEntityDefinitions
+    const modelBootFromPersistedState: ActionReturnType = await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
+    if (modelBootFromPersistedState.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.error}`,
+        },
+      });
+    }
+    const dataEntities:ActionReturnType = await this.modelStoreSection.getInstances(entityEntity.uuid);
+    const dataEntityDefinitions:ActionReturnType = await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
+    if (dataEntities.status != "ok" || dataEntityDefinitions.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `bootFromPersistedState for entities getInstances(${entityEntity.uuid}) status: ${dataEntities.status}, getInstances(${entityEntityDefinition.uuid}) status: ${dataEntities.status}. Message: ${dataEntities.status == "ok"?"":dataEntities.error}, ${dataEntityDefinitions.status == "ok"?"":dataEntityDefinitions.error}`,
+        },
+      });
+    }
+    if (dataEntities.returnedDomainElement?.elementType != "instanceArray" || dataEntityDefinitions.returnedDomainElement?.elementType != "instanceArray") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `bootFromPersistedState for entities wrong element type, expected "instanceArray", got getInstances(${entityEntity.uuid}) elementType: ${dataEntities.returnedDomainElement?.elementType}, getInstances(${entityEntityDefinition.uuid}) elementType: ${dataEntityDefinitions.returnedDomainElement?.elementType}`,
+        },
+      });
+    }
+
+    const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
+      (dataEntities.returnedDomainElement?.elementValue as Entity[]).filter((e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1), // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+      dataEntityDefinitions.returnedDomainElement?.elementValue as EntityDefinition[]
     );
+    if (dataBootFromPersistedState.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `bootFromPersistedState failed for section data: ${dataBootFromPersistedState.error}`,
+        },
+      });
+    }
+    
     return Promise.resolve(ACTION_OK);
   }
 
@@ -176,19 +215,56 @@ export class StoreController implements StoreControllerInterface {
   // ##############################################################################################
   async clearDataInstances():Promise<ActionReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
-    const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
-    const dataSectionEntityDefinitions: EntityInstanceCollection = await this.getInstances(
+    // const dataSectionEntities: EntityInstanceCollection = await this.getInstances("model", entityEntity.uuid);
+    const dataSectionEntities: ActionReturnType = await this.getInstances("model", entityEntity.uuid);
+    if (dataSectionEntities.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities.error.errorType}, ${dataSectionEntities.error.errorMessage}`,
+        },
+      });
+    }
+    if (dataSectionEntities.returnedDomainElement?.elementType != "entityInstanceCollection") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntities.returnedDomainElement?.elementType}`,
+        },
+      });
+    }
+    const dataSectionEntityDefinitions: ActionReturnType = await this.getInstances(
       "model",
       entityEntityDefinition.uuid
     );
-    const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.instances as MetaEntity[]).filter(
+    if (dataSectionEntityDefinitions.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions.error.errorType}, ${dataSectionEntityDefinitions.error.errorMessage}`,
+        },
+      });
+    }
+    if (dataSectionEntityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${dataSectionEntityDefinitions.returnedDomainElement?.elementType}`,
+        },
+      });
+    }
+    const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as MetaEntity[]).filter(
       (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
     ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
     log.trace(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataStoreSection.clear();
 
     for (const entity of dataSectionFilteredEntities) {
-      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.instances.find(
+      const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.returnedDomainElement.elementValue.instances.find(
         (d: EntityDefinition) => d.entityUuid == entity.uuid
       ) as EntityDefinition;
       if (entityDefinition) {
@@ -290,25 +366,42 @@ export class StoreController implements StoreControllerInterface {
   }
   
   // #############################################################################################
-  async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
+  // async getInstances(section: ApplicationSection, entityUuid: string): Promise<EntityInstanceCollection> {
+  async getInstances(section: ApplicationSection, entityUuid: string): Promise<ActionReturnType> {
     // TODO: fix applicationSection!!!
     log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid);
     
-    let result: EntityInstanceCollection;
-    if (section == 'data') {
-      result = await Promise.resolve({
-        parentUuid: entityUuid,
-        applicationSection: "data",
-        instances: await this.dataStoreSection.getInstances(entityUuid),
-      });
-    } else {
-      result = await Promise.resolve({
-        parentUuid: entityUuid,
-        applicationSection: "model",
-        instances: await this.modelStoreSection.getInstances(entityUuid),
+    // let result: EntityInstanceCollection;
+    const currentStore = section == 'data'?this.dataStoreSection:this.modelStoreSection;
+    const instances: ActionReturnType = await currentStore.getInstances(entityUuid);
+
+    if (instances.status != "ok") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances.error.errorType}, ${instances.error.errorMessage}`,
+        },
       });
     }
-    log.trace(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
+    if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+      return Promise.resolve({
+        status: "error",
+        error: {
+          errorType: "FailedToGetInstances",
+          errorMessage: `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid} wrong element type, expected "entityInstanceCollection", got elementType: ${instances.returnedDomainElement?.elementType}`,
+        },
+      });
+    }
+    const result:ActionReturnType = {
+      status: "ok",
+      returnedDomainElement: {
+        elementType: "entityInstanceCollection",
+        elementValue: instances.returnedDomainElement.elementValue
+      }
+    }
+
+    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", result);
     return result;
   }
   

@@ -10,7 +10,7 @@ import {
   ActionReturnType
 } from "miroir-core";
 import { packageName } from "../constants";
-import { IndexedDb } from "./IndexedDbSnakeCase";
+import { IndexedDb } from "./IndexedDb";
 import { cleanLevel } from "./constants";
 import { IndexedDbStore } from "./IndexedDbStore";
 

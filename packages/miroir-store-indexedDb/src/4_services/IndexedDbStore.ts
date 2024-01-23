@@ -1,9 +1,9 @@
 import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
-import { IndexedDb } from "./IndexedDbSnakeCase";
+import { IndexedDb } from "./IndexedDb";
 import { cleanLevel } from "./constants";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel, "IndexedDbStore");
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
@@ -30,17 +30,17 @@ export class IndexedDbStore implements AbstractStoreInterface {
   
   // ##################################################################################################
   async open(): Promise<ActionReturnType> {
-    log.info(this.logHeader, "open(): opening");
+    log.info("open()",this.indexedDbStoreName,": opening...");
     await this.localUuidIndexedDb.openObjectStore();
-    log.info(this.logHeader, "open(): opened");
+    log.info("open()",this.indexedDbStoreName,": opened");
     return Promise.resolve( { status: "ok" } );
   }
 
   // ##############################################################################################
   async close(): Promise<ActionReturnType> {
-    log.info(this.logHeader, "close(): closing");
+    log.info("close()",this.indexedDbStoreName,": closing...");
     await this.localUuidIndexedDb.closeObjectStore();
-    log.info(this.logHeader, "close(): closed");
+    log.info("close()",this.indexedDbStoreName,": closed");
     return Promise.resolve( { status: "ok" } );
   }
 

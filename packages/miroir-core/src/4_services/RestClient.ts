@@ -79,21 +79,21 @@ export class RestClient implements RestClientInterface {
 
   // ##############################################################################################
   async post(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
-    const result:Promise<RestClientCallReturnType> = this.call('POST', endpoint, { ...customConfig, body })
+    const result:RestClientCallReturnType = await this.call('POST', endpoint, { ...customConfig, body })
     log.trace('RestClient post', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async put(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
-    const result:Promise<RestClientCallReturnType> = this.call('PUT', endpoint, { ...customConfig, body })
+    const result:RestClientCallReturnType = await this.call('PUT', endpoint, { ...customConfig, body })
     log.trace('RestClient put', endpoint, result)
     return result
   }
 
   // ##############################################################################################
   async delete(endpoint:string, body:any, customConfig = {}): Promise<RestClientCallReturnType> {
-    const result:Promise<RestClientCallReturnType> = this.call('DELETE', endpoint, { ...customConfig, body })
+    const result:RestClientCallReturnType = await this.call('DELETE', endpoint, { ...customConfig, body })
     log.trace('RestClient delete', endpoint, result)
     return result
   }

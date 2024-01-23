@@ -64,9 +64,9 @@ export interface StorageSpaceHandlerInterface {
 
 // ###########################################################################################
 export interface AbstractInstanceStoreSectionInterface {
-  // getInstance(parentUuid: string, uuid: string): Promise<EntityInstance | undefined>;
   getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType>;
-  getInstances(parentUuid: string): Promise<EntityInstance[]>;
+  // getInstances(parentUuid: string): Promise<EntityInstance[]>;
+  getInstances(parentUuid: string): Promise<ActionReturnType>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
   deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
   deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
@@ -159,9 +159,9 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
   getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
 
   // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
-  // getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<EntityInstance | undefined>;
   getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<ActionReturnType>;
-  getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  getInstances(section: ApplicationSection, parentUuid:string):Promise<ActionReturnType>;
   upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
   deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;

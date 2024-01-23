@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { AbstractStoreInterface, ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -13,7 +13,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export class FileSystemStore implements AbstractStoreInterface {
   // ##############################################################################################
-  constructor(public filesystemStoreName: string, public directory: string, public logHeader: string) {}
+  constructor(
+    public applicationSection: ApplicationSection,
+    public filesystemStoreName: string,
+    public directory: string,
+    public logHeader: string
+  ) {}
 
   // #########################################################################################
   getStoreName(): string {
@@ -29,12 +34,12 @@ export class FileSystemStore implements AbstractStoreInterface {
       fs.mkdirSync(this.directory, { recursive: true });
       log.info(this.logHeader, "open created directory:", this.directory);
     }
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve({ status: "ok" });
   }
 
   // #############################################################################################
   close(): Promise<ActionReturnType> {
     log.info(this.logHeader, "close does nothing!");
-    return Promise.resolve( { status: "ok" } );
+    return Promise.resolve({ status: "ok" });
   }
 }

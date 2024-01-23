@@ -36,6 +36,11 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
 
   // ##############################################################################################
   constructor(
+    // applicationSection: ApplicationSection,
+    // sqlDbStoreName: string,
+    // dataConnectionString:string,
+    // dataSchema:string,
+    // logHeader:string,
     ...args: any[] // mixin constructors are limited to args:any[] parameters
   ) {
     super(
@@ -43,6 +48,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
       args[1],
       args[2],
       args[3],
+      args[4],
     )
   }
 

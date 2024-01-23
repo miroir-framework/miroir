@@ -19,6 +19,7 @@ import {
   CUDActionName,
   defaultLevels,
   defaultMiroirMetaModel,
+  DomainElementType,
   entityAuthor,
   EntityDefinition,
   entityDefinitionAuthor,
@@ -26,6 +27,7 @@ import {
   entityEntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  entityReport,
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
@@ -130,6 +132,46 @@ afterAll(
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+const chainTestSteps = async (
+  stepName: string,
+  context: {[k:string]: any},
+  functionCallingActionToTest: () => Promise<ActionReturnType>,
+  resultTransformation?: (a:ActionReturnType,p:{[k:string]: any}) => any,
+  addResultToContextAsName?: string,
+  expectedDomainElementType?: DomainElementType,
+  expectedValue?: any,
+): Promise<{[k:string]: any}> => {
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "previousResult:", JSON.stringify(context,undefined, 2));
+  const domainElement = await functionCallingActionToTest();
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "result:", JSON.stringify(domainElement,undefined, 2));
+  let testResult
+  if (domainElement.status == "ok") {
+    testResult = resultTransformation?resultTransformation(domainElement,context):domainElement.status == "ok"?domainElement?.returnedDomainElement?.elementValue:undefined;
+    if (expectedDomainElementType) {
+      if (domainElement.returnedDomainElement?.elementType != expectedDomainElementType) {
+        expect(domainElement.returnedDomainElement?.elementType, stepName + "received result: " + domainElement.returnedDomainElement).toEqual(expectedDomainElementType) // fails
+      } else {
+        // const testResult = ignorePostgresExtraAttributes(domainElement?.returnedDomainElement.elementValue)
+        if (expectedValue) {
+          expect(testResult).toEqual(expectedValue);
+        } else {
+          // no test to be done
+        }
+      }
+    } else {
+     // no test to be done 
+    }
+  } else {
+    expect(domainElement.status, domainElement.error?.errorType??"no errorType" + ": " + domainElement.error?.errorMessage??"no errorMessage").toEqual("ok")
+  }
+  console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult:", JSON.stringify(testResult,undefined, 2));
+  if (testResult && addResultToContextAsName) {
+    return {...context, [addResultToContextAsName]: testResult}
+  } else {
+    return context
+  }
+}
+
 function ignorePostgresExtraAttributes(instances: EntityInstance[]){
   return instances.map(i => Object.fromEntries(Object.entries(i).filter(e=>!["createdAt", "updatedAt", "author"].includes(e[0]))))
 }
@@ -256,64 +298,89 @@ describe.sequential("localStoreController.unit.test", () => {
   },10000);
 
   // ################################################################################################
-  it("get Miroir Entities", async () => {
-    const rawResult = (await localMiroirStoreController.getInstances("model",entityEntity.uuid))
-    
-    const testResult = (rawResult?.instances??[]).map(
-      (i: EntityInstance) => i["uuid"]
-    )
-    testResult.sort()
-
-    // console.log("!####################### raw result", result);
-    // console.log("!####################### test result", mapResult);
-    
-    expect(testResult).toEqual(
-    [
-      "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      "35c5608a-7678-4f07-a4ec-76fc5bc35424",
-      "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  it("get Entity instance: the Report Entity", async () => {
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localMiroirStoreController.getInstance("model",entityEntity.uuid, entityReport.uuid),
+      // (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]),
+      (a) => (a as any).returnedDomainElement.elementValue.uuid,
+      // undefined, // result transformation function
+      undefined, // result name
+      "instance",
       "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-      "7990c0c9-86c3-40a1-a121-036c91b55ed7",
-      "a659d350-dd97-4da9-91de-524fa01745dc",
-      "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-      "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-      "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-    ]
+    );
+  });
+
+  // ################################################################################################
+  it("get Miroir Entities", async () => {
+
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localMiroirStoreController.getInstances("model",entityEntity.uuid),
+      (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]).sort(),
+      // (a) => (a as any).returnedDomainElement.elementValue.instances,
+      undefined, // result name
+      "entityInstanceCollection",
+      [
+        "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+        "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+        "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+        "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+        "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+        "7990c0c9-86c3-40a1-a121-036c91b55ed7",
+        "a659d350-dd97-4da9-91de-524fa01745dc",
+        "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+        "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+        "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+      ]
     );
   });
 
 
   // ################################################################################################
   it("get Library Entities", async () => {
-    expect(
-      await localAppStoreController.getInstances("model",entityEntity.uuid)
-    ).toEqual(
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localAppStoreController.getInstances("model",entityEntity.uuid),
+      // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      undefined, // result transformation
+      undefined, // result name
+      "entityInstanceCollection",
       {
-      "applicationSection": "model",
-      "instances": [],
-      "parentUuid": entityEntity.uuid,
-    }
-    );
+        "applicationSection": "model",
+        "instances": [],
+        "parentUuid": entityEntity.uuid,
+      }
+    )
+
   });
 
   // ################################################################################################
   it("create Author Entity", async () => {
-    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
-    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+    await chainTestSteps( // setup
+      "setup_createEntity",
+      {},
+      async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // result name
+      undefined, // result.elementType
+      undefined, // result.elementValue
+    )
 
-    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid);
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances as any??[])
-
-    // console.log("create Author Entity rawResult", rawResult);
-    // console.log("create Author Entity testResult", testResult);
-    expect(testResult).toEqual(
-      [
-        entityAuthor
-      ],
-    );
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localAppStoreController.getInstances("model",entityEntity.uuid),
+      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      undefined, // result name
+      "entityInstanceCollection",
+      [entityAuthor]
+    )
   });
 
   // ################################################################################################
@@ -332,40 +399,78 @@ describe.sequential("localStoreController.unit.test", () => {
       targetValue: entityAuthor.name + "ssss"
     };
 
-    const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
-    const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
-
-    const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
-    console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
-
-    const applyUpdate: ActionReturnType = await localAppStoreController.applyModelEntityUpdate(
-      {
-        updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-        modelEntityUpdate,
-        "equivalentModelCUDUpdates": [
-          {
-            updateActionType:"ModelCUDInstanceUpdate",
-            updateActionName:cudUpdate?.actionName??"update",
-            objects: cudUpdate?.objects??[]
-          } as ModelCUDInstanceUpdate
-        ]
-      }
+    await chainTestSteps(
+      "fetchEntities",
+      { },
+      async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
+      (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+      "entities", // result name
+      "entityInstanceCollection", // result.elementType
+      undefined, // test result.elementValue
     )
-
-    expect(applyUpdate, "failed to apply applyModelEntityUpdate action").toEqual(ACTION_OK);
-    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-    
-    expect(
-      testResult
-    ).toEqual(
-      [
-        {
-          ...entityAuthor,
-          name: entityAuthor.name + "ssss"
-        }
-      ],
+    .then (
+      (v) => chainTestSteps(
+        "fetchEntityDefinitions",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+        "entityDefinitions", // result name
+        "entityInstanceCollection", // result.elementType
+        undefined, // result.elementValue
+      )
+    )
+    .then(
+      (v) => chainTestSteps(
+        "computeCudUpdate",
+        v,
+        async () => ACTION_OK,
+        (a, p) =>
+          ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
+            modelEntityUpdate,
+            p.entities,
+            p.entityDefinitions
+          ),
+        "cudUpdate", // result name
+        undefined, // result.elementType
+        undefined, // result.elementValue
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "applyModelEntityUpdate",
+        v,
+        async () => await localAppStoreController.applyModelEntityUpdate({
+            updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
+            modelEntityUpdate,
+            equivalentModelCUDUpdates: [
+              {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: v.cudUpdate?.actionName ?? "update",
+                objects: v.cudUpdate?.objects ?? [],
+              } as ModelCUDInstanceUpdate,
+            ],
+          }),
+        undefined,// (a,p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+        undefined, // result name
+        undefined, // result type
+        undefined // to value to compare with
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "getInstancesToCheckResult",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
+        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        undefined, // result name
+        "entityInstanceCollection",
+        [
+          {
+            ...entityAuthor,
+            name: entityAuthor.name + "ssss",
+          },
+        ]
+      )
     );
   });
 
@@ -386,78 +491,195 @@ describe.sequential("localStoreController.unit.test", () => {
      };
 
     
-    const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
-    const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
-
-    const cudUpdate: { actionName: CUDActionName; objects: EntityInstanceCollection[] } | undefined =
-      ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(modelEntityUpdate, entities, entityDefinitions);
-    console.log('DomainController updateModel correspondingCUDUpdate',cudUpdate);
-
-    const applyUpdate = await localAppStoreController.applyModelEntityUpdate(
-      {
-        updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-        modelEntityUpdate,
-        "equivalentModelCUDUpdates": [
-          {
-            updateActionType:"ModelCUDInstanceUpdate",
-            updateActionName:cudUpdate?.actionName??"delete",
-            objects: cudUpdate?.objects??[]
-          } as ModelCUDInstanceUpdate
-        ]
-      }
+    // const entities: MetaEntity[] = (await localAppStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
+    // const entityDefinitions: EntityDefinition[] = (await localAppStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityDefinition[];
+    await chainTestSteps(
+      "setup_createEntity",
+      {},
+      async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // result name
+      undefined, // result.elementType
+      undefined, // result.elementValue
     )
-
-    expect(applyUpdate, "failed to apply applyModelEntityUpdate action").toEqual(ACTION_OK);
-
-    const rawResult = await localAppStoreController.getInstances("model",entityEntity.uuid)
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-
-    expect(testResult).toEqual([]);
+    .then(
+      (v) => chainTestSteps(
+        "fetchEntities",
+        v,
+        async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
+        (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+        "entities", // result name
+        "entityInstanceCollection", // result.elementType
+        undefined, // test result.elementValue
+      )
+    )
+    .then (
+      (v) => chainTestSteps(
+        "fetchEntityDefinitions",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+        "entityDefinitions", // result name
+        "entityInstanceCollection", // result.elementType
+        undefined, // result.elementValue
+      )
+    )
+    .then(
+      (v) => chainTestSteps(
+        "createCudUpdate",
+        v,
+        async () => ACTION_OK,
+        (a, p) =>
+          ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
+            modelEntityUpdate,
+            p.entities,
+            p.entityDefinitions
+          ),
+        "cudUpdate", // result name
+        undefined, // result.elementType
+        undefined, // result.elementValue
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "applyModelEntityUpdate",
+        v,
+        async () => await localAppStoreController.applyModelEntityUpdate({
+            updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
+            modelEntityUpdate,
+            equivalentModelCUDUpdates: [
+              {
+                updateActionType: "ModelCUDInstanceUpdate",
+                updateActionName: v.cudUpdate?.actionName ?? "update",
+                objects: v.cudUpdate?.objects ?? [],
+              } as ModelCUDInstanceUpdate,
+            ],
+          }),
+        undefined, // result transformation function,
+        undefined, // result name
+        undefined, // result type
+        undefined // to value to compare with
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "actualTest_getInstancesAndCheckResult",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
+        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        undefined, // result name
+        "entityInstanceCollection",
+        []
+      )
+    );
   });
 
   // ################################################################################################
   it("add Author Instance", async () => {
     // setup
-    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
-    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+    // const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    // expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
-    // test
+    await chainTestSteps(
+      "setup_createEntity",
+      {},
+      async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // result name
+      undefined, // result.elementType
+      undefined, // result.elementValue
+    )
+
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
     // expect(instanceAdded, "failed to add Author instance").toEqual(ACTION_OK)
-    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid)
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    expect(instanceAdded.uuid, "failed to add Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
 
-    expect(testResult).toEqual([author1],);
+    // .then((v) =>
+    //   chainTestSteps(
+    //     "actionToBeTested",
+    //     v,
+    //     async () => localAppStoreController?.upsertInstance('data', author1 as EntityInstance),
+    //     undefined, // result transformation function,
+    //     undefined, // result name
+    //     undefined, // result type
+    //     undefined // to value to compare with
+    //   )
+    // )
+    // .then((v) =>
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
+      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      undefined, // result name
+      "entityInstanceCollection",
+      [author1]
+    )
+
   });
 
   // ################################################################################################
   it("update Author Instance", async () => {
-    // setup
-    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
-    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
-    
+    await chainTestSteps( // setup
+      "setup_createEntity",
+      {},
+      async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // result name
+      undefined, // result.elementType
+      undefined, // result.elementValue
+    )
+
     // test
     const instanceUpdated = await localAppStoreController?.upsertInstance('data', {...author1, "name": author1.name + "ssss"} as EntityInstance);
-    // expect(instanceUpdated, "failed to update Author instance").toEqual(ACTION_OK)
-    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-    expect(testResult).toEqual([{...author1, "name": author1.name + "ssss"}],);
+    // check that upsert succeeded
+    expect(instanceUpdated.uuid, "failed to update Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
+
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
+      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      undefined, // result name
+      "entityInstanceCollection",
+      [{...author1, "name": author1.name + "ssss"}]
+    )
+
   });
 
   // ################################################################################################
   it("delete Author Instance", async () => {
     // setup
     const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    await chainTestSteps( // setup
+      "setup_createEntity",
+      {},
+      async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
+      undefined,
+      undefined, // result name
+      undefined, // result.elementType
+      undefined, // result.elementValue
+    )
+
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // expect(instanceAdded, "failed to setup test case").toEqual(ACTION_OK)
 
     // test
     const instanceDeleted = await localAppStoreController?.deleteInstances('data', [author1]);
-    // expect(instanceDeleted, "failed to setup test case").toEqual(ACTION_OK)
-    const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
-    const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
-    expect(testResult).toEqual([],);
+    // // expect(instanceDeleted, "failed to setup test case").toEqual(ACTION_OK)
+    // const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
+    // const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])
+    // expect(testResult).toEqual([],);
+    await chainTestSteps(
+      "actualTest_getInstancesAndCheckResult",
+      {},
+      async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
+      (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+      undefined, // result name
+      "entityInstanceCollection",
+      []
+    )
   });
 
 });

@@ -495,6 +495,49 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
+      "domainElementEntityInstanceCollection": {
+        "type": "object",
+        "definition": {
+          "elementType": {
+            "type": "literal",
+            "definition": "entityInstanceCollection"
+          },
+          "elementValue": 
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityInstanceCollection"
+            }
+          }
+        }
+      },
+      "domainElementInstanceArray": {
+        "type": "object",
+        "definition": {
+          "elementType": {
+            "type": "literal",
+            "definition": "instanceArray"
+          },
+          "elementValue": 
+          {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityInstance"
+              }
+            }
+          }
+        }
+      },
+      "domainElementType": {
+        "type": "enum",
+        "definition": [
+          "object", "instanceUuidIndex", "entityInstanceCollection", "instanceArray", "instance", "instanceUuid", "instanceUuidIndexUuidIndex"
+        ]
+      },
       "domainElement": {
         "type": "union",
         "definition": [
@@ -510,6 +553,20 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "domainElementUuidIndex"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementEntityInstanceCollection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementInstanceArray"
             }
           },
           {

@@ -16,6 +16,7 @@ export async function throwExceptionIfError(
 ): Promise<EntityInstanceCollection | void> {
   const functionToCall = f.bind(_this);
   const result: RemoteStoreActionReturnType = await functionToCall(...args);
+  console.log("throwExceptionIfError received result", result)
   if (result && result['status'] == "error") {
     //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
     // Problem: what if the local storage is not accessible? => store it in a in-memory effect.

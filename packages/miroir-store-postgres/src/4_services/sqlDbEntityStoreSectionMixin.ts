@@ -34,6 +34,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     public dataStore: StoreDataSectionInterface;
 
     constructor(
+      // applicationSection: ApplicationSection,
       // sqlDbStoreName: string,
       // dataConnectionString:string,
       // dataSchema:string,
@@ -41,8 +42,8 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       // dataStore: StoreDataSectionInterface,
       ...args: any[]
     ) {
-      super(...args.slice(0, 4));
-      this.dataStore = args[4];
+      super(...args.slice(0, 5));
+      this.dataStore = args[5];
       // log.info(this.logHeader,'MixedIndexedDbEntityStoreSection constructor',this.dataStore);
     }
 
@@ -136,12 +137,29 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
           //remove all entity definitions for the dropped entity
-          const entityDefinitions = (
-            (await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]
-          ).filter((i) => i.entityUuid == entityUuid);
-          log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
+          const entityDefinitions: ActionReturnType = await this.getInstances(entityEntityDefinition.uuid);
 
-          for (const entityDefinition of entityDefinitions) {
+          log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
+          if (entityDefinitions.status != "ok") {
+            return Promise.resolve({
+              status: "error",
+              error: {
+                errorType: "FailedToDeleteStore",// TODO: correct errorType
+                errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
+              },
+            });
+          }
+          if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+            return Promise.resolve({
+              status: "error",
+              error: {
+                errorType: "FailedToGetInstances", // TODO: correct errorType
+                errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+              },
+            });
+          }
+  
+          for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i: EntityDefinition) => i.entityUuid == entityUuid)) {
             await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
           }
 

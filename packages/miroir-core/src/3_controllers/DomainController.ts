@@ -20,7 +20,7 @@ import {
   LocalCacheModelActionWithDeployment,
   LocalCacheInterface,
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { RemoteStoreInterface, RemoteStoreCRUDAction } from '../0_interfaces/4-services/RemoteStoreInterface.js';
+import { RemoteStoreInterface, RemoteStoreCRUDAction, RemoteStoreActionReturnType } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
 import { ModelEntityActionTransformer } from "../2_domain/ModelEntityActionTransformer.js";
 
@@ -36,6 +36,7 @@ import {
   EntityInstanceCollection,
   entityDefinition,
   InstanceAction,
+  EntityInstance,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -419,32 +420,45 @@ export class DomainController implements DomainControllerInterface {
   public async loadConfigurationFromRemoteDataStore(
     deploymentUuid: string,
   ): Promise<void> {
-    log.info("DomainController loadConfigurationFromRemoteDataStore for deployment",deploymentUuid);
+    log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment",deploymentUuid);
     try {
-      const dataEntitiesFromModelSection: EntityInstanceCollection | void = await throwExceptionIfError(
-        this.miroirContext.errorLogService,
-        this.remoteStore.handleRemoteStoreRestCRUDAction,
-        this.remoteStore, //this
-        deploymentUuid,
-        "model",
-        {
-          actionName: "read",
-          parentName: entityEntity.name,
-          parentUuid: entityEntity.uuid,
-        }
-      );
+      // const dataEntitiesFromModelSection: EntityInstanceCollection | void = await throwExceptionIfError(
+      //   this.miroirContext.errorLogService,
+      //   this.remoteStore.handleRemoteStoreRestCRUDAction,
+      //   this.remoteStore, //this
+      //   deploymentUuid,
+      //   "model",
+      //   {
+      //     actionName: "read",
+      //     parentName: entityEntity.name,
+      //     parentUuid: entityEntity.uuid,
+      //   }
+      // );
+      // const dataEntitiesFromModelSection: EntityInstanceCollection | void = 
+      const dataEntitiesFromModelSection: RemoteStoreActionReturnType = 
+        await this.remoteStore.handleRemoteStoreRestCRUDAction(
+          deploymentUuid,
+          "model",
+          {
+            actionName: "read",
+            actionType: "RemoteStoreCRUDAction",
+            parentName: entityEntity.name,
+            parentUuid: entityEntity.uuid,
+          }
+        )
+      ;
 
-      if (!dataEntitiesFromModelSection) {
-        throw new Error("DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list");
-        
-      }
-      log.trace(
-        "DomainController loadConfigurationFromRemoteDataStore for deployment",
+      log.info(
+        "DomainController loadConfigurationFromRemoteDataStore fetched list of Entities for deployment",
         deploymentUuid,
-        "found data entities from Model Section",
+        "found data entities from Model Section dataEntitiesFromModelSection",
         dataEntitiesFromModelSection
       );
 
+
+      if (!dataEntitiesFromModelSection || dataEntitiesFromModelSection.status != "ok") {
+        throw new Error("DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list" + dataEntitiesFromModelSection);
+      }
       const modelEntitiesToFetch: MetaEntity[] =
         deploymentUuid == applicationDeploymentMiroir.uuid
           ? miroirModelEntities
@@ -453,11 +467,11 @@ export class DomainController implements DomainControllerInterface {
           
       const dataEntitiesToFetch = 
         deploymentUuid == applicationDeploymentMiroir.uuid?
-          dataEntitiesFromModelSection.instances.filter(
-            (dataEntity) => modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0
+          (dataEntitiesFromModelSection.instanceCollection?.instances??[]).filter(
+            (dataEntity:EntityInstance) => modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0
           )
         :
-        dataEntitiesFromModelSection.instances
+        dataEntitiesFromModelSection.instanceCollection?.instances??[]
       ; // hack, hack, hack
 
       log.debug(
@@ -471,37 +485,58 @@ export class DomainController implements DomainControllerInterface {
 
       // const modelEntities = [entityReport].filter(me=>dataEntities.instances.filter(de=>de.uuid == me.uuid).length == 0)
       const toFetchEntities: { section: ApplicationSection; entity: MetaEntity }[] = [
-        ...modelEntitiesToFetch.map((e) => ({ section: "model" as ApplicationSection, entity: e })),
-        ...dataEntitiesToFetch.map((e) => ({ section: "data" as ApplicationSection, entity: e as MetaEntity })),
+        ...modelEntitiesToFetch.map(
+          (e) => (
+          { section: "model" as ApplicationSection, entity: e })
+        ),
+        ...dataEntitiesToFetch.map(
+          (e) => (
+          { section: "data" as ApplicationSection, entity: e as MetaEntity })
+          ),
       ];
 
 
       let instances: EntityInstanceCollection[] = []; //TODO: replace with functional implementation
       for (const e of toFetchEntities) {
         // makes sequential calls to interface. Make parallel calls instead using Promise.all?
-        log.trace(
+        log.info(
           "DomainController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
-          (e as any)["name"]
+          JSON.stringify(e,undefined,2)
         );
-        const entityInstanceCollection: EntityInstanceCollection | void = await throwExceptionIfError(
-          this.miroirContext.errorLogService,
-          this.remoteStore.handleRemoteStoreRestCRUDAction,
-          this.remoteStore, // this
-          deploymentUuid,
-          e.section,
-          {
-            actionName: "read",
-            parentName: e.entity.name,
-            parentUuid: e.entity.uuid,
-          }
-        );
+        // const entityInstanceCollection: EntityInstanceCollection | void = await throwExceptionIfError(
+        //   this.miroirContext.errorLogService,
+        //   this.remoteStore.handleRemoteStoreRestCRUDAction,
+        //   this.remoteStore, // this
+        //   deploymentUuid,
+        //   e.section,
+        //   {
+        //     actionName: "read",
+        //     parentName: e.entity.name,
+        //     parentUuid: e.entity.uuid,
+        //   }
+        // );
+        const entityInstanceCollection: RemoteStoreActionReturnType = await this.remoteStore.handleRemoteStoreRestCRUDAction(
+            deploymentUuid,
+            e.section,
+            {
+              actionName: "read",
+              actionType: 'RemoteStoreCRUDAction',
+              parentName: e.entity.name,
+              parentUuid: e.entity.uuid,
+            }
+          )
+        ;
+        if (entityInstanceCollection.status != "ok") {
+          throw new Error("DomainController loadConfigurationFromRemoteDataStore could not fetch entityInstanceCollection: " + entityInstanceCollection.error);
+        }
+
         log.trace(
           "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
           e.entity["name"],
           entityInstanceCollection
         );
-        if (entityInstanceCollection) {
-          instances.push(entityInstanceCollection);
+        if (entityInstanceCollection.instanceCollection) {
+          instances.push(entityInstanceCollection.instanceCollection);
         } else {
           log.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
         }
@@ -547,7 +582,7 @@ export class DomainController implements DomainControllerInterface {
 
       return Promise.resolve();
     } catch (error) {
-      log.warn("DomainController loadConfigurationFromRemoteDataStore", error);
+      log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
     }
   }
 

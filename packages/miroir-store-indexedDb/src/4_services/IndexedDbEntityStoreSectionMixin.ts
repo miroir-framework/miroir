@@ -150,9 +150,26 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        const entityDefinitions = ((await this.getInstances(entityEntityDefinition.uuid)) as EntityDefinition[]).filter(
-          (i) => i.entityUuid == entityUuid
-        );
+        const entityDefinitions: ActionReturnType = await this.getInstances(entityEntityDefinition.uuid);
+        if (entityDefinitions.status != "ok") {
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToDeleteStore",// TODO: correct errorType
+              errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
+            },
+          });
+        }
+        if (entityDefinitions.returnedDomainElement?.elementType != "entityInstanceCollection") {
+          return Promise.resolve({
+            status: "error",
+            error: {
+              errorType: "FailedToGetInstances", // TODO: correct errorType
+              errorMessage: `getInstances failed for section: data, entityUuid ${entityUuid} wrong element type, expected "entityInstanceCollection", got elementType: ${entityDefinitions.returnedDomainElement?.elementType}`,
+            },
+          });
+        }
+
         log.debug(
           this.logHeader,
           "dropEntity entity",
@@ -161,7 +178,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           entityDefinitions
         );
 
-        for (const entityDefinition of entityDefinitions) {
+        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i:EntityDefinition) => i.entityUuid == entityUuid)) {
           await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {

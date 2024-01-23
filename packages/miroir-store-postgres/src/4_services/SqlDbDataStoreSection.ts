@@ -4,7 +4,9 @@ import {
   StoreDataSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType,
+  ApplicationSection
 } from "miroir-core";
 import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin.js";
 import { packageName } from "../constants.js";
@@ -20,11 +22,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implements StoreDataSectionInterface {
   // ##############################################################################################
   constructor(
+    public applicationSection: ApplicationSection,
     sqlDbStoreName: string, // used only for debugging purposes
     dataConnectionString:string,
     dataSchema:string,
   ) {
     super(
+      applicationSection,
       sqlDbStoreName,
       dataConnectionString,
       dataSchema,
@@ -39,11 +43,17 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
     
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
-      const dbInstances = await this.getInstances(parentUuid);
-      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
+      const instances: ActionReturnType = await this.getInstances(parentUuid);
+      // const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances: dbInstances};
       // log.info(this.logHeader,'getState found instances',parentUuid,instances);
-      
-      Object.assign(result,{[parentUuid]:instances});
+      if (instances.status != "ok") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else {
+        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+      }
+
     }
     return Promise.resolve(result);
   }

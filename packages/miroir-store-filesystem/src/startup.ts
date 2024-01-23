@@ -31,7 +31,7 @@ export function miroirFileSystemStoreSectionStartup() {
       if (config.emulatedServerType == "filesystem") {
         const filesystemStoreName: string = config.directory
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new FileSystemAdminStore(filesystemStoreName, config.directory))
+        return Promise.resolve(new FileSystemAdminStore("data",filesystemStoreName, config.directory)) // TODO: provide adequate applicationSection! "admin"?
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
@@ -52,7 +52,7 @@ export function miroirFileSystemStoreSectionStartup() {
         
         return Promise.resolve(
           config.emulatedServerType == "filesystem" && dataStore
-            ? new FileSystemModelStoreSection(filesystemStoreName, config.directory, dataStore)
+            ? new FileSystemModelStoreSection("model", filesystemStoreName, config.directory, dataStore)
             : new ErrorModelStore()
         )
       } else {
@@ -73,7 +73,7 @@ export function miroirFileSystemStoreSectionStartup() {
         const filesystemStoreName: string = config.directory
         return Promise.resolve(
           config.emulatedServerType == "filesystem"
-            ? new FileSystemDataStoreSection(filesystemStoreName, config.directory)
+            ? new FileSystemDataStoreSection("data", filesystemStoreName, config.directory)
             : new ErrorDataStore()
         )
       } else {

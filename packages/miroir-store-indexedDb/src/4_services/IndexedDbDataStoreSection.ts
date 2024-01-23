@@ -7,7 +7,7 @@ import {
   getLoggerName
 } from "miroir-core";
 import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
-import { IndexedDb } from "./IndexedDbSnakeCase.js";
+import { IndexedDb } from "./IndexedDb.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -41,8 +41,14 @@ export class IndexedDbDataStoreSection extends MixedIndexedDbInstanceStoreSectio
       log.debug(this.logHeader, "getState getting instances for", parentUuid);
       const instances = await this.getInstances(parentUuid);
       // log.info(this.logHeader, "getState found instances", parentUuid, instances);
-
-      Object.assign(result, { [parentUuid]: instances });
+      // TODO: proper treatment of errors!
+      if (instances.status != "ok") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else {
+        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+      }
     }
     return Promise.resolve(result);
   }

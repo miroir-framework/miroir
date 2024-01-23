@@ -37,6 +37,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     // ##############################################################################################
     constructor(
       // ...args stands for:
+      // public applicationSection: ApplicationSection,
       // public filesystemStoreName: string,
       // private directory: string,
       // public logHeader: string,
@@ -66,7 +67,8 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #########################################################################################
-    async getInstances(entityUuid: string): Promise<EntityInstance[]> {
+    // async getInstances(entityUuid: string): Promise<EntityInstance[]> {
+    async getInstances(entityUuid: string): Promise<ActionReturnType> {
       log.info(
         this.logHeader,
         "FileSystemInstanceStore getInstances",
@@ -77,36 +79,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       );
 
       const entityInstancesPath = path.join(this.directory, entityUuid);
-      if (fs.existsSync(entityInstancesPath)) {
-        const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
-        log.debug(
-          this.logHeader,
-          "FileSystemInstanceStore getInstances",
-          "entityUuid",
-          entityUuid,
-          "directory",
-          this.directory,
-          "found entity instances",
-          entityInstancesUuid
-        );
-        const entityInstances = {
-          parentUuid: entityUuid,
-          instances: entityInstancesUuid.map((e) =>
-            JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e)).toString())
-          ),
-        } as EntityInstanceCollection;
-        log.debug(
-          this.logHeader,
-          "FileSystemInstanceStore getInstances",
-          "entityUuid",
-          entityUuid,
-          "directory",
-          this.directory,
-          "found entity instances",
-          entityInstances
-        );
-        return Promise.resolve(entityInstances.instances);
-      } else {
+      if (!fs.existsSync(entityInstancesPath)) {
         log.warn(
           this.logHeader,
           "FileSystemInstanceStore getInstances",
@@ -115,8 +88,50 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           "could not find path",
           entityInstancesPath
         );
-        return Promise.resolve([]);
+        return Promise.resolve({
+          status: "error",
+          error: {
+            errorType: "FailedToGetInstances",
+            errorMessage: `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
+          },
+        });
       }
+
+      const entityInstancesUuid = fs.readdirSync(entityInstancesPath);
+      log.debug(
+        this.logHeader,
+        "FileSystemInstanceStore getInstances",
+        "entityUuid",
+        entityUuid,
+        "directory",
+        this.directory,
+        "found entity instances",
+        entityInstancesUuid
+      );
+      const entityInstances: EntityInstanceCollection = {
+        parentUuid: entityUuid,
+        applicationSection: this.applicationSection,
+        instances: entityInstancesUuid.map((e) =>
+          JSON.parse(fs.readFileSync(path.join(entityInstancesPath, e)).toString())
+        ),
+      };
+      log.debug(
+        this.logHeader,
+        "FileSystemInstanceStore getInstances",
+        "entityUuid",
+        entityUuid,
+        "directory",
+        this.directory,
+        "found entity instances",
+        entityInstances
+      );
+      return Promise.resolve({
+        status: "ok",
+        returnedDomainElement: {
+          elementType: "entityInstanceCollection",
+          elementValue: entityInstances
+        }
+      });
     }
     // #########################################################################################
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<any> {

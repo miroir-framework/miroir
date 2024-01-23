@@ -5,7 +5,9 @@ import {
   StoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType,
+  ApplicationSection
 } from "miroir-core";
 
 import { MixedFileSystemDbEntityAndInstanceStoreSection } from "./FileSystemEntityStoreSectionMixin.js";
@@ -22,11 +24,13 @@ export class FileSystemModelStoreSection extends MixedFileSystemDbEntityAndInsta
 
   // #############################################################################################
   constructor(
+    applicationSection: ApplicationSection,
     filesystemStoreName: string,
     directory: string,
     dataStore: StoreDataSectionInterface,
   ) {
     super(
+      applicationSection,
       filesystemStoreName,
       directory,
       'FileSystemModelStoreSection ' + filesystemStoreName, // logheader
@@ -42,10 +46,16 @@ export class FileSystemModelStoreSection extends MixedFileSystemDbEntityAndInsta
 
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader, 'getState getting instances for',parentUuid);
-      const instances = await this.getInstances(parentUuid);
+      const instances: ActionReturnType = await this.getInstances(parentUuid);
       // log.info(this.logHeader, 'getState found instances',parentUuid,instances);
-
-      Object.assign(result,{[parentUuid]:instances});
+      // TODO: proper treatment of errors!
+      if (instances.status != "ok") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else {
+        Object.assign(result,{[parentUuid]:instances.returnedDomainElement.elementValue});
+      }
     }
     return Promise.resolve(result);
   }

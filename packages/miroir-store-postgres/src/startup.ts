@@ -33,7 +33,7 @@ export function miroirPostgresStoreSectionStartup() {
       if (config.emulatedServerType == "sql") {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
+        return Promise.resolve(new SqlDbAdminStore("data", sqlDbStoreName, config.connectionString, config.schema)) // TODO: fix application section, should be admin?
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
@@ -53,7 +53,7 @@ export function miroirPostgresStoreSectionStartup() {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql" && dataStore
-            ? new SqlDbModelStoreSection(sqlDbStoreName, config.connectionString, config.schema, dataStore)
+            ? new SqlDbModelStoreSection("model", sqlDbStoreName, config.connectionString, config.schema, dataStore)
             : new ErrorModelStore()
         )
       } else {
@@ -75,7 +75,7 @@ export function miroirPostgresStoreSectionStartup() {
         const sqlDbStoreName: string = config.connectionString + ":" + config.schema
         return Promise.resolve(
           config.emulatedServerType == "sql"
-            ? new SqlDbDataStoreSection(sqlDbStoreName, config.connectionString, config.schema)
+            ? new SqlDbDataStoreSection("data", sqlDbStoreName, config.connectionString, config.schema)
             : new ErrorDataStore()
         );
       } else {

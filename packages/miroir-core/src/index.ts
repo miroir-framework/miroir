@@ -26,6 +26,8 @@ export {
   entityInstancesUuidIndex,
   EntityInstanceCollection,
   entityInstanceCollection,
+  DomainElementType,
+  domainElementType,
   InstanceCUDAction,
   LocalCacheAction,
   MiroirAction,

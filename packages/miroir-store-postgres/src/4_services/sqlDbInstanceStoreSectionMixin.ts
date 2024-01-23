@@ -19,6 +19,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     // ##############################################################################################
     constructor(
       // actual arguments are:
+      // public applicationSection: ApplicationSection,
       // public sqlDbStoreName: string,
       // public dataConnectionString:string,
       // public dataSchema:string,
@@ -47,7 +48,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async getInstances(parentUuid: string): Promise<EntityInstance[]> {
+    // async getInstances(parentUuid: string): Promise<EntityInstance[]> {
+    async getInstances(parentUuid: string): Promise<ActionReturnType> {
       let rawResult: any[] = [];
       let cleanResult: EntityInstance[] = [];
       if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid] && this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel) {
@@ -59,11 +61,20 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           consoleLog('getInstances result', cleanResult);
         } catch (e) {
           console.warn(this.logHeader, 'getInstances', 'failed to fetch instances of entityUuid',parentUuid);
+          return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: `could not get instances for entity ${parentUuid}`}}
         }
       } else {
         console.warn(this.logHeader, 'getInstances', 'could not find entity in database: entityUuid',parentUuid);
+        return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: `could not find entity ${parentUuid}`}}
       }
-      return Promise.resolve(cleanResult);
+      // TODO: CORRECT APPLICATION SECTION
+      return Promise.resolve({
+        status: "ok",
+        returnedDomainElement: {
+          elementType: "entityInstanceCollection",
+          elementValue: { parentUuid, applicationSection: this.applicationSection, instances: cleanResult },
+        },
+      });
     }
 
     // ##############################################################################################

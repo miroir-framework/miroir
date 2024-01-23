@@ -5,7 +5,7 @@
     "miroirServerConfig": {
       "admin": {
         "emulatedServerType": "indexedDb",
-        "indexedDbName":"indexedDb-miroir"
+        "indexedDbName":"indexedDb-admin"
       },
       "model": {
         "emulatedServerType": "indexedDb",
@@ -19,7 +19,7 @@
     "appServerConfig": {
       "admin": {
         "emulatedServerType": "indexedDb",
-        "indexedDbName":"indexedDb-app"
+        "indexedDbName":"indexedDb-admin"
       },
       "model": {
         "emulatedServerType": "indexedDb",

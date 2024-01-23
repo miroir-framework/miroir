@@ -5,7 +5,9 @@ import {
   StoreModelSectionInterface,
   LoggerInterface,
   MiroirLoggerFactory,
-  getLoggerName
+  getLoggerName,
+  ActionReturnType,
+  ApplicationSection
 } from "miroir-core";
 import { MixedSqlDbEntityAndInstanceStoreSection } from "./sqlDbEntityStoreSectionMixin.js";
 
@@ -22,12 +24,14 @@ export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSect
 
   // ##############################################################################################
   constructor(
+    applicationSection: ApplicationSection,
     sqlDbStoreName: string, // used only for debugging purposes
     connectionString:string,
     schema:string,
     sqlDbDataStore: StoreDataSectionInterface,
   ) {
     super(
+      applicationSection,
       sqlDbStoreName,
       connectionString,
       schema,
@@ -44,9 +48,18 @@ export class SqlDbModelStoreSection extends MixedSqlDbEntityAndInstanceStoreSect
     
     for (const parentUuid of this.getEntityUuids()) {
       log.debug(this.logHeader,'getState getting instances for',parentUuid);
-      const dbInstances = await this.getInstances(parentUuid);
-      const instances:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:dbInstances};
+      const instances:ActionReturnType = await this.getInstances(parentUuid);
       // log.info(this.logHeader,'getState found instances',parentUuid,instances);
+            // TODO: proper treatment of errors!
+      if (instances.status != "ok") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else if (instances.returnedDomainElement?.elementType != "entityInstanceCollection") {
+        Object.assign(result,{[parentUuid]:{parentUuid, instances: []}});
+      } else {
+        // const instanceCollection:EntityInstanceCollection = {parentUuid:parentUuid, applicationSection:'data',instances:instances.returnedDomainElement.elementValue};
+
+        Object.assign(result,{[parentUuid]:instances});
+      }
       
       Object.assign(result,{[parentUuid]:instances});
     }

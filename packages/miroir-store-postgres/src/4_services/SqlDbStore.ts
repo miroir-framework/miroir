@@ -1,4 +1,4 @@
-import { AbstractStoreInterface, ActionReturnType, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
+import { AbstractStoreInterface, ActionReturnType, ApplicationSection, LoggerInterface, MiroirLoggerFactory, getLoggerName } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { SqlUuidEntityDefinition } from "../utils";
 import { packageName } from "../constants";
@@ -17,6 +17,7 @@ export class SqlDbStore implements AbstractStoreInterface {
   // ##############################################################################################
   constructor(
     // actual arguments are:
+    public applicationSection: ApplicationSection,
     public sqlDbStoreName: string, // used only for debugging purposes
     public connectionString:string,
     public schema:string,

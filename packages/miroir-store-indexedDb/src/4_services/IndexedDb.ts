@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
+import { ApplicationSection, LoggerInterface, MiroirLoggerFactory, entityDefinitionEntityDefinition, getLoggerName } from "miroir-core";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -16,17 +16,20 @@ export class IndexedDb {
   private logHeader: string;
 
   // #############################################################################################
-  constructor(private databaseName: string) {
+  constructor(
+    public applicationSection: ApplicationSection,
+    private databaseName: string
+  ) {
     this.logHeader = 'IndexedDb ' + databaseName;
   }
 
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     if (this.db?.status =='open' ) {
-      log.info(this.logHeader,'closeObjectStore closing db...', this.db?.status);
+      log.info(this.logHeader,'closeObjectStore closing db',this.databaseName, this.applicationSection, '...', this.db?.status);
       await this.db?.close();
     } else {
-      log.info(this.logHeader, 'closeObjectStore db already closed...', this.db?.status);
+      log.info(this.logHeader, 'closeObjectStore db already closed',this.databaseName, this.applicationSection,'...', this.db?.status);
     }
     // log.info('IndexedDb closeObjectStore db closed!');
     this.db = undefined;
@@ -36,12 +39,28 @@ export class IndexedDb {
 
   // #############################################################################################
   public async openObjectStore():Promise<void> {
-    log.info(this.logHeader, 'openObjectStore');
-    if(this.db !== undefined) {
-      await this.db?.open();
-    } else {
-      this.db = new Level<string, any>(this.databaseName, {valueEncoding: 'json'})
+    try {
+      log.info('openObjectStore called for', this.databaseName);
+      if(this.db !== undefined) {
+        if (this.db.status == "closed" || this.db.status == "closing") {
+          await this.db?.open();
+          log.info(this.logHeader, 'openObjectStore opened exitsting db', this.databaseName)
+        } else {
+          log.info(this.logHeader, 'openObjectStore existing db already opened', this.databaseName)
+        }
+      } else {
+        // TODO: allow to set path in config!???
+        this.db = new Level<string, any>("tests/tmp/" + this.databaseName, {valueEncoding: 'json', })
+        await this.db?.open();
+        log.info('openObjectStore created and opened db',this.databaseName);
+      }
+      log.info('openObjectStore done for', this.databaseName);
+    } catch (error) {
+      log.error('openObjectStore could not open', this.databaseName);
     }
+    // if (this.db.status != "open") {
+    //   throw new Error("openObjectStore could not open db" + this.databaseName + "!");
+    // }
     return Promise.resolve(undefined);
   }
 
@@ -53,11 +72,16 @@ export class IndexedDb {
   }
 
   // #############################################################################
+  // NOT USED!?
   public async createObjectStore(tableNames: string[]):Promise<void> {
     try {
       if(this.db !== undefined) {
-        await this.db.open();
-        log.info(this.logHeader, 'createObjectStore opened db')
+        if (this.db.status == "closed" || this.db.status == "closing") {
+          await this.db.open();
+          log.info(this.logHeader, 'createObjectStore opened db')
+        } else {
+          log.info(this.logHeader, 'createObjectStore db already opened')
+        }
         this.subLevels = this.createSubLevels(this.db,tableNames);
         return Promise.resolve(undefined);
       } else {
@@ -152,7 +176,10 @@ export class IndexedDb {
   // #############################################################################################
   public async getAllValue(parentUuid: string):Promise<any[]> {
     const store = this.subLevels.get(parentUuid);
-    const result =  store?(await store.values({valueEncoding: 'json'}).all()):[];
+    if (!store) {
+      throw new Error(`Entity ${parentUuid} does not exist!`);
+    }
+    const result =  await store.values({valueEncoding: 'json'}).all();
     log.trace(this.logHeader, 'getAllValue', parentUuid, "result", JSON.stringify(result));
     return Promise.resolve(result);
   }

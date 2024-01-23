@@ -1,5 +1,5 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { MiroirAction, ApplicationSection, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MiroirAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
 import { actionRunner, modelActionRunner, modelOLDActionRunner } from "../3_controllers/ActionRunner";
@@ -14,7 +14,7 @@ import { cleanLevel } from "./constants";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RestTools");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -69,8 +69,8 @@ export async function restMethodGetHandler
     deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   log.info(
-    "restMethodGetHandler get miroirWithDeployment/ using application",
-    (targetStoreController as any)["applicationName"],
+    "restMethodGetHandler get miroirWithDeployment/ using",
+    // (targetStoreController as any)["applicationName"],
     "deployment",
     deploymentUuid,
     "applicationDeploymentLibrary.uuid",
@@ -84,9 +84,16 @@ export async function restMethodGetHandler
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
         const getInstancesFunction = targetStoreController.getInstances.bind(targetStoreController);
-        const results = await getInstancesFunction(section, parentUuid)
-        log.info("restMethodGetHandler found results", results)
-        return wrapResults(results);
+        const results: ActionReturnType = await getInstancesFunction(section, parentUuid)
+        if (results.status != "ok") {
+          throw new Error("restMethodGetHandler could not get instances for parentUuid: " + parentUuid + " error " + JSON.stringify(results.error));
+        }
+        if (results.returnedDomainElement?.elementType != "entityInstanceCollection") {
+          throw new Error("restMethodGetHandler wrong returnType for instances of parentUuid: " + parentUuid + "returned" + results.returnedDomainElement);
+        }
+        
+        log.info("restMethodGetHandler found results", results.returnedDomainElement.elementValue.instances)
+        return wrapResults(results.returnedDomainElement.elementValue.instances);
       },
       continuationFunction(response)
     );
@@ -152,10 +159,15 @@ export async function restMethodsPostPutDeleteHandler(
     ["section"],
     body?.crudInstances ?? [],
     ["post", "put"].includes(method)
-      ? async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> =>
-          wrapResults(await targetDataStore.upsertInstance.bind(targetDataStore)(section, parentUuid))
-      : async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> =>
-          wrapResults(await targetDataStore.deleteInstance.bind(targetDataStore)(section, parentUuid)),
+      ? async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+        const boundToCall = targetDataStore.upsertInstance.bind(targetDataStore);
+        await boundToCall(section, parentUuid);
+        return wrapResults([]);
+      }
+      : async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+        const boundToCall = targetDataStore.deleteInstance.bind(targetDataStore)
+        return wrapResults(await boundToCall(section, parentUuid));
+      },
     continuationFunction(response)
   );
 }

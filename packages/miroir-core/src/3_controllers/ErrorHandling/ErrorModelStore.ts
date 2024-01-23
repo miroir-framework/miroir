@@ -54,7 +54,8 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
-  getInstances(parentUuid: string): Promise<EntityInstance[]> {
+  // getInstances(parentUuid: string): Promise<EntityInstance[]> {
+  getInstances(parentUuid: string): Promise<ActionReturnType> {
     throw new Error("Method not implemented.");
   }
   upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {

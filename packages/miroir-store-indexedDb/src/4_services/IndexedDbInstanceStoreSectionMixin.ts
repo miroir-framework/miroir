@@ -51,23 +51,34 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async getInstances(parentUuid: string): Promise<any> {
-      const result = await this.localUuidIndexedDb.getAllValue(parentUuid);
-      return Promise.resolve(result);
+    async getInstances(parentUuid: string): Promise<ActionReturnType> {
+      try {
+        const result: EntityInstance[] = await this.localUuidIndexedDb.getAllValue(parentUuid);
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            elementType: "entityInstanceCollection",
+            elementValue: { parentUuid, applicationSection: this.localUuidIndexedDb.applicationSection, instances: result },
+          },
+        });
+      } catch (error) {
+        return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: error}}
+      }
     }
 
     // #############################################################################################
     async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
-      log.info(this.logHeader, "upsertInstance", instance.parentUuid, instance);
+      log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
         await this.localUuidIndexedDb.putValue(instance.parentUuid, instance);
-        const tmp = await this.getInstances(instance.parentUuid);
-        log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing", tmp);
+        log.info(this.logHeader, "upsertInstance", instance.parentUuid, "done");
+        // const tmp = await this.getInstances(instance.parentUuid);
+        // log.debug(this.logHeader, "upsertInstance", instance.parentUuid, "found existing", tmp);
       } else {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
       }
-      return Promise.resolve();
+      // return Promise.resolve(undefined);
     }
 
     // #############################################################################################

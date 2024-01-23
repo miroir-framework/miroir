@@ -14,7 +14,7 @@ import {
 } from "miroir-core";
 import { IndexedDbDataStoreSection } from "./4_services/IndexedDbDataStoreSection.js";
 import { IndexedDbModelStoreSection } from "./4_services/IndexedDbModelStoreSection.js";
-import { IndexedDb } from "./4_services/IndexedDbSnakeCase.js";
+import { IndexedDb } from "./4_services/IndexedDb.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
@@ -32,7 +32,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       if (config.emulatedServerType == "indexedDb") {
         const indexedDbStoreName: string = config.indexedDbName + '-model'
         // return Promise.resolve(new SqlDbAdminStore(sqlDbStoreName, config.connectionString, config.schema))
-        return Promise.resolve(new IndexedDbAdminStore(indexedDbStoreName, new IndexedDb(indexedDbStoreName)))
+        return Promise.resolve(new IndexedDbAdminStore(indexedDbStoreName, new IndexedDb("data",indexedDbStoreName))) // TODO: add "admin" ApplicationSection?
       } else {
         return Promise.resolve(new ErrorAdminStore())
       }
@@ -50,7 +50,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
         const indexedDbStoreName = config.indexedDbName + '-model'
-        const db = new IndexedDbModelStoreSection(indexedDbStoreName, new IndexedDb(indexedDbStoreName), dataStore)
+        const db = new IndexedDbModelStoreSection(indexedDbStoreName, new IndexedDb("model", indexedDbStoreName), dataStore)
         // db.open()
         return Promise.resolve(db);
       } else {
@@ -70,7 +70,7 @@ export function miroirIndexedDbStoreSectionStartup() {
       if (config.emulatedServerType == "indexedDb") {
         log.info('called registerStoreSectionFactory function for', section, config);
         const indexedDbStoreName = config.indexedDbName + '-data'
-        const db = new IndexedDbDataStoreSection(indexedDbStoreName, new IndexedDb(indexedDbStoreName))
+        const db = new IndexedDbDataStoreSection(indexedDbStoreName, new IndexedDb("data", indexedDbStoreName))
         return Promise.resolve(db);
       } else {
         log.warn('called registerStoreSectionFactory data for', section, config, "returns ErrorDataStore!");

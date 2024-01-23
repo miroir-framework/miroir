@@ -37,12 +37,14 @@ export class FileSystemStoreSection extends FileSystemStore implements AbstractS
 
   // ##############################################################################################
   constructor(
+    // public applicationSection: ApplicationSection,
     // public filesystemStoreName: string,
     // private directory: string,
     // public logHeader: string;
     ...args:any[] // mixin constructors are limited to args:any[] parameters
   ) {
-    super(args[0], args[1], args[2])
+    // super(args[0], args[1], args[2], args[3]);
+    super(args[0], args[1], args[2], args[3]);
     // this.filesystemStoreName = args[0];
     // this.directory = args[1];
     // this.logHeader = args[2];

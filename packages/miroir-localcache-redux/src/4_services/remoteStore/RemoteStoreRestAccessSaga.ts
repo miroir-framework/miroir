@@ -101,7 +101,7 @@ export class RemoteStoreRestAccessReduxSaga {
       ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, section, action } = p.payload;
         try {
-          log.info("handleRemoteStoreRestCRUDAction param",p);
+          log.info("handleRemoteStoreRestCRUDAction called, param",p);
           const clientResult : RestClientCallReturnType
             = yield* call(
               () => 
@@ -115,7 +115,11 @@ export class RemoteStoreRestAccessReduxSaga {
           log.debug("handleRemoteStoreRestCRUDAction received clientResult",clientResult);
           const result:RemoteStoreActionReturnType = {
             status: "ok",
-            instanceCollection: clientResult.data.instances,
+            instanceCollection: {
+              parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+              applicationSection: section,
+              instances: clientResult.data.instances
+            },
           };
 
           // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received result", result);

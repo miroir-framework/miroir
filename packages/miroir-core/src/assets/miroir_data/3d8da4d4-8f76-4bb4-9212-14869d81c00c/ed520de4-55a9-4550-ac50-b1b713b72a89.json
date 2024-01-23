@@ -83,6 +83,38 @@
         "actionErrors": {
           "type":"literal", "definition": "FailedToGetInstance"
         }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"instanceAction"},
+            "actionName": {"type": "literal", "definition":"getInstances"},
+            "endpoint": {"type": "literal", "definition":"ed520de4-55a9-4550-ac50-b1b713b72a89"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            },
+            "applicationSection": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationSection"
+              }
+            },
+            "parentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToGetInstances"
+        }
       }
     ]
   }
