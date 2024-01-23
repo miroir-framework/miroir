@@ -10,12 +10,13 @@ import {
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeSectionFactory } from "./StoreController";
 
-import { ActionReturnType, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, ActionVoidReturnType, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
 import { cleanLevel } from "./constants";
+import { ACTION_OK } from "../1_core/constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -96,7 +97,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     newDeploymentUuid: Uuid,
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     await adminStoreController.deleteStore(storeUnitConfiguration.admin);
     await adminStoreController.createStore(storeUnitConfiguration.admin);
     await this.addStoreController(
@@ -128,6 +129,6 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
       // throw new Error("deployModule could not find storeController for " + newDeploymentUuid);
       return { status: "error", error: { errorType: "FailedToDeployModule" } }
     }
-    return { status: "ok"}
+    return ACTION_OK
   }
 }

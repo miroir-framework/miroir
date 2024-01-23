@@ -10,7 +10,9 @@ import {
   getLoggerName,
   ActionReturnType,
   ActionEntityInstanceCollectionReturnType,
-  ActionEntityInstanceReturnType
+  ActionEntityInstanceReturnType,
+  ActionVoidReturnType,
+  ACTION_OK
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -135,24 +137,24 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
       });
     }
     // #########################################################################################
-    upsertInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
+    upsertInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
       fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2));
 
-      return Promise.resolve(undefined);
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    deleteInstance(entityUuid: string, instance: EntityInstance): Promise<any> {
+    deleteInstance(entityUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
       if (fs.existsSync(filePath)) {
         fs.rmSync(filePath);
@@ -166,7 +168,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
           instance
         );
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
   };
 }

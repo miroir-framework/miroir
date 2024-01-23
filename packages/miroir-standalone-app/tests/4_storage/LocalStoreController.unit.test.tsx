@@ -5,6 +5,7 @@ import { describe, expect } from 'vitest';
 import {
   ACTION_OK,
   ActionReturnType,
+  ActionVoidReturnType,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
@@ -548,8 +549,8 @@ describe.sequential("localStoreController.unit.test", () => {
     )
 
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-    // expect(instanceAdded, "failed to add Author instance").toEqual(ACTION_OK)
-    expect(instanceAdded.uuid, "failed to add Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
+    expect(instanceAdded, "failed to add Author instance").toEqual(ACTION_OK)
+    // expect(instanceAdded.uuid, "failed to add Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
 
     // .then((v) =>
     //   chainTestSteps(
@@ -590,7 +591,8 @@ describe.sequential("localStoreController.unit.test", () => {
     // test
     const instanceUpdated = await localAppStoreController?.upsertInstance('data', {...author1, "name": author1.name + "ssss"} as EntityInstance);
     // check that upsert succeeded
-    expect(instanceUpdated.uuid, "failed to update Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
+    expect(instanceUpdated, "failed to add Author instance").toEqual(ACTION_OK)
+    // expect(instanceUpdated.uuid, "failed to update Author instance").toEqual("4441169e-0c22-4fbc-81b2-28c87cf48ab2")
 
     await chainTestSteps(
       "actualTest_getInstancesAndCheckResult",
@@ -620,10 +622,10 @@ describe.sequential("localStoreController.unit.test", () => {
 
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
-    // expect(instanceAdded, "failed to setup test case").toEqual(ACTION_OK)
+    expect(instanceAdded, "failed to setup test case").toEqual(ACTION_OK)
 
     // test
-    const instanceDeleted = await localAppStoreController?.deleteInstances('data', [author1]);
+    const instanceDeleted: ActionVoidReturnType = await localAppStoreController?.deleteInstances('data', [author1]);
     // // expect(instanceDeleted, "failed to setup test case").toEqual(ACTION_OK)
     // const rawResult = await localAppStoreController.getInstances("data",entityAuthor.uuid);
     // const testResult = ignorePostgresExtraAttributes(rawResult?.instances??[])

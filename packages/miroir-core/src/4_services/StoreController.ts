@@ -6,6 +6,7 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
+  ActionVoidReturnType,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -407,7 +408,7 @@ export class StoreController implements StoreControllerInterface {
   }
   
   // ##############################################################################################
-  async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
+  async upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
     log.info(this.logHeader,'upsertInstance','section',section,'instance',instance,'model entities',this.getModelEntities(),'data entities',this.getEntityUuids());
     
     if (section == 'data') {
@@ -422,21 +423,21 @@ export class StoreController implements StoreControllerInterface {
     // } catch (e){
     //   throw new Error("UpsertInstance insert failed" + e);
     // }
-    return Promise.resolve(instance);
+    return Promise.resolve({ status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
   }
 
   // ##############################################################################################
-  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>{
+  async deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>{
     if (section == 'data') {
       await this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
     } else {
       await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
     }
-    return Promise.resolve(instance);
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>{
+  async deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>{
     for (const instance of instances) {
       if (section == 'data') {
         await this.dataStoreSection.deleteInstance(instance.parentUuid,instance);
@@ -444,7 +445,7 @@ export class StoreController implements StoreControllerInterface {
         await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
       }
     }
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################

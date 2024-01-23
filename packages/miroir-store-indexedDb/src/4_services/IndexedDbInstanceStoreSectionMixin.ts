@@ -1,8 +1,10 @@
 import {
+  ACTION_OK,
   AbstractInstanceStoreSectionInterface,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
+  ActionVoidReturnType,
   EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -69,7 +71,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    async upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "upsertInstance called", instance.parentUuid, instance);
 
       if (this.localUuidIndexedDb.hasSubLevel(instance.parentUuid)) {
@@ -80,27 +82,27 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       } else {
         log.error(this.logHeader, "upsertInstance", instance.parentUuid, "does not exists.");
       }
-      // return Promise.resolve(undefined);
+      return Promise.resolve( { status: "ok", returnedDomainElement: { elementType: "void", elementValue: undefined } } );
     }
 
     // #############################################################################################
-    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+    async deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "deleteInstances", parentUuid, instances);
       for (const o of instances) {
         // await this.localUuidIndexedDb.deleteValue(parentUuid, o.uuid);
         await this.deleteInstance(parentUuid, { uuid: o.uuid } as EntityInstance);
       }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
 
     // #############################################################################################
-    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+    async deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
       // for (const o of instances) {
       log.debug(this.logHeader, "deleteInstance started.", "entity", parentUuid, "instance", instance);
       await this.localUuidIndexedDb.deleteValue(parentUuid, instance.uuid);
       log.debug(this.logHeader, "deleteInstance done.", parentUuid, instance);
       // }
-      return Promise.resolve();
+      return Promise.resolve(ACTION_OK);
     }
   };
 }

@@ -8,6 +8,7 @@ import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
+  ActionVoidReturnType,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -69,9 +70,9 @@ export interface AbstractInstanceStoreSectionInterface {
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   // getInstances(parentUuid: string): Promise<EntityInstance[]>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
-  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
-  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<any>;
-  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<any>;
+  upsertInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
+  deleteInstances(parentUuid:string, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
+  deleteInstance(parentUuid:string, instance:EntityInstance):Promise<ActionVoidReturnType>;
 }
 
 // ###########################################################################################
@@ -164,9 +165,9 @@ export interface StoreControllerInterface extends AdminStoreInterface, AbstractS
   getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<ActionReturnType>;
   // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   getInstances(section: ApplicationSection, parentUuid:string):Promise<ActionEntityInstanceCollectionReturnType>;
-  upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
-  deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<any>;
-  deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<any>;
+  upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>;
+  deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>;
+  deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
 
   // handleAction(storeAction: StoreAction): Promise<any>;
 

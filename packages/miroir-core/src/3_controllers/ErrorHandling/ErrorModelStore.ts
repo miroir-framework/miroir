@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { StoreModelSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
@@ -57,13 +57,13 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {
     throw new Error("Method not implemented.");
   }
-  upsertInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  upsertInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<any> {
+  deleteInstances(parentUuid: string, instances: EntityInstance[]): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  deleteInstance(parentUuid: string, instance: EntityInstance): Promise<any> {
+  deleteInstance(parentUuid: string, instance: EntityInstance): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
 }
