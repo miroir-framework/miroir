@@ -3,6 +3,10 @@
 export {
   ActionError,
   actionError,
+  ActionEntityInstanceReturnType,
+  actionEntityInstanceReturnType,
+  ActionEntityInstanceSuccess,
+  actionEntityInstanceSuccess,
   ActionEntityInstanceCollectionReturnType,
   actionEntityInstanceCollectionReturnType,
   ActionEntityInstanceCollectionSuccess,

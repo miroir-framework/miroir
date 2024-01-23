@@ -13,7 +13,8 @@ import {
   getLoggerName,
   ActionReturnType,
   ACTION_OK,
-  ActionEntityInstanceCollectionReturnType
+  ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -123,10 +124,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         update.equivalentModelCUDUpdates[0].objects[1].instances[0]
       ) {
         const cudUpdate = update.equivalentModelCUDUpdates[0];
-        const currentValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
+        const currentValue: ActionEntityInstanceReturnType = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
         log.info(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
-        const updatedValue = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
+        const updatedValue: ActionEntityInstanceReturnType = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
         // TODO: update EntityDefinition, too!
         log.debug(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
         await this.dataStore.renameStorageSpaceForInstancesOfEntity(

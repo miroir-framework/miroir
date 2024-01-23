@@ -9,7 +9,8 @@ import {
   MiroirLoggerFactory,
   getLoggerName,
   ActionReturnType,
-  ActionEntityInstanceCollectionReturnType
+  ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -48,7 +49,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     }
 
     // #############################################################################################
-    getInstance(entityUuid: string, uuid: string): Promise<ActionReturnType> {
+    getInstance(entityUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       const entityInstancePath = path.join(this.directory, entityUuid, fullName(uuid));
       try {
         const fileContents = fs.readFileSync(entityInstancePath).toString();

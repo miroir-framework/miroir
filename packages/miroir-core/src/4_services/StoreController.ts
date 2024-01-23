@@ -4,6 +4,7 @@ import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
   ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType,
   ActionReturnType,
   ApplicationSection,
   Entity,
@@ -352,11 +353,11 @@ export class StoreController implements StoreControllerInterface {
   
   // #############################################################################################
   // async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<EntityInstance | undefined> {
-  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<ActionReturnType> {
+  async getInstance(section: ApplicationSection, entityUuid: string, uuid: Uuid): Promise<ActionEntityInstanceReturnType> {
     log.info(this.logHeader,'getInstance','section',section,'entity',entityUuid, "uuid", uuid);
     
     // let result: EntityInstance | undefined;
-    let result: ActionReturnType;
+    let result: ActionEntityInstanceReturnType;
     if (section == 'data') {
       result = await this.dataStoreSection.getInstance(entityUuid,uuid);
     } else {
@@ -416,7 +417,7 @@ export class StoreController implements StoreControllerInterface {
     }
 
     // try {
-    //   const foundInstance = await this.getInstance(section, instance.parentUuid, instance.uuid)
+    //   const foundInstance:ActionEntityInstanceReturnType = await this.getInstance(section, instance.parentUuid, instance.uuid)
     //   log.info(this.logHeader,'upsertInstance succeeded!','section',section,'instance',instance,"found", foundInstance);
     // } catch (e){
     //   throw new Error("UpsertInstance insert failed" + e);

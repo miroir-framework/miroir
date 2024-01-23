@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { StoreDataSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
 export class ErrorDataStore implements StoreDataSectionInterface {
@@ -37,7 +37,7 @@ export class ErrorDataStore implements StoreDataSectionInterface {
   getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
     throw new Error("Method not implemented.");
   }
-  getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
+  getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
     throw new Error("Method not implemented.");
   }
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType> {

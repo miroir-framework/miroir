@@ -1,6 +1,7 @@
 import {
   AbstractInstanceStoreSectionInterface,
   ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType,
   ActionReturnType,
   EntityInstance,
   LoggerInterface,
@@ -33,7 +34,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     }
 
     // #############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
+    async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       try {
         const result = await this.localUuidIndexedDb.getValue(parentUuid, uuid);
         return Promise.resolve({

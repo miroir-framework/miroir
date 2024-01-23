@@ -6,6 +6,7 @@ import { Application } from '../1_core/Application.js';
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 import {
   ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType,
   ActionReturnType,
   ApplicationSection,
   Entity,
@@ -65,7 +66,7 @@ export interface StorageSpaceHandlerInterface {
 
 // ###########################################################################################
 export interface AbstractInstanceStoreSectionInterface {
-  getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType>;
+  getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType>;
   // getInstances(parentUuid: string): Promise<EntityInstance[]>;
   getInstances(parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(parentUuid:string, instance:EntityInstance):Promise<any>;

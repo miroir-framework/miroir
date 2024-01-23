@@ -1,4 +1,4 @@
-import { EntityInstance, AbstractInstanceStoreSectionInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName, ActionReturnType, ActionEntityInstanceCollectionReturnType } from "miroir-core"
+import { EntityInstance, AbstractInstanceStoreSectionInterface, LoggerInterface, MiroirLoggerFactory, getLoggerName, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType } from "miroir-core"
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection.js"
 
 import { packageName } from "../constants.js";
@@ -30,7 +30,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // ##############################################################################################
-    async getInstance(parentUuid: string, uuid: string): Promise<ActionReturnType> {
+    async getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {
       try {
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[parentUuid]) {
           const result:EntityInstance = (await this.sqlSchemaTableAccess[parentUuid].sequelizeModel.findByPk(uuid))?.dataValues;

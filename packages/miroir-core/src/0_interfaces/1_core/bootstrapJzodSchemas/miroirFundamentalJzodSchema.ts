@@ -495,6 +495,23 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
+      "domainElementEntityInstance": {
+        "type": "object",
+        "definition": {
+          "elementType": {
+            "type": "literal",
+            "definition": "instance"
+          },
+          "elementValue": 
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityInstance"
+            }
+          }
+        }
+      },
       "domainElementEntityInstanceCollection": {
         "type": "object",
         "definition": {
@@ -570,19 +587,10 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             }
           },
           {
-            "type": "object",
+            "type": "schemaReference",
             "definition": {
-              "elementType": {
-                "type": "literal",
-                "definition": "instance"
-              },
-              "elementValue": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "entityInstance"
-                }
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementEntityInstance"
             }
           },
           {
@@ -764,6 +772,24 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             }
           }
         }
+      },
+      "actionEntityInstanceSuccess": {
+        "type": "object",
+        "definition": {
+          "status": { "type": "literal", "definition": "ok" },
+          "returnedDomainElement": { "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "domainElementEntityInstance" } }
+        }
+      },
+      "actionEntityInstanceReturnType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionError" }
+          },
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "actionEntityInstanceSuccess" }
+          }
+        ]
       },
       "actionEntityInstanceCollectionSuccess": {
         "type": "object",
