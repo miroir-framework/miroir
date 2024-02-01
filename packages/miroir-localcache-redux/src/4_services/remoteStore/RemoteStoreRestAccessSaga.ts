@@ -19,7 +19,8 @@ import {
   RestClientCallReturnType,
   getLoggerName,
   stringTuple,
-  MiroirAction
+  MiroirAction,
+  ActionReturnType
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -91,14 +92,16 @@ export class RemoteStoreRestAccessReduxSaga {
   } = {
     handleRemoteStoreRestCRUDAction: {
       name: "handleRemoteStoreRestCRUDAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      creator: promiseActionFactory<ActionReturnType>().create<
         { deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction },
         "handleRemoteStoreRestCRUDAction"
       >("handleRemoteStoreRestCRUDAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction }>
-      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, section, action } = p.payload;
         try {
           log.info("handleRemoteStoreRestCRUDAction called, param",p);
@@ -113,13 +116,16 @@ export class RemoteStoreRestAccessReduxSaga {
             );
 
           log.debug("handleRemoteStoreRestCRUDAction received clientResult",clientResult);
-          const result:RemoteStoreActionReturnType = {
+          const result:ActionReturnType = {
             status: "ok",
-            instanceCollection: {
-              parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
-              applicationSection: section,
-              instances: clientResult.data.instances
-            },
+            returnedDomainElement: {
+              elementType: "entityInstanceCollection",
+              elementValue: {
+                parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+                applicationSection: section,
+                instances: clientResult.data.instances
+              }
+            }
           };
 
           // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received result", result);
@@ -127,24 +133,32 @@ export class RemoteStoreRestAccessReduxSaga {
         } catch (e: any) {
           log.error("handleRemoteStoreRestCRUDAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
-          return {
+          const result: ActionReturnType = {
             status: "error",
-            errorMessage: e["message"],
-            error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreActionReturnType;
+            error: {
+              errorType: "FailedToDeployModule",  // TODO: correct errorType!
+              errorMessage: e["message"],
+              error: { errorMessage: e["message"], stack: [e["message"]] },
+            }
+          };
+          return result
+          // } as ActionReturnType;
+          // } as RemoteStoreActionReturnType;
         }
       }.bind(this as RemoteStoreRestAccessReduxSaga),
     },
     handleRemoteStoreModelEntityAction: {
       name: "handleRemoteStoreModelEntityAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      creator: promiseActionFactory<ActionReturnType>().create<
         { deploymentUuid: string; action: ModelAction },
         "handleRemoteStoreModelEntityAction"
       >("handleRemoteStoreModelEntityAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; action: ModelAction }>
-      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
           log.info("handleRemoteStoreModelEntityAction on action",action);
@@ -154,8 +168,10 @@ export class RemoteStoreRestAccessReduxSaga {
           );
           log.debug("handleRemoteStoreModelEntityAction received clientResult", clientResult);
 
-          const result: RemoteStoreActionReturnType = {
+          // const result: RemoteStoreActionReturnType = {
+          const result: ActionReturnType = {
             status: "ok",
+            returnedDomainElement: { elementType: "void" }
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
@@ -164,17 +180,23 @@ export class RemoteStoreRestAccessReduxSaga {
         } catch (e: any) {
           log.error("handleRemoteStoreModelEntityAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
-          return {
+          const result: ActionReturnType = {
             status: "error",
-            errorMessage: e["message"],
-            error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreActionReturnType;
+            error: {
+              errorType: "FailedToDeployModule",  // TODO: correct errorType!
+              errorMessage: e["message"],
+              error: { errorMessage: e["message"], stack: [e["message"]] },
+            }
+          };
+          return result;
+          // } as RemoteStoreActionReturnType;
         }
       }.bind(this),
     },
     handleRemoteAction: {
       name: "handleRemoteAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      creator: promiseActionFactory<ActionReturnType>().create<
         { deploymentUuid: string; action: MiroirAction },
         "handleRemoteAction"
       >("handleRemoteAction"),
@@ -191,8 +213,9 @@ export class RemoteStoreRestAccessReduxSaga {
           );
           log.debug("handleRemoteAction received clientResult", clientResult);
 
-          const result: RemoteStoreActionReturnType = {
+          const result: ActionReturnType = {
             status: "ok",
+            returnedDomainElement: { elementType: "void" }
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
@@ -201,24 +224,30 @@ export class RemoteStoreRestAccessReduxSaga {
         } catch (e: any) {
           log.error("handleRemoteAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
-          return {
+          const result: ActionReturnType = {
             status: "error",
-            errorMessage: e["message"],
-            error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreActionReturnType;
+            error: {
+              errorType: "FailedToDeployModule",  // TODO: correct errorType!
+              errorMessage: e["message"],
+              error: { errorMessage: e["message"], stack: [e["message"]] },
+            }
+          };
+          return result;
         }
       }.bind(this),
     },
     handleRemoteStoreOLDModelAction: {
       name: "handleRemoteStoreOLDModelAction",
-      creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+      creator: promiseActionFactory<ActionReturnType>().create<
         { deploymentUuid: string; action: RemoteStoreOLDModelAction },
         "handleRemoteStoreOLDModelAction"
       >("handleRemoteStoreOLDModelAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreOLDModelAction }>
-      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+      ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
           log.info("handleRemoteStoreOLDModelAction on action",action);
@@ -228,8 +257,9 @@ export class RemoteStoreRestAccessReduxSaga {
           );
           log.debug("handleRemoteStoreOLDModelAction received clientResult", clientResult);
 
-          const result: RemoteStoreActionReturnType = {
+          const result: ActionReturnType = {
             status: "ok",
+            returnedDomainElement: { elementType: "void" }
             // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
 
@@ -238,11 +268,15 @@ export class RemoteStoreRestAccessReduxSaga {
         } catch (e: any) {
           log.error("handleRemoteStoreOLDModelAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });
-          return {
+          const result: ActionReturnType = {
             status: "error",
-            errorMessage: e["message"],
-            error: { errorMessage: e["message"], stack: [e["message"]] },
-          } as RemoteStoreActionReturnType;
+            error: {
+              errorType: "FailedToDeployModule",  // TODO: correct errorType!
+              errorMessage: e["message"],
+              error: { errorMessage: e["message"], stack: [e["message"]] },
+            }
+          };
+          return result;
         }
       }.bind(this),
     },

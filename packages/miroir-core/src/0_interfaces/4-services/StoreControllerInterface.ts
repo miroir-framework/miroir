@@ -93,12 +93,19 @@ export interface AbstractEntityStoreSectionInterface {
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-export interface StoreModelSectionInterface extends AbstractStoreSectionInterface, StorageSpaceHandlerInterface, AbstractInstanceStoreSectionInterface, AbstractEntityStoreSectionInterface {
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+export interface StoreModelSectionInterface
+  extends AbstractStoreSectionInterface,
+    StorageSpaceHandlerInterface,
+    AbstractInstanceStoreSectionInterface,
+    AbstractEntityStoreSectionInterface {
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 }
 
-export interface StoreDataSectionInterface extends AbstractStoreSectionInterface, StorageSpaceHandlerInterface, AbstractInstanceStoreSectionInterface {
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+export interface StoreDataSectionInterface
+  extends AbstractStoreSectionInterface,
+    StorageSpaceHandlerInterface,
+    AbstractInstanceStoreSectionInterface {
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 }
 
 

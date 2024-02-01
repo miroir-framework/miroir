@@ -35,7 +35,8 @@ import {
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
   startLocalStoreControllers,
-  StoreUnitConfiguration
+  StoreUnitConfiguration,
+  RemoteStoreInterface
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
@@ -163,7 +164,7 @@ export async function miroirBeforeAll(
 
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-      const remoteStore = domainController.getRemoteStore();
+      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
         actionType: "storeAction",
         actionName: "openStore",
@@ -357,7 +358,7 @@ export async function miroirAfterAll(
       throw new Error("miroirAfterAll could not close store controller: DomainController is undefined");
     } else {
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
-      const remoteStore = domainController.getRemoteStore();
+      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
       await remoteStore.handleRemoteAction("",{
         actionType: "storeAction",
         actionName: "closeStore",

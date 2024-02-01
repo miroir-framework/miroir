@@ -788,7 +788,15 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
                   ...instanceEndpointVersionV1.definition.actions.filter(e=>!!e.actionErrors).map(e =>e.actionErrors),
                 ]
               },
-              "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" }
+              "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" },
+              "error": { "type": "object", "optional": true, "definition": {
+                "errorMessage": { "type": "simpleType", "optional": true, "definition": "string" },
+                "stack": {
+                  "type": "array",
+                  "definition": { "type": "simpleType", "optional": true, "definition": "string" }
+                }
+              }
+             }
             }
           }
         }

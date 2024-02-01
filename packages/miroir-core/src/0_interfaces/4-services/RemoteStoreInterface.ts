@@ -7,6 +7,7 @@ import {
   StoreAction,
   MiroirAction,
   BundleAction,
+  ActionReturnType,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
@@ -134,18 +135,18 @@ export declare interface RemoteStoreInterface {
     deploymentUuid: string,
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
-  ): Promise<RemoteStoreActionReturnType>;
+  ): Promise<ActionReturnType>;
   handleRemoteStoreOLDModelAction(
     deploymentUuid: string,
     action: RemoteStoreOLDModelAction
-  ): Promise<RemoteStoreActionReturnType>;
+  ): Promise<ActionReturnType>;
   handleRemoteStoreModelEntityAction(
     deploymentUuid: string,
     action: ModelAction
-  ): Promise<RemoteStoreActionReturnType>;
+  ): Promise<ActionReturnType>;
   handleRemoteAction(
     deploymentUuid: string,
     action: MiroirAction
-  ): Promise<RemoteStoreActionReturnType>;
+  ): Promise<ActionReturnType>;
 }
 

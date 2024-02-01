@@ -144,13 +144,11 @@ afterEach(
 
 // describe.each([])(
 // describe.sequential(
-describe.sequential(
-  'DomainController.Data.CRUD',
+describe.sequential('DomainController.Data.CRUD',
   () => {
 
     // ###########################################################################################
-    it(
-      'Refresh all Instances',
+    it('Refresh all Instances',
       async() => {
         await refreshAllInstancesTest(
           miroirConfig,
@@ -165,8 +163,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Add Book instance then rollback',
+    it('Add Book instance then rollback',
       async () => {
         try {
           console.log('Add Book instance then rollback start');
@@ -360,8 +357,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Remove Book instance then rollback',
+    it('Remove Book instance then rollback',
       async () => {
 
         try {
@@ -550,8 +546,7 @@ describe.sequential(
     )
 
     // ###########################################################################################
-    it(
-      'Update Book instance then commit',
+    it('Update Book instance then commit',
       async () => {
         try {
           

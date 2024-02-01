@@ -42,6 +42,7 @@ import {
   LoggerInterface,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
+  RemoteStoreInterface,
   reportBookInstance,
 } from "miroir-core";
 
@@ -335,7 +336,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <span>
             <button
               onClick={async () => {
-                const remoteStore = domainController.getRemoteStore();
+                const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
                 if (!miroirConfig) {
                   throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                 }
@@ -414,7 +415,7 @@ export const RootComponent = (props: RootComponentProps) => {
             <button
               onClick={async () => {
                 log.info("creating bundle")
-                const remoteStore = domainController.getRemoteStore();
+                const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
                 await remoteStore.handleRemoteAction("",{
                   actionType: "bundleAction",
                   actionName: "createBundle",

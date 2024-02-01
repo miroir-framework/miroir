@@ -263,8 +263,8 @@ describe.sequential("localStoreController.unit.test", () => {
       async () => localMiroirStoreController.getInstance("model",entityEntity.uuid, entityReport.uuid),
       // (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]),
       (a) => (a as any).returnedDomainElement.elementValue.uuid,
-      // undefined, // result transformation function
-      undefined, // result name
+      // undefined, // transformation function to apply to result
+      undefined, // name to give to result
       "instance",
       "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
     );
@@ -279,7 +279,7 @@ describe.sequential("localStoreController.unit.test", () => {
       async () => localMiroirStoreController.getInstances("model",entityEntity.uuid),
       (a) => (a as any).returnedDomainElement.elementValue.instances.map((i: EntityInstance) => i["uuid"]).sort(),
       // (a) => (a as any).returnedDomainElement.elementValue.instances,
-      undefined, // result name
+      undefined, // name to give to result
       "entityInstanceCollection",
       [
         "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -305,8 +305,8 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.getInstances("model",entityEntity.uuid),
       // (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // result transformation
-      undefined, // result name
+      undefined, // expected result transformation
+      undefined, // name to give to result
       "entityInstanceCollection",
       {
         "applicationSection": "model",
@@ -325,9 +325,9 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
       undefined,
-      undefined, // result name
-      undefined, // result.elementType
-      undefined, // result.elementValue
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
 
     await chainTestSteps(
@@ -335,7 +335,7 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.getInstances("model",entityEntity.uuid),
       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // result name
+      undefined, // name to give to result
       "entityInstanceCollection",
       [entityAuthor]
     )
@@ -362,8 +362,8 @@ describe.sequential("localStoreController.unit.test", () => {
       { },
       async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
       (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
-      "entities", // result name
-      "entityInstanceCollection", // result.elementType
+      "entities", // name to give to result
+      "entityInstanceCollection", // expected result.elementType
       undefined, // test result.elementValue
     )
     .then (
@@ -372,9 +372,9 @@ describe.sequential("localStoreController.unit.test", () => {
         v,
         async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
         (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        "entityDefinitions", // result name
-        "entityInstanceCollection", // result.elementType
-        undefined, // result.elementValue
+        "entityDefinitions", // name to give to result
+        "entityInstanceCollection", // expected result.elementType
+        undefined, // expected result.elementValue
       )
     )
     .then(
@@ -388,9 +388,9 @@ describe.sequential("localStoreController.unit.test", () => {
             p.entities,
             p.entityDefinitions
           ),
-        "cudUpdate", // result name
-        undefined, // result.elementType
-        undefined, // result.elementValue
+        "cudUpdate", // name to give to result
+        undefined, // expected result.elementType
+        undefined, // expected result.elementValue
       )
     )
     .then((v) =>
@@ -409,8 +409,8 @@ describe.sequential("localStoreController.unit.test", () => {
             ],
           }),
         undefined,// (a,p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        undefined, // result name
-        undefined, // result type
+        undefined, // name to give to result
+        undefined, // expected result type
         undefined // to value to compare with
       )
     )
@@ -420,7 +420,7 @@ describe.sequential("localStoreController.unit.test", () => {
         v,
         async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
         (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-        undefined, // result name
+        undefined, // name to give to result
         "entityInstanceCollection",
         [
           {
@@ -456,9 +456,9 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
       undefined,
-      undefined, // result name
-      undefined, // result.elementType
-      undefined, // result.elementValue
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
     .then(
       (v) => chainTestSteps(
@@ -466,8 +466,8 @@ describe.sequential("localStoreController.unit.test", () => {
         v,
         async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
         (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
-        "entities", // result name
-        "entityInstanceCollection", // result.elementType
+        "entities", // name to give to result
+        "entityInstanceCollection", // expected result.elementType
         undefined, // test result.elementValue
       )
     )
@@ -477,9 +477,9 @@ describe.sequential("localStoreController.unit.test", () => {
         v,
         async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
         (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        "entityDefinitions", // result name
-        "entityInstanceCollection", // result.elementType
-        undefined, // result.elementValue
+        "entityDefinitions", // name to give to result
+        "entityInstanceCollection", // expected result.elementType
+        undefined, // expected result.elementValue
       )
     )
     .then(
@@ -493,9 +493,9 @@ describe.sequential("localStoreController.unit.test", () => {
             p.entities,
             p.entityDefinitions
           ),
-        "cudUpdate", // result name
-        undefined, // result.elementType
-        undefined, // result.elementValue
+        "cudUpdate", // name to give to result
+        undefined, // expected result.elementType
+        undefined, // expected result.elementValue
       )
     )
     .then((v) =>
@@ -513,9 +513,9 @@ describe.sequential("localStoreController.unit.test", () => {
               } as ModelCUDInstanceUpdate,
             ],
           }),
-        undefined, // result transformation function,
-        undefined, // result name
-        undefined, // result type
+        undefined, // transformation function to apply to result,
+        undefined, // name to give to result
+        undefined, // expected result type
         undefined // to value to compare with
       )
     )
@@ -525,7 +525,7 @@ describe.sequential("localStoreController.unit.test", () => {
         v,
         async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
         (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-        undefined, // result name
+        undefined, // name to give to result
         "entityInstanceCollection",
         []
       )
@@ -543,9 +543,9 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
       undefined,
-      undefined, // result name
-      undefined, // result.elementType
-      undefined, // result.elementValue
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
 
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
@@ -557,9 +557,9 @@ describe.sequential("localStoreController.unit.test", () => {
     //     "actionToBeTested",
     //     v,
     //     async () => localAppStoreController?.upsertInstance('data', author1 as EntityInstance),
-    //     undefined, // result transformation function,
-    //     undefined, // result name
-    //     undefined, // result type
+    //     undefined, // transformation function to apply to result,
+    //     undefined, // name to give to result
+    //     undefined, // expected result type
     //     undefined // to value to compare with
     //   )
     // )
@@ -569,7 +569,7 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // result name
+      undefined, // name to give to result
       "entityInstanceCollection",
       [author1]
     )
@@ -583,9 +583,9 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
       undefined,
-      undefined, // result name
-      undefined, // result.elementType
-      undefined, // result.elementValue
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
 
     // test
@@ -599,7 +599,7 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // result name
+      undefined, // name to give to result
       "entityInstanceCollection",
       [{...author1, "name": author1.name + "ssss"}]
     )
@@ -615,9 +615,9 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition),
       undefined,
-      undefined, // result name
-      undefined, // result.elementType
-      undefined, // result.elementValue
+      undefined, // name to give to result
+      undefined, // expected result.elementType
+      undefined, // expected result.elementValue
     )
 
     const instanceAdded = await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
@@ -635,7 +635,7 @@ describe.sequential("localStoreController.unit.test", () => {
       {},
       async () => localAppStoreController.getInstances("data",entityAuthor.uuid),
       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-      undefined, // result name
+      undefined, // name to give to result
       "entityInstanceCollection",
       []
     )

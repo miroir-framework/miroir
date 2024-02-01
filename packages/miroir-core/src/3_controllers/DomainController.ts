@@ -37,12 +37,13 @@ import {
   entityDefinition,
   InstanceAction,
   EntityInstance,
+  ActionReturnType,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants.js';
 import { circularReplacer, getLoggerName } from '../tools';
-import { throwExceptionIfError } from './ErrorHandling/ErrorUtils.js';
+import { callAction } from './ErrorHandling/ErrorUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
@@ -422,32 +423,29 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment",deploymentUuid);
     try {
-      // const dataEntitiesFromModelSection: EntityInstanceCollection | void = await throwExceptionIfError(
-      //   this.miroirContext.errorLogService,
-      //   this.remoteStore.handleRemoteStoreRestCRUDAction,
-      //   this.remoteStore, //this
+      const dataEntitiesFromModelSection: ActionReturnType = await callAction(
+        this.miroirContext.errorLogService,
+        this.remoteStore.handleRemoteStoreRestCRUDAction,
+        this.remoteStore, //this
+        deploymentUuid,
+        "model",
+        {
+          actionName: "read",
+          parentName: entityEntity.name,
+          parentUuid: entityEntity.uuid,
+        }
+      );
+      // const dataEntitiesFromModelSection: RemoteStoreActionReturnType = 
+      // await this.remoteStore.handleRemoteStoreRestCRUDAction(
       //   deploymentUuid,
       //   "model",
       //   {
       //     actionName: "read",
+      //     actionType: "RemoteStoreCRUDAction",
       //     parentName: entityEntity.name,
       //     parentUuid: entityEntity.uuid,
       //   }
       // );
-      // const dataEntitiesFromModelSection: EntityInstanceCollection | void = 
-      const dataEntitiesFromModelSection: RemoteStoreActionReturnType = 
-        await this.remoteStore.handleRemoteStoreRestCRUDAction(
-          deploymentUuid,
-          "model",
-          {
-            actionName: "read",
-            actionType: "RemoteStoreCRUDAction",
-            parentName: entityEntity.name,
-            parentUuid: entityEntity.uuid,
-          }
-        )
-      ;
-
       log.info(
         "DomainController loadConfigurationFromRemoteDataStore fetched list of Entities for deployment",
         deploymentUuid,
@@ -456,8 +454,15 @@ export class DomainController implements DomainControllerInterface {
       );
 
 
-      if (!dataEntitiesFromModelSection || dataEntitiesFromModelSection.status != "ok") {
-        throw new Error("DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list" + dataEntitiesFromModelSection);
+      if (
+        !dataEntitiesFromModelSection ||
+        dataEntitiesFromModelSection.status != "ok" ||
+        dataEntitiesFromModelSection.returnedDomainElement.elementType != "entityInstanceCollection"
+      ) {
+        throw new Error(
+          "DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list" +
+            dataEntitiesFromModelSection
+        );
       }
       const modelEntitiesToFetch: MetaEntity[] =
         deploymentUuid == applicationDeploymentMiroir.uuid
@@ -467,11 +472,11 @@ export class DomainController implements DomainControllerInterface {
           
       const dataEntitiesToFetch = 
         deploymentUuid == applicationDeploymentMiroir.uuid?
-          (dataEntitiesFromModelSection.instanceCollection?.instances??[]).filter(
+          (dataEntitiesFromModelSection.returnedDomainElement?.elementValue.instances??[]).filter(
             (dataEntity:EntityInstance) => modelEntitiesToFetch.filter((modelEntity) => dataEntity.uuid == modelEntity.uuid).length == 0
           )
         :
-        dataEntitiesFromModelSection.instanceCollection?.instances??[]
+        dataEntitiesFromModelSection.returnedDomainElement?.elementValue.instances??[]
       ; // hack, hack, hack
 
       log.debug(
@@ -503,31 +508,37 @@ export class DomainController implements DomainControllerInterface {
           "DomainController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
           JSON.stringify(e,undefined,2)
         );
-        // const entityInstanceCollection: EntityInstanceCollection | void = await throwExceptionIfError(
-        //   this.miroirContext.errorLogService,
-        //   this.remoteStore.handleRemoteStoreRestCRUDAction,
-        //   this.remoteStore, // this
-        //   deploymentUuid,
-        //   e.section,
-        //   {
-        //     actionName: "read",
-        //     parentName: e.entity.name,
-        //     parentUuid: e.entity.uuid,
-        //   }
-        // );
-        const entityInstanceCollection: RemoteStoreActionReturnType = await this.remoteStore.handleRemoteStoreRestCRUDAction(
-            deploymentUuid,
-            e.section,
-            {
-              actionName: "read",
-              actionType: 'RemoteStoreCRUDAction',
-              parentName: e.entity.name,
-              parentUuid: e.entity.uuid,
-            }
-          )
-        ;
-        if (entityInstanceCollection.status != "ok") {
-          throw new Error("DomainController loadConfigurationFromRemoteDataStore could not fetch entityInstanceCollection: " + entityInstanceCollection.error);
+        const entityInstanceCollection: ActionReturnType = await callAction(
+          this.miroirContext.errorLogService,
+          this.remoteStore.handleRemoteStoreRestCRUDAction,
+          this.remoteStore, // this
+          deploymentUuid,
+          e.section,
+          {
+            actionName: "read",
+            parentName: e.entity.name,
+            parentUuid: e.entity.uuid,
+          }
+        );
+        // const entityInstanceCollection: RemoteStoreActionReturnType = await this.remoteStore.handleRemoteStoreRestCRUDAction(
+        //     deploymentUuid,
+        //     e.section,
+        //     {
+        //       actionName: "read",
+        //       actionType: 'RemoteStoreCRUDAction',
+        //       parentName: e.entity.name,
+        //       parentUuid: e.entity.uuid,
+        //     }
+        //   )
+        // ;
+        if (
+          entityInstanceCollection.status != "ok" ||
+          entityInstanceCollection.returnedDomainElement.elementType != "entityInstanceCollection"
+        ) {
+          throw new Error(
+            "DomainController loadConfigurationFromRemoteDataStore could not fetch entityInstanceCollection: " +
+              (entityInstanceCollection.status == "error"?entityInstanceCollection.error : entityInstanceCollection.returnedDomainElement.elementType)
+          );
         }
 
         log.trace(
@@ -535,11 +546,11 @@ export class DomainController implements DomainControllerInterface {
           e.entity["name"],
           entityInstanceCollection
         );
-        if (entityInstanceCollection.instanceCollection) {
-          instances.push(entityInstanceCollection.instanceCollection);
-        } else {
-          log.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
-        }
+        // if (entityInstanceCollection.returnedDomainElement.) {
+          instances.push(entityInstanceCollection.returnedDomainElement.elementValue);
+        // } else {
+        //   log.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
+        // }
       }
 
       log.trace(
