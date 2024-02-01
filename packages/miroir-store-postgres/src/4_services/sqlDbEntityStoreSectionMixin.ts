@@ -14,6 +14,7 @@ import {
   ActionReturnType,
   ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
+  ActionVoidReturnType,
 } from "miroir-core";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
@@ -72,7 +73,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity",
@@ -122,7 +123,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
+    async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
       log.info("dropEntity entityUuid", entityUuid);
       if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
@@ -172,7 +173,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       return Promise.resolve(ACTION_OK);
     }
     // ##############################################################################################
-    async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
+    async dropEntities(entityUuids: string[]): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "dropEntities parentUuid", entityUuids);
       for (const e of entityUuids) {
         await this.dropEntity(e);
@@ -180,7 +181,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       return Promise.resolve(ACTION_OK);
     }
     // ##############################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
       if (
         update.equivalentModelCUDUpdates.length &&
         update.equivalentModelCUDUpdates[0] &&

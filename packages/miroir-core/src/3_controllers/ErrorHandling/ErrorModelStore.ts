@@ -47,16 +47,16 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   existsEntity(entityUuid: string): boolean {
     throw new Error("Method not implemented.");
   }
-  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+  createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropEntity(parentUuid: string): Promise<ActionReturnType> {
+  dropEntity(parentUuid: string): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  dropEntities(parentUuid: string[]): Promise<ActionReturnType> {
+  dropEntities(parentUuid: string[]): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
   getInstance(parentUuid: string, uuid: string): Promise<ActionEntityInstanceReturnType> {

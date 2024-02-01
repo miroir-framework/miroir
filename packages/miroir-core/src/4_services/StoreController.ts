@@ -314,23 +314,23 @@ export class StoreController implements StoreControllerInterface {
   async createEntity(
     entity:MetaEntity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionReturnType> {
+  ): Promise<ActionVoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity,entityDefinition);
     return Promise.resolve(result);
   }
 
   // ##############################################################################################
-  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
+  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.renameEntity(update);
   }
 
   // ##############################################################################################
-  async dropEntity(entityUuid: string): Promise<ActionReturnType> {
+  async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.dropEntity(entityUuid);
   }
 
   // ##############################################################################################
-  async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
+  async dropEntities(entityUuids: string[]): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.dropEntities(entityUuids);
   }
 

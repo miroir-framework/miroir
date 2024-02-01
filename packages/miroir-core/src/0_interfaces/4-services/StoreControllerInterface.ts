@@ -82,10 +82,10 @@ export interface AbstractEntityStoreSectionInterface {
   createEntity(
     entity:Entity,
     entityDefinition: EntityDefinition,
-  ): Promise<ActionReturnType>;
-  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType>;
-  dropEntity(parentUuid:string): Promise<ActionReturnType>;
-  dropEntities(parentUuid:string[]): Promise<ActionReturnType>;
+  ): Promise<ActionVoidReturnType>;
+  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType>;
+  dropEntity(parentUuid:string): Promise<ActionVoidReturnType>;
+  dropEntities(parentUuid:string[]): Promise<ActionVoidReturnType>;
 }
 
 // ###############################################################################################################

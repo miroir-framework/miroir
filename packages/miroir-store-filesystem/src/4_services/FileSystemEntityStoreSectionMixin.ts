@@ -18,6 +18,7 @@ import {
   ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
+  ActionVoidReturnType,
 } from "miroir-core";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -67,7 +68,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -107,7 +108,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
+    async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
       // TODO: implementation ~ indexedDb case. share it?
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         // this.localUuidIndexedDb.removeSubLevels([entityUuid]);
@@ -167,7 +168,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async dropEntities(entityUuids: string[]): Promise<ActionReturnType> {
+    async dropEntities(entityUuids: string[]): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "dropEntities", entityUuids);
       for (const entityUuid of entityUuids) {
         await this.dropEntity(entityUuid);
@@ -176,7 +177,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionReturnType> {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntity", update);
       // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);

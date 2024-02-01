@@ -74,7 +74,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionReturnType> {
+    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -113,7 +113,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<ActionReturnType> {
+    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<ActionVoidReturnType> {
       // TODO: identical to the Filesystem implementation!
       if (
         update.equivalentModelCUDUpdates.length &&
@@ -144,7 +144,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async dropEntity(entityUuid: string): Promise<ActionReturnType> {
+    async dropEntity(entityUuid: string): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
@@ -208,7 +208,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async dropEntities(entityUuids: string[]):Promise<ActionReturnType> {
+    async dropEntities(entityUuids: string[]):Promise<ActionVoidReturnType> {
       for (const entityUuid of entityUuids) {
         await this.dropEntity(entityUuid);
       }
