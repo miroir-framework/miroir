@@ -178,34 +178,53 @@ export class DomainController implements DomainControllerInterface {
                             entityDefinition: replayAction.update.modelEntityUpdate.entities[0].entityDefinition as any as EntityDefinition,
                           // }
                         }
-                        await this.remoteStore.handleRemoteStoreModelEntityAction(deploymentUuid,modelAction);
+                        // await this.remoteStore.handleRemoteStoreModelEntityAction(deploymentUuid,modelAction);
+                        await callAction(
+                          this.miroirContext.errorLogService,
+                          this.remoteStore.handleRemoteStoreModelEntityAction,
+                          this.remoteStore, //this
+                          deploymentUuid,
+                          // "model",
+                          modelAction
+                        );
                         break;
                       }
                       default: {
-                        await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,replayAction);
+                        // await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,replayAction);
+                        await callAction(
+                          this.miroirContext.errorLogService,
+                          this.remoteStore.handleRemoteStoreOLDModelAction,
+                          this.remoteStore, //this
+                          deploymentUuid,
+                          // "model",
+                          replayAction
+                        );
                         break;
                       }
                     }
                   } else {
-                    // for (const instances of replayAction["objects"]) {
-                      // TODO: replace with parallel implementation Promise.all?
-                      await this.remoteStore.handleRemoteStoreRestCRUDAction(
-                        deploymentUuid,
-                        replayAction.update.objects[0].applicationSection,
-                        {
-                          actionType:'RemoteStoreCRUDAction',
-                          actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-                          parentName: replayAction.update.objects[0].parentName,
-                          parentUuid: replayAction.update.objects[0].parentUuid,
-                          objects: replayAction.update.objects[0].instances,
-                        }
-                      );
-                    // }
+                    await callAction(
+                      this.miroirContext.errorLogService,
+                      this.remoteStore.handleRemoteStoreRestCRUDAction,
+                      this.remoteStore, //this
+                      deploymentUuid,
+                      replayAction.update.objects[0].applicationSection,
+                      {
+                        actionType:'RemoteStoreCRUDAction',
+                        actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
+                        parentName: replayAction.update.objects[0].parentName,
+                        parentUuid: replayAction.update.objects[0].parentUuid,
+                        objects: replayAction.update.objects[0].instances,
+                      }
+                    );
                   }
                   break;
                 }
                 case "localCacheModelActionWithDeployment": {
-                  await this.remoteStore.handleRemoteStoreModelEntityAction(
+                  await callAction(
+                    this.miroirContext.errorLogService,
+                    this.remoteStore.handleRemoteStoreModelEntityAction,
+                    this.remoteStore, //this
                     deploymentUuid,
                     (replayAction as LocalCacheModelActionWithDeployment).modelAction
                   );
@@ -213,11 +232,10 @@ export class DomainController implements DomainControllerInterface {
                 }
                 default:
                   throw new Error("DomainController handleDomainTransactionalAction commit could not handle replay action:" + JSON.stringify(replayAction));
-                  
                   break;
               }
             }
-    
+
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",this.localCache.currentTransaction());
 
             // await this.localCache.handleDomainTransactionalAction({
@@ -257,30 +275,24 @@ export class DomainController implements DomainControllerInterface {
               ],
             };
             // TODO: in the case of the Miroir app, this should be in the 'data'section
-            await this.remoteStore.handleRemoteStoreRestCRUDAction(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
-
-
+            // await this.remoteStore.handleRemoteStoreRestCRUDAction(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
+            await callAction(
+              this.miroirContext.errorLogService,
+              this.remoteStore.handleRemoteStoreRestCRUDAction,
+              this.remoteStore, //this
+              deploymentUuid,
+              sectionOfapplicationEntities,
+              newStoreBasedConfiguration
+            );
           }
           break;
         }
         case "UpdateMetaModelInstance": {
-          // await this.localCache.handleDomainTransactionalAction({
           await this.localCache.handleLocalCacheTransactionalAction({
             actionType: "localCacheTransactionalActionWithDeployment",
             deploymentUuid, 
             domainAction:domainTransactionalAction
           });
-          // const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
-          //   deploymentUuid,
-          //   instanceCUDAction: {
-          //     actionType: "InstanceCUDAction",
-          //     actionName: domainModelAction.update.updateActionName,
-          //     includeInTransaction: true,
-          //     applicationSection: domainModelAction.update.objects[0].applicationSection,
-          //     objects: domainModelAction.update.objects,
-          //   }
-          // };
-          // await this.localCache.handleLocalCacheCUDAction(instanceCUDAction);
           break;
         }
         case "updateEntity": {
@@ -357,10 +369,16 @@ export class DomainController implements DomainControllerInterface {
       for (const instances of domainAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction sending to remote storage instances",
-          instances.parentName, instances.instances
+          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+          deploymentUuid,
+          "handleDomainNonTransactionalAction sending to remote storage instances",
+          instances.parentName,
+          instances.instances
         );
-        await this.remoteStore.handleRemoteStoreRestCRUDAction(
+        await callAction(
+          this.miroirContext.errorLogService,
+          this.remoteStore.handleRemoteStoreRestCRUDAction,
+          this.remoteStore, //this
           deploymentUuid,
           'data',
           {
@@ -368,7 +386,8 @@ export class DomainController implements DomainControllerInterface {
             actionName: domainAction.actionName.toString() as CRUDActionName,
             parentName: instances.parentName,
             objects: instances.instances,
-          });
+          }
+        );
       }
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",deploymentUuid,"handleDomainNonTransactionalAction done calling handleRemoteStoreRestCRUDAction", domainAction
@@ -413,7 +432,10 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve();
   }
 
-    //####################################################################################
+  //####################################################################################
+  //####################################################################################
+  //####################################################################################
+  //####################################################################################
   /**
    * performs remote update before local update, so that whenever remote update fails, local value is not modified (going into the "catch").
    * @returns undefined when loading is finished
@@ -435,17 +457,6 @@ export class DomainController implements DomainControllerInterface {
           parentUuid: entityEntity.uuid,
         }
       );
-      // const dataEntitiesFromModelSection: RemoteStoreActionReturnType = 
-      // await this.remoteStore.handleRemoteStoreRestCRUDAction(
-      //   deploymentUuid,
-      //   "model",
-      //   {
-      //     actionName: "read",
-      //     actionType: "RemoteStoreCRUDAction",
-      //     parentName: entityEntity.name,
-      //     parentUuid: entityEntity.uuid,
-      //   }
-      // );
       log.info(
         "DomainController loadConfigurationFromRemoteDataStore fetched list of Entities for deployment",
         deploymentUuid,
@@ -520,17 +531,6 @@ export class DomainController implements DomainControllerInterface {
             parentUuid: e.entity.uuid,
           }
         );
-        // const entityInstanceCollection: RemoteStoreActionReturnType = await this.remoteStore.handleRemoteStoreRestCRUDAction(
-        //     deploymentUuid,
-        //     e.section,
-        //     {
-        //       actionName: "read",
-        //       actionType: 'RemoteStoreCRUDAction',
-        //       parentName: e.entity.name,
-        //       parentUuid: e.entity.uuid,
-        //     }
-        //   )
-        // ;
         if (
           entityInstanceCollection.status != "ok" ||
           entityInstanceCollection.returnedDomainElement.elementType != "entityInstanceCollection"
@@ -546,11 +546,7 @@ export class DomainController implements DomainControllerInterface {
           e.entity["name"],
           entityInstanceCollection
         );
-        // if (entityInstanceCollection.returnedDomainElement.) {
-          instances.push(entityInstanceCollection.returnedDomainElement.elementValue);
-        // } else {
-        //   log.warn("DomainController loadConfigurationFromRemoteDataStore could not find instances for entity",e.entity["name"]);
-        // }
+        instances.push(entityInstanceCollection.returnedDomainElement.elementValue);
       }
 
       log.trace(
