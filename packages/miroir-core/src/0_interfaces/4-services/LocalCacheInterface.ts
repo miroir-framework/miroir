@@ -5,7 +5,7 @@ import {
 } from "../2_domain/DomainControllerInterface";
 import { MiroirApplicationModel } from '../1_core/Model.js';
 
-import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection } from '../1_core/preprocessor-generated/miroirFundamentalType.js';
+import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection, ActionReturnType } from '../1_core/preprocessor-generated/miroirFundamentalType.js';
 import {
   DomainTransactionalActionWithCUDUpdate
 } from "../2_domain/DomainControllerInterface.js";
@@ -72,11 +72,11 @@ export declare interface LocalCacheInterface
     deploymentUuid: string,
     applicationSection: ApplicationSection,
     objects: EntityInstanceCollection[],
-  ): void;
+  ): ActionReturnType;
 
   // ##############################################################################################
-  handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):void;
-  handleLocalCacheEntityAction(action:LocalCacheModelActionWithDeployment):void;
-  handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):void;
-  handleEndpointAction(action:InstanceAction):void;
+  handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
+  handleLocalCacheEntityAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
+  handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):ActionReturnType;
+  handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

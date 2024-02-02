@@ -40,7 +40,8 @@ import {
   EntityInstanceCollection,
   StoreAction,
   MiroirAction,
-  ActionReturnType
+  ActionReturnType,
+  ACTION_OK
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -99,6 +100,22 @@ function roughSizeOfObject( object: any ) {
       }
   }
   return bytes;
+}
+
+// ###############################################################################
+function exceptionToActionReturnType(f:()=>void): ActionReturnType {
+  try {
+    f()
+  } catch (e) {
+    return {
+      status: "error",
+      error: {
+        errorType: "FailedToDeployModule", // TODO: correct errorType
+        errorMessage: e
+      }
+    }
+  }
+  return ACTION_OK;
 }
 // ###############################################################################
 /**
@@ -303,23 +320,32 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheTransactionalAction(localCacheTransactionalAction: LocalCacheTransactionalActionWithDeployment): void {
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction](localCacheTransactionalAction)
-    );
+  handleLocalCacheTransactionalAction(localCacheTransactionalAction: LocalCacheTransactionalActionWithDeployment): ActionReturnType {
+    // const result:ActionReturnType = this.innerReduxStore.dispatch(
+    return exceptionToActionReturnType(
+      ()=> this.innerReduxStore.dispatch(
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction](localCacheTransactionalAction)
+      )
+    )
+    // return ACTION_OK;
   }
 
   // ###############################################################################
-  handleLocalCacheEntityAction(localCacheEntityAction: LocalCacheModelActionWithDeployment): void {
-    this.innerReduxStore.dispatch(
+  handleLocalCacheEntityAction(localCacheEntityAction: LocalCacheModelActionWithDeployment): ActionReturnType {
+    // const result: ActionReturnType = this.innerReduxStore.dispatch(
+    return exceptionToActionReturnType(
+      ()=> this.innerReduxStore.dispatch(
       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction](localCacheEntityAction)
-    );
+    ));
   }
 
   // ###############################################################################
-  handleEndpointAction(endPointAction: InstanceAction): void {
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleEndpointAction](endPointAction)
+  handleEndpointAction(endPointAction: InstanceAction): ActionReturnType {
+    // const result: ActionReturnType = this.innerReduxStore.dispatch(
+    return exceptionToActionReturnType(() =>
+      this.innerReduxStore.dispatch(
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleEndpointAction](endPointAction)
+      )
     );
   }
 
@@ -328,18 +354,29 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
     deploymentUuid: string,
     applicationSection: ApplicationSection,
     objects: EntityInstanceCollection[],
-  ): void {
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.createInstance]({deploymentUuid, applicationSection, objects})
-    );
+  ): ActionReturnType {
+    // const result: ActionReturnType = this.innerReduxStore.dispatch(
+      return exceptionToActionReturnType(() =>
+        this.innerReduxStore.dispatch(
+          LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.createInstance]({
+            deploymentUuid,
+            applicationSection,
+            objects,
+          })
+        )
+      );
   }
 
   // ###############################################################################
-  handleLocalCacheCUDAction(instanceCUDAction: LocalCacheCUDActionWithDeployment): void {
+  handleLocalCacheCUDAction(instanceCUDAction: LocalCacheCUDActionWithDeployment): ActionReturnType {
     log.info("handleLocalCacheCUDAction", instanceCUDAction);
     
-    this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](instanceCUDAction)
+    return exceptionToActionReturnType(() =>
+      this.innerReduxStore.dispatch(
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
+          instanceCUDAction
+        )
+      )
     );
   }
 

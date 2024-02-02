@@ -77,7 +77,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   >
 ) => ReduxStateWithUndoRedo;
 
-export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>;
+export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>; // TODO: precise the type of Actions!
 
 //#########################################################################################
 //# DATA TYPES

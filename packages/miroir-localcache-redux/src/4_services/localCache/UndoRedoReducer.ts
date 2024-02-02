@@ -193,7 +193,10 @@ function callUndoRedoReducer(
     } else {
       // presentModelSnapshot !== newSnapshot
       const newPatch: ReduxStateChanges = {
-        action: action.payload.actionType == "localCacheModelActionWithDeployment"?action.payload:action.payload.domainAction as DomainTransactionalActionWithCUDUpdate,
+        action:
+          action.payload.actionType == "localCacheModelActionWithDeployment"
+            ? action.payload
+            : (action.payload.domainAction as DomainTransactionalActionWithCUDUpdate),
         changes,
         inverseChanges,
       };
