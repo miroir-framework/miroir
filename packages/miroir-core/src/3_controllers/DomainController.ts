@@ -44,7 +44,7 @@ import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants.js';
 import { circularReplacer, getLoggerName } from '../tools';
-import { callAsyncAction, callAsyncActionOLD, callSyncAction, callSyncActionOLD } from './ErrorHandling/ErrorUtils.js';
+import { CallUtils } from './ErrorHandling/CallUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
@@ -64,12 +64,15 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  * example: get the list of reports accessible by a given user.
  */
 export class DomainController implements DomainControllerInterface {
+  private callUtil: CallUtils;
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private remoteStore: RemoteStoreInterface,
     private endpoint: Endpoint,
-  ) {}
+  ) {
+    this.callUtil = new CallUtils(miroirContext.errorLogService,localCache,remoteStore);
+  }
 
   getRemoteStore(): RemoteStoreInterface {
       return this.remoteStore
@@ -112,10 +115,10 @@ export class DomainController implements DomainControllerInterface {
           //   deploymentUuid,
           //   domainAction: domainTransactionalAction
           // });
-          callSyncActionOLD(
+          this.callUtil.callSyncActionOLD(
             {}, // context
             {}, // context update
-            this.miroirContext.errorLogService,
+            // this.miroirContext.errorLogService,
             this.localCache.handleLocalCacheTransactionalAction,
             this.localCache, // this
             {
@@ -193,10 +196,9 @@ export class DomainController implements DomainControllerInterface {
                           // }
                         }
                         // await this.remoteStore.handleRemoteStoreModelEntityAction(deploymentUuid,modelAction);
-                        await callAsyncActionOLD(
+                        await this.callUtil.callAsyncActionOLD(
                           {}, // context
                           {}, // context update
-                          this.miroirContext.errorLogService,
                           this.remoteStore.handleRemoteStoreModelEntityAction,
                           this.remoteStore, //this
                           deploymentUuid,
@@ -207,10 +209,9 @@ export class DomainController implements DomainControllerInterface {
                       }
                       default: {
                         // await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,replayAction);
-                        await callAsyncActionOLD(
+                        await this.callUtil.callAsyncActionOLD(
                           {}, // context
                           {}, // context update
-                          this.miroirContext.errorLogService,
                           this.remoteStore.handleRemoteStoreOLDModelAction,
                           this.remoteStore, //this
                           deploymentUuid,
@@ -221,10 +222,9 @@ export class DomainController implements DomainControllerInterface {
                       }
                     }
                   } else {
-                    await callAsyncActionOLD(
+                    await this.callUtil.callAsyncActionOLD(
                       {}, // context
                       {}, // context update
-                      this.miroirContext.errorLogService,
                       this.remoteStore.handleRemoteStoreRestCRUDAction,
                       this.remoteStore, //this
                       deploymentUuid,
@@ -241,10 +241,9 @@ export class DomainController implements DomainControllerInterface {
                   break;
                 }
                 case "localCacheModelActionWithDeployment": {
-                  await callAsyncActionOLD(
+                  await this.callUtil.callAsyncActionOLD(
                     {}, // context
                     {}, // context update
-                    this.miroirContext.errorLogService,
                     this.remoteStore.handleRemoteStoreModelEntityAction,
                     this.remoteStore, //this
                     deploymentUuid,
@@ -298,10 +297,9 @@ export class DomainController implements DomainControllerInterface {
             };
             // TODO: in the case of the Miroir app, this should be in the 'data'section
             // await this.remoteStore.handleRemoteStoreRestCRUDAction(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
-            await callAsyncActionOLD(
+            await this.callUtil.callAsyncActionOLD(
               {}, // context
               {}, // context update
-              this.miroirContext.errorLogService,
               this.remoteStore.handleRemoteStoreRestCRUDAction,
               this.remoteStore, //this
               deploymentUuid,
@@ -399,10 +397,9 @@ export class DomainController implements DomainControllerInterface {
           instances.parentName,
           instances.instances
         );
-        await callAsyncActionOLD(
+        await this.callUtil.callAsyncActionOLD(
           {}, // context
           {}, // context update
-          this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreRestCRUDAction,
           this.remoteStore, //this
           deploymentUuid,
@@ -471,10 +468,9 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment",deploymentUuid);
     try {
-      const dataEntitiesFromModelSection: ActionReturnType = await callAsyncActionOLD(
+      const dataEntitiesFromModelSection: ActionReturnType = await this.callUtil.callAsyncActionOLD(
         {}, // context
         {}, // context update
-        this.miroirContext.errorLogService,
         this.remoteStore.handleRemoteStoreRestCRUDAction,
         this.remoteStore, //this
         deploymentUuid,
@@ -547,13 +543,13 @@ export class DomainController implements DomainControllerInterface {
           "DomainController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
           JSON.stringify(e,undefined,2)
         );
-        await callAsyncAction(
+        await this.callUtil.callAsyncAction(
           {}, // context
           {
             addResultToContextAsName: "entityInstanceCollection",
             expectedDomainElementType: "entityInstanceCollection"
           }, // context update
-          this.miroirContext.errorLogService,
+          // this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreRestCRUDAction,
           this.remoteStore, // this
           deploymentUuid,
@@ -574,10 +570,10 @@ export class DomainController implements DomainControllerInterface {
             return context;
           }
         ).then(
-          (context: Record<string, any>) => callSyncAction(
+          (context: Record<string, any>) => this.callUtil.callSyncAction(
             context, // context
             {}, // context update
-            this.miroirContext.errorLogService,
+            // this.miroirContext.errorLogService,
             this.localCache.handleLocalCacheCUDAction,
             this.localCache, // this
             {
@@ -591,10 +587,10 @@ export class DomainController implements DomainControllerInterface {
             }
           )
         ).then(
-          (context: Record<string, any>) => callSyncAction(
+          (context: Record<string, any>) => this.callUtil.callSyncAction(
             context, // context
             {}, // context update
-            this.miroirContext.errorLogService,
+            // this.miroirContext.errorLogService,
             this.localCache.handleLocalCacheTransactionalAction,
             this.localCache, // this
             {
