@@ -423,7 +423,7 @@ export {
   miroirModelEntities,
 } from './3_controllers/ModelInitializer.js';
 export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
-export { callAction } from './3_controllers/ErrorHandling/ErrorUtils.js';
+export { callAsyncAction } from './3_controllers/ErrorHandling/ErrorUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
 export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {

@@ -38,12 +38,13 @@ import {
   InstanceAction,
   EntityInstance,
   ActionReturnType,
+  entityInstanceCollection,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants.js';
 import { circularReplacer, getLoggerName } from '../tools';
-import { callAction } from './ErrorHandling/ErrorUtils.js';
+import { callAsyncAction, callAsyncActionOLD, callSyncAction, callSyncActionOLD } from './ErrorHandling/ErrorUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
 import { Endpoint } from './Endpoint.js';
@@ -106,11 +107,24 @@ export class DomainController implements DomainControllerInterface {
         }
         case "undo":
         case "redo": {
-          this.localCache.handleLocalCacheTransactionalAction({
-            actionType: "localCacheTransactionalActionWithDeployment",
-            deploymentUuid,
-            domainAction: domainTransactionalAction
-          });
+          // this.localCache.handleLocalCacheTransactionalAction({
+          //   actionType: "localCacheTransactionalActionWithDeployment",
+          //   deploymentUuid,
+          //   domainAction: domainTransactionalAction
+          // });
+          callSyncActionOLD(
+            {}, // context
+            {}, // context update
+            this.miroirContext.errorLogService,
+            this.localCache.handleLocalCacheTransactionalAction,
+            this.localCache, // this
+            {
+              actionType: "localCacheTransactionalActionWithDeployment",
+              deploymentUuid,
+              domainAction: domainTransactionalAction
+            }
+          );
+    
           break;
         }
         case "initModel": 
@@ -179,7 +193,9 @@ export class DomainController implements DomainControllerInterface {
                           // }
                         }
                         // await this.remoteStore.handleRemoteStoreModelEntityAction(deploymentUuid,modelAction);
-                        await callAction(
+                        await callAsyncActionOLD(
+                          {}, // context
+                          {}, // context update
                           this.miroirContext.errorLogService,
                           this.remoteStore.handleRemoteStoreModelEntityAction,
                           this.remoteStore, //this
@@ -191,7 +207,9 @@ export class DomainController implements DomainControllerInterface {
                       }
                       default: {
                         // await this.remoteStore.handleRemoteStoreOLDModelAction(deploymentUuid,replayAction);
-                        await callAction(
+                        await callAsyncActionOLD(
+                          {}, // context
+                          {}, // context update
                           this.miroirContext.errorLogService,
                           this.remoteStore.handleRemoteStoreOLDModelAction,
                           this.remoteStore, //this
@@ -203,7 +221,9 @@ export class DomainController implements DomainControllerInterface {
                       }
                     }
                   } else {
-                    await callAction(
+                    await callAsyncActionOLD(
+                      {}, // context
+                      {}, // context update
                       this.miroirContext.errorLogService,
                       this.remoteStore.handleRemoteStoreRestCRUDAction,
                       this.remoteStore, //this
@@ -221,7 +241,9 @@ export class DomainController implements DomainControllerInterface {
                   break;
                 }
                 case "localCacheModelActionWithDeployment": {
-                  await callAction(
+                  await callAsyncActionOLD(
+                    {}, // context
+                    {}, // context update
                     this.miroirContext.errorLogService,
                     this.remoteStore.handleRemoteStoreModelEntityAction,
                     this.remoteStore, //this
@@ -276,7 +298,9 @@ export class DomainController implements DomainControllerInterface {
             };
             // TODO: in the case of the Miroir app, this should be in the 'data'section
             // await this.remoteStore.handleRemoteStoreRestCRUDAction(deploymentUuid, sectionOfapplicationEntities, newStoreBasedConfiguration);
-            await callAction(
+            await callAsyncActionOLD(
+              {}, // context
+              {}, // context update
               this.miroirContext.errorLogService,
               this.remoteStore.handleRemoteStoreRestCRUDAction,
               this.remoteStore, //this
@@ -375,7 +399,9 @@ export class DomainController implements DomainControllerInterface {
           instances.parentName,
           instances.instances
         );
-        await callAction(
+        await callAsyncActionOLD(
+          {}, // context
+          {}, // context update
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreRestCRUDAction,
           this.remoteStore, //this
@@ -445,7 +471,9 @@ export class DomainController implements DomainControllerInterface {
   ): Promise<void> {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment",deploymentUuid);
     try {
-      const dataEntitiesFromModelSection: ActionReturnType = await callAction(
+      const dataEntitiesFromModelSection: ActionReturnType = await callAsyncActionOLD(
+        {}, // context
+        {}, // context update
         this.miroirContext.errorLogService,
         this.remoteStore.handleRemoteStoreRestCRUDAction,
         this.remoteStore, //this
@@ -519,7 +547,12 @@ export class DomainController implements DomainControllerInterface {
           "DomainController loadConfigurationFromRemoteDataStore fecthing instances from server for entity",
           JSON.stringify(e,undefined,2)
         );
-        const entityInstanceCollection: ActionReturnType = await callAction(
+        await callAsyncAction(
+          {}, // context
+          {
+            addResultToContextAsName: "entityInstanceCollection",
+            expectedDomainElementType: "entityInstanceCollection"
+          }, // context update
           this.miroirContext.errorLogService,
           this.remoteStore.handleRemoteStoreRestCRUDAction,
           this.remoteStore, // this
@@ -530,50 +563,53 @@ export class DomainController implements DomainControllerInterface {
             parentName: e.entity.name,
             parentUuid: e.entity.uuid,
           }
-        );
-        if (
-          entityInstanceCollection.status != "ok" ||
-          entityInstanceCollection.returnedDomainElement.elementType != "entityInstanceCollection"
-        ) {
-          throw new Error(
-            "DomainController loadConfigurationFromRemoteDataStore could not fetch entityInstanceCollection: " +
-              (entityInstanceCollection.status == "error"?entityInstanceCollection.error : entityInstanceCollection.returnedDomainElement.elementType)
-          );
-        }
-
-        log.trace(
-          "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
-          e.entity["name"],
-          entityInstanceCollection
-        );
-        instances.push(entityInstanceCollection.returnedDomainElement.elementValue);
-      }
-
-      log.trace(
-        "DomainController loadConfigurationFromRemoteDataStore all instances fetched from server",
-        instances
-      );
-      this.localCache.handleLocalCacheCUDAction(
-        {
-          actionType: "LocalCacheCUDActionWithDeployment",
-          deploymentUuid,
-          instanceCUDAction: {
-            actionType: "InstanceCUDAction",
-            actionName: "replaceLocalCache",
-            objects: instances,
+        ).then(
+          (context: Record<string, any>) => {
+            log.trace(
+              "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
+              e.entity["name"],
+              entityInstanceCollection
+            );
+            instances.push(context["entityInstanceCollection"].returnedDomainElement.elementValue);
+            return context;
           }
-        }
-      );
-
-
-      this.localCache.handleLocalCacheTransactionalAction({
-        actionType: "localCacheTransactionalActionWithDeployment",
-        deploymentUuid,
-        domainAction: {
-          actionType: "DomainTransactionalAction",
-          actionName: "rollback"
-        }
-      });
+        ).then(
+          (context: Record<string, any>) => callSyncAction(
+            context, // context
+            {}, // context update
+            this.miroirContext.errorLogService,
+            this.localCache.handleLocalCacheCUDAction,
+            this.localCache, // this
+            {
+              actionType: "LocalCacheCUDActionWithDeployment",
+              deploymentUuid,
+              instanceCUDAction: {
+                actionType: "InstanceCUDAction",
+                actionName: "replaceLocalCache",
+                objects: instances,
+              }
+            }
+          )
+        ).then(
+          (context: Record<string, any>) => callSyncAction(
+            context, // context
+            {}, // context update
+            this.miroirContext.errorLogService,
+            this.localCache.handleLocalCacheTransactionalAction,
+            this.localCache, // this
+            {
+              actionType: "localCacheTransactionalActionWithDeployment",
+              deploymentUuid,
+              domainAction: {
+                actionType: "DomainTransactionalAction",
+                actionName: "rollback"
+              }
+            }
+          )
+        ).catch(
+          (reason) => log.error(reason)
+        );
+      }
 
       log.info(
         "DomainController loadConfigurationFromRemoteDataStore done handleLocalCacheTransactionalAction rollback",
