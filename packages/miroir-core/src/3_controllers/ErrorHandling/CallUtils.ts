@@ -4,50 +4,37 @@ import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInt
 import { RemoteStoreInterface } from "../../0_interfaces/4-services/RemoteStoreInterface";
 
 export default {}
+export type AsyncCalls = "handleRemoteStoreModelEntityAction" | "handleRemoteStoreOLDModelAction" | "handleRemoteStoreRestCRUDAction";
+export type SyncCalls = "handleLocalCacheTransactionalAction" | "handleLocalCacheCUDAction" | "handleLocalCacheEntityAction";
+
 
 export class CallUtils {
+  private asyncCallsMap: {[k in AsyncCalls]: (...args: any) => Promise<ActionReturnType>}
+  private syncCallsMap: {[k in SyncCalls]: (...args: any) => ActionReturnType}
+
   constructor (
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
     private remoteStore: RemoteStoreInterface,
   ) {
-
-  }
-  
-  // ##############################################################################################
-  callSyncActionOLD(
-    context: {[k:string]: any},
-    continuation: {
-      resultTransformation?: (action:ActionReturnType,context:{[k:string]: any}) => any,
-      addResultToContextAsName?: string,
-      expectedDomainElementType?: DomainElementType,
-      expectedValue?: any,
-    },
-    f: (...args: any) => ActionReturnType,
-    _this: LocalCacheInterface,
-    ...args: any[]
-  ): Promise<ActionReturnType> {
-    const functionToCall = f.bind(_this);
-    const result: ActionReturnType = functionToCall(...args);
-    console.log("callSyncAction received result", result)
-    if (result && result['status'] == "error") {
-      //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
-      // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
-      const error: MError = { errorMessage: result.error.errorMessage };
-      this.errorLogService.pushError(error);
-      throw error;
-    } else {
-      // console.log("callAsyncAction ok", result);
-      return Promise.resolve(result);
+    this.asyncCallsMap = {
+      "handleRemoteStoreModelEntityAction": remoteStore.handleRemoteStoreModelEntityAction,
+      "handleRemoteStoreOLDModelAction": remoteStore.handleRemoteStoreOLDModelAction,
+      "handleRemoteStoreRestCRUDAction": remoteStore.handleRemoteStoreRestCRUDAction,
+    }
+    this.syncCallsMap = {
+      "handleLocalCacheCUDAction": localCache.handleLocalCacheCUDAction,
+      "handleLocalCacheTransactionalAction": localCache.handleLocalCacheTransactionalAction,
+      "handleLocalCacheEntityAction": localCache.handleLocalCacheEntityAction,
     }
   }
-
+  
   // ######################################################################################
   /**
    * convert errors to exceptions for controllers using store controllers, 
    * allowing them to interrupt their control flow without testing systematically for errors
    */ 
-  callSyncAction(
+  callLocalCacheAction(
     context: {[k:string]: any},
     continuation: {
       resultTransformation?: (action:ActionReturnType,context:{[k:string]: any}) => any,
@@ -55,11 +42,10 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    f: (...args: any) => ActionReturnType,
-    _this: LocalCacheInterface,
+    fName: SyncCalls,
     ...args: any[]
   ): Promise<Record<string, any>> {
-    const functionToCall = f.bind(_this);
+    const functionToCall = this.syncCallsMap[fName].bind(this.localCache);
     const result: ActionReturnType = functionToCall(...args);
     console.log("callSyncAction received result", result)
     if (result && result['status'] == "error") {
@@ -86,7 +72,7 @@ export class CallUtils {
  * convert errors to exceptions for controllers using store controllers, 
  * allowing them to interrupt their control flow without testing systematically for errors
  */ 
-  async callAsyncAction(
+  async callRemoteAction(
     context: {[k:string]: any},
     continuation: {
       resultTransformation?: (action:ActionReturnType,context:{[k:string]: any}) => any,
@@ -94,11 +80,10 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    f: (...args: any) => Promise<ActionReturnType>,
-    _this: RemoteStoreInterface,
+    fName: AsyncCalls,
     ...args: any[]
   ): Promise<Record<string, any>> {
-    const functionToCall = f.bind(_this);
+    const functionToCall = this.asyncCallsMap[fName].bind(this.remoteStore);
     const result: ActionReturnType = await functionToCall(...args);
     console.log("callAsyncAction received result", result)
     if (result['status'] == "error") {
@@ -119,32 +104,4 @@ export class CallUtils {
     }
   }
 
-  async callAsyncActionOLD(
-    context: {[k:string]: any},
-    continuation: {
-      resultTransformation?: (action:ActionReturnType,context:{[k:string]: any}) => any,
-      addResultToContextAsName?: string,
-      expectedDomainElementType?: DomainElementType,
-      expectedValue?: any,
-    },
-    // errorLogService: ErrorLogServiceInterface,
-    f: (...args: any) => Promise<ActionReturnType>,
-    _this: RemoteStoreInterface,
-    ...args: any[]
-  // ): Promise<RemoteStoreActionReturnType> {
-  ): Promise<ActionReturnType> {
-    const functionToCall = f.bind(_this);
-    const result: ActionReturnType = await functionToCall(...args);
-    console.log("callAction received result", result)
-    if (result && result['status'] == "error") {
-      //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
-      // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
-      const error: MError = { errorMessage: result.error.errorMessage };
-      this.errorLogService.pushError(error);
-      throw error;
-    } else {
-      // console.log("callAction ok", result);
-      return Promise.resolve(result);
-    }
-  }
 }
