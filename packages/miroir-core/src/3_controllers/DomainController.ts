@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
-import { MiroirApplicationVersion } from '../0_interfaces/1_core/ModelVersion';
+import { MiroirApplicationVersionOLD_DO_NOT_USE } from '../0_interfaces/1_core/ModelVersion';
 import {
   CRUDActionName,
   CRUDActionNamesArray, DomainAction,
@@ -39,6 +38,7 @@ import {
   EntityInstance,
   ActionReturnType,
   entityInstanceCollection,
+  MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -92,7 +92,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainTransactionalAction(
     deploymentUuid:Uuid,
     domainTransactionalAction: DomainTransactionalAction,
-    currentModel:MiroirApplicationModel,
+    currentModel: MetaModel,
   ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
@@ -122,13 +122,13 @@ export class DomainController implements DomainControllerInterface {
     
           break;
         }
-        case "initModel": 
-        case "resetData": 
+        case "initModel":
+        case "resetData":
         case "resetModel": {
           await this.callUtil.callRemoteAction(
             {}, // context
             {}, // context update
-            "handleRemoteStoreOLDModelAction",
+            "handleRemoteStoreModelAction",
             deploymentUuid,
             domainTransactionalAction
           );
@@ -145,7 +145,7 @@ export class DomainController implements DomainControllerInterface {
           } else {
             const sectionOfapplicationEntities: ApplicationSection = deploymentUuid== applicationDeploymentMiroir.uuid?'data':'model';
             const newModelVersionUuid = uuidv4();
-            const newModelVersion: MiroirApplicationVersion = {
+            const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
               uuid: newModelVersionUuid,
               conceptLevel: "Data",
               parentName: entityApplicationVersion?.name,
@@ -202,7 +202,7 @@ export class DomainController implements DomainControllerInterface {
                         await this.callUtil.callRemoteAction(
                           {}, // context
                           {}, // context update
-                          "handleRemoteStoreModelEntityAction",
+                          "handleRemoteStoreModelAction",
                           deploymentUuid,
                           modelAction
                         );
@@ -241,7 +241,7 @@ export class DomainController implements DomainControllerInterface {
                   await this.callUtil.callRemoteAction(
                     {}, // context
                     {}, // context update
-                    "handleRemoteStoreModelEntityAction",
+                    "handleRemoteStoreModelAction",
                     deploymentUuid,
                     (replayAction as LocalCacheModelActionWithDeployment).modelAction
                   );
@@ -669,7 +669,7 @@ export class DomainController implements DomainControllerInterface {
   async handleDomainAction(
     deploymentUuid:Uuid,
     domainAction: DomainAction,
-    currentModel:MiroirApplicationModel,
+    currentModel:MetaModel,
   ): Promise<void> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(

@@ -2,12 +2,11 @@ import { z } from "zod";
 
 import {
   ApplicationDeploymentSchema,
-  MetaEntitySchema,
   applicationSection,
-  entityDefinition,
-  objectListReportSection,
   domainElementObject,
-  selectObjectListQuery
+  entity,
+  entityDefinition,
+  objectListReportSection
 } from "miroir-core";
 
 import { jzodObject } from "@miroir-framework/jzod-ts";
@@ -29,7 +28,8 @@ export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDispla
   tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   chosenApplicationSection: applicationSection,
   currentModel: z.any(),
-  currentMiroirEntity: MetaEntitySchema.optional(),
+  // currentMiroirEntity: MetaEntitySchema.optional(),
+  currentMiroirEntity: entity.optional(),
   currentMiroirEntityDefinition: entityDefinition.optional(),
 });
 

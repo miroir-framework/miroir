@@ -2,12 +2,10 @@ import * as React from "react";
 
 import { 
   ApplicationSection, 
-  LocalCacheEntityInstancesSelectorParams, 
   EntityDefinition, 
   EntityInstance, 
   EntityInstanceWithName, 
   MetaEntity, 
-  MiroirApplicationModel, 
   LocalCacheQueryParams, 
   Report, 
   Uuid, 
@@ -18,6 +16,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
+  MetaModel,
+  Entity,
 } from 'miroir-core';
 import { JzodElement } from "@miroir-framework/jzod-ts";
 import { ReduxStateWithUndoRedo, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeployment } from "miroir-localcache-redux";
@@ -60,9 +60,9 @@ export const TestUtilsTableComponent = (
   const localSelectModelForDeployment = React.useMemo(selectModelForDeployment,[]);
   const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirApplicationModel
+  ) as MetaModel
 
-  const entitiesOfDataSection:MetaEntity [] = currentModel.entities;
+  const entitiesOfDataSection:Entity [] = currentModel.entities;
   const entityDefinitionsOfDataSection:EntityDefinition[] = currentModel.entityDefinitions;
 
   const deploymentReports: Report[] = currentModel.reports;

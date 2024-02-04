@@ -1,7 +1,6 @@
 
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
@@ -12,6 +11,7 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  MetaModel,
   StoreSectionConfiguration,
   actionReturnType,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -106,7 +106,7 @@ export class StoreController implements StoreControllerInterface {
 
   // #############################################################################################
   async initApplication(
-    metaModel:MiroirApplicationModel,
+    metaModel:MetaModel,
     dataStoreType: DataStoreApplicationType,
     application: Application,
     applicationDeploymentConfiguration: EntityInstance,

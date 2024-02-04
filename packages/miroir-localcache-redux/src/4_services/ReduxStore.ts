@@ -19,8 +19,7 @@ import {
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
   MetaEntity,
-  MiroirApplicationModel,
-  MiroirApplicationVersion,
+  MiroirApplicationVersionOLD_DO_NOT_USE,
   MiroirLoggerFactory,
   RemoteStoreActionReturnType,
   RemoteStoreCRUDAction,
@@ -41,7 +40,9 @@ import {
   StoreAction,
   MiroirAction,
   ActionReturnType,
-  ACTION_OK
+  ACTION_OK,
+  MetaModel,
+  JzodSchema
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -182,7 +183,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
 
   // ###############################################################################
   // FOR TESTING PURPOSES ONLY!!!!! TO REMOVE?
-  public currentModel(deploymentUuid: string): MiroirApplicationModel {
+  public currentModel(deploymentUuid: string): MetaModel {
     log.info(
       "called currentModel(",
       deploymentUuid,")"
@@ -203,7 +204,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
           applicationVersions: Object.values(
             reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityApplicationVersion.uuid)]
               .entities
-          ) as MiroirApplicationVersion[],
+          ) as MiroirApplicationVersionOLD_DO_NOT_USE[],
           applicationVersionCrossEntityDefinition: [],
           configuration: Object.values(
             reduxState[
@@ -220,7 +221,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
           jzodSchemas: Object.values(
             reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityJzodSchema.uuid)]
               .entities
-          ) as JzodSchemaDefinition[],
+          ) as JzodSchema[],
           reports: Object.values(
             reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityReport.uuid)].entities
           ) as Report[],
@@ -231,7 +232,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
         return {
           applicationVersions: Object.values(
             reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityApplicationVersion.uuid)]?.entities ?? {}
-          ) as MiroirApplicationVersion[],
+          ) as MiroirApplicationVersionOLD_DO_NOT_USE[],
           applicationVersionCrossEntityDefinition: [],
           configuration: Object.values(
             reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityStoreBasedConfiguration.uuid)]
@@ -245,7 +246,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
           ) as EntityDefinition[],
           jzodSchemas: Object.values(
             reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityJzodSchema.uuid)]?.entities ?? {}
-          ) as JzodSchemaDefinition[],
+          ) as JzodSchema[],
           reports: Object.values(
             reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityReport.uuid)]?.entities ?? {}
           ) as Report[],
@@ -288,14 +289,14 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  async handleRemoteStoreModelEntityAction(
+  async handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: ModelAction,
   // ): Promise<RemoteStoreActionReturnType> {
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelEntityAction.creator(
+      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(
         { deploymentUuid, action }
       )
     );

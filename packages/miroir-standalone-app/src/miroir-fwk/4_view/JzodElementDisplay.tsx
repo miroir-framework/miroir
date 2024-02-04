@@ -2,7 +2,7 @@ import { List, ListItem } from "@mui/material";
 import { useMemo } from "react";
 
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
-import { ApplicationSection, EntityInstancesUuidIndex, LoggerInterface, MetaEntity, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName } from "miroir-core";
+import { ApplicationSection, Entity, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName } from "miroir-core";
 
 import { packageName } from "../../constants";
 import { JzodEnumSchemaToJzodElementResolver, resolveJzodSchemaReference } from "../JzodTools";
@@ -28,7 +28,8 @@ export interface JzodElementDisplayProps {
   // instanceUuid?: Uuid,
   element: any,
   elementJzodSchema?: JzodElement,
-  currentReportDeploymentSectionEntities?: MetaEntity[],
+  // currentReportDeploymentSectionEntities?: MetaEntity[],
+  currentReportDeploymentSectionEntities?: Entity[],
   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
 }
 
@@ -243,7 +244,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
         targetJzodSchema.definition == "string" &&
         targetEntityUuid
       ) {
-        const targetEntity: MetaEntity | undefined = props.currentReportDeploymentSectionEntities?.find(
+        const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
           (e) => e.uuid == targetEntityUuid
         );
         return (

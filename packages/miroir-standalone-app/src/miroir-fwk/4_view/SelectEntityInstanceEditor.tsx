@@ -17,18 +17,18 @@ import {
   useRef,
   useState
 } from 'react';
-import { useSelector } from "react-redux";
 import ReactDOM from 'react-dom';
+import { useSelector } from "react-redux";
 
 import {
+  Entity,
   EntityDefinition,
   EntityInstanceWithName,
-  MetaEntity,
-  MiroirApplicationModel,
   LocalCacheQueryParams,
   LoggerInterface,
+  MetaModel,
   MiroirLoggerFactory,
-  getLoggerName,
+  getLoggerName
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
@@ -36,11 +36,10 @@ import {
   selectModelForDeployment,
 } from "miroir-localcache-redux";
 
+import { packageName } from "../../constants";
 import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
-import { EntityInstanceUuidIndexSelectorParams } from "./ReduxHooks";
-import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
@@ -76,7 +75,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirApplicationModel
+  ) as MetaModel
 
   const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
   
@@ -182,9 +181,9 @@ export const SelectEntityInstanceEditor = memo(
     const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
     const currentModel = useSelector((state: ReduxStateWithUndoRedo) =>
       localSelectModelForDeployment(state, currentModelSelectorParams)
-    ) as MiroirApplicationModel
+    ) as MetaModel
   
-    const miroirEntities:MetaEntity [] = currentModel.entities;
+    const miroirEntities:Entity [] = currentModel.entities;
     // const miroirEntities:MetaEntity [] = useLocalCacheSectionEntitiesTOREMOVE(deploymentUuid,'model');
     const miroirEntityDefinitions:EntityDefinition[] = currentModel.entityDefinitions;
     // const miroirEntityDefinitions:EntityDefinition[] = useLocalCacheSectionEntityDefinitions(deploymentUuid,'model');

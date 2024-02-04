@@ -1,6 +1,5 @@
 import { Uuid } from '../1_core/EntityDefinition.js';
 
-import { MiroirApplicationModel } from '../1_core/Model.js';
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../2_domain/ModelUpdateInterface.js';
 import { Application } from '../1_core/Application.js';
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
@@ -14,6 +13,7 @@ import {
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  MetaModel,
   StoreAction,
   StoreSectionConfiguration,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -129,7 +129,7 @@ export type AdminStoreFactory = (
 export type AdminStoreFactoryRegister = Map<string,AdminStoreFactory>;
 
 export interface InitApplicationParameters {
-  metaModel:MiroirApplicationModel, 
+  metaModel:MetaModel, 
   dataStoreType: DataStoreApplicationType,
   application: Application,
   applicationDeploymentConfiguration: EntityInstance,
@@ -141,45 +141,48 @@ export interface InitApplicationParameters {
 // ###############################################################################################################
 // store Controller
 // TODO: remove AdminStoreInterface?
-export interface StoreControllerInterface extends AdminStoreInterface, AbstractStoreSectionInterface, AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
+export interface StoreControllerInterface
+  extends AdminStoreInterface,
+    AbstractStoreSectionInterface,
+    AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
   initApplication(
-    metaModel:MiroirApplicationModel, 
+    metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
     application: Application,
     applicationDeploymentConfiguration: EntityInstance,
     applicationModelBranch: EntityInstance,
     applicationVersion: EntityInstance,
-    applicationStoreBasedConfiguration: EntityInstance,
-  ):Promise<ActionReturnType>;
+    applicationStoreBasedConfiguration: EntityInstance
+  ): Promise<ActionReturnType>;
 
   createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
   deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(
-    entity:Entity,
-    entityDefinition: EntityDefinition,
+    entity: Entity,
+    entityDefinition: EntityDefinition
   ): Promise<ActionVoidReturnType>;
 
   createDataStorageSpaceForInstancesOfEntity(
-    entity:Entity,
-    entityDefinition: EntityDefinition,
+    entity: Entity,
+    entityDefinition: EntityDefinition
   ): Promise<ActionVoidReturnType>;
 
-  clearDataInstances():Promise<ActionVoidReturnType>;
+  clearDataInstances(): Promise<ActionVoidReturnType>;
 
-  getState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
-  getModelState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
-  getDataState():Promise<{[uuid:string]:EntityInstanceCollection}>;   // used only for testing purposes!
+  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
+  getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
+  getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
   // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
-  getInstance(section: ApplicationSection, parentUuid:string, uuid: Uuid):Promise<ActionReturnType>;
+  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionReturnType>;
   // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
-  getInstances(section: ApplicationSection, parentUuid:string):Promise<ActionEntityInstanceCollectionReturnType>;
-  upsertInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>;
-  deleteInstance(section: ApplicationSection, instance:EntityInstance):Promise<ActionVoidReturnType>;
-  deleteInstances(section: ApplicationSection, instances:EntityInstance[]):Promise<ActionVoidReturnType>;
+  getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
+  upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
+  deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
+  deleteInstances(section: ApplicationSection, instances: EntityInstance[]): Promise<ActionVoidReturnType>;
 
   // handleAction(storeAction: StoreAction): Promise<any>;
 
-  applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionReturnType>;
+  applyModelEntityUpdate(update: ModelReplayableUpdate): Promise<ActionReturnType>;
 }

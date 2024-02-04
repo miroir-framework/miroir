@@ -14,32 +14,37 @@
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
       },
       "iso3166-1Alpha-2": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":5, "defaultLabel": "Country Code", "editable": true }
+        "extra": { "id": 5, "defaultLabel": "Country Code", "editable": true }
       },
-      "icon": { "id":6, "type": "simpleType", "definition": "string", "optional": true, "extra": { "defaultLabel": "Icon", "editable": true } }
+      "icon": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 6, "defaultLabel": "Icon", "editable": true }
+      }
     }
   }
 }

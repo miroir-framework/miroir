@@ -1,4 +1,3 @@
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json';
 import entityApplicationDeploymentConfiguration from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json';
 import entityEntityDefinition from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json';
@@ -44,22 +43,22 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 
 // import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
-import { EntityDefinition, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Entity, EntityDefinition, JzodSchema, MetaModel, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // TODO: define current configuration!
-export const defaultMiroirMetaModel:MiroirApplicationModel = {
+export const defaultMiroirMetaModel: MetaModel = {
   configuration: [instanceConfigurationReference],
   entities: [
-    entityApplication as MetaEntity,
-    entityApplicationDeploymentConfiguration as MetaEntity,
-    entityApplicationModelBranch as MetaEntity,
-    entityApplicationVersion as MetaEntity,
-    entityEntity as MetaEntity,
-    entityEntityDefinition as MetaEntity,
-    EntityJzodSchema as MetaEntity,
-    entityReport as MetaEntity,
-    entityStoreBasedConfiguration as MetaEntity,
-    // entityApplicationVersion as MetaEntity,
+    entityApplication as Entity,
+    entityApplicationDeploymentConfiguration as Entity,
+    entityApplicationModelBranch as Entity,
+    entityApplicationVersion as Entity,
+    entityEntity as Entity,
+    entityEntityDefinition as Entity,
+    EntityJzodSchema as Entity,
+    entityReport as Entity,
+    entityStoreBasedConfiguration as Entity,
+    entityApplicationVersion as Entity,
   ],
   entityDefinitions: [
     entityDefinitionApplication as EntityDefinition,
@@ -73,7 +72,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
     entityDefinitionStoreBasedConfiguration as EntityDefinition,
   ],
   jzodSchemas: [
-    jzodSchemajzodMiroirBootstrapSchema as JzodSchemaDefinition,
+    jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
   ],
   applicationVersions:[
     applicationVersionInitialMiroirVersion
@@ -151,7 +150,7 @@ export const defaultMiroirMetaModel:MiroirApplicationModel = {
 // }
 
 
-export function getCurrentEntityDefinition(metaModel:MiroirApplicationModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
+export function getCurrentEntityDefinition(metaModel:MetaModel,applicationUuid:string,entityUuid:string): EntityDefinition | undefined{
   const currentApplicationVersionUuid:string = metaModel.configuration[0].definition.currentApplicationVersion;
   const currentApplicationVersion = metaModel.applicationVersions.find(av=>av.uuid == currentApplicationVersionUuid);
   const currentApplicationVersionCrossEntityDefinitions = metaModel.applicationVersionCrossEntityDefinition.filter(e=>e.applicationVersion == currentApplicationVersionUuid);

@@ -12,6 +12,7 @@ import {
   ApplicationDeploymentConfiguration,
   DomainControllerInterface,
   DomainDataAction,
+  Entity,
   EntityInstancesUuidIndex,
   LoggerInterface,
   MetaEntity,
@@ -44,7 +45,7 @@ export function defaultFormValues(
   tableComponentType: TableComponentType,
   currentEntityJzodSchema: JzodObject,
   idList?:{id:number}[],
-  currentMiroirEntity?: MetaEntity,
+  currentMiroirEntity?: Entity,
   displayedDeploymentDefinition?: ApplicationDeploymentConfiguration,
 ):any {
   log.info(

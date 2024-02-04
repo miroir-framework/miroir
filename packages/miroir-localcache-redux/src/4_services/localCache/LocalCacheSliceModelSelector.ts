@@ -5,8 +5,8 @@ import {
   JzodSchemaDefinition,
   LoggerInterface,
   MetaEntity,
-  MiroirApplicationModel,
-  MiroirApplicationVersion,
+  MetaModel,
+  MiroirApplicationVersionOLD_DO_NOT_USE,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
   Report,
@@ -171,14 +171,14 @@ export const selectModelForDeployment: () => (
       const result = {
         applicationVersions: (applicationVersions
           ? Object.values(applicationVersions)
-          : []) as MiroirApplicationVersion[],
+          : []) as MiroirApplicationVersionOLD_DO_NOT_USE[],
         applicationVersionCrossEntityDefinition: [],
         configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as MetaEntity[],
         entityDefinitions: (entityDefinitions ? Object.values(entityDefinitions) : []) as EntityDefinition[],
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as JzodSchemaDefinition[],
         reports: (reports ? Object.values(reports) : []) as Report[],
-      } as MiroirApplicationModel;
+      } as MetaModel;
       // log.info("selectModelForDeployment",params,result);
 
       return result;

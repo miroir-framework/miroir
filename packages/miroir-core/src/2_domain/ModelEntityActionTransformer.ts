@@ -1,10 +1,11 @@
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
 import {
   ModelAction,
   EntityDefinition,
   EntityInstanceCollection,
+  MetaModel,
+  Entity,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
@@ -35,7 +36,7 @@ export class ModelEntityActionTransformer{
 
   static modelEntityUpdateToCUDUpdate(
     modelUpdate:ModelEntityUpdate,
-    entities: MetaEntity[],
+    entities: Entity[],
     entityDefinitions: EntityDefinition[],
   ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
     let domainActionCUDUpdate: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
@@ -197,7 +198,7 @@ export class ModelEntityActionTransformer{
   // ###################################################################################################
   static modelEntityUpdateToModelCUDUpdate(
     modelUpdate:ModelEntityUpdate,
-    currentModel: MiroirApplicationModel,
+    currentModel: MetaModel,
   ):ModelCUDInstanceUpdate | undefined {
     const o = ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
       modelUpdate,

@@ -11,12 +11,13 @@ import {
 
 
 import { ApplicationSchema } from "../1_core/Application.js";
-import { ApplicationModelSchema, MiroirApplicationModel } from "../1_core/Model.js";
 import {
   EntityInstance,
   EntityInstancesUuidIndex,
+  MetaModel,
   entityInstance,
-  entityInstanceCollection
+  entityInstanceCollection,
+  metaModel
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
@@ -146,7 +147,8 @@ export type DomainTransactionalResetDataAction = z.infer<typeof DomainTransactio
 
 // #############################################################################################
 export const DomainModelInitActionParamsSchema = z.object({
-  metaModel: z.lazy(()=>ApplicationModelSchema),
+  // metaModel: z.lazy(()=>ApplicationModelSchema),
+  metaModel: z.lazy(()=>metaModel),
   dataStoreType: DataStoreApplicationTypeSchema,
   application: ApplicationSchema,
   applicationDeploymentConfiguration: entityInstance,
@@ -260,7 +262,7 @@ export type EntitiesDomainStateEntityInstanceArraySelector = (domainState: Entit
 export type EntitiesDomainStateInstanceSelector = (domainState: EntitiesDomainState) => EntityInstance | undefined;
 export type EntitiesDomainStateReducer = (domainState: EntitiesDomainState) => any;
 
-export type DomainStateMetaModelSelector = (domainState: DomainState) => MiroirApplicationModel | undefined;
+export type DomainStateMetaModelSelector = (domainState: DomainState) => MetaModel | undefined;
 
 export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstancesUuidIndex: EntityInstancesUuidIndex) => EntityInstance[];
 
@@ -270,9 +272,9 @@ export interface DomainControllerInterface {
   handleDomainTransactionalAction(
     deploymentUuid: Uuid,
     action: DomainTransactionalAction,
-    currentModel?: MiroirApplicationModel
+    currentModel?: MetaModel,
   ): Promise<void>;
-  handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MiroirApplicationModel): Promise<void>;
+  handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?

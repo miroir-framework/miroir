@@ -8,12 +8,13 @@ import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
+  Entity,
   EntityDefinition,
   EntityInstancesUuidIndex,
   LocalCacheQueryParams,
   LoggerInterface,
   MetaEntity,
-  MiroirApplicationModel,
+  MetaModel,
   MiroirLoggerFactory,
   Report,
   applicationDeploymentLibrary,
@@ -84,9 +85,9 @@ export const EntityInstancePage = () => {
   );
 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const libraryAppModel: MiroirApplicationModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  const libraryAppModel: MetaModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirApplicationModel;
+  ) as MetaModel;
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -109,12 +110,12 @@ export const EntityInstancePage = () => {
   );
 
   const deploymentReports: Report[] = currentModel.reports;
-  const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   log.info("EntityInstancePage currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
-  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
+  const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
     (e) => e?.uuid === params.entityUuid
   );
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =

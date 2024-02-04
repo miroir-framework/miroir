@@ -6,18 +6,20 @@ import { JzodElement, JzodObject, JzodUnion, jzodReference } from "@miroir-frame
 
 
 const entityDefinitionApplicationV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json', import.meta.url)).toString());
-const entityDefinitionApplicationVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json', import.meta.url)).toString());
 const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
 const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json', import.meta.url)).toString());
 // const modelEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json', import.meta.url)).toString());
 // const instanceEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json', import.meta.url)).toString());
 // const configFileContents = await import(configFilePath);
+// const entityDefinitionApplicationVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json', import.meta.url)).toString());
 
+import entityDefinitionApplicationVersionV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
 import entityDefinitionBundleV1 from "../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
 import entityDefinitionEntity from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json"  assert { type: "json" };
 import deploymentEndpoint from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json"  assert { type: "json" };
 import instanceEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json"  assert { type: "json" };
 import jzodSchemajzodMiroirBootstrapSchema from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json"  assert { type: "json" };
+import entityDefinitionJzodSchemaV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json"  assert { type: "json" };
 import entityDefinitionReportV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json"  assert { type: "json" };
 import entityDefinitionQueryVersionV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json"  assert { type: "json" };
 import modelEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json" assert { type: "json" };
@@ -71,6 +73,52 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "definition": "app"
           }
         ]
+      },
+      "storeBasedConfiguration": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "parentName": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+          },
+          "parentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+          },
+          "conceptLevel": {
+            "type": "enum",
+            "definition": ["MetaModel", "Model", "Data"],
+            "optional": true,
+            "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+          },
+          "defaultLabel": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "currentApplicationVersion": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":1, "defaultLabel": "Current Application Version", "editable": false }
+              }
+            }
+          }
+        }
       },
       "entityInstance": {
         "type": "object",
@@ -197,7 +245,118 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           ].includes(e[0])
         )
       ),
+      "jzodObjectOrReference": entityDefinitionJzodSchemaV1.jzodSchema.definition.definition.context.jzodObjectOrReference,
+      "jzodSchema": entityDefinitionJzodSchemaV1.jzodSchema as JzodObject,
       "report": (entityDefinitionReportV1 as any).jzodSchema,
+      "metaModel": {
+        "type": "object",
+        "definition": {
+          "applicationVersions": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationVersion"
+              }
+            }
+          },
+          "applicationVersionCrossEntityDefinition": {
+            "type": "array", 
+            "definition": { 
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [{ "type": "uuid" }],
+                  "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+                },
+                "parentName": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "optional": true,
+                  "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+                },
+                "parentUuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [{ "type": "uuid" }],
+                  "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": ["MetaModel", "Model", "Data"],
+                  "optional": true,
+                  "extra": { "id": 4, "defaultLabel": "Concept Level", "editable": false }
+                },
+                "applicationVersion": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [{ "type": "uuid" }],
+                  "extra": { "id":1, "defaultLabel": "Application Version", "editable": false }
+                },
+                "entityDefinition": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [{ "type": "uuid" }],
+                  "extra": { "id":1, "defaultLabel": "Entity Definition", "editable": false }
+                }
+              }
+            }
+          },
+          "configuration": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "storeBasedConfiguration"
+              }
+            }
+          },
+          "entities": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entity"
+              }
+            }
+          },
+          "entityDefinitions": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityDefinition"
+              }
+            }
+          },
+          "jzodSchemas": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodSchema"
+              }
+            }
+          },
+          "reports": {
+            "type": "array", 
+            "definition": { 
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "report"
+              }
+            }
+          }
+        }
+      },
       "_________________________________configuration_and_bundles_________________________________": {
         "type": "simpleType",
         "definition": "never"
@@ -988,7 +1147,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "actionName": {"type": "literal", "definition":"replaceLocalCache"},
           "objects": {
             "type": "array",
-            "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
+            "extra": { "id":1, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
             "definition": {
               "type": "schemaReference",
               "optional": false,

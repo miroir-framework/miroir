@@ -15,7 +15,7 @@ import {
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
   LoggerInterface,
-  MiroirApplicationModel,
+  MetaModel,
   MiroirLoggerFactory,
   Uuid,
   applicationDeploymentMiroir,
@@ -91,7 +91,7 @@ export interface JzodElementEditorProps {
 
 
 // ################################################################################################
-export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MiroirApplicationModel) {
+export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MetaModel) {
   return jzodUnion.discriminator
     ? {
         [jzodUnion.discriminator]:jzodUnion.definition.map(

@@ -17,7 +17,6 @@ import {
   EntityInstance,
   LoggerInterface,
   MetaEntity,
-  MiroirApplicationModel,
   MiroirFetchQuery,
   MiroirLoggerFactory,
   ObjectListReportSection,
@@ -34,7 +33,9 @@ import {
   reportEntityList,
   reportReportList,
   resetAndInitMiroirAndApplicationDatabase,
-  selectByDomainManyQueriesFromDomainState
+  selectByDomainManyQueriesFromDomainState,
+  MetaModel,
+  Entity
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -90,8 +91,8 @@ export const HomePage = (props: RootComponentProps) => {
   const displayedApplicationSection = context.applicationSection;
   const setDisplayedApplicationSection = context.setApplicationSection;
 
-  const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MiroirApplicationModel = useCurrentModel(displayedDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(displayedDeploymentUuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == displayedDeploymentUuid);
@@ -170,7 +171,7 @@ export const HomePage = (props: RootComponentProps) => {
   //     ? (currentMiroirReport?.definition[0] as ReportSectionList).definition
   //     : undefined
   // ;
-  const currentReportTargetEntity: MetaEntity | undefined = currentMiroirReportSectionObjectList
+  const currentReportTargetEntity: Entity | undefined = currentMiroirReportSectionObjectList
     ? entities?.find(
         (e) => e?.uuid === currentMiroirReportSectionObjectList.definition?.parentUuid
       )

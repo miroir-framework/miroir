@@ -47,7 +47,6 @@ import instanceEndpointV1 from '../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14
 import modelEndpointV1 from '../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json';
 
 import { MetaEntity } from "../0_interfaces/1_core/EntityDefinition.js";
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model";
 import { Application } from "../0_interfaces/1_core/Application.js";
 import { StoreControllerInterface } from '../0_interfaces/4-services/StoreControllerInterface.js';
 import { DataStoreApplicationType } from '../0_interfaces/3_controllers/ApplicationControllerInterface';
@@ -56,7 +55,7 @@ import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants';
 import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
-import { EntityDefinition, EntityInstance } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -82,7 +81,7 @@ export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter(e=>e.c
 export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(e=>e.conceptLevel != "MetaModel");
 
 export async function modelInitialize(
-  metaModel:MiroirApplicationModel,
+  metaModel:MetaModel,
   storeController:StoreControllerInterface,
   dataStoreType: DataStoreApplicationType,
   application: Application,

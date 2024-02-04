@@ -82,13 +82,18 @@ export interface RemoteStoreCRUDAction {
 // ################################################################################################
 export type RemoteStoreOLDModelAction =
   | DomainTransactionalActionWithCUDUpdate
-  | DomainTransactionalResetModelAction
-  | DomainTransactionalResetDataAction
-  | DomainModelInitAction
 ;
 
 // ################################################################################################
-export type RemoteStoreAction = RemoteStoreCRUDAction | RemoteStoreOLDModelAction | ModelAction | StoreAction | BundleAction;
+export type RemoteStoreAction =
+  | RemoteStoreCRUDAction
+  | RemoteStoreOLDModelAction
+  | DomainTransactionalResetModelAction
+  | DomainTransactionalResetDataAction
+  | DomainModelInitAction
+  | ModelAction
+  | StoreAction
+  | BundleAction;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {
@@ -140,7 +145,7 @@ export declare interface RemoteStoreInterface {
     deploymentUuid: string,
     action: RemoteStoreOLDModelAction
   ): Promise<ActionReturnType>;
-  handleRemoteStoreModelEntityAction(
+  handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: ModelAction
   ): Promise<ActionReturnType>;

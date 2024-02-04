@@ -1,5 +1,4 @@
 import {
-  MiroirApplicationModel,
   applicationDeploymentLibrary,
   MetaEntity,
   EntityDefinition,
@@ -19,7 +18,7 @@ import {
   entityBook,
   entityDefinitionAuthor,
   entityDefinitionBook,
-  entityDefinitionPubliser,
+  entityDefinitionPublisher,
   entityDefinitionTest,
   entityPublisher,
   entityTest,
@@ -41,12 +40,13 @@ import {
   Country2,
   Country3,
   Country4,
+  MetaModel,
 } from "miroir-core";
 
 // ###################################################################################
 export async function uploadBooksAndReports(
   domainController: DomainControllerInterface,
-  currentModel?: MiroirApplicationModel
+  currentModel?: MetaModel
 ) {
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
@@ -62,7 +62,7 @@ export async function uploadBooksAndReports(
             { entity: entityAuthor as MetaEntity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
             { entity: entityBook as MetaEntity, entityDefinition: entityDefinitionBook as EntityDefinition },
             { entity: entityCountry as MetaEntity, entityDefinition: entityDefinitionCountry as EntityDefinition },
-            { entity: entityPublisher as MetaEntity, entityDefinition: entityDefinitionPubliser as EntityDefinition },
+            { entity: entityPublisher as MetaEntity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
             { entity: entityTest as MetaEntity, entityDefinition: entityDefinitionTest as EntityDefinition },
           ],
         },

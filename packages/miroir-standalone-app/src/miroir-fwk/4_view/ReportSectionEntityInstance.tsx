@@ -7,7 +7,6 @@ import {
   ApplicationSection,
   EntityDefinition,
   MetaEntity,
-  MiroirApplicationModel,
   LocalCacheQueryParams,
   Uuid,
   applicationDeploymentLibrary,
@@ -16,7 +15,9 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
-  EntityInstance
+  EntityInstance,
+  MetaModel,
+  Entity
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
@@ -66,9 +67,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
-  const libraryAppModel: MiroirApplicationModel = useSelector((state: ReduxStateWithUndoRedo) =>
+  const libraryAppModel: MetaModel = useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, currentModelSelectorParams)
-  ) as MiroirApplicationModel;
+  ) as MetaModel;
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -91,13 +92,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportDefinitionApplicationSection
   );
 
-  const currentReportDeploymentSectionEntities: MetaEntity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   log.info("ReportSectionEntityInstance currentReportDeploymentSectionEntities", currentReportDeploymentSectionEntities);
 
 
-  const currentReportTargetEntity: MetaEntity | undefined = currentReportDeploymentSectionEntities?.find(
+  const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
       (e) => e?.uuid === props.entityUuid
     );
 

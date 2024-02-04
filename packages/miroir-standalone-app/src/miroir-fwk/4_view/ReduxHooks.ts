@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
+  DomainElement,
   DomainStateSelector,
   EntityDefinition,
   EntityInstance,
@@ -12,11 +13,9 @@ import {
   LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   LoggerInterface,
-  MiroirApplicationModel,
-  MiroirCustomQueryParams,
+  MetaModel,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
-  DomainElement,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -25,8 +24,8 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDomainStateSelector,
   applyDomainStateCleanSelector,
+  applyDomainStateSelector,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -76,7 +75,7 @@ export function useDomainStateCleanSelector<P extends MiroirSelectorQueryParams,
 }
 
 // ################################################################################################
-export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicationModel {
+export function useCurrentModel(deploymentUuid: Uuid | undefined):MetaModel {
   const localSelectModelForDeployment = useMemo(selectModelForDeployment,[]);
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({
@@ -90,7 +89,7 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined):MiroirApplicat
 
   return useSelector((state: ReduxStateWithUndoRedo) =>
     localSelectModelForDeployment(state, selectorParams)
-  ) as MiroirApplicationModel
+  ) as MetaModel
 }
 
 

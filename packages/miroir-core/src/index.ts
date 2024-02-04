@@ -31,6 +31,8 @@ export {
   storeAction,
   Entity,
   entity,
+  MetaModel,
+  metaModel,
   ModelAction,
   modelAction,
   InstanceAction,
@@ -45,6 +47,8 @@ export {
   DomainElementType,
   domainElementType,
   InstanceCUDAction,
+  JzodSchema,
+  jzodSchema,
   LocalCacheAction,
   MiroirAction,
   MiroirConfigForMswClient,
@@ -75,6 +79,8 @@ export {
   SqlDbStoreSectionConfiguration,
   IndexedDbStoreSectionConfiguration,
   FilesystemDbStoreSectionConfiguration,
+  StoreBasedConfiguration,
+  storeBasedConfiguration,
   StoreSectionConfiguration,
   storeSectionConfiguration,
   StoreUnitConfiguration,
@@ -145,15 +151,15 @@ export {
 } from './0_interfaces/1_core/JzodSchemaDefinition.js';
 export {
   DeploymentMode,
-  StoreBasedConfigurationSchema,
-  StoreBasedConfiguration,
+  // StoreBasedConfigurationSchema,
+  // StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
+// export {
+//   ApplicationModelSchema,
+//   MiroirApplicationModel,
+// } from './0_interfaces/1_core/Model.js';
 export {
-  ApplicationModelSchema,
-  MiroirApplicationModel,
-} from './0_interfaces/1_core/Model.js';
-export {
-  MiroirApplicationVersion,
+  MiroirApplicationVersionOLD_DO_NOT_USE,
 } from './0_interfaces/1_core/ModelVersion.js';
 export {
   ClientFileStorage,
@@ -583,7 +589,7 @@ import reportBookInstance from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6
 import reportPublisherList from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a77aa662-006d-46cd-9176-01f02a1a12dc.json";
 import reportTestList from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/931dd036-dfce-4e47-868e-36dba3654816.json";
 import entityDefinitionBook from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json";
-import entityDefinitionPubliser from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
+import entityDefinitionPublisher from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json";
 import entityDefinitionAuthor from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json";
 import entityDefinitionCountry from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json";
 import entityDefinitionTest from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/83872519-ce34-4a24-b1db-b7bf604ebd3a.json";
@@ -631,7 +637,7 @@ export {
   reportCountryList,
   reportPublisherList,
   reportTestList,
-  entityDefinitionPubliser,
+  entityDefinitionPublisher,
   entityDefinitionAuthor,
   entityDefinitionTest,
   applicationLibrary,

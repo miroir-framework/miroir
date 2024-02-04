@@ -2,12 +2,8 @@ import { z } from "zod";
 
 import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
-import { MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { jzodSchemaDefinitionSchema } from "../../0_interfaces/1_core/JzodSchemaDefinition.js";
-import { StoreBasedConfigurationSchema } from "../../0_interfaces/1_core/MiroirConfig.js";
-import { MiroirApplicationVersionSchema } from "../../0_interfaces/1_core/ModelVersion.js";
 
-import { EntityInstance, entityDefinition, entityInstance, report } from "./preprocessor-generated/miroirFundamentalType";
+import { EntityInstance, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -25,17 +21,17 @@ export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.exte
   entityDefinition: z.string().uuid(),
 });
 
-export const ApplicationModelSchema = z.object({
-  applicationVersions: z.array(MiroirApplicationVersionSchema),
-  applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
-  configuration: z.array(StoreBasedConfigurationSchema),
-  entities: z.array(MetaEntitySchema),
-  entityDefinitions: z.array(entityDefinition),
-  jzodSchemas:z.array(jzodSchemaDefinitionSchema),
-  reports: z.array(report),
-});
+// export const ApplicationModelSchema = z.object({
+//   applicationVersions: z.array(MiroirApplicationVersionSchemaOLD_DO_NOT_USE),
+//   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
+//   configuration: z.array(StoreBasedConfigurationSchema),
+//   entities: z.array(MetaEntitySchema),
+//   entityDefinitions: z.array(entityDefinition),
+//   jzodSchemas:z.array(jzodSchemaDefinitionSchema),
+//   reports: z.array(report),
+// });
 
-export type MiroirApplicationModel = z.infer<typeof ApplicationModelSchema>
+// export type MiroirApplicationModel = z.infer<typeof ApplicationModelSchema>
 
 
 

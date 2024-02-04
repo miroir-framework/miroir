@@ -3,23 +3,21 @@ import { useMemo } from 'react';
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
+  DomainElementObject,
+  Entity,
   EntityDefinition,
   LoggerInterface,
   MetaEntity,
-  MiroirApplicationModel,
+  MetaModel,
   MiroirLoggerFactory,
   RecordOfJzodObject,
   ReportSection,
-  DomainElementObject,
-  SelectObjectListQuery,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  circularReplacer,
   getLoggerName,
   reportEntityDefinitionList,
-  reportEntityList,
-  domainElementObject
+  reportEntityList
 } from "miroir-core";
 
 
@@ -54,8 +52,8 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
 
   // ##############################################################################################
-  const miroirMetaModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentMiroir.uuid);
-  const libraryAppModel: MiroirApplicationModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
 
   // computing current state #####################################################################
   const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
@@ -103,7 +101,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   log.info("ReportSectionView availableReports",availableReports);
 
-  const currentReportTargetEntity: MetaEntity | undefined =
+  const currentReportTargetEntity: Entity | undefined =
     props.reportSection?.type === "objectListReportSection" 
       ? entities?.find(
           (e) =>

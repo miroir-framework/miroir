@@ -92,7 +92,7 @@
         "definition": "string",
         "extra": { "id":4, "defaultLabel": "Name", "editable": true }
       },
-      "icon": { "id":5, "type": "simpleType", "definition": "string", "extra": { "defaultLabel": "Icon", "editable": true } }
+      "icon": { "type": "simpleType", "definition": "string", "extra": { "id":5, "defaultLabel": "Icon", "editable": true } }
     }
   }
 }

@@ -6,11 +6,11 @@ import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationSection,
   LoggerInterface,
-  MiroirApplicationModel,
   MiroirLoggerFactory,
   Report,
   DomainElementObject,
-  getLoggerName
+  getLoggerName,
+  MetaModel
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -55,7 +55,7 @@ export const ReportPage = () => {
   useEffect(()=>context.setDeploymentUuid(params.deploymentUuid ? params.deploymentUuid : ""));
 
   const errorLog = useErrorLogService();
-  const currentModel: MiroirApplicationModel = useCurrentModel(params.deploymentUuid);
+  const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
 
   log.info("ReportPage currentModel", currentModel);
 
@@ -68,6 +68,7 @@ export const ReportPage = () => {
     "defaultLabel": "No report to display!",
     "type": "list",
     "definition": {
+      "fetchQuery": {"select": {}},
       "section": {
         "type":"objectListReportSection",
         "definition": {
@@ -77,7 +78,7 @@ export const ReportPage = () => {
       }
     }
   }), [])
-  const currentMiroirReport: Report = currentModel.reports?.find((r) => r.uuid === params.reportUuid)??defaultReport;
+  const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
 
   const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
 

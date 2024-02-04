@@ -245,6 +245,32 @@ export async function modelActionRunner(
   // log.info('modelActionRunner action', JSON.stringify(update,undefined,2));
   log.info('modelActionRunner action', update);
   switch (update.actionName) {
+    case 'resetModel':{
+      log.debug("modelActionRunner resetModel update");
+      await miroirDataStoreProxy.clear();
+      await appDataStoreProxy.clear();
+      log.trace('modelActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+      break;
+    }
+    case 'resetData':{
+      log.debug("modelActionRunner resetData update");
+      await appDataStoreProxy.clearDataInstances();
+      log.trace('modelActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
+      break;
+    }
+    case 'initModel':{
+      const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      log.debug('modelActionRunner initModel params',params);
+
+      await initApplicationDeployment(
+        deploymentUuid,
+        actionName,
+        miroirDataStoreProxy,
+        appDataStoreProxy,
+        params
+      );
+      break;
+    }
     case "createEntity": {
       log.debug('modelActionRunner applyModelEntityUpdates createEntity inserting',update.entity.name);
       await targetProxy.createEntity(update.entity, update.entityDefinition);

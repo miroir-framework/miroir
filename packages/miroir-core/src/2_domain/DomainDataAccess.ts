@@ -10,9 +10,7 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState.js";
 
-import { StoreBasedConfiguration } from "../0_interfaces/1_core/MiroirConfig.js";
-import { MiroirApplicationModel } from "../0_interfaces/1_core/Model.js";
-import { MiroirApplicationVersion } from "../0_interfaces/1_core/ModelVersion.js";
+import { MiroirApplicationVersionOLD_DO_NOT_USE } from "../0_interfaces/1_core/ModelVersion.js";
 import { defaultMiroirMetaModel } from "../1_core/Model.js";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
@@ -30,7 +28,14 @@ import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
 import { cleanLevel } from "./constants.js";
-import { EntityDefinition, EntityInstance, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  EntityDefinition,
+  EntityInstance,
+  JzodSchema,
+  MetaModel,
+  Report,
+  StoreBasedConfiguration,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -57,7 +62,7 @@ export function selectEntityInstances(parentUuid:string | undefined):EntitiesDom
 export function selectCurrentDeploymentModel(
   deploymentUuid:string | undefined
 ):DomainStateMetaModelSelector {
-  return (domainState:DomainState):MiroirApplicationModel => {
+  return (domainState:DomainState):MetaModel => {
     log.info('selectCurrentDeploymentModel for deploymentUuid', deploymentUuid, 'existing entities:', Object.keys(domainState))
     if (deploymentUuid == applicationDeploymentLibrary.uuid) {
       // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing instances:', Object.keys(domainState[parentUuid]))
@@ -80,7 +85,7 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid] &&
           domainState[deploymentUuid]["model"] &&
           domainState[deploymentUuid]["model"][entityJzodSchema.uuid]
-          ? Object.values(domainState[deploymentUuid]["model"][entityJzodSchema.uuid]) as JzodSchemaDefinition[]
+          ? Object.values(domainState[deploymentUuid]["model"][entityJzodSchema.uuid]) as JzodSchema[]
           : []
         ),
         reports: (
@@ -101,7 +106,7 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid] &&
           domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"] &&
           domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]
-          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersion[]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
           : []
         ),
         applicationVersionCrossEntityDefinition: [],

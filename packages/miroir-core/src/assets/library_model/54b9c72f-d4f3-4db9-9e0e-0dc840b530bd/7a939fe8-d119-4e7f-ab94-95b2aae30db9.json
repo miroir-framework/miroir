@@ -14,33 +14,43 @@
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+        "extra": { "id": 1, "defaultLabel": "Uuid", "editable": false }
       },
       "parentName": {
         "type": "simpleType",
         "definition": "string",
         "optional": true,
-        "extra": { "id":2, "defaultLabel": "Entity Name", "editable": false }
+        "extra": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
       },
       "parentUuid": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id":3, "defaultLabel": "Entity Uuid", "editable": false }
+        "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
       "name": {
         "type": "simpleType",
         "definition": "string",
-        "extra": { "id":4, "defaultLabel": "Name", "editable": true }
+        "extra": { "id": 4, "defaultLabel": "Name", "editable": true }
       },
       "country": {
         "type": "simpleType",
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":5, "defaultLabel": "Country", "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4", "editable": true }
+        "extra": {
+          "id": 5,
+          "defaultLabel": "Country",
+          "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+          "editable": true
+        }
       },
-      "icon": { "id":6, "type": "simpleType", "definition": "string", "optional": true, "extra": { "defaultLabel": "Icon", "editable": true } }
+      "icon": {
+        "type": "simpleType",
+        "definition": "string",
+        "optional": true,
+        "extra": { "id": 6, "defaultLabel": "Icon", "editable": true }
+      }
     }
   }
 }

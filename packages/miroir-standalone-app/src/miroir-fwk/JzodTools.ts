@@ -1,18 +1,19 @@
-import { JzodReference, JzodObject, JzodElement } from "@miroir-framework/jzod-ts";
-import { MiroirApplicationModel } from "miroir-core";
+import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
+import { MetaModel } from "miroir-core/src";
+import { JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
 // ################################################################################################
 export function resolveJzodSchemaReference(
   jzodReference?: JzodReference,
-  currentModel?: MiroirApplicationModel,
+  currentModel?: MetaModel,
   relativeReferenceJzodContext?: JzodObject | JzodReference,
 ): JzodElement {
   const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition.absolutePath
     ? {
         type: "object",
         definition:
-          currentModel?.jzodSchemas.find((s) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ??
+          (currentModel?(currentModel as any).jzodSchemas:[]).find((s:JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ??
           {},
       }
     : relativeReferenceJzodContext??jzodReference;
@@ -51,7 +52,7 @@ export type JzodElementRecord = { [k: string]: JzodElement };
 export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: any) => JzodElement;
 
 export function getCurrentEnumJzodSchemaResolver(
-  currentMiroirModel: MiroirApplicationModel,
+  currentMiroirModel: MetaModel,
   // relativeReferenceJzodSchema: JzodObject,
 // ):JzodElementRecord  {
 ):JzodEnumSchemaToJzodElementResolver  {
