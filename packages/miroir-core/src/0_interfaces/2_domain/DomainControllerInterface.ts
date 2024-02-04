@@ -17,7 +17,8 @@ import {
   MetaModel,
   entityInstance,
   entityInstanceCollection,
-  metaModel
+  metaModel,
+  modelActionInitModel
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationTypeSchema } from "../3_controllers/ApplicationControllerInterface.js";
 import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
@@ -161,12 +162,12 @@ export type DomainModelInitActionParams = z.infer<typeof DomainModelInitActionPa
 
 
 // #############################################################################################
-export const DomainModelInitActionSchema = z.object({
-  actionType: z.literal("DomainTransactionalAction"),
-  actionName: z.literal("initModel"),
-  params: DomainModelInitActionParamsSchema
-});
-export type DomainModelInitAction = z.infer<typeof DomainModelInitActionSchema>;
+// export const DomainModelInitActionSchema = z.object({
+//   actionType: z.literal("DomainTransactionalAction"),
+//   actionName: z.literal("initModel"),
+//   params: DomainModelInitActionParamsSchema
+// });
+// export type DomainModelInitAction = z.infer<typeof DomainModelInitActionSchema>;
 
 // #############################################################################################
 export const DomainTransactionalAncillaryActionSchema = z.union([
@@ -175,7 +176,6 @@ export const DomainTransactionalAncillaryActionSchema = z.union([
   DomainTransactionalUndoRedoActionSchema,
   DomainTransactionalResetModelActionSchema,
   DomainTransactionalResetDataActionSchema,
-  DomainModelInitActionSchema,
 ]);
 export type DomainTransactionalAncillaryAction = z.infer<typeof DomainTransactionalAncillaryActionSchema>;
   
@@ -213,7 +213,12 @@ export type RemoteStoreActionName = z.infer<typeof remoteStoreActionNamesSchema>
 
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
-export const DomainActionSchema = z.union([DomainDataActionSchema, DomainTransactionalActionSchema]);
+export const DomainActionSchema = z.union([
+  DomainDataActionSchema,
+  DomainTransactionalActionSchema,
+  modelActionInitModel,
+  
+]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
 
 export const DomainActionWithDeploymentSchema = z.object({

@@ -8,10 +8,10 @@ import {
   MiroirAction,
   BundleAction,
   ActionReturnType,
+  ModelActionInitModel,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName,
-  DomainModelInitAction,
   DomainTransactionalActionWithCUDUpdate,
   DomainTransactionalResetDataAction,
   DomainTransactionalResetModelAction,
@@ -90,7 +90,7 @@ export type RemoteStoreAction =
   | RemoteStoreOLDModelAction
   | DomainTransactionalResetModelAction
   | DomainTransactionalResetDataAction
-  | DomainModelInitAction
+  // | ModelActionInitModel
   | ModelAction
   | StoreAction
   | BundleAction;

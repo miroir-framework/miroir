@@ -44,8 +44,9 @@ export async function resetAndInitMiroirAndApplicationDatabase(
 ) {
   await resetMiroirAndApplicationDatabases(domainController)
   await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-    actionType: "DomainTransactionalAction",
+    actionType: "modelAction",
     actionName: "initModel",
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     params: {
       dataStoreType: "miroir",
       metaModel: defaultMiroirMetaModel,
@@ -57,8 +58,9 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     },
   });
   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-    actionType: "DomainTransactionalAction",
+    actionType: "modelAction",
     actionName: "initModel",
+    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     params: {
       dataStoreType: "app",
       metaModel: defaultMiroirMetaModel,

@@ -190,6 +190,13 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           "Data"
         ]
       },
+      "dataStoreType": {
+        "type": "enum",
+        "definition": [
+          "miroir",
+          "app"
+        ]
+      },
       "entityInstanceUuid": {
         "type": "simpleType",
         "definition": "string"
@@ -1032,6 +1039,9 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         ]
       },
+      "modelActionInitModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
+      "modelActionResetModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
+      "modelActionResetData": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,
       "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},

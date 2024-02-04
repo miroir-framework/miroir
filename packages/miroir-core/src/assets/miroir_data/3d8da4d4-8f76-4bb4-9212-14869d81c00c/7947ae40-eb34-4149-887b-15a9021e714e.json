@@ -15,11 +15,58 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"initModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "metaModel": {
-              "type": "schemaReference",
+            "params": {
+              "type": "object",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "metaModel"
+                "metaModel": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "metaModel"
+                  }
+                },
+                "dataStoreType": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "dataStoreType"
+                  }
+                },
+                "application": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "application"
+                  }
+                },
+                "applicationDeploymentConfiguration": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                },
+                "applicationModelBranch": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                },
+                "applicationVersion": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                },
+                "applicationStoreBasedConfiguration": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityInstance"
+                  }
+                }
               }
             }
           }

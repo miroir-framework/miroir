@@ -39,6 +39,7 @@ import {
   ActionReturnType,
   entityInstanceCollection,
   MetaModel,
+  ModelActionInitModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -122,7 +123,7 @@ export class DomainController implements DomainControllerInterface {
     
           break;
         }
-        case "initModel":
+        // case "initModel":
         case "resetData":
         case "resetModel": {
           await this.callUtil.callRemoteAction(
@@ -496,6 +497,53 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve();
   }
 
+  // ##############################################################################################
+  // converts a Domain model action into a set of local cache actions and remote store actions
+  async handleModelAction(
+    deploymentUuid:Uuid,
+    modelAction: ModelActionInitModel,
+    currentModel: MetaModel,
+  ): Promise<void> {
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction start actionName",
+      modelAction['actionName'],
+      "deployment", deploymentUuid,
+      "action",
+      modelAction
+    );
+    try {
+      switch (modelAction.actionName) {
+        case "initModel": {
+          await this.callUtil.callRemoteAction(
+            {}, // context
+            {}, // context update
+            "handleRemoteStoreModelAction",
+            deploymentUuid,
+            modelAction
+          );
+          break;
+        }
+        default: {
+          log.warn("DomainController handleDomainTransactionalAction cannot handle action name for", modelAction);
+          break;
+        }
+      }
+    } catch (error) {
+      log.warn(
+        "DomainController handleDomainTransactionalAction caught exception when handling",
+        modelAction["actionName"],
+        "deployment",
+        deploymentUuid,
+        "action",
+        modelAction,
+        "exception",
+        error
+      );
+    }
+    return Promise.resolve();
+  }
+
+
   //####################################################################################
   //####################################################################################
   //####################################################################################
@@ -687,6 +735,10 @@ export class DomainController implements DomainControllerInterface {
     log.debug('handleDomainAction domainAction',domainAction);
      
     switch (domainAction.actionType) {
+      case "modelAction": {
+        await this.handleModelAction(deploymentUuid, domainAction as ModelActionInitModel, currentModel);
+        return Promise.resolve()
+      }
       case "DomainDataAction": {
         await this.handleDomainNonTransactionalAction(deploymentUuid, domainAction as DomainDataAction);
         return Promise.resolve()
