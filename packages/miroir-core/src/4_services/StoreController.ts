@@ -1,11 +1,11 @@
 
-import { Application } from "../0_interfaces/1_core/Application.js";
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
   ActionVoidReturnType,
+  Application,
   ApplicationSection,
   Entity,
   EntityDefinition,
@@ -130,7 +130,7 @@ export class StoreController implements StoreControllerInterface {
 
   // #############################################################################################
   async bootFromPersistedState(
-    metaModelEntities : MetaEntity[],
+    metaModelEntities : Entity[],
     metaModelEntityDefinitions : EntityDefinition[],
   ):Promise<ActionVoidReturnType> {
     const modelBootFromPersistedState: ActionReturnType = await this.modelStoreSection.bootFromPersistedState(metaModelEntities, metaModelEntityDefinitions);
@@ -260,8 +260,8 @@ export class StoreController implements StoreControllerInterface {
     //     },
     //   });
     // }
-    const dataSectionFilteredEntities: MetaEntity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as MetaEntity[]).filter(
-      (e: MetaEntity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
+    const dataSectionFilteredEntities: Entity[] = (dataSectionEntities.returnedDomainElement.elementValue.instances as Entity[]).filter(
+      (e: Entity) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
     ); // for Miroir application only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
     log.trace(this.logHeader, "clearDataInstances found entities to clear:", dataSectionFilteredEntities);
     await this.dataStoreSection.clear();
@@ -296,7 +296,7 @@ export class StoreController implements StoreControllerInterface {
 
   // ##############################################################################################
   async createModelStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ):Promise<ActionVoidReturnType> {
     return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
@@ -304,7 +304,7 @@ export class StoreController implements StoreControllerInterface {
 
   // ##############################################################################################
   async createDataStorageSpaceForInstancesOfEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ):Promise<ActionVoidReturnType> {
     return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity,entityDefinition);
@@ -312,7 +312,7 @@ export class StoreController implements StoreControllerInterface {
 
   // ##############################################################################################
   async createEntity(
-    entity:MetaEntity,
+    entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<ActionVoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity,entityDefinition);

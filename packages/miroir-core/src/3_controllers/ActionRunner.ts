@@ -1,5 +1,4 @@
-import { MiroirAction, EntityDefinition, ModelAction, StoreAction } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainModelInitActionParams } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { EntityDefinition, MiroirAction, ModelAction, ModelActionInitModelParams } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { StoreControllerInterface } from "../0_interfaces/4-services/StoreControllerInterface.js";
@@ -30,7 +29,7 @@ export async function initApplicationDeployment(
   actionName:string,
   miroirStoreController:StoreControllerInterface,
   appStoreController:StoreControllerInterface,
-  params:DomainModelInitActionParams
+  params:ModelActionInitModelParams
 ) {
   log.info("ActionRunner.ts initApplicationDeployment model/initModel params",params);
   if (params.dataStoreType == 'miroir') { // TODO: improve, test is dirty
@@ -175,7 +174,7 @@ export async function modelOLDActionRunner(
       break;
     }
     case 'initModel':{
-      const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      const params:ModelActionInitModelParams = body as ModelActionInitModelParams;
       log.debug('modelOLDActionRunner initModel params',params);
 
       await initApplicationDeployment(
@@ -259,7 +258,7 @@ export async function modelActionRunner(
       break;
     }
     case 'initModel':{
-      const params:DomainModelInitActionParams = body as DomainModelInitActionParams;
+      const params:ModelActionInitModelParams = body as ModelActionInitModelParams;
       log.debug('modelActionRunner initModel params',params);
 
       await initApplicationDeployment(

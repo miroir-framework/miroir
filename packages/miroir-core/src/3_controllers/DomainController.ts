@@ -40,6 +40,7 @@ import {
   entityInstanceCollection,
   MetaModel,
   ModelActionInitModel,
+  ModelActionResetModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -123,9 +124,8 @@ export class DomainController implements DomainControllerInterface {
     
           break;
         }
-        // case "initModel":
-        case "resetData":
-        case "resetModel": {
+        // case "resetModel":
+        case "resetData": {
           await this.callUtil.callRemoteAction(
             {}, // context
             {}, // context update
@@ -501,7 +501,7 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain model action into a set of local cache actions and remote store actions
   async handleModelAction(
     deploymentUuid:Uuid,
-    modelAction: ModelActionInitModel,
+    modelAction: ModelActionInitModel | ModelActionResetModel,
     currentModel: MetaModel,
   ): Promise<void> {
     log.info(
@@ -513,6 +513,7 @@ export class DomainController implements DomainControllerInterface {
     );
     try {
       switch (modelAction.actionName) {
+        case "resetModel": 
         case "initModel": {
           await this.callUtil.callRemoteAction(
             {}, // context

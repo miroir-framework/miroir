@@ -1,13 +1,13 @@
 import { Uuid } from '../1_core/EntityDefinition.js';
 
 import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../2_domain/ModelUpdateInterface.js';
-import { Application } from '../1_core/Application.js';
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionReturnType,
   ActionVoidReturnType,
+  Application,
   ApplicationSection,
   Entity,
   EntityDefinition,

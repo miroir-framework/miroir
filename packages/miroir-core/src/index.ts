@@ -21,8 +21,8 @@ export {
   actionReturnType,
   ActionTransformer,
   actionTransformer,
-  // Application,
-  // application,
+  Application,
+  application,
   ApplicationSection,
   applicationSection,
   Commit,
@@ -106,10 +106,6 @@ export {
 }
 from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
-export {
-  Application,
-  ApplicationSchema,
-} from './0_interfaces/1_core/Application.js';
 export {
   miroirJzodSchemaBootstrapZodSchema,
   EntityAttributeCoreSchema,
@@ -199,10 +195,6 @@ export {
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeploymentSchema,
   DomainDataActionSchema,
-  // DomainModelInitAction,
-  DomainModelInitActionParams,
-  DomainModelInitActionParamsSchema,
-  // DomainModelInitActionSchema,
   DomainState,
   DomainStateMetaModelSelector,
   DomainTransactionalActionSchema,
@@ -212,7 +204,6 @@ export {
   DomainTransactionalEntityUpdateActionSchema,
   DomainTransactionalActionWithCUDUpdateSchema,
   DomainTransactionalUpdateEntityActionWithCUDUpdateSchema,
-  DomainTransactionalResetModelActionSchema,
   DomainTransactionalResetDataActionSchema,
   DomainTransactionalRollbackActionSchema,
   DomainTransactionalUndoRedoActionSchema,
@@ -233,7 +224,6 @@ export {
   DomainTransactionalEntityUpdateAction,
   DomainTransactionalActionWithCUDUpdate,
   DomainTransactionalUpdateEntityActionWithCUDUpdate,
-  DomainTransactionalResetModelAction,
   DomainTransactionalRollbackAction,
   DomainTransactionalUndoRedoAction,
   EntitiesDomainState,

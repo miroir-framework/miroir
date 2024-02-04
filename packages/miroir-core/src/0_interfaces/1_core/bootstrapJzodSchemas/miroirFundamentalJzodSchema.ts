@@ -5,7 +5,7 @@ import { JzodElement, JzodObject, JzodUnion, jzodReference } from "@miroir-frame
 
 
 
-const entityDefinitionApplicationV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json', import.meta.url)).toString());
+// const entityDefinitionApplicationV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json', import.meta.url)).toString());
 const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
 const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b17d5e9e-12f2-4ed8-abdb-2576c01514a4.json', import.meta.url)).toString());
 // const modelEndpointVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json', import.meta.url)).toString());
@@ -13,6 +13,7 @@ const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../asse
 // const configFileContents = await import(configFilePath);
 // const entityDefinitionApplicationVersionV1 = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json', import.meta.url)).toString());
 
+import entityDefinitionApplicationV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" assert { type: "json" };
 import entityDefinitionApplicationVersionV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
 import entityDefinitionBundleV1 from "../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
 import entityDefinitionEntity from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json"  assert { type: "json" };
@@ -1039,6 +1040,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         ]
       },
+      "modelActionInitModelParams": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters.definition.params,
       "modelActionInitModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
       "modelActionResetModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
       "modelActionResetData": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,

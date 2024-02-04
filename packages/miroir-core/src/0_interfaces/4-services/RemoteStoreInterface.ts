@@ -14,7 +14,6 @@ import {
   CRUDActionName,
   DomainTransactionalActionWithCUDUpdate,
   DomainTransactionalResetDataAction,
-  DomainTransactionalResetModelAction,
 } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { StoreControllerInterface } from "./StoreControllerInterface.js";
@@ -88,9 +87,7 @@ export type RemoteStoreOLDModelAction =
 export type RemoteStoreAction =
   | RemoteStoreCRUDAction
   | RemoteStoreOLDModelAction
-  | DomainTransactionalResetModelAction
   | DomainTransactionalResetDataAction
-  // | ModelActionInitModel
   | ModelAction
   | StoreAction
   | BundleAction;
