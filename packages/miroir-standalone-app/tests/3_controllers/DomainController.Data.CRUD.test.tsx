@@ -210,7 +210,7 @@ describe.sequential('DomainController.Data.CRUD',
                 );
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -269,8 +269,16 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('add Book step 1: the Book must be absent in the local cache report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
           console.log('add Book step 1: done replace.')
@@ -328,7 +336,11 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('add Book instance step 3: rollbacking/refreshing report list from remote store, added book must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -400,7 +412,7 @@ describe.sequential('DomainController.Data.CRUD',
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -459,8 +471,8 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
   
@@ -517,15 +529,15 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
-  
+
           await act(()=>user.click(screen.getByRole('button')));
-  
+
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(0);
-  
+
           await waitFor(
             () => {
               getAllByRole(/step:3/)
@@ -590,7 +602,7 @@ describe.sequential('DomainController.Data.CRUD',
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -650,10 +662,10 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
-  
+
           await act(()=>user.click(screen.getByRole('button')));
 
           await waitFor(
@@ -717,12 +729,12 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
-  
+
           await act(()=>user.click(screen.getByRole('button')));
-  
+
           await waitFor(
             () => {
               getAllByRole(/step:3/)

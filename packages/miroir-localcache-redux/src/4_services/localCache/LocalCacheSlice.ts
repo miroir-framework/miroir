@@ -38,7 +38,8 @@ import {
   getLoggerName,
   CreateInstanceParameters,
   ActionReturnType,
-  ACTION_OK
+  ACTION_OK,
+  DomainTransactionalUpdateMetaModelInstanceAction
 } from "miroir-core";
 
 import { packageName } from "../../constants";
@@ -474,13 +475,14 @@ function handleLocalCacheTransactionalAction(
     case "DomainTransactionalAction":
     default: {
       switch (action.actionName) {
-        case "rollback":
+        // case "rollback":
         case "undo":
         case "redo":
-        case "resetModel":
-        case "resetData":
-        case "initModel":
-        case "commit": {
+        // case "resetModel":
+        // case "resetData":
+        // case "initModel":
+        // case "commit":
+         {
           log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
           break;
         }

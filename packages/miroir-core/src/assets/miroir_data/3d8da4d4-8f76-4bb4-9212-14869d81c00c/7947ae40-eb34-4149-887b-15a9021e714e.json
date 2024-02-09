@@ -77,6 +77,26 @@
           "type": "object",
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"commit"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"rollback"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"resetModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
           }

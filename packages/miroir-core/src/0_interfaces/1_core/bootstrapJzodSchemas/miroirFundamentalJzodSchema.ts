@@ -1041,6 +1041,8 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
         ]
       },
       "modelActionInitModelParams": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters.definition.params,
+      "modelActionCommit": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "commit")?.actionParameters,
+      "modelActionRollback": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "rollback")?.actionParameters,
       "modelActionInitModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
       "modelActionResetModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
       "modelActionResetData": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,

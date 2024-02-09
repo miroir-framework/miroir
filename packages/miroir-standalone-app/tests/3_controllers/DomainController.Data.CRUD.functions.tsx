@@ -98,7 +98,7 @@ export async function refreshAllInstancesTest(
           await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
           await domainController.handleDomainAction(
             applicationDeploymentLibrary.uuid,
-            { actionName: "commit", actionType: "DomainTransactionalAction" },
+            { actionType: "modelAction", actionName: "commit", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
             reduxStore.currentModel(applicationDeploymentLibrary.uuid)
           );
         }
@@ -162,12 +162,14 @@ export async function refreshAllInstancesTest(
 
     await act(async () => {
       await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-        actionType: "DomainTransactionalAction",
+        actionType: "modelAction",
         actionName: "rollback",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       });
       await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-        actionType: "DomainTransactionalAction",
+        actionType: "modelAction",
         actionName: "rollback",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       });
     });
 

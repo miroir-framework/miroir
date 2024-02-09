@@ -171,6 +171,14 @@ export class ModelEntityActionTransformer{
         ];
         break;
       }
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "resetModel":
+      case "resetData": {
+        log.warn("modelActionToInstanceAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
+        return []
+      }
       default: {
         throw new Error("modelActionToInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
         break;

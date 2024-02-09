@@ -316,15 +316,17 @@ export const RootComponent = (props: RootComponentProps) => {
                 await domainController.handleDomainAction(
                   applicationDeploymentMiroir.uuid,
                   {
-                    actionType: "DomainTransactionalAction",
+                    actionType: "modelAction",
                     actionName: "rollback",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                   }
                 );
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
                   {
-                    actionType: "DomainTransactionalAction",
+                    actionType: "modelAction",
                     actionName: "rollback",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                   }
                 );
               }
@@ -366,8 +368,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 }
 
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-                  actionType: "DomainTransactionalAction",
+                  actionType: "modelAction",
                   actionName: "initModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   params: {
                     dataStoreType: "miroir",
                     metaModel: defaultMiroirMetaModel,
@@ -379,8 +382,9 @@ export const RootComponent = (props: RootComponentProps) => {
                   },
                 });
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-                  actionType: "DomainTransactionalAction",
+                  actionType: "modelAction",
                   actionName: "initModel",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   params: {
                     dataStoreType: "app",
                     metaModel: defaultMiroirMetaModel,
@@ -398,12 +402,14 @@ export const RootComponent = (props: RootComponentProps) => {
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 );
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-                  actionType: "DomainTransactionalAction",
+                  actionType: "modelAction",
                   actionName: "rollback",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                 });
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-                  actionType: "DomainTransactionalAction",
+                  actionType: "modelAction",
                   actionName: "rollback",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                 });
           
                 // }

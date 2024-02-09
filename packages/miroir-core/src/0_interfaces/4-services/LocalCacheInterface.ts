@@ -4,7 +4,15 @@ import {
   LocalCacheInfo,
 } from "../2_domain/DomainControllerInterface";
 
-import { modelAction, instanceCUDAction, InstanceAction, ApplicationSection, EntityInstanceCollection, ActionReturnType, MetaModel } from '../1_core/preprocessor-generated/miroirFundamentalType.js';
+import {
+  modelAction,
+  instanceCUDAction,
+  InstanceAction,
+  ApplicationSection,
+  EntityInstanceCollection,
+  ActionReturnType,
+  MetaModel,
+} from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   DomainTransactionalActionWithCUDUpdate
 } from "../2_domain/DomainControllerInterface.js";

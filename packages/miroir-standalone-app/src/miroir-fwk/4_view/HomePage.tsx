@@ -248,11 +248,12 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainTransactionalAction(
+            await domainController.handleDomainAction(
               applicationDeploymentMiroir.uuid,
               {
-                actionType: "DomainTransactionalAction",
+                actionType: "modelAction",
                 actionName: "commit",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               },
               defaultMiroirMetaModel
             );
@@ -264,11 +265,12 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainTransactionalAction(
+            await domainController.handleDomainAction(
               applicationDeploymentLibrary.uuid,
               {
-                actionType: "DomainTransactionalAction",
+                actionType: "modelAction",
                 actionName: "commit",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               },
               defaultMiroirMetaModel
             );
@@ -280,9 +282,10 @@ export const HomePage = (props: RootComponentProps) => {
       <span>
         <button
           onClick={async () => {
-            await domainController.handleDomainTransactionalAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainTransactionalAction",
+            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              actionType: "modelAction",
               actionName: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             });
           }}
         >
@@ -324,15 +327,17 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-              actionType: "DomainTransactionalAction",
+              actionType: "modelAction",
               actionName: "resetData",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             });
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-              actionType: "DomainTransactionalAction",
+              actionType: "modelAction",
               actionName: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             });
           }}
         >
@@ -395,12 +400,14 @@ export const HomePage = (props: RootComponentProps) => {
           onClick={async () => {
             log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainTransactionalAction",
+              actionType: "modelAction",
               actionName: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             });
             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-              actionType: "DomainTransactionalAction",
+              actionType: "modelAction",
               actionName: "rollback",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             });
           }}
         >

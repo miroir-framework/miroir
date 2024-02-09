@@ -216,7 +216,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createReportAction, props.currentModel);
 
-    await domainController.handleDomainAction(props.currentDeploymentUuid, {actionName: "commit",actionType:"DomainTransactionalAction"},props.currentModel);
+    await domainController.handleDomainAction(
+      props.currentDeploymentUuid,
+      { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" },
+      props.currentModel
+    );
     // const entityColumns = 
     const instances:EntityInstance[] = 
       fileData.map(

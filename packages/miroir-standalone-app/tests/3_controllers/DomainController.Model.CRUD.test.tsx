@@ -156,8 +156,16 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -213,8 +221,16 @@ describe.sequential(
           console.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -252,7 +268,11 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                createAction,
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+              );
             }
           );
 
@@ -285,7 +305,11 @@ describe.sequential(
           console.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -340,8 +364,16 @@ describe.sequential(
           console.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -417,7 +449,7 @@ describe.sequential(
             async () => {
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
-                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" },
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
@@ -445,7 +477,7 @@ describe.sequential(
             async () => {
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
-                { actionType: "DomainTransactionalAction", actionName: "rollback" },
+                { actionType: "modelAction", actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" },
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
@@ -485,8 +517,8 @@ describe.sequential(
 
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
 
@@ -517,7 +549,7 @@ describe.sequential(
             async () => {
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
-                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
@@ -547,7 +579,11 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
           await act(()=>user.click(screen.getByRole('button')));
@@ -608,9 +644,9 @@ describe.sequential(
           console.log('remove Author entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainTransactionalAction(
+              await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid,
-                { actionName: "commit", actionType: "DomainTransactionalAction" },
+                { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
               console.log("remove Author entity step 3: commit to remote store DONE")
@@ -632,7 +668,11 @@ describe.sequential(
           console.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -696,10 +736,14 @@ describe.sequential(
 
             await act(
               async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
-                await domainController.handleDomainTransactionalAction(
+                await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "DomainTransactionalAction" },
+                  createAction,
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -798,8 +842,8 @@ describe.sequential(
           console.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
             }
           );
   
@@ -868,7 +912,11 @@ describe.sequential(
           console.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainTransactionalAction(applicationDeploymentLibrary.uuid, {actionName: "commit",actionType:"DomainTransactionalAction"},reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleDomainAction(
+                applicationDeploymentLibrary.uuid,
+                { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" },
+                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+              );
             }
           );
   
@@ -888,7 +936,11 @@ describe.sequential(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalAction",actionName: "rollback"});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   

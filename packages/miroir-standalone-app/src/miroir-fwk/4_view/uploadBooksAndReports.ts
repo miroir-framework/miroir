@@ -101,7 +101,8 @@ export async function uploadBooksAndReports(
 
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
-    { actionName: "commit", actionType: "DomainTransactionalAction", label: "Adding Author and Book entities" },
+    { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"},
+    // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
     currentModel
   );
 
