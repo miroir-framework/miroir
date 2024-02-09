@@ -11,7 +11,6 @@ import {
   MetaEntity,
   entityEntity,
   entityEntityDefinition,
-  ApplicationModelSchema,
   DomainController,
   DomainControllerInterface,
   EntityAttribute,
@@ -21,12 +20,14 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   getLoggerName,
+  metaModel,
 } from "miroir-core";
 import { useDomainControllerService } from "./MiroirContextReactProvider";
 // import { JzodObject } from "@miroir-framework/jzod-ts";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
-import { JzodObject } from "@miroir-framework/jzod-ts";
+import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+// import { JzodObject } from "@miroir-framework/jzod-ts";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"importer");
@@ -37,7 +38,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 export const ImporterCorePropsSchema = z.object({
   filename:z.string(),
-  currentModel: ApplicationModelSchema,
+  // currentModel: ApplicationModelSchema,
+  currentModel: metaModel,
   currentDeploymentUuid: z.string().uuid(),
 })
 
