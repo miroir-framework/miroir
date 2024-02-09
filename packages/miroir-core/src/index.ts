@@ -204,7 +204,6 @@ export {
   DomainTransactionalEntityUpdateActionSchema,
   DomainTransactionalActionWithCUDUpdateSchema,
   DomainTransactionalUpdateEntityActionWithCUDUpdateSchema,
-  DomainTransactionalResetDataActionSchema,
   DomainTransactionalRollbackActionSchema,
   DomainTransactionalUndoRedoActionSchema,
   EntityInstancesUuidIndexEntityInstanceArraySelector,

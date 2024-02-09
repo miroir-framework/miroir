@@ -16,6 +16,7 @@ import {
   MetaModel,
   entityInstanceCollection,
   modelActionInitModel,
+  modelActionResetData,
   modelActionResetModel
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
@@ -129,27 +130,11 @@ export const DomainTransactionalUndoRedoActionSchema = z.object({
 });
 export type DomainTransactionalUndoRedoAction = z.infer<typeof DomainTransactionalUndoRedoActionSchema>;
 
-// // #############################################################################################
-// export const DomainTransactionalResetModelActionSchema = z.object({
-//   actionType: z.literal("DomainTransactionalAction"),
-//   actionName: z.literal("resetModel"),
-// });
-// export type DomainTransactionalResetModelAction = z.infer<typeof DomainTransactionalResetModelActionSchema>;
-
-// #############################################################################################
-export const DomainTransactionalResetDataActionSchema = z.object({
-  actionType: z.literal("DomainTransactionalAction"),
-  actionName: z.literal("resetData"),
-});
-export type DomainTransactionalResetDataAction = z.infer<typeof DomainTransactionalResetDataActionSchema>;
-
 // #############################################################################################
 export const DomainTransactionalAncillaryActionSchema = z.union([
   DomainTransactionalCommitActionSchema,
   DomainTransactionalRollbackActionSchema,
   DomainTransactionalUndoRedoActionSchema,
-  // DomainTransactionalResetModelActionSchema,
-  DomainTransactionalResetDataActionSchema,
 ]);
 export type DomainTransactionalAncillaryAction = z.infer<typeof DomainTransactionalAncillaryActionSchema>;
   
@@ -192,6 +177,7 @@ export const DomainActionSchema = z.union([
   DomainTransactionalActionSchema,
   modelActionInitModel,
   modelActionResetModel,
+  modelActionResetData,
 ]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
 

@@ -160,32 +160,32 @@ export async function modelOLDActionRunner(
   log.info('###################################### modelOLDActionRunner started deploymentUuid', deploymentUuid,'actionName',actionName);
   log.debug('modelOLDActionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   switch (actionName) {
-    case 'resetModel':{
-      log.debug("modelOLDActionRunner resetModel update");
-      await miroirDataStoreProxy.clear();
-      await appDataStoreProxy.clear();
-      log.trace('modelOLDActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
-      break;
-    }
-    case 'resetData':{
-      log.debug("modelOLDActionRunner resetData update");
-      await appDataStoreProxy.clearDataInstances();
-      log.trace('modelOLDActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
-      break;
-    }
-    case 'initModel':{
-      const params:ModelActionInitModelParams = body as ModelActionInitModelParams;
-      log.debug('modelOLDActionRunner initModel params',params);
+    // case 'resetModel':{
+    //   log.debug("modelOLDActionRunner resetModel update");
+    //   await miroirDataStoreProxy.clear();
+    //   await appDataStoreProxy.clear();
+    //   log.trace('modelOLDActionRunner resetModel after dropped entities:',miroirDataStoreProxy.getEntityUuids());
+    //   break;
+    // }
+    // case 'resetData':{
+    //   log.debug("modelOLDActionRunner resetData update");
+    //   await appDataStoreProxy.clearDataInstances();
+    //   log.trace('modelOLDActionRunner resetData after cleared data contents for entities:',miroirDataStoreProxy.getEntityUuids());
+    //   break;
+    // }
+    // case 'initModel':{
+    //   const params:ModelActionInitModelParams = body as ModelActionInitModelParams;
+    //   log.debug('modelOLDActionRunner initModel params',params);
 
-      await initApplicationDeployment(
-        deploymentUuid,
-        actionName,
-        miroirDataStoreProxy,
-        appDataStoreProxy,
-        params
-      );
-      break;
-    }
+    //   await initApplicationDeployment(
+    //     deploymentUuid,
+    //     actionName,
+    //     miroirDataStoreProxy,
+    //     appDataStoreProxy,
+    //     params
+    //   );
+    //   break;
+    // }
     case 'updateEntity': {
       const update: ModelReplayableUpdate = body;
       log.debug("modelOLDActionRunner updateEntity update",update);
