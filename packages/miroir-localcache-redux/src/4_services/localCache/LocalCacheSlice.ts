@@ -465,6 +465,7 @@ function handleLocalCacheTransactionalAction(
   // );
   switch (action.actionType) {
     case "modelAction": {
+      // TODO: modelActions shall be handled through handleLocalCacheEntityAction only! ??
       const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToInstanceAction(deploymentUuid, action)
       for (const localCacheCUDActionWithDeployment of localCacheCUDActionsWithDeployment) {
         handleLocalCacheCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);

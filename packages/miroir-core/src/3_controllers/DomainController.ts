@@ -44,6 +44,7 @@ import {
   ModelActionResetData,
   ModelActionCommit,
   ModelActionRollback,
+  ApplicationVersion,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -108,10 +109,6 @@ export class DomainController implements DomainControllerInterface {
     );
     try {
       switch (domainTransactionalAction.actionName) {
-        // case "rollback": {
-        //   await this.loadConfigurationFromRemoteDataStore(deploymentUuid);
-        //   break;
-        // }
         case "undo":
         case "redo": {
           this.callUtil.callLocalCacheAction(
@@ -127,215 +124,6 @@ export class DomainController implements DomainControllerInterface {
     
           break;
         }
-        // case "resetData": {
-        //   await this.callUtil.callRemoteAction(
-        //     {}, // context
-        //     {}, // context update
-        //     "handleRemoteStoreModelAction",
-        //     deploymentUuid,
-        //     domainTransactionalAction
-        //   );
-        //   break;
-        // }
-        // case "commit": {
-        //   log.debug(
-        //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit",
-        //     this.localCache.currentTransaction()
-        //   );
-  
-        //   if (!currentModel) {
-        //     throw new Error('commit operation did not receive current model. It requires the current model, to access the pre-existing transactions.');
-        //   } else {
-        //     const sectionOfapplicationEntities: ApplicationSection = deploymentUuid== applicationDeploymentMiroir.uuid?'data':'model';
-        //     const newModelVersionUuid = uuidv4();
-        //     const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
-        //       uuid: newModelVersionUuid,
-        //       conceptLevel: "Data",
-        //       parentName: entityApplicationVersion?.name,
-        //       parentUuid: entityApplicationVersion?.uuid,
-        //       description: domainTransactionalAction.label,
-        //       name: domainTransactionalAction.label
-        //         ? domainTransactionalAction.label
-        //         : "No label was given to this version.",
-        //       previousVersion: currentModel?.configuration[0]?.definition?.currentApplicationVersion,
-        //       // branch: applicationModelBranchMiroirMasterBranch.uuid,
-        //       branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        //       // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        //       application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-        //       modelStructureMigration: this.localCache
-        //         .currentTransaction()
-        //         .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalActionWithCUDUpdate) =>
-        //           t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
-        //         ),
-        //     };
-    
-        //     log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
-        //     const newModelVersionAction: RemoteStoreCRUDAction = {
-        //       actionType: 'RemoteStoreCRUDAction',
-        //       actionName: "create",
-        //       objects: [newModelVersion],
-        //     };
-    
-        //     // in the case of the Miroir app, this should be done in the 'data' section
-        //     await this.callUtil.callRemoteAction(
-        //       {}, // context
-        //       {}, // context update
-        //       "handleRemoteStoreRestCRUDAction",
-        //       deploymentUuid,
-        //       sectionOfapplicationEntities,
-        //       newModelVersionAction
-        //     );
-        //     log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
-    
-        //     for (const replayAction of this.localCache.currentTransaction()) {
-        //       log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
-        //       switch (replayAction.actionType) {
-        //         case 'DomainTransactionalAction': {
-        //           if (replayAction.actionName == "updateEntity") {
-        //             switch (replayAction.update.modelEntityUpdate.updateActionName) {
-        //               case 'createEntity': {
-        //                 const modelAction: ModelAction = {
-        //                     actionType: "modelAction",
-        //                     actionName: 'createEntity',
-        //                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        //                     entity: replayAction.update.modelEntityUpdate.entities[0].entity,
-        //                     entityDefinition: replayAction.update.modelEntityUpdate.entities[0].entityDefinition as any as EntityDefinition,
-        //                   // }
-        //                 }
-        //                 await this.callUtil.callRemoteAction(
-        //                   {}, // context
-        //                   {}, // context update
-        //                   "handleRemoteStoreModelAction",
-        //                   deploymentUuid,
-        //                   modelAction
-        //                 );
-        //                 break;
-        //               }
-        //               default: {
-        //                 await this.callUtil.callRemoteAction(
-        //                   {}, // context
-        //                   {}, // context update
-        //                   "handleRemoteStoreOLDModelAction",
-        //                   deploymentUuid,
-        //                   replayAction
-        //                 );
-        //                 break;
-        //               }
-        //             }
-        //           } else {
-        //             await this.callUtil.callRemoteAction(
-        //               {}, // context
-        //               {}, // context update
-        //               "handleRemoteStoreRestCRUDAction",
-        //               deploymentUuid,
-        //               replayAction.update.objects[0].applicationSection,
-        //               {
-        //                 actionType:'RemoteStoreCRUDAction',
-        //                 actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
-        //                 parentName: replayAction.update.objects[0].parentName,
-        //                 parentUuid: replayAction.update.objects[0].parentUuid,
-        //                 objects: replayAction.update.objects[0].instances,
-        //               }
-        //             );
-        //           }
-        //           break;
-        //         }
-        //         case "localCacheModelActionWithDeployment": {
-        //           await this.callUtil.callRemoteAction(
-        //             {}, // context
-        //             {}, // context update
-        //             "handleRemoteStoreModelAction",
-        //             deploymentUuid,
-        //             (replayAction as LocalCacheModelActionWithDeployment).modelAction
-        //           );
-        //           break;
-        //         }
-        //         default:
-        //           throw new Error("DomainController handleDomainTransactionalAction commit could not handle replay action:" + JSON.stringify(replayAction));
-        //           break;
-        //       }
-        //     }
-
-        //     log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",this.localCache.currentTransaction());
-
-        //     await this.callUtil.callLocalCacheAction(
-        //       {}, // context
-        //       {}, // context update
-        //       "handleLocalCacheTransactionalAction",
-        //       {
-        //         actionType: "localCacheTransactionalActionWithDeployment",
-        //         deploymentUuid,
-        //         domainAction: {
-        //           actionType: "DomainTransactionalAction",
-        //           actionName: "commit"
-        //         }
-        //       }
-        //     ).then(
-        //       (context) => {
-        //         log.debug(
-        //           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed and notified to local cache, currentTransaction:",
-        //           this.localCache.currentTransaction()
-        //         );
-        //         return this.callUtil.callLocalCacheAction(
-        //           {}, // context
-        //           {}, // context update
-        //           "handleLocalCacheCUDAction",
-        //           {
-        //             actionType: "LocalCacheCUDActionWithDeployment",
-        //             deploymentUuid,
-        //             instanceCUDAction: {
-        //               actionType: 'InstanceCUDAction',
-        //               actionName:'create',
-        //               applicationSection: "model",
-        //               objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
-        //             }
-        //           }
-        //         )
-        //       }
-        //     ).then(
-        //       (context) => {
-        //         return this.callUtil.callLocalCacheAction(
-        //           {}, // context
-        //           {}, // context update
-        //           "handleLocalCacheCUDAction",
-        //           {
-        //             actionType: "LocalCacheCUDActionWithDeployment",
-        //             deploymentUuid,
-        //             instanceCUDAction: {
-        //               actionType: 'InstanceCUDAction',
-        //               actionName:'create',
-        //               applicationSection: "model",
-        //               objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
-        //             }
-        //           }
-        //         )
-        //       }
-        //     ).then(
-        //       (context) => {
-        //         const updatedConfiguration = Object.assign({},instanceConfigurationReference,{definition:{"currentApplicationVersion": newModelVersionUuid}})
-        //         log.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration',updatedConfiguration)
-        //         const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
-        //           actionType:'RemoteStoreCRUDAction',
-        //           actionName: "update",
-        //           objects: [
-        //             updatedConfiguration
-        //           ],
-        //         };
-        //         // TODO: in the case of the Miroir app, this should be in the 'data'section
-        //         return this.callUtil.callRemoteAction(
-        //           {}, // context
-        //           {}, // context update
-        //           "handleRemoteStoreRestCRUDAction",
-        //           deploymentUuid,
-        //           sectionOfapplicationEntities,
-        //           newStoreBasedConfiguration
-        //         );
-        //       }
-        //     );
-    
-        //   }
-        //   break;
-        // }
         case "UpdateMetaModelInstance": {
           await this.callUtil.callLocalCacheAction(
             {}, // context
@@ -542,9 +330,10 @@ export class DomainController implements DomainControllerInterface {
           } else {
             const sectionOfapplicationEntities: ApplicationSection = deploymentUuid== applicationDeploymentMiroir.uuid?'data':'model';
             const newModelVersionUuid = uuidv4();
-            const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
+            // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
+            const newModelVersion: ApplicationVersion = {
               uuid: newModelVersionUuid,
-              conceptLevel: "Data",
+              // conceptLevel: "Data",
               parentName: entityApplicationVersion?.name,
               parentUuid: entityApplicationVersion?.uuid,
               description: "TODO: no description yet",
@@ -580,6 +369,7 @@ export class DomainController implements DomainControllerInterface {
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
     
             for (const replayAction of this.localCache.currentTransaction()) {
+              // replayAction: DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment
               log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
               switch (replayAction.actionType) {
                 case 'DomainTransactionalAction': {
@@ -603,6 +393,25 @@ export class DomainController implements DomainControllerInterface {
                         );
                         break;
                       }
+                      case 'DeleteEntity': {
+                        const modelAction: ModelAction = {
+                          actionType: "modelAction",
+                          actionName: 'dropEntity',
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          entityUuid: replayAction.update.modelEntityUpdate.entityUuid,
+                          entityDefinitionUuid: "unknown!!"
+                        }
+                        await this.callUtil.callRemoteAction(
+                          {}, // context
+                          {}, // context update
+                          "handleRemoteStoreModelAction",
+                          deploymentUuid,
+                          modelAction
+                        );
+                        break;
+                      }
+                      case 'alterEntityAttribute':
+                      case 'renameEntity':
                       default: {
                         await this.callUtil.callRemoteAction(
                           {}, // context
@@ -669,24 +478,6 @@ export class DomainController implements DomainControllerInterface {
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed and notified to local cache, currentTransaction:",
                   this.localCache.currentTransaction()
                 );
-                return this.callUtil.callLocalCacheAction(
-                  {}, // context
-                  {}, // context update
-                  "handleLocalCacheCUDAction",
-                  {
-                    actionType: "LocalCacheCUDActionWithDeployment",
-                    deploymentUuid,
-                    instanceCUDAction: {
-                      actionType: 'InstanceCUDAction',
-                      actionName:'create',
-                      applicationSection: "model",
-                      objects:[{parentUuid:newModelVersion.parentUuid, applicationSection:sectionOfapplicationEntities, instances: [newModelVersion]}]
-                    }
-                  }
-                )
-              }
-            ).then(
-              (context) => {
                 return this.callUtil.callLocalCacheAction(
                   {}, // context
                   {}, // context update

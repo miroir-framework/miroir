@@ -37,15 +37,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
-
   private operationMethod: {
     [P in HttpMethod]: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
-  }
+  };
 
-  constructor(
-    private rootApiUrl: string, 
-    private restClient: RestClientInterface
-  ) {
+  constructor(private rootApiUrl: string, private restClient: RestClientInterface) {
     log.info("RemoteStoreNetworkRestClient rootApiUrl", rootApiUrl);
     this.operationMethod = {
       get: this.restClient.get.bind(this.restClient),
@@ -58,25 +54,29 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
 
   // ##################################################################################
-  private actionTypeArgsMap: {[actionType:string]:{[actionNamePattern:string]: {"action"?: boolean, "attribute"?:string, "result"?: string} | undefined}} = {
-    "RemoteStoreCRUDAction": {"*": {attribute: "objects", result: "crudInstances"}},
-    "modelAction": {"*": {action: true}},
-    "storeAction": {"*": {action: true}}, // TODO: remove, there must be no impact when adding/removing an actionType
+  private actionTypeArgsMap: {
+    [actionType: string]: {
+      [actionNamePattern: string]: { action?: boolean; attribute?: string; result?: string } | undefined;
+    };
+  } = {
+    RemoteStoreCRUDAction: { "*": { attribute: "objects", result: "crudInstances" } },
+    modelAction: { "*": { action: true } },
+    storeAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
     // "localCacheModelActionWithDeployment": {"*": {action: true}},
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
-    "DomainTransactionalAction": {
-      "UpdateMetaModelInstance": {attribute: "update", result: "modelUpdate"}, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)
-      "updateEntity": {attribute: "update", result: "modelUpdate"},
-      "commit": undefined,
-      "initModel": {attribute: "params", result: "modelUpdate"},
-      "redo": undefined,
-      "replaceLocalCache": undefined, // local action, not sent on the network
-      "resetModel": undefined,
-      "resetData": undefined,
-      "rollback": undefined,
-      "undo": undefined,
+    DomainTransactionalAction: {
+      UpdateMetaModelInstance: { attribute: "update", result: "modelUpdate" }, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)
+      updateEntity: { attribute: "update", result: "modelUpdate" },
+      commit: undefined,
+      initModel: { attribute: "params", result: "modelUpdate" },
+      redo: undefined,
+      replaceLocalCache: undefined, // local action, not sent on the network
+      resetModel: undefined,
+      resetData: undefined,
+      rollback: undefined,
+      undo: undefined,
     },
-  }
+  };
 
   // ##################################################################################
   getRestCallParams(
@@ -87,35 +87,44 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     url: string;
     args: any;
   } {
-    const networkActionUrlMap: {[actionName:string]:string} = {
-      "read": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??((networkAction as RemoteStoreCRUDAction).parentUuid + "/all")),
-      "create": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
-      "update": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
-      "delete": "/" + ((networkAction as RemoteStoreCRUDAction).uuid??""),
-    }
-  
-    return {
-      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName]??"post"],
-      url: rootApiUrl + (networkActionUrlMap[networkAction.actionName]??""),
-      args: this.actionTypeArgsMap[networkAction.actionType]
-        ? this.actionTypeArgsMap[networkAction.actionType]["*"]
-          ? 
-          this.actionTypeArgsMap[networkAction.actionType]["*"]?.action?
-          networkAction // for an action, the whole action itself is passed as payload
-          :
-          {
-              [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[
-                this.actionTypeArgsMap[networkAction.actionType]["*"]?.attribute ?? "ERROR"
-              ],
+    const networkActionUrlMap: { [actionName: string]: string } = {
+      read:
+        "/" +
+        ((networkAction as RemoteStoreCRUDAction).uuid ?? (networkAction as RemoteStoreCRUDAction).parentUuid + "/all"),
+      create: "/" + ((networkAction as RemoteStoreCRUDAction).uuid ?? ""),
+      update: "/" + ((networkAction as RemoteStoreCRUDAction).uuid ?? ""),
+      delete: "/" + ((networkAction as RemoteStoreCRUDAction).uuid ?? ""),
+    };
+
+    let args
+    if (this.actionTypeArgsMap[networkAction.actionType]) {
+      if (this.actionTypeArgsMap[networkAction.actionType]["*"]) {
+        if (this.actionTypeArgsMap[networkAction.actionType]["*"]?.action) {
+          args = networkAction
+        } else {
+          args = {
+            [this.actionTypeArgsMap[networkAction.actionType]["*"]?.result ?? "ERROR"]: (networkAction as any)[
+              this.actionTypeArgsMap[networkAction.actionType]["*"]?.attribute ?? "ERROR"
+            ],
+          };
+        }
+      } else {
+        args = this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]
+        ? {
+            [this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.result ?? "ERROR"]: (
+              networkAction as any
+            )[this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.attribute ?? "ERROR"],
           }
-          : this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]
-          ? {
-              [this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.result ?? "ERROR"]: (
-                networkAction as any
-              )[this.actionTypeArgsMap[networkAction.actionType][networkAction.actionName]?.attribute ?? "ERROR"],
-            }
-          : {}
-        : {},
+        : {}
+      }
+    } else {
+      args = {}
+    }
+
+    return {
+      operation: (this.operationMethod as any)[(actionHttpMethods as any)[networkAction.actionName] ?? "post"],
+      url: rootApiUrl + (networkActionUrlMap[networkAction.actionName] ?? ""),
+      args
     };
   }
 
@@ -129,7 +138,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section + "/entity"
     );
-    // const args = 
+    // const args =
     log.debug(
       "RemoteStoreNetworkRestClient handleNetworkRemoteStoreCRUDAction action",
       action,
@@ -152,12 +161,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/modelOLDWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
-    log.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreOLDModelAction",
-      action,
-      "callParams",
-      callParams
-    );
+    log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreOLDModelAction", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
 
@@ -170,37 +174,16 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       action,
       this.rootApiUrl + "/modelWithDeployment/" + deploymentUuid + "/" + action.actionName
     );
-    log.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
-      action,
-      "callParams",
-      callParams
-    );
+    log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "callParams", callParams);
     return callParams.operation(callParams.url, callParams.args);
   }
 
   // ##################################################################################
-  async handleNetworkRemoteAction(
-    deploymentUuid: string,
-    action: MiroirAction
-  ): Promise<RestClientCallReturnType> {
-    const callParams = this.getRestCallParams(
-      action,
-      this.rootApiUrl + "/action/" + action.actionName
-    );
-    log.debug(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
-      action,
-      "callParams",
-      callParams
-    );
+  async handleNetworkRemoteAction(deploymentUuid: string, action: MiroirAction): Promise<RestClientCallReturnType> {
+    const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
+    log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "callParams", callParams);
     const result = await callParams.operation(callParams.url, callParams.args);
-    log.info(
-      "RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction",
-      action,
-      "result",
-      result
-    );
+    log.info("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "result", result);
     return result;
   }
 

@@ -517,8 +517,16 @@ describe.sequential(
 
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
 

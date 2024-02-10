@@ -40,7 +40,10 @@ export const MixedFileSystemDbEntityAndInstanceStoreSection = FileSystemDbEntity
 export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFileSystemInstanceStoreSection>(
   Base: TBase
 ) {
-  return class MixedSqlDbEntityStoreSection extends Base implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface {
+  return class MixedSqlDbEntityStoreSection
+    extends Base
+    implements AbstractEntityStoreSectionInterface, AbstractInstanceStoreSectionInterface
+  {
     public dataStore: StoreDataSectionInterface;
 
     constructor(
@@ -132,12 +135,14 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
 
-        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.dataStore.getInstances(entityEntityDefinition.uuid);
+        const entityDefinitions: ActionEntityInstanceCollectionReturnType = await this.dataStore.getInstances(
+          entityEntityDefinition.uuid
+        );
         if (entityDefinitions.status != "ok") {
           return Promise.resolve({
             status: "error",
             error: {
-              errorType: "FailedToDeleteStore",// TODO: correct errorType
+              errorType: "FailedToDeleteStore", // TODO: correct errorType
               errorMessage: `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.error.errorType}, ${entityDefinitions.error.errorMessage}`,
             },
           });
@@ -152,8 +157,9 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         //   });
         // }
 
-        
-        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i:EntityDefinition) => i.entityUuid == entityUuid)) {
+        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter(
+          (i: EntityDefinition) => i.entityUuid == entityUuid
+        )) {
           await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {
@@ -195,10 +201,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         // && cudUpdate.objects[0].instances[0].uuid
       ) {
         const cudUpdate = update.equivalentModelCUDUpdates[0];
-        const currentValue: ActionEntityInstanceReturnType = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
+        const currentValue: ActionEntityInstanceReturnType = await this.getInstance(
+          entityEntity.uuid,
+          cudUpdate.objects[0].instances[0].uuid
+        );
         log.debug(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
         await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
-        const updatedValue: ActionEntityInstanceReturnType = await this.getInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0].uuid);
+        const updatedValue: ActionEntityInstanceReturnType = await this.getInstance(
+          entityEntity.uuid,
+          cudUpdate.objects[0].instances[0].uuid
+        );
         // TODO: update EntityDefinition, too!
         log.debug(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
 
