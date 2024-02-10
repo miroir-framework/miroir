@@ -1046,6 +1046,8 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "modelActionInitModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
       "modelActionResetModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
       "modelActionResetData": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,
+      "modelActionDropEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "dropEntity")?.actionParameters,
+      "modelActionRenameEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "renameEntity")?.actionParameters,
       "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},

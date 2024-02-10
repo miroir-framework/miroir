@@ -54,10 +54,10 @@ export async function uploadBooksAndReports(
       actionType: "DomainTransactionalAction",
       actionName: "updateEntity",
       update: {
-        updateActionName: "WrappedTransactionalEntityUpdate",
+        actionName: "WrappedTransactionalEntityUpdate",
         modelEntityUpdate: {
-          updateActionType: "ModelEntityUpdate",
-          updateActionName: "createEntity",
+          actionType: "ModelEntityUpdate",
+          actionName: "createEntity",
           entities: [
             { entity: entityAuthor as MetaEntity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
             { entity: entityBook as MetaEntity, entityDefinition: entityDefinitionBook as EntityDefinition },
@@ -76,8 +76,8 @@ export async function uploadBooksAndReports(
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
       update: {
-        updateActionType: "ModelCUDInstanceUpdate",
-        updateActionName: "create",
+        actionType: "ModelCUDInstanceUpdate",
+        actionName: "create",
         objects: [
           {
             parentName: entityReport.name,

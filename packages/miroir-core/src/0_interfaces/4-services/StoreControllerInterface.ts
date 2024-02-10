@@ -14,6 +14,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
+  ModelActionRenameEntity,
   StoreAction,
   StoreSectionConfiguration,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -84,6 +85,7 @@ export interface AbstractEntityStoreSectionInterface {
     entityDefinition: EntityDefinition,
   ): Promise<ActionVoidReturnType>;
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType>;
+  renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType>;
   dropEntity(parentUuid:string): Promise<ActionVoidReturnType>;
   dropEntities(parentUuid:string[]): Promise<ActionVoidReturnType>;
 }

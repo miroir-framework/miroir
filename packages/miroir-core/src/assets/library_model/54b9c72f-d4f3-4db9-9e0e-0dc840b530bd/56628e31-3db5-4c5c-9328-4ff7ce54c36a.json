@@ -2,6 +2,7 @@
   "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
   "conceptLevel": "Model",
   "name": "Country",

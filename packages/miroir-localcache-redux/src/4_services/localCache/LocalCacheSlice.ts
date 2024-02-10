@@ -495,7 +495,7 @@ function handleLocalCacheTransactionalAction(
             deploymentUuid,
             instanceCUDAction: {
               actionType: "InstanceCUDAction",
-              actionName: action.update.updateActionName,
+              actionName: action.update.actionName,
               applicationSection: action.update.objects[0].applicationSection,
               objects: action.update.objects,
             }
@@ -725,7 +725,7 @@ function convertDomainActionToDomainTransactionalAction(action:DomainActionWithT
             actionType:  "DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName: "WrappedTransactionalEntityUpdate",
+              actionName: "WrappedTransactionalEntityUpdate",
               modelEntityUpdate: action.update.modelEntityUpdate
             }
           }

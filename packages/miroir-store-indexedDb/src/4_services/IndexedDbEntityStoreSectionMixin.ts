@@ -15,7 +15,9 @@ import {
   ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
-  ActionVoidReturnType
+  ActionVoidReturnType,
+  ModelActionRenameEntity,
+  EntityInstanceWithName
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -109,6 +111,44 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           }
         }
       }
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // #########################################################################################
+    async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
+      // TODO: identical to IndexedDbModelStoreSection implementation!
+      log.info(this.logHeader, "renameEntityClean", update);
+      // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
+      const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
+        entityEntity.uuid,
+        update.entityUuid
+      );
+      if (currentEntity.status != "ok") {
+        return currentEntity
+      }
+      const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
+        entityEntityDefinition.uuid,
+        update.entityDefinitionUuid
+      );
+
+      if (currentEntity.status != "ok") {
+        return currentEntity
+      }
+      if (currentEntityDefinition.status != "ok") {
+        return currentEntityDefinition
+      }
+      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement.elementValue,{name:update.targetValue});
+      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition,{name:update.targetValue});
+
+      await this.upsertInstance(entityEntity.uuid, modifiedEntity);
+      await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
+
+      await this.dataStore.renameStorageSpaceForInstancesOfEntity(
+        (currentEntity.returnedDomainElement.elementValue as EntityInstanceWithName).name,
+        update.targetValue,
+        modifiedEntity,
+        modifiedEntityDefinition
+      );
       return Promise.resolve(ACTION_OK);
     }
 

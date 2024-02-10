@@ -253,10 +253,10 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
+                actionType: "ModelEntityUpdate",
+                actionName: "createEntity",
                 // parentName: entityDefinitionEntityDefinition.name,
                 // parentUuid: entityDefinitionEntityDefinition.uuid,
                 entities: [
@@ -399,10 +399,10 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
+                actionType: "ModelEntityUpdate",
+                actionName: "createEntity",
                 entities: [
                   {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
                 ],
@@ -534,10 +534,10 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              updateActionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                updateActionType: "ModelEntityUpdate",
-                updateActionName: "createEntity",
+                actionType: "ModelEntityUpdate",
+                actionName: "createEntity",
                 entities: [
                   {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
                 ],
@@ -617,10 +617,10 @@ describe.sequential(
                   actionType: "DomainTransactionalAction",
                   actionName: "updateEntity",
                   update: {
-                    updateActionName: "WrappedTransactionalEntityUpdate",
+                    actionName: "WrappedTransactionalEntityUpdate",
                     modelEntityUpdate: {
-                      updateActionType: "ModelEntityUpdate",
-                      updateActionName: "DeleteEntity",
+                      actionType: "ModelEntityUpdate",
+                      actionName: "DeleteEntity",
                       entityName: entityAuthor.name,
                       entityUuid: entityAuthor.uuid,
                     },
@@ -730,10 +730,10 @@ describe.sequential(
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                updateActionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate: {
-                  updateActionType: "ModelEntityUpdate",
-                  updateActionName: "createEntity",
+                  actionType: "ModelEntityUpdate",
+                  actionName: "createEntity",
                   entities: [
                     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
                     {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
@@ -803,10 +803,10 @@ describe.sequential(
           //   actionType:"DomainTransactionalAction",
           //   actionName: "updateEntity",
           //   update: {
-          //     updateActionName:"WrappedTransactionalEntityUpdate",
+          //     actionName:"WrappedTransactionalEntityUpdate",
           //     modelEntityUpdate: {
-          //       updateActionType: "ModelEntityUpdate",
-          //       updateActionName: "createEntity",
+          //       actionType: "ModelEntityUpdate",
+          //       actionName: "createEntity",
           //       entities: [
           //         {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
           //       ],
@@ -875,12 +875,14 @@ describe.sequential(
               actionType: "DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                updateActionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate:{
-                  updateActionType:"ModelEntityUpdate",
-                  updateActionName: "renameEntity",
+                  actionType:"modelAction",
+                  actionName: "renameEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   entityName: entityAuthor.name,
                   entityUuid: entityAuthor.uuid,
+                  entityDefinitionUuid: entityDefinitionAuthor.uuid,
                   targetValue: "Authorsss",
                 },
               }

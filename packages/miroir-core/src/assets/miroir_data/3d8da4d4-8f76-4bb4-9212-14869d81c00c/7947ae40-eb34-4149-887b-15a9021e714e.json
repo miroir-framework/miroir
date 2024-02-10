@@ -117,6 +117,64 @@
           "type": "object",
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"alterEntityAttribute"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "entityName": {
+              "type": "simpleType",
+              "optional": true,
+              "definition": "string"
+            },
+            "entityUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }]
+            },
+            "entityAttributeName": {
+              "type": "simpleType",
+              "optional": true,
+              "definition": "string"
+            },
+            "targetValue": {
+              "type": "simpleType",
+              "definition": "any"
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"renameEntity"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "entityName": {
+              "type": "simpleType",
+              "optional": true,
+              "definition": "string"
+            },
+            "entityUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }]
+            },
+            "entityDefinitionUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }]
+            },
+            "targetValue": {
+              "type": "simpleType",
+              "definition": "string"
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"createEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "entity": {

@@ -32,6 +32,7 @@ import {
   MetaEntity,
   MiroirConfigClient,
   MiroirLoggerFactory,
+  ModelActionRenameEntity,
   ModelCUDInstanceUpdate,
   ModelEntityActionTransformer,
   ModelEntityUpdate,
@@ -45,7 +46,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { setupServer } from "msw/node";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { loadTestConfigFiles, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
+import { loadTestConfigFiles, miroirAfterAll, miroirAfterEach, miroirBeforeAll, miroirBeforeEach } from "../utils/tests-utils";
 
 let localMiroirStoreController: StoreControllerInterface;
 let localAppStoreController: StoreControllerInterface;
@@ -104,21 +105,25 @@ beforeEach(
 // ################################################################################################
 afterEach(
   async () => {
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach")
-    try {
-      // await localDataStore?.close();
-      await localMiroirStoreController.clear();
-      await localAppStoreController.clear();
-    } catch (error) {
-      console.error('Error afterEach',error);
-    }
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterEach")
+    // await miroirAfterEach(miroirConfig, undefined, localMiroirStoreController,localAppStoreController);
+    await miroirAfterEach(miroirConfig, undefined, localMiroirStoreController,localAppStoreController);
+
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach")
+    // try {
+    //   // await localDataStore?.close();
+    //   await localMiroirStoreController.clear();
+    //   await localAppStoreController.clear();
+    // } catch (error) {
+    //   console.error('Error afterEach',error);
+    // }
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirAfterEach")
   }
 )
 
 // ################################################################################################
 afterAll(
   async () => {
+    // await miroirAfterAll(miroirConfig, undefined, localMiroirStoreController,localAppStoreController,undefined);
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll")
     try {
       await localMiroirStoreController.close();
@@ -180,31 +185,35 @@ function ignorePostgresExtraAttributes(instances: EntityInstance[]){
 describe.sequential("localStoreController.unit.test", () => {
 
   // ################################################################################################
-  it(
-    "Delete miroir2 store or remove existing store", async () => { // TODO: test failure cases!
-      if (miroirConfig.client.emulateServer) {
-        const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
-        const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
-        expect(testResult).toEqual(ACTION_OK)
-        expect(testResult2).toEqual(ACTION_OK)
-      } else {
-        expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
-      }
-    }
-  );
+  // it(
+  //   "Delete miroir2 store or remove existing store", async () => { // TODO: test failure cases!
+  //     if (miroirConfig.client.emulateServer) {
+  //       const testResult: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
+  //       const testResult2: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
+  //       expect(testResult).toEqual(ACTION_OK)
+  //       expect(testResult2).toEqual(ACTION_OK)
+  //     } else {
+  //       expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
+  //     }
+  //   }
+  // );
 
   // ################################################################################################
   it(
     "Create miroir2 store", async () => { // TODO: test failure cases!
       if (miroirConfig.client.emulateServer) {
-        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.admin)
-        const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.admin)
+        console.log("Create miroir2 store START")
+        const testResult: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.model)
+        const testResult2: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.data)
         //cleanup
-        const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.admin)
+        const testResult3: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
+        const testResult4: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
         // test
         expect(testResult).toEqual(ACTION_OK)
         expect(testResult2).toEqual(ACTION_OK)
         expect(testResult3).toEqual(ACTION_OK)
+        expect(testResult4).toEqual(ACTION_OK)
+        console.log("Create miroir2 store END")
       } else {
         expect(false, "could not test store creation, configuration can not specify to use a real server, only emulated server makes sense in this case")
       }
@@ -349,11 +358,13 @@ describe.sequential("localStoreController.unit.test", () => {
 
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
     // test starts
-    const modelEntityUpdate:ModelEntityUpdate =  {
-      updateActionType: "ModelEntityUpdate",
-      updateActionName: "renameEntity",
+    const modelActionRenameEntity:ModelActionRenameEntity =  {
+      actionType: "modelAction",
+      actionName: "renameEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       entityName: entityAuthor.name,
+      entityDefinitionUuid: entityDefinitionAuthor.uuid,
       targetValue: entityAuthor.name + "ssss"
     };
 
@@ -377,46 +388,20 @@ describe.sequential("localStoreController.unit.test", () => {
         undefined, // expected result.elementValue
       )
     )
-    .then(
+    .then (
       (v) => chainTestSteps(
-        "computeCudUpdate",
+        "fetchEntityDefinitions",
         v,
-        async () => ACTION_OK,
-        (a, p) =>
-          ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
-            modelEntityUpdate,
-            p.entities,
-            p.entityDefinitions
-          ),
-        "cudUpdate", // name to give to result
+        async () => await localAppStoreController.renameEntityClean(modelActionRenameEntity),
+        undefined,
+        undefined, // name to give to result
         undefined, // expected result.elementType
         undefined, // expected result.elementValue
       )
     )
     .then((v) =>
       chainTestSteps(
-        "applyModelEntityUpdate",
-        v,
-        async () => await localAppStoreController.applyModelEntityUpdate({
-            updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-            modelEntityUpdate,
-            equivalentModelCUDUpdates: [
-              {
-                updateActionType: "ModelCUDInstanceUpdate",
-                updateActionName: v.cudUpdate?.actionName ?? "update",
-                objects: v.cudUpdate?.objects ?? [],
-              } as ModelCUDInstanceUpdate,
-            ],
-          }),
-        undefined,// (a,p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-        undefined, // name to give to result
-        undefined, // expected result type
-        undefined // to value to compare with
-      )
-    )
-    .then((v) =>
-      chainTestSteps(
-        "getInstancesToCheckResult",
+        "getEntityInstancesToCheckResult",
         v,
         async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
         (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
@@ -426,6 +411,22 @@ describe.sequential("localStoreController.unit.test", () => {
           {
             ...entityAuthor,
             name: entityAuthor.name + "ssss",
+          },
+        ]
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "getEntityDefinitionInstancesToCheckResult",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        undefined, // name to give to result
+        "entityInstanceCollection",
+        [
+          {
+            ...entityDefinitionAuthor,
+            name: entityDefinitionAuthor.name + "ssss",
           },
         ]
       )
@@ -442,8 +443,8 @@ describe.sequential("localStoreController.unit.test", () => {
 
     // test starts
     const modelEntityUpdate:ModelEntityUpdate =  {
-      updateActionType: "ModelEntityUpdate",
-      updateActionName: "DeleteEntity",
+      actionType: "ModelEntityUpdate",
+      actionName: "DeleteEntity",
       entityUuid: entityAuthor.uuid, 
       entityName: entityAuthor.name,
      };
@@ -503,12 +504,12 @@ describe.sequential("localStoreController.unit.test", () => {
         "applyModelEntityUpdate",
         v,
         async () => await localAppStoreController.applyModelEntityUpdate({
-            updateActionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
+            actionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
             modelEntityUpdate,
             equivalentModelCUDUpdates: [
               {
-                updateActionType: "ModelCUDInstanceUpdate",
-                updateActionName: v.cudUpdate?.actionName ?? "update",
+                actionType: "ModelCUDInstanceUpdate",
+                actionName: v.cudUpdate?.actionName ?? "update",
                 objects: v.cudUpdate?.objects ?? [],
               } as ModelCUDInstanceUpdate,
             ],

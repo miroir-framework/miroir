@@ -12,6 +12,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
+  ModelActionRenameEntity,
   StoreSectionConfiguration,
   actionReturnType,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -317,6 +318,11 @@ export class StoreController implements StoreControllerInterface {
   ): Promise<ActionVoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity,entityDefinition);
     return Promise.resolve(result);
+  }
+
+  // ##############################################################################################
+  async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
+    return this.modelStoreSection.renameEntityClean(update);
   }
 
   // ##############################################################################################

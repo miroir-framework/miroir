@@ -168,10 +168,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType:"DomainTransactionalAction",
       actionName: "updateEntity",
       update: {
-        updateActionName:"WrappedTransactionalEntityUpdate",
+        actionName:"WrappedTransactionalEntityUpdate",
         modelEntityUpdate: {
-          updateActionType: "ModelEntityUpdate",
-          updateActionName: "createEntity",
+          actionType: "ModelEntityUpdate",
+          actionName: "createEntity",
           // parentName: entityDefinitionEntityDefinition.name,
           // parentUuid: entityDefinitionEntityDefinition.uuid,
           entities: [
@@ -204,8 +204,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
       update: {
-        updateActionType: "ModelCUDInstanceUpdate",
-        updateActionName: "create",
+        actionType: "ModelCUDInstanceUpdate",
+        actionName: "create",
         objects: [{
           parentName: newEntityReport.parentName,
           parentUuid: newEntityReport.parentUuid,

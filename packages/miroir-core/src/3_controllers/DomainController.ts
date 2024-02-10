@@ -146,7 +146,7 @@ export class DomainController implements DomainControllerInterface {
             "entity definitions",
             currentModel.entityDefinitions
           );
-          if (domainTransactionalAction.update.modelEntityUpdate.updateActionName == "createEntity") {
+          if (domainTransactionalAction.update.modelEntityUpdate.actionName == "createEntity") {
             for (const entity of domainTransactionalAction?.update.modelEntityUpdate.entities) {
               await this.callUtil.callLocalCacheAction(
                 {}, // context
@@ -170,7 +170,7 @@ export class DomainController implements DomainControllerInterface {
             log.trace('DomainController updateEntity correspondingCUDUpdate',cudUpdate);
   
             const structureUpdatesWithCUDUpdates: WrappedTransactionalEntityUpdateWithCUDUpdate = {
-              updateActionName: 'WrappedTransactionalEntityUpdateWithCUDUpdate',
+              actionName: 'WrappedTransactionalEntityUpdateWithCUDUpdate',
               modelEntityUpdate:domainTransactionalAction?.update.modelEntityUpdate,
               equivalentModelCUDUpdates: cudUpdate?[cudUpdate]:[],
             };
@@ -374,7 +374,7 @@ export class DomainController implements DomainControllerInterface {
               switch (replayAction.actionType) {
                 case 'DomainTransactionalAction': {
                   if (replayAction.actionName == "updateEntity") {
-                    switch (replayAction.update.modelEntityUpdate.updateActionName) {
+                    switch (replayAction.update.modelEntityUpdate.actionName) {
                       case 'createEntity': {
                         const modelAction: ModelAction = {
                             actionType: "modelAction",
@@ -410,8 +410,8 @@ export class DomainController implements DomainControllerInterface {
                         );
                         break;
                       }
-                      case 'alterEntityAttribute':
                       case 'renameEntity':
+                      case 'alterEntityAttribute':
                       default: {
                         await this.callUtil.callRemoteAction(
                           {}, // context
@@ -432,7 +432,7 @@ export class DomainController implements DomainControllerInterface {
                       replayAction.update.objects[0].applicationSection,
                       {
                         actionType:'RemoteStoreCRUDAction',
-                        actionName: replayAction.update.updateActionName.toString() as CRUDActionName,
+                        actionName: replayAction.update.actionName.toString() as CRUDActionName,
                         parentName: replayAction.update.objects[0].parentName,
                         parentUuid: replayAction.update.objects[0].parentUuid,
                         objects: replayAction.update.objects[0].instances,

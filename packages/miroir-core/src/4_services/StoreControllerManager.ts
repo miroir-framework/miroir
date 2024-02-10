@@ -98,8 +98,8 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
   ): Promise<ActionVoidReturnType> {
-    await adminStoreController.deleteStore(storeUnitConfiguration.admin);
-    await adminStoreController.createStore(storeUnitConfiguration.admin);
+    // await adminStoreController.deleteStore(storeUnitConfiguration.admin);
+    // await adminStoreController.createStore(storeUnitConfiguration.admin);
     await this.addStoreController(
       newDeploymentUuid,
       storeUnitConfiguration

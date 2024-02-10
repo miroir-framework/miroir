@@ -40,7 +40,7 @@ export class ModelEntityActionTransformer{
     entityDefinitions: EntityDefinition[],
   ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
     let domainActionCUDUpdate: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
-    switch (modelUpdate.updateActionName) {
+    switch (modelUpdate.actionName) {
       case "renameEntity":{
         const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
         const currentEntityDefinition = entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
@@ -215,8 +215,8 @@ export class ModelEntityActionTransformer{
     );
     if (o) {
       return {
-        updateActionType:"ModelCUDInstanceUpdate",
-        updateActionName:o.actionName,
+        actionType:"ModelCUDInstanceUpdate",
+        actionName:o.actionName,
         objects: o.objects
       } as ModelCUDInstanceUpdate;
     } else {

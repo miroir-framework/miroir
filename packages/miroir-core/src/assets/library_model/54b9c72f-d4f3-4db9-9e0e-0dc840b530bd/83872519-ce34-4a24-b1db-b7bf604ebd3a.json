@@ -2,6 +2,7 @@
   "uuid": "83872519-ce34-4a24-b1db-b7bf604ebd3a",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
   "conceptLevel": "Model",
   "name": "Test",

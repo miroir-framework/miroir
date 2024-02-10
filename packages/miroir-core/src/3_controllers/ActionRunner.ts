@@ -80,7 +80,7 @@ export async function applyModelEntityUpdate(
   // log.info('ModelActionRunner applyModelEntityUpdate for',update);
   log.info("ActionRunner.ts applyModelEntityUpdate for", JSON.stringify(update, null, 2));
   const modelCUDupdate =
-    update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate"
+    update.actionName == "WrappedTransactionalEntityUpdateWithCUDUpdate"
       ? update.equivalentModelCUDUpdates[0]
       : update;
   if (
@@ -88,9 +88,9 @@ export async function applyModelEntityUpdate(
     storeController.existsEntity(modelCUDupdate.objects[0].parentUuid)
   ) {
     // log.info('StoreController applyModelEntityUpdate',modelEntityUpdate);
-    if (update.updateActionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
+    if (update.actionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
       // const modelEntityUpdate = update.modelEntityUpdate;
-      switch (update.modelEntityUpdate.updateActionName) {
+      switch (update.modelEntityUpdate.actionName) {
         case "DeleteEntity": {
           await storeController.dropEntity(update.modelEntityUpdate.entityUuid);
           break;
@@ -116,7 +116,7 @@ export async function applyModelEntityUpdate(
           break;
       }
     } else {
-      switch (update.updateActionName) {
+      switch (update.actionName) {
         case "create":
         case "update": {
           for (const instanceCollection of update.objects) {
@@ -250,6 +250,10 @@ export async function modelActionRunner(
       await targetProxy.dropEntity(update.entityUuid);
       break;
     }
+    case "renameEntity": {
+      await targetProxy.renameEntityClean(update);
+      break;
+    }
     case "resetModel": {
       log.debug("modelActionRunner resetModel update");
       await miroirDataStoreProxy.clear();
@@ -310,9 +314,11 @@ export async function actionRunner(
     // case "deleteBundle":
     //   break;
     case "createStore": {
+      log.warn("actionRunner createStore does nothing!")
       break;
     }
     case "deleteStore": {
+      log.warn("actionRunner deleteStore does nothing!")
       break;
     }
     case "openStore": {

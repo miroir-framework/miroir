@@ -433,10 +433,10 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "updateEntity",
                 update: {
-                  updateActionName: "WrappedTransactionalEntityUpdate",
+                  actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    updateActionType: "ModelEntityUpdate",
-                    updateActionName: "renameEntity",
+                    actionType: "ModelEntityUpdate",
+                    actionName: "renameEntity",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
                     targetValue: "Bookss",
@@ -459,8 +459,8 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "UpdateMetaModelInstance",
                 update: {
-                  updateActionType: "ModelCUDInstanceUpdate",
-                  updateActionName: "update",
+                  actionType: "ModelCUDInstanceUpdate",
+                  actionName: "update",
                   objects: [
                     {
                       parentName: reportReportList.parentName,
@@ -492,10 +492,10 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "updateEntity",
                 update: {
-                  updateActionName: "WrappedTransactionalEntityUpdate",
+                  actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    updateActionType: "ModelEntityUpdate",
-                    updateActionName: "DeleteEntity",
+                    actionType: "ModelEntityUpdate",
+                    actionName: "DeleteEntity",
                     entityName: entityAuthor.name,
                     entityUuid: entityAuthor.uuid,
                     // instanceUuid:entityAuthor.uuid,

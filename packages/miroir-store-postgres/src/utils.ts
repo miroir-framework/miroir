@@ -78,7 +78,7 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       ];
     })
   );
-  log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
+  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
 // // ##############################################################################################

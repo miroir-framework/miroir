@@ -36,7 +36,8 @@ import {
   restServerDefaultHandlers,
   startLocalStoreControllers,
   StoreUnitConfiguration,
-  RemoteStoreInterface
+  RemoteStoreInterface,
+  ActionReturnType
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
 import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
@@ -270,6 +271,15 @@ export async function miroirBeforeEach(
     }
   } else {
     try {
+      try {
+        const miroirModelStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.model)
+        const miroirDataStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.data)
+        const libraryModelStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.appServerConfig.model)
+        const libraryDataStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.appServerConfig.data)
+      } catch (error) {
+        throw new Error("miroirBeforeEach could not create model and data stores");
+      }
+
       await localAppStoreController.clear();
       await localMiroirStoreController.clear();
       try {
@@ -333,8 +343,12 @@ export async function miroirAfterEach(
   } else {
     try {
       // await localDataStore?.close();
-      await localMiroirStoreController.clear();
-      await localAppStoreController.clear();
+      // await localMiroirStoreController.clear();
+      // await localAppStoreController.clear();
+      const miroirModelStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
+      const miroirDataStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
+      const libraryModelStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.appServerConfig.model)
+      const libraryDataStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.appServerConfig.data)
     } catch (error) {
       console.error('Error afterEach',error);
     }
