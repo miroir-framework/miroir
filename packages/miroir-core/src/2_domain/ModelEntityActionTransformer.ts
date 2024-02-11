@@ -10,7 +10,7 @@ import {
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   CUDActionName,
-  ModelCUDInstanceUpdate,
+  ModelEntityInstanceCUDUpdate,
   ModelEntityUpdate,
   ModelEntityUpdateCreateMetaModelInstance,
 } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
@@ -60,7 +60,7 @@ export class ModelEntityActionTransformer{
         }
         break;
       }
-      case "DeleteEntity": {
+      case "dropEntity": {
         const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityUuid);
         const currentEntityDefinitions = entityDefinitions.filter(e=>e.entityUuid==modelUpdate.entityUuid);
         const definitionsToRemove:EntityInstanceCollection[] = currentEntityDefinitions.map(ed => ({
@@ -188,7 +188,7 @@ export class ModelEntityActionTransformer{
   }
 
   // ###################################################################################################
-  static modelEntityUpdateToLocalCacheUpdate(
+  static modelEntityUpdateToLocalCacheCUDUpdate(
     entities: MetaEntity[],
     entityDefinitions: EntityDefinition[],
     modelUpdate:ModelEntityUpdate,
@@ -204,10 +204,10 @@ export class ModelEntityActionTransformer{
   }
 
   // ###################################################################################################
-  static modelEntityUpdateToModelCUDUpdate(
+  static modelEntityUpdateToModelInstanceCUDUpdate(
     modelUpdate:ModelEntityUpdate,
     currentModel: MetaModel,
-  ):ModelCUDInstanceUpdate | undefined {
+  ):ModelEntityInstanceCUDUpdate | undefined {
     const o = ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
       modelUpdate,
       currentModel.entities,
@@ -215,10 +215,10 @@ export class ModelEntityActionTransformer{
     );
     if (o) {
       return {
-        actionType:"ModelCUDInstanceUpdate",
+        actionType:"ModelEntityInstanceCUDUpdate",
         actionName:o.actionName,
         objects: o.objects
-      } as ModelCUDInstanceUpdate;
+      } as ModelEntityInstanceCUDUpdate;
     } else {
       return undefined
     }

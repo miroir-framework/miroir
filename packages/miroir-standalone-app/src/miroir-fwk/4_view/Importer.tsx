@@ -204,7 +204,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
       update: {
-        actionType: "ModelCUDInstanceUpdate",
+        actionType: "ModelEntityInstanceCUDUpdate",
         actionName: "create",
         objects: [{
           parentName: newEntityReport.parentName,

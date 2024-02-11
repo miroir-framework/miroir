@@ -76,7 +76,7 @@ export async function uploadBooksAndReports(
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
       update: {
-        actionType: "ModelCUDInstanceUpdate",
+        actionType: "ModelEntityInstanceCUDUpdate",
         actionName: "create",
         objects: [
           {

@@ -153,7 +153,7 @@ export class DomainController implements DomainControllerInterface {
               await this.callUtil.callLocalCacheAction(
                 {}, // context
                 {}, // context update
-                "handleLocalCacheEntityAction",
+                "handleLocalCacheModelAction",
                 {
                   actionType: "localCacheModelActionWithDeployment",
                   deploymentUuid,
@@ -168,7 +168,7 @@ export class DomainController implements DomainControllerInterface {
               );
             }
           } else {
-            const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelCUDUpdate(
+            const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelInstanceCUDUpdate(
               domainTransactionalAction?.update.modelEntityUpdate,
               currentModel
             );
@@ -422,20 +422,20 @@ export class DomainController implements DomainControllerInterface {
                         );
                         break;
                       }
-                      case "DeleteEntity": {
-                        const replayModelAction: ModelAction = {
-                          actionType: "modelAction",
-                          actionName: "dropEntity",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          entityUuid: replayAction.update.modelEntityUpdate.entityUuid,
-                          entityDefinitionUuid: "unknown!!",
-                        };
+                      case "dropEntity": {
+                        // const replayModelAction: ModelAction = {
+                        //   actionType: "modelAction",
+                        //   actionName: "dropEntity",
+                        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        //   entityUuid: replayAction.update.modelEntityUpdate.entityUuid,
+                        //   entityDefinitionUuid: "unknown!!",
+                        // };
                         await this.callUtil.callRemoteAction(
                           {}, // context
                           {}, // context update
                           "handleRemoteStoreModelAction",
                           deploymentUuid,
-                          replayModelAction
+                          replayAction.update.modelEntityUpdate
                         );
                         break;
                       }

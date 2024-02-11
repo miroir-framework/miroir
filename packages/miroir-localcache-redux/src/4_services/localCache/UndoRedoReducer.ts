@@ -292,10 +292,10 @@ export function createUndoRedoReducer(
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
     
     switch (action.type) {
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheEntityAction: {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheModelAction: {
         if (action.payload.actionType != "localCacheModelActionWithDeployment") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheEntityAction accepts only actionType=localCacheModelActionWithDeployment, found " + action.payload.actionType
+            "reduceWithUndoRedo handleLocalCacheModelAction accepts only actionType=localCacheModelActionWithDeployment, found " + action.payload.actionType
           );
         } else {
           return callNextReducerWithUndoRedoAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);

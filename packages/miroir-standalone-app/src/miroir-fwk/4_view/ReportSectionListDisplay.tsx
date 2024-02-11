@@ -167,7 +167,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               actionType: "DomainTransactionalAction",
               actionName: "UpdateMetaModelInstance",
               update: {
-                actionType: "ModelCUDInstanceUpdate",
+                actionType: "ModelEntityInstanceCUDUpdate",
                 actionName: "create",
                 objects: [
                   {
@@ -220,7 +220,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               actionType: "DomainTransactionalAction",
               actionName: "UpdateMetaModelInstance",
               update: {
-                actionType: "ModelCUDInstanceUpdate",
+                actionType: "ModelEntityInstanceCUDUpdate",
                 actionName: "update",
                 objects: [
                   {

@@ -91,7 +91,7 @@ export async function applyModelEntityUpdate(
     if (update.actionName == "WrappedTransactionalEntityUpdateWithCUDUpdate") {
       // const modelEntityUpdate = update.modelEntityUpdate;
       switch (update.modelEntityUpdate.actionName) {
-        case "DeleteEntity": {
+        case "dropEntity": {
           await storeController.dropEntity(update.modelEntityUpdate.entityUuid);
           break;
         }
@@ -105,14 +105,15 @@ export async function applyModelEntityUpdate(
         // case "renameEntity": {
         //   break;
         // }
-        case "createEntity": {
-          for (const entity of update.modelEntityUpdate.entities) {
-            log.debug("ActionRunner.ts applyModelEntityUpdates createEntity inserting", entity);
-            await storeController.createEntity(entity.entity, entity.entityDefinition as EntityDefinition);
-          }
-          break;
-        }
+        // case "createEntity": {
+        //   for (const entity of update.modelEntityUpdate.entities) {
+        //     log.debug("ActionRunner.ts applyModelEntityUpdates createEntity inserting", entity);
+        //     await storeController.createEntity(entity.entity, entity.entityDefinition as EntityDefinition);
+        //   }
+        //   break;
+        // }
         default:
+          log.warn("applyModelEntityUpdate did nothing for action",update)
           break;
       }
     } else {

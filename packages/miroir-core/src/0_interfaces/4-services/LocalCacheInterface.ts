@@ -86,7 +86,7 @@ export declare interface LocalCacheInterface
 
   // ##############################################################################################
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
-  handleLocalCacheEntityAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
+  handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
   handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }
