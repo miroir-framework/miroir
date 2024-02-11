@@ -255,13 +255,11 @@ describe.sequential(
             update: {
               actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                actionType: "ModelEntityUpdate",
+                actionType: "modelAction",
                 actionName: "createEntity",
-                // parentName: entityDefinitionEntityDefinition.name,
-                // parentUuid: entityDefinitionEntityDefinition.uuid,
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
               },
             }
           };
@@ -401,11 +399,11 @@ describe.sequential(
             update: {
               actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                actionType: "ModelEntityUpdate",
+                actionType: "modelAction",
                 actionName: "createEntity",
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
               },
             }
           };
@@ -536,11 +534,11 @@ describe.sequential(
             update: {
               actionName:"WrappedTransactionalEntityUpdate",
               modelEntityUpdate: {
-                actionType: "ModelEntityUpdate",
+                actionType: "modelAction",
                 actionName: "createEntity",
-                entities: [
-                  {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                ],
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
               },
             }
           };
@@ -732,18 +730,31 @@ describe.sequential(
             await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
             await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
-            const createAction: DomainAction = {
+            const createActionAuthor: DomainAction = {
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
                 actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate: {
-                  actionType: "ModelEntityUpdate",
+                  actionType: "modelAction",
                   actionName: "createEntity",
-                  entities: [
-                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-                  ],
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entity: entityAuthor as MetaEntity,
+                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                },
+              }
+            };
+            const createActionBook: DomainAction = {
+              actionType:"DomainTransactionalAction",
+              actionName: "updateEntity",
+              update: {
+                actionName:"WrappedTransactionalEntityUpdate",
+                modelEntityUpdate: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entity: entityBook as MetaEntity,
+                  entityDefinition: entityDefinitionBook as EntityDefinition,
                 },
               }
             };
@@ -752,7 +763,12 @@ describe.sequential(
               async () => {
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  createAction,
+                  createActionAuthor,
+                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                );
+                await domainController.handleDomainAction(
+                  applicationDeploymentLibrary.uuid,
+                  createActionBook,
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleDomainAction(

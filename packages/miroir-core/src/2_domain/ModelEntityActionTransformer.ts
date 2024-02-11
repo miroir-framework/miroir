@@ -6,13 +6,13 @@ import {
   EntityInstanceCollection,
   MetaModel,
   Entity,
+  ModelActionCreateEntity,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import {
   CUDActionName,
   ModelEntityInstanceCUDUpdate,
   ModelEntityUpdate,
-  ModelEntityUpdateCreateMetaModelInstance,
 } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
@@ -83,7 +83,7 @@ export class ModelEntityActionTransformer{
       }
       case "alterEntityAttribute":
       case "createEntity":{
-        const castUpdate = modelUpdate as ModelEntityUpdateCreateMetaModelInstance;
+        const castUpdate = modelUpdate as ModelActionCreateEntity;
         domainActionCUDUpdate = {
           actionName: "create",
           objects:[
@@ -91,13 +91,13 @@ export class ModelEntityActionTransformer{
               parentName:entityEntity.name,
               parentUuid:entityEntity.uuid,
               applicationSection:'model',
-              instances:castUpdate.entities.map(e=>e.entity)
+              instances:[castUpdate.entity]
             },
             {
               parentName:entityEntityDefinition.name,
               parentUuid:entityEntityDefinition.uuid,
               applicationSection:'model', 
-              instances:castUpdate.entities.map(e=>e.entityDefinition)
+              instances:[castUpdate.entityDefinition]
             },
           ]
         };

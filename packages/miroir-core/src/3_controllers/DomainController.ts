@@ -149,24 +149,22 @@ export class DomainController implements DomainControllerInterface {
             currentModel.entityDefinitions
           );
           if (domainTransactionalAction.update.modelEntityUpdate.actionName == "createEntity") {
-            for (const entity of domainTransactionalAction?.update.modelEntityUpdate.entities) {
-              await this.callUtil.callLocalCacheAction(
-                {}, // context
-                {}, // context update
-                "handleLocalCacheModelAction",
-                {
-                  actionType: "localCacheModelActionWithDeployment",
-                  deploymentUuid,
-                  modelAction: {
-                    actionType: "modelAction",
-                    actionName: "createEntity",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    entity: entity.entity,
-                    entityDefinition: entity.entityDefinition,
-                  },
-                }
-              );
-            }
+            await this.callUtil.callLocalCacheAction(
+              {}, // context
+              {}, // context update
+              "handleLocalCacheModelAction",
+              {
+                actionType: "localCacheModelActionWithDeployment",
+                deploymentUuid,
+                modelAction: {
+                  actionType: "modelAction",
+                  actionName: "createEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  entity: domainTransactionalAction.update.modelEntityUpdate.entity,
+                  entityDefinition: domainTransactionalAction.update.modelEntityUpdate.entityDefinition,
+                },
+              }
+            );
           } else {
             const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelInstanceCUDUpdate(
               domainTransactionalAction?.update.modelEntityUpdate,
@@ -403,42 +401,8 @@ export class DomainController implements DomainControllerInterface {
                 case "DomainTransactionalAction": {
                   if (replayAction.actionName == "updateEntity") {
                     switch (replayAction.update.modelEntityUpdate.actionName) {
-                      case "createEntity": {
-                        const replayModelAction: ModelAction = {
-                          actionType: "modelAction",
-                          actionName: "createEntity",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          entity: replayAction.update.modelEntityUpdate.entities[0].entity,
-                          entityDefinition: replayAction.update.modelEntityUpdate.entities[0]
-                            .entityDefinition as any as EntityDefinition,
-                          // }
-                        };
-                        await this.callUtil.callRemoteAction(
-                          {}, // context
-                          {}, // context update
-                          "handleRemoteStoreModelAction",
-                          deploymentUuid,
-                          replayModelAction
-                        );
-                        break;
-                      }
-                      case "dropEntity": {
-                        // const replayModelAction: ModelAction = {
-                        //   actionType: "modelAction",
-                        //   actionName: "dropEntity",
-                        //   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        //   entityUuid: replayAction.update.modelEntityUpdate.entityUuid,
-                        //   entityDefinitionUuid: "unknown!!",
-                        // };
-                        await this.callUtil.callRemoteAction(
-                          {}, // context
-                          {}, // context update
-                          "handleRemoteStoreModelAction",
-                          deploymentUuid,
-                          replayAction.update.modelEntityUpdate
-                        );
-                        break;
-                      }
+                      case "createEntity": 
+                      case "dropEntity": 
                       case "renameEntity": {
                         await this.callUtil.callRemoteAction(
                           {}, // context

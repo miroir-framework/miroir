@@ -3,6 +3,7 @@ import { EntityAttributePartialSchema, MetaEntitySchema } from "../../0_interfac
 import {
   entityDefinition,
   entityInstanceCollection,
+  modelActionCreateEntity,
   modelActionDropEntity,
   modelActionRenameEntity,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -12,19 +13,6 @@ export const CUDActionNamesArray = ["create", "update", "delete"] as const;
 export const CUDActionNameSchema = z.enum(CUDActionNamesArray);
 
 export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
-
-// #############################################################################################
-export const ModelEntityUpdateCreateMetaModelInstanceSchema = z.object({
-  actionType: z.literal("ModelEntityUpdate"),
-  actionName: z.literal("createEntity"),
-  entities: z.array(
-    z.object({
-      entity: MetaEntitySchema,
-      entityDefinition: entityDefinition,
-    })
-  ),
-});
-export type ModelEntityUpdateCreateMetaModelInstance = z.infer<typeof ModelEntityUpdateCreateMetaModelInstanceSchema>;
 
 // #############################################################################################
 export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
@@ -37,32 +25,10 @@ export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
 });
 export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
 
-// // #############################################################################################
-// export const ModelEntityUpdateDeleteMetaModelInstanceSchema = z.object({
-//   actionType: z.literal('ModelEntityUpdate'),
-//   actionName: z.literal('DeleteEntity'),
-//   entityName:z.string().optional(),
-//   entityUuid:z.string(),
-// });
-// export type ModelEntityUpdateDeleteMetaModelInstance = z.infer<typeof ModelEntityUpdateDeleteMetaModelInstanceSchema>;
-
-// // #############################################################################################
-// export const ModelEntityUpdateRenameEntitySchema = z.object({
-//   actionType: z.literal('ModelEntityUpdate'),
-//   actionName: z.literal('renameEntity'),
-//   entityName:z.string().optional(),
-//   entityUuid:z.string(),
-//   entityAttributeName:z.string().optional(),
-//   targetValue:z.any().optional(),
-// });
-// export type ModelEntityUpdateRenameEntity = z.infer<typeof ModelEntityUpdateRenameEntitySchema>;
-
 // #############################################################################################
 export const ModelEntityUpdateSchema = z.union([
-  ModelEntityUpdateCreateMetaModelInstanceSchema,
   ModelEntityUpdateAlterEntityAttributeSchema,
-  // ModelEntityUpdateDeleteMetaModelInstanceSchema,
-  // ModelEntityUpdateRenameEntitySchema,
+  modelActionCreateEntity,
   modelActionRenameEntity,
   modelActionDropEntity,
 ]);
