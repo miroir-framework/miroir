@@ -1,11 +1,10 @@
 import { z } from "zod";
-import { EntityAttributePartialSchema, MetaEntitySchema } from "../../0_interfaces/1_core/EntityDefinition.js";
 import {
-  entityDefinition,
+  entityAttributePartial,
   entityInstanceCollection,
   modelActionCreateEntity,
   modelActionDropEntity,
-  modelActionRenameEntity,
+  modelActionRenameEntity
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // #############################################################################################
@@ -21,13 +20,15 @@ export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
   parentName: z.string().optional(),
   parentUuid: z.string(),
   entityAttributeId: z.number(),
-  update: EntityAttributePartialSchema,
+  update: entityAttributePartial,
+  // update: EntityAttributePartialSchema,
 });
 export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
 
 // #############################################################################################
 export const ModelEntityUpdateSchema = z.union([
   ModelEntityUpdateAlterEntityAttributeSchema,
+  // modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionRenameEntity,
   modelActionDropEntity,

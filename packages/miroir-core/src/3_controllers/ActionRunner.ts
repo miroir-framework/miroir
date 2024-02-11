@@ -279,6 +279,11 @@ export async function modelActionRunner(
       await initApplicationDeployment(deploymentUuid, actionName, miroirDataStoreProxy, appDataStoreProxy, params);
       break;
     }
+    case "alterEntityAttribute":
+    case "commit":
+    case "rollback": {
+      throw new Error("modelActionRunner could not handle action" + JSON.stringify(update));
+    }
     case "createEntity": {
       log.debug("modelActionRunner applyModelEntityUpdates createEntity inserting", update.entity.name);
       await targetProxy.createEntity(update.entity, update.entityDefinition);

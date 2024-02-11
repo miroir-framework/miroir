@@ -401,6 +401,7 @@ export class DomainController implements DomainControllerInterface {
                 case "DomainTransactionalAction": {
                   if (replayAction.actionName == "updateEntity") {
                     switch (replayAction.update.modelEntityUpdate.actionName) {
+                      case "alterEntityAttribute":
                       case "createEntity": 
                       case "dropEntity": 
                       case "renameEntity": {
@@ -413,7 +414,6 @@ export class DomainController implements DomainControllerInterface {
                         );
                         break;
                       }
-                      case "alterEntityAttribute":
                       default: {
                         await this.callUtil.callRemoteAction(
                           {}, // context

@@ -28,7 +28,17 @@ export async function generateZodSchemaFileFromJzodSchema(
   const generateTypeAnotationsForSchema =
     // jzodElement.type == "schemaReference" ? Object.keys(jzodElement.context) : [];
     jzodElement.type == "schemaReference"
-      ? Object.keys(jzodElement.context).filter((e) => !["jzodObject", "entityInstance"].includes(e))
+      ? Object.keys(jzodElement.context).filter(
+          (e) =>
+            ![
+              "jzodObject",
+              "entityInstance",
+              "entityAttributeUntypedCore",
+              "entityAttributeCore",
+              "entityArrayAttribute",
+              "entityForeignKeyAttribute",
+            ].includes(e)
+        )
       : [];
 
   console.log("generateZodSchemaFileFromJzodSchema generateTypeAnotationsForSchema:", generateTypeAnotationsForSchema);

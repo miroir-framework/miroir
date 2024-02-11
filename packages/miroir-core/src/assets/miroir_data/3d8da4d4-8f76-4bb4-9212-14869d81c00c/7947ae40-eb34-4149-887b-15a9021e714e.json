@@ -129,14 +129,16 @@
               "definition": "string",
               "validations": [{ "type": "uuid" }]
             },
-            "entityAttributeName": {
+            "entityAttributeId": {
               "type": "simpleType",
-              "optional": true,
-              "definition": "string"
+              "definition": "number"
             },
-            "targetValue": {
-              "type": "simpleType",
-              "definition": "any"
+            "update": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityAttributePartial"
+              }
             }
           }
         }

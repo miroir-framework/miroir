@@ -37,8 +37,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@miroir-framework/jzod": "0.6.1",
-    "@miroir-framework/jzod-ts": "^0.6.1",
+    "@miroir-framework/jzod": "0.6.2",
+    "@miroir-framework/jzod-ts": "^0.6.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {

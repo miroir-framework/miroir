@@ -49,6 +49,221 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
     "type": "schemaReference",
     "context": {
       ...(jzodSchemajzodMiroirBootstrapSchema as any).definition.context,
+      "______________________________________________miroirMetaModel_____________________________________________": {
+        "type": "simpleType",
+        "definition": "never"
+
+
+
+
+
+
+
+
+
+
+      },
+      "entityAttributeExpandedType": {
+        "type": "enum",
+        "definition": [
+          "UUID",
+          "STRING",
+          "BOOLEAN",
+          "OBJECT"
+        ]
+      },
+      "entityAttributeType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityInstance"
+            }
+          },
+          {
+            "type": "enum",
+            "definition": [
+              "ENTITY_INSTANCE_UUID",
+              "ARRAY"
+            ]
+          }
+        ]
+      },
+      "entityAttributeUntypedCore": {
+        "type": "object",
+        "definition": {
+          "id": { "type": "simpleType", "definition": "number" },
+          "name": { "type": "simpleType", "definition": "string" },
+          "defaultLabel": { "type": "simpleType", "definition": "string" },
+          "description": { "type": "simpleType", "optional": true, "definition": "string" },
+          "editable": { "type": "simpleType", "definition": "boolean" },
+          "nullable": { "type": "simpleType", "definition": "boolean" }
+        }
+      },
+      "entityAttributeCore": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityAttributeUntypedCore"
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityAttributeExpandedType"
+            }
+          }
+        }
+      },
+      "entityArrayAttribute": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityAttributeUntypedCore"
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "ARRAY"
+          },
+          "lineFormat": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityAttributeCore"
+              }
+            }
+          }
+        }
+      },
+      "entityForeignKeyAttribute": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityAttributeUntypedCore"
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "ENTITY_INSTANCE_UUID"
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "entityUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id": 1, "defaultLabel": "Entity Uuid", "editable": false }
+          }
+        }
+      },
+      "entityAttribute": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityForeignKeyAttribute"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityArrayAttribute"
+            }
+          }
+        ]
+      },
+      "entityAttributePartial": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityAttributeUntypedCore"
+              }
+            },
+            "partial": true,
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "ENTITY_INSTANCE_UUID"
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "entityUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id": 1, "defaultLabel": "Entity Uuid", "editable": false }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityAttributeUntypedCore"
+              }
+            },
+            "partial": true,
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "ARRAY"
+              },
+              "lineFormat": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entityAttributeCore"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
       "applicationSection": {
         "type": "union",
         "definition": [
@@ -1046,6 +1261,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "modelActionInitModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "initModel")?.actionParameters,
       "modelActionResetModel": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetModel")?.actionParameters,
       "modelActionResetData": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "resetData")?.actionParameters,
+      "modelActionAlterEntityAttribute": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "alterEntityAttribute")?.actionParameters,
       "modelActionCreateEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "createEntity")?.actionParameters,
       "modelActionDropEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "dropEntity")?.actionParameters,
       "modelActionRenameEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "renameEntity")?.actionParameters,

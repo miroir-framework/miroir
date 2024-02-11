@@ -81,7 +81,10 @@ export class ModelEntityActionTransformer{
         };
         break;
       }
-      case "alterEntityAttribute":
+      case "alterEntityAttribute": {
+        throw new Error("modelEntityUpdateToCUDUpdate could not handle alterEntityAttribute");
+        break;
+      }
       case "createEntity":{
         const castUpdate = modelUpdate as ModelActionCreateEntity;
         domainActionCUDUpdate = {
