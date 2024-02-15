@@ -2,7 +2,7 @@ import { HttpMethod } from "../0_interfaces/1_core/Http";
 import { MiroirAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
-import { actionRunner, modelActionRunner, modelOLDActionRunner } from "../3_controllers/ActionRunner";
+import { actionRunner, modelActionRunner } from "../3_controllers/ActionRunner";
 
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
@@ -172,43 +172,43 @@ export async function restMethodsPostPutDeleteHandler(
   );
 }
 
-// ################################################################################################
-export async function restMethodModelOLDActionRunnerHandler(
-  continuationFunction: (response:any) =>(arg0: any) => any,
-  storeControllerManager: StoreControllerManagerInterface,
-  method: HttpMethod,
-  response: any,
-  effectiveUrl: string, // log only, to remove?
-  body: HttpRequestBodyFormat,
-  params: any,
-):Promise<void> {
-  const actionName: string =
-  typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
+// // ################################################################################################
+// export async function restMethodModelOLDActionRunnerHandler(
+//   continuationFunction: (response:any) =>(arg0: any) => any,
+//   storeControllerManager: StoreControllerManagerInterface,
+//   method: HttpMethod,
+//   response: any,
+//   effectiveUrl: string, // log only, to remove?
+//   body: HttpRequestBodyFormat,
+//   params: any,
+// ):Promise<void> {
+//   const actionName: string =
+//   typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
 
-  const deploymentUuid: string =
-    typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
+//   const deploymentUuid: string =
+//     typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
 
-    const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-    const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-    if (!localMiroirStoreController || !localAppStoreController) {
-      throw new Error("restMethodModelOLDActionRunnerHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-    } 
+//     const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+//     const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+//     if (!localMiroirStoreController || !localAppStoreController) {
+//       throw new Error("restMethodModelOLDActionRunnerHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+//     } 
   
-  // log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
-  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "storeControllers", localMiroirStoreController, localAppStoreController);
+//   // log.debug("restMethodModelOLDActionRunnerHandler params", params, "body", body);
+//   log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "storeControllers", localMiroirStoreController, localAppStoreController);
 
-  const result = await modelOLDActionRunner(
-    localMiroirStoreController,
-    localAppStoreController,
-    deploymentUuid,
-    actionName,
-    body.modelUpdate
-  );
+//   const result = await modelOLDActionRunner(
+//     localMiroirStoreController,
+//     localAppStoreController,
+//     deploymentUuid,
+//     actionName,
+//     body.modelUpdate
+//   );
 
-  log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "result", result);
+//   log.info("restMethodModelOLDActionRunnerHandler params", params, "body", body, "result", result);
 
-  return continuationFunction(response)(result)
-}
+//   return continuationFunction(response)(result)
+// }
 
 // ################################################################################################
 export async function restMethodEntityActionRunnerHandler(
@@ -303,11 +303,11 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     handler: restMethodsPostPutDeleteHandler
   },
   // other operations, receiving Miroir Actions
-  {
-    method: "post",
-    url: "/modelOLDWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodModelOLDActionRunnerHandler
-  },
+  // {
+  //   method: "post",
+  //   url: "/modelOLDWithDeployment/:deploymentUuid/:actionName",
+  //   handler: restMethodModelOLDActionRunnerHandler
+  // },
   {
     method: "post",
     url: "/modelWithDeployment/:deploymentUuid/:actionName",

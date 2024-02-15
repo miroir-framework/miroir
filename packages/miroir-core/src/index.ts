@@ -324,7 +324,7 @@ export {
   RemoteStoreAction,
   RemoteStoreCRUDAction,
   RemoteStoreActionReturnType,
-  RemoteStoreOLDModelAction,
+  // RemoteStoreOLDModelAction,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
@@ -404,7 +404,7 @@ export {
 } from './3_controllers/resetApplicationDatabase.js';
 export {
   actionRunner,
-  modelOLDActionRunner,
+  // modelOLDActionRunner,
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,

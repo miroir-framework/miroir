@@ -24,7 +24,7 @@ import {
   RemoteStoreActionReturnType,
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
-  RemoteStoreOLDModelAction,
+  // RemoteStoreOLDModelAction,
   Report,
   StoreBasedConfiguration,
   applicationDeploymentMiroir,
@@ -272,21 +272,21 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
     return Promise.resolve(result);
   }
 
-  // ###############################################################################
-  async handleRemoteStoreOLDModelAction(
-    deploymentUuid: string,
-    action: RemoteStoreOLDModelAction
-  // ): Promise<RemoteStoreActionReturnType> {
-  ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreOLDModelAction.creator(
-        { deploymentUuid, action }
-      )
-    );
-    // log.info("ReduxStore handleRemoteStoreOLDModelAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
+  // // ###############################################################################
+  // async handleRemoteStoreOLDModelAction(
+  //   deploymentUuid: string,
+  //   action: RemoteStoreOLDModelAction
+  // // ): Promise<RemoteStoreActionReturnType> {
+  // ): Promise<ActionReturnType> {
+  //   const result: ActionReturnType = await this.innerReduxStore.dispatch(
+  //     // remote store access is accomplished through asynchronous sagas
+  //     this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreOLDModelAction.creator(
+  //       { deploymentUuid, action }
+  //     )
+  //   );
+  //   // log.info("ReduxStore handleRemoteStoreOLDModelAction", action, "returned", result)
+  //   return Promise.resolve(result);
+  // }
 
   // ###############################################################################
   async handleRemoteStoreModelAction(

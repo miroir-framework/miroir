@@ -415,13 +415,15 @@ export class DomainController implements DomainControllerInterface {
                         break;
                       }
                       default: {
-                        await this.callUtil.callRemoteAction(
-                          {}, // context
-                          {}, // context update
-                          "handleRemoteStoreOLDModelAction",
-                          deploymentUuid,
-                          replayAction
-                        );
+                        throw new Error("handleModelAction could not handle action" + replayAction);
+                        
+                        // await this.callUtil.callRemoteAction(
+                        //   {}, // context
+                        //   {}, // context update
+                        //   "handleRemoteStoreOLDModelAction",
+                        //   deploymentUuid,
+                        //   replayAction
+                        // );
                         break;
                       }
                     }
