@@ -129,6 +129,15 @@
               "definition": "string",
               "validations": [{ "type": "uuid" }]
             },
+            "entityDefinitionUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }]
+            },
+            "entityAttributeName": {
+              "type": "simpleType",
+              "definition": "string"
+            },
             "entityAttributeId": {
               "type": "simpleType",
               "definition": "number"

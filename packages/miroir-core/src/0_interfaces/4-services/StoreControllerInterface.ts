@@ -14,6 +14,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
+  ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   StoreAction,
   StoreSectionConfiguration,
@@ -86,6 +87,7 @@ export interface AbstractEntityStoreSectionInterface {
   ): Promise<ActionVoidReturnType>;
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType>;
+  alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType>;
   dropEntity(parentUuid:string): Promise<ActionVoidReturnType>;
   dropEntities(parentUuid:string[]): Promise<ActionVoidReturnType>;
 }

@@ -86,6 +86,8 @@ export {
   miroirSelectQueriesRecord,
   ModelAction,
   modelAction,
+  ModelActionAlterEntityAttribute,
+  modelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   modelActionRenameEntity,
   ModelActionCreateEntity,
@@ -266,8 +268,8 @@ export {
   CUDActionNameSchema,
   CUDActionName,
   CUDActionNamesArray,
-  ModelEntityUpdateAlterEntityAttributeSchema,
-  ModelEntityUpdateAlterEntityAttribute,
+  // ModelEntityUpdateAlterEntityAttributeSchema,
+  // ModelEntityUpdateAlterEntityAttribute,
   ModelCUDInstanceUpdateSchema,
   ModelEntityInstanceCUDUpdate,
   ModelEntityUpdateSchema,
@@ -404,7 +406,6 @@ export {
 } from './3_controllers/resetApplicationDatabase.js';
 export {
   actionRunner,
-  // modelOLDActionRunner,
   initApplicationDeployment,
   modelActionRunner,
   applyModelEntityUpdate,

@@ -37,7 +37,8 @@ import {
   ModelEntityActionTransformer,
   ModelEntityUpdate,
   StoreControllerInterface,
-  StoreControllerManagerInterface
+  StoreControllerManagerInterface,
+  ModelAction
 } from "miroir-core";
 
 
@@ -443,10 +444,12 @@ describe.sequential("localStoreController.unit.test", () => {
 
   //   // test starts
   //   const modelEntityUpdate:ModelEntityUpdate =  {
-  //     actionType: "ModelEntityUpdate",
-  //     actionName: "DeleteEntity",
+  //     actionType: "modelAction",
+  //     actionName: "dropEntity",
+  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
   //     entityUuid: entityAuthor.uuid, 
-  //     entityName: entityAuthor.name,
+  //     // entityName: entityAuthor.name,
+  //     entityDefinitionUuid: entityDefinitionAuthor.uuid
   //    };
 
     
@@ -533,89 +536,102 @@ describe.sequential("localStoreController.unit.test", () => {
   //   );
   // });
 
-  // // ################################################################################################
-  // // TODO
-  // it("alter Author Entity: rename Author Entity attribute", async () => {
+  // ################################################################################################
+  // TODO
+  it("alter Author Entity: rename Author Entity attribute", async () => {
 
-  //   // setup
-  //   const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
+    // setup
+    const entityCreated = await localAppStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityDefinition)
 
-  //   expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
-  //   // test starts
-  //   const modelActionRenameEntity:ModelActionRenameEntity =  {
-  //     actionType: "modelAction",
-  //     actionName: "renameEntity",
-  //     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-  //     entityUuid: entityAuthor.uuid, 
-  //     entityName: entityAuthor.name,
-  //     entityDefinitionUuid: entityDefinitionAuthor.uuid,
-  //     targetValue: entityAuthor.name + "ssss"
-  //   };
+    expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
+    // test starts
+    const modelActionAlterAttribute:ModelAction =  {
+      actionType: "modelAction",
+      actionName: "alterEntityAttribute",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      entityUuid: entityAuthor.uuid, 
+      entityDefinitionUuid: entityDefinitionAuthor.uuid,
+      entityName: entityAuthor.name,
+      entityAttributeId: 6,
+      entityAttributeName: "icon",
+      update: {
+        name: "icons"
+      }
+    };
 
-  //   await chainTestSteps(
-  //     "fetchEntities",
-  //     { },
-  //     async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
-  //     (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
-  //     "entities", // name to give to result
-  //     "entityInstanceCollection", // expected result.elementType
-  //     undefined, // test result.elementValue
-  //   )
-  //   .then (
-  //     (v) => chainTestSteps(
-  //       "fetchEntityDefinitions",
-  //       v,
-  //       async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
-  //       (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
-  //       "entityDefinitions", // name to give to result
-  //       "entityInstanceCollection", // expected result.elementType
-  //       undefined, // expected result.elementValue
-  //     )
-  //   )
-  //   .then (
-  //     (v) => chainTestSteps(
-  //       "fetchEntityDefinitions",
-  //       v,
-  //       async () => await localAppStoreController.renameEntityClean(modelActionRenameEntity),
-  //       undefined,
-  //       undefined, // name to give to result
-  //       undefined, // expected result.elementType
-  //       undefined, // expected result.elementValue
-  //     )
-  //   )
-  //   .then((v) =>
-  //     chainTestSteps(
-  //       "getEntityInstancesToCheckResult",
-  //       v,
-  //       async () => await localAppStoreController.getInstances("model", entityEntity.uuid),
-  //       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-  //       undefined, // name to give to result
-  //       "entityInstanceCollection",
-  //       [
-  //         {
-  //           ...entityAuthor,
-  //           name: entityAuthor.name + "ssss",
-  //         },
-  //       ]
-  //     )
-  //   )
-  //   .then((v) =>
-  //     chainTestSteps(
-  //       "getEntityDefinitionInstancesToCheckResult",
-  //       v,
-  //       async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
-  //       (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
-  //       undefined, // name to give to result
-  //       "entityInstanceCollection",
-  //       [
-  //         {
-  //           ...entityDefinitionAuthor,
-  //           name: entityDefinitionAuthor.name + "ssss",
-  //         },
-  //       ]
-  //     )
-  //   );
-  // });
+    await chainTestSteps(
+      "fetchEntities",
+      { },
+      async () => await localAppStoreController.getInstances("model",entityEntity.uuid),
+      (a, p) => (a as any).returnedDomainElement.elementValue.instances as MetaEntity[],
+      "entities", // name to give to result
+      "entityInstanceCollection", // expected result.elementType
+      undefined, // test result.elementValue
+    )
+    .then (
+      (v) => chainTestSteps(
+        "fetchEntityDefinitions",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+        (a, p) => (a as any).returnedDomainElement.elementValue.instances as EntityDefinition[],
+        "entityDefinitions", // name to give to result
+        "entityInstanceCollection", // expected result.elementType
+        undefined, // expected result.elementValue
+      )
+    )
+    .then (
+      (v) => chainTestSteps(
+        "fetchEntityDefinitions",
+        v,
+        async () => await localAppStoreController.alterEntityAttribute(modelActionAlterAttribute),
+        undefined,
+        undefined, // name to give to result
+        undefined, // expected result.elementType
+        undefined, // expected result.elementValue
+      )
+    )
+    .then((v) =>
+      chainTestSteps(
+        "getEntityInstancesToCheckResult",
+        v,
+        async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+        (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+        undefined, // name to give to result
+        "entityInstanceCollection",
+        [
+          {
+            ...entityDefinitionAuthor,
+            jzodSchema: {
+              "type": "object",
+              "definition": {
+                ...Object.fromEntries(
+                  Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter((i) => i[0] != modelActionAlterAttribute.entityAttributeName)
+                ),
+                "icons": entityDefinitionAuthor.jzodSchema.definition.icon
+              }
+              // entityAuthor.name + "ssss",
+            } 
+          },
+        ]
+      )
+    )
+    // .then((v) =>
+    //   chainTestSteps(
+    //     "getEntityDefinitionInstancesToCheckResult",
+    //     v,
+    //     async () => await localAppStoreController.getInstances("model", entityEntityDefinition.uuid),
+    //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.elementValue.instances),
+    //     undefined, // name to give to result
+    //     "entityInstanceCollection",
+    //     [
+    //       {
+    //         ...entityDefinitionAuthor,
+    //         name: entityDefinitionAuthor.name + "ssss",
+    //       },
+    //     ]
+    //   )
+    // );
+  });
   
   
   // // ################################################################################################

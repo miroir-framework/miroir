@@ -1,5 +1,5 @@
 import { MetaEntity } from "../../0_interfaces/1_core/EntityDefinition.js";
-import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { EntityInstanceCollection, EntityInstance, EntityDefinition, ActionReturnType, ActionEntityInstanceCollectionReturnType, ActionEntityInstanceReturnType, ActionVoidReturnType, ModelActionRenameEntity, ModelActionAlterEntityAttribute } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { StoreModelSectionInterface } from "../../0_interfaces/4-services/StoreControllerInterface.js";
 
@@ -53,6 +53,10 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
+  alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+    throw new Error("Method not implemented");
+  }
+
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }

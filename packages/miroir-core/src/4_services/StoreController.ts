@@ -12,6 +12,7 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
+  ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
   StoreSectionConfiguration,
   actionReturnType,
@@ -323,6 +324,11 @@ export class StoreController implements StoreControllerInterface {
   // ##############################################################################################
   async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.renameEntityClean(update);
+  }
+
+  // ##############################################################################################
+  async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+    return this.modelStoreSection.alterEntityAttribute(update);
   }
 
   // ##############################################################################################

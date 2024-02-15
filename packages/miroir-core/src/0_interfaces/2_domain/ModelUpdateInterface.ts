@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   entityAttributePartial,
   entityInstanceCollection,
+  modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionDropEntity,
   modelActionRenameEntity
@@ -14,21 +15,21 @@ export const CUDActionNameSchema = z.enum(CUDActionNamesArray);
 export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 
 // #############################################################################################
-export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
-  actionType: z.literal("ModelEntityUpdate"),
-  actionName: z.literal("alterEntityAttribute"),
-  parentName: z.string().optional(),
-  parentUuid: z.string(),
-  entityAttributeId: z.number(),
-  update: entityAttributePartial,
-  // update: EntityAttributePartialSchema,
-});
-export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
+// export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
+//   actionType: z.literal("ModelEntityUpdate"),
+//   actionName: z.literal("alterEntityAttribute"),
+//   parentName: z.string().optional(),
+//   parentUuid: z.string(),
+//   entityAttributeId: z.number(),
+//   update: entityAttributePartial,
+//   // update: EntityAttributePartialSchema,
+// });
+// export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
 
 // #############################################################################################
 export const ModelEntityUpdateSchema = z.union([
-  ModelEntityUpdateAlterEntityAttributeSchema,
-  // modelActionAlterEntityAttribute,
+  // ModelEntityUpdateAlterEntityAttributeSchema,
+  modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionRenameEntity,
   modelActionDropEntity,

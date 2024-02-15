@@ -102,16 +102,6 @@ export async function applyModelEntityUpdate(
           await storeController.renameEntity(update);
           break;
         }
-        // case "renameEntity": {
-        //   break;
-        // }
-        // case "createEntity": {
-        //   for (const entity of update.modelEntityUpdate.entities) {
-        //     log.debug("ActionRunner.ts applyModelEntityUpdates createEntity inserting", entity);
-        //     await storeController.createEntity(entity.entity, entity.entityDefinition as EntityDefinition);
-        //   }
-        //   break;
-        // }
         default:
           log.warn("applyModelEntityUpdate did nothing for action",update)
           break;
@@ -150,71 +140,6 @@ export async function applyModelEntityUpdate(
   }
   return Promise.resolve(undefined);
 }
-
-// // ################################################################################################
-// /**
-//  * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
-//  * @param deploymentUuid
-//  * @param actionName
-//  * @param miroirDataStoreProxy
-//  * @param appDataStoreProxy
-//  * @param body
-//  * @returns
-//  */
-// export async function modelOLDActionRunner(
-//   miroirDataStoreProxy: StoreControllerInterface,
-//   appDataStoreProxy: StoreControllerInterface,
-//   deploymentUuid: string,
-//   actionName: string,
-//   body: any
-// ): Promise<void> {
-//   // log.info("server post model/"," started #####################################");
-//   log.info("server post model/", " started #####################################");
-//   log.info("server post model/ body", body);
-
-//   // const localData = await localIndexedDbDataStore.upsertDataInstance(parentName, addedObjects[0]);
-//   // for (const instance of addedObjects) {
-//   log.info(
-//     "###################################### modelOLDActionRunner started deploymentUuid",
-//     deploymentUuid,
-//     "actionName",
-//     actionName
-//   );
-//   log.debug("modelOLDActionRunner getEntityUuids()", miroirDataStoreProxy.getEntityUuids());
-//   switch (actionName) {
-//     case "updateEntity": {
-//       const update: ModelReplayableUpdate = body;
-//       log.debug("modelOLDActionRunner updateEntity update", update);
-//       if (update) {
-//         // switch ((update as any)['action']) {
-//         //   default: {
-//         const targetProxy =
-//           deploymentUuid == applicationDeploymentMiroir.uuid ? miroirDataStoreProxy : appDataStoreProxy;
-//         log.trace(
-//           "modelOLDActionRunner updateEntity",
-//           "used targetProxy",
-//           (targetProxy as any)["applicationName"],
-//           deploymentUuid,
-//           applicationDeploymentMiroir.uuid
-//         );
-
-//         await targetProxy.applyModelEntityUpdate(update);
-//         log.trace("modelOLDActionRunner applyModelEntityUpdate done", update);
-//         // break;
-//         // }
-//         // }
-//       } else {
-//         log.warn("modelOLDActionRunner has no update to execute!");
-//       }
-//       break;
-//     }
-//     default:
-//       log.warn("modelOLDActionRunner could not handle actionName", actionName);
-//       break;
-//   }
-//   log.debug("modelOLDActionRunner returning empty response.");
-//   return Promise.resolve(undefined);
-// }
 
 // ################################################################################################
 /**
