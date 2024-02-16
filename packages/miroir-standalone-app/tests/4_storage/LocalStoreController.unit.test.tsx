@@ -554,8 +554,12 @@ describe.sequential("localStoreController.unit.test", () => {
       entityName: entityAuthor.name,
       entityAttributeId: 6,
       entityAttributeName: "icon",
+      entityAttributeRename: "icons",
       update: {
-        name: "icons"
+        "type": "array",
+        "definition": {
+          "type": "simpleType", "definition": "string", "optional": true, "extra": { "id":6, "defaultLabel": "Gender (narrow-minded)", "editable": true }
+        }
       }
     };
 
@@ -607,7 +611,7 @@ describe.sequential("localStoreController.unit.test", () => {
                 ...Object.fromEntries(
                   Object.entries(entityDefinitionAuthor.jzodSchema.definition).filter((i) => i[0] != modelActionAlterAttribute.entityAttributeName)
                 ),
-                "icons": entityDefinitionAuthor.jzodSchema.definition.icon
+                "icons": { "type": "array", "definition": entityDefinitionAuthor.jzodSchema.definition.icon }
               }
               // entityAuthor.name + "ssss",
             } 

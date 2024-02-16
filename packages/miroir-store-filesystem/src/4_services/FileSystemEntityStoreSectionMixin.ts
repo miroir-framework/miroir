@@ -247,7 +247,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       }
       // const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement.elementValue,{name:update.targetValue});
       const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
-      const localEntityJzodSchemaDefinition = update.update.name
+      const localEntityJzodSchemaDefinition = update.entityAttributeRename
         ? Object.fromEntries(
             Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => i[0] != update.entityAttributeName)
           )
@@ -260,9 +260,8 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
             type: "object",
             definition: {
               ...localEntityJzodSchemaDefinition,
-              [update.update.name ?? update.entityAttributeName]: (
-                localEntityDefinition
-              ).jzodSchema.definition[update.entityAttributeName],
+              [update.entityAttributeRename ?? update.entityAttributeName]: 
+                update.update??localEntityDefinition.jzodSchema.definition[update.entityAttributeName],
             },
           },
         }

@@ -124,6 +124,7 @@
             "type": "literal",
             "definition": "date"
           },
+          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -190,6 +191,7 @@
             "type": "literal",
             "definition": "number"
           },
+          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -260,6 +262,7 @@
             "type": "literal",
             "definition": "string"
           },
+          "coerce": { "type": "simpleType", "definition": "boolean", "optional": true },
           "validations": {
             "type": "array",
             "optional": true,
@@ -546,8 +549,13 @@
             "definition": "literal"
           },
           "definition": {
-            "type": "simpleType",
-            "definition": "string"
+            "type": "union",
+            "definition": [
+              { "type": "simpleType", "definition": "string" },
+              { "type": "simpleType", "definition": "number" },
+              { "type": "simpleType", "definition": "bigint" },
+              { "type": "simpleType", "definition": "boolean" }
+            ]
           }
         }
       },
@@ -651,6 +659,7 @@
             "definition": "boolean",
             "optional": true
           },
+          "partial": { "type": "simpleType", "definition": "boolean", "optional": true },
           "definition": {
             "type": "record",
             "definition": {
@@ -745,6 +754,7 @@
                 "definition": "boolean",
                 "optional": true
               },
+              "partial": { "type": "simpleType", "definition": "boolean", "optional": true },
               "relativePath": {
                 "type": "simpleType",
                 "definition": "string",
