@@ -9,7 +9,7 @@ import {
 } from "miroir-core";
 import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
-import { SqlUuidEntityDefinition } from "../utils";
+import { EntityUuidIndexedSequelizeModel } from "../utils";
 import { cleanLevel } from "./constants";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "SqlDbStore");
@@ -19,7 +19,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 export class SqlDbStore implements AbstractStoreInterface {
-  public sqlSchemaTableAccess: SqlUuidEntityDefinition = {};
+  public sqlSchemaTableAccess: EntityUuidIndexedSequelizeModel = {};
   public sequelize: Sequelize;
 
   // ##############################################################################################

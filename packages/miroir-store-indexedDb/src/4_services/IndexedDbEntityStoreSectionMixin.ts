@@ -17,7 +17,8 @@ import {
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
   ModelActionRenameEntity,
-  EntityInstanceWithName
+  EntityInstanceWithName,
+  ModelActionAlterEntityAttribute
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -152,6 +153,42 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       return Promise.resolve(ACTION_OK);
     }
 
+    // ############################################################################################
+    async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+      log.info(this.logHeader, "alterEntityAttribute", update);
+      const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
+        entityEntityDefinition.uuid,
+        update.entityDefinitionUuid
+      );
+      if (currentEntityDefinition.status != "ok") {
+        return currentEntityDefinition
+      }
+      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
+      const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
+        Object.fromEntries(
+          Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => update.removeColumns??([] as string[]).includes(i[0]))
+        )
+        : localEntityDefinition.jzodSchema.definition;
+      const modifiedEntityDefinition: EntityDefinition = Object.assign(
+        {},
+        localEntityDefinition,
+        {
+          jzodSchema: {
+            type: "object",
+            definition: {
+              ...localEntityJzodSchemaDefinition,
+              ...(update.addColumns?Object.fromEntries(update.addColumns.map(c=>[c.name, c.definition])):{})
+            },
+          },
+        }
+      );
+
+      log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
+    
+      await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
+      return Promise.resolve(ACTION_OK);
+    }
+    
     // #############################################################################################
     async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate):Promise<ActionVoidReturnType> {
       // TODO: identical to the Filesystem implementation!

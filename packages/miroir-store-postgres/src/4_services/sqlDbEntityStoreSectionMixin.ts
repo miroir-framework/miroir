@@ -18,13 +18,16 @@ import {
   ActionEntityInstanceReturnType,
   EntityInstanceWithName,
   ModelActionRenameEntity,
+  ModelActionAlterEntityAttribute,
+  Entity,
 } from "miroir-core";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
-import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
+import { EntityUuidIndexedSequelizeModel, dataTypesMapping, fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { JzodAttribute } from "@miroir-framework/jzod-ts";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbEntityStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -54,7 +57,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     // TODO: does side effect => refactor!
-    getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
+    getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): EntityUuidIndexedSequelizeModel {
       return {
         [entity.uuid]: {
           parentName: entity.parentName,
@@ -262,5 +265,93 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       log.debug(this.logHeader, "renameEntity done.");
       return Promise.resolve(ACTION_OK);
     }
+
+    // ############################################################################################
+    async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
+      log.info(this.logHeader, "alterEntityAttribute", update);
+      // const currentEntity: ActionEntityInstanceReturnType = await this.getInstance(
+      //   entityEntity.uuid,
+      //   update.entityUuid
+      // );
+      // if (currentEntity.status != "ok") {
+      //   return currentEntity
+      // }
+      const currentEntityDefinition: ActionEntityInstanceReturnType = await this.getInstance(
+        entityEntityDefinition.uuid,
+        update.entityDefinitionUuid
+      );
+      if (currentEntityDefinition.status != "ok") {
+        return currentEntityDefinition
+      }
+      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
+      const localEntityJzodSchemaDefinition = update.removeColumns != undefined && Array.isArray(update.removeColumns)?
+        Object.fromEntries(
+          Object.entries(localEntityDefinition.jzodSchema.definition).filter((i) => update.removeColumns??([] as string[]).includes(i[0]))
+        )
+        : localEntityDefinition.jzodSchema.definition;
+      const modifiedEntityDefinition: EntityDefinition = Object.assign(
+        {},
+        localEntityDefinition,
+        {
+          jzodSchema: {
+            type: "object",
+            definition: {
+              ...localEntityJzodSchemaDefinition,
+              ...(update.addColumns?Object.fromEntries(update.addColumns.map(c=>[c.name, c.definition])):{})
+            },
+          },
+        }
+      );
+
+      log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
+    
+      await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
+      // if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[update.entityUuid]) {
+      //   const model = this.sqlSchemaTableAccess[update.entityUuid];
+        // await model.sequelizeModel.u
+      const queryInterface = this.sequelize.getQueryInterface();
+      // if (update.update && (update.update as any).type == "simpleType") {
+      // const simpleTypeDefinition:any = update.update;
+      log.info(
+        "alterEntityAttribute table",
+        update.entityName,
+        "addColumns",
+        JSON.stringify(update.addColumns, null, 2),
+      );
+      for (const c of update.addColumns??[]) {
+        const columnOptions = fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(c.definition)
+        log.info("alterEntityAttribute adding column", c.name, "options", JSON.stringify(columnOptions, null, 2))
+        await queryInterface.addColumn(
+          update.entityName,
+          c.name,
+          columnOptions.options
+        );
+      }
+      // } else {
+      //   // throw new Error("");
+      //   return Promise.resolve({
+      //     status: "error",
+      //     error: {
+      //       errorType: "FailedToCreateStore", // TODO: put the right errorType
+      //       errorMessage: "alterEntityAttribute could not handle wanted attribute modification: " + JSON.stringify(update.update)
+      //     }
+      //   });
+        
+      // }
+        // if (update.entityAttributeRename) {
+        //   await queryInterface.renameColumn(update.entityName, update.entityAttributeName, update.entityAttributeRename)
+          
+        // }
+
+      // }  
+      // await this.dataStore.createStorageSpaceForInstancesOfEntity(
+      //   // (currentEntity.returnedDomainElement.elementValue as EntityInstanceWithName).name,
+      //   // update.targetValue,
+      //   currentEntity.returnedDomainElement as any as MetaEntity,
+      //   modifiedEntityDefinition
+      // );
+      return Promise.resolve(ACTION_OK);
+    }
+    
   };
 }

@@ -121,7 +121,6 @@
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "entityName": {
               "type": "simpleType",
-              "optional": true,
               "definition": "string"
             },
             "entityUuid": {
@@ -134,21 +133,37 @@
               "definition": "string",
               "validations": [{ "type": "uuid" }]
             },
-            "entityAttributeName": {
-              "type": "simpleType",
-              "definition": "string"
-            },
-            "entityAttributeId": {
-              "type": "simpleType",
-              "definition": "number"
-            },
-            "entityAttributeRename": {
-              "type": "simpleType",
+            "addColumns": {
+              "type": "array",
               "optional": true,
-              "definition": "string"
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodElement"
+                    }
+                  }
+                }
+              }
+            },
+            "removeColumns": {
+              "type": "array",
+              "optional": true,
+              "definition": {
+                "type": "simpleType",
+                "definition": "string"
+              }
             },
             "update": {
               "type": "schemaReference",
+              "optional": true,
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "jzodElement"

@@ -7,7 +7,7 @@ import {
   MiroirLoggerFactory,
   getLoggerName
 } from "miroir-core";
-import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic } from "sequelize";
+import { Attributes, DataTypes, Model, ModelAttributeColumnOptions, ModelAttributes, ModelStatic } from "sequelize";
 
 import { cleanLevel } from "./4_services/constants";
 import { packageName } from "./constants";
@@ -19,7 +19,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 });
 
 // export type SqlEntityDefinition = { [parentName in string]: ModelStatic<Model<any, any>> };
-export type SqlUuidEntityDefinition = {
+export type EntityUuidIndexedSequelizeModel = {
   [parentUuid in string]: { parentName?: string; sequelizeModel: ModelStatic<Model<any, any>> };
 };
 
@@ -33,11 +33,12 @@ export type SqlUuidEntityDefinition = {
 //   // OBJECT: DataTypes.STRING, // TODO: use JSONB for OBJECTs on postgres!
 // };
 
-const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeConstructor } = { // TODO: correct types!
+export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeConstructor } = { // TODO: correct types!
   array: DataTypes.JSONB, // OK?
   boolean: DataTypes.BOOLEAN,
   entity_instance_uuid: DataTypes.STRING,
   object: DataTypes.JSONB, 
+  number: DataTypes.INTEGER, 
   record: DataTypes.JSONB, 
   string: DataTypes.STRING,
   uuid: DataTypes.STRING,
@@ -78,6 +79,53 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
       ];
     })
   );
+  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
+  return result;
+}
+// ##############################################################################################
+export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(
+  attributeDefinition: JzodElement
+): {dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions} {
+
+  const dataType =  dataTypesMapping[attributeDefinition.definition as string]
+  const result: { dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions } = {
+    "dataType": dataType,
+    "options": {
+      "type": dataType,
+      "allowNull": attributeDefinition.optional || attributeDefinition.nullable,
+    }
+  };
+  log.info(
+    "fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions attributeDefinition=",
+    JSON.stringify(attributeDefinition),
+    "dataType=",
+    dataType,
+    "result",
+    result
+  );
+
+  // const jzodSchema: JzodObject = entityDefinition.jzodSchema ? entityDefinition.jzodSchema : { type: "object", definition: {}};
+  // const jzodObjectAttributes = jzodSchema.definition;
+  // const result = Object.fromEntries(
+  //   Object.entries(jzodObjectAttributes).map((a: [string, JzodElement]) => {
+  //     return [
+  //       [a[0]],
+  //       {
+  //         type:
+  //           a[1].type == "simpleType"
+  //             ? dataTypesMapping[a[1].definition]
+  //             : a[1].type == "schemaReference"
+  //             ? dataTypesMapping[a[1].type]
+  //             : a[1].type == "array" || a[1].type == "object"
+  //             ? dataTypesMapping[a[1].type]
+  //             : DataTypes.STRING,
+  //         // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
+  //         allowNull: (a[1] as any)["optional"] ?? false,
+  //         primaryKey: a[0] == "uuid",
+  //       },
+  //     ];
+  //   })
+  // );
   // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }

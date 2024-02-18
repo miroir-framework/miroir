@@ -14,7 +14,7 @@ import {
   ACTION_OK,
 } from "miroir-core";
 import { Sequelize } from "sequelize";
-import { SqlUuidEntityDefinition, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
+import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -96,7 +96,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     }
 
   // ##############################################################################################
-  getAccessToDataSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): SqlUuidEntityDefinition {
+  getAccessToDataSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): EntityUuidIndexedSequelizeModel {
     // TODO: does side effect => refactor!
     return {
       [entity.uuid]: {
@@ -160,6 +160,28 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
     );
     return Promise.resolve( ACTION_OK );
   }
+
+  // // ##############################################################################################
+  // async alterStorageSpaceForInstancesOfEntity(
+  //   entity: MetaEntity,
+  //   entityDefinition: EntityDefinition
+  // ): Promise<ActionVoidReturnType> {
+  //   const queryInterface = this.sequelize.getQueryInterface();
+  //   await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
+  //   // log.info(this.logHeader, 'renameEntity renameTable done.');
+  //   // removing dataSequelize model with old name
+  //   this.sequelize.modelManager.removeModel(this.sequelize.model(oldName));
+  //   // creating dataSequelize model for the renamed entity
+  //   Object.assign(
+  //     this.sqlSchemaTableAccess,
+  //     this.getAccessToDataSectionEntity(
+  //       // TODO: decouple from ModelUpdateConverter implementation
+  //       entity,
+  //       entityDefinition
+  //     )
+  //   );
+  //   return Promise.resolve( ACTION_OK );
+  // }
 
   // ##############################################################################################
   async dropStorageSpaceForInstancesOfEntity(entityUuid: Uuid): Promise<ActionVoidReturnType> {
