@@ -125,7 +125,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //       update: {
     //         actionName:"WrappedTransactionalEntityUpdate",
     //         modelEntityUpdate:{
-    //           actionType:"ModelEntityUpdate",
+    //           actionType:"ModelActionEntityUpdate",
     //           actionName: "renameEntity",
     //           entityName: e.oldValue,
     //           entityUuid: entity.uuid,

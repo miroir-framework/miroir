@@ -16,7 +16,7 @@ export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 
 // #############################################################################################
 // export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
-//   actionType: z.literal("ModelEntityUpdate"),
+//   actionType: z.literal("ModelActionEntityUpdate"),
 //   actionName: z.literal("alterEntityAttribute"),
 //   parentName: z.string().optional(),
 //   parentUuid: z.string(),
@@ -27,14 +27,14 @@ export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 // export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
 
 // #############################################################################################
-export const ModelEntityUpdateSchema = z.union([
+export const ModelActionEntityUpdateSchema = z.union([
   // ModelEntityUpdateAlterEntityAttributeSchema,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionRenameEntity,
   modelActionDropEntity,
 ]);
-export type ModelEntityUpdate = z.infer<typeof ModelEntityUpdateSchema>;
+export type ModelActionEntityUpdate = z.infer<typeof ModelActionEntityUpdateSchema>;
 
 // #############################################################################################
 export const ModelCUDInstanceUpdateSchema = z.object({
@@ -47,14 +47,14 @@ export type ModelEntityInstanceCUDUpdate = z.infer<typeof ModelCUDInstanceUpdate
 // #############################################################################################
 export const WrappedTransactionalEntityUpdateSchema = z.object({
   actionName: z.literal("WrappedTransactionalEntityUpdate"),
-  modelEntityUpdate: ModelEntityUpdateSchema,
+  modelEntityUpdate: ModelActionEntityUpdateSchema,
 });
 export type WrappedTransactionalEntityUpdate = z.infer<typeof WrappedTransactionalEntityUpdateSchema>;
 
 // #############################################################################################
 export const WrappedTransactionalEntityUpdateWithCUDUpdateSchema = z.object({
   actionName: z.literal("WrappedTransactionalEntityUpdateWithCUDUpdate"),
-  modelEntityUpdate: ModelEntityUpdateSchema,
+  modelEntityUpdate: ModelActionEntityUpdateSchema,
   equivalentModelCUDUpdates: z.array(ModelCUDInstanceUpdateSchema),
 });
 export type WrappedTransactionalEntityUpdateWithCUDUpdate = z.infer<

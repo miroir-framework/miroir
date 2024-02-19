@@ -435,7 +435,7 @@ export const HomePage = (props: RootComponentProps) => {
                 update: {
                   actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    actionType: "ModelEntityUpdate",
+                    actionType: "ModelActionEntityUpdate",
                     actionName: "renameEntity",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
@@ -494,7 +494,7 @@ export const HomePage = (props: RootComponentProps) => {
                 update: {
                   actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    actionType: "ModelEntityUpdate",
+                    actionType: "ModelActionEntityUpdate",
                     actionName: "DeleteEntity",
                     entityName: entityAuthor.name,
                     entityUuid: entityAuthor.uuid,

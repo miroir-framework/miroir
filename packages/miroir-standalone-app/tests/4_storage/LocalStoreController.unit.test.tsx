@@ -17,7 +17,7 @@ import {
   ModelActionRenameEntity,
   ModelEntityActionTransformer,
   ModelEntityInstanceCUDUpdate,
-  ModelEntityUpdate,
+  ModelActionEntityUpdate,
   StoreControllerInterface,
   StoreControllerManagerInterface,
   applicationDeploymentLibrary,
@@ -430,7 +430,7 @@ describe.sequential("localStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
     // test starts
-    const modelEntityUpdate:ModelEntityUpdate =  {
+    const modelActionDropEntity:ModelActionEntityUpdate =  {
       actionType: "modelAction",
       actionName: "dropEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -473,41 +473,15 @@ describe.sequential("localStoreController.unit.test", () => {
         undefined, // expected result.elementValue
       )
     )
-    .then(
+    .then (
       (v) => chainTestSteps(
-        "createCudUpdate",
+        "fetchEntityDefinitions",
         v,
-        async () => ACTION_OK,
-        (a, p) =>
-          ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
-            modelEntityUpdate,
-            p.entities,
-            p.entityDefinitions
-          ),
-        "cudUpdate", // name to give to result
+        async () => await localAppStoreController.dropEntity(modelActionDropEntity.entityUuid),
+        undefined,
+        undefined, // name to give to result
         undefined, // expected result.elementType
         undefined, // expected result.elementValue
-      )
-    )
-    .then((v) =>
-      chainTestSteps(
-        "applyModelEntityUpdate",
-        v,
-        async () => await localAppStoreController.applyModelEntityUpdate({
-            actionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-            modelEntityUpdate,
-            equivalentModelCUDUpdates: [
-              {
-                actionType: "ModelEntityInstanceCUDUpdate",
-                actionName: v.cudUpdate?.actionName ?? "update",
-                objects: v.cudUpdate?.objects ?? [],
-              } as ModelEntityInstanceCUDUpdate,
-            ],
-          }),
-        undefined, // transformation function to apply to result,
-        undefined, // name to give to result
-        undefined, // expected result type
-        undefined // to value to compare with
       )
     )
     .then((v) =>

@@ -191,7 +191,7 @@ describe.sequential('DomainController.Data.CRUD',
               update: {
                 actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate: {
-                  actionType: "ModelEntityUpdate",
+                  actionType: "ModelActionEntityUpdate",
                   actionName: "createEntity",
                   entities: [
                     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -397,7 +397,7 @@ describe.sequential('DomainController.Data.CRUD',
               update: {
                 actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate: {
-                  actionType: "ModelEntityUpdate",
+                  actionType: "ModelActionEntityUpdate",
                   actionName: "createEntity",
                   entities: [
                     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -587,7 +587,7 @@ describe.sequential('DomainController.Data.CRUD',
               update: {
                 actionName:"WrappedTransactionalEntityUpdate",
                 modelEntityUpdate: {
-                  actionType: "ModelEntityUpdate",
+                  actionType: "ModelActionEntityUpdate",
                   actionName: "createEntity",
                   entities: [
                     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},

@@ -12,7 +12,7 @@ import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInter
 import {
   CUDActionName,
   ModelEntityInstanceCUDUpdate,
-  ModelEntityUpdate,
+  ModelActionEntityUpdate,
 } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
@@ -35,7 +35,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export class ModelEntityActionTransformer{
 
   static modelEntityUpdateToCUDUpdate(
-    modelUpdate:ModelEntityUpdate,
+    modelUpdate:ModelActionEntityUpdate,
     entities: Entity[],
     entityDefinitions: EntityDefinition[],
   ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
@@ -294,7 +294,7 @@ export class ModelEntityActionTransformer{
   static modelEntityUpdateToLocalCacheCUDUpdate(
     entities: MetaEntity[],
     entityDefinitions: EntityDefinition[],
-    modelUpdate:ModelEntityUpdate,
+    modelUpdate:ModelActionEntityUpdate,
   ):DomainDataAction{
     return {
       actionType:"DomainDataAction",
@@ -308,7 +308,7 @@ export class ModelEntityActionTransformer{
 
   // ###################################################################################################
   static modelEntityUpdateToModelInstanceCUDUpdate(
-    modelUpdate:ModelEntityUpdate,
+    modelUpdate:ModelActionEntityUpdate,
     currentModel: MetaModel,
   ):ModelEntityInstanceCUDUpdate | undefined {
     const o = ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
