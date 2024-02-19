@@ -104,38 +104,5 @@ export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOpti
     result
   );
 
-  // const jzodSchema: JzodObject = entityDefinition.jzodSchema ? entityDefinition.jzodSchema : { type: "object", definition: {}};
-  // const jzodObjectAttributes = jzodSchema.definition;
-  // const result = Object.fromEntries(
-  //   Object.entries(jzodObjectAttributes).map((a: [string, JzodElement]) => {
-  //     return [
-  //       [a[0]],
-  //       {
-  //         type:
-  //           a[1].type == "simpleType"
-  //             ? dataTypesMapping[a[1].definition]
-  //             : a[1].type == "schemaReference"
-  //             ? dataTypesMapping[a[1].type]
-  //             : a[1].type == "array" || a[1].type == "object"
-  //             ? dataTypesMapping[a[1].type]
-  //             : DataTypes.STRING,
-  //         // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
-  //         allowNull: (a[1] as any)["optional"] ?? false,
-  //         primaryKey: a[0] == "uuid",
-  //       },
-  //     ];
-  //   })
-  // );
-  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "jzodSchema",entityDefinition.jzodSchema, "result", result);
   return result;
 }
-// // ##############################################################################################
-// export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
-//   entityDefinition: EntityDefinition
-// ): ModelAttributes<Model, Attributes<Model>> {
-//   return Object.fromEntries(
-//     entityDefinition.attributes.map((a:EntityAttribute) => {
-//       return [[a.name], { type: dataTypesMapping[a.type], allowNull: a.nullable, primaryKey: a.name == "uuid" }];
-//     })
-//   );
-// }

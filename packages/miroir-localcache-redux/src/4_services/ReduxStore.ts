@@ -52,6 +52,7 @@ import { packageName } from '../constants';
 import { cleanLevel } from './constants';
 import {
   LocalCacheSlice,
+  currentModel,
   getLocalCacheSliceIndex,
   localCacheSliceGeneratedActionNames,
 } from "./localCache/LocalCacheSlice";
@@ -196,63 +197,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
     );
     const reduxState = this.innerReduxStore.getState().presentModelSnapshot;
 
-    if (!deploymentUuid) {
-      throw new Error("currentModel(deploymentUuid) parameter can not be undefined.");
-    } else {
-      if (deploymentUuid == applicationDeploymentMiroir.uuid) {
-        return {
-          applicationVersions: Object.values(
-            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityApplicationVersion.uuid)]
-              .entities
-          ) as MiroirApplicationVersionOLD_DO_NOT_USE[],
-          applicationVersionCrossEntityDefinition: [],
-          configuration: Object.values(
-            reduxState[
-              getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityStoreBasedConfiguration.uuid)
-            ].entities
-          ) as StoreBasedConfiguration[],
-          entities: Object.values(
-            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "model", entityEntity.uuid)].entities
-          ) as MetaEntity[],
-          entityDefinitions: Object.values(
-            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "model", entityEntityDefinition.uuid)]
-              .entities
-          ) as EntityDefinition[],
-          jzodSchemas: Object.values(
-            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityJzodSchema.uuid)]
-              .entities
-          ) as JzodSchema[],
-          reports: Object.values(
-            reduxState[getLocalCacheSliceIndex(applicationDeploymentMiroir.uuid, "data", entityReport.uuid)].entities
-          ) as Report[],
-        };
-      } else {
-        // log.info('currentModel reports',reports,getLocalCacheSliceIndex(deploymentUuid,'model',entityReport.uuid));
-
-        return {
-          applicationVersions: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityApplicationVersion.uuid)]?.entities ?? {}
-          ) as MiroirApplicationVersionOLD_DO_NOT_USE[],
-          applicationVersionCrossEntityDefinition: [],
-          configuration: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityStoreBasedConfiguration.uuid)]
-              ?.entities ?? {}
-          ) as StoreBasedConfiguration[],
-          entities: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityEntity.uuid)]?.entities ?? {}
-          ) as MetaEntity[],
-          entityDefinitions: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityEntityDefinition.uuid)]?.entities ?? {}
-          ) as EntityDefinition[],
-          jzodSchemas: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityJzodSchema.uuid)]?.entities ?? {}
-          ) as JzodSchema[],
-          reports: Object.values(
-            reduxState[getLocalCacheSliceIndex(deploymentUuid, "model", entityReport.uuid)]?.entities ?? {}
-          ) as Report[],
-        };
-      }
-    }
+    return currentModel(deploymentUuid,reduxState);
   }
 
   // ###############################################################################

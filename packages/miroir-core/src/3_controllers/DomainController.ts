@@ -65,6 +65,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 
+export type handleModelActionParam = 
+  ModelActionInitModel
+  | ModelActionResetModel
+  | ModelActionResetData
+  | ModelActionCommit
+  | ModelActionRollback
+;
+
 /**
  * domain level contains "business" logic related to concepts defined whithin the
  * application: entities, reports, reducers, users, etc.
@@ -143,12 +151,17 @@ export class DomainController implements DomainControllerInterface {
           log.debug(
             "DomainController updateEntity for model entity update",
             domainTransactionalAction?.update.modelEntityUpdate,
-            "entities",
-            currentModel.entities,
-            "entity definitions",
-            currentModel.entityDefinitions
+            // "entities",
+            // currentModel.entities,
+            // "entity definitions",
+            // currentModel.entityDefinitions
           );
-          if (domainTransactionalAction.update.modelEntityUpdate.actionName == "createEntity") {
+          if (
+            domainTransactionalAction.update.modelEntityUpdate.actionName == "createEntity" ||
+            domainTransactionalAction.update.modelEntityUpdate.actionName == "dropEntity" ||
+            domainTransactionalAction.update.modelEntityUpdate.actionName == "renameEntity" ||
+            domainTransactionalAction.update.modelEntityUpdate.actionName == "alterEntityAttribute"
+          ) {
             await this.callUtil.callLocalCacheAction(
               {}, // context
               {}, // context update
@@ -156,14 +169,9 @@ export class DomainController implements DomainControllerInterface {
               {
                 actionType: "localCacheModelActionWithDeployment",
                 deploymentUuid,
-                modelAction: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entity: domainTransactionalAction.update.modelEntityUpdate.entity,
-                  entityDefinition: domainTransactionalAction.update.modelEntityUpdate.entityDefinition,
-                },
-              }
+                modelAction: domainTransactionalAction.update.modelEntityUpdate
+              },
+              // currentModel
             );
           } else {
             const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelInstanceCUDUpdate(
@@ -309,12 +317,7 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain model action into a set of local cache actions and remote store actions
   async handleModelAction(
     deploymentUuid: Uuid,
-    modelAction:
-      | ModelActionInitModel
-      | ModelActionResetModel
-      | ModelActionResetData
-      | ModelActionCommit
-      | ModelActionRollback
+    modelAction: handleModelActionParam
       // | ModelActionRenameEntity
     ,
     currentModel: MetaModel
@@ -700,8 +703,9 @@ export class DomainController implements DomainControllerInterface {
           log.debug(
             "DomainController loadConfigurationFromRemoteDataStore",
             deploymentUuid,
-            "all instances stored:",
-            JSON.stringify(this.localCache.getState(), circularReplacer())
+            "all instances stored!",
+            toFetchEntities.map(e=>({section: e.section, uuid: e.entity.uuid}))
+            // JSON.stringify(this.localCache.getState(), circularReplacer())
           );
           return context;
         });
@@ -731,7 +735,7 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case "modelAction": {
-        await this.handleModelAction(deploymentUuid, domainAction as ModelActionInitModel, currentModel);
+        await this.handleModelAction(deploymentUuid, domainAction as handleModelActionParam, currentModel);
         return Promise.resolve();
       }
       case "DomainDataAction": {

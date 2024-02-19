@@ -187,6 +187,10 @@ export async function modelActionRunner(
       log.trace("modelActionRunner resetModel after dropped entities:", miroirDataStoreProxy.getEntityUuids());
       break;
     }
+    case "alterEntityAttribute": {
+      await targetProxy.alterEntityAttribute(update);
+      break;
+    }
     case "resetData": {
       log.debug("modelActionRunner resetData update");
       await appDataStoreProxy.clearDataInstances();
@@ -204,7 +208,7 @@ export async function modelActionRunner(
       await initApplicationDeployment(deploymentUuid, actionName, miroirDataStoreProxy, appDataStoreProxy, params);
       break;
     }
-    case "alterEntityAttribute":
+    // case "alterEntityAttribute":
     case "commit":
     case "rollback": {
       throw new Error("modelActionRunner could not handle action" + JSON.stringify(update));
