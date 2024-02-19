@@ -23,7 +23,8 @@ import {
   entityDefinitionBook,
   entityEntity,
   entityReport,
-  miroirCoreStartup
+  miroirCoreStartup,
+  Entity
 } from "miroir-core";
 import { ReduxStore } from "miroir-localcache-redux";
 
@@ -197,8 +198,12 @@ describe.sequential(
                 actionType: "modelAction",
                 actionName: "createEntity",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entity: entityAuthor as MetaEntity,
-                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                entities: [
+                  {
+                    entity: entityAuthor as Entity,
+                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                  }
+                ]
               // entities: [
               //     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
               //   ],
@@ -214,8 +219,12 @@ describe.sequential(
                 actionType: "modelAction",
                 actionName: "createEntity",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entity: entityBook as MetaEntity,
-                entityDefinition: entityDefinitionBook as EntityDefinition,
+                entities: [
+                  {
+                    entity: entityBook as Entity,
+                    entityDefinition: entityDefinitionBook as EntityDefinition,
+                  }
+                ]
               // entities: [
               //     {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
               //   ],

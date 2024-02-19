@@ -35,7 +35,9 @@ import {
   resetAndInitMiroirAndApplicationDatabase,
   selectByDomainManyQueriesFromDomainState,
   MetaModel,
-  Entity
+  Entity,
+  entityDefinitionBook,
+  entityDefinitionAuthor
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -435,10 +437,12 @@ export const HomePage = (props: RootComponentProps) => {
                 update: {
                   actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    actionType: "ModelActionEntityUpdate",
+                    actionType: "modelAction",
                     actionName: "renameEntity",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                     entityName: entityBook.name,
                     entityUuid: entityBook.uuid,
+                    entityDefinitionUuid: entityDefinitionBook.uuid,
                     targetValue: "Bookss",
                   },
                 },
@@ -494,10 +498,12 @@ export const HomePage = (props: RootComponentProps) => {
                 update: {
                   actionName: "WrappedTransactionalEntityUpdate",
                   modelEntityUpdate: {
-                    actionType: "ModelActionEntityUpdate",
-                    actionName: "DeleteEntity",
-                    entityName: entityAuthor.name,
+                    actionType: "modelAction",
+                    actionName: "dropEntity",
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    // entityName: entityAuthor.name,
                     entityUuid: entityAuthor.uuid,
+                    entityDefinitionUuid: entityDefinitionAuthor.uuid,
                     // instanceUuid:entityAuthor.uuid,
                   },
                 },

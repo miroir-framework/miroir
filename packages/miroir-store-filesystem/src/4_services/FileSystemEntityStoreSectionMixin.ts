@@ -22,6 +22,7 @@ import {
   ModelActionRenameEntity,
   EntityInstanceWithName,
   ModelActionAlterEntityAttribute,
+  Entity,
 } from "miroir-core";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -74,7 +75,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -110,6 +111,19 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       await this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
       // fs.writeFileSync(path.join(this.directory,entityEntity.uuid,fullName(entity.uuid)),JSON.stringify(entity))
       // fs.writeFileSync(path.join(this.directory,entityEntityDefinition.uuid,fullName(entityDefinition.uuid)),JSON.stringify(entityDefinition))
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // ##############################################################################################
+    async createEntities(
+      entities: {
+        entity:Entity,
+        entityDefinition: EntityDefinition,
+      }[]
+    ): Promise<ActionVoidReturnType> {
+      for (const e of entities) {
+        await this.createEntity(e.entity, e.entityDefinition);
+      }
       return Promise.resolve(ACTION_OK);
     }
 

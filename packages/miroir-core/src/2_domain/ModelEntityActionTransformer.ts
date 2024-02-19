@@ -1,21 +1,14 @@
-import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance.js";
 import {
-  ModelAction,
+  ApplicationSection,
   EntityDefinition,
   EntityInstanceCollection,
   MetaModel,
-  Entity,
-  ModelActionCreateEntity,
+  ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { DomainDataAction } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import {
-  CUDActionName,
-  ModelEntityInstanceCUDUpdate,
-  ModelActionEntityUpdate,
-} from "../0_interfaces/2_domain/ModelUpdateInterface.js";
-import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
@@ -33,86 +26,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 export class ModelEntityActionTransformer{
-
-  static modelEntityUpdateToCUDUpdate(
-    modelUpdate:ModelActionEntityUpdate,
-    entities: Entity[],
-    entityDefinitions: EntityDefinition[],
-  ):{actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined {
-    let domainActionCUDUpdate: {actionName:CUDActionName,objects:EntityInstanceCollection[]} | undefined = undefined;
-    switch (modelUpdate.actionName) {
-      case "renameEntity":{
-        const currentEntity = entities.find(e=>e.uuid==modelUpdate.entityUuid);
-        const currentEntityDefinition = entityDefinitions.find(e=>e.entityUuid==modelUpdate.entityUuid);
-        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelUpdate.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelUpdate.targetValue});
-        if (currentEntity && currentEntityDefinition) {
-          const objects:EntityInstanceCollection[] = [
-            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
-          ];
-          domainActionCUDUpdate = {
-            actionName: "update",
-            objects
-          }
-        } else {
-          log.error('modelEntityUpdateToCUDUpdate renameEntity could not rename',modelUpdate);
-        }
-        break;
-      }
-      case "dropEntity":
-      // {
-      //   const currentEntity = entityDefinitions.find(e=>e.uuid==modelUpdate.entityUuid);
-      //   const currentEntityDefinitions = entityDefinitions.filter(e=>e.entityUuid==modelUpdate.entityUuid);
-      //   const definitionsToRemove:EntityInstanceCollection[] = currentEntityDefinitions.map(ed => ({
-      //     parentName: entityEntityDefinition.name, parentUuid:entityEntityDefinition.uuid, applicationSection:'model', instances:[{uuid: ed.uuid} as EntityInstanceWithName]
-      //   }));
-      //   // const castUpdate = modelUpdate as ModelEntityUpdateDeleteMetaModelInstance;
-      //   domainActionCUDUpdate = {
-      //     actionName: "delete",
-      //     objects: [
-      //       {
-      //         parentName: entityEntity.name,
-      //         parentUuid: entityEntity.uuid,
-      //         applicationSection: "model",
-      //         instances: [{ uuid: modelUpdate.entityUuid } as EntityInstanceWithName],
-      //       },
-      //       ...definitionsToRemove,
-      //     ],
-      //   };
-      //   break;
-      // }
-      case "createEntity":
-      // {
-      //   const castUpdate = modelUpdate as ModelActionCreateEntity;
-      //   domainActionCUDUpdate = {
-      //     actionName: "create",
-      //     objects:[
-      //       {
-      //         parentName:entityEntity.name,
-      //         parentUuid:entityEntity.uuid,
-      //         applicationSection:'model',
-      //         instances:[castUpdate.entity]
-      //       },
-      //       {
-      //         parentName:entityEntityDefinition.name,
-      //         parentUuid:entityEntityDefinition.uuid,
-      //         applicationSection:'model', 
-      //         instances:[castUpdate.entityDefinition]
-      //       },
-      //     ]
-      //   };
-      //   break;
-      // }
-      case "alterEntityAttribute": {
-        throw new Error("modelEntityUpdateToCUDUpdate could not handle " + modelUpdate.actionName);
-        break;
-      }
-      default:
-      break;
-    }
-    return domainActionCUDUpdate;
-  }
 
   // ###################################################################################################
   static modelActionToInstanceAction(
@@ -132,18 +45,22 @@ export class ModelEntityActionTransformer{
               actionName: "create",
               applicationSection: "model",
               objects: [
-                {
-                  parentName:entityEntity.name,
-                  parentUuid:entityEntity.uuid,
-                  applicationSection:'model',
-                  instances:[modelAction.entity]
-                },
-                {
-                  parentName:entityEntityDefinition.name,
-                  parentUuid:entityEntityDefinition.uuid,
-                  applicationSection:'model', 
-                  instances:[modelAction.entityDefinition]
-                },
+                ...modelAction.entities.flatMap(
+                  a => [
+                    {
+                      parentName:entityEntity.name,
+                      parentUuid:entityEntity.uuid,
+                      applicationSection:'model' as ApplicationSection,
+                      instances:[a.entity]
+                    },
+                    {
+                      parentName:entityEntityDefinition.name,
+                      parentUuid:entityEntityDefinition.uuid,
+                      applicationSection:'model' as ApplicationSection, 
+                      instances:[a.entityDefinition]
+                    },
+                  ]
+                )
               ]
             }
           }
@@ -213,7 +130,7 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelEntityUpdateToCUDUpdate renameEntity could not rename',modelAction);
+          log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
           return [];
         }
         break;
@@ -270,7 +187,7 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelEntityUpdateToCUDUpdate alterEntityAttribute could not rename',modelAction);
+          log.error('modelActionToInstanceAction alterEntityAttribute could not rename',modelAction);
           return [];
         }
       }
@@ -288,42 +205,5 @@ export class ModelEntityActionTransformer{
       }
     }
     return [];
-  }
-
-  // ###################################################################################################
-  static modelEntityUpdateToLocalCacheCUDUpdate(
-    entities: MetaEntity[],
-    entityDefinitions: EntityDefinition[],
-    modelUpdate:ModelActionEntityUpdate,
-  ):DomainDataAction{
-    return {
-      actionType:"DomainDataAction",
-      ...ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
-        modelUpdate,
-        entities,
-        entityDefinitions,
-      )
-    } as DomainDataAction
-  }
-
-  // ###################################################################################################
-  static modelEntityUpdateToModelInstanceCUDUpdate(
-    modelUpdate:ModelActionEntityUpdate,
-    currentModel: MetaModel,
-  ):ModelEntityInstanceCUDUpdate | undefined {
-    const o = ModelEntityActionTransformer.modelEntityUpdateToCUDUpdate(
-      modelUpdate,
-      currentModel.entities,
-      currentModel.entityDefinitions,
-    );
-    if (o) {
-      return {
-        actionType:"ModelEntityInstanceCUDUpdate",
-        actionName:o.actionName,
-        objects: o.objects
-      } as ModelEntityInstanceCUDUpdate;
-    } else {
-      return undefined
-    }
   }
 }

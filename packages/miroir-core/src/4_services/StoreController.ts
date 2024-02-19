@@ -322,6 +322,17 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // ##############################################################################################
+  async createEntities(
+    entities: {
+      entity:Entity,
+      entityDefinition: EntityDefinition,
+    }[]
+  ): Promise<ActionVoidReturnType> {
+    const result = await this.modelStoreSection.createEntities(entities);
+    return Promise.resolve(result);
+  }
+  
+  // ##############################################################################################
   async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.renameEntityClean(update);
   }

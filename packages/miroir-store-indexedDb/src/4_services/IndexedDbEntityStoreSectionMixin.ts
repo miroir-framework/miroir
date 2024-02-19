@@ -18,7 +18,8 @@ import {
   ActionVoidReturnType,
   ModelActionRenameEntity,
   EntityInstanceWithName,
-  ModelActionAlterEntityAttribute
+  ModelActionAlterEntityAttribute,
+  Entity
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -77,7 +78,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
         // inconsistent input, raise exception
         log.error(
@@ -111,6 +112,19 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
             );
           }
         }
+      }
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // ##############################################################################################
+    async createEntities(
+      entities: {
+        entity:Entity,
+        entityDefinition: EntityDefinition,
+      }[]
+    ): Promise<ActionVoidReturnType> {
+      for (const e of entities) {
+        await this.createEntity(e.entity, e.entityDefinition);
       }
       return Promise.resolve(ACTION_OK);
     }

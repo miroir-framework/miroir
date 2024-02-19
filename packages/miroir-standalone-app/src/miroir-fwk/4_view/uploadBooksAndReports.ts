@@ -41,6 +41,7 @@ import {
   Country3,
   Country4,
   MetaModel,
+  Entity,
 } from "miroir-core";
 
 // ###################################################################################
@@ -56,14 +57,15 @@ export async function uploadBooksAndReports(
       update: {
         actionName: "WrappedTransactionalEntityUpdate",
         modelEntityUpdate: {
-          actionType: "ModelActionEntityUpdate",
+          actionType: "modelAction",
           actionName: "createEntity",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           entities: [
-            { entity: entityAuthor as MetaEntity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
-            { entity: entityBook as MetaEntity, entityDefinition: entityDefinitionBook as EntityDefinition },
-            { entity: entityCountry as MetaEntity, entityDefinition: entityDefinitionCountry as EntityDefinition },
-            { entity: entityPublisher as MetaEntity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
-            { entity: entityTest as MetaEntity, entityDefinition: entityDefinitionTest as EntityDefinition },
+            { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
+            { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition },
+            { entity: entityCountry as Entity, entityDefinition: entityDefinitionCountry as EntityDefinition },
+            { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
+            { entity: entityTest as Entity, entityDefinition: entityDefinitionTest as EntityDefinition },
           ],
         },
       },

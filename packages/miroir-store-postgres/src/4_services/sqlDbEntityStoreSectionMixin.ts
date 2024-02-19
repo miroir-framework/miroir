@@ -79,7 +79,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
+    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity",
@@ -125,6 +125,19 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         // }
       }
       log.debug(this.logHeader, "createEntity", "done for", entity.name);
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // ##############################################################################################
+    async createEntities(
+      entities: {
+        entity:Entity,
+        entityDefinition: EntityDefinition,
+      }[]
+    ): Promise<ActionVoidReturnType> {
+      for (const e of entities) {
+        await this.createEntity(e.entity, e.entityDefinition);
+      }
       return Promise.resolve(ACTION_OK);
     }
 

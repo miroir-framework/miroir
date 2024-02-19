@@ -1,6 +1,5 @@
 import { z } from "zod";
 import {
-  entityAttributePartial,
   entityInstanceCollection,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
@@ -15,20 +14,7 @@ export const CUDActionNameSchema = z.enum(CUDActionNamesArray);
 export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
 
 // #############################################################################################
-// export const ModelEntityUpdateAlterEntityAttributeSchema = z.object({
-//   actionType: z.literal("ModelActionEntityUpdate"),
-//   actionName: z.literal("alterEntityAttribute"),
-//   parentName: z.string().optional(),
-//   parentUuid: z.string(),
-//   entityAttributeId: z.number(),
-//   update: entityAttributePartial,
-//   // update: EntityAttributePartialSchema,
-// });
-// export type ModelEntityUpdateAlterEntityAttribute = z.infer<typeof ModelEntityUpdateAlterEntityAttributeSchema>;
-
-// #############################################################################################
 export const ModelActionEntityUpdateSchema = z.union([
-  // ModelEntityUpdateAlterEntityAttributeSchema,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionRenameEntity,

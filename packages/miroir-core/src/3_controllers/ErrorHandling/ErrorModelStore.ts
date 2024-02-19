@@ -50,6 +50,9 @@ export class ErrorModelStore implements StoreModelSectionInterface {
   createEntity(entity: MetaEntity, entityDefinition: EntityDefinition): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }
+  createEntities(entities:{entity: MetaEntity, entityDefinition: EntityDefinition}[]): Promise<ActionVoidReturnType> {
+    throw new Error("Method not implemented.");
+  }
   renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
     throw new Error("Method not implemented.");
   }

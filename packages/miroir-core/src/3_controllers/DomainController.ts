@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
-import { MiroirApplicationVersionOLD_DO_NOT_USE } from '../0_interfaces/1_core/ModelVersion';
 import {
   CRUDActionName,
   CRUDActionNamesArray, DomainAction,
@@ -11,17 +10,15 @@ import {
   DomainTransactionalActionWithCUDUpdate,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
-import { WrappedTransactionalEntityUpdateWithCUDUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface";
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
   LocalCacheCUDActionWithDeployment,
-  LocalCacheModelActionWithDeployment,
   LocalCacheInterface,
+  LocalCacheModelActionWithDeployment,
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { RemoteStoreInterface, RemoteStoreCRUDAction, RemoteStoreActionReturnType } from '../0_interfaces/4-services/RemoteStoreInterface.js';
+import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
-import { ModelEntityActionTransformer } from "../2_domain/ModelEntityActionTransformer.js";
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
 import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json';
@@ -30,31 +27,26 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 
 import {
   ApplicationSection,
-  ModelAction,
-  EntityDefinition,
-  EntityInstanceCollection,
-  entityDefinition,
-  InstanceAction,
-  EntityInstance,
-  ActionReturnType,
-  entityInstanceCollection,
-  MetaModel,
-  ModelActionInitModel,
-  ModelActionResetModel,
-  ModelActionResetData,
-  ModelActionCommit,
-  ModelActionRollback,
   ApplicationVersion,
-  ModelActionRenameEntity,
+  EntityInstance,
+  EntityInstanceCollection,
+  InstanceAction,
+  MetaModel,
+  ModelActionCommit,
+  ModelActionInitModel,
+  ModelActionResetData,
+  ModelActionResetModel,
+  ModelActionRollback,
+  entityInstanceCollection
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
 import { packageName } from '../constants.js';
-import { circularReplacer, getLoggerName } from '../tools';
+import { getLoggerName } from '../tools';
+import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
-import { Endpoint } from './Endpoint.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -174,29 +166,7 @@ export class DomainController implements DomainControllerInterface {
               // currentModel
             );
           } else {
-            const cudUpdate = ModelEntityActionTransformer.modelEntityUpdateToModelInstanceCUDUpdate(
-              domainTransactionalAction?.update.modelEntityUpdate,
-              currentModel
-            );
-            log.trace("DomainController updateEntity correspondingCUDUpdate", cudUpdate);
-
-            const structureUpdatesWithCUDUpdates: WrappedTransactionalEntityUpdateWithCUDUpdate = {
-              actionName: "WrappedTransactionalEntityUpdateWithCUDUpdate",
-              modelEntityUpdate: domainTransactionalAction?.update.modelEntityUpdate,
-              equivalentModelCUDUpdates: cudUpdate ? [cudUpdate] : [],
-            };
-            // log.trace('structureUpdatesWithCUDUpdates',structureUpdatesWithCUDUpdates);
-
-            await this.callUtil.callLocalCacheAction(
-              {}, // context
-              {}, // context update
-              "handleLocalCacheTransactionalAction",
-              {
-                actionType: "localCacheTransactionalActionWithDeployment",
-                deploymentUuid,
-                domainAction: { ...domainTransactionalAction, update: structureUpdatesWithCUDUpdates },
-              }
-            );
+            throw new Error("DomainController handleDomainTransactionalAction could not handle model entity update:" + domainTransactionalAction.update.modelEntityUpdate);
           }
           break;
         }

@@ -85,6 +85,12 @@ export interface AbstractEntityStoreSectionInterface {
     entity:Entity,
     entityDefinition: EntityDefinition,
   ): Promise<ActionVoidReturnType>;
+  createEntities(
+    entities: {
+      entity:Entity,
+      entityDefinition: EntityDefinition,
+    }[]
+  ): Promise<ActionVoidReturnType>;
   renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType>;
   alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType>;

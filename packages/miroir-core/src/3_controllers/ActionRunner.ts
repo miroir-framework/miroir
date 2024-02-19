@@ -214,8 +214,9 @@ export async function modelActionRunner(
       throw new Error("modelActionRunner could not handle action" + JSON.stringify(update));
     }
     case "createEntity": {
-      log.debug("modelActionRunner applyModelEntityUpdates createEntity inserting", update.entity.name);
-      await targetProxy.createEntity(update.entity, update.entityDefinition);
+      log.debug("modelActionRunner applyModelEntityUpdates createEntity inserting", update.entities);
+      // await targetProxy.createEntity(update.entity, update.entityDefinition);
+      await targetProxy.createEntities(update.entities);
       break;
     }
     default:

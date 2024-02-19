@@ -14,10 +14,8 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   ModelAction,
-  ModelActionRenameEntity,
-  ModelEntityActionTransformer,
-  ModelEntityInstanceCUDUpdate,
   ModelActionEntityUpdate,
+  ModelActionRenameEntity,
   StoreControllerInterface,
   StoreControllerManagerInterface,
   applicationDeploymentLibrary,
@@ -37,7 +35,7 @@ import {
   entityDefinitionAuthor,
   entityEntity,
   entityEntityDefinition,
-  entityReport,
+  entityReport
 } from "miroir-core";
 
 

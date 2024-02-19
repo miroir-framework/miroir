@@ -208,18 +208,26 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"createEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
-            "entity": {
-              "type": "schemaReference",
+            "entities": {
+              "type": "array",
               "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entity"
-              }
-            },
-            "entityDefinition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityDefinition"
+                "type": "object",
+                "definition": {
+                  "entity": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entity"
+                    }
+                  },
+                  "entityDefinition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinition"
+                    }
+                  }
+                }
               }
             }
           }
