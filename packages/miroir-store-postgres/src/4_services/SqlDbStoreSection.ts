@@ -146,7 +146,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   ): Promise<ActionVoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
-    // log.info(this.logHeader, 'renameEntity renameTable done.');
+    // log.info(this.logHeader, 'renameStorageSpaceForInstancesOfEntity renameTable done.');
     // removing dataSequelize model with old name
     this.sequelize.modelManager.removeModel(this.sequelize.model(oldName));
     // creating dataSequelize model for the renamed entity
@@ -168,7 +168,7 @@ export class SqlDbStoreSection extends SqlDbStore implements AbstractStoreSectio
   // ): Promise<ActionVoidReturnType> {
   //   const queryInterface = this.sequelize.getQueryInterface();
   //   await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
-  //   // log.info(this.logHeader, 'renameEntity renameTable done.');
+  //   // log.info(this.logHeader, 'alterStorageSpaceForInstancesOfEntity renameTable done.');
   //   // removing dataSequelize model with old name
   //   this.sequelize.modelManager.removeModel(this.sequelize.model(oldName));
   //   // creating dataSequelize model for the renamed entity

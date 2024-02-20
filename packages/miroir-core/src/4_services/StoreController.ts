@@ -30,7 +30,7 @@ import {
   StoreControllerInterface,
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/StoreControllerInterface.js";
-import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
+// import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -331,7 +331,7 @@ export class StoreController implements StoreControllerInterface {
     const result = await this.modelStoreSection.createEntities(entities);
     return Promise.resolve(result);
   }
-  
+
   // ##############################################################################################
   async renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.renameEntityClean(update);
@@ -340,11 +340,6 @@ export class StoreController implements StoreControllerInterface {
   // ##############################################################################################
   async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
     return this.modelStoreSection.alterEntityAttribute(update);
-  }
-
-  // ##############################################################################################
-  async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
-    return this.modelStoreSection.renameEntity(update);
   }
 
   // ##############################################################################################
@@ -468,13 +463,6 @@ export class StoreController implements StoreControllerInterface {
         await this.modelStoreSection.deleteInstance(instance.parentUuid,instance);
       }
     }
-    return Promise.resolve(ACTION_OK);
-  }
-
-  // ##############################################################################################
-  async applyModelEntityUpdate(update:ModelReplayableUpdate):Promise<ActionVoidReturnType>{
-    log.info('StoreController applyModelEntityUpdate',update);
-    await applyModelEntityUpdate(this,update);
     return Promise.resolve(ACTION_OK);
   }
 }

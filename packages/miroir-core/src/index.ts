@@ -228,9 +228,9 @@ export {
 //   ApplicationModelSchema,
 //   MiroirApplicationModel,
 // } from './0_interfaces/1_core/Model.js';
-export {
-  MiroirApplicationVersionOLD_DO_NOT_USE,
-} from './0_interfaces/1_core/ModelVersion.js';
+// export {
+//   MiroirApplicationVersionOLD_DO_NOT_USE,
+// } from './0_interfaces/1_core/ModelVersion.js';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,
@@ -322,8 +322,8 @@ export {
   CUDActionNamesArray,
   // ModelEntityUpdateAlterEntityAttributeSchema,
   // ModelEntityUpdateAlterEntityAttribute,
-  ModelCUDInstanceUpdateSchema,
-  ModelEntityInstanceCUDUpdate,
+  EntityInstanceTransactionalCUDUpdateSchema,
+  EntityInstanceTransactionalCUDUpdate,
   ModelActionEntityUpdateSchema,
   ModelActionEntityUpdate,
   ModelReplayableUpdateSchema,
@@ -460,7 +460,6 @@ export {
   actionRunner,
   initApplicationDeployment,
   modelActionRunner,
-  applyModelEntityUpdate,
 } from './3_controllers/ActionRunner.js';
 export {
   modelInitialize,

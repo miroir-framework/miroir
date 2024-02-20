@@ -8,12 +8,12 @@ import { describe, expect } from 'vitest';
 import {
   DomainAction,
   DomainControllerInterface,
+  Entity,
   EntityDefinition,
-  StoreControllerInterface,
-  MetaEntity,
   MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
+  StoreControllerInterface,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
@@ -23,8 +23,7 @@ import {
   entityDefinitionBook,
   entityEntity,
   entityReport,
-  miroirCoreStartup,
-  Entity
+  miroirCoreStartup
 } from "miroir-core";
 import { ReduxStore } from "miroir-localcache-redux";
 

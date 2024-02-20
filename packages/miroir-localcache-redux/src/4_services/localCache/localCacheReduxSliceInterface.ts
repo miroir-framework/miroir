@@ -3,10 +3,8 @@ import { Patch } from "immer";
 import {
   Commit,
   DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
-  DomainTransactionalActionWithCUDUpdate,
-  EntityDefinition,
-  EntityInstanceCollection,
   DomainElement,
+  DomainTransactionalActionWithCUDUpdate,
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,

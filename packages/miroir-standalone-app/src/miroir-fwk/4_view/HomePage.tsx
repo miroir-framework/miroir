@@ -463,7 +463,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "UpdateMetaModelInstance",
                 update: {
-                  actionType: "ModelEntityInstanceCUDUpdate",
+                  actionType: "EntityInstanceTransactionalCUDUpdate",
                   actionName: "update",
                   objects: [
                     {

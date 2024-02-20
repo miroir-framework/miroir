@@ -2,30 +2,27 @@ import * as fs from "fs";
 import * as path from "path";
 
 import {
-  EntityDefinition,
-  EntityInstance,
+  ACTION_OK,
   AbstractEntityStoreSectionInterface,
   AbstractInstanceStoreSectionInterface,
-  StoreDataSectionInterface,
-  LoggerInterface,
-  MetaEntity,
-  MiroirLoggerFactory,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
-  entityEntity,
-  entityEntityDefinition,
-  getLoggerName,
-  ActionReturnType,
-  ACTION_OK,
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
   ActionVoidReturnType,
-  ModelActionRenameEntity,
-  EntityInstanceWithName,
-  ModelActionAlterEntityAttribute,
   Entity,
+  EntityDefinition,
+  EntityInstance,
+  EntityInstanceWithName,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  ModelActionAlterEntityAttribute,
+  ModelActionRenameEntity,
+  StoreDataSectionInterface,
+  entityEntity,
+  entityEntityDefinition,
+  getLoggerName
 } from "miroir-core";
-import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
+import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 
 
 import { packageName } from "../constants.js";
@@ -270,50 +267,6 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
     
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
-      return Promise.resolve(ACTION_OK);
-    }
-
-    // #########################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
-      // TODO: identical to IndexedDbModelStoreSection implementation!
-      log.info(this.logHeader, "renameEntity", update);
-      // const currentValue = await this.localUuidIndexedDb.getValue(cudUpdate.objects[0].instances[0].parentUuid,cudUpdate.objects[0].instances[0].uuid);
-      if (
-        update.equivalentModelCUDUpdates.length &&
-        update.equivalentModelCUDUpdates[0] &&
-        update.equivalentModelCUDUpdates[0].objects?.length &&
-        update.equivalentModelCUDUpdates[0].objects[0] &&
-        update.equivalentModelCUDUpdates[0].objects[1] &&
-        update.equivalentModelCUDUpdates[0].objects[0].instances[0] &&
-        update.equivalentModelCUDUpdates[0].objects[1].instances[0]
-        // cudUpdate
-        // && cudUpdate.objects[0].instances[0].parentUuid
-        // && cudUpdate.objects[0].instances[0].parentUuid == entityEntity.uuid
-        // && cudUpdate.objects[0].instances[0].uuid
-      ) {
-        const cudUpdate = update.equivalentModelCUDUpdates[0];
-        const currentValue: ActionEntityInstanceReturnType = await this.getInstance(
-          entityEntity.uuid,
-          cudUpdate.objects[0].instances[0].uuid
-        );
-        log.debug(this.logHeader, "renameEntity", cudUpdate.objects[0].instances[0].parentUuid, currentValue);
-        await this.upsertInstance(entityEntity.uuid, cudUpdate.objects[0].instances[0]);
-        const updatedValue: ActionEntityInstanceReturnType = await this.getInstance(
-          entityEntity.uuid,
-          cudUpdate.objects[0].instances[0].uuid
-        );
-        // TODO: update EntityDefinition, too!
-        log.debug(this.logHeader, "renameEntity done", cudUpdate.objects[0].instances[0].parentUuid, updatedValue);
-
-        await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-          (update.modelEntityUpdate as any)["entityName"],
-          (update.modelEntityUpdate as any)["targetValue"],
-          update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
-          update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
-        );
-      } else {
-        throw new Error(this.logHeader + " renameEntity could not execute update " + update);
-      }
       return Promise.resolve(ACTION_OK);
     }
   };

@@ -20,18 +20,3 @@ export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.exte
   applicationVersion: z.string().uuid(),
   entityDefinition: z.string().uuid(),
 });
-
-// export const ApplicationModelSchema = z.object({
-//   applicationVersions: z.array(MiroirApplicationVersionSchemaOLD_DO_NOT_USE),
-//   applicationVersionCrossEntityDefinition: z.array(ApplicationVersionCrossEntityDefinitionSchema),
-//   configuration: z.array(StoreBasedConfigurationSchema),
-//   entities: z.array(MetaEntitySchema),
-//   entityDefinitions: z.array(entityDefinition),
-//   jzodSchemas:z.array(jzodSchemaDefinitionSchema),
-//   reports: z.array(report),
-// });
-
-// export type MiroirApplicationModel = z.infer<typeof ApplicationModelSchema>
-
-
-

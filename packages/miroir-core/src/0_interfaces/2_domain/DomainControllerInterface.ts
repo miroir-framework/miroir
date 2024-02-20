@@ -4,7 +4,7 @@ import { Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
 import {
   CUDActionNameSchema,
   CUDActionNamesArray,
-  ModelCUDInstanceUpdateSchema,
+  EntityInstanceTransactionalCUDUpdateSchema,
   WrappedTransactionalEntityUpdateSchema,
   WrappedTransactionalEntityUpdateWithCUDUpdateSchema
 } from "../../0_interfaces/2_domain/ModelUpdateInterface.js";
@@ -84,7 +84,7 @@ export type DomainTransactionalUpdateEntityActionWithCUDUpdate = z.infer<typeof 
 export const DomainTransactionalUpdateMetaModelInstanceActionSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
   actionName: z.literal("UpdateMetaModelInstance"),
-  update: ModelCUDInstanceUpdateSchema,
+  update: EntityInstanceTransactionalCUDUpdateSchema,
 });
 export type DomainTransactionalUpdateMetaModelInstanceAction = z.infer<typeof DomainTransactionalUpdateMetaModelInstanceActionSchema>;
 

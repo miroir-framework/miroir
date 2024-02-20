@@ -1,7 +1,5 @@
 import { Uuid } from '../1_core/EntityDefinition.js';
 
-import { ModelReplayableUpdate, WrappedTransactionalEntityUpdateWithCUDUpdate } from '../2_domain/ModelUpdateInterface.js';
-import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 import {
   ActionEntityInstanceCollectionReturnType,
   ActionEntityInstanceReturnType,
@@ -16,9 +14,9 @@ import {
   MetaModel,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  StoreAction,
-  StoreSectionConfiguration,
+  StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
+import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 
 
 // ###########################################################################################
@@ -91,7 +89,6 @@ export interface AbstractEntityStoreSectionInterface {
       entityDefinition: EntityDefinition,
     }[]
   ): Promise<ActionVoidReturnType>;
-  renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<ActionVoidReturnType>;
   alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType>;
   dropEntity(parentUuid:string): Promise<ActionVoidReturnType>;
@@ -193,6 +190,4 @@ export interface StoreControllerInterface
   deleteInstances(section: ApplicationSection, instances: EntityInstance[]): Promise<ActionVoidReturnType>;
 
   // handleAction(storeAction: StoreAction): Promise<any>;
-
-  applyModelEntityUpdate(update: ModelReplayableUpdate): Promise<ActionReturnType>;
 }

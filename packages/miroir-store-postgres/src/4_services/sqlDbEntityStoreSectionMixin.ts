@@ -1,33 +1,30 @@
 import {
-  EntityDefinition,
-  EntityInstance,
+  ACTION_OK,
   AbstractEntityStoreSectionInterface,
   AbstractInstanceStoreSectionInterface,
-  StoreDataSectionInterface,
+  ActionEntityInstanceCollectionReturnType,
+  ActionEntityInstanceReturnType,
+  ActionVoidReturnType,
+  Entity,
+  EntityDefinition,
+  EntityInstance,
+  EntityInstanceWithName,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
+  ModelActionAlterEntityAttribute,
+  ModelActionRenameEntity,
+  StoreDataSectionInterface,
   entityEntity,
   entityEntityDefinition,
-  getLoggerName,
-  ActionReturnType,
-  ACTION_OK,
-  ActionEntityInstanceCollectionReturnType,
-  ActionVoidReturnType,
-  ActionEntityInstanceReturnType,
-  EntityInstanceWithName,
-  ModelActionRenameEntity,
-  ModelActionAlterEntityAttribute,
-  Entity,
+  getLoggerName
 } from "miroir-core";
+import { EntityUuidIndexedSequelizeModel, fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 import { SqlDbStoreSection } from "./SqlDbStoreSection.js";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin.js";
-import { EntityUuidIndexedSequelizeModel, dataTypesMapping, fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { JzodAttribute } from "@miroir-framework/jzod-ts";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SqlDbEntityStoreSectionMixin");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -238,47 +235,6 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       return Promise.resolve(ACTION_OK);
     }
     
-    // ##############################################################################################
-    async renameEntity(update: WrappedTransactionalEntityUpdateWithCUDUpdate): Promise<ActionVoidReturnType> {
-      if (
-        update.equivalentModelCUDUpdates.length &&
-        update.equivalentModelCUDUpdates[0] &&
-        update.equivalentModelCUDUpdates[0].objects?.length &&
-        update.equivalentModelCUDUpdates[0].objects[0] &&
-        update.equivalentModelCUDUpdates[0].objects[1] &&
-        update.equivalentModelCUDUpdates[0].objects[0].instances[0] &&
-        update.equivalentModelCUDUpdates[0].objects[1].instances[0]
-      ) {
-        const modelCUDupdate = update.equivalentModelCUDUpdates[0];
-        const model =
-          modelCUDupdate && modelCUDupdate.objects?.length && modelCUDupdate.objects[0]
-            ? this.sqlSchemaTableAccess[modelCUDupdate.objects[0].parentUuid]
-            : undefined;
-        log.debug(this.logHeader, "renameEntity update", update);
-        log.debug(this.logHeader, "renameEntity model", model);
-
-        await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-          (update.modelEntityUpdate as any)["entityName"],
-          (update.modelEntityUpdate as any)["targetValue"],
-          update.equivalentModelCUDUpdates[0].objects[0].instances[0] as MetaEntity,
-          update.equivalentModelCUDUpdates[0].objects[1].instances[0] as EntityDefinition
-        );
-
-        if (modelCUDupdate.objects && model?.parentName) {
-          // this.modelSequelize indexes tables by name, it has to be updated to stay consistent
-          // update the instance in table Entity and EntityDefinition corresponding to the renamed entity
-          await this.upsertInstance(modelCUDupdate.objects[0].parentUuid, modelCUDupdate.objects[0].instances[0]);
-          await this.upsertInstance(entityEntityDefinition.uuid, modelCUDupdate.objects[1].instances[0]);
-        } else {
-          log.error("renameEntity could not execute update", update);
-        }
-      } else {
-        log.error("renameEntity could not execute update", update);
-      }
-      log.debug(this.logHeader, "renameEntity done.");
-      return Promise.resolve(ACTION_OK);
-    }
-
     // ############################################################################################
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<ActionVoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
