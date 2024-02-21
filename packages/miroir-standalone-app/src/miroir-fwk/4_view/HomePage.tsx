@@ -347,56 +347,6 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      {/* <span>
-        <button
-          onClick={async () => {
-            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainTransactionalAction",
-              actionName: "initModel",
-              params: {
-                dataStoreType: "miroir",
-                metaModel: defaultMiroirMetaModel,
-                application: applicationMiroir,
-                applicationDeploymentConfiguration: applicationDeploymentMiroir,
-                applicationModelBranch: applicationModelBranchMiroirMasterBranch,
-                applicationStoreBasedConfiguration: applicationStoreBasedConfigurationMiroir,
-                applicationVersion: applicationVersionInitialMiroirVersion,
-              },
-            });
-            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-              actionType: "DomainTransactionalAction",
-              actionName: "initModel",
-              params: {
-                dataStoreType: "app",
-                metaModel: defaultMiroirMetaModel,
-                application: applicationLibrary,
-                applicationDeploymentConfiguration: applicationDeploymentLibrary,
-                applicationModelBranch: applicationModelBranchLibraryMasterBranch,
-                applicationStoreBasedConfiguration: applicationStoreBasedConfigurationLibrary,
-                applicationVersion: applicationVersionLibraryInitialVersion,
-              },
-            });
-            // TODO: transactional action must not autocommit! initModel neither?!
-            // .then(
-            // async () => {
-            log.info(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            );
-            await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainTransactionalAction",
-              actionName: "rollback",
-            });
-            await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-              actionType: "DomainTransactionalAction",
-              actionName: "rollback",
-            });
-            // }
-            // );
-          }}
-        >
-          Init database
-        </button>
-      </span> */}
       <span>
         <button
           onClick={async () => {

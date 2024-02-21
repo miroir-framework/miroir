@@ -216,7 +216,7 @@ function callUndoRedoReducer(
     innerReducer: InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
     action: PayloadAction<
-      // | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
+      // | DomainDataActionOrTransactionalActionWithCUDUpdateWithDeployment
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
     >

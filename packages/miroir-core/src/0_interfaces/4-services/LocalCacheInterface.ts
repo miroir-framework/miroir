@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
-  DomainActionWithTransactionalEntityUpdateSchema,
-  DomainTransactionalAction,
+  DomainDataActionOrTransactionalActionSchema,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -30,7 +29,7 @@ export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionW
 
 // ################################################################################################
 export const LocalCacheTransactionalActionSchema = z.union([
-  DomainActionWithTransactionalEntityUpdateSchema,
+  DomainDataActionOrTransactionalActionSchema,
   modelAction,
 ]);
 

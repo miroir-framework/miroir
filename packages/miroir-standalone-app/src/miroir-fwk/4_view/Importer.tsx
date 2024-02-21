@@ -170,8 +170,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       update: {
         actionName:"WrappedTransactionalModelActionEntityUpdate",
         modelEntityUpdate: {
-          actionType: "ModelActionEntityUpdate",
+          actionType: "modelAction",
           actionName: "createEntity",
+          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           // parentName: entityDefinitionEntityDefinition.name,
           // parentUuid: entityDefinitionEntityDefinition.uuid,
           entities: [

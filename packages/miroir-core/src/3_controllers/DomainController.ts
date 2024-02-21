@@ -7,7 +7,7 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   DomainTransactionalAction,
-  DomainTransactionalEntityUpdateAction,
+  DomainTransactionalActionUpdateEntity,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -377,7 +377,7 @@ export class DomainController implements DomainControllerInterface {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalReplayableAction = replayAction;
                   if (localReplayAction.actionName == "updateEntity") {
-                    const local2ReplayAction: DomainTransactionalEntityUpdateAction = replayAction as DomainTransactionalEntityUpdateAction; //type system bug?
+                    const local2ReplayAction: DomainTransactionalActionUpdateEntity = replayAction as DomainTransactionalActionUpdateEntity; //type system bug?
                     // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
 
                     switch (local2ReplayAction.update.modelEntityUpdate.actionName) {

@@ -3,7 +3,6 @@ import { Patch } from "immer";
 import {
   Commit,
   DomainElement,
-  DomainTransactionalAction,
   DomainTransactionalReplayableAction,
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
@@ -24,7 +23,6 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  // action: DomainTransactionalAction | LocalCacheModelActionWithDeployment;
   action: DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment;
   changes: Patch[];
   inverseChanges: Patch[];
