@@ -31,29 +31,29 @@ export const EntityInstanceTransactionalCUDUpdateSchema = z.object({
 export type EntityInstanceTransactionalCUDUpdate = z.infer<typeof EntityInstanceTransactionalCUDUpdateSchema>;
 
 // #############################################################################################
-export const WrappedTransactionalEntityUpdateSchema = z.object({
-  actionName: z.literal("WrappedTransactionalEntityUpdate"),
+export const WrappedTransactionalModelActionEntityUpdateSchema = z.object({
+  actionName: z.literal("WrappedTransactionalModelActionEntityUpdate"),
   modelEntityUpdate: ModelActionEntityUpdateSchema,
 });
-export type WrappedTransactionalEntityUpdate = z.infer<typeof WrappedTransactionalEntityUpdateSchema>;
+export type WrappedTransactionalModelActionEntityUpdate = z.infer<typeof WrappedTransactionalModelActionEntityUpdateSchema>;
 
-// #############################################################################################
-export const WrappedTransactionalEntityUpdateWithCUDUpdateSchema = z.object({
-  actionName: z.literal("WrappedTransactionalEntityUpdateWithCUDUpdate"),
-  modelEntityUpdate: ModelActionEntityUpdateSchema,
-  equivalentModelCUDUpdates: z.array(EntityInstanceTransactionalCUDUpdateSchema),
-});
-export type WrappedTransactionalEntityUpdateWithCUDUpdate = z.infer<
-  typeof WrappedTransactionalEntityUpdateWithCUDUpdateSchema
->;
+// // #############################################################################################
+// export const WrappedTransactionalEntityUpdateWithCUDUpdateSchema = z.object({
+//   actionName: z.literal("WrappedTransactionalEntityUpdateWithCUDUpdate"),
+//   modelEntityUpdate: ModelActionEntityUpdateSchema,
+//   equivalentModelCUDUpdates: z.array(EntityInstanceTransactionalCUDUpdateSchema),
+// });
+// export type WrappedTransactionalEntityUpdateWithCUDUpdate = z.infer<
+//   typeof WrappedTransactionalEntityUpdateWithCUDUpdateSchema
+// >;
 
-// #############################################################################################
-export const ModelUpdateSchema = z.union([WrappedTransactionalEntityUpdateSchema, EntityInstanceTransactionalCUDUpdateSchema]);
-export type ModelUpdate = z.infer<typeof ModelUpdateSchema>;
+// // #############################################################################################
+// export const ModelUpdateSchema = z.union([WrappedTransactionalModelActionEntityUpdateSchema, EntityInstanceTransactionalCUDUpdateSchema]);
+// export type ModelUpdate = z.infer<typeof ModelUpdateSchema>;
 
-// #############################################################################################
-export const ModelReplayableUpdateSchema = z.union([
-  WrappedTransactionalEntityUpdateWithCUDUpdateSchema,
-  EntityInstanceTransactionalCUDUpdateSchema,
-]);
-export type ModelReplayableUpdate = z.infer<typeof ModelReplayableUpdateSchema>;
+// // #############################################################################################
+// export const ModelReplayableUpdateSchema = z.union([
+//   WrappedTransactionalEntityUpdateWithCUDUpdateSchema,
+//   EntityInstanceTransactionalCUDUpdateSchema,
+// ]);
+// export type ModelReplayableUpdate = z.infer<typeof ModelReplayableUpdateSchema>;

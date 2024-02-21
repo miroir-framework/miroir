@@ -1,11 +1,9 @@
 import {
-  EntityDefinition,
   MiroirAction,
   ModelAction,
   ModelActionInitModel,
-  ModelActionInitModelParams,
+  ModelActionInitModelParams
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { ModelReplayableUpdate } from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { StoreControllerInterface } from "../0_interfaces/4-services/StoreControllerInterface.js";
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface.js";
@@ -18,8 +16,6 @@ import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
 import { startLocalStoreControllers } from "../4_services/storeControllerTools.js";
-import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
-import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = console as any as LoggerInterface;

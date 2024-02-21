@@ -14,20 +14,15 @@ import {
   MetaModel,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
-  StoreSectionConfiguration,
-  actionReturnType,
+  StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  ModelReplayableUpdate,
-  WrappedTransactionalEntityUpdateWithCUDUpdate,
-} from "../0_interfaces/2_domain/ModelUpdateInterface.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
   AdminStoreInterface,
+  StoreControllerInterface,
   StoreDataSectionInterface,
   StoreModelSectionInterface,
-  StoreControllerInterface,
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/StoreControllerInterface.js";
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
@@ -37,9 +32,9 @@ import { getLoggerName } from "../tools.js";
 import { MiroirLoggerFactory } from "./Logger.js";
 import { cleanLevel } from "./constants.js";
 
+import { ACTION_OK } from "../1_core/constants.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
-import { ACTION_OK } from "../1_core/constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreController");
 let log:LoggerInterface = console as any as LoggerInterface;

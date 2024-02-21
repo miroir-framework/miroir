@@ -2,9 +2,9 @@ import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   Commit,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
   DomainElement,
-  DomainTransactionalActionWithCUDUpdate,
+  DomainTransactionalAction,
+  DomainTransactionalReplayableAction,
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
@@ -24,7 +24,10 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action:DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment, changes:Patch[]; inverseChanges:Patch[];
+  // action: DomainTransactionalAction | LocalCacheModelActionWithDeployment;
+  action: DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment;
+  changes: Patch[];
+  inverseChanges: Patch[];
 }
 
 export type QueriesResultsCache = {[k: string]: DomainElement};
@@ -55,7 +58,6 @@ export interface ReduxStateWithUndoRedo {
 export type InnerReducerInterface = (
   state: LocalCacheSliceState,
   action: PayloadAction<
-    | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
@@ -67,7 +69,6 @@ export type InnerReducerInterface = (
 export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
-    | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment

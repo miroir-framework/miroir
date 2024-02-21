@@ -1,12 +1,12 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
+  ApplicationVersion,
   EntityDefinition,
   EntityInstancesUuidIndex,
   JzodSchemaDefinition,
   LoggerInterface,
   MetaEntity,
   MetaModel,
-  MiroirApplicationVersionOLD_DO_NOT_USE,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
   Report,
@@ -171,7 +171,7 @@ export const selectModelForDeployment: () => (
       const result = {
         applicationVersions: (applicationVersions
           ? Object.values(applicationVersions)
-          : []) as MiroirApplicationVersionOLD_DO_NOT_USE[],
+          : []) as ApplicationVersion[],
         applicationVersionCrossEntityDefinition: [],
         configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as MetaEntity[],

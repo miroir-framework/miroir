@@ -435,7 +435,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "updateEntity",
                 update: {
-                  actionName: "WrappedTransactionalEntityUpdate",
+                  actionName: "WrappedTransactionalModelActionEntityUpdate",
                   modelEntityUpdate: {
                     actionType: "modelAction",
                     actionName: "renameEntity",
@@ -496,7 +496,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "DomainTransactionalAction",
                 actionName: "updateEntity",
                 update: {
-                  actionName: "WrappedTransactionalEntityUpdate",
+                  actionName: "WrappedTransactionalModelActionEntityUpdate",
                   modelEntityUpdate: {
                     actionType: "modelAction",
                     actionName: "dropEntity",

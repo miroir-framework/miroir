@@ -10,7 +10,8 @@ import {
   ACTION_OK,
   ActionReturnType,
   ApplicationSection,
-  DomainTransactionalActionWithCUDUpdate,
+  DomainTransactionalAction,
+  DomainTransactionalReplayableAction,
   EntityInstanceCollection,
   InstanceAction,
   LocalCacheCUDActionWithDeployment,
@@ -41,7 +42,11 @@ import {
 import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer";
-import { ReduxReducerWithUndoRedoInterface, ReduxStoreWithUndoRedo, localCacheSliceInputActionNamesObject } from './localCache/localCacheReduxSliceInterface';
+import {
+  ReduxReducerWithUndoRedoInterface,
+  ReduxStoreWithUndoRedo,
+  localCacheSliceInputActionNamesObject,
+} from "./localCache/localCacheReduxSliceInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxStore");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -293,7 +298,9 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
+  // currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
+  // currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

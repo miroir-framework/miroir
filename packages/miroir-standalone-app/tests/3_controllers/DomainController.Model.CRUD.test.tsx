@@ -256,7 +256,7 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              actionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
                 actionType: "modelAction",
                 actionName: "createEntity",
@@ -404,7 +404,7 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              actionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
                 actionType: "modelAction",
                 actionName: "createEntity",
@@ -543,7 +543,7 @@ describe.sequential(
             actionType:"DomainTransactionalAction",
             actionName: "updateEntity",
             update: {
-              actionName:"WrappedTransactionalEntityUpdate",
+              actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
                 actionType: "modelAction",
                 actionName: "createEntity",
@@ -634,7 +634,7 @@ describe.sequential(
                   actionType: "DomainTransactionalAction",
                   actionName: "updateEntity",
                   update: {
-                    actionName: "WrappedTransactionalEntityUpdate",
+                    actionName: "WrappedTransactionalModelActionEntityUpdate",
                     modelEntityUpdate: {
                       actionType: "modelAction",
                       actionName: "dropEntity",
@@ -749,7 +749,7 @@ describe.sequential(
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
                   actionType: "modelAction",
                   actionName: "createEntity",
@@ -767,7 +767,7 @@ describe.sequential(
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
                   actionType: "modelAction",
                   actionName: "createEntity",
@@ -888,7 +888,7 @@ describe.sequential(
               actionType: "DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate:{
                   actionType:"modelAction",
                   actionName: "renameEntity",
@@ -1015,7 +1015,7 @@ describe.sequential(
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
                   actionType: "modelAction",
                   actionName: "createEntity",
@@ -1034,7 +1034,7 @@ describe.sequential(
               actionType:"DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
                   actionType: "modelAction",
                   actionName: "createEntity",
@@ -1159,7 +1159,7 @@ describe.sequential(
               actionType: "DomainTransactionalAction",
               actionName: "updateEntity",
               update: {
-                actionName:"WrappedTransactionalEntityUpdate",
+                actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate:{
                   actionType:"modelAction",
                   actionName: "alterEntityAttribute",

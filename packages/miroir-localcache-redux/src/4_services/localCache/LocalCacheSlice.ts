@@ -14,11 +14,9 @@ import {
   ACTION_OK,
   ActionReturnType,
   ApplicationSection,
+  ApplicationVersion,
   CreateInstanceParameters,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdate,
-  DomainDataAction,
   DomainState,
-  DomainTransactionalAction,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
@@ -33,7 +31,6 @@ import {
   LoggerInterface,
   MetaEntity,
   MetaModel,
-  MiroirApplicationVersionOLD_DO_NOT_USE,
   MiroirLoggerFactory,
   ModelAction,
   ModelEntityActionTransformer,
@@ -219,7 +216,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
       const result = {
         applicationVersions: (applicationVersions && applicationVersions.entities
           ? Object.values(applicationVersions.entities)
-          : []) as MiroirApplicationVersionOLD_DO_NOT_USE[],
+          : []) as ApplicationVersion[],
         applicationVersionCrossEntityDefinition: [],
         configuration: (configuration && configuration.entities
           ? Object.values(configuration.entities)
@@ -614,40 +611,6 @@ function handleLocalCacheInstanceCUDActionWithDeployment(
       );
   }
   return ACTION_OK
-}
-
-
-//#########################################################################################
-function convertDomainActionToDomainTransactionalAction(action:DomainActionWithTransactionalEntityUpdateWithCUDUpdate): DomainTransactionalAction | undefined {
-  switch (action.actionType) {
-    case "DomainDataAction": {
-      return undefined
-      break;
-    }
-    case "DomainTransactionalAction": {
-      switch (action.actionName) {
-        case "updateEntity": {
-          return {
-            actionType:  "DomainTransactionalAction",
-            actionName: "updateEntity",
-            update: {
-              actionName: "WrappedTransactionalEntityUpdate",
-              modelEntityUpdate: action.update.modelEntityUpdate
-            }
-          }
-          break;
-        }
-        default: {
-          return action
-          break;
-        }
-      }
-    }
-    default: {
-      return action
-      break;
-    }
-  }
 }
 
 

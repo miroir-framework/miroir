@@ -7,7 +7,8 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   DomainTransactionalAction,
-  DomainTransactionalActionWithCUDUpdate,
+  DomainTransactionalEntityUpdateAction,
+  DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
@@ -85,7 +86,9 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
+  // currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
+  // currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -344,9 +347,9 @@ export class DomainController implements DomainControllerInterface {
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               modelStructureMigration: this.localCache
                 .currentTransaction()
-                .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalActionWithCUDUpdate) =>
-                  t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
-                ),
+                // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalAction) =>
+                //   t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
+                // ),
             };
 
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
@@ -368,12 +371,16 @@ export class DomainController implements DomainControllerInterface {
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
 
             for (const replayAction of this.localCache.currentTransaction()) {
-              // replayAction: DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment
-              log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
+              // const localReplayAction: DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment = replayAction;
+              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
               switch (replayAction.actionType) {
                 case "DomainTransactionalAction": {
-                  if (replayAction.actionName == "updateEntity") {
-                    switch (replayAction.update.modelEntityUpdate.actionName) {
+                  const localReplayAction: DomainTransactionalReplayableAction = replayAction;
+                  if (localReplayAction.actionName == "updateEntity") {
+                    const local2ReplayAction: DomainTransactionalEntityUpdateAction = replayAction as DomainTransactionalEntityUpdateAction; //type system bug?
+                    // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
+
+                    switch (local2ReplayAction.update.modelEntityUpdate.actionName) {
                       case "alterEntityAttribute":
                       case "createEntity": 
                       case "dropEntity": 
@@ -383,7 +390,7 @@ export class DomainController implements DomainControllerInterface {
                           {}, // context update
                           "handleRemoteStoreModelAction",
                           deploymentUuid,
-                          replayAction.update.modelEntityUpdate
+                          local2ReplayAction.update.modelEntityUpdate
                         );
                         break;
                       }
@@ -401,20 +408,25 @@ export class DomainController implements DomainControllerInterface {
                       }
                     }
                   } else {
-                    await this.callUtil.callRemoteAction(
-                      {}, // context
-                      {}, // context update
-                      "handleRemoteStoreRestCRUDAction",
-                      deploymentUuid,
-                      replayAction.update.objects[0].applicationSection,
-                      {
-                        actionType: "RemoteStoreCRUDAction",
-                        actionName: replayAction.update.actionName.toString() as CRUDActionName,
-                        parentName: replayAction.update.objects[0].parentName,
-                        parentUuid: replayAction.update.objects[0].parentUuid,
-                        objects: replayAction.update.objects[0].instances,
-                      }
-                    );
+                    if (localReplayAction.actionName == "UpdateMetaModelInstance") {
+                    //  log.warn("handleModelAction commit ignored transactional action" + replayAction) 
+                     await this.callUtil.callRemoteAction(
+                       {}, // context
+                       {}, // context update
+                       "handleRemoteStoreRestCRUDAction",
+                       deploymentUuid,
+                       localReplayAction.update.objects[0].applicationSection,
+                       {
+                         actionType: "RemoteStoreCRUDAction",
+                         actionName: localReplayAction.update.actionName.toString() as CRUDActionName,
+                         parentName: localReplayAction.update.objects[0].parentName,
+                         parentUuid: localReplayAction.update.objects[0].parentUuid,
+                         objects: localReplayAction.update.objects[0].instances,
+                       }
+                     );
+                    } else {
+                      throw new Error("handleModelAction commit could not replay transactional action" + replayAction);
+                    }
                   }
                   break;
                 }

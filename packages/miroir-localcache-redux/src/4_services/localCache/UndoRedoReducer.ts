@@ -4,8 +4,8 @@ import produce, { Patch, applyPatches, enablePatches } from "immer";
 import {
   CUDActionNamesArray,
   Commit,
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment,
-  DomainTransactionalActionWithCUDUpdate,
+  DomainTransactionalAction,
+  DomainTransactionalReplayableAction,
   LocalCacheCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
@@ -64,7 +64,6 @@ function callNextReducer(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
-    | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheCUDActionWithDeployment
     | RemoteStoreCRUDAction
@@ -104,7 +103,6 @@ function callUndoRedoReducer(
   reducer: InnerReducerInterface,
   presentModelSnapshot: LocalCacheSliceState,
   action: PayloadAction<
-    | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
   >
@@ -130,11 +128,9 @@ function callUndoRedoReducer(
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
-    case "localCacheTransactionalActionWithDeployment":
-    case "DomainActionWithTransactionalEntityUpdateWithCUDUpdate": {
-      const localAction = action.payload as DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment | LocalCacheTransactionalActionWithDeployment
+    case "localCacheTransactionalActionWithDeployment": {
+      const localAction = action.payload as LocalCacheTransactionalActionWithDeployment
       if (
-        // action?.payload?.actionType == "DomainActionWithTransactionalEntityUpdateWithCUDUpdate" &&
         undoableSliceUpdateActions.some(
           (item) => item.type == action?.type && item.actionName == localAction.domainAction.actionName
         )
@@ -178,7 +174,6 @@ function callUndoRedoReducer(
     innerReducer: InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
     action: PayloadAction<
-      | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
     >
@@ -196,7 +191,9 @@ function callUndoRedoReducer(
         action:
           action.payload.actionType == "localCacheModelActionWithDeployment"
             ? action.payload
-            : (action.payload.domainAction as DomainTransactionalActionWithCUDUpdate),
+            // : (action.payload.domainAction as DomainTransactionalActionWithCUDUpdate),
+            // : action.payload.domainAction as LocalCacheTransactionalAction,
+            : action.payload.domainAction as DomainTransactionalReplayableAction,
         changes,
         inverseChanges,
       };
@@ -219,7 +216,7 @@ function callUndoRedoReducer(
     innerReducer: InnerReducerInterface,
     state: ReduxStateWithUndoRedo,
     action: PayloadAction<
-      | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
+      // | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
     >
@@ -252,7 +249,7 @@ function callUndoRedoReducer(
         action:
           action.payload.actionType == "localCacheModelActionWithDeployment"
             ? action.payload
-            : (action.payload.domainAction as DomainTransactionalActionWithCUDUpdate),
+            : (action.payload.domainAction as DomainTransactionalReplayableAction),
         changes,
         inverseChanges,
       };
@@ -280,7 +277,6 @@ export function createUndoRedoReducer(
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
-      | DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalActionWithDeployment
       | LocalCacheCUDActionWithDeployment
@@ -333,8 +329,6 @@ export function createUndoRedoReducer(
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
-        // if (!["DomainActionWithTransactionalEntityUpdateWithCUDUpdate", ""].includes(action.payload.actionType)) {
-        // if (action.payload.actionType == "LocalCacheCUDActionWithDeployment" || action.payload.actionType == "RemoteStoreCRUDAction") {
         if (action.payload.actionType !== "localCacheTransactionalActionWithDeployment") {
           throw new Error("reduceWithUndoRedo handleDomainTransactionalAction does not accept actionType=InstanceCUDAction!");
         } else {
@@ -410,12 +404,10 @@ export function createUndoRedoReducer(
                 case "UpdateMetaModelInstance":
                 default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                   // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
-                  // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>)
-                  // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
                   return callNextReducerWithUndoRedo(
                     innerReducer,
                     state,
-                    action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
+                    action as PayloadAction<LocalCacheTransactionalActionWithDeployment>
                   );
               }
               break;
@@ -448,12 +440,10 @@ export function createUndoRedoReducer(
                 }
                 default: {// TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                   // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
-                  // return callNextReducerWithUndoRedo(innerReducer, state, action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>)
-                  // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
                   return callNextReducerWithUndoRedo(
                     innerReducer,
                     state,
-                    action as PayloadAction<DomainActionWithTransactionalEntityUpdateWithCUDUpdateWithDeployment>
+                    action as PayloadAction<LocalCacheTransactionalActionWithDeployment>
                   );
                   break;
                 }

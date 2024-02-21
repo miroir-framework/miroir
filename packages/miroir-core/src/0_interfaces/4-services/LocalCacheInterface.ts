@@ -1,21 +1,20 @@
 import { z } from "zod";
 import {
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
-  LocalCacheInfo,
+  DomainActionWithTransactionalEntityUpdateSchema,
+  DomainTransactionalAction,
+  DomainTransactionalReplayableAction,
+  LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
 
 import {
-  modelAction,
-  instanceCUDAction,
-  InstanceAction,
+  ActionReturnType,
   ApplicationSection,
   EntityInstanceCollection,
-  ActionReturnType,
+  InstanceAction,
   MetaModel,
+  instanceCUDAction,
+  modelAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  DomainTransactionalActionWithCUDUpdate
-} from "../2_domain/DomainControllerInterface.js";
 
 // ################################################################################################
 
@@ -28,16 +27,14 @@ export const LocalCacheActionWithDeploymentSchema = z.object(
 )
 
 export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
-// export interface LocalCacheCUDActionWithDeployment {
-//   deploymentUuid: Uuid,
-//   instanceCUDAction: InstanceCUDAction,
-// }
 
 // ################################################################################################
 export const LocalCacheTransactionalActionSchema = z.union([
-  DomainActionWithTransactionalEntityUpdateWithCUDUpdateSchema,
+  DomainActionWithTransactionalEntityUpdateSchema,
   modelAction,
 ]);
+
+// export const LocalCacheTransactionalActionSchema = modelAction;
 export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
 
 // ################################################################################################
@@ -75,7 +72,8 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  currentTransaction():(DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  // currentTransaction():(DomainTransactionalAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // actions on local cache
   createInstance(
