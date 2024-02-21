@@ -271,7 +271,7 @@ export {
   DomainState,
   DomainStateMetaModelSelector,
   DomainTransactionalActionSchema,
-  DomainTransactionalActionUpdateEntitySchema,
+  DomainTransactionalActionForModelActionSchema,
   // DomainTransactionalActionWithCUDUpdateSchema,
   EntityInstancesUuidIndexEntityInstanceArraySelector,
   DomainAction,
@@ -282,7 +282,7 @@ export {
   DomainTransactionalAction,
   // DomainTransactionalActionWithEntityUpdateWithCUDUpdate,
   DomainTransactionalActionUpdateMetaModelInstance,
-  DomainTransactionalActionUpdateEntity,
+  DomainTransactionalActionForModelAction,
   // DomainTransactionalActionWithCUDUpdate,
   // DomainTransactionalUpdateEntityActionWithCUDUpdate,
   // DomainTransactionalActionUndoRedo,
@@ -355,10 +355,10 @@ export {
   StoreControllerManagerInterface
 } from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
 export {
-  LocalCacheCUDActionWithDeployment,
-  LocalCacheActionWithDeploymentSchema,
+  LocalCacheInstanceCUDActionWithDeployment,
+  LocalCacheInstanceCUDActionWithDeploymentSchema,
   LocalCacheModelActionWithDeployment,
-  LocalCacheEntityActionWithDeploymentSchema,
+  LocalCacheModelActionWithDeploymentSchema,
   LocalCacheTransactionalAction,
   LocalCacheTransactionalActionSchema,
   LocalCacheTransactionalActionWithDeployment,

@@ -24,7 +24,7 @@ import {
   InstanceAction,
   InstanceCUDAction,
   JzodSchema,
-  LocalCacheCUDActionWithDeployment,
+  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalAction,
   LocalCacheTransactionalActionWithDeployment,
@@ -392,30 +392,25 @@ function handleLocalCacheTransactionalAction(
   //   action
   // );
   switch (action.actionType) {
-    case "modelAction": {
-      return handleLocalCacheModelAction(state,deploymentUuid,action)
-      break;
-    }
+    // case "modelAction": {
+    //   return handleLocalCacheModelAction(state,deploymentUuid,action)
+    //   break;
+    // }
     case "DomainDataAction":
     case "DomainTransactionalAction":
     default: {
       switch (action.actionName) {
         // case "rollback":
         case "undo":
-        case "redo":
-        // case "resetModel":
-        // case "resetData":
-        // case "initModel":
-        // case "commit":
-         {
+        case "redo": {
           log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
           break;
         }
         case "UpdateMetaModelInstance": {
           // not transactional??
           // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
-          const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
-            actionType: "LocalCacheCUDActionWithDeployment",
+          const instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment = {
+            actionType: "LocalCacheInstanceCUDActionWithDeployment",
             deploymentUuid,
             instanceCUDAction: {
               actionType: "InstanceCUDAction",
@@ -452,7 +447,7 @@ function handleLocalCacheTransactionalAction(
 // 
 function handleLocalCacheInstanceCUDActionWithDeployment(
   state: LocalCacheSliceState,
-  action: LocalCacheCUDActionWithDeployment
+  action: LocalCacheInstanceCUDActionWithDeployment
 ): ActionReturnType {
   const instanceCUDAction: InstanceCUDAction = action.instanceCUDAction;
 
@@ -772,7 +767,7 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheCUDActionWithDeployment>
+      action: PayloadAction<LocalCacheInstanceCUDActionWithDeployment>
     ): void {
       actionReturnTypeToException(handleLocalCacheInstanceCUDActionWithDeployment(state, action.payload));
     },

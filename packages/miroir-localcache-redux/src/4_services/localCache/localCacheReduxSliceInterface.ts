@@ -4,7 +4,7 @@ import {
   Commit,
   DomainElement,
   DomainTransactionalReplayableAction,
-  LocalCacheCUDActionWithDeployment,
+  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   RemoteStoreCRUDAction,
@@ -58,7 +58,7 @@ export type InnerReducerInterface = (
   action: PayloadAction<
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
-    | LocalCacheCUDActionWithDeployment
+    | LocalCacheInstanceCUDActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => LocalCacheSliceState;
@@ -69,7 +69,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   action: PayloadAction<
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
-    | LocalCacheCUDActionWithDeployment
+    | LocalCacheInstanceCUDActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => ReduxStateWithUndoRedo;

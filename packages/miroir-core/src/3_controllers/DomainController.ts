@@ -7,14 +7,14 @@ import {
   DomainControllerInterface,
   DomainDataAction,
   DomainTransactionalAction,
-  DomainTransactionalActionUpdateEntity,
+  DomainTransactionalActionForModelAction,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
-  LocalCacheCUDActionWithDeployment,
+  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
@@ -86,8 +86,6 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  // currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
-  // currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
   currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();
   }
@@ -250,8 +248,8 @@ export class DomainController implements DomainControllerInterface {
         };
         await this.endpoint.handleAction(instanceAction);
       } else {
-        const instanceCUDAction: LocalCacheCUDActionWithDeployment = {
-          actionType: "LocalCacheCUDActionWithDeployment",
+        const instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment = {
+          actionType: "LocalCacheInstanceCUDActionWithDeployment",
           deploymentUuid,
           instanceCUDAction: {
             actionType: "InstanceCUDAction",
@@ -377,7 +375,7 @@ export class DomainController implements DomainControllerInterface {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalReplayableAction = replayAction;
                   if (localReplayAction.actionName == "updateEntity") {
-                    const local2ReplayAction: DomainTransactionalActionUpdateEntity = replayAction as DomainTransactionalActionUpdateEntity; //type system bug?
+                    const local2ReplayAction: DomainTransactionalActionForModelAction = replayAction as DomainTransactionalActionForModelAction; //type system bug?
                     // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
 
                     switch (local2ReplayAction.update.modelEntityUpdate.actionName) {
@@ -396,14 +394,6 @@ export class DomainController implements DomainControllerInterface {
                       }
                       default: {
                         throw new Error("handleModelAction could not handle action" + replayAction);
-                        
-                        // await this.callUtil.callRemoteAction(
-                        //   {}, // context
-                        //   {}, // context update
-                        //   "handleRemoteStoreOLDModelAction",
-                        //   deploymentUuid,
-                        //   replayAction
-                        // );
                         break;
                       }
                     }
@@ -479,7 +469,7 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   "handleLocalCacheCUDAction",
                   {
-                    actionType: "LocalCacheCUDActionWithDeployment",
+                    actionType: "LocalCacheInstanceCUDActionWithDeployment",
                     deploymentUuid,
                     instanceCUDAction: {
                       actionType: "InstanceCUDAction",
@@ -649,7 +639,7 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   "handleLocalCacheCUDAction",
                   {
-                    actionType: "LocalCacheCUDActionWithDeployment",
+                    actionType: "LocalCacheInstanceCUDActionWithDeployment",
                     deploymentUuid,
                     instanceCUDAction: {
                       actionType: "InstanceCUDAction",

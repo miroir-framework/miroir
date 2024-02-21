@@ -7,7 +7,7 @@ import {
   MetaModel,
   ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { LocalCacheInstanceCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
@@ -32,13 +32,13 @@ export class ModelEntityActionTransformer{
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
-  ):LocalCacheCUDActionWithDeployment[] {
+  ):LocalCacheInstanceCUDActionWithDeployment[] {
     log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionName) {
       case "createEntity": {
         return [
           {
-            actionType:"LocalCacheCUDActionWithDeployment",
+            actionType:"LocalCacheInstanceCUDActionWithDeployment",
             deploymentUuid,
             instanceCUDAction: {
               actionType: "InstanceCUDAction",
@@ -70,7 +70,7 @@ export class ModelEntityActionTransformer{
       case "dropEntity": {
         return [
           {
-            actionType: "LocalCacheCUDActionWithDeployment",
+            actionType: "LocalCacheInstanceCUDActionWithDeployment",
             deploymentUuid,
             instanceCUDAction: {
               actionType: "InstanceCUDAction",
@@ -109,9 +109,9 @@ export class ModelEntityActionTransformer{
             {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheCUDActionWithDeployment[] = [
+          const result: LocalCacheInstanceCUDActionWithDeployment[] = [
             {
-              actionType: "LocalCacheCUDActionWithDeployment",
+              actionType: "LocalCacheInstanceCUDActionWithDeployment",
               deploymentUuid,
               instanceCUDAction: {
                 actionType: "InstanceCUDAction",
@@ -166,9 +166,9 @@ export class ModelEntityActionTransformer{
             // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheCUDActionWithDeployment[] = [
+          const result: LocalCacheInstanceCUDActionWithDeployment[] = [
             {
-              actionType: "LocalCacheCUDActionWithDeployment",
+              actionType: "LocalCacheInstanceCUDActionWithDeployment",
               deploymentUuid,
               instanceCUDAction: {
                 actionType: "InstanceCUDAction",

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
-  DomainDataActionOrTransactionalActionSchema,
+  DomainDataActionSchema,
+  DomainTransactionalActionSchema,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -17,23 +18,23 @@ import {
 
 // ################################################################################################
 
-export const LocalCacheActionWithDeploymentSchema = z.object(
+export const LocalCacheInstanceCUDActionWithDeploymentSchema = z.object(
   {
-    actionType:z.literal("LocalCacheCUDActionWithDeployment"),
+    actionType:z.literal("LocalCacheInstanceCUDActionWithDeployment"),
     deploymentUuid: z.string().uuid(),
     instanceCUDAction: instanceCUDAction
   }
 )
 
-export type LocalCacheCUDActionWithDeployment = z.infer<typeof LocalCacheActionWithDeploymentSchema>;
+export type LocalCacheInstanceCUDActionWithDeployment = z.infer<typeof LocalCacheInstanceCUDActionWithDeploymentSchema>;
 
 // ################################################################################################
 export const LocalCacheTransactionalActionSchema = z.union([
-  DomainDataActionOrTransactionalActionSchema,
-  modelAction,
+  DomainDataActionSchema, // not only "transactional"?
+  DomainTransactionalActionSchema,
+  modelAction, // not only "transactional"?
 ]);
 
-// export const LocalCacheTransactionalActionSchema = modelAction;
 export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
 
 // ################################################################################################
@@ -45,12 +46,12 @@ export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
 export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
 
 // ################################################################################################
-export const LocalCacheEntityActionWithDeploymentSchema = z.object({
+export const LocalCacheModelActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheModelActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
   modelAction: modelAction,
 });
-export type LocalCacheModelActionWithDeployment = z.infer<typeof LocalCacheEntityActionWithDeploymentSchema>;
+export type LocalCacheModelActionWithDeployment = z.infer<typeof LocalCacheModelActionWithDeploymentSchema>;
 
 export type CreateInstanceParameters = {
   deploymentUuid: string,
@@ -84,6 +85,6 @@ export declare interface LocalCacheInterface
   // ##############################################################################################
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
-  handleLocalCacheCUDAction(action:LocalCacheCUDActionWithDeployment):ActionReturnType;
+  handleLocalCacheCUDAction(action:LocalCacheInstanceCUDActionWithDeployment):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }
