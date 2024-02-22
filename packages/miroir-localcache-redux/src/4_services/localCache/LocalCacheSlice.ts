@@ -396,7 +396,7 @@ function handleLocalCacheTransactionalAction(
     //   return handleLocalCacheModelAction(state,deploymentUuid,action)
     //   break;
     // }
-    case "DomainDataAction":
+    case "DomainDataCUDAction":
     case "DomainTransactionalAction":
     default: {
       switch (action.actionName) {
@@ -627,7 +627,7 @@ function handleLocalCacheModelAction(
   );
   switch (action.actionType) {
     case "modelAction": {
-      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToInstanceAction(deploymentUuid, action, currentModel(deploymentUuid, state))
+      const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToLocalCacheInstanceCUDAction(deploymentUuid, action, currentModel(deploymentUuid, state))
 
       for (const localCacheCUDActionWithDeployment of localCacheCUDActionsWithDeployment) {
         handleLocalCacheInstanceCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);

@@ -11,7 +11,7 @@ import { JzodObject } from "@miroir-framework/jzod-ts";
 import {
   ApplicationDeploymentConfiguration,
   DomainControllerInterface,
-  DomainDataAction,
+  DomainDataCUDAction,
   Entity,
   EntityInstancesUuidIndex,
   LoggerInterface,
@@ -184,9 +184,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {
-          const createAction: DomainDataAction = {
+          const createAction: DomainDataCUDAction = {
             actionName: "create",
-            actionType:"DomainDataAction",
+            actionType:"DomainDataCUDAction",
             objects: [
               {
                 parentName: data.name,
@@ -236,9 +236,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {
-          const updateAction: DomainDataAction = {
+          const updateAction: DomainDataCUDAction = {
             actionName: "update",
-            actionType:"DomainDataAction",
+            actionType:"DomainDataCUDAction",
             objects: [
               {
                 parentName: data.name,

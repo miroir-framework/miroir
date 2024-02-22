@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
-  DomainDataActionSchema,
-  DomainTransactionalActionSchema,
+  domainDataCUDActionSchema,
+  domainTransactionalActionSchema,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -11,9 +11,9 @@ import {
   ApplicationSection,
   EntityInstanceCollection,
   InstanceAction,
-  MetaModel,
   instanceCUDAction,
-  modelAction,
+  MetaModel,
+  modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -29,19 +29,19 @@ export const LocalCacheInstanceCUDActionWithDeploymentSchema = z.object(
 export type LocalCacheInstanceCUDActionWithDeployment = z.infer<typeof LocalCacheInstanceCUDActionWithDeploymentSchema>;
 
 // ################################################################################################
-export const LocalCacheTransactionalActionSchema = z.union([
-  DomainDataActionSchema, // not only "transactional"?
-  DomainTransactionalActionSchema,
-  modelAction, // not only "transactional"?
+export const localCacheTransactionalActionSchema = z.union([
+  domainDataCUDActionSchema, // not only "transactional"?
+  domainTransactionalActionSchema,
+  modelAction,
 ]);
 
-export type LocalCacheTransactionalAction = z.infer<typeof LocalCacheTransactionalActionSchema>;
+export type LocalCacheTransactionalAction = z.infer<typeof localCacheTransactionalActionSchema>;
 
 // ################################################################################################
 export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheTransactionalActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  domainAction: LocalCacheTransactionalActionSchema,
+  domainAction: localCacheTransactionalActionSchema,
 });
 export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
 

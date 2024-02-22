@@ -252,6 +252,9 @@ function callUndoRedoReducer(
 
       // log.info('callNextReducerWithUndoRedo for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction', newPatch);
 
+      
+      // the model action is NOT passed down further to the next reducer
+      
       return {
         currentTransaction,
         previousModelSnapshot,
@@ -322,6 +325,8 @@ export function createUndoRedoReducer(
           // throw new Error(
           //   "reduceWithUndoRedo handleLocalCacheModelAction not treated yet!" + action.payload.actionType
           // );
+          // log.info("reduceWithUndoRedo handleLocalCacheModelAction treating action", action.payload)
+          log.info("reduceWithUndoRedo handleLocalCacheModelAction treating action", JSON.stringify(action.payload, null, 2))
           return callNextReducerWithUndoRedoForModelAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);
         }
         break;
@@ -412,7 +417,7 @@ export function createUndoRedoReducer(
               }
               break;
             }
-            case "modelAction": { // TODO: modelAction wrapped in transactional action!
+            case "modelAction": { // this is a modelAction wrapped in transactional action!
               switch (action.payload.domainAction.actionName) {
                 case "rollback": {
                   const next = callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheTransactionalActionWithDeployment>);
@@ -450,7 +455,6 @@ export function createUndoRedoReducer(
               }
               break;
             }
-            // case "DomainDataAction": 
             default: {
               throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
               log.error("reduceWithUndoRedo handleDomainAction default case for action", action);

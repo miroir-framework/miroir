@@ -10,7 +10,7 @@ import { SetupServerApi, setupServer } from "msw/node";
 import {
   DomainAction,
   DomainControllerInterface,
-  DomainDataAction,
+  DomainDataCUDAction,
   EntityDefinition,
   EntityInstance,
   StoreControllerInterface,
@@ -802,9 +802,9 @@ describe.sequential(
               }
             );
               
-            const createInstancesAction: DomainDataAction = {
+            const createInstancesAction: DomainDataCUDAction = {
               actionName: "create",
-              actionType: "DomainDataAction",
+              actionType: "DomainDataCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -1069,9 +1069,9 @@ describe.sequential(
               }
             );
               
-            const createInstancesAction: DomainDataAction = {
+            const createInstancesAction: DomainDataCUDAction = {
               actionName: "create",
-              actionType: "DomainDataAction",
+              actionType: "DomainDataCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,

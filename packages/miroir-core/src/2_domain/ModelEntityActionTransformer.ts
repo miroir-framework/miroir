@@ -28,12 +28,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export class ModelEntityActionTransformer{
 
   // ###################################################################################################
-  static modelActionToInstanceAction(
+  static modelActionToLocalCacheInstanceCUDAction(
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
   ):LocalCacheInstanceCUDActionWithDeployment[] {
-    log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
+    log.info("modelActionToLocalCacheInstanceCUDAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionName) {
       case "createEntity": {
         return [
@@ -97,11 +97,11 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        log.info("modelActionToLocalCacheInstanceCUDAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.targetValue});
         if (currentEntity && currentEntityDefinition) {
@@ -121,7 +121,7 @@ export class ModelEntityActionTransformer{
               },
             },
           ];
-          log.info("modelActionToInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
+          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", result)
 
           return result;
 
@@ -130,17 +130,17 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
+          log.error('modelActionToLocalCacheInstanceCUDAction renameEntity could not rename',modelAction);
           return [];
         }
         break;
       }
       case "alterEntityAttribute": {
-        log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToInstanceAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        log.info("modelActionToLocalCacheInstanceCUDAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         if (currentEntity && currentEntityDefinition) {
           // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
           const localEntityJzodSchemaDefinition = modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)?
@@ -178,7 +178,7 @@ export class ModelEntityActionTransformer{
               },
             },
           ];
-          log.info("modelActionToInstanceAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
+          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
 
           return result;
 
@@ -187,7 +187,7 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelActionToInstanceAction alterEntityAttribute could not rename',modelAction);
+          log.error('modelActionToLocalCacheInstanceCUDAction alterEntityAttribute could not rename',modelAction);
           return [];
         }
       }
@@ -196,11 +196,11 @@ export class ModelEntityActionTransformer{
       case "rollback":
       case "resetModel":
       case "resetData": {
-        log.warn("modelActionToInstanceAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
+        log.warn("modelActionToLocalCacheInstanceCUDAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
         return []
       }
       default: {
-        throw new Error("modelActionToInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
+        throw new Error("modelActionToLocalCacheInstanceCUDAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
         break;
       }
     }

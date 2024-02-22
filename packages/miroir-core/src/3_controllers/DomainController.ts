@@ -5,7 +5,7 @@ import {
   CRUDActionName,
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
-  DomainDataAction,
+  DomainDataCUDAction,
   DomainTransactionalAction,
   DomainTransactionalActionForModelAction,
   DomainTransactionalReplayableAction,
@@ -196,7 +196,7 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleDomainNonTransactionalAction(deploymentUuid: Uuid, domainAction: DomainDataAction): Promise<void> {
+  async handleDomainNonTransactionalAction(deploymentUuid: Uuid, domainAction: DomainDataCUDAction): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
       deploymentUuid,
@@ -710,8 +710,8 @@ export class DomainController implements DomainControllerInterface {
         await this.handleModelAction(deploymentUuid, domainAction as handleModelActionParam, currentModel);
         return Promise.resolve();
       }
-      case "DomainDataAction": {
-        await this.handleDomainNonTransactionalAction(deploymentUuid, domainAction as DomainDataAction);
+      case "DomainDataCUDAction": {
+        await this.handleDomainNonTransactionalAction(deploymentUuid, domainAction as DomainDataCUDAction);
         return Promise.resolve();
       }
       case "DomainTransactionalAction": {
