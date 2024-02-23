@@ -254,7 +254,7 @@ describe.sequential(
           console.log('add Entity step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
+            actionName: "modelActionUpdateEntity",
             update: {
               actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
@@ -402,7 +402,7 @@ describe.sequential(
           console.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
+            actionName: "modelActionUpdateEntity",
             update: {
               actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
@@ -541,7 +541,7 @@ describe.sequential(
 
           const createAction: DomainAction = {
             actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
+            actionName: "modelActionUpdateEntity",
             update: {
               actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
@@ -632,7 +632,7 @@ describe.sequential(
                 applicationDeploymentLibrary.uuid, 
                 {
                   actionType: "DomainTransactionalAction",
-                  actionName: "updateEntity",
+                  actionName: "modelActionUpdateEntity",
                   update: {
                     actionName: "WrappedTransactionalModelActionEntityUpdate",
                     modelEntityUpdate: {
@@ -747,7 +747,7 @@ describe.sequential(
           } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -765,7 +765,7 @@ describe.sequential(
             };
             const createActionBook: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -886,7 +886,7 @@ describe.sequential(
           const updateAction: DomainAction = 
             {
               actionType: "DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate:{
@@ -1013,7 +1013,7 @@ describe.sequential(
           } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -1032,7 +1032,7 @@ describe.sequential(
             };
             const createActionBook: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -1157,7 +1157,7 @@ describe.sequential(
           const updateAction: DomainAction = 
             {
               actionType: "DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate:{

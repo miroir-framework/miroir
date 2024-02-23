@@ -140,9 +140,9 @@ export class DomainController implements DomainControllerInterface {
           );
           break;
         }
-        case "updateEntity": {
+        case "modelActionUpdateEntity": {
           log.debug(
-            "DomainController updateEntity for model entity update",
+            "DomainController modelActionUpdateEntity for model entity update",
             domainTransactionalAction?.update.modelEntityUpdate,
             // "entities",
             // currentModel.entities,
@@ -374,7 +374,7 @@ export class DomainController implements DomainControllerInterface {
               switch (replayAction.actionType) {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalReplayableAction = replayAction;
-                  if (localReplayAction.actionName == "updateEntity") {
+                  if (localReplayAction.actionName == "modelActionUpdateEntity") {
                     const local2ReplayAction: DomainTransactionalActionForModelAction = replayAction as DomainTransactionalActionForModelAction; //type system bug?
                     // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
 

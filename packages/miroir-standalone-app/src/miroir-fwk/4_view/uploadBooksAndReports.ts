@@ -53,7 +53,7 @@ export async function uploadBooksAndReports(
     applicationDeploymentLibrary.uuid,
     {
       actionType: "DomainTransactionalAction",
-      actionName: "updateEntity",
+      actionName: "modelActionUpdateEntity",
       update: {
         actionName: "WrappedTransactionalModelActionEntityUpdate",
         modelEntityUpdate: {

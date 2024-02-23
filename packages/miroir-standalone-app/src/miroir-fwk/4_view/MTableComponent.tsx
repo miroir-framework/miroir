@@ -121,7 +121,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //     contextDeploymentUuid,
     //     {
     //       actionType: "DomainTransactionalAction",
-    //       actionName: "updateEntity",
+    //       actionName: "modelActionUpdateEntity",
     //       update: {
     //         actionName:"WrappedTransactionalModelActionEntityUpdate",
     //         modelEntityUpdate:{

@@ -80,7 +80,7 @@ export type DomainDataCUDAction = z.infer<typeof domainDataCUDActionSchema>;
 // without translation of Entity Updates in CUD updates
 export const domainTransactionalActionForModelActionSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
-  actionName: z.literal("updateEntity"),
+  actionName: z.literal("modelActionUpdateEntity"),
   update: z.object({
     actionName: z.literal("WrappedTransactionalModelActionEntityUpdate"),
     modelEntityUpdate: ModelActionEntityUpdateSchema,

@@ -79,7 +79,7 @@ export async function refreshAllInstancesTest(
     } else {
       const createAction: DomainAction = {
         actionType:"DomainTransactionalAction",
-        actionName: "updateEntity",
+        actionName: "modelActionUpdateEntity",
         update: {
           actionName:"WrappedTransactionalModelActionEntityUpdate",
           modelEntityUpdate: {

@@ -187,7 +187,7 @@ describe.sequential('DomainController.Data.CRUD',
           } else {
             const createAction: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -394,7 +394,7 @@ describe.sequential('DomainController.Data.CRUD',
           } else {
             const createAction: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {
@@ -585,7 +585,7 @@ describe.sequential('DomainController.Data.CRUD',
           } else {
             const createAction: DomainAction = {
               actionType:"DomainTransactionalAction",
-              actionName: "updateEntity",
+              actionName: "modelActionUpdateEntity",
               update: {
                 actionName:"WrappedTransactionalModelActionEntityUpdate",
                 modelEntityUpdate: {

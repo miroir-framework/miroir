@@ -69,7 +69,7 @@ export async function initApplicationDeployment(
 
 // ################################################################################################
 /**
- * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
  * @param deploymentUuid
  * @param actionName
  * @param miroirDataStoreProxy
@@ -155,7 +155,7 @@ export async function modelActionRunner(
 
 // ################################################################################################
 /**
- * runs a model action: "updateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
+ * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
  * @param actionName
  * @param action
  * @returns

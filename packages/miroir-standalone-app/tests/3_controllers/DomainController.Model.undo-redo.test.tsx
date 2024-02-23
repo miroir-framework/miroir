@@ -190,7 +190,7 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
             actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
+            actionName: "modelActionUpdateEntity",
             update: {
               actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {
@@ -211,7 +211,7 @@ describe.sequential(
           };
           const createBookAction: DomainAction = {
             actionType:"DomainTransactionalAction",
-            actionName: "updateEntity",
+            actionName: "modelActionUpdateEntity",
             update: {
               actionName:"WrappedTransactionalModelActionEntityUpdate",
               modelEntityUpdate: {

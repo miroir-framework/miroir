@@ -66,7 +66,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     // "RemoteStoreCRUDActionWithDeployment": {"*": "objects"},
     DomainTransactionalAction: {
       UpdateMetaModelInstance: { attribute: "update", result: "modelUpdate" }, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)
-      updateEntity: { attribute: "update", result: "modelUpdate" },
+      modelActionUpdateEntity: { attribute: "update", result: "modelUpdate" },
       commit: undefined,
       initModel: { attribute: "params", result: "modelUpdate" },
       redo: undefined,

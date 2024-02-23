@@ -383,7 +383,7 @@ export const HomePage = (props: RootComponentProps) => {
               applicationDeploymentLibrary.uuid,
               {
                 actionType: "DomainTransactionalAction",
-                actionName: "updateEntity",
+                actionName: "modelActionUpdateEntity",
                 update: {
                   actionName: "WrappedTransactionalModelActionEntityUpdate",
                   modelEntityUpdate: {
@@ -444,7 +444,7 @@ export const HomePage = (props: RootComponentProps) => {
               applicationDeploymentLibrary.uuid,
               {
                 actionType: "DomainTransactionalAction",
-                actionName: "updateEntity",
+                actionName: "modelActionUpdateEntity",
                 update: {
                   actionName: "WrappedTransactionalModelActionEntityUpdate",
                   modelEntityUpdate: {

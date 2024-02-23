@@ -40,7 +40,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 const undoableSliceUpdateActions: {type:string,actionName:string}[] =
   // the action to be reduced will update a substancial part of the instances in the slice. The whole slice state is saved to be undoable.
-    (CUDActionNamesArray as readonly string[]).slice().concat(['updateEntity','UpdateMetaModelInstance']).flatMap(
+    (CUDActionNamesArray as readonly string[]).slice().concat(['modelActionUpdateEntity','UpdateMetaModelInstance']).flatMap(
     a => ([
       // {
       //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleDomainTransactionalAction,
@@ -405,7 +405,7 @@ export function createUndoRedoReducer(
                   }
                   break;
                 }
-                case "updateEntity":
+                case "modelActionUpdateEntity":
                 case "UpdateMetaModelInstance":
                 default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
                   // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
