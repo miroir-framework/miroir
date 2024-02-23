@@ -1369,7 +1369,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         ]
       },
-      "miroirAction": {
+      "storeOrBundleAction": {
         "type": "union",
         "definition": [
           {

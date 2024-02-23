@@ -1,5 +1,5 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { MiroirAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { StoreOrBundleAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
 import { restActionRunnerImplementation, modelActionRunner } from "../3_controllers/ActionRunner";
@@ -234,7 +234,7 @@ export async function restActionRunner(
 
   const result = await restActionRunnerImplementation(
     actionName,
-    body as MiroirAction,
+    body as StoreOrBundleAction,
     storeControllerManager,
     // miroirConfig,
   );

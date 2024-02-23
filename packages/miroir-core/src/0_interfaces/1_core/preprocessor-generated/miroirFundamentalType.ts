@@ -981,7 +981,7 @@ export type BundleAction = {
     actionType: "bundleAction";
     actionName: "deleteBundle";
 };
-export type MiroirAction = StoreAction | BundleAction;
+export type StoreOrBundleAction = StoreAction | BundleAction;
 export type ActionTransformer = {
     transformerType: "actionTransformer";
 };
@@ -1116,7 +1116,7 @@ export const storeAction: z.ZodType<StoreAction> = z.union([z.object({actionType
 export const instanceCUDAction: z.ZodType<InstanceCUDAction> = z.union([z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("create"), includeInTransaction:z.boolean().optional(), applicationSection:z.lazy(() =>applicationSection), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("update"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("delete"), applicationSection:z.lazy(() =>applicationSection), includeInTransaction:z.boolean().optional(), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict(), z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict()]);
 export const localCacheAction: z.ZodType<LocalCacheAction> = z.object({actionType:z.literal("InstanceCUDAction"), actionName:z.literal("replaceLocalCache"), objects:z.array(z.lazy(() =>entityInstanceCollection))}).strict();
 export const bundleAction: z.ZodType<BundleAction> = z.union([z.object({actionType:z.literal("bundleAction"), actionName:z.literal("createBundle")}).strict(), z.object({actionType:z.literal("bundleAction"), actionName:z.literal("deleteBundle")}).strict()]);
-export const miroirAction: z.ZodType<MiroirAction> = z.union([z.lazy(() =>storeAction), z.lazy(() =>bundleAction)]);
+export const storeOrBundleAction: z.ZodType<StoreOrBundleAction> = z.union([z.lazy(() =>storeAction), z.lazy(() =>bundleAction)]);
 export const actionTransformer: z.ZodType<ActionTransformer> = z.object({transformerType:z.literal("actionTransformer")}).strict();
 export const dataTransformer: z.ZodType<DataTransformer> = z.object({transformerType:z.literal("dataTransformer")}).strict();
 export const miroirFundamentalType = z.lazy(() =>miroirAllFundamentalTypesUnion);

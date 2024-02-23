@@ -1,5 +1,5 @@
 import {
-  MiroirAction,
+  StoreOrBundleAction,
   ModelAction,
   ModelActionInitModel,
   ModelActionInitModelParams
@@ -162,7 +162,7 @@ export async function modelActionRunner(
  */
 export async function restActionRunnerImplementation(
   actionName: string,
-  action: MiroirAction,
+  action: StoreOrBundleAction,
   storeControllerManager: StoreControllerManagerInterface
   // miroirConfig:MiroirConfigClient,
 ): Promise<void> {

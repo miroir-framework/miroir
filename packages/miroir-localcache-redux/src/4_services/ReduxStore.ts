@@ -21,7 +21,7 @@ import {
   LocalCacheTransactionalActionWithDeployment,
   LoggerInterface,
   MetaModel,
-  MiroirAction,
+  StoreOrBundleAction,
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreCRUDAction,
@@ -193,7 +193,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<ActionReturnType> {
-    // const result: RemoteStoreActionReturnType = await this.innerReduxStore.dispatch(
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
       this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreRestCRUDAction.creator(
@@ -208,7 +207,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   async handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: ModelAction,
-  // ): Promise<RemoteStoreActionReturnType> {
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
@@ -216,19 +214,18 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
         { deploymentUuid, action }
       )
     );
-    // log.info("ReduxStore handleRemoteStoreOLDModelAction", action, "returned", result)
+    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
     return Promise.resolve(result);
   }
 
   // ###############################################################################
-  async handleRemoteAction(
+  async handleRemoteStoreActionOrBundleAction(
     deploymentUuid: string,
-    action: MiroirAction,
-  // ): Promise<RemoteStoreActionReturnType> {
+    action: StoreOrBundleAction,
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteAction.creator(
+      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreActionOrBundleAction.creator(
         { deploymentUuid, action }
       )
     );

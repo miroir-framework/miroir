@@ -17,6 +17,7 @@ packages/miroir-server/library*/
 packages/miroir-server/miroir*/
 packages/miroir-server/node_modules*/
 packages/miroir-server/miroir-db*/
+packages/miroir-server/tests/tmp*/
 packages/miroir-server/miroir-indexedDb*/
 packages/miroir-server-msw-stub/node_modules*/
 packages/miroir-server-msw-stub/dist*/

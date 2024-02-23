@@ -5,7 +5,7 @@ import {
   BundleAction,
   EntityInstance,
   EntityInstanceCollection,
-  MiroirAction,
+  StoreOrBundleAction,
   ModelAction,
   StoreAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -75,14 +75,8 @@ export interface RemoteStoreCRUDAction {
 }
 
 // ################################################################################################
-// export type RemoteStoreOLDModelAction =
-//   | DomainTransactionalActionWithCUDUpdate
-// ;
-
-// ################################################################################################
 export type RemoteStoreAction =
   | RemoteStoreCRUDAction
-  // | RemoteStoreOLDModelAction
   | ModelAction
   | StoreAction
   | BundleAction;
@@ -107,17 +101,13 @@ export interface RemoteStoreNetworkClientInterface {
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RestClientCallReturnType>;
-  // handleNetworkRemoteStoreOLDModelAction(
-  //   deploymentUuid: string,
-  //   action: RemoteStoreOLDModelAction
-  // ): Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreModelEntityAction(
     deploymentUuid: string,
     action: ModelAction
   ): Promise<RestClientCallReturnType>;
   handleNetworkRemoteAction(
     deploymentUuid: string,
-    action: MiroirAction
+    action: StoreOrBundleAction
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -133,17 +123,13 @@ export declare interface RemoteStoreInterface {
     section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<ActionReturnType>;
-  // handleRemoteStoreOLDModelAction(
-  //   deploymentUuid: string,
-  //   action: RemoteStoreOLDModelAction
-  // ): Promise<ActionReturnType>;
   handleRemoteStoreModelAction(
     deploymentUuid: string,
     action: ModelAction
   ): Promise<ActionReturnType>;
-  handleRemoteAction(
+  handleRemoteStoreActionOrBundleAction(
     deploymentUuid: string,
-    action: MiroirAction
+    action: StoreOrBundleAction
   ): Promise<ActionReturnType>;
 }
 

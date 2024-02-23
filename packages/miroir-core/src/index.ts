@@ -118,7 +118,7 @@ export {
   JzodUnion,
   jzodUnion,
   LocalCacheAction,
-  MiroirAction,
+  StoreOrBundleAction,
   MiroirConfigForMswClient,
   miroirConfigForMswClient,
   MiroirConfigForRestClient,

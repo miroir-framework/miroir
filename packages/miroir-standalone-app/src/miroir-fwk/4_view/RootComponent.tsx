@@ -343,7 +343,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                 }
                 if (miroirConfig && miroirConfig.client.emulateServer) {
-                  await remoteStore.handleRemoteAction("",{
+                  await remoteStore.handleRemoteStoreActionOrBundleAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
                     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -355,7 +355,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   })
                 } else {
                   const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                  await remoteStore.handleRemoteAction("",{
+                  await remoteStore.handleRemoteStoreActionOrBundleAction("",{
                     actionType: "storeAction",
                     actionName: "openStore",
                     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -422,7 +422,7 @@ export const RootComponent = (props: RootComponentProps) => {
               onClick={async () => {
                 log.info("creating bundle")
                 const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
-                await remoteStore.handleRemoteAction("",{
+                await remoteStore.handleRemoteStoreActionOrBundleAction("",{
                   actionType: "bundleAction",
                   actionName: "createBundle",
                 })
