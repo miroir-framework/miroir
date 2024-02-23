@@ -160,31 +160,31 @@ export async function modelActionRunner(
  * @param action
  * @returns
  */
-export async function actionRunner(
+export async function restActionRunnerImplementation(
   actionName: string,
   action: MiroirAction,
   storeControllerManager: StoreControllerManagerInterface
   // miroirConfig:MiroirConfigClient,
 ): Promise<void> {
-  log.info("###################################### actionRunner started ", "actionName", actionName);
-  // log.debug('actionRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  log.info("###################################### restActionRunnerImplementation started ", "actionName", actionName);
+  // log.debug('restActionRunnerImplementation getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreAction = action;
 
-  log.info("actionRunner action", JSON.stringify(action, undefined, 2));
+  log.info("restActionRunnerImplementation action", JSON.stringify(action, undefined, 2));
   switch (action.actionName) {
     // case "createBundle":
     // case "deleteBundle":
     //   break;
     case "createStore": {
-      log.warn("actionRunner createStore does nothing!")
+      log.warn("restActionRunnerImplementation createStore does nothing!")
       break;
     }
     case "deleteStore": {
-      log.warn("actionRunner deleteStore does nothing!")
+      log.warn("restActionRunnerImplementation deleteStore does nothing!")
       break;
     }
     case "openStore": {
-      // log.info('actionRunner openStore',miroirConfig);
+      // log.info('restActionRunnerImplementation openStore',miroirConfig);
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
@@ -207,24 +207,24 @@ export async function actionRunner(
 
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController);
 
-      log.info("actionRunner openStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("restActionRunnerImplementation openStore DONE!", storeControllerManager.getStoreControllers());
 
       break;
     }
     case "closeStore": {
-      log.info("actionRunner closeStore");
+      log.info("restActionRunnerImplementation closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
       await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
 
-      log.info("actionRunner closeStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("restActionRunnerImplementation closeStore DONE!", storeControllerManager.getStoreControllers());
 
       break;
     }
     default:
-      log.warn("actionRunner could not handle actionName", actionName);
+      log.warn("restActionRunnerImplementation could not handle actionName", actionName);
       break;
   }
-  log.debug("actionRunner returning empty response.");
+  log.debug("restActionRunnerImplementation returning empty response.");
   return Promise.resolve(undefined);
 }
