@@ -14,6 +14,7 @@ import {
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
+  LocalCacheInstanceActionWithDeployment,
   LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
@@ -143,7 +144,7 @@ export class DomainController implements DomainControllerInterface {
         case "modelActionUpdateEntity": {
           log.debug(
             "DomainController modelActionUpdateEntity for model entity update",
-            domainTransactionalAction?.update.modelEntityUpdate,
+            domainTransactionalAction?.update.modelEntityUpdate
             // "entities",
             // currentModel.entities,
             // "entity definitions",
@@ -162,12 +163,15 @@ export class DomainController implements DomainControllerInterface {
               {
                 actionType: "localCacheModelActionWithDeployment",
                 deploymentUuid,
-                modelAction: domainTransactionalAction.update.modelEntityUpdate
-              },
+                modelAction: domainTransactionalAction.update.modelEntityUpdate,
+              }
               // currentModel
             );
           } else {
-            throw new Error("DomainController handleDomainTransactionalAction could not handle model entity update:" + domainTransactionalAction.update.modelEntityUpdate);
+            throw new Error(
+              "DomainController handleDomainTransactionalAction could not handle model entity update:" +
+                domainTransactionalAction.update.modelEntityUpdate
+            );
           }
           break;
         }
@@ -196,19 +200,22 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleDomainNonTransactionalAction(deploymentUuid: Uuid, domainAction: DomainDataCUDAction): Promise<void> {
+  async handleDomainNonTransactionalAction(
+    deploymentUuid: Uuid,
+    domainDataCUDAction: DomainDataCUDAction
+  ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
       deploymentUuid,
       "handleDomainNonTransactionalAction",
-      domainAction.actionName,
-      domainAction.objects
+      domainDataCUDAction.actionName,
+      domainDataCUDAction.objects
     );
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
-    if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainAction.actionName)) {
+    if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainDataCUDAction.actionName)) {
       // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
       // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
-      for (const instances of domainAction.objects) {
+      for (const instances of domainDataCUDAction.objects) {
         // TODO: replace with parallel implementation Promise.all?
         log.info(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
@@ -225,7 +232,7 @@ export class DomainController implements DomainControllerInterface {
           "data",
           {
             actionType: "RemoteStoreCRUDAction",
-            actionName: domainAction.actionName.toString() as CRUDActionName,
+            actionName: domainDataCUDAction.actionName.toString() as CRUDActionName,
             parentName: instances.parentName,
             objects: instances.instances,
           }
@@ -235,50 +242,45 @@ export class DomainController implements DomainControllerInterface {
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
         "handleDomainNonTransactionalAction done calling handleRemoteStoreRestCRUDAction",
-        domainAction
+        domainDataCUDAction
       );
-      if (domainAction.actionName == "create") {
-        const instanceAction: InstanceAction = {
-          actionType: "instanceAction",
-          actionName: "createInstance",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          applicationSection: domainAction.objects[0].applicationSection,
-          deploymentUuid,
-          objects: domainAction.objects,
-        };
-        await this.endpoint.handleAction(instanceAction);
-      } else {
-        const instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment = {
-          actionType: "LocalCacheInstanceCUDActionWithDeployment",
-          deploymentUuid,
-          instanceCUDAction: {
-            actionType: "InstanceCUDAction",
-            actionName: domainAction.actionName,
-            applicationSection: domainAction.objects[0].applicationSection,
-            objects: domainAction.objects,
-          },
-        };
-        await this.callUtil.callLocalCacheAction(
-          {}, // context
-          {}, // context update
-          "handleLocalCacheCUDAction",
-          instanceCUDAction
-        );
+      const actionNameMap = {
+        "create": "createInstance",
+        "update": "updateInstance",
+        "delete": "deleteInstance",
       }
+      const instanceAction: LocalCacheInstanceActionWithDeployment = {
+        actionType: "LocalCacheInstanceActionWithDeployment",
+        deploymentUuid,
+        instanceAction: {
+          actionType: "instanceAction",
+          actionName: actionNameMap[domainDataCUDAction.actionName] as any,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          applicationSection: domainDataCUDAction.objects[0].applicationSection,
+          objects: domainDataCUDAction.objects,
+        },
+      };
+      await this.callUtil.callLocalCacheAction(
+        {}, // context
+        {}, // context update
+        "handleLocalCacheInstanceAction",
+        instanceAction
+      );
+
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
         "handleDomainNonTransactionalAction end",
-        domainAction
+        domainDataCUDAction
       );
     } else {
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
         "handleDomainNonTransactionalAction could not handle action name",
-        domainAction.actionName,
+        domainDataCUDAction.actionName,
         "for action",
-        domainAction
+        domainDataCUDAction
       );
     }
     return Promise.resolve();
@@ -288,9 +290,8 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain model action into a set of local cache actions and remote store actions
   async handleModelAction(
     deploymentUuid: Uuid,
-    modelAction: handleModelActionParam
-      // | ModelActionRenameEntity
-    ,
+    modelAction: handleModelActionParam,
+    // | ModelActionRenameEntity
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
@@ -343,11 +344,10 @@ export class DomainController implements DomainControllerInterface {
               branch: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-              modelStructureMigration: this.localCache
-                .currentTransaction()
-                // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalAction) =>
-                //   t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
-                // ),
+              modelStructureMigration: this.localCache.currentTransaction(),
+              // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalAction) =>
+              //   t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
+              // ),
             };
 
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
@@ -375,13 +375,14 @@ export class DomainController implements DomainControllerInterface {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalReplayableAction = replayAction;
                   if (localReplayAction.actionName == "modelActionUpdateEntity") {
-                    const local2ReplayAction: DomainTransactionalActionForModelAction = replayAction as DomainTransactionalActionForModelAction; //type system bug?
+                    const local2ReplayAction: DomainTransactionalActionForModelAction =
+                      replayAction as DomainTransactionalActionForModelAction; //type system bug?
                     // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
 
                     switch (local2ReplayAction.update.modelEntityUpdate.actionName) {
                       case "alterEntityAttribute":
-                      case "createEntity": 
-                      case "dropEntity": 
+                      case "createEntity":
+                      case "dropEntity":
                       case "renameEntity": {
                         await this.callUtil.callRemoteAction(
                           {}, // context
@@ -399,21 +400,21 @@ export class DomainController implements DomainControllerInterface {
                     }
                   } else {
                     if (localReplayAction.actionName == "UpdateMetaModelInstance") {
-                    //  log.warn("handleModelAction commit ignored transactional action" + replayAction) 
-                     await this.callUtil.callRemoteAction(
-                       {}, // context
-                       {}, // context update
-                       "handleRemoteStoreRestCRUDAction",
-                       deploymentUuid,
-                       localReplayAction.update.objects[0].applicationSection,
-                       {
-                         actionType: "RemoteStoreCRUDAction",
-                         actionName: localReplayAction.update.actionName.toString() as CRUDActionName,
-                         parentName: localReplayAction.update.objects[0].parentName,
-                         parentUuid: localReplayAction.update.objects[0].parentUuid,
-                         objects: localReplayAction.update.objects[0].instances,
-                       }
-                     );
+                      //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
+                      await this.callUtil.callRemoteAction(
+                        {}, // context
+                        {}, // context update
+                        "handleRemoteStoreRestCRUDAction",
+                        deploymentUuid,
+                        localReplayAction.update.objects[0].applicationSection,
+                        {
+                          actionType: "RemoteStoreCRUDAction",
+                          actionName: localReplayAction.update.actionName.toString() as CRUDActionName,
+                          parentName: localReplayAction.update.objects[0].parentName,
+                          parentUuid: localReplayAction.update.objects[0].parentUuid,
+                          objects: localReplayAction.update.objects[0].instances,
+                        }
+                      );
                     } else {
                       throw new Error("handleModelAction commit could not replay transactional action" + replayAction);
                     }
@@ -676,7 +677,7 @@ export class DomainController implements DomainControllerInterface {
             "DomainController loadConfigurationFromRemoteDataStore",
             deploymentUuid,
             "all instances stored!",
-            toFetchEntities.map(e=>({section: e.section, uuid: e.entity.uuid}))
+            toFetchEntities.map((e) => ({ section: e.section, uuid: e.entity.uuid }))
             // JSON.stringify(this.localCache.getState(), circularReplacer())
           );
           return context;

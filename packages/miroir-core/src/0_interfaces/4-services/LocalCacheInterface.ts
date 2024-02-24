@@ -10,6 +10,7 @@ import {
   ActionReturnType,
   ApplicationSection,
   EntityInstanceCollection,
+  instanceAction,
   InstanceAction,
   instanceCUDAction,
   MetaModel,
@@ -17,7 +18,6 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
-
 export const LocalCacheInstanceCUDActionWithDeploymentSchema = z.object(
   {
     actionType:z.literal("LocalCacheInstanceCUDActionWithDeployment"),
@@ -27,6 +27,17 @@ export const LocalCacheInstanceCUDActionWithDeploymentSchema = z.object(
 )
 
 export type LocalCacheInstanceCUDActionWithDeployment = z.infer<typeof LocalCacheInstanceCUDActionWithDeploymentSchema>;
+
+// ################################################################################################
+export const LocalCacheInstanceActionWithDeploymentSchema = z.object(
+  {
+    actionType:z.literal("LocalCacheInstanceActionWithDeployment"),
+    deploymentUuid: z.string().uuid(),
+    instanceAction: instanceAction
+  }
+)
+
+export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheInstanceActionWithDeploymentSchema>;
 
 // ################################################################################################
 export const localCacheTransactionalActionSchema = z.union([
@@ -86,5 +97,6 @@ export declare interface LocalCacheInterface
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
   handleLocalCacheCUDAction(action:LocalCacheInstanceCUDActionWithDeployment):ActionReturnType;
+  handleLocalCacheInstanceAction(action:LocalCacheInstanceActionWithDeployment):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

@@ -4,6 +4,7 @@ import {
   Commit,
   DomainElement,
   DomainTransactionalReplayableAction,
+  LocalCacheInstanceActionWithDeployment,
   LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
@@ -70,6 +71,7 @@ export type ReduxReducerWithUndoRedoInterface = (
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheInstanceCUDActionWithDeployment
+    | LocalCacheInstanceActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => ReduxStateWithUndoRedo;
@@ -94,6 +96,7 @@ export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheModelAction: "handleLocalCacheModelAction",
   handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
   handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
+  handleLocalCacheInstanceAction: "handleLocalCacheInstanceAction",
   handleEndpointAction: "handleEndpointAction",
   createInstance: "createInstance",
 };

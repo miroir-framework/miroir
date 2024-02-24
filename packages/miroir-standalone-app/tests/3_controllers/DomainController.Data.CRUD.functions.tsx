@@ -83,8 +83,9 @@ export async function refreshAllInstancesTest(
         update: {
           actionName:"WrappedTransactionalModelActionEntityUpdate",
           modelEntityUpdate: {
-            actionType: "ModelActionEntityUpdate",
+            actionType: "modelAction",
             actionName: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             entities: [
               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
               {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},

@@ -26,7 +26,8 @@ import {
   ModelAction,
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
-  getLoggerName
+  getLoggerName,
+  LocalCacheInstanceActionWithDeployment
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -289,6 +290,19 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
       this.innerReduxStore.dispatch(
         LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
           instanceCUDAction
+        )
+      )
+    );
+  }
+
+  // ###############################################################################
+  handleLocalCacheInstanceAction(instanceAction: LocalCacheInstanceActionWithDeployment): ActionReturnType {
+    log.info("handleLocalCacheInstanceAction", instanceAction);
+    
+    return exceptionToActionReturnType(() =>
+      this.innerReduxStore.dispatch(
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
+          instanceAction
         )
       )
     );

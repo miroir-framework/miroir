@@ -50,9 +50,15 @@
         "optional": true,
         "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
       },
+      "transactionalEndpoint": {
+        "type": "simpleType",
+        "definition": "boolean",
+        "optional": true,
+        "extra": { "id": 9, "defaultLabel": "Transactional Endpoint", "editable": true }
+      },
       "definition": {
         "type": "object",
-        "extra": { "id": 9, "defaultLabel": "Definition", "editable": true },
+        "extra": { "id": 10, "defaultLabel": "Definition", "editable": true },
         "definition": {
           "actions": {
             "type": "schemaReference",
