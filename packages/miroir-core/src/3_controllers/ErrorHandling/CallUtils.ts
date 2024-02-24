@@ -7,7 +7,7 @@ export default {}
 export type AsyncCalls = "handleRemoteStoreModelAction" | "handleRemoteStoreRestCRUDAction";
 export type SyncCalls =
   | "handleLocalCacheTransactionalAction"
-  | "handleLocalCacheCUDAction"
+  // | "handleLocalCacheCUDAction"
   | "handleLocalCacheInstanceAction"
   | "handleLocalCacheModelAction";
 
@@ -27,7 +27,7 @@ export class CallUtils {
       "handleRemoteStoreRestCRUDAction": remoteStore.handleRemoteStoreRestCRUDAction,
     }
     this.syncCallsMap = {
-      "handleLocalCacheCUDAction": localCache.handleLocalCacheCUDAction,
+      // "handleLocalCacheCUDAction": localCache.handleLocalCacheCUDAction,
       "handleLocalCacheInstanceAction": localCache.handleLocalCacheInstanceAction,
       "handleLocalCacheTransactionalAction": localCache.handleLocalCacheTransactionalAction,
       "handleLocalCacheModelAction": localCache.handleLocalCacheModelAction,

@@ -282,18 +282,18 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
       );
   }
 
-  // ###############################################################################
-  handleLocalCacheCUDAction(instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment): ActionReturnType {
-    log.info("handleLocalCacheCUDAction", instanceCUDAction);
+  // // ###############################################################################
+  // handleLocalCacheCUDAction(instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment): ActionReturnType {
+  //   log.info("handleLocalCacheCUDAction", instanceCUDAction);
     
-    return exceptionToActionReturnType(() =>
-      this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
-          instanceCUDAction
-        )
-      )
-    );
-  }
+  //   return exceptionToActionReturnType(() =>
+  //     this.innerReduxStore.dispatch(
+  //       LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
+  //         instanceCUDAction
+  //       )
+  //     )
+  //   );
+  // }
 
   // ###############################################################################
   handleLocalCacheInstanceAction(instanceAction: LocalCacheInstanceActionWithDeployment): ActionReturnType {

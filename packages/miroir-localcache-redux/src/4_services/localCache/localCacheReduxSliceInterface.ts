@@ -95,7 +95,7 @@ export const localCacheSliceName: string = "localCache";
 export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheModelAction: "handleLocalCacheModelAction",
   handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
-  handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
+  // handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
   handleLocalCacheInstanceAction: "handleLocalCacheInstanceAction",
   handleEndpointAction: "handleEndpointAction",
   createInstance: "createInstance",

@@ -468,13 +468,14 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callLocalCacheAction(
                   {}, // context
                   {}, // context update
-                  "handleLocalCacheCUDAction",
+                  "handleLocalCacheInstanceAction",
                   {
-                    actionType: "LocalCacheInstanceCUDActionWithDeployment",
+                    actionType: "LocalCacheInstanceActionWithDeployment",
                     deploymentUuid,
-                    instanceCUDAction: {
-                      actionType: "InstanceCUDAction",
-                      actionName: "create",
+                    instanceAction: {
+                      actionType: "instanceAction",
+                      actionName: "createInstance",
+                      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       applicationSection: "model",
                       objects: [
                         {
@@ -638,13 +639,14 @@ export class DomainController implements DomainControllerInterface {
                 this.callUtil.callLocalCacheAction(
                   context, // context
                   {}, // context update
-                  "handleLocalCacheCUDAction",
+                  "handleLocalCacheInstanceAction",
                   {
-                    actionType: "LocalCacheInstanceCUDActionWithDeployment",
+                    actionType: "LocalCacheInstanceActionWithDeployment",
                     deploymentUuid,
-                    instanceCUDAction: {
-                      actionType: "InstanceCUDAction",
+                    instanceAction: {
+                      actionType: "instanceAction",
                       actionName: "replaceLocalCache",
+                      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       objects: instances,
                     },
                   }
