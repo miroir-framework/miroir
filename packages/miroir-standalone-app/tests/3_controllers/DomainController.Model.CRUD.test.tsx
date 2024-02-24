@@ -10,7 +10,7 @@ import { SetupServerApi, setupServer } from "msw/node";
 import {
   DomainAction,
   DomainControllerInterface,
-  DomainDataCUDAction,
+  DomainDataNonTransactionalCUDAction,
   EntityDefinition,
   EntityInstance,
   StoreControllerInterface,
@@ -802,9 +802,9 @@ describe.sequential(
               }
             );
               
-            const createInstancesAction: DomainDataCUDAction = {
+            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
               actionName: "create",
-              actionType: "DomainDataCUDAction",
+              actionType: "DomainDataNonTransactionalCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -1069,9 +1069,9 @@ describe.sequential(
               }
             );
               
-            const createInstancesAction: DomainDataCUDAction = {
+            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
               actionName: "create",
-              actionType: "DomainDataCUDAction",
+              actionType: "DomainDataNonTransactionalCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,

@@ -16,7 +16,7 @@ import {
   book4,
   DomainAction,
   DomainControllerInterface,
-  DomainDataCUDAction,
+  DomainDataNonTransactionalCUDAction,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -105,8 +105,8 @@ export async function refreshAllInstancesTest(
         }
       );
 
-      const createInstancesAction: DomainDataCUDAction = {
-        actionType: "DomainDataCUDAction",
+      const createInstancesAction: DomainDataNonTransactionalCUDAction = {
+        actionType: "DomainDataNonTransactionalCUDAction",
         actionName: "create",
         objects: [
           {

@@ -109,7 +109,7 @@ export async function uploadBooksAndReports(
   );
 
   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-    actionType: "DomainDataCUDAction",
+    actionType: "DomainDataNonTransactionalCUDAction",
     actionName: "create",
     objects: [
       {

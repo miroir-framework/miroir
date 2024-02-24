@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  domainDataCUDActionSchema,
+  domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
@@ -41,7 +41,7 @@ export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheIn
 
 // ################################################################################################
 export const localCacheTransactionalActionSchema = z.union([
-  domainDataCUDActionSchema, // not only "transactional"?
+  domainDataNonTransactionalCUDActionSchema, // not only "transactional"?
   domainTransactionalActionSchema,
   modelAction,
 ]);
@@ -83,15 +83,7 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  // currentTransaction():(DomainTransactionalAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentTransaction():(DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
-
-  // // actions on local cache
-  // createInstance(
-  //   deploymentUuid: string,
-  //   applicationSection: ApplicationSection,
-  //   objects: EntityInstanceCollection[],
-  // ): ActionReturnType;
 
   // ##############################################################################################
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;

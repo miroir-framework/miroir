@@ -14,7 +14,7 @@ import {
   DomainController,
   DomainControllerInterface,
   EntityAttribute,
-  DomainDataCUDAction,
+  DomainDataNonTransactionalCUDAction,
   EntityInstance,
   Report,
   LoggerInterface,
@@ -241,9 +241,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     ;
     log.info('adding instances',instances);
     
-    const createRowsAction: DomainDataCUDAction = {
+    const createRowsAction: DomainDataNonTransactionalCUDAction = {
       actionName:'create',
-      actionType:"DomainDataCUDAction",
+      actionType:"DomainDataNonTransactionalCUDAction",
       objects:[
         {
           parentName:newEntity.name,

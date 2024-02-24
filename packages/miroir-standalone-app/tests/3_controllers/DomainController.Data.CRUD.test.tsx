@@ -20,7 +20,7 @@ import {
   defaultLevels,
   DomainAction,
   DomainControllerInterface,
-  DomainDataCUDAction,
+  DomainDataNonTransactionalCUDAction,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -217,8 +217,8 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataCUDAction = {
-              actionType: "DomainDataCUDAction",
+            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
+              actionType: "DomainDataNonTransactionalCUDAction",
               actionName: "create",
               objects: [
                 {
@@ -301,9 +301,9 @@ describe.sequential('DomainController.Data.CRUD',
 
           // ##########################################################################################################
           console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
-          const createAction: DomainDataCUDAction = {
+          const createAction: DomainDataNonTransactionalCUDAction = {
             actionName:'create',
-            actionType:"DomainDataCUDAction",
+            actionType:"DomainDataNonTransactionalCUDAction",
             objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data',instances:[book3 as EntityInstance]}]
           };
   
@@ -420,9 +420,9 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataCUDAction = {
+            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
               actionName: "create",
-              actionType: "DomainDataCUDAction",
+              actionType: "DomainDataNonTransactionalCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -496,9 +496,9 @@ describe.sequential('DomainController.Data.CRUD',
   
           // ##########################################################################################################
           console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
-          const deleteAction: DomainDataCUDAction = {
+          const deleteAction: DomainDataNonTransactionalCUDAction = {
             actionName:'delete',
-            actionType:"DomainDataCUDAction",
+            actionType:"DomainDataNonTransactionalCUDAction",
             objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
           };
   
@@ -611,9 +611,9 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataCUDAction = {
+            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
               actionName: "create",
-              actionType: "DomainDataCUDAction",
+              actionType: "DomainDataNonTransactionalCUDAction",
               objects: [
                 {
                   parentName: entityAuthor.name,
@@ -687,9 +687,9 @@ describe.sequential('DomainController.Data.CRUD',
   
           // ##########################################################################################################
           console.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
-          const updateAction: DomainDataCUDAction = {
+          const updateAction: DomainDataNonTransactionalCUDAction = {
             actionName: "update",
-            actionType:"DomainDataCUDAction",
+            actionType:"DomainDataNonTransactionalCUDAction",
             objects: [
               {
                 parentName: book4.parentName,

@@ -64,14 +64,14 @@ export const UndoRedoActionNamesSchema = z.enum(
 export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 
 // #############################################################################################
-export const domainDataCUDActionSchema = z.object({
-  actionType: z.literal("DomainDataCUDAction"),
+export const domainDataNonTransactionalCUDActionSchema = z.object({
+  actionType: z.literal("DomainDataNonTransactionalCUDAction"),
   actionName: CUDActionNameSchema,
   steps: z.number().optional(),
   uuid: z.string().optional(),
   objects: z.array(entityInstanceCollection),
 });
-export type DomainDataCUDAction = z.infer<typeof domainDataCUDActionSchema>;
+export type DomainDataNonTransactionalCUDAction = z.infer<typeof domainDataNonTransactionalCUDActionSchema>;
 
 
 // #############################################################################################
@@ -131,7 +131,7 @@ export type DomainTransactionalAction = z.infer<typeof domainTransactionalAction
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
-  domainDataCUDActionSchema,
+  domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
   modelActionCommit,
   modelActionInitModel,
@@ -179,7 +179,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 
 // ###################################################################################
 export interface DomainControllerInterface {
-  handleDomainNonTransactionalAction(deploymentUuid: Uuid, action: DomainDataCUDAction): Promise<void>;
+  handleDomainNonTransactionalCUDAction(deploymentUuid: Uuid, action: DomainDataNonTransactionalCUDAction): Promise<void>;
   handleDomainTransactionalAction(
     deploymentUuid: Uuid,
     action: DomainTransactionalAction,
