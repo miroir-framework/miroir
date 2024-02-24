@@ -256,6 +256,7 @@ export class DomainController implements DomainControllerInterface {
           actionType: "instanceAction",
           actionName: actionNameMap[domainDataCUDAction.actionName] as any,
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          deploymentUuid,
           applicationSection: domainDataCUDAction.objects[0].applicationSection,
           objects: domainDataCUDAction.objects,
         },

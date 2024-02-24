@@ -43,9 +43,9 @@ export class ModelEntityActionTransformer{
             instanceAction: {
               actionType: "instanceAction",
               actionName: "createInstance",
+              deploymentUuid,
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "model",
-              deploymentUuid,
               objects: [
                 ...modelAction.entities.flatMap(
                   a => [
@@ -77,6 +77,7 @@ export class ModelEntityActionTransformer{
             instanceAction: {
               actionType: "instanceAction",
               actionName: "deleteInstance",
+              deploymentUuid,
               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
               applicationSection: "model",
               objects: [
@@ -120,6 +121,7 @@ export class ModelEntityActionTransformer{
                 actionType: "instanceAction",
                 actionName: "updateInstance",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                deploymentUuid,
                 applicationSection: "model",
                 objects
               },
@@ -177,6 +179,7 @@ export class ModelEntityActionTransformer{
               instanceAction: {
                 actionType: "instanceAction",
                 actionName: "updateInstance",
+                deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "model",
                 objects
