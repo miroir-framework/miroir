@@ -289,35 +289,6 @@ export function createUndoRedoReducer(
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
     
     switch (action.type) {
-      // case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction: {
-      //   // no undo/redo
-      //   if (action.payload.actionType != "LocalCacheInstanceCUDActionWithDeployment") {
-      //     throw new Error(
-      //       "reduceWithUndoRedo handleLocalCacheCUDAction accepts only actionType=LocalCacheInstanceCUDActionWithDeployment, found " + action.payload.actionType
-      //     );
-      //   } else {
-      //     // const instanceCUDAction: InstanceCUDAction = action.payload.instanceCUDAction;
-      //     log.info("reduceWithUndoRedo handleLocalCacheCUDAction", action.payload.instanceCUDAction);
-      //     switch (action.payload.instanceCUDAction.actionName) {
-      //       case "replaceLocalCache": {
-      //         const next = callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheInstanceCUDActionWithDeployment>);
-      //         return {
-      //           currentTransaction,
-      //           previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-      //           pastModelPatches,
-      //           presentModelSnapshot: next.presentModelSnapshot,
-      //           futureModelPatches,
-      //           queriesResultsCache,
-      //         };
-      //         break;
-      //       }
-      //       default: { 
-      //         return callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheInstanceCUDActionWithDeployment>);
-      //         break;
-      //       }
-      //     }
-      //   }
-      // }
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction: {
         // no undo/redo
         if (action.payload.actionType != "LocalCacheInstanceActionWithDeployment") {

@@ -434,24 +434,6 @@ function handleLocalCacheTransactionalAction(
             state,
             instanceAction
           );
-          // const instanceCUDAction: LocalCacheInstanceCUDActionWithDeployment = {
-          //   actionType: "LocalCacheInstanceCUDActionWithDeployment",
-          //   deploymentUuid,
-          //   instanceCUDAction: {
-          //     actionType: "InstanceCUDAction",
-          //     actionName: action.update.actionName,
-          //     applicationSection: action.update.objects[0].applicationSection,
-          //     objects: action.update.objects,
-          //   }
-          // };
-    
-          // // log.info("localCacheSliceObject handleDomainTransactionalAction updateModel domainDataAction", domainDataAction);
-    
-          // // TODO: handle object instanceCollections by ApplicationSection
-          // handleLocalCacheInstanceCUDActionWithDeployment(
-          //   state,
-          //   instanceCUDAction
-          // );
           break;
         }
         default:
@@ -818,11 +800,9 @@ function handleLocalCacheModelAction(
   // TODO: fail in case of Transactional Entity (Entity, EntityDefinition...)?
   switch (action.actionType) {
     case "modelAction": {
-      // const localCacheCUDActionsWithDeployment = ModelEntityActionTransformer.modelActionToLocalCacheInstanceCUDAction(deploymentUuid, action, currentModel(deploymentUuid, state))
       const localCacheInstanceActionsWithDeployment = ModelEntityActionTransformer.modelActionToLocalCacheInstanceAction(deploymentUuid, action, currentModel(deploymentUuid, state))
 
       for (const localCacheInstanceActionWithDeployment of localCacheInstanceActionsWithDeployment) {
-        // handleLocalCacheInstanceCUDActionWithDeployment(state, localCacheCUDActionWithDeployment);
         handleLocalCacheInstanceActionWithDeployment(state, localCacheInstanceActionWithDeployment);
       }
       break;
@@ -958,12 +938,6 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     ): void {
       actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.deploymentUuid, action.payload.modelAction));
     },
-    // [localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction](
-    //   state: LocalCacheSliceState,
-    //   action: PayloadAction<LocalCacheInstanceCUDActionWithDeployment>
-    // ): void {
-    //   actionReturnTypeToException(handleLocalCacheInstanceCUDActionWithDeployment(state, action.payload));
-    // },
     [localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
       state: LocalCacheSliceState,
       action: PayloadAction<LocalCacheInstanceActionWithDeployment>

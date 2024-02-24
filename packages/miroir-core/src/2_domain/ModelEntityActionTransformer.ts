@@ -33,7 +33,7 @@ export class ModelEntityActionTransformer{
     modelAction:ModelAction,
     currentModel: MetaModel,
   ):LocalCacheInstanceActionWithDeployment[] {
-    log.info("modelActionToLocalCacheInstanceCUDAction called ", deploymentUuid, modelAction)
+    log.info("modelActionToLocalCacheInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionName) {
       case "createEntity": {
         return [
@@ -100,11 +100,11 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceCUDAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        log.info("modelActionToLocalCacheInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.targetValue});
         const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.targetValue});
         if (currentEntity && currentEntityDefinition) {
@@ -125,7 +125,7 @@ export class ModelEntityActionTransformer{
               },
             },
           ];
-          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", result)
+          log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
 
           return result;
 
@@ -134,17 +134,17 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelActionToLocalCacheInstanceCUDAction renameEntity could not rename',modelAction);
+          log.error('modelActionToLocalCacheInstanceAction renameEntity could not rename',modelAction);
           return [];
         }
         break;
       }
       case "alterEntityAttribute": {
-        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
+        log.info("modelActionToLocalCacheInstanceAction currentModel ", JSON.stringify(currentModel));
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceCUDAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
+        log.info("modelActionToLocalCacheInstanceAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
         if (currentEntity && currentEntityDefinition) {
           // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
           const localEntityJzodSchemaDefinition = modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)?
@@ -183,7 +183,7 @@ export class ModelEntityActionTransformer{
               },
             },
           ];
-          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
+          log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
 
           return result;
 
@@ -192,7 +192,7 @@ export class ModelEntityActionTransformer{
           //   objects
           // }
         } else {
-          log.error('modelActionToLocalCacheInstanceCUDAction alterEntityAttribute could not rename',modelAction);
+          log.error('modelActionToLocalCacheInstanceAction alterEntityAttribute could not rename',modelAction);
           return [];
         }
       }
@@ -201,190 +201,11 @@ export class ModelEntityActionTransformer{
       case "rollback":
       case "resetModel":
       case "resetData": {
-        log.warn("modelActionToLocalCacheInstanceCUDAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
+        log.warn("modelActionToLocalCacheInstanceAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
         return []
       }
       default: {
-        throw new Error("modelActionToLocalCacheInstanceCUDAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
-        break;
-      }
-    }
-    return [];
-  }
-  // ###################################################################################################
-  static modelActionToLocalCacheInstanceCUDAction(
-    deploymentUuid: Uuid,
-    modelAction:ModelAction,
-    currentModel: MetaModel,
-  ):LocalCacheInstanceCUDActionWithDeployment[] {
-    log.info("modelActionToLocalCacheInstanceCUDAction called ", deploymentUuid, modelAction)
-    switch (modelAction.actionName) {
-      case "createEntity": {
-        return [
-          {
-            actionType:"LocalCacheInstanceCUDActionWithDeployment",
-            deploymentUuid,
-            instanceCUDAction: {
-              actionType: "InstanceCUDAction",
-              actionName: "create",
-              applicationSection: "model",
-              objects: [
-                ...modelAction.entities.flatMap(
-                  a => [
-                    {
-                      parentName:entityEntity.name,
-                      parentUuid:entityEntity.uuid,
-                      applicationSection:'model' as ApplicationSection,
-                      instances:[a.entity]
-                    },
-                    {
-                      parentName:entityEntityDefinition.name,
-                      parentUuid:entityEntityDefinition.uuid,
-                      applicationSection:'model' as ApplicationSection, 
-                      instances:[a.entityDefinition]
-                    },
-                  ]
-                )
-              ]
-            }
-          }
-        ];
-        break;
-      }
-      case "dropEntity": {
-        return [
-          {
-            actionType: "LocalCacheInstanceCUDActionWithDeployment",
-            deploymentUuid,
-            instanceCUDAction: {
-              actionType: "InstanceCUDAction",
-              actionName: "delete",
-              applicationSection: "model",
-              objects: [
-                {
-                  parentName: entityEntity.name,
-                  parentUuid: entityEntity.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.entityUuid }],
-                },
-                {
-                  parentName: entityEntityDefinition.name,
-                  parentUuid: entityEntityDefinition.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
-                },
-              ],
-            },
-          },
-        ];
-        break;
-      }
-      case "renameEntity":
-      {
-        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
-
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceCUDAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
-        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.targetValue});
-        if (currentEntity && currentEntityDefinition) {
-          const objects:EntityInstanceCollection[] = [
-            {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
-          ];
-          const result: LocalCacheInstanceCUDActionWithDeployment[] = [
-            {
-              actionType: "LocalCacheInstanceCUDActionWithDeployment",
-              deploymentUuid,
-              instanceCUDAction: {
-                actionType: "InstanceCUDAction",
-                actionName: "update",
-                applicationSection: "model",
-                objects
-              },
-            },
-          ];
-          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", result)
-
-          return result;
-
-          // domainActionCUDUpdate = {
-          //   actionName: "update",
-          //   objects
-          // }
-        } else {
-          log.error('modelActionToLocalCacheInstanceCUDAction renameEntity could not rename',modelAction);
-          return [];
-        }
-        break;
-      }
-      case "alterEntityAttribute": {
-        log.info("modelActionToLocalCacheInstanceCUDAction currentModel ", JSON.stringify(currentModel));
-
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.entityDefinitionUuid);
-        log.info("modelActionToLocalCacheInstanceCUDAction alterEntityAttribute found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
-        if (currentEntity && currentEntityDefinition) {
-          // const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement.elementValue as EntityDefinition;
-          const localEntityJzodSchemaDefinition = modelAction.removeColumns != undefined && Array.isArray(modelAction.removeColumns)?
-            Object.fromEntries(
-              Object.entries(currentEntityDefinition.jzodSchema.definition).filter((i) => modelAction.removeColumns??([] as string[]).includes(i[0]))
-            )
-            : currentEntityDefinition.jzodSchema.definition;
-          const modifiedEntityDefinition: EntityDefinition = Object.assign(
-            {},
-            currentEntityDefinition,
-            {
-              jzodSchema: {
-                type: "object",
-                definition: {
-                  ...localEntityJzodSchemaDefinition,
-                  ...(modelAction.addColumns?Object.fromEntries(modelAction.addColumns.map(c=>[c.name, c.definition])):{})
-                },
-              },
-            }
-          );
-    
-          const objects:EntityInstanceCollection[] = [
-            // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
-            {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
-          ];
-          const result: LocalCacheInstanceCUDActionWithDeployment[] = [
-            {
-              actionType: "LocalCacheInstanceCUDActionWithDeployment",
-              deploymentUuid,
-              instanceCUDAction: {
-                actionType: "InstanceCUDAction",
-                actionName: "update",
-                applicationSection: "model",
-                objects
-              },
-            },
-          ];
-          log.info("modelActionToLocalCacheInstanceCUDAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
-
-          return result;
-
-          // domainActionCUDUpdate = {
-          //   actionName: "update",
-          //   objects
-          // }
-        } else {
-          log.error('modelActionToLocalCacheInstanceCUDAction alterEntityAttribute could not rename',modelAction);
-          return [];
-        }
-      }
-      case "initModel":
-      case "commit":
-      case "rollback":
-      case "resetModel":
-      case "resetData": {
-        log.warn("modelActionToLocalCacheInstanceCUDAction nothing to do for action", JSON.stringify(modelAction, undefined, 2))
-        return []
-      }
-      default: {
-        throw new Error("modelActionToLocalCacheInstanceCUDAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
+        throw new Error("modelActionToLocalCacheInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
         break;
       }
     }
