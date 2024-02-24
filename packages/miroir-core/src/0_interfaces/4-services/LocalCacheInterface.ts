@@ -86,12 +86,12 @@ export declare interface LocalCacheInterface
   // currentTransaction():(DomainTransactionalAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
   currentTransaction():(DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
-  // actions on local cache
-  createInstance(
-    deploymentUuid: string,
-    applicationSection: ApplicationSection,
-    objects: EntityInstanceCollection[],
-  ): ActionReturnType;
+  // // actions on local cache
+  // createInstance(
+  //   deploymentUuid: string,
+  //   applicationSection: ApplicationSection,
+  //   objects: EntityInstanceCollection[],
+  // ): ActionReturnType;
 
   // ##############################################################################################
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
