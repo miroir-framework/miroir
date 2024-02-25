@@ -52,10 +52,10 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
         type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction,
         actionName: a
       },
-      {
-        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction,
-        actionName: a
-      },
+      // {
+      //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction,
+      //   actionName: a
+      // },
       {
         type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheModelAction,
         actionName: a
@@ -396,7 +396,7 @@ export function createUndoRedoReducer(
                       pastModelPatches[pastModelPatches.length - 1].inverseChanges
                     );
                     log.info(
-                      "reduceWithUndoRedo handleDomainAction undo patches",
+                      "reduceWithUndoRedo handleLocalCacheUndoRedoAction undo patches",
                       pastModelPatches,
                       "undo",
                       pastModelPatches[0],
@@ -412,7 +412,7 @@ export function createUndoRedoReducer(
                     };
                   } else {
                     // do nothing
-                    log.warn("reduceWithUndoRedo handleDomainAction cannot further undo, ignoring undo action");
+                    log.warn("reduceWithUndoRedo handleLocalCacheUndoRedoAction cannot further undo, ignoring undo action");
                     return {
                       currentTransaction,
                       previousModelSnapshot,
@@ -439,7 +439,7 @@ export function createUndoRedoReducer(
                   } else {
                     // do nothing
                     log.warn(
-                      "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleDomainTransactionalAction cannot further redo, ignoring redo action"
+                      "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction cannot further redo, ignoring redo action"
                     );
                     return {
                       currentTransaction,
@@ -453,7 +453,7 @@ export function createUndoRedoReducer(
                   break;
                 }
                 default: {
-                  throw new Error("reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleDomainTransactionalAction DomainUndoRedoAction cannot handle action:" + action.payload.domainAction);
+                  throw new Error("reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction DomainUndoRedoAction cannot handle action:" + action.payload.domainAction);
                 }
               }
               break;

@@ -196,46 +196,26 @@ describe.sequential(
           // ##########################################################################################################
           console.log('Add 2 entity definitions then undo one then commit step 2: adding entities, they must then be present in the local cache Entity list.')
           const createAuthorAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "modelActionUpdateEntity",
-            update: {
-              actionName:"WrappedTransactionalModelActionEntityUpdate",
-              modelEntityUpdate: {
-                actionType: "modelAction",
-                actionName: "createEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as Entity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  }
-                ]
-              // entities: [
-              //     {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-              //   ],
-              },
-            }
+            actionType: "modelAction",
+            actionName: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: entityAuthor as Entity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+              }
+            ]
           };
           const createBookAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "modelActionUpdateEntity",
-            update: {
-              actionName:"WrappedTransactionalModelActionEntityUpdate",
-              modelEntityUpdate: {
-                actionType: "modelAction",
-                actionName: "createEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityBook as Entity,
-                    entityDefinition: entityDefinitionBook as EntityDefinition,
-                  }
-                ]
-              // entities: [
-              //     {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-              //   ],
-              },
-            }
+            actionType: "modelAction",
+            actionName: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: entityBook as Entity,
+                entityDefinition: entityDefinitionBook as EntityDefinition,
+              }
+            ]
           };
   
           await act(

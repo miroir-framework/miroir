@@ -253,11 +253,6 @@ describe.sequential(
           // ##########################################################################################################
           console.log('add Entity step 2: adding entity Author, it must then be present in the local cache report list.')
           const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "modelActionUpdateEntity",
-            update: {
-              actionName:"WrappedTransactionalModelActionEntityUpdate",
-              modelEntityUpdate: {
                 actionType: "modelAction",
                 actionName: "createEntity",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -267,8 +262,6 @@ describe.sequential(
                     entityDefinition: entityDefinitionAuthor as EntityDefinition,
                   }
                 ]
-              },
-            }
           };
   
           await act(
@@ -401,22 +394,15 @@ describe.sequential(
           // ##########################################################################################################
           console.log('add Entity step 2: adding Author entity, it must then be present in the local cache entity list.')
           const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "modelActionUpdateEntity",
-            update: {
-              actionName:"WrappedTransactionalModelActionEntityUpdate",
-              modelEntityUpdate: {
-                actionType: "modelAction",
-                actionName: "createEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as MetaEntity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  }
-                ]
-              },
-            }
+            actionType: "modelAction",
+            actionName: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+              }
+            ]
           };
   
           await act(
@@ -540,22 +526,15 @@ describe.sequential(
           );
 
           const createAction: DomainAction = {
-            actionType:"DomainTransactionalAction",
-            actionName: "modelActionUpdateEntity",
-            update: {
-              actionName:"WrappedTransactionalModelActionEntityUpdate",
-              modelEntityUpdate: {
-                actionType: "modelAction",
-                actionName: "createEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: entityAuthor as MetaEntity,
-                    entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                  }
-                ]
-              },
-            }
+            actionType: "modelAction",
+            actionName: "createEntity",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            entities: [
+              {
+                entity: entityAuthor as MetaEntity,
+                entityDefinition: entityDefinitionAuthor as EntityDefinition,
+              }
+            ]
           };
 
           console.log('remove Author entity setup: adding Author entity locally.')
@@ -631,19 +610,12 @@ describe.sequential(
               await domainController.handleDomainAction(
                 applicationDeploymentLibrary.uuid, 
                 {
-                  actionType: "DomainTransactionalAction",
-                  actionName: "modelActionUpdateEntity",
-                  update: {
-                    actionName: "WrappedTransactionalModelActionEntityUpdate",
-                    modelEntityUpdate: {
-                      actionType: "modelAction",
-                      actionName: "dropEntity",
-                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      // entityName: entityAuthor.name,
-                      entityUuid: entityAuthor.uuid,
-                      entityDefinitionUuid: entityDefinitionAuthor.uuid,
-                    },
-                  }
+                  actionType: "modelAction",
+                  actionName: "dropEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  // entityName: entityAuthor.name,
+                  entityUuid: entityAuthor.uuid,
+                  entityDefinitionUuid: entityDefinitionAuthor.uuid,
                 },
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
               );
@@ -746,40 +718,26 @@ describe.sequential(
             await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityAuthor as Entity,
-                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    }
-                  ]
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {
+                  entity: entityAuthor as Entity,
+                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                }
+              ]
             };
             const createActionBook: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityBook as Entity,
-                      entityDefinition: entityDefinitionBook as EntityDefinition,
-                    }
-                  ]
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {
+                  entity: entityBook as Entity,
+                  entityDefinition: entityDefinitionBook as EntityDefinition,
+                }
+              ]
             };
 
             await act(
@@ -885,20 +843,13 @@ describe.sequential(
           // const updatedReport = 
           const updateAction: DomainAction = 
             {
-              actionType: "DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate:{
-                  actionType:"modelAction",
-                  actionName: "renameEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entityName: entityAuthor.name,
-                  entityUuid: entityAuthor.uuid,
-                  entityDefinitionUuid: entityDefinitionAuthor.uuid,
-                  targetValue: "Authorsss",
-                },
-              }
+              actionType:"modelAction",
+              actionName: "renameEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entityName: entityAuthor.name,
+              entityUuid: entityAuthor.uuid,
+              entityDefinitionUuid: entityDefinitionAuthor.uuid,
+              targetValue: "Authorsss",
             }
           ;
           await act(
@@ -1012,41 +963,26 @@ describe.sequential(
             await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityAuthor as Entity,
-                      entityDefinition: entityDefinitionAuthor as EntityDefinition,
-                    }
-                  ]
-  
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {
+                  entity: entityAuthor as Entity,
+                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                }
+              ]
             };
             const createActionBook: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {
-                      entity: entityBook as Entity,
-                      entityDefinition: entityDefinitionBook as EntityDefinition,
-                    }
-                  ]
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {
+                  entity: entityBook as Entity,
+                  entityDefinition: entityDefinitionBook as EntityDefinition,
+                }
+              ]
             };
 
             await act(
@@ -1156,26 +1092,19 @@ describe.sequential(
       
           const updateAction: DomainAction = 
             {
-              actionType: "DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate:{
-                  actionType:"modelAction",
-                  actionName: "alterEntityAttribute",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entityName: entityAuthor.name,
-                  entityUuid: entityAuthor.uuid,
-                  entityDefinitionUuid: entityDefinitionAuthor.uuid,
-                  // targetValue: "Authorsss",
-                  addColumns: [
-                    {
-                      "name": "icons",
-                      "definition": iconsDefinition
-                    }
-                  ],
-                },
-              }
+              actionType:"modelAction",
+              actionName: "alterEntityAttribute",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entityName: entityAuthor.name,
+              entityUuid: entityAuthor.uuid,
+              entityDefinitionUuid: entityDefinitionAuthor.uuid,
+              // targetValue: "Authorsss",
+              addColumns: [
+                {
+                  "name": "icons",
+                  "definition": iconsDefinition
+                }
+              ],
             }
           ;
           await act(

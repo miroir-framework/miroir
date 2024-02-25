@@ -186,20 +186,13 @@ describe.sequential('DomainController.Data.CRUD',
             await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-                  ],
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+              ],
             };
 
             await act(
@@ -393,20 +386,13 @@ describe.sequential('DomainController.Data.CRUD',
             await localAppStoreController.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-                  ],
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+              ],
             };
 
             await act(
@@ -473,8 +459,16 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Remove Book instance step 1: the Book must be present in the local cache report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
   
@@ -584,20 +578,13 @@ describe.sequential('DomainController.Data.CRUD',
             await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
-              actionType:"DomainTransactionalAction",
-              actionName: "modelActionUpdateEntity",
-              update: {
-                actionName:"WrappedTransactionalModelActionEntityUpdate",
-                modelEntityUpdate: {
-                  actionType: "modelAction",
-                  actionName: "createEntity",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  entities: [
-                    {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
-                    {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
-                  ],
-                },
-              }
+              actionType: "modelAction",
+              actionName: "createEntity",
+              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              entities: [
+                {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
+                {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
+              ],
             };
 
             await act(
@@ -665,7 +652,11 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Update Book instance step 1: loading initial configuration, book must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
 
@@ -732,7 +723,11 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Update Book instance step 3: refreshing book list from remote store, modified bool must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
 

@@ -78,11 +78,6 @@ export async function refreshAllInstancesTest(
       await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
     } else {
       const createAction: DomainAction = {
-        actionType:"DomainTransactionalAction",
-        actionName: "modelActionUpdateEntity",
-        update: {
-          actionName:"WrappedTransactionalModelActionEntityUpdate",
-          modelEntityUpdate: {
             actionType: "modelAction",
             actionName: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -90,8 +85,6 @@ export async function refreshAllInstancesTest(
               {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
               {entity:entityBook as MetaEntity, entityDefinition:entityDefinitionBook as EntityDefinition},
             ],
-          },
-        }
       };
 
       await act(

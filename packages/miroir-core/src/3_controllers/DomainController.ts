@@ -6,18 +6,17 @@ import {
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
   DomainDataNonTransactionalCUDAction,
+  DomainTransactionalAction,
   DomainTransactionalActionForModelAction,
   DomainUndoRedoAction,
-  DomainTransactionalAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
   LocalCacheInstanceActionWithDeployment,
-  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheInterface,
-  LocalCacheModelActionWithDeployment,
+  LocalCacheModelActionWithDeployment
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
@@ -32,13 +31,8 @@ import {
   ApplicationVersion,
   EntityInstance,
   EntityInstanceCollection,
-  InstanceAction,
   MetaModel,
-  ModelActionCommit,
-  ModelActionInitModel,
-  ModelActionResetData,
-  ModelActionResetModel,
-  ModelActionRollback,
+  ModelAction,
   entityInstanceCollection
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
@@ -59,13 +53,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 
-export type handleModelActionParam = 
-  ModelActionInitModel
-  | ModelActionResetModel
-  | ModelActionResetData
-  | ModelActionCommit
-  | ModelActionRollback
-;
+// export type handleModelActionParam = 
+//   ModelActionInitModel
+//   | ModelActionResetModel
+//   | ModelActionResetData
+//   | ModelActionCommit
+//   | ModelActionRollback
+// ;
 
 /**
  * domain level contains "business" logic related to concepts defined whithin the
@@ -331,8 +325,8 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain model action into a set of local cache actions and remote store actions
   async handleModelAction(
     deploymentUuid: Uuid,
-    modelAction: handleModelActionParam,
-    // | ModelActionRenameEntity
+    // modelAction: handleModelActionParam,
+    modelAction: ModelAction,
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
@@ -347,6 +341,23 @@ export class DomainController implements DomainControllerInterface {
       switch (modelAction.actionName) {
         case "rollback": {
           await this.loadConfigurationFromRemoteDataStore(deploymentUuid);
+          break;
+        }
+        case 'alterEntityAttribute':
+        case 'createEntity':
+        case 'renameEntity':
+        case 'dropEntity': {
+          await this.callUtil.callLocalCacheAction(
+            {}, // context
+            {}, // context update
+            "handleLocalCacheModelAction",
+            {
+              actionType: "localCacheModelActionWithDeployment",
+              deploymentUuid,
+              modelAction,
+            }
+            // currentModel
+          );
           break;
         }
         case "resetModel":
@@ -753,20 +764,20 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case "modelAction": {
-        await this.handleModelAction(deploymentUuid, domainAction as handleModelActionParam, currentModel);
+        await this.handleModelAction(deploymentUuid, domainAction, currentModel);
         return Promise.resolve();
       }
       case "DomainDataNonTransactionalCUDAction": {
         await this.handleDomainNonTransactionalCUDAction(
           deploymentUuid,
-          domainAction as DomainDataNonTransactionalCUDAction
+          domainAction
         );
         return Promise.resolve();
       }
       case "DomainUndoRedoAction": {
         await this.handleDomainUndoRedoAction(
           deploymentUuid,
-          domainAction as DomainUndoRedoAction,
+          domainAction,
           currentModel
         );
         return Promise.resolve();

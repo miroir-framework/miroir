@@ -52,11 +52,11 @@ export async function uploadBooksAndReports(
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
     {
-      actionType: "DomainTransactionalAction",
-      actionName: "modelActionUpdateEntity",
-      update: {
-        actionName: "WrappedTransactionalModelActionEntityUpdate",
-        modelEntityUpdate: {
+      // actionType: "DomainTransactionalAction",
+      // actionName: "modelActionUpdateEntity",
+      // update: {
+      //   actionName: "WrappedTransactionalModelActionEntityUpdate",
+      //   modelEntityUpdate: {
           actionType: "modelAction",
           actionName: "createEntity",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -67,8 +67,8 @@ export async function uploadBooksAndReports(
             { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
             { entity: entityTest as Entity, entityDefinition: entityDefinitionTest as EntityDefinition },
           ],
-        },
-      },
+      //   },
+      // },
     },
     currentModel
   );

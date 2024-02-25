@@ -165,11 +165,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       jzodSchema: jzodSchema,
     }
     const createEntityAction: DomainAction = {
-      actionType:"DomainTransactionalAction",
-      actionName: "modelActionUpdateEntity",
-      update: {
-        actionName:"WrappedTransactionalModelActionEntityUpdate",
-        modelEntityUpdate: {
+      // actionType:"DomainTransactionalAction",
+      // actionName: "modelActionUpdateEntity",
+      // update: {
+      //   actionName:"WrappedTransactionalModelActionEntityUpdate",
+      //   modelEntityUpdate: {
           actionType: "modelAction",
           actionName: "createEntity",
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -178,8 +178,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           entities: [
             {entity: newEntity, entityDefinition:newEntityDefinition},
           ],
-        },
-      }
+      //   },
+      // }
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createEntityAction, props.currentModel);
     const newEntityReport: Report = {

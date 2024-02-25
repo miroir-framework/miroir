@@ -7,15 +7,11 @@ import {
   EntityInstancesUuidIndex,
   MetaModel,
   entityInstanceCollection,
-  modelActionCommit,
-  modelActionInitModel,
-  modelActionResetData,
-  modelActionResetModel,
-  modelActionRollback,
-  modelActionDropEntity,
-  modelActionRenameEntity,
+  modelAction,
   modelActionAlterEntityAttribute,
-  modelActionCreateEntity
+  modelActionCreateEntity,
+  modelActionDropEntity,
+  modelActionRenameEntity
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
 import { RemoteStoreInterface } from "../4-services/RemoteStoreInterface.js";
@@ -90,7 +86,7 @@ export type DomainTransactionalActionForModelAction = z.infer<typeof domainTrans
 
 
 // #############################################################################################
-const domainTransactionalActionUpdateMetaModelInstanceSchema = z.object({
+const domainTransactionalActionForUpdateMetaModelInstanceSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
   actionName: z.literal("UpdateMetaModelInstance"),
   update: z.object({
@@ -99,7 +95,7 @@ const domainTransactionalActionUpdateMetaModelInstanceSchema = z.object({
     objects: z.array(entityInstanceCollection),
   }),
 });
-// type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionUpdateMetaModelInstanceSchema>;
+// type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionForUpdateMetaModelInstanceSchema>;
 
 // #############################################################################################
 export const domainUndoRedoActionSchema = z.object({
@@ -111,7 +107,7 @@ export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const domainTransactionalActionSchema = z.union([
-  domainTransactionalActionUpdateMetaModelInstanceSchema,
+  domainTransactionalActionForUpdateMetaModelInstanceSchema,
   domainTransactionalActionForModelActionSchema,
 ]);
 export type DomainTransactionalAction = z.infer<typeof domainTransactionalActionSchema>;
@@ -125,11 +121,12 @@ export const DomainActionSchema = z.union([
   domainUndoRedoActionSchema,
   domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
-  modelActionCommit,
-  modelActionInitModel,
-  modelActionResetModel,
-  modelActionResetData,
-  modelActionRollback,
+  modelAction,
+  // modelActionCommit,
+  // modelActionInitModel,
+  // modelActionResetModel,
+  // modelActionResetData,
+  // modelActionRollback,
 ]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
 
