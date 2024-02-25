@@ -62,7 +62,6 @@ export {
   entityInstanceCollection,
   DomainElementType,
   domainElementType,
-  InstanceCUDAction,
   JzodSchema,
   jzodSchema,
   JzodArray,
@@ -338,8 +337,6 @@ export {
   StoreControllerManagerInterface
 } from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
 export {
-  LocalCacheInstanceCUDActionWithDeployment,
-  LocalCacheInstanceCUDActionWithDeploymentSchema,
   LocalCacheInstanceActionWithDeployment,
   LocalCacheInstanceActionWithDeploymentSchema,
   LocalCacheModelActionWithDeployment,

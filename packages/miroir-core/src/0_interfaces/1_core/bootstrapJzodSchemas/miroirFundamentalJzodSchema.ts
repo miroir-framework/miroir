@@ -767,7 +767,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "instanceCUDAction"
+              "relativePath": "instanceAction"
             }
           }
         ]
@@ -1214,111 +1214,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
-      "instanceCUDAction": {
-        "type": "union",
-        "definition": [
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"create"},
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to create", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"update"},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to update", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"delete"},
-              "applicationSection": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "applicationSection"
-                }
-              },
-              "includeInTransaction": { "type": "simpleType", "definition": "boolean", "optional": true},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to delete", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {"type": "literal", "definition":"InstanceCUDAction"},
-              "actionName": {"type": "literal", "definition":"replaceLocalCache"},
-              "objects": {
-                "type": "array",
-                "extra": { "id":2, "defaultLabel": "Entity Instances to place in the local cache", "editable": true },
-                "definition": {
-                  "type": "schemaReference",
-                  "optional": false,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "entityInstanceCollection"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
       "localCacheAction": {
         "type": "object",
         "definition": {

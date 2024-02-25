@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
   domainDataNonTransactionalCUDActionSchema,
-  domainTransactionalActionSchema,
   DomainTransactionalAction,
+  domainTransactionalActionSchema,
   domainUndoRedoActionSchema,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -13,21 +13,9 @@ import {
   EntityInstanceCollection,
   instanceAction,
   InstanceAction,
-  instanceCUDAction,
   MetaModel,
   modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-
-// ################################################################################################
-export const LocalCacheInstanceCUDActionWithDeploymentSchema = z.object(
-  {
-    actionType:z.literal("LocalCacheInstanceCUDActionWithDeployment"),
-    deploymentUuid: z.string().uuid(),
-    instanceCUDAction: instanceCUDAction
-  }
-)
-
-export type LocalCacheInstanceCUDActionWithDeployment = z.infer<typeof LocalCacheInstanceCUDActionWithDeploymentSchema>;
 
 // ################################################################################################
 export const LocalCacheInstanceActionWithDeploymentSchema = z.object(

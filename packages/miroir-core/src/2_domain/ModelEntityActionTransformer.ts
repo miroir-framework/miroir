@@ -7,7 +7,7 @@ import {
   MetaModel,
   ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheInstanceActionWithDeployment, LocalCacheInstanceCUDActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { LocalCacheInstanceActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 

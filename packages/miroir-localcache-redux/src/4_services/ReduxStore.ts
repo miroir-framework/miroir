@@ -11,23 +11,21 @@ import {
   ActionReturnType,
   ApplicationSection,
   DomainTransactionalAction,
-  EntityInstanceCollection,
   InstanceAction,
-  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheInfo,
+  LocalCacheInstanceActionWithDeployment,
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
+  LocalCacheUndoRedoActionWithDeployment,
   LoggerInterface,
   MetaModel,
-  StoreOrBundleAction,
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
-  getLoggerName,
-  LocalCacheInstanceActionWithDeployment,
-  LocalCacheUndoRedoActionWithDeployment
+  StoreOrBundleAction,
+  getLoggerName
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,

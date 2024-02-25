@@ -5,7 +5,6 @@ import {
   DomainElement,
   DomainTransactionalAction,
   LocalCacheInstanceActionWithDeployment,
-  LocalCacheInstanceCUDActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheUndoRedoActionWithDeployment,
@@ -61,7 +60,7 @@ export type InnerReducerInterface = (
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheUndoRedoActionWithDeployment
-    | LocalCacheInstanceCUDActionWithDeployment
+    | LocalCacheInstanceActionWithDeployment
     | RemoteStoreCRUDAction
   >
 ) => LocalCacheSliceState;
@@ -73,7 +72,6 @@ export type ReduxReducerWithUndoRedoInterface = (
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalActionWithDeployment
     | LocalCacheUndoRedoActionWithDeployment
-    | LocalCacheInstanceCUDActionWithDeployment
     | LocalCacheInstanceActionWithDeployment
     | RemoteStoreCRUDAction
   >

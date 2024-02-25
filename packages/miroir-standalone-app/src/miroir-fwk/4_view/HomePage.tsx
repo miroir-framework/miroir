@@ -382,20 +382,13 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleDomainAction(
               applicationDeploymentLibrary.uuid,
               {
-                // actionType: "DomainTransactionalAction",
-                // actionName: "modelActionUpdateEntity",
-                // update: {
-                //   actionName: "WrappedTransactionalModelActionEntityUpdate",
-                //   modelEntityUpdate: {
-                    actionType: "modelAction",
-                    actionName: "renameEntity",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    entityName: entityBook.name,
-                    entityUuid: entityBook.uuid,
-                    entityDefinitionUuid: entityDefinitionBook.uuid,
-                    targetValue: "Bookss",
-                //   },
-                // },
+                actionType: "modelAction",
+                actionName: "renameEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityName: entityBook.name,
+                entityUuid: entityBook.uuid,
+                entityDefinitionUuid: entityDefinitionBook.uuid,
+                targetValue: "Bookss",
               },
               libraryAppModel
             );
@@ -443,18 +436,11 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleDomainAction(
               applicationDeploymentLibrary.uuid,
               {
-                // actionType: "DomainTransactionalAction",
-                // actionName: "modelActionUpdateEntity",
-                // update: {
-                //   actionName: "WrappedTransactionalModelActionEntityUpdate",
-                //   modelEntityUpdate: {
-                    actionType: "modelAction",
-                    actionName: "dropEntity",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                    entityUuid: entityAuthor.uuid,
-                    entityDefinitionUuid: entityDefinitionAuthor.uuid,
-                //   },
-                // },
+                actionType: "modelAction",
+                actionName: "dropEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                entityUuid: entityAuthor.uuid,
+                entityDefinitionUuid: entityDefinitionAuthor.uuid,
               },
               libraryAppModel // TODO replace with current Miroir model (as existing in the datastore)
             );

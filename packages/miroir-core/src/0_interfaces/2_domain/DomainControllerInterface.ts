@@ -63,26 +63,9 @@ export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 export const domainDataNonTransactionalCUDActionSchema = z.object({
   actionType: z.literal("DomainDataNonTransactionalCUDAction"),
   actionName: CUDActionNameSchema,
-  steps: z.number().optional(),
-  uuid: z.string().optional(),
   objects: z.array(entityInstanceCollection),
 });
 export type DomainDataNonTransactionalCUDAction = z.infer<typeof domainDataNonTransactionalCUDActionSchema>;
-
-
-// #############################################################################################
-// DomainTransactionalAction
-// #############################################################################################
-// without translation of Entity Updates in CUD updates
-// export const domainTransactionalActionForModelActionSchema = z.object({
-//   actionType: z.literal("DomainTransactionalAction"),
-//   actionName: z.literal("modelActionUpdateEntity"),
-//   update: z.object({
-//     actionName: z.literal("WrappedTransactionalModelActionEntityUpdate"),
-//     modelEntityUpdate: ModelActionEntityUpdateSchema,
-//   }),
-// });
-// export type DomainTransactionalActionForModelAction = z.infer<typeof domainTransactionalActionForModelActionSchema>;
 
 
 // #############################################################################################
@@ -107,10 +90,6 @@ export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const domainTransactionalActionSchema = domainTransactionalActionForUpdateMetaModelInstanceSchema
-// z.union([
-//   domainTransactionalActionForUpdateMetaModelInstanceSchema,
-//   // domainTransactionalActionForModelActionSchema,
-// ]);
 export type DomainTransactionalAction = z.infer<typeof domainTransactionalActionSchema>;
 
 // #############################################################################################
@@ -123,11 +102,6 @@ export const DomainActionSchema = z.union([
   domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
   modelAction,
-  // modelActionCommit,
-  // modelActionInitModel,
-  // modelActionResetModel,
-  // modelActionResetData,
-  // modelActionRollback,
 ]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
 
