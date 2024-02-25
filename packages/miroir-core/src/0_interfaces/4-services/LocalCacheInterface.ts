@@ -43,7 +43,6 @@ export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheIn
 export const localCacheTransactionalActionSchema = z.union([
   domainDataNonTransactionalCUDActionSchema, // not only "transactional"?
   domainTransactionalActionSchema,
-  modelAction,
 ]);
 
 export type LocalCacheTransactionalAction = z.infer<typeof localCacheTransactionalActionSchema>;

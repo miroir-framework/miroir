@@ -385,7 +385,7 @@ function handleLocalCacheTransactionalAction(
   // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
 ): ActionReturnType {
   // log.info(
-  //   "localCacheSliceObject handleDomainTransactionalAction called",
+  //   "localCacheSliceObject handleLocalCacheTransactionalAction called",
   //   action.actionName,
   //   "deploymentUuid",
   //   deploymentUuid,
@@ -404,12 +404,12 @@ function handleLocalCacheTransactionalAction(
         // case "rollback":
         case "undo":
         case "redo": {
-          log.warn("localCache.handleDomainTransactionalAction does nothing for DomainTransactionalAction", action);
+          log.warn("localCache.handleLocalCacheTransactionalAction does nothing for DomainTransactionalAction", action);
           break;
         }
         case "UpdateMetaModelInstance": {
           // not transactional??
-          // log.info('localCacheSliceObject handleDomainTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
+          // log.info('localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
           const actionNameMap = {
             "create": "createInstance",
             "update": "updateInstance",
@@ -428,7 +428,7 @@ function handleLocalCacheTransactionalAction(
             }
           };
     
-          // log.info("localCacheSliceObject handleDomainTransactionalAction updateModel domainDataAction", domainDataAction);
+          // log.info("localCacheSliceObject handleLocalCacheTransactionalAction updateModel domainDataAction", domainDataAction);
     
           // TODO: handle object instanceCollections by ApplicationSection
           handleLocalCacheInstanceActionWithDeployment(
@@ -439,7 +439,7 @@ function handleLocalCacheTransactionalAction(
         }
         default:
           log.warn(
-            "localCacheSliceObject handleDomainTransactionalAction deploymentUuid",
+            "localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid",
             deploymentUuid,
             "action could not be taken into account, unkown action",
             JSON.stringify(action, undefined, 2)

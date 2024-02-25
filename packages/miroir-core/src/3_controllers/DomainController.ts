@@ -245,10 +245,10 @@ export class DomainController implements DomainControllerInterface {
         domainDataNonTransactionalCUDAction
       );
       const actionNameMap = {
-        "create": "createInstance",
-        "update": "updateInstance",
-        "delete": "deleteInstance",
-      }
+        create: "createInstance",
+        update: "updateInstance",
+        delete: "deleteInstance",
+      };
       const instanceAction: LocalCacheInstanceActionWithDeployment = {
         actionType: "LocalCacheInstanceActionWithDeployment",
         deploymentUuid,
@@ -434,7 +434,7 @@ export class DomainController implements DomainControllerInterface {
                 }
                 default:
                   throw new Error(
-                    "DomainController handleDomainTransactionalAction commit could not handle replay action:" +
+                    "DomainController handleModelAction commit could not handle replay action:" +
                       JSON.stringify(replayAction)
                   );
                   break;
@@ -450,11 +450,11 @@ export class DomainController implements DomainControllerInterface {
               .callLocalCacheAction(
                 {}, // context
                 {}, // context update
-                "handleLocalCacheTransactionalAction",
+                "handleLocalCacheModelAction",
                 {
-                  actionType: "localCacheTransactionalActionWithDeployment",
+                  actionType: "localCacheModelActionWithDeployment",
                   deploymentUuid,
-                  domainAction: {
+                  modelAction: {
                     actionType: "modelAction",
                     actionName: "commit",
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -516,13 +516,13 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         default: {
-          log.warn("DomainController handleDomainTransactionalAction cannot handle action name for", modelAction);
+          log.warn("DomainController handleModelAction cannot handle action name for", modelAction);
           break;
         }
       }
     } catch (error) {
       log.warn(
-        "DomainController handleDomainTransactionalAction caught exception when handling",
+        "DomainController handleModelAction caught exception when handling",
         modelAction["actionName"],
         "deployment",
         deploymentUuid,
@@ -653,26 +653,28 @@ export class DomainController implements DomainControllerInterface {
                   }
                 )
               )
-              .then((context: Record<string, any>) =>
-                this.callUtil.callLocalCacheAction(
-                  context, // context
-                  {}, // context update
-                  "handleLocalCacheTransactionalAction",
-                  {
-                    actionType: "localCacheTransactionalActionWithDeployment",
-                    deploymentUuid,
-                    domainAction: {
-                      actionType: "modelAction",
-                      actionName: "rollback",
-                    },
-                  }
-                )
+              .then(
+                (context: Record<string, any>) =>
+                  this.callUtil.callLocalCacheAction(
+                    context, // context
+                    {}, // context update
+                    "handleLocalCacheModelAction",
+                    {
+                      actionType: "localCacheModelActionWithDeployment",
+                      deploymentUuid,
+                      modelAction: {
+                        actionType: "modelAction",
+                        actionName: "rollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      },
+                    }
+                  )
               )
               .catch((reason) => log.error(reason));
           }
 
           log.info(
-            "DomainController loadConfigurationFromRemoteDataStore done handleLocalCacheTransactionalAction rollback",
+            "DomainController loadConfigurationFromRemoteDataStore done rollback",
             this.currentTransaction()
           );
 
@@ -715,7 +717,10 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve();
       }
       case "DomainDataNonTransactionalCUDAction": {
-        await this.handleDomainNonTransactionalCUDAction(deploymentUuid, domainAction as DomainDataNonTransactionalCUDAction);
+        await this.handleDomainNonTransactionalCUDAction(
+          deploymentUuid,
+          domainAction as DomainDataNonTransactionalCUDAction
+        );
         return Promise.resolve();
       }
       case "DomainTransactionalAction": {

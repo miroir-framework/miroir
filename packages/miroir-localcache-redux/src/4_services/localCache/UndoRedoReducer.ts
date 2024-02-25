@@ -51,6 +51,10 @@ const undoableSliceUpdateActions: {type:string,actionName:string}[] =
         type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction,
         actionName: a
       },
+      {
+        type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheModelAction,
+        actionName: a
+      },
       // {
       //   type: localCacheSliceName + '/' + localCacheSliceInputActionNamesObject.handleLocalCacheCUDAction,
       //   actionName: a
@@ -329,7 +333,42 @@ export function createUndoRedoReducer(
           // );
           // log.info("reduceWithUndoRedo handleLocalCacheModelAction treating action", action.payload)
           log.info("reduceWithUndoRedo handleLocalCacheModelAction treating action", JSON.stringify(action.payload, null, 2))
-          return callNextReducerWithUndoRedoForModelAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);
+          switch (action.payload.modelAction.actionName) {
+            case "rollback": {
+              const next = callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheTransactionalActionWithDeployment>);
+              return {
+                currentTransaction,
+                previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+                pastModelPatches: [],
+                presentModelSnapshot: next.presentModelSnapshot,
+                futureModelPatches: [],
+                queriesResultsCache,
+              };
+              break;
+            }
+            case "commit": {
+              // no effect on local storage contents, just clears the present transaction contents.
+              return {
+                currentTransaction,
+                previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+                pastModelPatches: [],
+                presentModelSnapshot: presentModelSnapshot,
+                futureModelPatches: [],
+                queriesResultsCache,
+              };
+              break;
+            }
+            default: {// TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
+              // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
+              return callNextReducerWithUndoRedoForModelAction(
+                innerReducer,
+                state,
+                action as PayloadAction<LocalCacheTransactionalActionWithDeployment>
+              );
+              break;
+            }
+          }
+          // return callNextReducerWithUndoRedoForModelAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);
         }
         break;
       }
@@ -416,44 +455,6 @@ export function createUndoRedoReducer(
                     state,
                     action as PayloadAction<LocalCacheTransactionalActionWithDeployment>
                   );
-              }
-              break;
-            }
-            case "modelAction": { // this is a modelAction wrapped in transactional action!
-              switch (action.payload.domainAction.actionName) {
-                case "rollback": {
-                  const next = callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheTransactionalActionWithDeployment>);
-                  return {
-                    currentTransaction,
-                    previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-                    pastModelPatches: [],
-                    presentModelSnapshot: next.presentModelSnapshot,
-                    futureModelPatches: [],
-                    queriesResultsCache,
-                  };
-                  break;
-                }
-                case "commit": {
-                  // no effect on local storage contents, just clears the present transaction contents.
-                  return {
-                    currentTransaction,
-                    previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
-                    pastModelPatches: [],
-                    presentModelSnapshot: presentModelSnapshot,
-                    futureModelPatches: [],
-                    queriesResultsCache,
-                  };
-                  break;
-                }
-                default: {// TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-                  // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalAction action.payload.actionName', action.payload.domainAction.actionName, action);
-                  return callNextReducerWithUndoRedo(
-                    innerReducer,
-                    state,
-                    action as PayloadAction<LocalCacheTransactionalActionWithDeployment>
-                  );
-                  break;
-                }
               }
               break;
             }
