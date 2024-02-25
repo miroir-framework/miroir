@@ -110,14 +110,6 @@ export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
 
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
-export const DomainTransactionalReplayableActionSchema = z.union([
-  domainTransactionalActionUpdateMetaModelInstanceSchema,
-  domainTransactionalActionForModelActionSchema,
-]);
-export type DomainTransactionalReplayableAction = z.infer<typeof DomainTransactionalReplayableActionSchema>;
-  
-// #############################################################################################
-// without translation of Entity Updates in CUD updates
 export const domainTransactionalActionSchema = z.union([
   domainTransactionalActionUpdateMetaModelInstanceSchema,
   domainTransactionalActionForModelActionSchema,
@@ -227,8 +219,7 @@ export interface DomainControllerInterface {
    * 
    * 
    */
-  // currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[],
-  currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[],
+  currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[],
   currentLocalCacheInfo(): LocalCacheInfo,
   getRemoteStore(): RemoteStoreInterface,
   

@@ -6,10 +6,9 @@ import {
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
   DomainDataNonTransactionalCUDAction,
-  DomainTransactionalAction,
   DomainTransactionalActionForModelAction,
   DomainUndoRedoAction,
-  DomainTransactionalReplayableAction,
+  DomainTransactionalAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
@@ -88,7 +87,7 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -119,9 +118,9 @@ export class DomainController implements DomainControllerInterface {
           this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleLocalCacheTransactionalAction",
+            "handleLocalCacheUndoRedoAction",
             {
-              actionType: "localCacheTransactionalActionWithDeployment",
+              actionType: "localCacheUndoRedoActionWithDeployment",
               deploymentUuid,
               domainAction: domainTransactionalAction,
             }
@@ -411,11 +410,11 @@ export class DomainController implements DomainControllerInterface {
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
 
             for (const replayAction of this.localCache.currentTransaction()) {
-              // const localReplayAction: DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment = replayAction;
+              // const localReplayAction: DomainTransactionalAction | LocalCacheModelActionWithDeployment = replayAction;
               log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
               switch (replayAction.actionType) {
                 case "DomainTransactionalAction": {
-                  const localReplayAction: DomainTransactionalReplayableAction = replayAction;
+                  const localReplayAction: DomainTransactionalAction = replayAction;
                   if (localReplayAction.actionName == "modelActionUpdateEntity") {
                     const local2ReplayAction: DomainTransactionalActionForModelAction =
                       replayAction as DomainTransactionalActionForModelAction; //type system bug?

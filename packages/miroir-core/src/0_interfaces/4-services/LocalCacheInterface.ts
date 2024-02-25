@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
-  DomainTransactionalReplayableAction,
+  DomainTransactionalAction,
   domainUndoRedoActionSchema,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -97,7 +97,7 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  currentTransaction():(DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(DomainTransactionalAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
   handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoActionWithDeployment):ActionReturnType;

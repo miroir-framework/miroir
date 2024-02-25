@@ -11,7 +11,6 @@ import {
   ActionReturnType,
   ApplicationSection,
   DomainTransactionalAction,
-  DomainTransactionalReplayableAction,
   EntityInstanceCollection,
   InstanceAction,
   LocalCacheInstanceCUDActionWithDeployment,
@@ -27,7 +26,8 @@ import {
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
   getLoggerName,
-  LocalCacheInstanceActionWithDeployment
+  LocalCacheInstanceActionWithDeployment,
+  LocalCacheUndoRedoActionWithDeployment
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
   RemoteStoreRestSagaGeneratedActionNames,
@@ -246,6 +246,17 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
+  handleLocalCacheUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoActionWithDeployment): ActionReturnType {
+    // const result:ActionReturnType = this.innerReduxStore.dispatch(
+    return exceptionToActionReturnType(
+      ()=> this.innerReduxStore.dispatch(
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](localCacheUndoRedoAction)
+      )
+    )
+    // return ACTION_OK;
+  }
+
+  // ###############################################################################
   handleLocalCacheModelAction(localCacheEntityAction: LocalCacheModelActionWithDeployment): ActionReturnType {
     // const result: ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
@@ -280,7 +291,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   // ###############################################################################
   // currentTransaction(): (DomainTransactionalActionWithCUDUpdate | LocalCacheModelActionWithDeployment)[] {
   // currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
-  currentTransaction(): (DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }
