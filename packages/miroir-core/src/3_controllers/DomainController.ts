@@ -7,7 +7,6 @@ import {
   DomainControllerInterface,
   DomainDataNonTransactionalCUDAction,
   DomainTransactionalAction,
-  DomainTransactionalActionForModelAction,
   DomainUndoRedoAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -173,40 +172,6 @@ export class DomainController implements DomainControllerInterface {
               domainAction: domainTransactionalAction,
             }
           );
-          break;
-        }
-        case "modelActionUpdateEntity": {
-          log.debug(
-            "DomainController modelActionUpdateEntity for model entity update",
-            domainTransactionalAction?.update.modelEntityUpdate
-            // "entities",
-            // currentModel.entities,
-            // "entity definitions",
-            // currentModel.entityDefinitions
-          );
-          if (
-            domainTransactionalAction.update.modelEntityUpdate.actionName == "createEntity" ||
-            domainTransactionalAction.update.modelEntityUpdate.actionName == "dropEntity" ||
-            domainTransactionalAction.update.modelEntityUpdate.actionName == "renameEntity" ||
-            domainTransactionalAction.update.modelEntityUpdate.actionName == "alterEntityAttribute"
-          ) {
-            await this.callUtil.callLocalCacheAction(
-              {}, // context
-              {}, // context update
-              "handleLocalCacheModelAction",
-              {
-                actionType: "localCacheModelActionWithDeployment",
-                deploymentUuid,
-                modelAction: domainTransactionalAction.update.modelEntityUpdate,
-              }
-              // currentModel
-            );
-          } else {
-            throw new Error(
-              "DomainController handleDomainTransactionalAction could not handle model entity update:" +
-                domainTransactionalAction.update.modelEntityUpdate
-            );
-          }
           break;
         }
 
@@ -426,31 +391,6 @@ export class DomainController implements DomainControllerInterface {
               switch (replayAction.actionType) {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalAction = replayAction;
-                  if (localReplayAction.actionName == "modelActionUpdateEntity") {
-                    const local2ReplayAction: DomainTransactionalActionForModelAction =
-                      replayAction as DomainTransactionalActionForModelAction; //type system bug?
-                    // const localReplayUpdate: WrappedTransactionalModelActionEntityUpdate = localReplayAction.update;
-
-                    switch (local2ReplayAction.update.modelEntityUpdate.actionName) {
-                      case "alterEntityAttribute":
-                      case "createEntity":
-                      case "dropEntity":
-                      case "renameEntity": {
-                        await this.callUtil.callRemoteAction(
-                          {}, // context
-                          {}, // context update
-                          "handleRemoteStoreModelAction",
-                          deploymentUuid,
-                          local2ReplayAction.update.modelEntityUpdate
-                        );
-                        break;
-                      }
-                      default: {
-                        throw new Error("handleModelAction could not handle action" + replayAction);
-                        break;
-                      }
-                    }
-                  } else {
                     if (localReplayAction.actionName == "UpdateMetaModelInstance") {
                       //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
                       await this.callUtil.callRemoteAction(
@@ -470,7 +410,7 @@ export class DomainController implements DomainControllerInterface {
                     } else {
                       throw new Error("handleModelAction commit could not replay transactional action" + replayAction);
                     }
-                  }
+                  // }
                   break;
                 }
                 case "localCacheModelActionWithDeployment": {
