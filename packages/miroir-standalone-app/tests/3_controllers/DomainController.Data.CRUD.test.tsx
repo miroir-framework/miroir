@@ -20,7 +20,7 @@ import {
   defaultLevels,
   DomainAction,
   DomainControllerInterface,
-  DomainDataNonTransactionalCUDAction,
+  DomainNonTransactionalInstanceAction,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -210,31 +210,37 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
-              actionType: "DomainDataNonTransactionalCUDAction",
-              actionName: "create",
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
+            const createInstancesAction: DomainNonTransactionalInstanceAction = {
+              actionType: "DomainNonTransactionalInstanceAction",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: applicationDeploymentLibrary.uuid,
+                objects: [
+                  {
+                    parentName: entityAuthor.name,
+                    parentUuid: entityAuthor.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      author1 as EntityInstance,
+                      author2 as EntityInstance,
+                      author3 as EntityInstance,
+                    ],
+                  },
+                  {
+                    parentName: entityBook.name,
+                    parentUuid: entityBook.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      book1 as EntityInstance,
+                      book2 as EntityInstance,
+                      book4 as EntityInstance,
+                    ],
+                  },
+                ],
+              }
             };
     
             await act(
@@ -294,10 +300,16 @@ describe.sequential('DomainController.Data.CRUD',
 
           // ##########################################################################################################
           console.log('add Book instance step 2: the Book must then be present in the local cache report list.')
-          const createAction: DomainDataNonTransactionalCUDAction = {
-            actionName:'create',
-            actionType:"DomainDataNonTransactionalCUDAction",
-            objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data',instances:[book3 as EntityInstance]}]
+          const createAction: DomainNonTransactionalInstanceAction = {
+            actionType:"DomainNonTransactionalInstanceAction",
+            instanceAction: {
+              actionType: "instanceAction",
+              actionName: "createInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              applicationSection: "data",
+              deploymentUuid: applicationDeploymentLibrary.uuid,
+              objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data',instances:[book3 as EntityInstance]}]
+            }
           };
   
           await act(
@@ -406,32 +418,38 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
-              actionName: "create",
-              actionType: "DomainDataNonTransactionalCUDAction",
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book3 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
+            const createInstancesAction: DomainNonTransactionalInstanceAction = {
+              actionType: "DomainNonTransactionalInstanceAction",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: applicationDeploymentLibrary.uuid,
+                objects: [
+                  {
+                    parentName: entityAuthor.name,
+                    parentUuid: entityAuthor.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      author1 as EntityInstance,
+                      author2 as EntityInstance,
+                      author3 as EntityInstance,
+                    ],
+                  },
+                  {
+                    parentName: entityBook.name,
+                    parentUuid: entityBook.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      book1 as EntityInstance,
+                      book2 as EntityInstance,
+                      book3 as EntityInstance,
+                      book4 as EntityInstance,
+                    ],
+                  },
+                ],
+              }
             };
     
             await act(
@@ -490,10 +508,16 @@ describe.sequential('DomainController.Data.CRUD',
   
           // ##########################################################################################################
           console.log('remove Book instance step 2: the Book must then be absent from the local cache report list.')
-          const deleteAction: DomainDataNonTransactionalCUDAction = {
-            actionName:'delete',
-            actionType:"DomainDataNonTransactionalCUDAction",
-            objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
+          const deleteAction: DomainNonTransactionalInstanceAction = {
+            actionType:"DomainNonTransactionalInstanceAction",
+            instanceAction: {
+              actionType: "instanceAction",
+              actionName: "deleteInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              applicationSection: "data",
+              deploymentUuid: applicationDeploymentLibrary.uuid,
+              objects:[{parentName:book3.parentName,parentUuid:book3.parentUuid,applicationSection:'data', instances:[book3 as EntityInstance]}]
+            }
           };
   
           await act(
@@ -598,32 +622,38 @@ describe.sequential('DomainController.Data.CRUD',
               }
             );
               
-            const createInstancesAction: DomainDataNonTransactionalCUDAction = {
-              actionName: "create",
-              actionType: "DomainDataNonTransactionalCUDAction",
-              objects: [
-                {
-                  parentName: entityAuthor.name,
-                  parentUuid: entityAuthor.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    author1 as EntityInstance,
-                    author2 as EntityInstance,
-                    author3 as EntityInstance,
-                  ],
-                },
-                {
-                  parentName: entityBook.name,
-                  parentUuid: entityBook.uuid,
-                  applicationSection: "data",
-                  instances: [
-                    book1 as EntityInstance,
-                    book2 as EntityInstance,
-                    book3 as EntityInstance,
-                    book4 as EntityInstance,
-                  ],
-                },
-              ],
+            const createInstancesAction: DomainNonTransactionalInstanceAction = {
+              actionType: "DomainNonTransactionalInstanceAction",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                applicationSection: "data",
+                deploymentUuid: applicationDeploymentLibrary.uuid,
+                objects: [
+                  {
+                    parentName: entityAuthor.name,
+                    parentUuid: entityAuthor.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      author1 as EntityInstance,
+                      author2 as EntityInstance,
+                      author3 as EntityInstance,
+                    ],
+                  },
+                  {
+                    parentName: entityBook.name,
+                    parentUuid: entityBook.uuid,
+                    applicationSection: "data",
+                    instances: [
+                      book1 as EntityInstance,
+                      book2 as EntityInstance,
+                      book3 as EntityInstance,
+                      book4 as EntityInstance,
+                    ],
+                  },
+                ],
+              }
             };
     
             await act(
@@ -678,25 +708,31 @@ describe.sequential('DomainController.Data.CRUD',
   
           // ##########################################################################################################
           console.log('Update Book instance step 2: update reportReportList, modified version must then be present in the report list.')
-          const updateAction: DomainDataNonTransactionalCUDAction = {
-            actionName: "update",
-            actionType:"DomainDataNonTransactionalCUDAction",
-            objects: [
-              {
-                parentName: book4.parentName,
-                parentUuid: book4.parentUuid,
-                applicationSection:'data',
-                instances: [
-                  Object.assign({},book4,{"name":"Tthe Bride Wore Blackk", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
-                  // {
-                  //   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
-                  //   "parentName":"Book",
-                  //   "name":"RRear WindowW",
-                  //   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
-                  // } as Instance,
-                ],
-              },
-            ],
+          const updateAction: DomainNonTransactionalInstanceAction = {
+            actionType:"DomainNonTransactionalInstanceAction",
+            instanceAction: {
+              actionType: "instanceAction",
+              actionName: "updateInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              applicationSection: "data",
+              deploymentUuid: applicationDeploymentLibrary.uuid,
+              objects: [
+                {
+                  parentName: book4.parentName,
+                  parentUuid: book4.parentUuid,
+                  applicationSection:'data',
+                  instances: [
+                    Object.assign({},book4,{"name":"Tthe Bride Wore Blackk", "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"}) as EntityInstance
+                    // {
+                    //   "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    //   "parentName":"Book",
+                    //   "name":"RRear WindowW",
+                    //   "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"
+                    // } as Instance,
+                  ],
+                },
+              ],
+            }
           };
           await act(
             async () => {

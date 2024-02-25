@@ -7,6 +7,7 @@ import {
   EntityInstancesUuidIndex,
   MetaModel,
   entityInstanceCollection,
+  instanceAction,
   modelAction,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
@@ -60,12 +61,11 @@ export const UndoRedoActionNamesSchema = z.enum(
 export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 
 // #############################################################################################
-export const domainDataNonTransactionalCUDActionSchema = z.object({
-  actionType: z.literal("DomainDataNonTransactionalCUDAction"),
-  actionName: CUDActionNameSchema,
-  objects: z.array(entityInstanceCollection),
+export const domainNonTransactionalInstanceActionSchema = z.object({
+  actionType: z.literal("DomainNonTransactionalInstanceAction"),
+  instanceAction: instanceAction
 });
-export type DomainDataNonTransactionalCUDAction = z.infer<typeof domainDataNonTransactionalCUDActionSchema>;
+export type DomainNonTransactionalInstanceAction = z.infer<typeof domainNonTransactionalInstanceActionSchema>;
 
 
 // #############################################################################################
@@ -99,7 +99,7 @@ export type DomainTransactionalAction = z.infer<typeof domainTransactionalAction
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
   domainUndoRedoActionSchema,
-  domainDataNonTransactionalCUDActionSchema,
+  domainNonTransactionalInstanceActionSchema,
   domainTransactionalActionSchema,
   modelAction,
 ]);
@@ -143,7 +143,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 
 // ###################################################################################
 export interface DomainControllerInterface {
-  handleDomainNonTransactionalCUDAction(deploymentUuid: Uuid, action: DomainDataNonTransactionalCUDAction): Promise<void>;
+  handleDomainNonTransactionalInstanceAction(deploymentUuid: Uuid, action: DomainNonTransactionalInstanceAction): Promise<void>;
   handleDomainTransactionalAction(
     deploymentUuid: Uuid,
     action: DomainTransactionalAction,

@@ -5,7 +5,7 @@ import {
   CRUDActionName,
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
-  DomainDataNonTransactionalCUDAction,
+  DomainNonTransactionalInstanceAction,
   DomainTransactionalAction,
   DomainUndoRedoAction,
   LocalCacheInfo
@@ -199,27 +199,36 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleDomainNonTransactionalCUDAction(
+  async handleDomainNonTransactionalInstanceAction(
     deploymentUuid: Uuid,
-    domainDataNonTransactionalCUDAction: DomainDataNonTransactionalCUDAction
+    domainNonTransactionalInstanceAction: DomainNonTransactionalInstanceAction
   ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
       deploymentUuid,
-      "handleDomainNonTransactionalCUDAction",
-      domainDataNonTransactionalCUDAction.actionName,
-      domainDataNonTransactionalCUDAction.objects
+      "handleDomainNonTransactionalInstanceAction",
+      domainNonTransactionalInstanceAction.instanceAction
+      // domainDataNonTransactionalCUDAction.actionName,
+      // domainDataNonTransactionalCUDAction.objects
     );
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
-    if (CRUDActionNamesArray.map((a) => a.toString()).includes(domainDataNonTransactionalCUDAction.actionName)) {
-      // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
-      // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
-      for (const instances of domainDataNonTransactionalCUDAction.objects) {
+
+    // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
+    // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
+    const actionMap: any = {
+      "createInstance": "create",
+      "updateInstance": "update",
+      "deleteInstance": "delete",
+    }
+    // if (actionMap.map((a) => a.toString()).includes(domainNonTransactionalInstanceAction.instanceAction.actionName)) {
+    if (Object.keys(actionMap).includes(domainNonTransactionalInstanceAction.instanceAction.actionName)) {
+      const objectsToTreat: EntityInstanceCollection[] = (domainNonTransactionalInstanceAction.instanceAction as any)["objects"]  as EntityInstanceCollection[]
+      for (const instances of objectsToTreat) {
         // TODO: replace with parallel implementation Promise.all?
         log.info(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
           deploymentUuid,
-          "handleDomainNonTransactionalCUDAction sending to remote storage instances",
+          "handleDomainNonTransactionalInstanceAction sending to remote storage instances",
           instances.parentName,
           instances.instances
         );
@@ -231,7 +240,7 @@ export class DomainController implements DomainControllerInterface {
           "data",
           {
             actionType: "RemoteStoreCRUDAction",
-            actionName: domainDataNonTransactionalCUDAction.actionName.toString() as CRUDActionName,
+            actionName: actionMap[domainNonTransactionalInstanceAction.instanceAction.actionName] as CRUDActionName,
             parentName: instances.parentName,
             objects: instances.instances,
           }
@@ -240,25 +249,13 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
-        "handleDomainNonTransactionalCUDAction done calling handleRemoteStoreRestCRUDAction",
-        domainDataNonTransactionalCUDAction
+        "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
+        domainNonTransactionalInstanceAction
       );
-      const actionNameMap = {
-        create: "createInstance",
-        update: "updateInstance",
-        delete: "deleteInstance",
-      };
       const instanceAction: LocalCacheInstanceActionWithDeployment = {
         actionType: "LocalCacheInstanceActionWithDeployment",
         deploymentUuid,
-        instanceAction: {
-          actionType: "instanceAction",
-          actionName: actionNameMap[domainDataNonTransactionalCUDAction.actionName] as any,
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          deploymentUuid,
-          applicationSection: domainDataNonTransactionalCUDAction.objects[0].applicationSection,
-          objects: domainDataNonTransactionalCUDAction.objects,
-        },
+        instanceAction: domainNonTransactionalInstanceAction.instanceAction
       };
       await this.callUtil.callLocalCacheAction(
         {}, // context
@@ -270,17 +267,17 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
-        "handleDomainNonTransactionalCUDAction end",
-        domainDataNonTransactionalCUDAction
+        "handleDomainNonTransactionalInstanceAction end",
+        domainNonTransactionalInstanceAction
       );
     } else {
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
-        "handleDomainNonTransactionalCUDAction could not handle action name",
-        domainDataNonTransactionalCUDAction.actionName,
+        "handleDomainNonTransactionalInstanceAction could not handle action name",
+        domainNonTransactionalInstanceAction.instanceAction.actionName,
         "for action",
-        domainDataNonTransactionalCUDAction
+        domainNonTransactionalInstanceAction
       );
     }
     return Promise.resolve();
@@ -693,7 +690,7 @@ export class DomainController implements DomainControllerInterface {
       "deploymentUuid",
       deploymentUuid,
       "actionName",
-      domainAction?.actionName,
+      (domainAction as any).actionName,
       "actionType",
       domainAction?.actionType,
       "objects",
@@ -707,8 +704,8 @@ export class DomainController implements DomainControllerInterface {
         await this.handleModelAction(deploymentUuid, domainAction, currentModel);
         return Promise.resolve();
       }
-      case "DomainDataNonTransactionalCUDAction": {
-        await this.handleDomainNonTransactionalCUDAction(
+      case "DomainNonTransactionalInstanceAction": {
+        await this.handleDomainNonTransactionalInstanceAction(
           deploymentUuid,
           domainAction
         );

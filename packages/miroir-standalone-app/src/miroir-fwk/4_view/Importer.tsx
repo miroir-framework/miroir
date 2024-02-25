@@ -1,32 +1,30 @@
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import { Button } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import { Button } from "@mui/material";
 // import * as XLSX from 'xlsx/xlsx.mjs';
-import * as XLSX from 'xlsx';
 import {
   DomainAction,
+  DomainControllerInterface,
+  DomainNonTransactionalInstanceAction,
   EntityDefinition,
+  EntityInstance,
+  LoggerInterface,
   MetaEntity,
+  MiroirLoggerFactory,
+  Report,
   entityEntity,
   entityEntityDefinition,
-  DomainController,
-  DomainControllerInterface,
-  EntityAttribute,
-  DomainDataNonTransactionalCUDAction,
-  EntityInstance,
-  Report,
-  LoggerInterface,
-  MiroirLoggerFactory,
   getLoggerName,
-  metaModel,
+  metaModel
 } from "miroir-core";
+import * as XLSX from 'xlsx';
 import { useDomainControllerService } from "./MiroirContextReactProvider";
 // import { JzodObject } from "@miroir-framework/jzod-ts";
+import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
-import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // import { JzodObject } from "@miroir-framework/jzod-ts";
 
 
@@ -241,9 +239,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     ;
     log.info('adding instances',instances);
     
-    const createRowsAction: DomainDataNonTransactionalCUDAction = {
+    const createRowsAction: DomainNonTransactionalInstanceAction = {
       actionName:'create',
-      actionType:"DomainDataNonTransactionalCUDAction",
+      actionType:"DomainNonTransactionalInstanceAction",
       objects:[
         {
           parentName:newEntity.name,

@@ -142,7 +142,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     //   await domainController.handleDomainAction(
     //     contextDeploymentUuid,
     //     {
-    //       actionType: "DomainDataNonTransactionalCUDAction",
+    //       actionType: "DomainNonTransactionalInstanceAction",
     //       actionName: "update",
     //       objects: [
     //         {

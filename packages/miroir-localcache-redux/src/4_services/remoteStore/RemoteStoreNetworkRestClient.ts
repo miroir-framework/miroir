@@ -33,7 +33,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 /**
  * Facade / decorator for restClient and GraphQL client.
- * Resolves a DomainDataNonTransactionalCUDAction into a network query, using the proper protocol / address.
+ * Resolves a DomainNonTransactionalInstanceAction into a network query, using the proper protocol / address.
  *
  */
 export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {

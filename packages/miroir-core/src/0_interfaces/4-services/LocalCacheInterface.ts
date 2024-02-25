@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  domainDataNonTransactionalCUDActionSchema,
+  domainNonTransactionalInstanceActionSchema,
   DomainTransactionalAction,
   domainTransactionalActionSchema,
   domainUndoRedoActionSchema,
@@ -35,7 +35,7 @@ export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoActionSc
 
 // ################################################################################################
 export const localCacheTransactionalActionSchema = z.union([
-  domainDataNonTransactionalCUDActionSchema, // not only "transactional"?
+  // domainNonTransactionalInstanceActionSchema, // not only "transactional"?
   domainTransactionalActionSchema,
   domainUndoRedoActionSchema,
 ]);

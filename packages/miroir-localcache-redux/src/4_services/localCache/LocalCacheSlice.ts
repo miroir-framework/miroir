@@ -438,7 +438,6 @@ function handleLocalCacheTransactionalAction(
   //   action
   // );
   switch (action.actionType) {
-    case "DomainDataNonTransactionalCUDAction":
     case "DomainTransactionalAction":
     default: {
       switch (action.actionName) {

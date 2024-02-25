@@ -16,7 +16,7 @@ import {
   book4,
   DomainAction,
   DomainControllerInterface,
-  DomainDataNonTransactionalCUDAction,
+  DomainNonTransactionalInstanceAction,
   entityAuthor,
   entityBook,
   EntityDefinition,
@@ -98,31 +98,37 @@ export async function refreshAllInstancesTest(
         }
       );
 
-      const createInstancesAction: DomainDataNonTransactionalCUDAction = {
-        actionType: "DomainDataNonTransactionalCUDAction",
-        actionName: "create",
-        objects: [
-          {
-            parentName: entityAuthor.name,
-            parentUuid: entityAuthor.uuid,
-            applicationSection: "data",
-            instances: [
-              author1 as EntityInstance,
-              author2 as EntityInstance,
-              author3 as EntityInstance,
-            ],
-          },
-          {
-            parentName: entityBook.name,
-            parentUuid: entityBook.uuid,
-            applicationSection: "data",
-            instances: [
-              book1 as EntityInstance,
-              book2 as EntityInstance,
-              book4 as EntityInstance,
-            ],
-          },
-        ],
+      const createInstancesAction: DomainNonTransactionalInstanceAction = {
+        actionType: "DomainNonTransactionalInstanceAction",
+        instanceAction: {
+          actionType: "instanceAction",
+          actionName: "createInstance",
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          applicationSection: "data",
+          deploymentUuid: applicationDeploymentLibrary.uuid,
+          objects: [
+            {
+              parentName: entityAuthor.name,
+              parentUuid: entityAuthor.uuid,
+              applicationSection: "data",
+              instances: [
+                author1 as EntityInstance,
+                author2 as EntityInstance,
+                author3 as EntityInstance,
+              ],
+            },
+            {
+              parentName: entityBook.name,
+              parentUuid: entityBook.uuid,
+              applicationSection: "data",
+              instances: [
+                book1 as EntityInstance,
+                book2 as EntityInstance,
+                book4 as EntityInstance,
+              ],
+            },
+          ],
+        }
       };
 
       await act(
