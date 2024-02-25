@@ -274,7 +274,7 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 3: undo 1 Entity creation, one Entity must still be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
             }
           );
   
@@ -303,7 +303,7 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 4: redo 1 Entity creation, two Entities must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
   
@@ -336,9 +336,9 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 5: undo 2 then redo 1 Entity creation, one Entity must be present in the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
       
@@ -362,7 +362,7 @@ describe.sequential(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
   
@@ -370,10 +370,10 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 6: undo 3 times, show that the extra undo is igored.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainTransactionalAction'});
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "undo", actionType: 'DomainUndoRedoAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
       
@@ -397,7 +397,7 @@ describe.sequential(
           // putting state back to where it was when test section started
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
   
@@ -405,7 +405,7 @@ describe.sequential(
           console.log('Add 2 entity definitions then undo one then commit step 7: redo 1 time, show that the extra redo is igored. Commit then see that current transaction has no undo/redo')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainTransactionalAction'});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionName: "redo", actionType: 'DomainUndoRedoAction'});
             }
           );
       

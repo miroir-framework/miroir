@@ -3,6 +3,7 @@ import {
   domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
   DomainTransactionalReplayableAction,
+  domainUndoRedoActionSchema,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
 
@@ -40,12 +41,26 @@ export const LocalCacheInstanceActionWithDeploymentSchema = z.object(
 export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheInstanceActionWithDeploymentSchema>;
 
 // ################################################################################################
+export const localCacheUndoRedoActionSchema = domainUndoRedoActionSchema;
+
+export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoActionSchema>;
+
+// ################################################################################################
 export const localCacheTransactionalActionSchema = z.union([
   domainDataNonTransactionalCUDActionSchema, // not only "transactional"?
   domainTransactionalActionSchema,
+  domainUndoRedoActionSchema,
 ]);
 
 export type LocalCacheTransactionalAction = z.infer<typeof localCacheTransactionalActionSchema>;
+
+// ################################################################################################
+export const LocalCacheUndoRedoActionWithDeploymentSchema = z.object({
+  actionType:z.literal("localCacheUndoRedoActionWithDeployment"),
+  deploymentUuid: z.string().uuid(),
+  domainAction: localCacheUndoRedoActionSchema,
+});
+export type LocalCacheUndoRedoActionWithDeployment = z.infer<typeof LocalCacheUndoRedoActionWithDeploymentSchema>;
 
 // ################################################################################################
 export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
@@ -85,6 +100,7 @@ export declare interface LocalCacheInterface
   currentTransaction():(DomainTransactionalReplayableAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
+  handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoActionWithDeployment):ActionReturnType;
   handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
   handleLocalCacheInstanceAction(action:LocalCacheInstanceActionWithDeployment):ActionReturnType;

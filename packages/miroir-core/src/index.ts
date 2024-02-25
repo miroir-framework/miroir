@@ -279,6 +279,8 @@ export {
   DomainDataNonTransactionalCUDAction,
   DomainTransactionalReplayableAction,
   DomainTransactionalAction,
+  DomainUndoRedoAction,
+  domainUndoRedoActionSchema,
   // DomainTransactionalActionUpdateMetaModelInstance,
   DomainTransactionalActionForModelAction,
   EntitiesDomainState,
@@ -351,6 +353,10 @@ export {
   LocalCacheTransactionalActionWithDeployment,
   LocalCacheTransactionalActionWithDeploymentSchema,
   LocalCacheInterface,
+  LocalCacheUndoRedoAction,
+  LocalCacheUndoRedoActionWithDeployment,
+  LocalCacheUndoRedoActionWithDeploymentSchema,
+  localCacheUndoRedoActionSchema,
   CreateInstanceParameters,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
 export {

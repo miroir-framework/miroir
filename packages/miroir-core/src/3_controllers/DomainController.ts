@@ -8,6 +8,7 @@ import {
   DomainDataNonTransactionalCUDAction,
   DomainTransactionalAction,
   DomainTransactionalActionForModelAction,
+  DomainUndoRedoAction,
   DomainTransactionalReplayableAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -98,13 +99,13 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // converts a Domain transactional action into a set of local cache actions and remote store actions
-  async handleDomainTransactionalAction(
+  async handleDomainUndoRedoAction(
     deploymentUuid: Uuid,
-    domainTransactionalAction: DomainTransactionalAction,
+    domainTransactionalAction: DomainUndoRedoAction,
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionName",
       domainTransactionalAction["actionName"],
       "deployment",
       deploymentUuid,
@@ -128,6 +129,46 @@ export class DomainController implements DomainControllerInterface {
 
           break;
         }
+        default: {
+          log.warn(
+            "DomainController handleDomainUndoRedoAction cannot handle action name for",
+            domainTransactionalAction
+          );
+          break;
+        }
+      }
+    } catch (error) {
+      log.warn(
+        "DomainController handleDomainUndoRedoAction caught exception when handling",
+        domainTransactionalAction["actionName"],
+        "deployment",
+        deploymentUuid,
+        "action",
+        domainTransactionalAction,
+        "exception",
+        error
+      );
+    }
+    return Promise.resolve();
+  }
+
+  // ##############################################################################################
+  // converts a Domain transactional action into a set of local cache actions and remote store actions
+  async handleDomainTransactionalAction(
+    deploymentUuid: Uuid,
+    domainTransactionalAction: DomainTransactionalAction,
+    currentModel: MetaModel
+  ): Promise<void> {
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
+      domainTransactionalAction["actionName"],
+      "deployment",
+      deploymentUuid,
+      "action",
+      domainTransactionalAction
+    );
+    try {
+      switch (domainTransactionalAction.actionName) {
         case "UpdateMetaModelInstance": {
           await this.callUtil.callLocalCacheAction(
             {}, // context
@@ -720,6 +761,14 @@ export class DomainController implements DomainControllerInterface {
         await this.handleDomainNonTransactionalCUDAction(
           deploymentUuid,
           domainAction as DomainDataNonTransactionalCUDAction
+        );
+        return Promise.resolve();
+      }
+      case "DomainUndoRedoAction": {
+        await this.handleDomainUndoRedoAction(
+          deploymentUuid,
+          domainAction as DomainUndoRedoAction,
+          currentModel
         );
         return Promise.resolve();
       }

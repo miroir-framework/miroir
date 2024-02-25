@@ -29,6 +29,8 @@ import {
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalAction,
   LocalCacheTransactionalActionWithDeployment,
+  LocalCacheUndoRedoAction,
+  LocalCacheUndoRedoActionWithDeployment,
   LoggerInterface,
   MetaEntity,
   MetaModel,
@@ -378,6 +380,52 @@ function ReplaceInstancesForSectionEntity(
  * @param action 
  * @returns 
  */
+function handleLocalCacheUndoRedoAction(
+  state: LocalCacheSliceState,
+  deploymentUuid: Uuid,
+  action: LocalCacheUndoRedoAction
+  // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
+): ActionReturnType {
+  // log.info(
+  //   "localCacheSliceObject handleLocalCacheUndoRedoAction called",
+  //   action.actionName,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "action",
+  //   action
+  // );
+  switch (action.actionType) {
+    case "DomainUndoRedoAction":
+    default: {
+      switch (action.actionName) {
+        case "undo":
+        case "redo": {
+          log.warn("localCache.handleLocalCacheUndoRedoAction does nothing for DomainUndoRedoAction", action);
+          break;
+        }
+        default:
+          log.warn(
+            "localCacheSliceObject handleLocalCacheUndoRedoAction deploymentUuid",
+            deploymentUuid,
+            "action could not be taken into account, unkown action",
+            JSON.stringify(action, undefined, 2)
+          );
+      }
+      break;
+    }
+  }
+  return ACTION_OK;
+}
+//#########################################################################################
+/**
+ * Performs the effects of an action on the local state so that this local state reflects
+ * the modifications due to this action.
+ * The action is also added to the current transaction by the undoRedoReducer.
+ * @param state 
+ * @param deploymentUuid 
+ * @param action 
+ * @returns 
+ */
 function handleLocalCacheTransactionalAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
@@ -393,10 +441,6 @@ function handleLocalCacheTransactionalAction(
   //   action
   // );
   switch (action.actionType) {
-    // case "modelAction": {
-    //   return handleLocalCacheModelAction(state,deploymentUuid,action)
-    //   break;
-    // }
     case "DomainDataNonTransactionalCUDAction":
     case "DomainTransactionalAction":
     default: {
@@ -707,6 +751,12 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
       action: PayloadAction<LocalCacheTransactionalActionWithDeployment>
     ): void {
       actionReturnTypeToException(handleLocalCacheTransactionalAction(state, action.payload.deploymentUuid, action.payload.domainAction));
+    },
+    [localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](
+      state: LocalCacheSliceState,
+      action: PayloadAction<LocalCacheUndoRedoActionWithDeployment>
+    ): void {
+      actionReturnTypeToException(handleLocalCacheUndoRedoAction(state, action.payload.deploymentUuid, action.payload.domainAction));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](
       state: LocalCacheSliceState,

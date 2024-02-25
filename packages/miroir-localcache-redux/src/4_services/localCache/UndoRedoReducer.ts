@@ -380,7 +380,7 @@ export function createUndoRedoReducer(
         } else {
           // const localAction = (action.payload as LocalCacheTransactionalActionWithDeployment)
           switch (action.payload.domainAction.actionType) {
-            case "DomainTransactionalAction": {
+            case "DomainUndoRedoAction": {
               switch (action.payload.domainAction.actionName) {
                 case "undo": {
                   if (pastModelPatches.length > 0) {
@@ -446,6 +446,14 @@ export function createUndoRedoReducer(
                   }
                   break;
                 }
+                default: {
+                  throw new Error("reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleDomainTransactionalAction DomainUndoRedoAction cannot handle action:" + action.payload.domainAction);
+                }
+              }
+              break;
+            }
+            case "DomainTransactionalAction": {
+              switch (action.payload.domainAction.actionName) {
                 case "modelActionUpdateEntity":
                 case "UpdateMetaModelInstance":
                 default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!

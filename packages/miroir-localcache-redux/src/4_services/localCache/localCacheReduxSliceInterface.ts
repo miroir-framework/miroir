@@ -95,10 +95,9 @@ export const localCacheSliceName: string = "localCache";
 export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheModelAction: "handleLocalCacheModelAction",
   handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
-  // handleLocalCacheCUDAction: "handleLocalCacheCUDAction",
+  handleLocalCacheUndoRedoAction: "handleLocalCacheUndoRedoAction",
   handleLocalCacheInstanceAction: "handleLocalCacheInstanceAction",
   handleEndpointAction: "handleEndpointAction",
-  // createInstance: "createInstance",
 };
 export type LocalCacheSliceInputActionNamesObjectTuple = typeof localCacheSliceInputActionNamesObject;
 export type LocalCacheSliceInputActionNamesKey = keyof LocalCacheSliceInputActionNamesObjectTuple;

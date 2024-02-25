@@ -102,11 +102,11 @@ const domainTransactionalActionUpdateMetaModelInstanceSchema = z.object({
 // type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionUpdateMetaModelInstanceSchema>;
 
 // #############################################################################################
-const domainTransactionalActionUndoRedoSchema = z.object({
-  actionType: z.literal("DomainTransactionalAction"),
+export const domainUndoRedoActionSchema = z.object({
+  actionType: z.literal("DomainUndoRedoAction"),
   actionName: UndoRedoActionNamesSchema,
 });
-// type DomainTransactionalActionUndoRedo = z.infer<typeof domainTransactionalActionUndoRedoSchema>;
+export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
 
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
@@ -119,7 +119,6 @@ export type DomainTransactionalReplayableAction = z.infer<typeof DomainTransacti
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const domainTransactionalActionSchema = z.union([
-  domainTransactionalActionUndoRedoSchema,
   domainTransactionalActionUpdateMetaModelInstanceSchema,
   domainTransactionalActionForModelActionSchema,
 ]);
@@ -131,6 +130,7 @@ export type DomainTransactionalAction = z.infer<typeof domainTransactionalAction
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
+  domainUndoRedoActionSchema,
   domainDataNonTransactionalCUDActionSchema,
   domainTransactionalActionSchema,
   modelActionCommit,
