@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
   domainNonTransactionalInstanceActionSchema,
-  DomainTransactionalAction,
-  domainTransactionalActionSchema,
+  DomainTransactionalInstanceAction,
+  domainTransactionalInstanceActionSchema,
   domainUndoRedoActionSchema,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -13,6 +13,7 @@ import {
   EntityInstanceCollection,
   instanceAction,
   InstanceAction,
+  instanceCUDAction,
   MetaModel,
   modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -34,16 +35,6 @@ export const localCacheUndoRedoActionSchema = domainUndoRedoActionSchema;
 export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoActionSchema>;
 
 // ################################################################################################
-export const localCacheTransactionalActionSchema =   domainTransactionalActionSchema;
-// z.union([
-//   // domainNonTransactionalInstanceActionSchema, // not only "transactional"?
-//   domainTransactionalActionSchema,
-//   // domainUndoRedoActionSchema,
-// ]);
-
-export type LocalCacheTransactionalAction = z.infer<typeof localCacheTransactionalActionSchema>;
-
-// ################################################################################################
 export const LocalCacheUndoRedoActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheUndoRedoActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
@@ -52,12 +43,13 @@ export const LocalCacheUndoRedoActionWithDeploymentSchema = z.object({
 export type LocalCacheUndoRedoActionWithDeployment = z.infer<typeof LocalCacheUndoRedoActionWithDeploymentSchema>;
 
 // ################################################################################################
-export const LocalCacheTransactionalActionWithDeploymentSchema = z.object({
-  actionType:z.literal("localCacheTransactionalActionWithDeployment"),
+export const LocalCacheTransactionalInstanceActionWithDeploymentSchema = z.object({
+  actionType:z.literal("localCacheTransactionalInstanceActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  domainAction: localCacheTransactionalActionSchema,
+  // domainAction: localCacheTransactionalActionSchema,
+  instanceAction: instanceCUDAction
 });
-export type LocalCacheTransactionalActionWithDeployment = z.infer<typeof LocalCacheTransactionalActionWithDeploymentSchema>;
+export type LocalCacheTransactionalInstanceActionWithDeployment = z.infer<typeof LocalCacheTransactionalInstanceActionWithDeploymentSchema>;
 
 // ################################################################################################
 export const LocalCacheModelActionWithDeploymentSchema = z.object({
@@ -86,11 +78,11 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  currentTransaction():(DomainTransactionalAction | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
   handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoActionWithDeployment):ActionReturnType;
-  handleLocalCacheTransactionalAction(action:LocalCacheTransactionalActionWithDeployment):ActionReturnType;
+  handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
   handleLocalCacheInstanceAction(action:LocalCacheInstanceActionWithDeployment):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;

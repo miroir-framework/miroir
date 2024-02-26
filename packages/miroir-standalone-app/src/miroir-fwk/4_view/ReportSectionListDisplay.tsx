@@ -164,7 +164,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           await domainController.handleDomainAction(
             props.displayedDeploymentDefinition?.uuid,
             {
-              actionType: "DomainTransactionalAction",
+              actionType: "DomainTransactionalInstanceAction",
               actionName: "UpdateMetaModelInstance",
               instanceAction: {
                 actionType: "instanceAction",
@@ -241,7 +241,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           await domainController.handleDomainAction(
             props.displayedDeploymentDefinition?.uuid,
             {
-              actionType: "DomainTransactionalAction",
+              actionType: "DomainTransactionalInstanceAction",
               actionName: "UpdateMetaModelInstance",
               instanceAction: {
                 actionType: "instanceAction",
@@ -260,20 +260,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                 ],
               }
-              // update: {
-              //   actionType: "EntityInstanceTransactionalCUDUpdate",
-              //   actionName: "update",
-              //   objects: [
-              //     {
-              //       parentName: data.name,
-              //       parentUuid: data.parentUuid,
-              //       applicationSection:props.chosenApplicationSection,
-              //       instances: [
-              //         data 
-              //       ]
-              //     }
-              //   ],
-              // }
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {

@@ -24,8 +24,7 @@ import {
   JzodSchema,
   LocalCacheInstanceActionWithDeployment,
   LocalCacheModelActionWithDeployment,
-  LocalCacheTransactionalAction,
-  LocalCacheTransactionalActionWithDeployment,
+  LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoAction,
   LocalCacheUndoRedoActionWithDeployment,
   LoggerInterface,
@@ -423,59 +422,30 @@ function handleLocalCacheUndoRedoAction(
  * @param action 
  * @returns 
  */
-function handleLocalCacheTransactionalAction(
+function handleLocalCacheTransactionalInstanceAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: LocalCacheTransactionalAction
-  // action: DomainTransactionalActionWithEntityUpdateWithCUDUpdate
+  action: LocalCacheTransactionalInstanceActionWithDeployment
 ): ActionReturnType {
   // log.info(
-  //   "localCacheSliceObject handleLocalCacheTransactionalAction called",
+  //   "localCacheSliceObject handleLocalCacheTransactionalInstanceAction called",
   //   action.actionName,
   //   "deploymentUuid",
   //   deploymentUuid,
   //   "action",
   //   action
   // );
-  // switch (action.actionType) {
-  //   case "DomainTransactionalAction":
-  //   default: {
-      // switch (action.actionName) {
-        // case "rollback":
-        // case "undo":
-        // case "redo": {
-        //   log.warn("localCache.handleLocalCacheTransactionalAction does nothing for DomainTransactionalAction", action);
-        //   break;
-        // }
-        // case "UpdateMetaModelInstance": {
-          // not transactional??
-          // log.info('localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
-          const instanceAction: LocalCacheInstanceActionWithDeployment = {
-            actionType: "LocalCacheInstanceActionWithDeployment",
-            deploymentUuid,
-            instanceAction: action.instanceAction
-          };
+  const instanceAction: LocalCacheInstanceActionWithDeployment = {
+    actionType: "LocalCacheInstanceActionWithDeployment",
+    deploymentUuid,
+    instanceAction: action.instanceAction
+  };
     
-          // log.info("localCacheSliceObject handleLocalCacheTransactionalAction updateModel domainDataAction", domainDataAction);
-    
-          // TODO: handle object instanceCollections by ApplicationSection
-          handleLocalCacheInstanceActionWithDeployment(
-            state,
-            instanceAction
-          );
-        //   break;
-        // }
-      //   default:
-      //     log.warn(
-      //       "localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid",
-      //       deploymentUuid,
-      //       "action could not be taken into account, unkown action",
-      //       JSON.stringify(action, undefined, 2)
-      //     );
-      // }
-      // break;
-    // }
-  // }
+  // TODO: handle object instanceCollections by ApplicationSection
+  handleLocalCacheInstanceActionWithDeployment(
+    state,
+    instanceAction
+  );
   return ACTION_OK;
 }
 
@@ -730,11 +700,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: {} as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction](
+    [localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalInstanceAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheTransactionalActionWithDeployment>
+      action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
     ): void {
-      actionReturnTypeToException(handleLocalCacheTransactionalAction(state, action.payload.deploymentUuid, action.payload.domainAction));
+      actionReturnTypeToException(handleLocalCacheTransactionalInstanceAction(state, action.payload.deploymentUuid, action.payload));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](
       state: LocalCacheSliceState,

@@ -163,21 +163,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       jzodSchema: jzodSchema,
     }
     const createEntityAction: DomainAction = {
-      // actionType:"DomainTransactionalAction",
-      // actionName: "modelActionUpdateEntity",
-      // update: {
-      //   actionName:"WrappedTransactionalModelActionEntityUpdate",
-      //   modelEntityUpdate: {
-          actionType: "modelAction",
-          actionName: "createEntity",
-          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-          // parentName: entityDefinitionEntityDefinition.name,
-          // parentUuid: entityDefinitionEntityDefinition.uuid,
-          entities: [
-            {entity: newEntity, entityDefinition:newEntityDefinition},
-          ],
-      //   },
-      // }
+      actionType: "modelAction",
+      actionName: "createEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      entities: [
+        {entity: newEntity, entityDefinition:newEntityDefinition},
+      ],
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createEntityAction, props.currentModel);
     const newEntityReport: Report = {
@@ -200,7 +191,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       }
     }
     const createReportAction: DomainAction = {
-      actionType: "DomainTransactionalAction",
+      actionType: "DomainTransactionalInstanceAction",
       actionName: "UpdateMetaModelInstance",
       instanceAction: {
         actionType: "instanceAction",
@@ -216,17 +207,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             newEntityReport as EntityInstance
           ]
         }],
-// update: {
-//         actionType: "EntityInstanceTransactionalCUDUpdate",
-//         actionName: "create",
-//         objects: [{
-//           parentName: newEntityReport.parentName,
-//           parentUuid: newEntityReport.parentUuid,
-//           applicationSection:'model',
-//           instances: [
-//             newEntityReport as EntityInstance
-//           ]
-//         }],
       }
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createReportAction, props.currentModel);

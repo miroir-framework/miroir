@@ -416,7 +416,7 @@ describe.sequential(
           console.log("domainController.currentTransaction()", domainController.currentTransaction());
           expect(domainController.currentTransaction().length).toEqual(1);
           // IMPLEMENTATION-SPECIFIC DETAILS
-          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalAction");
+          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalInstanceAction");
           // expect(
           //   (
           //     (domainController.currentTransaction()[0] as DomainTransactionalActionWithCUDUpdate)
@@ -868,7 +868,7 @@ describe.sequential(
   
           expect(domainController.currentTransaction().length).toEqual(1);
           // testing transaction contents is implementation dependent!
-          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalAction");
+          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalInstanceAction");
           // expect(
           //   (
           //     (domainController.currentTransaction()[0] as DomainTransactionalActionWithCUDUpdate)
@@ -1129,7 +1129,7 @@ describe.sequential(
   
           expect(domainController.currentTransaction().length).toEqual(1);
           // testing transaction contents is implementation dependent!
-          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalAction");
+          // expect(domainController.currentTransaction()[0].actionType).toEqual("DomainTransactionalInstanceAction");
           // expect(
           //   (
           //     (domainController.currentTransaction()[0] as DomainTransactionalActionWithCUDUpdate)

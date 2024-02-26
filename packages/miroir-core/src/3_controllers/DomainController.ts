@@ -6,7 +6,7 @@ import {
   CRUDActionNamesArray, DomainAction,
   DomainControllerInterface,
   DomainNonTransactionalInstanceAction,
-  DomainTransactionalAction,
+  DomainTransactionalInstanceAction,
   DomainUndoRedoAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -15,7 +15,8 @@ import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirCont
 import {
   LocalCacheInstanceActionWithDeployment,
   LocalCacheInterface,
-  LocalCacheModelActionWithDeployment
+  LocalCacheModelActionWithDeployment,
+  LocalCacheTransactionalInstanceActionWithDeployment
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
@@ -80,7 +81,7 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -146,13 +147,13 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   // converts a Domain transactional action into a set of local cache actions and remote store actions
-  async handleDomainTransactionalAction(
+  async handleDomainTransactionalInstanceAction(
     deploymentUuid: Uuid,
-    domainTransactionalAction: DomainTransactionalAction,
+    domainTransactionalAction: DomainTransactionalInstanceAction,
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalAction start actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalInstanceAction start actionName",
       domainTransactionalAction["actionName"],
       "deployment",
       deploymentUuid,
@@ -165,11 +166,11 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleLocalCacheTransactionalAction",
+            "handleLocalCacheTransactionalInstanceAction",
             {
-              actionType: "localCacheTransactionalActionWithDeployment",
+              actionType: "localCacheTransactionalInstanceActionWithDeployment",
               deploymentUuid,
-              domainAction: domainTransactionalAction,
+              instanceAction: domainTransactionalAction.instanceAction,
             }
           );
           break;
@@ -177,7 +178,7 @@ export class DomainController implements DomainControllerInterface {
 
         default: {
           log.warn(
-            "DomainController handleDomainTransactionalAction cannot handle action name for",
+            "DomainController handleDomainTransactionalInstanceAction cannot handle action name for",
             domainTransactionalAction
           );
           break;
@@ -185,7 +186,7 @@ export class DomainController implements DomainControllerInterface {
       }
     } catch (error) {
       log.warn(
-        "DomainController handleDomainTransactionalAction caught exception when handling",
+        "DomainController handleDomainTransactionalInstanceAction caught exception when handling",
         domainTransactionalAction["actionName"],
         "deployment",
         deploymentUuid,
@@ -359,7 +360,7 @@ export class DomainController implements DomainControllerInterface {
               // application:applicationMiroir.uuid, // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               application: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", // TODO: this is wrong, application, application version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
               modelStructureMigration: this.localCache.currentTransaction(),
-              // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalAction) =>
+              // .map((t: LocalCacheModelActionWithDeployment | DomainTransactionalInstanceAction) =>
               //   t.actionType == "localCacheModelActionWithDeployment" ? t : t.update
               // ),
             };
@@ -383,24 +384,24 @@ export class DomainController implements DomainControllerInterface {
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
 
             for (const replayAction of this.localCache.currentTransaction()) {
-              // const localReplayAction: DomainTransactionalAction | LocalCacheModelActionWithDeployment = replayAction;
+              const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment = replayAction;
               log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction", replayAction);
               switch (replayAction.actionType) {
-                case "DomainTransactionalAction": {
-                  const localReplayAction: DomainTransactionalAction = replayAction;
+                case "localCacheTransactionalInstanceActionWithDeployment": {
+                  // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                       //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
                       await this.callUtil.callRemoteAction(
                         {}, // context
                         {}, // context update
                         "handleRemoteStoreRestCRUDAction",
                         deploymentUuid,
-                        localReplayAction.instanceAction.applicationSection,
+                        replayAction.instanceAction.applicationSection,
                         {
                           actionType: "RemoteStoreCRUDAction",
-                          actionName: localReplayAction.instanceAction.actionName.toString() as CRUDActionName,
-                          parentName: localReplayAction.instanceAction.objects[0].parentName,
-                          parentUuid: localReplayAction.instanceAction.objects[0].parentUuid,
-                          objects: localReplayAction.instanceAction.objects[0].instances,
+                          actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                          parentName: replayAction.instanceAction.objects[0].parentName,
+                          parentUuid: replayAction.instanceAction.objects[0].parentUuid,
+                          objects: replayAction.instanceAction.objects[0].instances,
                         }
                       );
                   break;
@@ -716,10 +717,10 @@ export class DomainController implements DomainControllerInterface {
         );
         return Promise.resolve();
       }
-      case "DomainTransactionalAction": {
-        await this.handleDomainTransactionalAction(
+      case "DomainTransactionalInstanceAction": {
+        await this.handleDomainTransactionalInstanceAction(
           deploymentUuid,
-          domainAction as DomainTransactionalAction,
+          domainAction as DomainTransactionalInstanceAction,
           currentModel
         );
         return Promise.resolve();

@@ -301,22 +301,22 @@ export const HomePage = (props: RootComponentProps) => {
             resetAndInitMiroirAndApplicationDatabase.bind(domainController)
           //   async () => {
           //   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-          //     actionType: "DomainTransactionalAction",
+          //     actionType: "DomainTransactionalInstanceAction",
           //     actionName: "resetModel",
           //   });
           //   await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-          //     actionType: "DomainTransactionalAction",
+          //     actionType: "DomainTransactionalInstanceAction",
           //     actionName: "resetModel",
           //   });
           //   log.info(
           //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETMODEL APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
           //   );
           //   await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
-          //     actionType: "DomainTransactionalAction",
+          //     actionType: "DomainTransactionalInstanceAction",
           //     actionName: "rollback",
           //   });
           //   await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-          //     actionType: "DomainTransactionalAction",
+          //     actionType: "DomainTransactionalInstanceAction",
           //     actionName: "rollback",
           //   });
           // }
@@ -403,7 +403,7 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleDomainAction(
               applicationDeploymentMiroir.uuid,
               {
-                actionType: "DomainTransactionalAction",
+                actionType: "DomainTransactionalInstanceAction",
                 actionName: "UpdateMetaModelInstance",
                 instanceAction: {
                   actionType: "instanceAction",

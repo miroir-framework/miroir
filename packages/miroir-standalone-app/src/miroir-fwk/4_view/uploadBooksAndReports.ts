@@ -65,10 +65,18 @@ export async function uploadBooksAndReports(
     },
     currentModel
   );
+
+  await domainController.handleDomainAction(
+    applicationDeploymentLibrary.uuid,
+    { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"},
+    // { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", label: "Adding Author and Book entities" },
+    currentModel
+  );
+
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
     {
-      actionType: "DomainTransactionalAction",
+      actionType: "DomainTransactionalInstanceAction",
       actionName: "UpdateMetaModelInstance",
       instanceAction: {
         actionType: "instanceAction",
@@ -93,26 +101,6 @@ export async function uploadBooksAndReports(
           },
         ],
       }
-      // update: {
-      //   actionType: "EntityInstanceTransactionalCUDUpdate",
-      //   actionName: "create",
-      //   objects: [
-      //     {
-      //       parentName: entityReport.name,
-      //       parentUuid: entityReport.uuid,
-      //       applicationSection: "model",
-      //       instances: [
-      //         reportAuthorDetails as EntityInstance,
-      //         reportAuthorList as EntityInstance,
-      //         reportBookDetails as EntityInstance,
-      //         reportBookList as EntityInstance,
-      //         reportCountryList as EntityInstance,
-      //         reportPublisherList as EntityInstance,
-      //         reportTestList as EntityInstance,
-      //       ],
-      //     },
-      //   ],
-      // },
     },
     currentModel
   );

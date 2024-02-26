@@ -15,7 +15,7 @@ import {
   modelActionDropEntity,
   modelActionRenameEntity
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheModelActionWithDeployment } from "../4-services/LocalCacheInterface.js";
+import { LocalCacheModelActionWithDeployment, LocalCacheTransactionalInstanceActionWithDeployment } from "../4-services/LocalCacheInterface.js";
 import { RemoteStoreInterface } from "../4-services/RemoteStoreInterface.js";
 
 
@@ -69,13 +69,13 @@ export const domainNonTransactionalInstanceActionSchema = z.object({
 export type DomainNonTransactionalInstanceAction = z.infer<typeof domainNonTransactionalInstanceActionSchema>;
 
 
-// #############################################################################################
-const domainTransactionalActionForUpdateMetaModelInstanceSchema = z.object({
-  actionType: z.literal("DomainTransactionalAction"),
-  actionName: z.literal("UpdateMetaModelInstance"),
-  instanceAction: instanceCUDAction,
-});
-// type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionForUpdateMetaModelInstanceSchema>;
+// // #############################################################################################
+// const domainTransactionalActionForUpdateMetaModelInstanceSchema = z.object({
+//   actionType: z.literal("DomainTransactionalInstanceAction"),
+//   actionName: z.literal("UpdateMetaModelInstance"),
+//   instanceAction: instanceCUDAction,
+// });
+// // type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionForUpdateMetaModelInstanceSchema>;
 
 // #############################################################################################
 export const domainUndoRedoActionSchema = z.object({
@@ -86,8 +86,12 @@ export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
 
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
-export const domainTransactionalActionSchema = domainTransactionalActionForUpdateMetaModelInstanceSchema
-export type DomainTransactionalAction = z.infer<typeof domainTransactionalActionSchema>;
+export const domainTransactionalInstanceActionSchema = z.object({
+  actionType: z.literal("DomainTransactionalInstanceAction"),
+  actionName: z.literal("UpdateMetaModelInstance"),
+  instanceAction: instanceCUDAction,
+})
+export type DomainTransactionalInstanceAction = z.infer<typeof domainTransactionalInstanceActionSchema>;
 
 // #############################################################################################
 // #############################################################################################
@@ -97,7 +101,7 @@ export type DomainTransactionalAction = z.infer<typeof domainTransactionalAction
 export const DomainActionSchema = z.union([
   domainUndoRedoActionSchema,
   domainNonTransactionalInstanceActionSchema,
-  domainTransactionalActionSchema,
+  domainTransactionalInstanceActionSchema,
   modelAction,
 ]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
@@ -141,9 +145,9 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   handleDomainNonTransactionalInstanceAction(deploymentUuid: Uuid, action: DomainNonTransactionalInstanceAction): Promise<void>;
-  handleDomainTransactionalAction(
+  handleDomainTransactionalInstanceAction(
     deploymentUuid: Uuid,
-    action: DomainTransactionalAction,
+    action: DomainTransactionalInstanceAction,
     currentModel?: MetaModel,
   ): Promise<void>;
   handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
@@ -188,7 +192,8 @@ export interface DomainControllerInterface {
    * 
    * 
    */
-  currentTransaction(): (DomainTransactionalAction | LocalCacheModelActionWithDeployment)[],
+  // TODO: currentTransaction should not depend on localCache types?! Use DomainActions instead?
+  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[],
   currentLocalCacheInfo(): LocalCacheInfo,
   getRemoteStore(): RemoteStoreInterface,
   

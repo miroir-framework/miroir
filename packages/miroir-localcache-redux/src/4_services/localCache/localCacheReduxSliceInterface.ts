@@ -3,10 +3,9 @@ import { Patch } from "immer";
 import {
   Commit,
   DomainElement,
-  DomainTransactionalAction,
   LocalCacheInstanceActionWithDeployment,
   LocalCacheModelActionWithDeployment,
-  LocalCacheTransactionalActionWithDeployment,
+  LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoActionWithDeployment,
   RemoteStoreCRUDAction,
   entityInstance
@@ -24,7 +23,7 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action: DomainTransactionalAction | LocalCacheModelActionWithDeployment;
+  action: LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment;
   changes: Patch[];
   inverseChanges: Patch[];
 }
@@ -58,7 +57,7 @@ export type InnerReducerInterface = (
   state: LocalCacheSliceState,
   action: PayloadAction<
     | LocalCacheModelActionWithDeployment
-    | LocalCacheTransactionalActionWithDeployment
+    | LocalCacheTransactionalInstanceActionWithDeployment
     | LocalCacheUndoRedoActionWithDeployment
     | LocalCacheInstanceActionWithDeployment
     | RemoteStoreCRUDAction
@@ -70,7 +69,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
     | LocalCacheModelActionWithDeployment
-    | LocalCacheTransactionalActionWithDeployment
+    | LocalCacheTransactionalInstanceActionWithDeployment
     | LocalCacheUndoRedoActionWithDeployment
     | LocalCacheInstanceActionWithDeployment
     | RemoteStoreCRUDAction
@@ -95,7 +94,7 @@ export const localCacheSliceName: string = "localCache";
 
 export const localCacheSliceInputActionNamesObject = {
   handleLocalCacheModelAction: "handleLocalCacheModelAction",
-  handleLocalCacheTransactionalAction: "handleLocalCacheTransactionalAction",
+  handleLocalCacheTransactionalInstanceAction: "handleLocalCacheTransactionalInstanceAction",
   handleLocalCacheUndoRedoAction: "handleLocalCacheUndoRedoAction",
   handleLocalCacheInstanceAction: "handleLocalCacheInstanceAction",
   handleEndpointAction: "handleEndpointAction",
