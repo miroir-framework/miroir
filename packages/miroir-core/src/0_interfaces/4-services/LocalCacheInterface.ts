@@ -1,7 +1,8 @@
 import { z } from "zod";
 import {
   domainUndoRedoActionSchema,
-  LocalCacheInfo
+  LocalCacheInfo,
+  UndoRedoActionNamesSchema
 } from "../2_domain/DomainControllerInterface";
 
 import {
@@ -27,15 +28,10 @@ export const LocalCacheInstanceActionWithDeploymentSchema = z.object(
 export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheInstanceActionWithDeploymentSchema>;
 
 // ################################################################################################
-export const localCacheUndoRedoActionSchema = domainUndoRedoActionSchema;
-
-export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoActionSchema>;
-
-// ################################################################################################
 export const LocalCacheUndoRedoActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheUndoRedoActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  domainAction: localCacheUndoRedoActionSchema,
+  undoRedoAction: UndoRedoActionNamesSchema,
 });
 export type LocalCacheUndoRedoActionWithDeployment = z.infer<typeof LocalCacheUndoRedoActionWithDeploymentSchema>;
 

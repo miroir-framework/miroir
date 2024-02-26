@@ -352,85 +352,85 @@ export function createUndoRedoReducer(
           throw new Error("reduceWithUndoRedo handleLocalCacheUndoRedoAction does not accept actionType=" + action.payload.actionType);
         } else {
           // const localAction = (action.payload as LocalCacheTransactionalInstanceActionWithDeployment)
-          switch (action.payload.domainAction.actionType) {
-            case "DomainUndoRedoAction": {
-              switch (action.payload.domainAction.actionName) {
-                case "undo": {
-                  if (pastModelPatches.length > 0) {
-                    const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
-                    const newPresentSnapshot = applyPatches(
-                      presentModelSnapshot,
-                      pastModelPatches[pastModelPatches.length - 1].inverseChanges
-                    );
-                    log.info(
-                      "reduceWithUndoRedo handleLocalCacheUndoRedoAction undo patches",
-                      pastModelPatches,
-                      "undo",
-                      pastModelPatches[0],
-                      pastModelPatches[1]
-                    );
-                    return {
-                      currentTransaction,
-                      previousModelSnapshot,
-                      pastModelPatches: newPast,
-                      presentModelSnapshot: newPresentSnapshot,
-                      futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
-                      queriesResultsCache,
-                    };
-                  } else {
-                    // do nothing
-                    log.warn("reduceWithUndoRedo handleLocalCacheUndoRedoAction cannot further undo, ignoring undo action");
-                    return {
-                      currentTransaction,
-                      previousModelSnapshot,
-                      pastModelPatches,
-                      presentModelSnapshot,
-                      futureModelPatches,
-                      queriesResultsCache,
-                    };
-                  }
-                }
-                case "redo": {
-                  if (futureModelPatches.length > 0) {
-                    const newPastPatches = futureModelPatches[0];
-                    const newFuturePatches = futureModelPatches.slice(1);
-                    const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
-                    return {
-                      currentTransaction,
-                      previousModelSnapshot,
-                      pastModelPatches: [...pastModelPatches, newPastPatches],
-                      presentModelSnapshot: newPresentSnapshot,
-                      futureModelPatches: newFuturePatches,
-                      queriesResultsCache,
-                    };
-                  } else {
-                    // do nothing
-                    log.warn(
-                      "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction cannot further redo, ignoring redo action"
-                    );
-                    return {
-                      currentTransaction,
-                      previousModelSnapshot,
-                      pastModelPatches,
-                      presentModelSnapshot,
-                      futureModelPatches,
-                      queriesResultsCache,
-                    };
-                  }
-                  break;
-                }
-                default: {
-                  throw new Error("reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction DomainUndoRedoAction cannot handle action:" + action.payload.domainAction);
-                }
+          // switch (action.payload.actionType) {
+          //   case "localCacheUndoRedoActionWithDeployment": {
+          switch (action.payload.undoRedoAction) {
+            case "undo": {
+              if (pastModelPatches.length > 0) {
+                const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
+                const newPresentSnapshot = applyPatches(
+                  presentModelSnapshot,
+                  pastModelPatches[pastModelPatches.length - 1].inverseChanges
+                );
+                log.info(
+                  "reduceWithUndoRedo handleLocalCacheUndoRedoAction undo patches",
+                  pastModelPatches,
+                  "undo",
+                  pastModelPatches[0],
+                  pastModelPatches[1]
+                );
+                return {
+                  currentTransaction,
+                  previousModelSnapshot,
+                  pastModelPatches: newPast,
+                  presentModelSnapshot: newPresentSnapshot,
+                  futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
+                  queriesResultsCache,
+                };
+              } else {
+                // do nothing
+                log.warn("reduceWithUndoRedo handleLocalCacheUndoRedoAction cannot further undo, ignoring undo action");
+                return {
+                  currentTransaction,
+                  previousModelSnapshot,
+                  pastModelPatches,
+                  presentModelSnapshot,
+                  futureModelPatches,
+                  queriesResultsCache,
+                };
+              }
+            }
+            case "redo": {
+              if (futureModelPatches.length > 0) {
+                const newPastPatches = futureModelPatches[0];
+                const newFuturePatches = futureModelPatches.slice(1);
+                const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
+                return {
+                  currentTransaction,
+                  previousModelSnapshot,
+                  pastModelPatches: [...pastModelPatches, newPastPatches],
+                  presentModelSnapshot: newPresentSnapshot,
+                  futureModelPatches: newFuturePatches,
+                  queriesResultsCache,
+                };
+              } else {
+                // do nothing
+                log.warn(
+                  "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction cannot further redo, ignoring redo action"
+                );
+                return {
+                  currentTransaction,
+                  previousModelSnapshot,
+                  pastModelPatches,
+                  presentModelSnapshot,
+                  futureModelPatches,
+                  queriesResultsCache,
+                };
               }
               break;
             }
             default: {
-              throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-              log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
-              break;
+              throw new Error("reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction DomainUndoRedoAction cannot handle action:" + action.payload.undoRedoAction);
             }
           }
+          break;
+            // }
+            // default: {
+            //   throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
+            //   log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
+            //   break;
+            // }
+          // }
         }
         break;
       }
