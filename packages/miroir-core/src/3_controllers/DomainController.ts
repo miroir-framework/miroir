@@ -112,9 +112,9 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             "handleUndoRedoAction",
             {
-              actionType: "localCacheUndoRedoAction",
+              actionType: "undoRedoAction",
               deploymentUuid,
-              undoRedoAction: domainTransactionalAction.actionName,
+              actionName: domainTransactionalAction.actionName,
             }
           );
 

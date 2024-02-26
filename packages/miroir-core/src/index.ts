@@ -162,6 +162,8 @@ export {
   storeSectionConfiguration,
   StoreUnitConfiguration,
   storeUnitConfiguration,
+  UndoRedoAction,
+  undoRedoAction,
   GridReportSection,
   gridReportSection,
   ListReportSection,

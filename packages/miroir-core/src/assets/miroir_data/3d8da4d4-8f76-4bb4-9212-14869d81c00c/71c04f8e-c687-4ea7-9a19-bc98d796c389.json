@@ -1,0 +1,51 @@
+{
+  "uuid": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+  "name": "UndoRedoEndpoint",
+  "version": "1",
+  "description": "Undo Redo Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"undoRedoAction"},
+            "actionName": {"type": "literal", "definition":"undo"},
+            "endpoint": {"type": "literal", "definition":"71c04f8e-c687-4ea7-9a19-bc98d796c389"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToUndo"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"undoRedoAction"},
+            "actionName": {"type": "literal", "definition":"redo"},
+            "endpoint": {"type": "literal", "definition":"71c04f8e-c687-4ea7-9a19-bc98d796c389"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToRedo"
+        }
+      }
+    ]
+  }
+}

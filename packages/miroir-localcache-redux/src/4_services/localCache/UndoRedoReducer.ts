@@ -10,6 +10,7 @@ import {
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreCRUDAction,
+  UndoRedoAction,
   getLoggerName,
 } from "miroir-core";
 import { packageName } from "../../constants";
@@ -238,7 +239,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
-      InstanceAction | ModelAction | LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheUndoRedoAction
+      InstanceAction | ModelAction | LocalCacheTransactionalInstanceActionWithDeployment | UndoRedoAction
       // | RemoteStoreCRUDAction
     >
   ): ReduxStateWithUndoRedo => {
@@ -346,7 +347,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleUndoRedoAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
-        if (action.payload.actionType !== "localCacheUndoRedoAction") {
+        if (action.payload.actionType !== "undoRedoAction") {
           throw new Error(
             "reduceWithUndoRedo handleUndoRedoAction does not accept actionType=" + action.payload.actionType
           );
@@ -354,7 +355,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
           // const localAction = (action.payload as LocalCacheTransactionalInstanceActionWithDeployment)
           // switch (action.payload.actionType) {
           //   case "localCacheUndoRedoAction": {
-          switch (action.payload.undoRedoAction) {
+          switch (action.payload.actionName) {
             case "undo": {
               if (pastModelPatches.length > 0) {
                 const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
@@ -421,8 +422,8 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             }
             default: {
               throw new Error(
-                "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action:" +
-                  action.payload.undoRedoAction
+                "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action" +
+                  action.payload
               );
             }
           }

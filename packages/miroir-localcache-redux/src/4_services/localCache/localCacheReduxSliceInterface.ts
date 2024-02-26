@@ -8,6 +8,7 @@ import {
   LocalCacheUndoRedoAction,
   ModelAction,
   RemoteStoreCRUDAction,
+  UndoRedoAction,
   entityInstance
 } from "miroir-core";
 import { z } from "zod";
@@ -59,7 +60,8 @@ export type InnerReducerInterface = (
     // | LocalCacheModelActionWithDeployment
     | ModelAction
     | LocalCacheTransactionalInstanceActionWithDeployment
-    | LocalCacheUndoRedoAction
+    // | LocalCacheUndoRedoAction
+    | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction
   >
@@ -72,7 +74,8 @@ export type ReduxReducerWithUndoRedoInterface = (
     // | LocalCacheModelActionWithDeployment
     | ModelAction
     | LocalCacheTransactionalInstanceActionWithDeployment
-    | LocalCacheUndoRedoAction
+    // | LocalCacheUndoRedoAction
+    | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction
   >

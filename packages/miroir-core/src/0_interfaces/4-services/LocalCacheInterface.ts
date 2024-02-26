@@ -6,13 +6,11 @@ import {
 
 import {
   ActionReturnType,
-  ApplicationSection,
-  EntityInstanceCollection,
   InstanceAction,
   instanceCUDAction,
   MetaModel,
   ModelAction,
-  modelAction
+  UndoRedoAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
@@ -47,7 +45,8 @@ export declare interface LocalCacheInterface
   currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
-  handleUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
+  // handleUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
+  handleUndoRedoAction(action:UndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
   handleModelAction(action:ModelAction):ActionReturnType;
   handleInstanceAction(action:InstanceAction):ActionReturnType;
