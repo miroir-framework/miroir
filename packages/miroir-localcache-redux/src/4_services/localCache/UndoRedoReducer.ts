@@ -466,9 +466,10 @@ export function createUndoRedoReducer(
       }
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
-        log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
+        log.info("reduceWithUndoRedo handleLocalCacheTransactionalAction for action", JSON.stringify(action, undefined, 2));
+        // log.info("reduceWithUndoRedo handleLocalCacheTransactionalAction for action.payload", JSON.stringify(action, undefined, 2));
         if (action.payload.actionType !== "localCacheTransactionalActionWithDeployment") {
-          throw new Error("reduceWithUndoRedo handleDomainTransactionalAction does not accept actionType=" + action.payload.actionType);
+          throw new Error("reduceWithUndoRedo handleLocalCacheTransactionalAction does not accept actionType=" + action.payload.actionType);
         } else {
           // const localAction = (action.payload as LocalCacheTransactionalActionWithDeployment)
           switch (action.payload.domainAction.actionType) {

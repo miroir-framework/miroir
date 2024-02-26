@@ -437,35 +437,23 @@ function handleLocalCacheTransactionalAction(
   //   "action",
   //   action
   // );
-  switch (action.actionType) {
-    case "DomainTransactionalAction":
-    default: {
-      switch (action.actionName) {
+  // switch (action.actionType) {
+  //   case "DomainTransactionalAction":
+  //   default: {
+      // switch (action.actionName) {
         // case "rollback":
-        case "undo":
-        case "redo": {
-          log.warn("localCache.handleLocalCacheTransactionalAction does nothing for DomainTransactionalAction", action);
-          break;
-        }
-        case "UpdateMetaModelInstance": {
+        // case "undo":
+        // case "redo": {
+        //   log.warn("localCache.handleLocalCacheTransactionalAction does nothing for DomainTransactionalAction", action);
+        //   break;
+        // }
+        // case "UpdateMetaModelInstance": {
           // not transactional??
           // log.info('localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid',deploymentUuid,'UpdateMetaModelInstance',action);
-          const actionNameMap = {
-            "create": "createInstance",
-            "update": "updateInstance",
-            "delete": "deleteInstance",
-          }
           const instanceAction: LocalCacheInstanceActionWithDeployment = {
             actionType: "LocalCacheInstanceActionWithDeployment",
             deploymentUuid,
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: actionNameMap[action.update.actionName] as any,
-              deploymentUuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: action.update.objects[0].applicationSection,
-              objects: action.update.objects,
-            }
+            instanceAction: action.instanceAction
           };
     
           // log.info("localCacheSliceObject handleLocalCacheTransactionalAction updateModel domainDataAction", domainDataAction);
@@ -475,19 +463,19 @@ function handleLocalCacheTransactionalAction(
             state,
             instanceAction
           );
-          break;
-        }
-        default:
-          log.warn(
-            "localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid",
-            deploymentUuid,
-            "action could not be taken into account, unkown action",
-            JSON.stringify(action, undefined, 2)
-          );
-      }
-      break;
-    }
-  }
+        //   break;
+        // }
+      //   default:
+      //     log.warn(
+      //       "localCacheSliceObject handleLocalCacheTransactionalAction deploymentUuid",
+      //       deploymentUuid,
+      //       "action could not be taken into account, unkown action",
+      //       JSON.stringify(action, undefined, 2)
+      //     );
+      // }
+      // break;
+    // }
+  // }
   return ACTION_OK;
 }
 

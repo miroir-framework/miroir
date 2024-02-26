@@ -204,9 +204,9 @@ export class DomainController implements DomainControllerInterface {
     domainNonTransactionalInstanceAction: DomainNonTransactionalInstanceAction
   ): Promise<void> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainNonTransactionalInstanceAction deployment",
       deploymentUuid,
-      "handleDomainNonTransactionalInstanceAction",
+      "instanceAction",
       domainNonTransactionalInstanceAction.instanceAction
       // domainDataNonTransactionalCUDAction.actionName,
       // domainDataNonTransactionalCUDAction.objects
@@ -335,7 +335,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "commit": {
-          log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit", this.localCache.currentTransaction());
+          log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit", this.localCache.currentTransaction());
 
           if (!currentModel) {
             throw new Error(
@@ -364,7 +364,7 @@ export class DomainController implements DomainControllerInterface {
               // ),
             };
 
-            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit create new version", newModelVersion);
+            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version", newModelVersion);
             const newModelVersionAction: RemoteStoreCRUDAction = {
               actionType: "RemoteStoreCRUDAction",
               actionName: "create",
@@ -380,34 +380,29 @@ export class DomainController implements DomainControllerInterface {
               sectionOfapplicationEntities,
               newModelVersionAction
             );
-            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit new version created", newModelVersion);
+            log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
 
             for (const replayAction of this.localCache.currentTransaction()) {
               // const localReplayAction: DomainTransactionalAction | LocalCacheModelActionWithDeployment = replayAction;
-              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit replayAction", replayAction);
+              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction", replayAction);
               switch (replayAction.actionType) {
                 case "DomainTransactionalAction": {
                   const localReplayAction: DomainTransactionalAction = replayAction;
-                    if (localReplayAction.actionName == "UpdateMetaModelInstance") {
                       //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
                       await this.callUtil.callRemoteAction(
                         {}, // context
                         {}, // context update
                         "handleRemoteStoreRestCRUDAction",
                         deploymentUuid,
-                        localReplayAction.update.objects[0].applicationSection,
+                        localReplayAction.instanceAction.applicationSection,
                         {
                           actionType: "RemoteStoreCRUDAction",
-                          actionName: localReplayAction.update.actionName.toString() as CRUDActionName,
-                          parentName: localReplayAction.update.objects[0].parentName,
-                          parentUuid: localReplayAction.update.objects[0].parentUuid,
-                          objects: localReplayAction.update.objects[0].instances,
+                          actionName: localReplayAction.instanceAction.actionName.toString() as CRUDActionName,
+                          parentName: localReplayAction.instanceAction.objects[0].parentName,
+                          parentUuid: localReplayAction.instanceAction.objects[0].parentUuid,
+                          objects: localReplayAction.instanceAction.objects[0].instances,
                         }
                       );
-                    } else {
-                      throw new Error("handleModelAction commit could not replay transactional action" + replayAction);
-                    }
-                  // }
                   break;
                 }
                 case "localCacheModelActionWithDeployment": {
@@ -416,7 +411,7 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context update
                     "handleRemoteStoreModelAction",
                     deploymentUuid,
-                    (replayAction as LocalCacheModelActionWithDeployment).modelAction
+                    replayAction.modelAction
                   );
                   break;
                 }
@@ -430,7 +425,7 @@ export class DomainController implements DomainControllerInterface {
             }
 
             log.debug(
-              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed, currentTransaction:",
+              "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed, currentTransaction:",
               this.localCache.currentTransaction()
             );
 
@@ -451,7 +446,7 @@ export class DomainController implements DomainControllerInterface {
               )
               .then((context) => {
                 log.debug(
-                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit actions replayed and notified to local cache, currentTransaction:",
+                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
                   this.localCache.currentTransaction()
                 );
                 return this.callUtil.callLocalCacheAction(
@@ -482,7 +477,7 @@ export class DomainController implements DomainControllerInterface {
                   definition: { currentApplicationVersion: newModelVersionUuid },
                 });
                 log.debug(
-                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController commit updating configuration",
+                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit updating configuration",
                   updatedConfiguration
                 );
                 const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
@@ -500,6 +495,8 @@ export class DomainController implements DomainControllerInterface {
                   newStoreBasedConfiguration
                 );
               });
+              log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!");
+
           }
           break;
         }

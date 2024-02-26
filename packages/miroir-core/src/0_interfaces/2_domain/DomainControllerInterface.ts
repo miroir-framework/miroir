@@ -8,6 +8,7 @@ import {
   MetaModel,
   entityInstanceCollection,
   instanceAction,
+  instanceCUDAction,
   modelAction,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
@@ -72,11 +73,7 @@ export type DomainNonTransactionalInstanceAction = z.infer<typeof domainNonTrans
 const domainTransactionalActionForUpdateMetaModelInstanceSchema = z.object({
   actionType: z.literal("DomainTransactionalAction"),
   actionName: z.literal("UpdateMetaModelInstance"),
-  update: z.object({
-    actionType: z.literal("EntityInstanceTransactionalCUDUpdate"),
-    actionName: CUDActionNameSchema,
-    objects: z.array(entityInstanceCollection),
-  }),
+  instanceAction: instanceCUDAction,
 });
 // type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionForUpdateMetaModelInstanceSchema>;
 

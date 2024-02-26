@@ -70,9 +70,12 @@ export async function uploadBooksAndReports(
     {
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
-      update: {
-        actionType: "EntityInstanceTransactionalCUDUpdate",
-        actionName: "create",
+      instanceAction: {
+        actionType: "instanceAction",
+        actionName: "createInstance",
+        applicationSection: "model",
+        deploymentUuid: applicationDeploymentLibrary.uuid,
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [
           {
             parentName: entityReport.name,
@@ -89,7 +92,27 @@ export async function uploadBooksAndReports(
             ],
           },
         ],
-      },
+      }
+      // update: {
+      //   actionType: "EntityInstanceTransactionalCUDUpdate",
+      //   actionName: "create",
+      //   objects: [
+      //     {
+      //       parentName: entityReport.name,
+      //       parentUuid: entityReport.uuid,
+      //       applicationSection: "model",
+      //       instances: [
+      //         reportAuthorDetails as EntityInstance,
+      //         reportAuthorList as EntityInstance,
+      //         reportBookDetails as EntityInstance,
+      //         reportBookList as EntityInstance,
+      //         reportCountryList as EntityInstance,
+      //         reportPublisherList as EntityInstance,
+      //         reportTestList as EntityInstance,
+      //       ],
+      //     },
+      //   ],
+      // },
     },
     currentModel
   );

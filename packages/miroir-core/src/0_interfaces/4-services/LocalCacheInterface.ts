@@ -34,11 +34,12 @@ export const localCacheUndoRedoActionSchema = domainUndoRedoActionSchema;
 export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoActionSchema>;
 
 // ################################################################################################
-export const localCacheTransactionalActionSchema = z.union([
-  // domainNonTransactionalInstanceActionSchema, // not only "transactional"?
-  domainTransactionalActionSchema,
-  domainUndoRedoActionSchema,
-]);
+export const localCacheTransactionalActionSchema =   domainTransactionalActionSchema;
+// z.union([
+//   // domainNonTransactionalInstanceActionSchema, // not only "transactional"?
+//   domainTransactionalActionSchema,
+//   // domainUndoRedoActionSchema,
+// ]);
 
 export type LocalCacheTransactionalAction = z.infer<typeof localCacheTransactionalActionSchema>;
 

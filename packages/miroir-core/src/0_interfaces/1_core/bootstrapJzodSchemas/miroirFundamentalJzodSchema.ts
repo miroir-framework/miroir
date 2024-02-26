@@ -1212,6 +1212,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "modelActionDropEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "dropEntity")?.actionParameters,
       "modelActionRenameEntity": modelEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionName.definition == "renameEntity")?.actionParameters,
       "modelAction": { "type": "union", "definition": modelEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
+      "instanceCUDAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.filter(e=>["createInstance", "updateInstance", "deleteInstance"].includes(e.actionParameters.definition.actionName.definition)).map(e=>e.actionParameters)},
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": {

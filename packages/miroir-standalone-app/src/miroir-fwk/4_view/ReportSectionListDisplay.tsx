@@ -159,16 +159,19 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     async (data:any) => {
       log.info('ReportComponent onEditFormObject called with new object value',data);
       
-      if (props.displayedDeploymentDefinition) {
+      if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
         if (props.chosenApplicationSection == 'model') {
           await domainController.handleDomainAction(
             props.displayedDeploymentDefinition?.uuid,
             {
               actionType: "DomainTransactionalAction",
               actionName: "UpdateMetaModelInstance",
-              update: {
-                actionType: "EntityInstanceTransactionalCUDUpdate",
-                actionName: "create",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "createInstance",
+                applicationSection: "model",
+                deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 objects: [
                   {
                     parentName: data.name,
@@ -181,6 +184,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                 ],
               }
+              // update: {
+              //   actionType: "EntityInstanceTransactionalCUDUpdate",
+              //   actionName: "create",
+              //   objects: [
+              //     {
+              //       parentName: data.name,
+              //       parentUuid: data.parentUuid,
+              //       applicationSection:'model',
+              //       instances: [
+              //         // newEntity 
+              //         data
+              //       ]
+              //     }
+              //   ],
+              // }
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {
@@ -225,9 +243,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {
               actionType: "DomainTransactionalAction",
               actionName: "UpdateMetaModelInstance",
-              update: {
-                actionType: "EntityInstanceTransactionalCUDUpdate",
-                actionName: "update",
+              instanceAction: {
+                actionType: "instanceAction",
+                actionName: "updateInstance",
+                applicationSection: "model",
+                deploymentUuid: props.displayedDeploymentDefinition.uuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 objects: [
                   {
                     parentName: data.name,
@@ -239,6 +260,20 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                 ],
               }
+              // update: {
+              //   actionType: "EntityInstanceTransactionalCUDUpdate",
+              //   actionName: "update",
+              //   objects: [
+              //     {
+              //       parentName: data.name,
+              //       parentUuid: data.parentUuid,
+              //       applicationSection:props.chosenApplicationSection,
+              //       instances: [
+              //         data 
+              //       ]
+              //     }
+              //   ],
+              // }
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {

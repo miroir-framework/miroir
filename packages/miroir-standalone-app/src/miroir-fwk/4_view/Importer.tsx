@@ -202,9 +202,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const createReportAction: DomainAction = {
       actionType: "DomainTransactionalAction",
       actionName: "UpdateMetaModelInstance",
-      update: {
-        actionType: "EntityInstanceTransactionalCUDUpdate",
-        actionName: "create",
+      instanceAction: {
+        actionType: "instanceAction",
+        actionName: "createInstance",
+        applicationSection: "model",
+        deploymentUuid: props.currentDeploymentUuid,
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         objects: [{
           parentName: newEntityReport.parentName,
           parentUuid: newEntityReport.parentUuid,
@@ -213,6 +216,17 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
             newEntityReport as EntityInstance
           ]
         }],
+// update: {
+//         actionType: "EntityInstanceTransactionalCUDUpdate",
+//         actionName: "create",
+//         objects: [{
+//           parentName: newEntityReport.parentName,
+//           parentUuid: newEntityReport.parentUuid,
+//           applicationSection:'model',
+//           instances: [
+//             newEntityReport as EntityInstance
+//           ]
+//         }],
       }
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createReportAction, props.currentModel);
