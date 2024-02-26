@@ -15,15 +15,15 @@ import {
   modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
-// ################################################################################################
-export const localCacheInstanceActionSchema = z.object(
-  {
-    actionType:z.literal("LocalCacheInstanceAction"),
-    instanceAction: instanceAction
-  }
-)
+// // ################################################################################################
+// export const localCacheInstanceActionSchema = z.object(
+//   {
+//     actionType:z.literal("LocalCacheInstanceAction"),
+//     instanceAction: instanceAction
+//   }
+// )
 
-export type LocalCacheInstanceAction = z.infer<typeof localCacheInstanceActionSchema>;
+// export type LocalCacheInstanceAction = z.infer<typeof localCacheInstanceActionSchema>;
 
 // ################################################################################################
 export const localCacheUndoRedoAction = z.object({
@@ -74,6 +74,6 @@ export declare interface LocalCacheInterface
   handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
-  handleLocalCacheInstanceAction(action:LocalCacheInstanceAction):ActionReturnType;
+  handleLocalCacheInstanceAction(action:InstanceAction):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

@@ -4,7 +4,7 @@ import produce, { Patch, applyPatches, enablePatches } from "immer";
 import {
   CUDActionNamesArray,
   Commit,
-  LocalCacheInstanceAction,
+  InstanceAction,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoAction,
@@ -43,7 +43,7 @@ function callNextReducer(
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
     | LocalCacheTransactionalInstanceActionWithDeployment
-    | LocalCacheInstanceAction
+    | InstanceAction
     | RemoteStoreCRUDAction
   >
 ): ReduxStateWithUndoRedo {
@@ -255,7 +255,7 @@ export function createUndoRedoReducer(
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
-      | LocalCacheInstanceAction
+      | InstanceAction
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalInstanceActionWithDeployment
       | LocalCacheUndoRedoAction
@@ -269,15 +269,15 @@ export function createUndoRedoReducer(
     switch (action.type) {
       case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction: {
         // no undo/redo
-        if (action.payload.actionType != "LocalCacheInstanceAction") {
+        if (action.payload.actionType != "instanceAction") {
           throw new Error(
             "reduceWithUndoRedo handleLocalCacheInstanceAction accepts only actionType=LocalCacheInstanceAction, found " + action.payload.actionType
           );
         } else {
           log.info("reduceWithUndoRedo handleLocalCacheInstanceAction", action.payload);
-          switch (action.payload.instanceAction.actionName) {
+          switch (action.payload.actionName) {
             case "replaceLocalCache": {
-              const next = callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheInstanceAction>);
+              const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
               return {
                 currentTransaction,
                 previousModelSnapshot, //TODO: effectively set previousModelSnapshot
@@ -289,7 +289,7 @@ export function createUndoRedoReducer(
               break;
             }
             default: { 
-              return callNextReducer(innerReducer, state, action as PayloadAction<LocalCacheInstanceAction>);
+              return callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
               break;
             }
           }

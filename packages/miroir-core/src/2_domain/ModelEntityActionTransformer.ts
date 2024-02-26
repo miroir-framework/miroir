@@ -4,10 +4,10 @@ import {
   ApplicationSection,
   EntityDefinition,
   EntityInstanceCollection,
+  InstanceAction,
   MetaModel,
   ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheInstanceAction } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
@@ -28,19 +28,19 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export class ModelEntityActionTransformer{
 
   // ###################################################################################################
-  static modelActionToLocalCacheInstanceAction(
+  static modelActionToInstanceAction(
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
-  ):LocalCacheInstanceAction[] {
+  ):InstanceAction[] {
     log.info("modelActionToLocalCacheInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionName) {
       case "createEntity": {
         return [
           {
-            actionType:"LocalCacheInstanceAction",
-            // deploymentUuid,
-            instanceAction: {
+            // actionType:"LocalCacheInstanceAction",
+            // // deploymentUuid,
+            // instanceAction: {
               actionType: "instanceAction",
               actionName: "createInstance",
               deploymentUuid,
@@ -64,7 +64,7 @@ export class ModelEntityActionTransformer{
                   ]
                 )
               ]
-            }
+            // }
           }
         ];
         break;
@@ -72,9 +72,9 @@ export class ModelEntityActionTransformer{
       case "dropEntity": {
         return [
           {
-            actionType: "LocalCacheInstanceAction",
-            // deploymentUuid,
-            instanceAction: {
+            // actionType: "LocalCacheInstanceAction",
+            // // deploymentUuid,
+            // instanceAction: {
               actionType: "instanceAction",
               actionName: "deleteInstance",
               deploymentUuid,
@@ -94,7 +94,7 @@ export class ModelEntityActionTransformer{
                   instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
                 },
               ],
-            },
+            // },
           },
         ];
         break;
@@ -113,18 +113,18 @@ export class ModelEntityActionTransformer{
             {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheInstanceAction[] = [
+          const result: InstanceAction[] = [
             {
-              actionType: "LocalCacheInstanceAction",
-              // deploymentUuid,
-              instanceAction: {
+              // actionType: "LocalCacheInstanceAction",
+              // // deploymentUuid,
+              // instanceAction: {
                 actionType: "instanceAction",
                 actionName: "updateInstance",
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 deploymentUuid,
                 applicationSection: "model",
                 objects
-              },
+              // },
             },
           ];
           log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
@@ -172,18 +172,18 @@ export class ModelEntityActionTransformer{
             // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheInstanceAction[] = [
+          const result: InstanceAction[] = [
             {
-              actionType: "LocalCacheInstanceAction",
-              // deploymentUuid,
-              instanceAction: {
+              // actionType: "LocalCacheInstanceAction",
+              // // deploymentUuid,
+              // instanceAction: {
                 actionType: "instanceAction",
                 actionName: "updateInstance",
                 deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 applicationSection: "model",
                 objects
-              },
+              // },
             },
           ];
           log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))

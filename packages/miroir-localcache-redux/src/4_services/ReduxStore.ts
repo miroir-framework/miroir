@@ -10,10 +10,8 @@ import {
   ACTION_OK,
   ActionReturnType,
   ApplicationSection,
-  DomainTransactionalInstanceAction,
   InstanceAction,
   LocalCacheInfo,
-  LocalCacheInstanceAction,
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
@@ -274,7 +272,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheInstanceAction(instanceAction: LocalCacheInstanceAction): ActionReturnType {
+  handleLocalCacheInstanceAction(instanceAction: InstanceAction): ActionReturnType {
     log.info("handleLocalCacheInstanceAction", instanceAction);
     
     return exceptionToActionReturnType(() =>
