@@ -373,13 +373,13 @@ function ReplaceInstancesForSectionEntity(
  * @param action 
  * @returns 
  */
-function handleLocalCacheUndoRedoAction(
+function handleUndoRedoAction(
   state: LocalCacheSliceState,
   // deploymentUuid: Uuid,
   action: LocalCacheUndoRedoAction
 ): ActionReturnType {
   // log.info(
-  //   "localCacheSliceObject handleLocalCacheUndoRedoAction called",
+  //   "localCacheSliceObject handleUndoRedoAction called",
   //   action.actionName,
   //   "deploymentUuid",
   //   deploymentUuid,
@@ -392,12 +392,12 @@ function handleLocalCacheUndoRedoAction(
       switch (action.undoRedoAction) {
         case "undo":
         case "redo": {
-          log.warn("localCache.handleLocalCacheUndoRedoAction does nothing for DomainUndoRedoAction", action);
+          log.warn("localCache.handleUndoRedoAction does nothing for DomainUndoRedoAction", action);
           break;
         }
         default:
           log.warn(
-            "localCacheSliceObject handleLocalCacheUndoRedoAction deploymentUuid",
+            "localCacheSliceObject handleUndoRedoAction deploymentUuid",
             action.deploymentUuid,
             "action could not be taken into account, unkown action",
             JSON.stringify(action, undefined, 2)
@@ -573,13 +573,13 @@ function handleInstanceAction(
 
 
 //#########################################################################################
-function handleLocalCacheModelAction(
+function handleModelAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
   action: ModelAction
 ): ActionReturnType {
   log.info(
-    "localCacheSliceObject handleLocalCacheModelAction called",
+    "localCacheSliceObject handleModelAction called",
     action.actionName,
     "deploymentUuid",
     deploymentUuid,
@@ -666,20 +666,19 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
         action.payload.instanceAction
       ));
     },
-    [localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](
+    [localCacheSliceInputActionNamesObject.handleUndoRedoAction](
       state: LocalCacheSliceState,
       action: PayloadAction<LocalCacheUndoRedoAction>
     ): void {
-      actionReturnTypeToException(handleLocalCacheUndoRedoAction(state, action.payload));
+      actionReturnTypeToException(handleUndoRedoAction(state, action.payload));
     },
-    [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](
+    [localCacheSliceInputActionNamesObject.handleModelAction](
       state: LocalCacheSliceState,
-      // action: PayloadAction<LocalCacheModelActionWithDeployment>
       action: PayloadAction<ModelAction>
     ): void {
-      actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.deploymentUuid, action.payload));
+      actionReturnTypeToException(handleModelAction(state, action.payload.deploymentUuid, action.payload));
     },
-    [localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
+    [localCacheSliceInputActionNamesObject.handleInstanceAction](
       state: LocalCacheSliceState,
       action: PayloadAction<InstanceAction>
     ): void {

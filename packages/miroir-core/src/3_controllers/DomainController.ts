@@ -110,7 +110,7 @@ export class DomainController implements DomainControllerInterface {
           this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleLocalCacheUndoRedoAction",
+            "handleUndoRedoAction",
             {
               actionType: "localCacheUndoRedoAction",
               deploymentUuid,
@@ -259,7 +259,7 @@ export class DomainController implements DomainControllerInterface {
       await this.callUtil.callLocalCacheAction(
         {}, // context
         {}, // context update
-        "handleLocalCacheInstanceAction",
+        "handleInstanceAction",
         domainNonTransactionalInstanceAction.instanceAction
       );
 
@@ -311,7 +311,7 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleLocalCacheModelAction",
+            "handleModelAction",
             // {
             //   actionType: "localCacheModelActionWithDeployment",
             //   deploymentUuid: modelAction.deploymentUuid,
@@ -442,7 +442,7 @@ export class DomainController implements DomainControllerInterface {
               .callLocalCacheAction(
                 {}, // context
                 {}, // context update
-                "handleLocalCacheModelAction",
+                "handleModelAction",
                 {
                   // actionType: "localCacheModelActionWithDeployment",
                   // modelAction: {
@@ -461,7 +461,7 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callLocalCacheAction(
                   {}, // context
                   {}, // context update
-                  "handleLocalCacheInstanceAction",
+                  "handleInstanceAction",
                   {
                     // actionType: "LocalCacheInstanceAction",
                     // instanceAction: {
@@ -634,7 +634,7 @@ export class DomainController implements DomainControllerInterface {
                 this.callUtil.callLocalCacheAction(
                   context, // context
                   {}, // context update
-                  "handleLocalCacheInstanceAction",
+                  "handleInstanceAction",
                   {
                     // actionType: "LocalCacheInstanceAction",
                     // instanceAction: {
@@ -652,7 +652,7 @@ export class DomainController implements DomainControllerInterface {
                   this.callUtil.callLocalCacheAction(
                     context, // context
                     {}, // context update
-                    "handleLocalCacheModelAction",
+                    "handleModelAction",
                     {
                       // actionType: "localCacheModelActionWithDeployment",
                       // modelAction: {

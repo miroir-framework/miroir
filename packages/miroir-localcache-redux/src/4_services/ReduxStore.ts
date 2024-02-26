@@ -241,22 +241,22 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoAction): ActionReturnType {
+  handleUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoAction): ActionReturnType {
     // const result:ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
       ()=> this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](localCacheUndoRedoAction)
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleUndoRedoAction](localCacheUndoRedoAction)
       )
     )
     // return ACTION_OK;
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(localCacheEntityAction: ModelAction): ActionReturnType {
+  handleModelAction(localCacheEntityAction: ModelAction): ActionReturnType {
     // const result: ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
       ()=> this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](localCacheEntityAction)
+      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleModelAction](localCacheEntityAction)
     ));
   }
 
@@ -271,12 +271,12 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheInstanceAction(instanceAction: InstanceAction): ActionReturnType {
-    log.info("handleLocalCacheInstanceAction", instanceAction);
+  handleInstanceAction(instanceAction: InstanceAction): ActionReturnType {
+    log.info("handleInstanceAction", instanceAction);
     
     return exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleInstanceAction](
           instanceAction
         )
       )

@@ -47,10 +47,9 @@ export declare interface LocalCacheInterface
   currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
-  handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
+  handleUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
-  // handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
-  handleLocalCacheModelAction(action:ModelAction):ActionReturnType;
-  handleLocalCacheInstanceAction(action:InstanceAction):ActionReturnType;
+  handleModelAction(action:ModelAction):ActionReturnType;
+  handleInstanceAction(action:InstanceAction):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

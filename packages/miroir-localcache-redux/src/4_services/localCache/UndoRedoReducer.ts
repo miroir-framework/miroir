@@ -254,15 +254,15 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
 
     switch (action.type) {
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction: {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleInstanceAction: {
         // no undo/redo
         if (action.payload.actionType != "instanceAction") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheInstanceAction accepts only actionType=LocalCacheInstanceAction, found " +
+            "reduceWithUndoRedo handleInstanceAction accepts only actionType=LocalCacheInstanceAction, found " +
               action.payload.actionType
           );
         } else {
-          log.info("reduceWithUndoRedo handleLocalCacheInstanceAction", action.payload);
+          log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
           switch (action.payload.actionName) {
             case "replaceLocalCache": {
               const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
@@ -283,20 +283,20 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
           }
         }
       }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheModelAction: {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleModelAction: {
         // if (action.payload.actionType != "localCacheModelActionWithDeployment") {
         if (action.payload.actionType != "modelAction") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheModelAction accepts only actionType=modelAction, found " +
+            "reduceWithUndoRedo handleModelAction accepts only actionType=modelAction, found " +
               action.payload.actionType
           );
         } else {
           // throw new Error(
-          //   "reduceWithUndoRedo handleLocalCacheModelAction not treated yet!" + action.payload.actionType
+          //   "reduceWithUndoRedo handleModelAction not treated yet!" + action.payload.actionType
           // );
-          // log.info("reduceWithUndoRedo handleLocalCacheModelAction treating action", action.payload)
+          // log.info("reduceWithUndoRedo handleModelAction treating action", action.payload)
           log.info(
-            "reduceWithUndoRedo handleLocalCacheModelAction treating action",
+            "reduceWithUndoRedo handleModelAction treating action",
             JSON.stringify(action.payload, null, 2)
           );
           switch (action.payload.actionName) {
@@ -343,12 +343,12 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
         }
         break;
       }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction: {
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleUndoRedoAction: {
         // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
         log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
         if (action.payload.actionType !== "localCacheUndoRedoAction") {
           throw new Error(
-            "reduceWithUndoRedo handleLocalCacheUndoRedoAction does not accept actionType=" + action.payload.actionType
+            "reduceWithUndoRedo handleUndoRedoAction does not accept actionType=" + action.payload.actionType
           );
         } else {
           // const localAction = (action.payload as LocalCacheTransactionalInstanceActionWithDeployment)
@@ -363,7 +363,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
                   pastModelPatches[pastModelPatches.length - 1].inverseChanges
                 );
                 log.info(
-                  "reduceWithUndoRedo handleLocalCacheUndoRedoAction undo patches",
+                  "reduceWithUndoRedo handleUndoRedoAction undo patches",
                   pastModelPatches,
                   "undo",
                   pastModelPatches[0],
@@ -379,7 +379,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
                 };
               } else {
                 // do nothing
-                log.warn("reduceWithUndoRedo handleLocalCacheUndoRedoAction cannot further undo, ignoring undo action");
+                log.warn("reduceWithUndoRedo handleUndoRedoAction cannot further undo, ignoring undo action");
                 return {
                   currentTransaction,
                   previousModelSnapshot,
@@ -406,7 +406,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
               } else {
                 // do nothing
                 log.warn(
-                  "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction cannot further redo, ignoring redo action"
+                  "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction cannot further redo, ignoring redo action"
                 );
                 return {
                   currentTransaction,
@@ -421,7 +421,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             }
             default: {
               throw new Error(
-                "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction DomainUndoRedoAction cannot handle action:" +
+                "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action:" +
                   action.payload.undoRedoAction
               );
             }
