@@ -22,7 +22,6 @@ import {
   EntityInstancesUuidIndex,
   InstanceAction,
   JzodSchema,
-  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoAction,
   LoggerInterface,
@@ -594,9 +593,9 @@ function handleLocalCacheModelAction(
     case "modelAction": {
       const localInstanceActions =
         ModelEntityActionTransformer.modelActionToInstanceAction(
-          deploymentUuid,
+          action.deploymentUuid,
           action,
-          currentModel(deploymentUuid, state)
+          currentModel(action.deploymentUuid, state)
         );
 
       for (const localInstanceAction of localInstanceActions) {
@@ -675,9 +674,10 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheModelAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheModelActionWithDeployment>
+      // action: PayloadAction<LocalCacheModelActionWithDeployment>
+      action: PayloadAction<ModelAction>
     ): void {
-      actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.modelAction.deploymentUuid, action.payload.modelAction));
+      actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.deploymentUuid, action.payload));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
       state: LocalCacheSliceState,

@@ -337,14 +337,11 @@ export {
   StoreControllerManagerInterface
 } from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
 export {
-  LocalCacheModelActionWithDeployment,
-  LocalCacheModelActionWithDeploymentSchema,
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeploymentSchema,
   LocalCacheInterface,
   LocalCacheUndoRedoAction,
   localCacheUndoRedoAction,
-  CreateInstanceParameters,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
 export {
   HttpRequestBodyFormat,

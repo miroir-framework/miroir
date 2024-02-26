@@ -14,7 +14,6 @@ import {
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
   LocalCacheInterface,
-  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
@@ -80,7 +79,7 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -313,11 +312,11 @@ export class DomainController implements DomainControllerInterface {
             {}, // context
             {}, // context update
             "handleLocalCacheModelAction",
-            {
-              actionType: "localCacheModelActionWithDeployment",
-              deploymentUuid: modelAction.deploymentUuid,
+            // {
+            //   actionType: "localCacheModelActionWithDeployment",
+            //   deploymentUuid: modelAction.deploymentUuid,
               modelAction,
-            }
+            // }
             // currentModel
           );
           break;
@@ -383,7 +382,7 @@ export class DomainController implements DomainControllerInterface {
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
 
             for (const replayAction of this.localCache.currentTransaction()) {
-              const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment = replayAction;
+              // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction = replayAction;
               log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction", replayAction);
               switch (replayAction.actionType) {
                 case "localCacheTransactionalInstanceActionWithDeployment": {
@@ -405,16 +404,26 @@ export class DomainController implements DomainControllerInterface {
                       );
                   break;
                 }
-                case "localCacheModelActionWithDeployment": {
+                case "modelAction": {
                   await this.callUtil.callRemoteAction(
                     {}, // context
                     {}, // context update
                     "handleRemoteStoreModelAction",
-                    replayAction.modelAction.deploymentUuid,
-                    replayAction.modelAction
+                    replayAction.deploymentUuid,
+                    replayAction
                   );
                   break;
                 }
+                // case "localCacheModelActionWithDeployment": {
+                //   await this.callUtil.callRemoteAction(
+                //     {}, // context
+                //     {}, // context update
+                //     "handleRemoteStoreModelAction",
+                //     replayAction.modelAction.deploymentUuid,
+                //     replayAction.modelAction
+                //   );
+                //   break;
+                // }
                 default:
                   throw new Error(
                     "DomainController handleModelAction commit could not handle replay action:" +
@@ -435,13 +444,13 @@ export class DomainController implements DomainControllerInterface {
                 {}, // context update
                 "handleLocalCacheModelAction",
                 {
-                  actionType: "localCacheModelActionWithDeployment",
-                  deploymentUuid:modelAction.deploymentUuid,
-                  modelAction: {
+                  // actionType: "localCacheModelActionWithDeployment",
+                  // modelAction: {
                     actionType: "modelAction",
                     actionName: "commit",
+                    deploymentUuid:modelAction.deploymentUuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                  },
+                  // },
                 }
               )
               .then((context) => {
@@ -645,13 +654,13 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context update
                     "handleLocalCacheModelAction",
                     {
-                      actionType: "localCacheModelActionWithDeployment",
-                      deploymentUuid,
-                      modelAction: {
+                      // actionType: "localCacheModelActionWithDeployment",
+                      // modelAction: {
                         actionType: "modelAction",
                         actionName: "rollback",
+                        deploymentUuid,
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      },
+                      // },
                     }
                   )
               )

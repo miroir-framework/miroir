@@ -11,6 +11,7 @@ import {
   InstanceAction,
   instanceCUDAction,
   MetaModel,
+  ModelAction,
   modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
@@ -31,20 +32,6 @@ export const LocalCacheTransactionalInstanceActionWithDeploymentSchema = z.objec
 export type LocalCacheTransactionalInstanceActionWithDeployment = z.infer<typeof LocalCacheTransactionalInstanceActionWithDeploymentSchema>;
 
 // ################################################################################################
-export const LocalCacheModelActionWithDeploymentSchema = z.object({
-  actionType:z.literal("localCacheModelActionWithDeployment"),
-  deploymentUuid: z.string().uuid(),
-  modelAction: modelAction,
-});
-export type LocalCacheModelActionWithDeployment = z.infer<typeof LocalCacheModelActionWithDeploymentSchema>;
-
-export type CreateInstanceParameters = {
-  deploymentUuid: string,
-  applicationSection: ApplicationSection,
-  objects: EntityInstanceCollection[],
-};
-
-// ################################################################################################
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
@@ -57,12 +44,13 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
   handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
-  handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
+  // handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
+  handleLocalCacheModelAction(action:ModelAction):ActionReturnType;
   handleLocalCacheInstanceAction(action:InstanceAction):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

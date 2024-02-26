@@ -13,7 +13,6 @@ import {
   InstanceAction,
   LocalCacheInfo,
   LocalCacheInterface,
-  LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoAction,
   LoggerInterface,
@@ -253,7 +252,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheModelAction(localCacheEntityAction: LocalCacheModelActionWithDeployment): ActionReturnType {
+  handleLocalCacheModelAction(localCacheEntityAction: ModelAction): ActionReturnType {
     // const result: ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
       ()=> this.innerReduxStore.dispatch(
@@ -285,7 +284,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | LocalCacheModelActionWithDeployment)[] {
+  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

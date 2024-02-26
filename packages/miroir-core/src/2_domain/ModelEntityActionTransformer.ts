@@ -38,33 +38,29 @@ export class ModelEntityActionTransformer{
       case "createEntity": {
         return [
           {
-            // actionType:"LocalCacheInstanceAction",
-            // // deploymentUuid,
-            // instanceAction: {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              deploymentUuid: modelAction.deploymentUuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "model",
-              objects: [
-                ...modelAction.entities.flatMap(
-                  a => [
-                    {
-                      parentName:entityEntity.name,
-                      parentUuid:entityEntity.uuid,
-                      applicationSection:'model' as ApplicationSection,
-                      instances:[a.entity]
-                    },
-                    {
-                      parentName:entityEntityDefinition.name,
-                      parentUuid:entityEntityDefinition.uuid,
-                      applicationSection:'model' as ApplicationSection, 
-                      instances:[a.entityDefinition]
-                    },
-                  ]
-                )
-              ]
-            // }
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            deploymentUuid: modelAction.deploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            applicationSection: "model",
+            objects: [
+              ...modelAction.entities.flatMap(
+                a => [
+                  {
+                    parentName:entityEntity.name,
+                    parentUuid:entityEntity.uuid,
+                    applicationSection:'model' as ApplicationSection,
+                    instances:[a.entity]
+                  },
+                  {
+                    parentName:entityEntityDefinition.name,
+                    parentUuid:entityEntityDefinition.uuid,
+                    applicationSection:'model' as ApplicationSection, 
+                    instances:[a.entityDefinition]
+                  },
+                ]
+              )
+            ]
           }
         ];
         break;
@@ -72,29 +68,25 @@ export class ModelEntityActionTransformer{
       case "dropEntity": {
         return [
           {
-            // actionType: "LocalCacheInstanceAction",
-            // // deploymentUuid,
-            // instanceAction: {
-              actionType: "instanceAction",
-              actionName: "deleteInstance",
-              deploymentUuid: modelAction.deploymentUuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              applicationSection: "model",
-              objects: [
-                {
-                  parentName: entityEntity.name,
-                  parentUuid: entityEntity.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.entityUuid }],
-                },
-                {
-                  parentName: entityEntityDefinition.name,
-                  parentUuid: entityEntityDefinition.uuid,
-                  applicationSection: "model",
-                  instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
-                },
-              ],
-            // },
+            actionType: "instanceAction",
+            actionName: "deleteInstance",
+            deploymentUuid: modelAction.deploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            applicationSection: "model",
+            objects: [
+              {
+                parentName: entityEntity.name,
+                parentUuid: entityEntity.uuid,
+                applicationSection: "model",
+                instances: [{ parentUuid: entityEntity.uuid, uuid: modelAction.entityUuid }],
+              },
+              {
+                parentName: entityEntityDefinition.name,
+                parentUuid: entityEntityDefinition.uuid,
+                applicationSection: "model",
+                instances: [{ parentUuid: entityEntityDefinition.uuid, uuid: modelAction.entityDefinitionUuid }],
+              },
+            ],
           },
         ];
         break;
@@ -115,26 +107,17 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              // actionType: "LocalCacheInstanceAction",
-              // // deploymentUuid,
-              // instanceAction: {
-                actionType: "instanceAction",
-                actionName: "updateInstance",
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                deploymentUuid,
-                applicationSection: "model",
-                objects
-              // },
+              actionType: "instanceAction",
+              actionName: "updateInstance",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              deploymentUuid,
+              applicationSection: "model",
+              objects
             },
           ];
           log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
 
           return result;
-
-          // domainActionCUDUpdate = {
-          //   actionName: "update",
-          //   objects
-          // }
         } else {
           log.error('modelActionToLocalCacheInstanceAction renameEntity could not rename',modelAction);
           return [];
@@ -174,26 +157,17 @@ export class ModelEntityActionTransformer{
           ];
           const result: InstanceAction[] = [
             {
-              // actionType: "LocalCacheInstanceAction",
-              // // deploymentUuid,
-              // instanceAction: {
-                actionType: "instanceAction",
-                actionName: "updateInstance",
-                deploymentUuid: modelAction.deploymentUuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                applicationSection: "model",
-                objects
-              // },
+              actionType: "instanceAction",
+              actionName: "updateInstance",
+              deploymentUuid: modelAction.deploymentUuid,
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              applicationSection: "model",
+              objects
             },
           ];
           log.info("modelActionToLocalCacheInstanceAction returning for ", deploymentUuid, modelAction,"result=", JSON.stringify(result, null, 2))
 
           return result;
-
-          // domainActionCUDUpdate = {
-          //   actionName: "update",
-          //   objects
-          // }
         } else {
           log.error('modelActionToLocalCacheInstanceAction alterEntityAttribute could not rename',modelAction);
           return [];
