@@ -3,7 +3,7 @@ import { Patch } from "immer";
 import {
   Commit,
   DomainElement,
-  LocalCacheInstanceActionWithDeployment,
+  LocalCacheInstanceAction,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheUndoRedoAction,
@@ -59,7 +59,7 @@ export type InnerReducerInterface = (
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalInstanceActionWithDeployment
     | LocalCacheUndoRedoAction
-    | LocalCacheInstanceActionWithDeployment
+    | LocalCacheInstanceAction
     | RemoteStoreCRUDAction
   >
 ) => LocalCacheSliceState;
@@ -71,7 +71,7 @@ export type ReduxReducerWithUndoRedoInterface = (
     | LocalCacheModelActionWithDeployment
     | LocalCacheTransactionalInstanceActionWithDeployment
     | LocalCacheUndoRedoAction
-    | LocalCacheInstanceActionWithDeployment
+    | LocalCacheInstanceAction
     | RemoteStoreCRUDAction
   >
 ) => ReduxStateWithUndoRedo;

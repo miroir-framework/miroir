@@ -7,7 +7,7 @@ import {
   MetaModel,
   ModelAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheInstanceActionWithDeployment } from "../0_interfaces/4-services/LocalCacheInterface.js";
+import { LocalCacheInstanceAction } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 
@@ -32,14 +32,14 @@ export class ModelEntityActionTransformer{
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
-  ):LocalCacheInstanceActionWithDeployment[] {
+  ):LocalCacheInstanceAction[] {
     log.info("modelActionToLocalCacheInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionName) {
       case "createEntity": {
         return [
           {
-            actionType:"LocalCacheInstanceActionWithDeployment",
-            deploymentUuid,
+            actionType:"LocalCacheInstanceAction",
+            // deploymentUuid,
             instanceAction: {
               actionType: "instanceAction",
               actionName: "createInstance",
@@ -72,8 +72,8 @@ export class ModelEntityActionTransformer{
       case "dropEntity": {
         return [
           {
-            actionType: "LocalCacheInstanceActionWithDeployment",
-            deploymentUuid,
+            actionType: "LocalCacheInstanceAction",
+            // deploymentUuid,
             instanceAction: {
               actionType: "instanceAction",
               actionName: "deleteInstance",
@@ -113,10 +113,10 @@ export class ModelEntityActionTransformer{
             {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheInstanceActionWithDeployment[] = [
+          const result: LocalCacheInstanceAction[] = [
             {
-              actionType: "LocalCacheInstanceActionWithDeployment",
-              deploymentUuid,
+              actionType: "LocalCacheInstanceAction",
+              // deploymentUuid,
               instanceAction: {
                 actionType: "instanceAction",
                 actionName: "updateInstance",
@@ -172,10 +172,10 @@ export class ModelEntityActionTransformer{
             // {parentName:currentEntity.parentName, parentUuid:currentEntity.parentUuid, applicationSection:'model', instances:[modifiedEntity]},
             {parentName:currentEntityDefinition.parentName, parentUuid:currentEntityDefinition.parentUuid, applicationSection:'model', instances:[modifiedEntityDefinition]},
           ];
-          const result: LocalCacheInstanceActionWithDeployment[] = [
+          const result: LocalCacheInstanceAction[] = [
             {
-              actionType: "LocalCacheInstanceActionWithDeployment",
-              deploymentUuid,
+              actionType: "LocalCacheInstanceAction",
+              // deploymentUuid,
               instanceAction: {
                 actionType: "instanceAction",
                 actionName: "updateInstance",

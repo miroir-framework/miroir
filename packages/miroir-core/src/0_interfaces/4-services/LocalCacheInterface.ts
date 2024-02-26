@@ -16,19 +16,18 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
-export const LocalCacheInstanceActionWithDeploymentSchema = z.object(
+export const localCacheInstanceActionSchema = z.object(
   {
-    actionType:z.literal("LocalCacheInstanceActionWithDeployment"),
-    deploymentUuid: z.string().uuid(),
+    actionType:z.literal("LocalCacheInstanceAction"),
     instanceAction: instanceAction
   }
 )
 
-export type LocalCacheInstanceActionWithDeployment = z.infer<typeof LocalCacheInstanceActionWithDeploymentSchema>;
+export type LocalCacheInstanceAction = z.infer<typeof localCacheInstanceActionSchema>;
 
 // ################################################################################################
 export const localCacheUndoRedoAction = z.object({
-  actionType:z.literal("localCacheUndoRedoActionWithDeployment"),
+  actionType:z.literal("localCacheUndoRedoAction"),
   deploymentUuid: z.string().uuid(),
   undoRedoAction: UndoRedoActionNamesSchema,
 });
@@ -75,6 +74,6 @@ export declare interface LocalCacheInterface
   handleLocalCacheUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
   handleLocalCacheModelAction(action:LocalCacheModelActionWithDeployment):ActionReturnType;
-  handleLocalCacheInstanceAction(action:LocalCacheInstanceActionWithDeployment):ActionReturnType;
+  handleLocalCacheInstanceAction(action:LocalCacheInstanceAction):ActionReturnType;
   handleEndpointAction(action:InstanceAction):ActionReturnType;
 }

@@ -13,7 +13,7 @@ import {
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
-  LocalCacheInstanceActionWithDeployment,
+  LocalCacheInstanceAction,
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment
@@ -114,7 +114,7 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             "handleLocalCacheUndoRedoAction",
             {
-              actionType: "localCacheUndoRedoActionWithDeployment",
+              actionType: "localCacheUndoRedoAction",
               deploymentUuid,
               undoRedoAction: domainTransactionalAction.actionName,
             }
@@ -253,9 +253,9 @@ export class DomainController implements DomainControllerInterface {
         "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
         domainNonTransactionalInstanceAction
       );
-      const instanceAction: LocalCacheInstanceActionWithDeployment = {
-        actionType: "LocalCacheInstanceActionWithDeployment",
-        deploymentUuid,
+      const instanceAction: LocalCacheInstanceAction = {
+        actionType: "LocalCacheInstanceAction",
+        // deploymentUuid,
         instanceAction: domainNonTransactionalInstanceAction.instanceAction
       };
       await this.callUtil.callLocalCacheAction(
@@ -455,12 +455,12 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   "handleLocalCacheInstanceAction",
                   {
-                    actionType: "LocalCacheInstanceActionWithDeployment",
-                    deploymentUuid,
+                    actionType: "LocalCacheInstanceAction",
                     instanceAction: {
                       actionType: "instanceAction",
                       actionName: "createInstance",
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      deploymentUuid,
                       applicationSection: "model",
                       objects: [
                         {
@@ -628,11 +628,11 @@ export class DomainController implements DomainControllerInterface {
                   {}, // context update
                   "handleLocalCacheInstanceAction",
                   {
-                    actionType: "LocalCacheInstanceActionWithDeployment",
-                    deploymentUuid,
+                    actionType: "LocalCacheInstanceAction",
                     instanceAction: {
                       actionType: "instanceAction",
                       actionName: "replaceLocalCache",
+                      deploymentUuid,
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                       objects: instances,
                     },
