@@ -150,19 +150,6 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
     return callParams.operation(callParams.url, callParams.args);
   }
 
-  // // ##################################################################################
-  // async handleNetworkRemoteStoreOLDModelAction(
-  //   deploymentUuid: string,
-  //   action: RemoteStoreAction
-  // ): Promise<RestClientCallReturnType> {
-  //   const callParams = this.getRestCallParams(
-  //     action,
-  //     this.rootApiUrl + "/modelOLDWithDeployment/" + deploymentUuid + "/" + action.actionName
-  //   );
-  //   log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreOLDModelAction", action, "callParams", callParams);
-  //   return callParams.operation(callParams.url, callParams.args);
-  // }
-
   // ##################################################################################
   async handleNetworkRemoteStoreModelEntityAction(
     deploymentUuid: string,

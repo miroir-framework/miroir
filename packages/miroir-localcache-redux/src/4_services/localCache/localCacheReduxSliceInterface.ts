@@ -5,7 +5,6 @@ import {
   DomainElement,
   InstanceAction,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoAction,
   ModelAction,
   RemoteStoreCRUDAction,
   UndoRedoAction,
@@ -60,7 +59,6 @@ export type InnerReducerInterface = (
     // | LocalCacheModelActionWithDeployment
     | ModelAction
     | LocalCacheTransactionalInstanceActionWithDeployment
-    // | LocalCacheUndoRedoAction
     | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction
@@ -71,10 +69,8 @@ export type InnerReducerInterface = (
 export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
-    // | LocalCacheModelActionWithDeployment
     | ModelAction
     | LocalCacheTransactionalInstanceActionWithDeployment
-    // | LocalCacheUndoRedoAction
     | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction

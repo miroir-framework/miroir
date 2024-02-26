@@ -5,13 +5,12 @@ import {
   Commit,
   InstanceAction,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoAction,
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreCRUDAction,
   UndoRedoAction,
-  getLoggerName,
+  getLoggerName
 } from "miroir-core";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
@@ -99,13 +98,6 @@ function callUndoRedoReducer(
       break;
     }
     case "localCacheTransactionalInstanceActionWithDeployment": {
-      // const localAction = action.payload as LocalCacheTransactionalInstanceActionWithDeployment
-      // if (
-      //   undoableSliceUpdateActions.some(
-      //     (item) => item.type == action?.type && item.actionName == localAction.instanceAction.actionName
-      //   )
-      // ) {
-      // TODO: test can probably be removed, sorting of undoable actions is done before reaching this point
       log.info(
         "callUndoRedoReducer undoable action type",
         action.type,
@@ -115,21 +107,6 @@ function callUndoRedoReducer(
         action.payload
       );
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
-      // } else {
-      //   log.warn(
-      //     "callUndoRedoReducer not undoable action type",
-      //     action.payload.actionType,
-      //     "action",
-      //     action.payload,
-      //     "changes",
-      //     changes,
-      //     "inverseChanges",
-      //     inverseChanges
-      //   );
-      //   log.warn("undoableSliceUpdateActions", undoableSliceUpdateActions);
-      //   // log.warn("newPresentModelSnapshot", JSON.stringify(newPresentModelSnapshot));
-      //   return { newSnapshot: newPresentModelSnapshot, changes: [], inverseChanges: [] };
-      // }
       break;
     }
     default: {
@@ -210,9 +187,6 @@ const callNextReducerWithUndoRedoForModelAction = (
     // presentModelSnapshot !== newSnapshot
     const newPatch: ReduxStateChanges = {
       action: action.payload,
-      // action.payload.actionType == "localCacheModelActionWithDeployment"
-      //   ? action.payload
-      //   : action.payload as DomainTransactionalInstanceAction),
       changes,
       inverseChanges,
     };
@@ -352,9 +326,6 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             "reduceWithUndoRedo handleUndoRedoAction does not accept actionType=" + action.payload.actionType
           );
         } else {
-          // const localAction = (action.payload as LocalCacheTransactionalInstanceActionWithDeployment)
-          // switch (action.payload.actionType) {
-          //   case "localCacheUndoRedoAction": {
           switch (action.payload.actionName) {
             case "undo": {
               if (pastModelPatches.length > 0) {
@@ -428,13 +399,6 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             }
           }
           break;
-          // }
-          // default: {
-          //   throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-          //   log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
-          //   break;
-          // }
-          // }
         }
         break;
       }
@@ -453,27 +417,11 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
               action.payload.actionType
           );
         } else {
-          // const localAction = (action.payload as LocalCacheTransactionalInstanceActionWithDeployment)
-          // switch (action.payload.domainAction.actionType) {
-          //   case "DomainTransactionalInstanceAction": {
-          //     switch (action.payload.domainAction.actionName) {
-          //       case "UpdateMetaModelInstance":
-          //       default: // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-          //         // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
           return callNextReducerWithUndoRedo(
             innerReducer,
             state,
             action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
           );
-          // }
-          //   break;
-          // }
-          // default: {
-          //   throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-          //   log.error("reduceWithUndoRedo handleDomainAction default case for action", action);
-          //   break;
-          // }
-          // }
         }
         break;
       }

@@ -14,14 +14,6 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ################################################################################################
-export const localCacheUndoRedoAction = z.object({
-  actionType:z.literal("localCacheUndoRedoAction"),
-  deploymentUuid: z.string().uuid(),
-  undoRedoAction: UndoRedoActionNamesSchema,
-});
-export type LocalCacheUndoRedoAction = z.infer<typeof localCacheUndoRedoAction>;
-
-// ################################################################################################
 export const LocalCacheTransactionalInstanceActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheTransactionalInstanceActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
@@ -45,7 +37,6 @@ export declare interface LocalCacheInterface
   currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
-  // handleUndoRedoAction(action:LocalCacheUndoRedoAction):ActionReturnType;
   handleUndoRedoAction(action:UndoRedoAction):ActionReturnType;
   handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
   handleModelAction(action:ModelAction):ActionReturnType;

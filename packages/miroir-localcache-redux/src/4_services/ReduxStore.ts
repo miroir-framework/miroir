@@ -14,7 +14,6 @@ import {
   LocalCacheInfo,
   LocalCacheInterface,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoAction,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -22,6 +21,7 @@ import {
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
   StoreOrBundleAction,
+  UndoRedoAction,
   getLoggerName
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
@@ -241,11 +241,11 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoAction): ActionReturnType {
+  handleUndoRedoAction(undoRedoAction: UndoRedoAction): ActionReturnType {
     // const result:ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
       ()=> this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleUndoRedoAction](localCacheUndoRedoAction)
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleUndoRedoAction](undoRedoAction)
       )
     )
     // return ACTION_OK;
