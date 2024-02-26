@@ -412,42 +412,6 @@ function handleLocalCacheUndoRedoAction(
   }
   return ACTION_OK;
 }
-//#########################################################################################
-/**
- * Performs the effects of an action on the local state so that this local state reflects
- * the modifications due to this action.
- * The action is also added to the current transaction by the undoRedoReducer.
- * @param state 
- * @param deploymentUuid 
- * @param action 
- * @returns 
- */
-function handleLocalCacheTransactionalInstanceAction(
-  state: LocalCacheSliceState,
-  deploymentUuid: Uuid,
-  action: LocalCacheTransactionalInstanceActionWithDeployment
-): ActionReturnType {
-  // log.info(
-  //   "localCacheSliceObject handleLocalCacheTransactionalInstanceAction called",
-  //   action.actionName,
-  //   "deploymentUuid",
-  //   deploymentUuid,
-  //   "action",
-  //   action
-  // );
-  const instanceAction: LocalCacheInstanceActionWithDeployment = {
-    actionType: "LocalCacheInstanceActionWithDeployment",
-    deploymentUuid,
-    instanceAction: action.instanceAction
-  };
-    
-  // TODO: handle object instanceCollections by ApplicationSection
-  handleLocalCacheInstanceActionWithDeployment(
-    state,
-    instanceAction
-  );
-  return ACTION_OK;
-}
 
 //#########################################################################################
 // 
@@ -704,7 +668,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
       state: LocalCacheSliceState,
       action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
     ): void {
-      actionReturnTypeToException(handleLocalCacheTransactionalInstanceAction(state, action.payload.deploymentUuid, action.payload));
+      actionReturnTypeToException(handleLocalCacheInstanceActionWithDeployment(state,  {
+        actionType: "LocalCacheInstanceActionWithDeployment",
+        deploymentUuid: action.payload.deploymentUuid,
+        instanceAction: action.payload.instanceAction
+      }));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](
       state: LocalCacheSliceState,

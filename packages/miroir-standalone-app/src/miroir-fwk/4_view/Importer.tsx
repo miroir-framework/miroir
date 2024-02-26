@@ -234,16 +234,22 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     log.info('adding instances',instances);
     
     const createRowsAction: DomainNonTransactionalInstanceAction = {
-      actionName:'create',
       actionType:"DomainNonTransactionalInstanceAction",
-      objects:[
-        {
-          parentName:newEntity.name,
-          parentUuid:newEntity.uuid,
-          applicationSection:'data',
-          instances:instances,
-        }
-      ]
+      instanceAction: {
+        actionType: 'instanceAction',
+        actionName: "createInstance",
+        applicationSection: "data",
+        deploymentUuid: props.currentDeploymentUuid,
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        objects:[
+          {
+            parentName:newEntity.name,
+            parentUuid:newEntity.uuid,
+            applicationSection:'data',
+            instances:instances,
+          }
+        ]
+      }
     };
     await domainController.handleDomainAction(props.currentDeploymentUuid, createRowsAction);
   }

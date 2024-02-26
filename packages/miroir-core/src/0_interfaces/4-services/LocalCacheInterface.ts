@@ -1,8 +1,5 @@
 import { z } from "zod";
 import {
-  domainNonTransactionalInstanceActionSchema,
-  DomainTransactionalInstanceAction,
-  domainTransactionalInstanceActionSchema,
   domainUndoRedoActionSchema,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
@@ -46,7 +43,6 @@ export type LocalCacheUndoRedoActionWithDeployment = z.infer<typeof LocalCacheUn
 export const LocalCacheTransactionalInstanceActionWithDeploymentSchema = z.object({
   actionType:z.literal("localCacheTransactionalInstanceActionWithDeployment"),
   deploymentUuid: z.string().uuid(),
-  // domainAction: localCacheTransactionalActionSchema,
   instanceAction: instanceCUDAction
 });
 export type LocalCacheTransactionalInstanceActionWithDeployment = z.infer<typeof LocalCacheTransactionalInstanceActionWithDeploymentSchema>;
