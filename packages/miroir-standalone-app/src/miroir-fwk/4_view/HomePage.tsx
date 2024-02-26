@@ -256,6 +256,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid:applicationDeploymentMiroir.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -273,6 +274,7 @@ export const HomePage = (props: RootComponentProps) => {
                 actionType: "modelAction",
                 actionName: "commit",
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
               },
               defaultMiroirMetaModel
             );
@@ -288,6 +290,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid:applicationDeploymentMiroir.uuid,
             });
           }}
         >
@@ -332,6 +335,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
             });
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -340,6 +344,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
             });
           }}
         >
@@ -355,11 +360,13 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid:applicationDeploymentMiroir.uuid,
             });
             await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
               actionType: "modelAction",
               actionName: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
             });
           }}
         >
@@ -384,6 +391,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "renameEntity",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityName: entityBook.name,
                 entityUuid: entityBook.uuid,
@@ -458,6 +466,7 @@ export const HomePage = (props: RootComponentProps) => {
               {
                 actionType: "modelAction",
                 actionName: "dropEntity",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 entityUuid: entityAuthor.uuid,
                 entityDefinitionUuid: entityDefinitionAuthor.uuid,

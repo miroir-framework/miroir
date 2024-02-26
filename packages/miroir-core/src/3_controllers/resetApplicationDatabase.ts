@@ -33,11 +33,13 @@ export async function resetMiroirAndApplicationDatabases(
     actionType: "modelAction",
     actionName: "resetModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentLibrary.uuid,
   });
   await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
     actionType: "modelAction",
     actionName: "resetModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentMiroir.uuid
   });
 }
 
@@ -49,6 +51,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     actionType: "modelAction",
     actionName: "initModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentMiroir.uuid,
     params: {
       dataStoreType: "miroir",
       metaModel: defaultMiroirMetaModel,
@@ -63,6 +66,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     actionType: "modelAction",
     actionName: "initModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentLibrary.uuid,
     params: {
       dataStoreType: "app",
       metaModel: defaultMiroirMetaModel,
@@ -81,10 +85,12 @@ export async function resetAndInitMiroirAndApplicationDatabase(
     actionType: "modelAction",
     actionName: "rollback",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentLibrary.uuid,
   });
   await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
     actionType: "modelAction",
     actionName: "rollback",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+    deploymentUuid: applicationDeploymentMiroir.uuid,
   });
 }

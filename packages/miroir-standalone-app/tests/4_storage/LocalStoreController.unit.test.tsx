@@ -14,6 +14,7 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   ModelAction,
+  ModelActionDropEntity,
   ModelActionEntityUpdate,
   ModelActionRenameEntity,
   StoreControllerInterface,
@@ -347,6 +348,7 @@ describe.sequential("localStoreController.unit.test", () => {
     const modelActionRenameEntity:ModelActionRenameEntity =  {
       actionType: "modelAction",
       actionName: "renameEntity",
+      deploymentUuid:applicationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       entityName: entityAuthor.name,
@@ -428,9 +430,10 @@ describe.sequential("localStoreController.unit.test", () => {
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
     // test starts
-    const modelActionDropEntity:ModelActionEntityUpdate =  {
+    const modelActionDropEntity:ModelActionDropEntity =  {
       actionType: "modelAction",
       actionName: "dropEntity",
+      deploymentUuid:applicationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       // entityName: entityAuthor.name,
@@ -510,6 +513,7 @@ describe.sequential("localStoreController.unit.test", () => {
     const modelActionAlterAttribute:ModelAction =  {
       actionType: "modelAction",
       actionName: "alterEntityAttribute",
+      deploymentUuid:applicationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entityUuid: entityAuthor.uuid, 
       entityDefinitionUuid: entityDefinitionAuthor.uuid,

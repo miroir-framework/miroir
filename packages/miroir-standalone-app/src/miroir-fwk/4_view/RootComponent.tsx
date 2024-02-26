@@ -318,7 +318,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   {
                     actionType: "modelAction",
                     actionName: "rollback",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    deploymentUuid:applicationDeploymentMiroir.uuid,
                   }
                 );
                 await domainController.handleDomainAction(
@@ -326,7 +327,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   {
                     actionType: "modelAction",
                     actionName: "rollback",
-                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    deploymentUuid:applicationDeploymentLibrary.uuid,
                   }
                 );
               }
@@ -370,6 +372,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                   actionType: "modelAction",
                   actionName: "initModel",
+                  deploymentUuid:applicationDeploymentMiroir.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   params: {
                     dataStoreType: "miroir",
@@ -384,6 +387,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                   actionType: "modelAction",
                   actionName: "initModel",
+                  deploymentUuid:applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   params: {
                     dataStoreType: "app",
@@ -404,11 +408,13 @@ export const RootComponent = (props: RootComponentProps) => {
                 await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                   actionType: "modelAction",
                   actionName: "rollback",
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
+                  deploymentUuid:applicationDeploymentMiroir.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 });
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                   actionType: "modelAction",
                   actionName: "rollback",
+                  deploymentUuid:applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
                 });
           

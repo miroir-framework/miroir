@@ -188,6 +188,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -204,7 +205,12 @@ describe.sequential('DomainController.Data.CRUD',
                 );
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
+                  {
+                    actionName: "commit",
+                    actionType: "modelAction",
+                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -272,11 +278,13 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -345,6 +353,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -400,6 +409,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -412,7 +422,12 @@ describe.sequential('DomainController.Data.CRUD',
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
+                  {
+                    actionName: "commit",
+                    actionType: "modelAction",
+                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -480,11 +495,13 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -549,7 +566,12 @@ describe.sequential('DomainController.Data.CRUD',
           console.log('Remove Book instance step 3: rollbacking/refreshing book list from remote store, removed book must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"modelAction",actionName: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",});
+              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                actionType: "modelAction",
+                actionName: "rollback",
+                deploymentUuid: applicationDeploymentLibrary.uuid,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+              });
             }
           );
 
@@ -604,6 +626,7 @@ describe.sequential('DomainController.Data.CRUD',
             const createAction: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
+              deploymentUuid:applicationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               entities: [
                 {entity:entityAuthor as MetaEntity, entityDefinition:entityDefinitionAuthor as EntityDefinition},
@@ -616,7 +639,12 @@ describe.sequential('DomainController.Data.CRUD',
                 await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleDomainAction(
                   applicationDeploymentLibrary.uuid,
-                  { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", },
+                  {
+                    actionName: "commit",
+                    actionType: "modelAction",
+                    deploymentUuid: applicationDeploymentLibrary.uuid,
+                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
@@ -685,6 +713,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }
@@ -762,6 +791,7 @@ describe.sequential('DomainController.Data.CRUD',
               await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
+                deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
             }

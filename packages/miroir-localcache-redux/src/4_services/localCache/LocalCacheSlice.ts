@@ -677,7 +677,7 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
       state: LocalCacheSliceState,
       action: PayloadAction<LocalCacheModelActionWithDeployment>
     ): void {
-      actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.deploymentUuid, action.payload.modelAction));
+      actionReturnTypeToException(handleLocalCacheModelAction(state, action.payload.modelAction.deploymentUuid, action.payload.modelAction));
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheInstanceAction](
       state: LocalCacheSliceState,

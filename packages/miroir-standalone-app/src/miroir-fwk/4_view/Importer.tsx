@@ -165,6 +165,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     const createEntityAction: DomainAction = {
       actionType: "modelAction",
       actionName: "createEntity",
+      deploymentUuid:props.currentDeploymentUuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       entities: [
         {entity: newEntity, entityDefinition:newEntityDefinition},
@@ -213,7 +214,12 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
     await domainController.handleDomainAction(
       props.currentDeploymentUuid,
-      { actionName: "commit", actionType: "modelAction", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" },
+      {
+        actionName: "commit",
+        actionType: "modelAction",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        deploymentUuid: props.currentDeploymentUuid,
+      },
       props.currentModel
     );
     // const entityColumns = 

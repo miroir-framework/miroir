@@ -315,7 +315,7 @@ export class DomainController implements DomainControllerInterface {
             "handleLocalCacheModelAction",
             {
               actionType: "localCacheModelActionWithDeployment",
-              deploymentUuid,
+              deploymentUuid: modelAction.deploymentUuid,
               modelAction,
             }
             // currentModel
@@ -329,7 +329,7 @@ export class DomainController implements DomainControllerInterface {
             {}, // context
             {}, // context update
             "handleRemoteStoreModelAction",
-            deploymentUuid,
+            modelAction.deploymentUuid,
             modelAction
           );
           break;
@@ -410,7 +410,7 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context
                     {}, // context update
                     "handleRemoteStoreModelAction",
-                    deploymentUuid,
+                    replayAction.modelAction.deploymentUuid,
                     replayAction.modelAction
                   );
                   break;
@@ -436,7 +436,7 @@ export class DomainController implements DomainControllerInterface {
                 "handleLocalCacheModelAction",
                 {
                   actionType: "localCacheModelActionWithDeployment",
-                  deploymentUuid,
+                  deploymentUuid:modelAction.deploymentUuid,
                   modelAction: {
                     actionType: "modelAction",
                     actionName: "commit",
@@ -459,7 +459,7 @@ export class DomainController implements DomainControllerInterface {
                       actionType: "instanceAction",
                       actionName: "createInstance",
                       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                      deploymentUuid,
+                      deploymentUuid:modelAction.deploymentUuid,
                       applicationSection: "model",
                       objects: [
                         {

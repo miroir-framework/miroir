@@ -15,6 +15,12 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"initModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            },
             "params": {
               "type": "object",
               "definition": {
@@ -78,7 +84,13 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"commit"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            }
           }
         }
       },
@@ -88,7 +100,13 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"rollback"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            }
           }
         }
       },
@@ -98,7 +116,13 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"resetModel"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            }
           }
         }
       },
@@ -108,7 +132,13 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"resetData"},
-            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"}
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            }
           }
         }
       },
@@ -119,6 +149,12 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"alterEntityAttribute"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            },
             "entityName": {
               "type": "simpleType",
               "definition": "string"
@@ -179,6 +215,12 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"renameEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            },
             "entityName": {
               "type": "simpleType",
               "optional": true,
@@ -208,6 +250,12 @@
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"createEntity"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            },
             "entities": {
               "type": "array",
               "definition": {
@@ -239,6 +287,12 @@
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"dropEntity"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            },
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "entityUuid": {
               "type": "simpleType",

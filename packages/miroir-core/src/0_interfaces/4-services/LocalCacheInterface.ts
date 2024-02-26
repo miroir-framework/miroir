@@ -8,22 +8,11 @@ import {
   ActionReturnType,
   ApplicationSection,
   EntityInstanceCollection,
-  instanceAction,
   InstanceAction,
   instanceCUDAction,
   MetaModel,
   modelAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-
-// // ################################################################################################
-// export const localCacheInstanceActionSchema = z.object(
-//   {
-//     actionType:z.literal("LocalCacheInstanceAction"),
-//     instanceAction: instanceAction
-//   }
-// )
-
-// export type LocalCacheInstanceAction = z.infer<typeof localCacheInstanceActionSchema>;
 
 // ################################################################################################
 export const localCacheUndoRedoAction = z.object({
