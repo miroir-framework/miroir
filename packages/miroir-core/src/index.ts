@@ -344,10 +344,8 @@ export {
   LocalCacheTransactionalInstanceActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeploymentSchema,
   LocalCacheInterface,
-  // LocalCacheUndoRedoAction,
-  LocalCacheUndoRedoActionWithDeployment,
-  LocalCacheUndoRedoActionWithDeploymentSchema,
-  // localCacheUndoRedoActionSchema,
+  LocalCacheUndoRedoAction,
+  localCacheUndoRedoAction,
   CreateInstanceParameters,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
 export {

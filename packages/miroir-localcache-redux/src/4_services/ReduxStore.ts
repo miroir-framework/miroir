@@ -17,7 +17,7 @@ import {
   LocalCacheInterface,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoActionWithDeployment,
+  LocalCacheUndoRedoAction,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -244,7 +244,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoActionWithDeployment): ActionReturnType {
+  handleLocalCacheUndoRedoAction(localCacheUndoRedoAction: LocalCacheUndoRedoAction): ActionReturnType {
     // const result:ActionReturnType = this.innerReduxStore.dispatch(
     return exceptionToActionReturnType(
       ()=> this.innerReduxStore.dispatch(

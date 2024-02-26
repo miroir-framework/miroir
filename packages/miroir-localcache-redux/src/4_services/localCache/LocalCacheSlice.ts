@@ -25,7 +25,7 @@ import {
   LocalCacheInstanceActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoActionWithDeployment,
+  LocalCacheUndoRedoAction,
   LoggerInterface,
   MetaEntity,
   MetaModel,
@@ -378,7 +378,7 @@ function ReplaceInstancesForSectionEntity(
 function handleLocalCacheUndoRedoAction(
   state: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  action: LocalCacheUndoRedoActionWithDeployment
+  action: LocalCacheUndoRedoAction
 ): ActionReturnType {
   // log.info(
   //   "localCacheSliceObject handleLocalCacheUndoRedoAction called",
@@ -674,7 +674,7 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
     },
     [localCacheSliceInputActionNamesObject.handleLocalCacheUndoRedoAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheUndoRedoActionWithDeployment>
+      action: PayloadAction<LocalCacheUndoRedoAction>
     ): void {
       actionReturnTypeToException(handleLocalCacheUndoRedoAction(state, action.payload.deploymentUuid, action.payload));
     },

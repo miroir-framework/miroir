@@ -7,7 +7,7 @@ import {
   LocalCacheInstanceActionWithDeployment,
   LocalCacheModelActionWithDeployment,
   LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheUndoRedoActionWithDeployment,
+  LocalCacheUndoRedoAction,
   LoggerInterface,
   MiroirLoggerFactory,
   RemoteStoreCRUDAction,
@@ -258,7 +258,7 @@ export function createUndoRedoReducer(
       | LocalCacheInstanceActionWithDeployment
       | LocalCacheModelActionWithDeployment
       | LocalCacheTransactionalInstanceActionWithDeployment
-      | LocalCacheUndoRedoActionWithDeployment
+      | LocalCacheUndoRedoAction
       // | RemoteStoreCRUDAction
     >
   ): ReduxStateWithUndoRedo => {
