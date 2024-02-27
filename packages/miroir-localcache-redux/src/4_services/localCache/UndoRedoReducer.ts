@@ -37,7 +37,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 function callNextReducer(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment | InstanceAction | RemoteStoreCRUDAction>
+  action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment | ModelAction | InstanceAction | RemoteStoreCRUDAction>
 ): ReduxStateWithUndoRedo {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -207,6 +207,186 @@ const callNextReducerWithUndoRedoForModelAction = (
 };
 
 // ################################################################################################
+function handleModelAction(
+  innerReducer: InnerReducerInterface,
+  state: ReduxStateWithUndoRedo,
+  action: PayloadAction<ModelAction>
+): ReduxStateWithUndoRedo {
+  log.info("reduceWithUndoRedo handleModelAction treating action", JSON.stringify(action.payload, null, 2));
+  const {
+    currentTransaction,
+    previousModelSnapshot,
+    pastModelPatches,
+    presentModelSnapshot,
+    futureModelPatches,
+    queriesResultsCache,
+  } = state;
+  switch (action.payload.actionName) {
+    case "rollback": {
+      const next = callNextReducer(
+        innerReducer,
+        state,
+        action
+      );
+      return {
+        currentTransaction,
+        previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+        pastModelPatches: [],
+        presentModelSnapshot: next.presentModelSnapshot,
+        futureModelPatches: [],
+        queriesResultsCache,
+      };
+      break;
+    }
+    case "commit": {
+      // no effect on local storage contents, just clears the present transaction contents.
+      return {
+        currentTransaction,
+        previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
+        pastModelPatches: [],
+        presentModelSnapshot: presentModelSnapshot,
+        futureModelPatches: [],
+        queriesResultsCache,
+      };
+      break;
+    }
+    default: {
+      // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
+      // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
+      return callNextReducerWithUndoRedoForModelAction(
+        innerReducer,
+        state,
+        action
+      );
+      break;
+    }
+  }
+}
+// ################################################################################################
+function handleInstanceAction(
+  innerReducer: InnerReducerInterface,
+  state: ReduxStateWithUndoRedo,
+  action: PayloadAction<InstanceAction>
+): ReduxStateWithUndoRedo {
+  // log.info("reduceWithUndoRedo handleInstanceAction treating action", JSON.stringify(action.payload, null, 2));
+  log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
+  const {
+    currentTransaction,
+    previousModelSnapshot,
+    pastModelPatches,
+    presentModelSnapshot,
+    futureModelPatches,
+    queriesResultsCache,
+  } = state;
+  switch (action.payload.actionName) {
+    case "replaceLocalCache": {
+      const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
+      return {
+        currentTransaction,
+        previousModelSnapshot, //TODO: effectively set previousModelSnapshot
+        pastModelPatches,
+        presentModelSnapshot: next.presentModelSnapshot,
+        futureModelPatches,
+        queriesResultsCache,
+      };
+      break;
+    }
+    default: {
+      return callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
+      break;
+    }
+  }
+}
+// ################################################################################################
+function handleUndoRedoAction(
+  innerReducer: InnerReducerInterface,
+  state: ReduxStateWithUndoRedo,
+  action: PayloadAction<UndoRedoAction>
+): ReduxStateWithUndoRedo {
+  // log.info("reduceWithUndoRedo handleUndoRedoAction treating action", JSON.stringify(action.payload, null, 2));
+  log.info("reduceWithUndoRedo handleUndoRedoAction", action.payload);
+  const {
+    currentTransaction,
+    previousModelSnapshot,
+    pastModelPatches,
+    presentModelSnapshot,
+    futureModelPatches,
+    queriesResultsCache,
+  } = state;
+  switch (action.payload.actionName) {
+    case "undo": {
+      if (pastModelPatches.length > 0) {
+        const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
+        const newPresentSnapshot = applyPatches(
+          presentModelSnapshot,
+          pastModelPatches[pastModelPatches.length - 1].inverseChanges
+        );
+        log.info(
+          "reduceWithUndoRedo handleUndoRedoAction undo patches",
+          pastModelPatches,
+          "undo",
+          pastModelPatches[0],
+          pastModelPatches[1]
+        );
+        return {
+          currentTransaction,
+          previousModelSnapshot,
+          pastModelPatches: newPast,
+          presentModelSnapshot: newPresentSnapshot,
+          futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
+          queriesResultsCache,
+        };
+      } else {
+        // do nothing
+        log.warn("reduceWithUndoRedo handleUndoRedoAction cannot further undo, ignoring undo action");
+        return {
+          currentTransaction,
+          previousModelSnapshot,
+          pastModelPatches,
+          presentModelSnapshot,
+          futureModelPatches,
+          queriesResultsCache,
+        };
+      }
+    }
+    case "redo": {
+      if (futureModelPatches.length > 0) {
+        const newPastPatches = futureModelPatches[0];
+        const newFuturePatches = futureModelPatches.slice(1);
+        const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
+        return {
+          currentTransaction,
+          previousModelSnapshot,
+          pastModelPatches: [...pastModelPatches, newPastPatches],
+          presentModelSnapshot: newPresentSnapshot,
+          futureModelPatches: newFuturePatches,
+          queriesResultsCache,
+        };
+      } else {
+        // do nothing
+        log.warn(
+          "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction cannot further redo, ignoring redo action"
+        );
+        return {
+          currentTransaction,
+          previousModelSnapshot,
+          pastModelPatches,
+          presentModelSnapshot,
+          futureModelPatches,
+          queriesResultsCache,
+        };
+      }
+      break;
+    }
+    default: {
+      throw new Error(
+        "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action" +
+          action.payload
+      );
+    }
+  }
+}
+// ################################################################################################
 export function createUndoRedoReducer(innerReducer: InnerReducerInterface): ReduxReducerWithUndoRedoInterface {
   // Returns a reducer function, that handles undo and redo
   // return reduceWithUndoRedo.bind(undefined,innerReducer)
@@ -217,224 +397,47 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
       // | RemoteStoreCRUDAction
     >
   ): ReduxStateWithUndoRedo => {
-    const {
-      currentTransaction,
-      previousModelSnapshot,
-      pastModelPatches,
-      presentModelSnapshot,
-      futureModelPatches,
-      queriesResultsCache,
-    } = state;
-
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));
 
     switch (action.type) {
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleInstanceAction: {
-        // no undo/redo
-        if (action.payload.actionType != "instanceAction") {
-          throw new Error(
-            "reduceWithUndoRedo handleInstanceAction accepts only actionType=LocalCacheInstanceAction, found " +
-              action.payload.actionType
-          );
-        } else {
-          log.info("reduceWithUndoRedo handleInstanceAction", action.payload);
-          switch (action.payload.actionName) {
-            case "replaceLocalCache": {
-              const next = callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
-              return {
-                currentTransaction,
-                previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-                pastModelPatches,
-                presentModelSnapshot: next.presentModelSnapshot,
-                futureModelPatches,
-                queriesResultsCache,
-              };
-              break;
-            }
-            default: {
-              return callNextReducer(innerReducer, state, action as PayloadAction<InstanceAction>);
-              break;
-            }
+      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleAction: {
+        log.info("reduceWithUndoRedo handleAction treating action", action.payload)
+        switch (action.payload.actionType) {
+          case "modelAction": {
+            return handleModelAction(innerReducer, state, action as PayloadAction<ModelAction>)
+            break;
           }
-        }
-      }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleModelAction: {
-        // if (action.payload.actionType != "localCacheModelActionWithDeployment") {
-        if (action.payload.actionType != "modelAction") {
-          throw new Error(
-            "reduceWithUndoRedo handleModelAction accepts only actionType=modelAction, found " +
-              action.payload.actionType
-          );
-        } else {
-          // throw new Error(
-          //   "reduceWithUndoRedo handleModelAction not treated yet!" + action.payload.actionType
-          // );
-          // log.info("reduceWithUndoRedo handleModelAction treating action", action.payload)
-          log.info(
-            "reduceWithUndoRedo handleModelAction treating action",
-            JSON.stringify(action.payload, null, 2)
-          );
-          switch (action.payload.actionName) {
-            case "rollback": {
-              const next = callNextReducer(
-                innerReducer,
-                state,
-                action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
-              );
-              return {
-                currentTransaction,
-                previousModelSnapshot, //TODO: effectively set previousModelSnapshot
-                pastModelPatches: [],
-                presentModelSnapshot: next.presentModelSnapshot,
-                futureModelPatches: [],
-                queriesResultsCache,
-              };
-              break;
-            }
-            case "commit": {
-              // no effect on local storage contents, just clears the present transaction contents.
-              return {
-                currentTransaction,
-                previousModelSnapshot: presentModelSnapshot, //TODO: presentModelSnapshot becomes previousModelSnapshot?
-                pastModelPatches: [],
-                presentModelSnapshot: presentModelSnapshot,
-                futureModelPatches: [],
-                queriesResultsCache,
-              };
-              break;
-            }
-            default: {
-              // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-              // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
-              return callNextReducerWithUndoRedoForModelAction(
-                innerReducer,
-                state,
-                action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
-              );
-              break;
-            }
+          case "instanceAction": {
+            return handleInstanceAction(innerReducer, state, action as PayloadAction<InstanceAction>)
+            break;
           }
-          // return callNextReducerWithUndoRedoForModelAction(innerReducer, state, action as PayloadAction<LocalCacheModelActionWithDeployment>);
-        }
-        break;
-      }
-      case localCacheSliceName + "/" + localCacheSliceInputActionNamesObject.handleUndoRedoAction: {
-        // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
-        log.info("reduceWithUndoRedo handleDomainAction for action", JSON.stringify(action, undefined, 2));
-        if (action.payload.actionType !== "undoRedoAction") {
-          throw new Error(
-            "reduceWithUndoRedo handleUndoRedoAction does not accept actionType=" + action.payload.actionType
-          );
-        } else {
-          switch (action.payload.actionName) {
-            case "undo": {
-              if (pastModelPatches.length > 0) {
-                const newPast = pastModelPatches.slice(0, pastModelPatches.length - 1);
-                const newPresentSnapshot = applyPatches(
-                  presentModelSnapshot,
-                  pastModelPatches[pastModelPatches.length - 1].inverseChanges
-                );
-                log.info(
-                  "reduceWithUndoRedo handleUndoRedoAction undo patches",
-                  pastModelPatches,
-                  "undo",
-                  pastModelPatches[0],
-                  pastModelPatches[1]
-                );
-                return {
-                  currentTransaction,
-                  previousModelSnapshot,
-                  pastModelPatches: newPast,
-                  presentModelSnapshot: newPresentSnapshot,
-                  futureModelPatches: [pastModelPatches[pastModelPatches.length - 1], ...futureModelPatches],
-                  queriesResultsCache,
-                };
-              } else {
-                // do nothing
-                log.warn("reduceWithUndoRedo handleUndoRedoAction cannot further undo, ignoring undo action");
-                return {
-                  currentTransaction,
-                  previousModelSnapshot,
-                  pastModelPatches,
-                  presentModelSnapshot,
-                  futureModelPatches,
-                  queriesResultsCache,
-                };
-              }
-            }
-            case "redo": {
-              if (futureModelPatches.length > 0) {
-                const newPastPatches = futureModelPatches[0];
-                const newFuturePatches = futureModelPatches.slice(1);
-                const newPresentSnapshot = applyPatches(presentModelSnapshot, newPastPatches.changes);
-                return {
-                  currentTransaction,
-                  previousModelSnapshot,
-                  pastModelPatches: [...pastModelPatches, newPastPatches],
-                  presentModelSnapshot: newPresentSnapshot,
-                  futureModelPatches: newFuturePatches,
-                  queriesResultsCache,
-                };
-              } else {
-                // do nothing
-                log.warn(
-                  "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction cannot further redo, ignoring redo action"
-                );
-                return {
-                  currentTransaction,
-                  previousModelSnapshot,
-                  pastModelPatches,
-                  presentModelSnapshot,
-                  futureModelPatches,
-                  queriesResultsCache,
-                };
-              }
-              break;
-            }
-            default: {
-              throw new Error(
-                "reduceWithUndoRedo localCacheSliceInputActionNamesObject.handleUndoRedoAction DomainUndoRedoAction cannot handle action" +
-                  action.payload
-              );
-            }
+          case "localCacheTransactionalInstanceActionWithDeployment": {
+            return callNextReducerWithUndoRedo(
+              innerReducer,
+              state,
+              action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
+            );
+            break;
           }
-          break;
-        }
-        break;
-      }
-      case localCacheSliceName +
-        "/" +
-        localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalInstanceAction: {
-        // log.info('UndoRedoReducer localCacheSliceInputActionNamesObject.handleDomainAction with actionType',action.payload.domainAction.actionType'for action', action);
-        log.info(
-          "reduceWithUndoRedo handleLocalCacheTransactionalInstanceAction for action",
-          JSON.stringify(action, undefined, 2)
-        );
-        // log.info("reduceWithUndoRedo handleLocalCacheTransactionalInstanceAction for action.payload", JSON.stringify(action, undefined, 2));
-        if (action.payload.actionType !== "localCacheTransactionalInstanceActionWithDeployment") {
-          throw new Error(
-            "reduceWithUndoRedo handleLocalCacheTransactionalInstanceAction does not accept actionType=" +
-              action.payload.actionType
-          );
-        } else {
-          return callNextReducerWithUndoRedo(
-            innerReducer,
-            state,
-            action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
-          );
+          case "undoRedoAction":{
+            return handleUndoRedoAction(innerReducer, state, action as PayloadAction<UndoRedoAction>)
+            break;
+          }
+          default: {
+            throw new Error(
+              "reduceWithUndoRedo handleAction accepts only actionType=modelAction, found " +
+                action.payload
+            );
+            break;
+          }
         }
         break;
       }
       default: {
         // log.warn('reduceWithUndoRedo default handling action',JSON.stringify(action, undefined, 2))
-        // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
         return callNextReducer(innerReducer, state, action as any); //useful? this is an unknown action!
       }
     }
-    // log.error("UndoRedoReducer handleDomainAction out of switch handling action", action);
-    // throw new Error("createUndoRedoReducer must not be called for action: " + JSON.stringify(action, undefined, 2));
-
-    // return callNextReducer(innerReducer, state, action);
   };
 }
 

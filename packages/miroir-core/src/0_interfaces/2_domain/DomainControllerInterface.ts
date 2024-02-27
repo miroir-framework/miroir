@@ -69,14 +69,6 @@ export const domainNonTransactionalInstanceActionSchema = z.object({
 export type DomainNonTransactionalInstanceAction = z.infer<typeof domainNonTransactionalInstanceActionSchema>;
 
 
-// // #############################################################################################
-// const domainTransactionalActionForUpdateMetaModelInstanceSchema = z.object({
-//   actionType: z.literal("DomainTransactionalInstanceAction"),
-//   actionName: z.literal("UpdateMetaModelInstance"),
-//   instanceAction: instanceCUDAction,
-// });
-// // type DomainTransactionalActionUpdateMetaModelInstance = z.infer<typeof domainTransactionalActionForUpdateMetaModelInstanceSchema>;
-
 // #############################################################################################
 export const domainUndoRedoActionSchema = z.object({
   actionType: z.literal("DomainUndoRedoAction"),

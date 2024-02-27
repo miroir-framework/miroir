@@ -5,11 +5,7 @@ import { RemoteStoreInterface } from "../../0_interfaces/4-services/RemoteStoreI
 
 export default {}
 export type AsyncCalls = "handleRemoteStoreModelAction" | "handleRemoteStoreRestCRUDAction";
-export type SyncCalls =
-  | "handleLocalCacheTransactionalInstanceAction"
-  | "handleUndoRedoAction"
-  | "handleInstanceAction"
-  | "handleModelAction"
+export type SyncCalls = "handleAction"
 ;
 
 
@@ -27,10 +23,7 @@ export class CallUtils {
       "handleRemoteStoreRestCRUDAction": remoteStore.handleRemoteStoreRestCRUDAction,
     }
     this.syncCallsMap = {
-      "handleInstanceAction": localCache.handleInstanceAction,
-      "handleLocalCacheTransactionalInstanceAction": localCache.handleLocalCacheTransactionalInstanceAction,
-      "handleUndoRedoAction": localCache.handleUndoRedoAction,
-      "handleModelAction": localCache.handleModelAction,
+      "handleAction": localCache.handleAction,
     }
   }
   

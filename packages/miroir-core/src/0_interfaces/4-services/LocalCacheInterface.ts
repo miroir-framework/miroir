@@ -1,13 +1,13 @@
 import { z } from "zod";
 import {
-  LocalCacheInfo,
-  UndoRedoActionNamesSchema
+  LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
 
 import {
   ActionReturnType,
   InstanceAction,
   instanceCUDAction,
+  LocalCacheAction,
   MetaModel,
   ModelAction,
   UndoRedoAction
@@ -37,9 +37,5 @@ export declare interface LocalCacheInterface
   currentTransaction():(LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
-  handleUndoRedoAction(action:UndoRedoAction):ActionReturnType;
-  handleLocalCacheTransactionalInstanceAction(action:LocalCacheTransactionalInstanceActionWithDeployment):ActionReturnType;
-  handleModelAction(action:ModelAction):ActionReturnType;
-  handleInstanceAction(action:InstanceAction):ActionReturnType;
-  handleEndpointAction(action:InstanceAction):ActionReturnType;
+  handleAction(action:LocalCacheAction):ActionReturnType;
 }

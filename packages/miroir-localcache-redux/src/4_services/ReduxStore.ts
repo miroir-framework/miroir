@@ -11,6 +11,7 @@ import {
   ActionReturnType,
   ApplicationSection,
   InstanceAction,
+  LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
   LocalCacheTransactionalInstanceActionWithDeployment,
@@ -230,54 +231,13 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleLocalCacheTransactionalInstanceAction(localCacheTransactionalAction: LocalCacheTransactionalInstanceActionWithDeployment): ActionReturnType {
-    // const result:ActionReturnType = this.innerReduxStore.dispatch(
-    return exceptionToActionReturnType(
-      ()=> this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalInstanceAction](localCacheTransactionalAction)
-      )
-    )
-    // return ACTION_OK;
-  }
-
-  // ###############################################################################
-  handleUndoRedoAction(undoRedoAction: UndoRedoAction): ActionReturnType {
-    // const result:ActionReturnType = this.innerReduxStore.dispatch(
-    return exceptionToActionReturnType(
-      ()=> this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleUndoRedoAction](undoRedoAction)
-      )
-    )
-    // return ACTION_OK;
-  }
-
-  // ###############################################################################
-  handleModelAction(localCacheEntityAction: ModelAction): ActionReturnType {
-    // const result: ActionReturnType = this.innerReduxStore.dispatch(
-    return exceptionToActionReturnType(
-      ()=> this.innerReduxStore.dispatch(
-      LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleModelAction](localCacheEntityAction)
-    ));
-  }
-
-  // ###############################################################################
-  handleEndpointAction(endPointAction: InstanceAction): ActionReturnType {
-    // const result: ActionReturnType = this.innerReduxStore.dispatch(
-    return exceptionToActionReturnType(() =>
-      this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleEndpointAction](endPointAction)
-      )
-    );
-  }
-
-  // ###############################################################################
-  handleInstanceAction(instanceAction: InstanceAction): ActionReturnType {
-    log.info("handleInstanceAction", instanceAction);
+  handleAction(action: LocalCacheAction): ActionReturnType {
+    log.info("handleAction", action);
     
     return exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
-        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleInstanceAction](
-          instanceAction
+        LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleAction](
+          action
         )
       )
     );

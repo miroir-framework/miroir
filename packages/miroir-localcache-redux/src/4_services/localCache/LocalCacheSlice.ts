@@ -22,7 +22,7 @@ import {
   EntityInstancesUuidIndex,
   InstanceAction,
   JzodSchema,
-  LocalCacheTransactionalInstanceActionWithDeployment,
+  LocalCacheAction,
   LoggerInterface,
   MetaEntity,
   MetaModel,
@@ -31,7 +31,6 @@ import {
   ModelEntityActionTransformer,
   Report,
   StoreBasedConfiguration,
-  UndoRedoAction,
   Uuid,
   applicationDeploymentMiroir,
   entityApplicationVersion,
@@ -591,6 +590,49 @@ function handleEndpointAction(
   return ACTION_OK;
 }
 
+//#########################################################################################
+function handleAction(
+  state: LocalCacheSliceState,
+  action: LocalCacheAction
+): ActionReturnType {
+  log.info(
+    "localCacheSliceObject handleAction called",
+    action.actionType,
+    "deploymentUuid",
+    action.deploymentUuid,
+    "action",
+    action
+  );
+  switch (action.actionType) {
+    case "undoRedoAction": {
+      log.debug(
+        "localCacheSliceObject handleUndoRedoAction deploymentUuid",
+        action.deploymentUuid,
+        "action has no effect",
+        JSON.stringify(action, undefined, 2)
+      );
+      break;
+    }
+    case "modelAction": {
+      return handleModelAction(state, action.deploymentUuid,action);
+      break;
+    }
+    case "localCacheTransactionalInstanceActionWithDeployment": {
+      return handleInstanceAction(state, action.instanceAction);
+      break;
+    }
+    case "instanceAction": {
+      return handleInstanceAction(state, action);
+      break;
+    }
+    default: {
+      log.warn("localCacheSliceObject handleDomainEntityAction could not handle action:", JSON.stringify(action, undefined, 2))
+      break;
+    }
+  }
+  return ACTION_OK;
+}
+
 function actionReturnTypeToException(a:ActionReturnType) {
   if (a.status == "error") {
     throw new Error("caught error on return value " + JSON.stringify(a.error, undefined, 2));
@@ -604,42 +646,11 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
   name: localCacheSliceName,
   initialState: {} as LocalCacheSliceState,
   reducers: {
-    [localCacheSliceInputActionNamesObject.handleLocalCacheTransactionalInstanceAction](
+    [localCacheSliceInputActionNamesObject.handleAction](
       state: LocalCacheSliceState,
-      action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
+      action: PayloadAction<LocalCacheAction>
     ): void {
-      actionReturnTypeToException(handleInstanceAction(state, 
-        action.payload.instanceAction
-      ));
-    },
-    [localCacheSliceInputActionNamesObject.handleUndoRedoAction](
-      state: LocalCacheSliceState,
-      action: PayloadAction<UndoRedoAction>
-    ): void {
-      log.debug(
-        "localCacheSliceObject handleUndoRedoAction deploymentUuid",
-        action.payload.deploymentUuid,
-        "action has no effect",
-        JSON.stringify(action, undefined, 2)
-      );
-    },
-    [localCacheSliceInputActionNamesObject.handleModelAction](
-      state: LocalCacheSliceState,
-      action: PayloadAction<ModelAction>
-    ): void {
-      actionReturnTypeToException(handleModelAction(state, action.payload.deploymentUuid, action.payload));
-    },
-    [localCacheSliceInputActionNamesObject.handleInstanceAction](
-      state: LocalCacheSliceState,
-      action: PayloadAction<InstanceAction>
-    ): void {
-      actionReturnTypeToException(handleInstanceAction(state, action.payload));
-    },
-    [localCacheSliceInputActionNamesObject.handleEndpointAction](
-      state: LocalCacheSliceState,
-      action: PayloadAction<InstanceAction>
-    ): void {
-      actionReturnTypeToException(handleEndpointAction(state, action.payload));
+      actionReturnTypeToException(handleAction(state, action.payload));
     },
   },
 });
