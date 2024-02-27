@@ -20,6 +20,7 @@ import deploymentEndpoint from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9
 import instanceEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" assert { type: "json" };
 import undoRedoEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json" assert { type: "json" };
 import localCacheEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json" assert { type: "json" };
+import domainEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json" assert { type: "json" };
 import jzodSchemajzodMiroirBootstrapSchema from "../../../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" assert { type: "json" };
 import entityDefinitionJzodSchemaV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json" assert { type: "json" };
 import entityDefinitionApplicationVersionV1 from "../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" assert { type: "json" };
@@ -1217,8 +1218,9 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "instanceCUDAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.filter(e=>["createInstance", "updateInstance", "deleteInstance"].includes(e.actionParameters.definition.actionName.definition)).map(e=>e.actionParameters)},
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "undoRedoAction": { "type": "union", "definition": undoRedoEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
-      "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
+      "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
+      "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
       "bundleAction": {
         "type": "union",
         "definition": [

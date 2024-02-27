@@ -11,9 +11,9 @@ import { JzodObject } from "@miroir-framework/jzod-ts";
 import {
   ApplicationDeploymentConfiguration,
   DomainControllerInterface,
-  DomainNonTransactionalInstanceAction,
   Entity,
   EntityInstancesUuidIndex,
+  InstanceAction,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -202,25 +202,22 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {
-          const createAction: DomainNonTransactionalInstanceAction = {
-            actionType:"DomainNonTransactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "createInstance",
-              applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
-              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-                  instances: [
-                    data 
-                  ],
-                },
-              ],
-            }
+          const createAction: InstanceAction = {
+            actionType: "instanceAction",
+            actionName: "createInstance",
+            applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+            deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                instances: [
+                  data 
+                ],
+              },
+            ],
           };
           await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, createAction);
         }
@@ -263,26 +260,22 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
           );
         } else {
-          const updateAction: DomainNonTransactionalInstanceAction = {
-            // actionName: "update",
-            actionType:"DomainNonTransactionalInstanceAction",
-            instanceAction: {
-              actionType: "instanceAction",
-              actionName: "updateInstance",
-              applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
-              deploymentUuid: props.displayedDeploymentDefinition?.uuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              objects: [
-                {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
-                  applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-                  instances: [
-                    data 
-                  ],
-                },
-              ],
-            }
+          const updateAction: InstanceAction = {
+            actionType: "instanceAction",
+            actionName: "updateInstance",
+            applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+            deploymentUuid: props.displayedDeploymentDefinition?.uuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            objects: [
+              {
+                parentName: data.name,
+                parentUuid: data.parentUuid,
+                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                instances: [
+                  data 
+                ],
+              },
+            ],
           };
           await domainController.handleDomainAction(props.displayedDeploymentDefinition?.uuid, updateAction);
         }

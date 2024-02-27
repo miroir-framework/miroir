@@ -1,0 +1,77 @@
+{
+  "uuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  "name": "DomainEndpoint",
+  "version": "1",
+  "description": "Domain Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "undoRedoAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToHandleUndoRedoAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "modelAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleModelAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "instanceAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleInstanceAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": { "type":"literal", "definition":"localCacheTransactionalInstanceActionWithDeployment"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            },
+            "instanceAction": {
+              "type": "schemaReference",
+              "optional": false,
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "instanceCUDAction"
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleTransactionalInstanceAction"
+        }
+      }
+    ]
+  }
+}

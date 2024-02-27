@@ -10,7 +10,6 @@ import {
   ACTION_OK,
   ActionReturnType,
   ApplicationSection,
-  InstanceAction,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
@@ -22,7 +21,6 @@ import {
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
   StoreOrBundleAction,
-  UndoRedoAction,
   getLoggerName
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {

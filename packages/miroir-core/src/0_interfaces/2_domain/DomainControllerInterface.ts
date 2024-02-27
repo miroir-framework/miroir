@@ -62,14 +62,6 @@ export const UndoRedoActionNamesSchema = z.enum(
 export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 
 // #############################################################################################
-export const domainNonTransactionalInstanceActionSchema = z.object({
-  actionType: z.literal("DomainNonTransactionalInstanceAction"),
-  instanceAction: instanceAction
-});
-export type DomainNonTransactionalInstanceAction = z.infer<typeof domainNonTransactionalInstanceActionSchema>;
-
-
-// #############################################################################################
 export const domainUndoRedoActionSchema = z.object({
   actionType: z.literal("DomainUndoRedoAction"),
   actionName: UndoRedoActionNamesSchema,
@@ -92,7 +84,7 @@ export type DomainTransactionalInstanceAction = z.infer<typeof domainTransaction
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
   domainUndoRedoActionSchema,
-  domainNonTransactionalInstanceActionSchema,
+  instanceAction,
   domainTransactionalInstanceActionSchema,
   modelAction,
 ]);
@@ -136,7 +128,6 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 
 // ###################################################################################
 export interface DomainControllerInterface {
-  handleDomainNonTransactionalInstanceAction(deploymentUuid: Uuid, action: DomainNonTransactionalInstanceAction): Promise<void>;
   handleDomainTransactionalInstanceAction(
     deploymentUuid: Uuid,
     action: DomainTransactionalInstanceAction,
