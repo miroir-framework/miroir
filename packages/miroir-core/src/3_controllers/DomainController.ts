@@ -10,8 +10,7 @@ import {
 
 import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirContextInterface';
 import {
-  LocalCacheInterface,
-  LocalCacheTransactionalInstanceActionWithDeployment
+  LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
 import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
 
@@ -79,7 +78,7 @@ export class DomainController implements DomainControllerInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
-  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[] {
+  currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
     return this.localCache.currentTransaction();
   }
 
@@ -161,29 +160,16 @@ export class DomainController implements DomainControllerInterface {
       domainTransactionalAction
     );
     try {
-      // switch (domainTransactionalAction.instanceAction.actionName) {
-      //   case "UpdateMetaModelInstance": {
-          await this.callUtil.callLocalCacheAction(
-            {}, // context
-            {}, // context update
-            "handleAction",
-            {
-              actionType: "localCacheTransactionalInstanceActionWithDeployment",
-              deploymentUuid,
-              instanceAction: domainTransactionalAction.instanceAction,
-            }
-          );
-        //   break;
-        // }
-
-        // default: {
-        //   log.warn(
-        //     "DomainController handleDomainTransactionalInstanceAction cannot handle action name for",
-        //     domainTransactionalAction
-        //   );
-        //   break;
-        // }
-      // }
+      await this.callUtil.callLocalCacheAction(
+        {}, // context
+        {}, // context update
+        "handleAction",
+        {
+          actionType: "transactionalInstanceAction",
+          deploymentUuid,
+          instanceAction: domainTransactionalAction.instanceAction,
+        }
+      );
     } catch (error) {
       log.warn(
         "DomainController handleDomainTransactionalInstanceAction caught exception when handling",
@@ -376,7 +362,7 @@ export class DomainController implements DomainControllerInterface {
               // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction = replayAction;
               log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replayAction", replayAction);
               switch (replayAction.actionType) {
-                case "localCacheTransactionalInstanceActionWithDeployment": {
+                case "transactionalInstanceAction": {
                   // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                       //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
                       await this.callUtil.callRemoteAction(

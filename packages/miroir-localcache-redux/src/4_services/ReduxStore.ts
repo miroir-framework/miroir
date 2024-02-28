@@ -13,7 +13,6 @@ import {
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
-  LocalCacheTransactionalInstanceActionWithDeployment,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -21,6 +20,7 @@ import {
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
   StoreOrBundleAction,
+  TransactionalInstanceAction,
   getLoggerName
 } from "miroir-core";
 import RemoteStoreRestAccessReduxSaga, {
@@ -242,7 +242,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[] {
+  currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

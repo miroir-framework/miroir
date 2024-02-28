@@ -4,11 +4,11 @@ import produce, { Patch, applyPatches, enablePatches } from "immer";
 import {
   Commit,
   InstanceAction,
-  LocalCacheTransactionalInstanceActionWithDeployment,
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreCRUDAction,
+  TransactionalInstanceAction,
   UndoRedoAction,
   getLoggerName
 } from "miroir-core";
@@ -37,7 +37,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 function callNextReducer(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment | ModelAction | InstanceAction | RemoteStoreCRUDAction>
+  action: PayloadAction<TransactionalInstanceAction | ModelAction | InstanceAction | RemoteStoreCRUDAction>
 ): ReduxStateWithUndoRedo {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -73,7 +73,7 @@ export function reduxStoreWithUndoRedoGetInitialState(reducer: any): ReduxStateW
 function callUndoRedoReducer(
   reducer: InnerReducerInterface,
   presentModelSnapshot: LocalCacheSliceState,
-  action: PayloadAction<ModelAction | LocalCacheTransactionalInstanceActionWithDeployment>
+  action: PayloadAction<ModelAction | TransactionalInstanceAction>
 ): { newSnapshot: LocalCacheSliceState; changes: Patch[]; inverseChanges: Patch[] } {
   // log.info('callUndoRedoReducer called with action', action, 'state', state);
   // log.info("callUndoRedoReducer called with action", JSON.stringify(action, undefined, 2));
@@ -97,7 +97,7 @@ function callUndoRedoReducer(
       return { newSnapshot: newPresentModelSnapshot, changes: changes, inverseChanges: inverseChanges };
       break;
     }
-    case "localCacheTransactionalInstanceActionWithDeployment": {
+    case "transactionalInstanceAction": {
       log.info(
         "callUndoRedoReducer undoable action type",
         action.type,
@@ -120,7 +120,7 @@ function callUndoRedoReducer(
 const callNextReducerWithUndoRedo = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelAction | LocalCacheTransactionalInstanceActionWithDeployment>
+  action: PayloadAction<ModelAction | TransactionalInstanceAction>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -158,7 +158,7 @@ const callNextReducerWithUndoRedo = (
 const callNextReducerWithUndoRedoForModelAction = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelAction | LocalCacheTransactionalInstanceActionWithDeployment>
+  action: PayloadAction<ModelAction | TransactionalInstanceAction>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -393,7 +393,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
-      InstanceAction | ModelAction | LocalCacheTransactionalInstanceActionWithDeployment | UndoRedoAction
+      InstanceAction | ModelAction | TransactionalInstanceAction | UndoRedoAction
       // | RemoteStoreCRUDAction
     >
   ): ReduxStateWithUndoRedo => {
@@ -411,11 +411,11 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
             return handleInstanceAction(innerReducer, state, action as PayloadAction<InstanceAction>)
             break;
           }
-          case "localCacheTransactionalInstanceActionWithDeployment": {
+          case "transactionalInstanceAction": {
             return callNextReducerWithUndoRedo(
               innerReducer,
               state,
-              action as PayloadAction<LocalCacheTransactionalInstanceActionWithDeployment>
+              action as PayloadAction<TransactionalInstanceAction>
             );
             break;
           }

@@ -332,8 +332,6 @@ export {
   StoreControllerManagerInterface
 } from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
 export {
-  LocalCacheTransactionalInstanceActionWithDeployment,
-  LocalCacheTransactionalInstanceActionWithDeploymentSchema,
   LocalCacheInterface,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
 export {

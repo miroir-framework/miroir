@@ -5,9 +5,9 @@ import {
   DomainElement,
   InstanceAction,
   LocalCacheAction,
-  LocalCacheTransactionalInstanceActionWithDeployment,
   ModelAction,
   RemoteStoreCRUDAction,
+  TransactionalInstanceAction,
   UndoRedoAction,
   entityInstance
 } from "miroir-core";
@@ -24,7 +24,8 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction;
+  // action: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction;
+  action: TransactionalInstanceAction | ModelAction;
   changes: Patch[];
   inverseChanges: Patch[];
 }
@@ -58,7 +59,7 @@ export type InnerReducerInterface = (
   state: LocalCacheSliceState,
   action: PayloadAction<
     | ModelAction
-    | LocalCacheTransactionalInstanceActionWithDeployment
+    | TransactionalInstanceAction
     | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction
@@ -71,7 +72,7 @@ export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
   action: PayloadAction<
     | ModelAction
-    | LocalCacheTransactionalInstanceActionWithDeployment
+    | TransactionalInstanceAction
     | UndoRedoAction
     | InstanceAction
     | RemoteStoreCRUDAction

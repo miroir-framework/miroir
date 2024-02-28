@@ -599,7 +599,7 @@ function handleAction(
     "localCacheSliceObject handleAction called",
     action.actionType,
     "deploymentUuid",
-    action.deploymentUuid,
+    action.actionType !== "transactionalInstanceAction" ?action.deploymentUuid:action.instanceAction.deploymentUuid,
     "action",
     action
   );
@@ -617,7 +617,7 @@ function handleAction(
       return handleModelAction(state, action.deploymentUuid,action);
       break;
     }
-    case "localCacheTransactionalInstanceActionWithDeployment": {
+    case "transactionalInstanceAction": {
       return handleInstanceAction(state, action.instanceAction);
       break;
     }

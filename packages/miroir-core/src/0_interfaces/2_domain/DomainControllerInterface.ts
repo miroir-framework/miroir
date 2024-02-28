@@ -9,7 +9,6 @@ import {
   ModelAction,
   TransactionalInstanceAction,
   instanceAction,
-  instanceCUDAction,
   modelAction,
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
@@ -18,7 +17,6 @@ import {
   transactionalInstanceAction,
   undoRedoAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import { LocalCacheTransactionalInstanceActionWithDeployment } from "../4-services/LocalCacheInterface.js";
 import { RemoteStoreInterface } from "../4-services/RemoteStoreInterface.js";
 
 
@@ -163,7 +161,7 @@ export interface DomainControllerInterface {
    * 
    */
   // TODO: currentTransaction should not depend on localCache types?! Use DomainActions instead?
-  currentTransaction(): (LocalCacheTransactionalInstanceActionWithDeployment | ModelAction)[],
+  currentTransaction(): (TransactionalInstanceAction | ModelAction)[],
   currentLocalCacheInfo(): LocalCacheInfo,
   getRemoteStore(): RemoteStoreInterface,
   
