@@ -72,11 +72,6 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 
 // ###################################################################################
 export interface DomainControllerInterface {
-  handleDomainTransactionalInstanceAction(
-    deploymentUuid: Uuid,
-    action: TransactionalInstanceAction,
-    currentModel?: MetaModel,
-  ): Promise<void>;
   handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   /**
    * data access must accomodate different styles of access

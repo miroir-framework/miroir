@@ -50,14 +50,6 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 
-// export type handleModelActionParam = 
-//   ModelActionInitModel
-//   | ModelActionResetModel
-//   | ModelActionResetData
-//   | ModelActionCommit
-//   | ModelActionRollback
-// ;
-
 /**
  * domain level contains "business" logic related to concepts defined whithin the
  * application: entities, reports, reducers, users, etc.
@@ -111,11 +103,6 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             "handleAction",
             undoRedoAction
-            // {
-            //   actionType: "undoRedoAction",
-            //   deploymentUuid,
-            //   actionName: undoRedoAction.actionName,
-            // }
           );
 
           break;
@@ -136,48 +123,6 @@ export class DomainController implements DomainControllerInterface {
         deploymentUuid,
         "action",
         undoRedoAction,
-        "exception",
-        error
-      );
-    }
-    return Promise.resolve();
-  }
-
-  // ##############################################################################################
-  // converts a Domain transactional action into a set of local cache actions and remote store actions
-  async handleDomainTransactionalInstanceAction(
-    deploymentUuid: Uuid,
-    // domainTransactionalAction: DomainTransactionalInstanceAction,
-    domainTransactionalAction: TransactionalInstanceAction,
-    currentModel: MetaModel
-  ): Promise<void> {
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalInstanceAction start actionName",
-      domainTransactionalAction.actionType,
-      "deployment",
-      deploymentUuid,
-      "action",
-      domainTransactionalAction
-    );
-    try {
-      await this.callUtil.callLocalCacheAction(
-        {}, // context
-        {}, // context update
-        "handleAction",
-        {
-          actionType: "transactionalInstanceAction",
-          deploymentUuid,
-          instanceAction: domainTransactionalAction.instanceAction,
-        }
-      );
-    } catch (error) {
-      log.warn(
-        "DomainController handleDomainTransactionalInstanceAction caught exception when handling",
-        domainTransactionalAction.actionType,
-        "deployment",
-        deploymentUuid,
-        "action",
-        domainTransactionalAction,
         "exception",
         error
       );
@@ -681,12 +626,36 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve();
       }
       case "transactionalInstanceAction": {
-        await this.handleAction(
-          deploymentUuid,
-          domainAction,
-          currentModel
-        );
+        // await this.handleDomainTransactionalInstanceAction(
+        //   deploymentUuid,
+        //   domainAction,
+        //   currentModel
+        // );
+        try {
+          await this.callUtil.callLocalCacheAction(
+            {}, // context
+            {}, // context update
+            "handleAction",
+            {
+              actionType: "transactionalInstanceAction",
+              deploymentUuid,
+              instanceAction: domainAction.instanceAction,
+            }
+          );
+        } catch (error) {
+          log.warn(
+            "DomainController handleAction caught exception when handling",
+            domainAction.actionType,
+            "deployment",
+            deploymentUuid,
+            "action",
+            domainAction,
+            "exception",
+            error
+          );
+        }
         return Promise.resolve();
+        break;
       }
       default:
         log.error(
