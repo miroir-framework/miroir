@@ -139,7 +139,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     // } else {
     //   log.info("onCellValueChanged on instance of entity",props.reportSection.definition.parentName, props.reportSection.definition.parentUuid,'updating object',e.data)
     //   // sending DataUpdates
-    //   await domainController.handleDomainAction(
+    //   await domainController.handleAction(
     //     contextDeploymentUuid,
     //     {
     //       actionType: "DomainNonTransactionalInstanceAction",

@@ -77,7 +77,7 @@ export interface DomainControllerInterface {
     action: TransactionalInstanceAction,
     currentModel?: MetaModel,
   ): Promise<void>;
-  handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
+  handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?

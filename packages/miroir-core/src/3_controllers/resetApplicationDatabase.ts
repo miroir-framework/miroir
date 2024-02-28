@@ -29,13 +29,13 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export async function resetMiroirAndApplicationDatabases(
   domainController: DomainControllerInterface
 ) {
-  await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+  await domainController.handleAction(applicationDeploymentLibrary.uuid, {
     actionType: "modelAction",
     actionName: "resetModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     deploymentUuid: applicationDeploymentLibrary.uuid,
   });
-  await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+  await domainController.handleAction(applicationDeploymentMiroir.uuid, {
     actionType: "modelAction",
     actionName: "resetModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -47,7 +47,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
   domainController: DomainControllerInterface
 ) {
   await resetMiroirAndApplicationDatabases(domainController)
-  await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+  await domainController.handleAction(applicationDeploymentMiroir.uuid, {
     actionType: "modelAction",
     actionName: "initModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -62,7 +62,7 @@ export async function resetAndInitMiroirAndApplicationDatabase(
       applicationVersion: applicationVersionInitialMiroirVersion,
     },
   });
-  await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+  await domainController.handleAction(applicationDeploymentLibrary.uuid, {
     actionType: "modelAction",
     actionName: "initModel",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -81,13 +81,13 @@ export async function resetAndInitMiroirAndApplicationDatabase(
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ resetAndInitMiroirAndApplicationDatabase APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   );
-  await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+  await domainController.handleAction(applicationDeploymentLibrary.uuid, {
     actionType: "modelAction",
     actionName: "rollback",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
     deploymentUuid: applicationDeploymentLibrary.uuid,
   });
-  await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+  await domainController.handleAction(applicationDeploymentMiroir.uuid, {
     actionType: "modelAction",
     actionName: "rollback",
     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

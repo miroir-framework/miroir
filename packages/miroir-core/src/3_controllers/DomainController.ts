@@ -644,10 +644,10 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleDomainAction(deploymentUuid: Uuid, domainAction: DomainAction, currentModel: MetaModel): Promise<void> {
+  async handleAction(deploymentUuid: Uuid, domainAction: DomainAction, currentModel: MetaModel): Promise<void> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
-      "handleDomainAction",
+      "handleAction",
       "deploymentUuid",
       deploymentUuid,
       "actionName",
@@ -658,7 +658,7 @@ export class DomainController implements DomainControllerInterface {
       JSON.stringify((domainAction as any)["objects"], null, 2)
     );
 
-    log.debug("handleDomainAction domainAction", domainAction);
+    log.debug("handleAction domainAction", domainAction);
 
     switch (domainAction.actionType) {
       case "modelAction": {
@@ -681,7 +681,7 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve();
       }
       case "transactionalInstanceAction": {
-        await this.handleDomainTransactionalInstanceAction(
+        await this.handleAction(
           deploymentUuid,
           domainAction,
           currentModel
@@ -690,7 +690,7 @@ export class DomainController implements DomainControllerInterface {
       }
       default:
         log.error(
-          "DomainController handleDomainAction action could not be taken into account, unkown action",
+          "DomainController handleAction action could not be taken into account, unkown action",
           domainAction
         );
     }

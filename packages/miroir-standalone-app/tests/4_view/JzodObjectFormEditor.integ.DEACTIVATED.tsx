@@ -293,8 +293,8 @@ describe(
   
     //       await act(
     //         async () => {
-    //           await testEnvironment.domainController.handleDomainAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalInstanceAction",actionName: "rollback"});
-    //           await testEnvironment.domainController.handleDomainAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalInstanceAction",actionName: "rollback"});
+    //           await testEnvironment.domainController.handleAction(applicationDeploymentMiroir.uuid,{actionType:"DomainTransactionalInstanceAction",actionName: "rollback"});
+    //           await testEnvironment.domainController.handleAction(applicationDeploymentLibrary.uuid,{actionType:"DomainTransactionalInstanceAction",actionName: "rollback"});
     //         }
     //       );
 

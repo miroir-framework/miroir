@@ -313,7 +313,7 @@ export const RootComponent = (props: RootComponentProps) => {
             <button
               onClick={async () => {
                 log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentMiroir.uuid,
                   {
                     actionType: "modelAction",
@@ -322,7 +322,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     deploymentUuid:applicationDeploymentMiroir.uuid,
                   }
                 );
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   {
                     actionType: "modelAction",
@@ -369,7 +369,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   })
                 }
 
-                await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                   actionType: "modelAction",
                   actionName: "initModel",
                   deploymentUuid:applicationDeploymentMiroir.uuid,
@@ -384,7 +384,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     applicationVersion: applicationVersionInitialMiroirVersion,
                   },
                 });
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                   actionType: "modelAction",
                   actionName: "initModel",
                   deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -405,13 +405,13 @@ export const RootComponent = (props: RootComponentProps) => {
                 log.info(
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                 );
-                await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+                await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                   actionType: "modelAction",
                   actionName: "rollback",
                   deploymentUuid:applicationDeploymentMiroir.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 });
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+                await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                   actionType: "modelAction",
                   actionName: "rollback",
                   deploymentUuid:applicationDeploymentLibrary.uuid,

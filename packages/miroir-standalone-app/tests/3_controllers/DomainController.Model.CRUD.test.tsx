@@ -159,13 +159,13 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -226,13 +226,13 @@ describe.sequential(
           console.log('add Entity step 1: loading initial configuration, entity Author must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -271,7 +271,7 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 createAction,
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
@@ -308,7 +308,7 @@ describe.sequential(
           console.log('add Entity step 3: rollbacking/refreshing report list from remote store, Author Entity must be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -368,13 +368,13 @@ describe.sequential(
           console.log('add Entity Author step 1: loading initial configuration, Author entity must be absent from entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -416,7 +416,7 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -451,7 +451,7 @@ describe.sequential(
           // log.info('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionName: "commit",
@@ -484,7 +484,7 @@ describe.sequential(
           console.log('add Entity step step 4: rollbacking/refreshing Entity list from remote store after the first commit, Author Entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionType: "modelAction",
@@ -531,13 +531,13 @@ describe.sequential(
 
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -562,7 +562,7 @@ describe.sequential(
           console.log('remove Author entity setup: adding Author entity locally.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 createAction,
                 reduxStore.currentModel(applicationDeploymentLibrary.uuid)
@@ -573,7 +573,7 @@ describe.sequential(
           console.log('remove Author entity setup: adding Author entity remotely by commit.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionName: "commit",
@@ -610,7 +610,7 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -635,7 +635,7 @@ describe.sequential(
           console.log('remove Author entity step 2: removing Author entity from local store, it must be absent from the entity list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid, 
                 {
                   actionType: "modelAction",
@@ -672,7 +672,7 @@ describe.sequential(
           console.log('remove Author entity step 3: commit to remote store, Author entity must still be absent from the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionName: "commit",
@@ -701,7 +701,7 @@ describe.sequential(
           console.log('remove Entity step 4: rollbacking/refreshing entity list from remote store after the first commit, Author entity must still be absent in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -779,17 +779,17 @@ describe.sequential(
 
             await act(
               async () => {
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   createActionAuthor,
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   createActionBook,
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   {
                     actionName: "commit",
@@ -834,7 +834,7 @@ describe.sequential(
     
             await act(
               async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+                await domainController.handleAction(applicationDeploymentLibrary.uuid, createInstancesAction);
               }
             );
           } // end if (miroirConfig.client.emulateServer)
@@ -858,13 +858,13 @@ describe.sequential(
           console.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentMiroir.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -902,7 +902,7 @@ describe.sequential(
           ;
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -934,7 +934,7 @@ describe.sequential(
           console.log('Update Author entity definition step 3: committing entity list to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionName: "commit",
@@ -963,7 +963,7 @@ describe.sequential(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -1043,17 +1043,17 @@ describe.sequential(
 
             await act(
               async () => {
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   createActionAuthor,
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   createActionBook,
                   reduxStore.currentModel(applicationDeploymentLibrary.uuid)
                 );
-                await domainController.handleDomainAction(
+                await domainController.handleAction(
                   applicationDeploymentLibrary.uuid,
                   {
                     actionName: "commit",
@@ -1098,7 +1098,7 @@ describe.sequential(
     
             await act(
               async () => {
-                await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+                await domainController.handleAction(applicationDeploymentLibrary.uuid, createInstancesAction);
               }
             );
           } // end if (miroirConfig.client.emulateServer)
@@ -1122,13 +1122,13 @@ describe.sequential(
           console.log('Update Author definition step 1: loading initial configuration, Author entity must be present in report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
+              await domainController.handleAction(applicationDeploymentMiroir.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               });
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,
@@ -1176,7 +1176,7 @@ describe.sequential(
           ;
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -1208,7 +1208,7 @@ describe.sequential(
           console.log('Update Author entity Attribute definition step 3: committing entity definition to remote store, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(
+              await domainController.handleAction(
                 applicationDeploymentLibrary.uuid,
                 {
                   actionName: "commit",
@@ -1237,7 +1237,7 @@ describe.sequential(
           console.log('update Author entity definition step 4: rollbacking/refreshing entity definition list from remote store after the first commit, modified entity must still be present in the report list.')
           await act(
             async () => {
-              await domainController.handleDomainAction(applicationDeploymentLibrary.uuid, {
+              await domainController.handleAction(applicationDeploymentLibrary.uuid, {
                 actionType: "modelAction",
                 actionName: "rollback",
                 deploymentUuid:applicationDeploymentLibrary.uuid,

@@ -252,7 +252,7 @@ function handleModelAction(
     }
     default: {
       // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-      // log.warn('UndoRedoReducer handleDomainAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
+      // log.warn('UndoRedoReducer handleAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
       return callNextReducerWithUndoRedoForModelAction(
         innerReducer,
         state,
