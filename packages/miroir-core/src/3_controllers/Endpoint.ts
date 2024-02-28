@@ -27,7 +27,7 @@ export class Endpoint implements EndpointInterface {
       case "createInstance": {
         // this.localCache.createInstance(action.deploymentUuid, action.applicationSection, action.objects);
         // log.info("Endpoint.handleAction called", action)
-        this.localCache.handleAction(action);
+        this.localCache.handleLocalCacheAction(action);
         break
       }
       case "getInstance": {

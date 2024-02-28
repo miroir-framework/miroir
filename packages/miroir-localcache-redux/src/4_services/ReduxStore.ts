@@ -17,6 +17,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelAction,
+  RemoteStoreAction,
   RemoteStoreCRUDAction,
   RemoteStoreInterface,
   StoreOrBundleAction,
@@ -229,7 +230,23 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  handleAction(action: LocalCacheAction): ActionReturnType {
+  async handleRemoteStoreAction(
+    deploymentUuid: string,
+    action: RemoteStoreAction,
+  ): Promise<ActionReturnType> {
+    const result: ActionReturnType = await this.innerReduxStore.dispatch(
+      // remote store access is accomplished through asynchronous sagas
+      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreAction.creator(
+        { deploymentUuid, action }
+      )
+    );
+    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
+    return Promise.resolve(result);
+  }
+  
+  
+  // ###############################################################################
+  handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
     log.info("handleAction", action);
     
     return exceptionToActionReturnType(() =>

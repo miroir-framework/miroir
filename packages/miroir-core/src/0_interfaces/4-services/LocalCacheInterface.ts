@@ -26,5 +26,5 @@ export declare interface LocalCacheInterface
   currentTransaction():(TransactionalInstanceAction | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
-  handleAction(action:LocalCacheAction):ActionReturnType;
+  handleLocalCacheAction(action:LocalCacheAction):ActionReturnType;
 }

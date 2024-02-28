@@ -129,12 +129,11 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
   async handleNetworkRemoteStoreCRUDAction(
     deploymentUuid: string,
-    section: ApplicationSection,
-    action: RemoteStoreAction
+    action: RemoteStoreCRUDAction
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,
-      this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + section + "/entity"
+      this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + action.section.toString() + "/entity"
     );
     // const args =
     log.debug(
@@ -143,7 +142,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
       "deploymentUuid",
       deploymentUuid,
       "section",
-      section,
+      action.section,
       "callParams",
       callParams
     );
@@ -164,12 +163,39 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteAction(deploymentUuid: string, action: StoreOrBundleAction): Promise<RestClientCallReturnType> {
+  async handleNetworkRemoteStoreOrBundleAction(deploymentUuid: string, action: StoreOrBundleAction): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
     log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "callParams", callParams);
     const result = await callParams.operation(callParams.url, callParams.args);
     log.info("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "result", result);
     return result;
+  }
+
+  // ##################################################################################
+  async handleNetworkRemoteStoreAction(deploymentUuid: string, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
+    switch (action.actionType) {
+      case "bundleAction":
+      case "storeAction": {
+        return this.handleNetworkRemoteStoreOrBundleAction(deploymentUuid, action);
+        break;
+      }
+      case "RemoteStoreCRUDAction": {
+        return this.handleNetworkRemoteStoreCRUDAction(deploymentUuid, action);
+        break;
+      }
+      case "modelAction": {
+        return this.handleNetworkRemoteStoreModelEntityAction(deploymentUuid, action)
+        break;
+      }
+      default:
+        throw new Error("handleNetworkRemoteStoreAction could not handle action " + action);
+        break;
+    }
+    // const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
+    // log.debug("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "callParams", callParams);
+    // const result = await callParams.operation(callParams.url, callParams.args);
+    // log.info("RemoteStoreNetworkRestClient handleNetworkRemoteStoreEntityAction", action, "result", result);
+    // return result;
   }
 
   // ##################################################################################

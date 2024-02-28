@@ -173,6 +173,7 @@ export class DomainController implements DomainControllerInterface {
           {
             actionType: "RemoteStoreCRUDAction",
             actionName: actionMap[instanceAction.actionName] as CRUDActionName,
+            section: "data",
             parentName: instances.parentName,
             objects: instances.instances,
           }
@@ -264,7 +265,7 @@ export class DomainController implements DomainControllerInterface {
             );
           } else {
             const sectionOfapplicationEntities: ApplicationSection =
-              deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model";
+              modelAction.deploymentUuid == applicationDeploymentMiroir.uuid ? "data" : "model";
             const newModelVersionUuid = uuidv4();
             // const newModelVersion: MiroirApplicationVersionOLD_DO_NOT_USE = {
             const newModelVersion: ApplicationVersion = {
@@ -289,6 +290,7 @@ export class DomainController implements DomainControllerInterface {
             const newModelVersionAction: RemoteStoreCRUDAction = {
               actionType: "RemoteStoreCRUDAction",
               actionName: "create",
+              section: sectionOfapplicationEntities,
               objects: [newModelVersion],
             };
 
@@ -319,6 +321,7 @@ export class DomainController implements DomainControllerInterface {
                         {
                           actionType: "RemoteStoreCRUDAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                          section: replayAction.instanceAction.applicationSection,
                           parentName: replayAction.instanceAction.objects[0].parentName,
                           parentUuid: replayAction.instanceAction.objects[0].parentUuid,
                           objects: replayAction.instanceAction.objects[0].instances,
@@ -398,6 +401,7 @@ export class DomainController implements DomainControllerInterface {
                 const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
                   actionType: "RemoteStoreCRUDAction",
                   actionName: "update",
+                  section: sectionOfapplicationEntities,
                   objects: [updatedConfiguration],
                 };
                 // TODO: in the case of the Miroir app, this should be in the 'data'section
@@ -461,6 +465,7 @@ export class DomainController implements DomainControllerInterface {
             actionName: "read",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
+            section: "model",
           }
         )
         .then(async (context) => {
@@ -525,14 +530,16 @@ export class DomainController implements DomainControllerInterface {
                   actionName: "read",
                   parentName: e.entity.name,
                   parentUuid: e.entity.uuid,
+                  section: e.section,
                 }
               )
               .then((context: Record<string, any>) => {
-                log.trace(
-                  "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
-                  e.entity["name"],
-                  entityInstanceCollection
-                );
+                // TODO: is logging whithin this function independent of logging configuration?
+                // log.trace(
+                //   "DomainController loadConfigurationFromRemoteDataStore found instances for entity",
+                //   e.entity["name"],
+                //   entityInstanceCollection
+                // );
                 instances.push(context["entityInstanceCollection"].returnedDomainElement.elementValue);
                 return context;
               })

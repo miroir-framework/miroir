@@ -68,6 +68,7 @@ export interface RestClientCallReturnType {
 export interface RemoteStoreCRUDAction {
   actionType: "RemoteStoreCRUDAction";
   actionName: CRUDActionName;
+  section: ApplicationSection,
   parentName?: string; //redundant with object list
   parentUuid?: string; //redundant with object list
   uuid?: string; //redundant with object list
@@ -98,16 +99,19 @@ export interface RemoteStoreActionReturnType {
 export interface RemoteStoreNetworkClientInterface {
   handleNetworkRemoteStoreCRUDAction(
     deploymentUuid: string,
-    section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreModelEntityAction(
     deploymentUuid: string,
     action: ModelAction
   ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteAction(
+  handleNetworkRemoteStoreOrBundleAction(
     deploymentUuid: string,
     action: StoreOrBundleAction
+  ): Promise<RestClientCallReturnType>;
+  handleNetworkRemoteStoreAction(
+    deploymentUuid: string,
+    action: RemoteStoreAction,
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -130,6 +134,10 @@ export declare interface RemoteStoreInterface {
   handleRemoteStoreActionOrBundleAction(
     deploymentUuid: string,
     action: StoreOrBundleAction
+  ): Promise<ActionReturnType>;
+  handleRemoteStoreAction(
+    deploymentUuid: string,
+    action: RemoteStoreAction
   ): Promise<ActionReturnType>;
 }
 
