@@ -171,7 +171,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         {entity: newEntity, entityDefinition:newEntityDefinition},
       ],
     };
-    await domainController.handleAction(props.currentDeploymentUuid, createEntityAction, props.currentModel);
+    await domainController.handleAction(createEntityAction, props.currentModel);
     const newEntityReport: Report = {
       "uuid": uuidv4(),
       "parentName":"Report",
@@ -209,10 +209,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         }],
       }
     };
-    await domainController.handleAction(props.currentDeploymentUuid, createReportAction, props.currentModel);
+    await domainController.handleAction(createReportAction, props.currentModel);
 
     await domainController.handleAction(
-      props.currentDeploymentUuid,
       {
         actionName: "commit",
         actionType: "modelAction",
@@ -253,7 +252,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
         }
       ]
     };
-    await domainController.handleAction(props.currentDeploymentUuid, createRowsAction);
+    await domainController.handleAction(createRowsAction);
   }
 
   return (

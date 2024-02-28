@@ -162,7 +162,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       if (props.displayedDeploymentDefinition && props.displayedDeploymentDefinition.uuid) {
         if (props.chosenApplicationSection == 'model') {
           await domainController.handleAction(
-            props.displayedDeploymentDefinition?.uuid,
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
@@ -203,7 +202,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               },
             ],
           };
-          await domainController.handleAction(props.displayedDeploymentDefinition?.uuid, createAction);
+          await domainController.handleAction(createAction);
         }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
@@ -220,7 +219,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       if (props.displayedDeploymentDefinition) {
         if (props.chosenApplicationSection == 'model') {
           await domainController.handleAction(
-            props.displayedDeploymentDefinition?.uuid,
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
@@ -260,7 +258,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               },
             ],
           };
-          await domainController.handleAction(props.displayedDeploymentDefinition?.uuid, updateAction);
+          await domainController.handleAction(updateAction);
         }
       } else {
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')

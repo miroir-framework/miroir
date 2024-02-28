@@ -589,12 +589,12 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
-  async handleAction(deploymentUuid: Uuid, domainAction: DomainAction, currentModel: MetaModel): Promise<void> {
+  async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<void> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleAction",
       "deploymentUuid",
-      deploymentUuid,
+      domainAction.deploymentUuid,
       "actionName",
       (domainAction as any).actionName,
       "actionType",
@@ -607,19 +607,19 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case "modelAction": {
-        await this.handleModelAction(deploymentUuid, domainAction, currentModel);
+        await this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
         return Promise.resolve();
       }
       case "instanceAction": {
         await this.handleInstanceAction(
-          deploymentUuid,
+          domainAction.deploymentUuid,
           domainAction
         );
         return Promise.resolve();
       }
       case "undoRedoAction": {
         await this.handleDomainUndoRedoAction(
-          deploymentUuid,
+          domainAction.deploymentUuid,
           domainAction,
           currentModel
         );
@@ -631,18 +631,19 @@ export class DomainController implements DomainControllerInterface {
             {}, // context
             {}, // context update
             "handleAction",
-            {
-              actionType: "transactionalInstanceAction",
-              deploymentUuid,
-              instanceAction: domainAction.instanceAction,
-            }
+            domainAction
+            // {
+            //   actionType: "transactionalInstanceAction",
+            //   deploymentUuid: domainAction.deploymentUuid,
+            //   instanceAction: domainAction.instanceAction,
+            // }
           );
         } catch (error) {
           log.warn(
             "DomainController handleAction caught exception when handling",
             domainAction.actionType,
             "deployment",
-            deploymentUuid,
+            domainAction.deploymentUuid,
             "action",
             domainAction,
             "exception",

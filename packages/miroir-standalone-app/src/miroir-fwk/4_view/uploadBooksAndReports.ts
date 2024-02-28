@@ -50,7 +50,6 @@ export async function uploadBooksAndReports(
   currentModel?: MetaModel
 ) {
   await domainController.handleAction(
-    applicationDeploymentLibrary.uuid,
     {
       actionType: "modelAction",
       actionName: "createEntity",
@@ -68,7 +67,6 @@ export async function uploadBooksAndReports(
   );
 
   await domainController.handleAction(
-    applicationDeploymentLibrary.uuid,
     {
       actionName: "commit",
       actionType: "modelAction",
@@ -80,7 +78,6 @@ export async function uploadBooksAndReports(
   );
 
   await domainController.handleAction(
-    applicationDeploymentLibrary.uuid,
     {
       actionType: "transactionalInstanceAction",
       instanceAction: {
@@ -111,7 +108,6 @@ export async function uploadBooksAndReports(
   );
 
   await domainController.handleAction(
-    applicationDeploymentLibrary.uuid,
     {
       actionName: "commit",
       actionType: "modelAction",
@@ -122,7 +118,7 @@ export async function uploadBooksAndReports(
     currentModel
   );
 
-  await domainController.handleAction(applicationDeploymentLibrary.uuid, {
+  await domainController.handleAction({
     actionType: "instanceAction",
     actionName: "createInstance",
     applicationSection: "data",

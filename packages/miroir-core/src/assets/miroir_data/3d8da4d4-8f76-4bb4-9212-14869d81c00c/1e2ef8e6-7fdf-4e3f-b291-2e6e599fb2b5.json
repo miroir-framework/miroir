@@ -52,6 +52,13 @@
           "type": "object",
           "definition": {
             "actionType": { "type":"literal", "definition":"transactionalInstanceAction"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }],
+              "extra": { "defaultLabel": "Module Deployment Uuid", "editable": false }
+            },
             "instanceAction": {
               "type": "schemaReference",
               "optional": false,

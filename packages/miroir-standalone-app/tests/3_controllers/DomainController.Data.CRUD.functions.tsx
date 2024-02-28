@@ -90,9 +90,8 @@ export async function refreshAllInstancesTest(
 
       await act(
         async () => {
-          await domainController.handleAction(applicationDeploymentLibrary.uuid, createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          await domainController.handleAction(createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
           await domainController.handleAction(
-            applicationDeploymentLibrary.uuid,
             {
               actionType: "modelAction",
               actionName: "commit",
@@ -136,7 +135,7 @@ export async function refreshAllInstancesTest(
 
       await act(
         async () => {
-          await domainController.handleAction(applicationDeploymentLibrary.uuid, createInstancesAction);
+          await domainController.handleAction(createInstancesAction);
         }
       );
     }
@@ -164,13 +163,13 @@ export async function refreshAllInstancesTest(
     log.info("Refresh all Instances setup is finished.")
 
     await act(async () => {
-      await domainController.handleAction(applicationDeploymentMiroir.uuid, {
+      await domainController.handleAction({
         actionType: "modelAction",
         actionName: "rollback",
         deploymentUuid:applicationDeploymentMiroir.uuid,
         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       });
-      await domainController.handleAction(applicationDeploymentLibrary.uuid, {
+      await domainController.handleAction({
         actionType: "modelAction",
         actionName: "rollback",
         deploymentUuid:applicationDeploymentLibrary.uuid,
