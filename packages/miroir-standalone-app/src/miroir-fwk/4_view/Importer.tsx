@@ -192,8 +192,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
       }
     }
     const createReportAction: DomainAction = {
-      actionType: "DomainTransactionalInstanceAction",
-      actionName: "UpdateMetaModelInstance",
+      actionType: "transactionalInstanceAction",
       instanceAction: {
         actionType: "instanceAction",
         actionName: "createInstance",

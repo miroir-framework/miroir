@@ -1219,6 +1219,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "instanceAction": { "type": "union", "definition": instanceEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "undoRedoAction": { "type": "union", "definition": undoRedoEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
+      "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction")?.actionParameters,
       "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
       "bundleAction": {

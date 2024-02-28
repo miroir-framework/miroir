@@ -5,7 +5,6 @@ import {
   CRUDActionName,
   DomainAction,
   DomainControllerInterface,
-  DomainTransactionalInstanceAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
@@ -30,6 +29,7 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  TransactionalInstanceAction,
   UndoRedoAction,
   entityInstanceCollection
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -148,20 +148,21 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainTransactionalInstanceAction(
     deploymentUuid: Uuid,
-    domainTransactionalAction: DomainTransactionalInstanceAction,
+    // domainTransactionalAction: DomainTransactionalInstanceAction,
+    domainTransactionalAction: TransactionalInstanceAction,
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainTransactionalInstanceAction start actionName",
-      domainTransactionalAction["actionName"],
+      domainTransactionalAction.actionType,
       "deployment",
       deploymentUuid,
       "action",
       domainTransactionalAction
     );
     try {
-      switch (domainTransactionalAction.actionName) {
-        case "UpdateMetaModelInstance": {
+      // switch (domainTransactionalAction.instanceAction.actionName) {
+      //   case "UpdateMetaModelInstance": {
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
@@ -172,21 +173,21 @@ export class DomainController implements DomainControllerInterface {
               instanceAction: domainTransactionalAction.instanceAction,
             }
           );
-          break;
-        }
+        //   break;
+        // }
 
-        default: {
-          log.warn(
-            "DomainController handleDomainTransactionalInstanceAction cannot handle action name for",
-            domainTransactionalAction
-          );
-          break;
-        }
-      }
+        // default: {
+        //   log.warn(
+        //     "DomainController handleDomainTransactionalInstanceAction cannot handle action name for",
+        //     domainTransactionalAction
+        //   );
+        //   break;
+        // }
+      // }
     } catch (error) {
       log.warn(
         "DomainController handleDomainTransactionalInstanceAction caught exception when handling",
-        domainTransactionalAction["actionName"],
+        domainTransactionalAction.actionType,
         "deployment",
         deploymentUuid,
         "action",
@@ -693,10 +694,10 @@ export class DomainController implements DomainControllerInterface {
         );
         return Promise.resolve();
       }
-      case "DomainTransactionalInstanceAction": {
+      case "transactionalInstanceAction": {
         await this.handleDomainTransactionalInstanceAction(
           deploymentUuid,
-          domainAction as DomainTransactionalInstanceAction,
+          domainAction,
           currentModel
         );
         return Promise.resolve();

@@ -7,6 +7,7 @@ import {
   EntityInstancesUuidIndex,
   MetaModel,
   ModelAction,
+  TransactionalInstanceAction,
   instanceAction,
   instanceCUDAction,
   modelAction,
@@ -14,6 +15,7 @@ import {
   modelActionCreateEntity,
   modelActionDropEntity,
   modelActionRenameEntity,
+  transactionalInstanceAction,
   undoRedoAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LocalCacheTransactionalInstanceActionWithDeployment } from "../4-services/LocalCacheInterface.js";
@@ -52,24 +54,14 @@ export const CRUDActionNameSchema = z.enum(
 export type CRUDActionName = z.infer<typeof CRUDActionNameSchema>;
 export const CRUDActionNamesArrayString: string[] = CRUDActionNamesArray.map((a) => a);
 
-// #############################################################################################
-export const UndoRedoActionNamesArray = [
-  "undo",
-  "redo",
-] as const;
-export const UndoRedoActionNamesSchema = z.enum(
-  UndoRedoActionNamesArray
-);
-export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
-
-// #############################################################################################
-// without translation of Entity Updates in CUD updates
-export const domainTransactionalInstanceActionSchema = z.object({
-  actionType: z.literal("DomainTransactionalInstanceAction"),
-  actionName: z.literal("UpdateMetaModelInstance"),
-  instanceAction: instanceCUDAction,
-})
-export type DomainTransactionalInstanceAction = z.infer<typeof domainTransactionalInstanceActionSchema>;
+// // #############################################################################################
+// // without translation of Entity Updates in CUD updates
+// export const domainTransactionalInstanceActionSchema = z.object({
+//   actionType: z.literal("DomainTransactionalInstanceAction"),
+//   actionName: z.literal("UpdateMetaModelInstance"),
+//   instanceAction: instanceCUDAction,
+// })
+// export type DomainTransactionalInstanceAction = z.infer<typeof domainTransactionalInstanceActionSchema>;
 
 // #############################################################################################
 // #############################################################################################
@@ -77,10 +69,9 @@ export type DomainTransactionalInstanceAction = z.infer<typeof domainTransaction
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
-  // domainUndoRedoActionSchema,
   undoRedoAction,
   instanceAction,
-  domainTransactionalInstanceActionSchema,
+  transactionalInstanceAction,
   modelAction,
 ]);
 export type DomainAction = z.infer<typeof DomainActionSchema>;
@@ -125,7 +116,8 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 export interface DomainControllerInterface {
   handleDomainTransactionalInstanceAction(
     deploymentUuid: Uuid,
-    action: DomainTransactionalInstanceAction,
+    // action: DomainTransactionalInstanceAction,
+    action: TransactionalInstanceAction,
     currentModel?: MetaModel,
   ): Promise<void>;
   handleDomainAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;

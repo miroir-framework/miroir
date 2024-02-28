@@ -415,8 +415,7 @@ export const HomePage = (props: RootComponentProps) => {
             await domainController.handleDomainAction(
               applicationDeploymentMiroir.uuid,
               {
-                actionType: "DomainTransactionalInstanceAction",
-                actionName: "UpdateMetaModelInstance",
+                actionType: "transactionalInstanceAction",
                 instanceAction: {
                   actionType: "instanceAction",
                   actionName: "createInstance",
@@ -437,23 +436,6 @@ export const HomePage = (props: RootComponentProps) => {
                     },
                   ],
                 }
-                // update: {
-                //   actionType: "EntityInstanceTransactionalCUDUpdate",
-                //   actionName: "update",
-                //   objects: [
-                //     {
-                //       parentName: reportReportList.parentName,
-                //       parentUuid: reportReportList.parentUuid,
-                //       applicationSection: "data",
-                //       instances: [
-                //         Object.assign({}, reportReportList, {
-                //           name: "Report2List",
-                //           defaultLabel: "Modified List of Reports",
-                //         }) as EntityInstance,
-                //       ],
-                //     },
-                //   ],
-                // },
               },
               defaultMiroirMetaModel // TODO replace with current Miroir model (as existing in the datastore)
             );

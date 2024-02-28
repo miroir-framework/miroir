@@ -82,8 +82,7 @@ export async function uploadBooksAndReports(
   await domainController.handleDomainAction(
     applicationDeploymentLibrary.uuid,
     {
-      actionType: "DomainTransactionalInstanceAction",
-      actionName: "UpdateMetaModelInstance",
+      actionType: "transactionalInstanceAction",
       instanceAction: {
         actionType: "instanceAction",
         actionName: "createInstance",

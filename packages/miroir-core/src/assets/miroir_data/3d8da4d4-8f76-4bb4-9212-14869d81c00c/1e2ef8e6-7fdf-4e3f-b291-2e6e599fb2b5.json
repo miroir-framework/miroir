@@ -51,13 +51,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": { "type":"literal", "definition":"localCacheTransactionalInstanceActionWithDeployment"},
-            "deploymentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
-              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
-            },
+            "actionType": { "type":"literal", "definition":"transactionalInstanceAction"},
             "instanceAction": {
               "type": "schemaReference",
               "optional": false,
