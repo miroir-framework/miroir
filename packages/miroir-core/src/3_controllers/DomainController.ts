@@ -167,9 +167,8 @@ export class DomainController implements DomainControllerInterface {
         await this.callUtil.callRemoteAction(
           {}, // context
           {}, // context update
-          "handleRemoteStoreRestCRUDAction",
+          "handleRemoteStoreAction",
           deploymentUuid,
-          "data",
           {
             actionType: "RemoteStoreCRUDAction",
             actionName: actionMap[instanceAction.actionName] as CRUDActionName,
@@ -250,7 +249,7 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callRemoteAction(
             {}, // context
             {}, // context update
-            "handleRemoteStoreModelAction",
+            "handleRemoteStoreAction",
             modelAction.deploymentUuid,
             modelAction
           );
@@ -298,9 +297,8 @@ export class DomainController implements DomainControllerInterface {
             await this.callUtil.callRemoteAction(
               {}, // context
               {}, // context update
-              "handleRemoteStoreRestCRUDAction",
+              "handleRemoteStoreAction",
               deploymentUuid,
-              sectionOfapplicationEntities,
               newModelVersionAction
             );
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
@@ -315,9 +313,8 @@ export class DomainController implements DomainControllerInterface {
                       await this.callUtil.callRemoteAction(
                         {}, // context
                         {}, // context update
-                        "handleRemoteStoreRestCRUDAction",
+                        "handleRemoteStoreAction",
                         deploymentUuid,
-                        replayAction.instanceAction.applicationSection,
                         {
                           actionType: "RemoteStoreCRUDAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
@@ -333,7 +330,7 @@ export class DomainController implements DomainControllerInterface {
                   await this.callUtil.callRemoteAction(
                     {}, // context
                     {}, // context update
-                    "handleRemoteStoreModelAction",
+                    "handleRemoteStoreAction",
                     replayAction.deploymentUuid,
                     replayAction
                   );
@@ -408,9 +405,8 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callRemoteAction(
                   {}, // context
                   {}, // context update
-                  "handleRemoteStoreRestCRUDAction",
+                  "handleRemoteStoreAction",
                   deploymentUuid,
-                  sectionOfapplicationEntities,
                   newStoreBasedConfiguration
                 );
               });
@@ -457,11 +453,10 @@ export class DomainController implements DomainControllerInterface {
             addResultToContextAsName: "dataEntitiesFromModelSection",
             expectedDomainElementType: "entityInstanceCollection",
           }, // context update
-          "handleRemoteStoreRestCRUDAction",
-          // this.remoteStore, //this
+          "handleRemoteStoreAction",
           deploymentUuid,
-          "model",
           {
+            actionType: "RemoteStoreCRUDAction",
             actionName: "read",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -482,8 +477,8 @@ export class DomainController implements DomainControllerInterface {
             context.dataEntitiesFromModelSection.returnedDomainElement.elementType != "entityInstanceCollection"
           ) {
             throw new Error(
-              "DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list" +
-                context.dataEntitiesFromModelSection
+              "DomainController loadConfigurationFromRemoteDataStore could not fetch entity instance list " +
+                JSON.stringify(context.dataEntitiesFromModelSection,undefined,2)
             );
           }
           const modelEntitiesToFetch: MetaEntity[] =
@@ -523,10 +518,10 @@ export class DomainController implements DomainControllerInterface {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
-                "handleRemoteStoreRestCRUDAction",
+                "handleRemoteStoreAction",
                 deploymentUuid,
-                e.section,
                 {
+                  actionType: "RemoteStoreCRUDAction",
                   actionName: "read",
                   parentName: e.entity.name,
                   parentUuid: e.entity.uuid,

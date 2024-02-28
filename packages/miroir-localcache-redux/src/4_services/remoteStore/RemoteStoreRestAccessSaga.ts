@@ -95,15 +95,15 @@ export class RemoteStoreRestAccessReduxSaga {
       name: "handleRemoteStoreRestCRUDAction",
       // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
       creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction },
+        { deploymentUuid: string; action: RemoteStoreCRUDAction },
         "handleRemoteStoreRestCRUDAction"
       >("handleRemoteStoreRestCRUDAction"),
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; section: ApplicationSection; action: RemoteStoreCRUDAction }>
+        p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreCRUDAction }>
       // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
       ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
-        const { deploymentUuid, section, action } = p.payload;
+        const { deploymentUuid, action } = p.payload;
         try {
           log.info("handleRemoteStoreRestCRUDAction called, param",p);
           const clientResult : RestClientCallReturnType
@@ -122,7 +122,7 @@ export class RemoteStoreRestAccessReduxSaga {
               elementType: "entityInstanceCollection",
               elementValue: {
                 parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
-                applicationSection: section,
+                applicationSection: action.section,
                 instances: clientResult.data.instances
               }
             }
@@ -149,7 +149,6 @@ export class RemoteStoreRestAccessReduxSaga {
     },
     handleRemoteStoreAction: {
       name: "handleRemoteStoreAction",
-      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
       creator: promiseActionFactory<ActionReturnType>().create<
         { deploymentUuid: string; action: RemoteStoreAction },
         "handleRemoteStoreAction"
@@ -157,7 +156,6 @@ export class RemoteStoreRestAccessReduxSaga {
       generator: function* (
         this: RemoteStoreRestAccessReduxSaga,
         p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreAction }>
-      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
       ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
@@ -169,14 +167,29 @@ export class RemoteStoreRestAccessReduxSaga {
           log.debug("handleRemoteStoreAction received clientResult", clientResult);
 
           // const result: RemoteStoreActionReturnType = {
-          const result: ActionReturnType = {
-            status: "ok",
-            returnedDomainElement: { elementType: "void" }
-            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
+            if (action.actionType == "RemoteStoreCRUDAction") {
+              const result:ActionReturnType = {
+                status: "ok",
+                returnedDomainElement: {
+                  elementType: "entityInstanceCollection",
+                  elementValue: {
+                    parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+                    applicationSection: action.section,
+                    instances: clientResult.data.instances
+                  }
+                }
+              };
+              log.debug("handleRemoteStoreAction received result", result.status);
+              return yield result;
+            } else {
+              const result: ActionReturnType = {
+              status: "ok",
+              returnedDomainElement: { elementType: "void" }
+            }
+            log.debug("handleRemoteStoreAction received result", result.status);
+            return yield result;
+              // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
           };
-
-          log.debug("handleRemoteStoreAction received result", result.status);
-          return yield result;
         } catch (e: any) {
           log.error("handleRemoteStoreAction exception", e);
           // yield put({ type: "instances/failure/instancesNotReceived" });

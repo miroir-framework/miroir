@@ -188,7 +188,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
         break;
       }
       default:
-        throw new Error("handleNetworkRemoteStoreAction could not handle action " + action);
+        throw new Error("handleNetworkRemoteStoreAction could not handle action " + JSON.stringify(action,undefined,2));
         break;
     }
     // const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);

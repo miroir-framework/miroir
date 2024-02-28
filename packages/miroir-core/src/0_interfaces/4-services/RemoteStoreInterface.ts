@@ -124,7 +124,6 @@ export default {};
 export declare interface RemoteStoreInterface {
   handleRemoteStoreRestCRUDAction(
     deploymentUuid: string,
-    section: ApplicationSection,
     action: RemoteStoreCRUDAction
   ): Promise<ActionReturnType>;
   handleRemoteStoreModelAction(
