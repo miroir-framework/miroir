@@ -54,11 +54,7 @@ export function getPromiseActionStoreActionNames(promiseActionNames:string[]):st
 //# ACTION NAMES
 //#########################################################################################
 export const RemoteStoreRestSagaInputActionNamesObject = {
-  'handleRemoteStoreRestCRUDAction':'handleRemoteStoreRestCRUDAction',
-  // 'handleRemoteStoreOLDModelAction':'handleRemoteStoreOLDModelAction',
-  'handleRemoteStoreModelAction':'handleRemoteStoreModelAction',
   'handleRemoteStoreAction':'handleRemoteStoreAction',
-  'handleRemoteStoreActionOrBundleAction':'handleRemoteStoreActionOrBundleAction',
 };
 export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
 export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
@@ -91,62 +87,62 @@ export class RemoteStoreRestAccessReduxSaga {
       generator: (a: any) => RemoteStoreSagaGenReturnType;
     };
   } = {
-    handleRemoteStoreRestCRUDAction: {
-      name: "handleRemoteStoreRestCRUDAction",
-      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-      creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; action: RemoteStoreCRUDAction },
-        "handleRemoteStoreRestCRUDAction"
-      >("handleRemoteStoreRestCRUDAction"),
-      generator: function* (
-        this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreCRUDAction }>
-      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
-      ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
-        const { deploymentUuid, action } = p.payload;
-        try {
-          log.info("handleRemoteStoreRestCRUDAction called, param",p);
-          const clientResult : RestClientCallReturnType
-            = yield* call(
-              () => 
-                this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(
-                  deploymentUuid,
-                  action
-                )
-            );
+    // handleRemoteStoreRestCRUDAction: {
+    //   name: "handleRemoteStoreRestCRUDAction",
+    //   // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+    //   creator: promiseActionFactory<ActionReturnType>().create<
+    //     { deploymentUuid: string; action: RemoteStoreCRUDAction },
+    //     "handleRemoteStoreRestCRUDAction"
+    //   >("handleRemoteStoreRestCRUDAction"),
+    //   generator: function* (
+    //     this: RemoteStoreRestAccessReduxSaga,
+    //     p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreCRUDAction }>
+    //   // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+    //   ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
+    //     const { deploymentUuid, action } = p.payload;
+    //     try {
+    //       log.info("handleRemoteStoreRestCRUDAction called, param",p);
+    //       const clientResult : RestClientCallReturnType
+    //         = yield* call(
+    //           () => 
+    //             this.remoteStoreNetworkClient.handleNetworkRemoteStoreCRUDAction(
+    //               deploymentUuid,
+    //               action
+    //             )
+    //         );
 
-          log.debug("handleRemoteStoreRestCRUDAction received clientResult",clientResult);
-          const result:ActionReturnType = {
-            status: "ok",
-            returnedDomainElement: {
-              elementType: "entityInstanceCollection",
-              elementValue: {
-                parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
-                applicationSection: action.section,
-                instances: clientResult.data.instances
-              }
-            }
-          };
+    //       log.debug("handleRemoteStoreRestCRUDAction received clientResult",clientResult);
+    //       const result:ActionReturnType = {
+    //         status: "ok",
+    //         returnedDomainElement: {
+    //           elementType: "entityInstanceCollection",
+    //           elementValue: {
+    //             parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+    //             applicationSection: action.section,
+    //             instances: clientResult.data.instances
+    //           }
+    //         }
+    //       };
 
-          // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received result", result);
-          return yield result;
-        } catch (e: any) {
-          log.error("handleRemoteStoreRestCRUDAction exception", e);
-          // yield put({ type: "instances/failure/instancesNotReceived" });
-          const result: ActionReturnType = {
-            status: "error",
-            error: {
-              errorType: "FailedToDeployModule",  // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            }
-          };
-          return result
-          // } as ActionReturnType;
-          // } as RemoteStoreActionReturnType;
-        }
-      }.bind(this as RemoteStoreRestAccessReduxSaga),
-    },
+    //       // log.info("RemoteStoreRestAccessReduxSaga handleRemoteStoreRestCRUDAction received result", result);
+    //       return yield result;
+    //     } catch (e: any) {
+    //       log.error("handleRemoteStoreRestCRUDAction exception", e);
+    //       // yield put({ type: "instances/failure/instancesNotReceived" });
+    //       const result: ActionReturnType = {
+    //         status: "error",
+    //         error: {
+    //           errorType: "FailedToDeployModule",  // TODO: correct errorType!
+    //           errorMessage: e["message"],
+    //           error: { errorMessage: e["message"], stack: [e["message"]] },
+    //         }
+    //       };
+    //       return result
+    //       // } as ActionReturnType;
+    //       // } as RemoteStoreActionReturnType;
+    //     }
+    //   }.bind(this as RemoteStoreRestAccessReduxSaga),
+    // },
     handleRemoteStoreAction: {
       name: "handleRemoteStoreAction",
       creator: promiseActionFactory<ActionReturnType>().create<
@@ -206,95 +202,95 @@ export class RemoteStoreRestAccessReduxSaga {
         }
       }.bind(this),
     },
-    handleRemoteStoreModelAction: {
-      name: "handleRemoteStoreModelAction",
-      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-      creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; action: ModelAction },
-        "handleRemoteStoreModelAction"
-      >("handleRemoteStoreModelAction"),
-      generator: function* (
-        this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: ModelAction }>
-      // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
-      ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
-        const { deploymentUuid, action } = p.payload;
-        try {
-          log.info("handleRemoteStoreModelAction on action",action);
-          const clientResult: RestClientCallReturnType
-           = yield* call(() =>
-            this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelEntityAction(deploymentUuid, action)
-          );
-          log.debug("handleRemoteStoreModelAction received clientResult", clientResult);
+    // handleRemoteStoreModelAction: {
+    //   name: "handleRemoteStoreModelAction",
+    //   // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+    //   creator: promiseActionFactory<ActionReturnType>().create<
+    //     { deploymentUuid: string; action: ModelAction },
+    //     "handleRemoteStoreModelAction"
+    //   >("handleRemoteStoreModelAction"),
+    //   generator: function* (
+    //     this: RemoteStoreRestAccessReduxSaga,
+    //     p: PayloadAction<{ deploymentUuid: string; action: ModelAction }>
+    //   // ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+    //   ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
+    //     const { deploymentUuid, action } = p.payload;
+    //     try {
+    //       log.info("handleRemoteStoreModelAction on action",action);
+    //       const clientResult: RestClientCallReturnType
+    //        = yield* call(() =>
+    //         this.remoteStoreNetworkClient.handleNetworkRemoteStoreModelEntityAction(deploymentUuid, action)
+    //       );
+    //       log.debug("handleRemoteStoreModelAction received clientResult", clientResult);
 
-          // const result: RemoteStoreActionReturnType = {
-          const result: ActionReturnType = {
-            status: "ok",
-            returnedDomainElement: { elementType: "void" }
-            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
-          };
+    //       // const result: RemoteStoreActionReturnType = {
+    //       const result: ActionReturnType = {
+    //         status: "ok",
+    //         returnedDomainElement: { elementType: "void" }
+    //         // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
+    //       };
 
-          log.debug("handleRemoteStoreModelAction received result", result.status);
-          return yield result;
-        } catch (e: any) {
-          log.error("handleRemoteStoreModelAction exception", e);
-          // yield put({ type: "instances/failure/instancesNotReceived" });
-          const result: ActionReturnType = {
-            status: "error",
-            error: {
-              errorType: "FailedToDeployModule",  // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            }
-          };
-          return result;
-          // } as RemoteStoreActionReturnType;
-        }
-      }.bind(this),
-    },
-    handleRemoteStoreActionOrBundleAction: {
-      name: "handleRemoteStoreActionOrBundleAction",
-      // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
-      creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; action: StoreOrBundleAction },
-        "handleRemoteStoreActionOrBundleAction"
-      >("handleRemoteStoreActionOrBundleAction"),
-      generator: function* (
-        this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: StoreAction }>
-      ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
-        const { deploymentUuid, action } = p.payload;
-        try {
-          log.info("handleRemoteStoreActionOrBundleAction on action",action);
-          const clientResult: RestClientCallReturnType
-           = yield* call(() =>
-            this.remoteStoreNetworkClient.handleNetworkRemoteStoreOrBundleAction(deploymentUuid, action)
-          );
-          log.debug("handleRemoteStoreActionOrBundleAction received clientResult", clientResult);
+    //       log.debug("handleRemoteStoreModelAction received result", result.status);
+    //       return yield result;
+    //     } catch (e: any) {
+    //       log.error("handleRemoteStoreModelAction exception", e);
+    //       // yield put({ type: "instances/failure/instancesNotReceived" });
+    //       const result: ActionReturnType = {
+    //         status: "error",
+    //         error: {
+    //           errorType: "FailedToDeployModule",  // TODO: correct errorType!
+    //           errorMessage: e["message"],
+    //           error: { errorMessage: e["message"], stack: [e["message"]] },
+    //         }
+    //       };
+    //       return result;
+    //       // } as RemoteStoreActionReturnType;
+    //     }
+    //   }.bind(this),
+    // },
+    // handleRemoteStoreActionOrBundleAction: {
+    //   name: "handleRemoteStoreActionOrBundleAction",
+    //   // creator: promiseActionFactory<RemoteStoreActionReturnType>().create<
+    //   creator: promiseActionFactory<ActionReturnType>().create<
+    //     { deploymentUuid: string; action: StoreOrBundleAction },
+    //     "handleRemoteStoreActionOrBundleAction"
+    //   >("handleRemoteStoreActionOrBundleAction"),
+    //   generator: function* (
+    //     this: RemoteStoreRestAccessReduxSaga,
+    //     p: PayloadAction<{ deploymentUuid: string; action: StoreAction }>
+    //   ): Generator<RemoteStoreActionReturnType | CallEffect<RestClientCallReturnType>> {
+    //     const { deploymentUuid, action } = p.payload;
+    //     try {
+    //       log.info("handleRemoteStoreActionOrBundleAction on action",action);
+    //       const clientResult: RestClientCallReturnType
+    //        = yield* call(() =>
+    //         this.remoteStoreNetworkClient.handleNetworkRemoteStoreOrBundleAction(deploymentUuid, action)
+    //       );
+    //       log.debug("handleRemoteStoreActionOrBundleAction received clientResult", clientResult);
 
-          const result: ActionReturnType = {
-            status: "ok",
-            returnedDomainElement: { elementType: "void" }
-            // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
-          };
+    //       const result: ActionReturnType = {
+    //         status: "ok",
+    //         returnedDomainElement: { elementType: "void" }
+    //         // instanceCollection: {entity:action?., instanceCollection:clientResult['data']}
+    //       };
 
-          log.debug("handleRemoteStoreActionOrBundleAction received result", result.status);
-          return yield result;
-        } catch (e: any) {
-          log.error("handleRemoteStoreActionOrBundleAction exception", e);
-          // yield put({ type: "instances/failure/instancesNotReceived" });
-          const result: ActionReturnType = {
-            status: "error",
-            error: {
-              errorType: "FailedToDeployModule",  // TODO: correct errorType!
-              errorMessage: e["message"],
-              error: { errorMessage: e["message"], stack: [e["message"]] },
-            }
-          };
-          return result;
-        }
-      }.bind(this),
-    },
+    //       log.debug("handleRemoteStoreActionOrBundleAction received result", result.status);
+    //       return yield result;
+    //     } catch (e: any) {
+    //       log.error("handleRemoteStoreActionOrBundleAction exception", e);
+    //       // yield put({ type: "instances/failure/instancesNotReceived" });
+    //       const result: ActionReturnType = {
+    //         status: "error",
+    //         error: {
+    //           errorType: "FailedToDeployModule",  // TODO: correct errorType!
+    //           errorMessage: e["message"],
+    //           error: { errorMessage: e["message"], stack: [e["message"]] },
+    //         }
+    //       };
+    //       return result;
+    //     }
+    //   }.bind(this),
+    // },
   };
 
   //#########################################################################################

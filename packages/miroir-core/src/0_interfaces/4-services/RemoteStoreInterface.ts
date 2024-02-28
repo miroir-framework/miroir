@@ -122,18 +122,6 @@ export default {};
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface RemoteStoreInterface {
-  handleRemoteStoreRestCRUDAction(
-    deploymentUuid: string,
-    action: RemoteStoreCRUDAction
-  ): Promise<ActionReturnType>;
-  handleRemoteStoreModelAction(
-    deploymentUuid: string,
-    action: ModelAction
-  ): Promise<ActionReturnType>;
-  handleRemoteStoreActionOrBundleAction(
-    deploymentUuid: string,
-    action: StoreOrBundleAction
-  ): Promise<ActionReturnType>;
   handleRemoteStoreAction(
     deploymentUuid: string,
     action: RemoteStoreAction

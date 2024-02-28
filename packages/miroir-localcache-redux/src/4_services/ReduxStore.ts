@@ -184,51 +184,6 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  async handleRemoteStoreRestCRUDAction(
-    deploymentUuid: string,
-    action: RemoteStoreCRUDAction
-  ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreRestCRUDAction.creator(
-        { deploymentUuid, action }
-      )
-    );
-    log.info("ReduxStore handleRemoteStoreRestCRUDAction done: action", action, "returned", result)
-    return Promise.resolve(result);
-  }
-
-  // ###############################################################################
-  async handleRemoteStoreModelAction(
-    deploymentUuid: string,
-    action: ModelAction,
-  ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreModelAction.creator(
-        { deploymentUuid, action }
-      )
-    );
-    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
-
-  // ###############################################################################
-  async handleRemoteStoreActionOrBundleAction(
-    deploymentUuid: string,
-    action: StoreOrBundleAction,
-  ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreActionOrBundleAction.creator(
-        { deploymentUuid, action }
-      )
-    );
-    // log.info("ReduxStore handleRemoteStoreOLDModelAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
-
-  // ###############################################################################
   async handleRemoteStoreAction(
     deploymentUuid: string,
     action: RemoteStoreAction,
