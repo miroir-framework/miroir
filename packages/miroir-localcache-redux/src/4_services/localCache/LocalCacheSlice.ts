@@ -371,8 +371,8 @@ function handleInstanceAction(
   log.info(
     "localCacheSliceObject handleInstanceAction deploymentUuid",
     instanceAction.deploymentUuid,
-    "actionType",
-    instanceAction.actionType,
+    "actionName",
+    instanceAction.actionName,
     "called",
     // JSON.stringify(action, null, 2)
     instanceAction
@@ -496,9 +496,12 @@ function handleInstanceAction(
           instanceCollection.parentUuid,
           state
         );
+        // log.info("localCacheSliceObject handleInstanceAction for index", instanceCollectionEntityIndex, sliceEntityAdapter)
+        const updates = instanceCollection.instances.map((i) => ({ id: i.uuid, changes: i }));
+        // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
         sliceEntityAdapter.updateMany(
           state[instanceCollectionEntityIndex],
-          instanceCollection.instances.map((i) => ({ id: i.uuid, changes: i }))
+          updates,
         );
       }
       break;

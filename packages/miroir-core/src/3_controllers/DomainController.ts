@@ -626,11 +626,6 @@ export class DomainController implements DomainControllerInterface {
         return Promise.resolve();
       }
       case "transactionalInstanceAction": {
-        // await this.handleDomainTransactionalInstanceAction(
-        //   deploymentUuid,
-        //   domainAction,
-        //   currentModel
-        // );
         try {
           await this.callUtil.callLocalCacheAction(
             {}, // context
