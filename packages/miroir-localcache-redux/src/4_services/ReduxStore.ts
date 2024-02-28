@@ -9,7 +9,6 @@ import { all } from 'redux-saga/effects';
 import {
   ACTION_OK,
   ActionReturnType,
-  ApplicationSection,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
@@ -18,9 +17,7 @@ import {
   MiroirLoggerFactory,
   ModelAction,
   RemoteStoreAction,
-  RemoteStoreCRUDAction,
   RemoteStoreInterface,
-  StoreOrBundleAction,
   TransactionalInstanceAction,
   getLoggerName
 } from "miroir-core";

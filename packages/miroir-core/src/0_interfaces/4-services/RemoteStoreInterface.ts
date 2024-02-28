@@ -97,18 +97,6 @@ export interface RemoteStoreActionReturnType {
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
 export interface RemoteStoreNetworkClientInterface {
-  handleNetworkRemoteStoreCRUDAction(
-    deploymentUuid: string,
-    action: RemoteStoreCRUDAction
-  ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreModelEntityAction(
-    deploymentUuid: string,
-    action: ModelAction
-  ): Promise<RestClientCallReturnType>;
-  handleNetworkRemoteStoreOrBundleAction(
-    deploymentUuid: string,
-    action: StoreOrBundleAction
-  ): Promise<RestClientCallReturnType>;
   handleNetworkRemoteStoreAction(
     deploymentUuid: string,
     action: RemoteStoreAction,
