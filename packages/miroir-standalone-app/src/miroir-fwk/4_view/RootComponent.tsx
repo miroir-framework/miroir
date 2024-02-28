@@ -300,9 +300,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link> */}
                 <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/c3503412-3d8a-43ef-a168-aa36e975e606/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a`}>Test Instance</Link>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           </TableBody>
         </Table>
@@ -336,6 +336,62 @@ export const RootComponent = (props: RootComponentProps) => {
             </button>
           <p />
           <span>
+          <button
+              onClick={async () => {
+                const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
+                if (!miroirConfig) {
+                  throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
+                }
+                if (miroirConfig && miroirConfig.client.emulateServer) {
+                  await remoteStore.handleRemoteStoreAction("",{
+                    actionType: "storeAction",
+                    actionName: "openStore",
+                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    configuration: {
+                      [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
+                    },
+                    deploymentUuid: applicationDeploymentMiroir.uuid,
+                  })
+                } else {
+                  const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
+                  await remoteStore.handleRemoteStoreAction("",{
+                    actionType: "storeAction",
+                    actionName: "openStore",
+                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                    configuration: {
+                      [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                      [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+                    },
+                    deploymentUuid: applicationDeploymentMiroir.uuid,
+                  })
+                }
+
+                // TODO: transactional action must not autocommit! initModel neither?!
+                // .then(
+                // async () => {
+                log.info(
+                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                );
+                await domainController.handleAction({
+                  actionType: "modelAction",
+                  actionName: "rollback",
+                  deploymentUuid:applicationDeploymentMiroir.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                });
+                await domainController.handleAction({
+                  actionType: "modelAction",
+                  actionName: "rollback",
+                  deploymentUuid:applicationDeploymentLibrary.uuid,
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
+                });
+          
+                // }
+                // );
+              }}
+            >
+              Open database
+            </button>
             <button
               onClick={async () => {
                 const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();

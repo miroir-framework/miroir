@@ -1,0 +1,52 @@
+{
+  "client": {
+    "emulateServer": false,
+    "serverConfig":{
+      "rootApiUrl":"http://localhost:3080",
+      "dataflowConfiguration": {
+        "type":"singleNode",
+        "metaModel": {
+          "location": {
+            "side":"server",
+            "type": "filesystem",
+            "location":"../miroir-core/src/assets"
+          }
+        }
+      },
+      "storeSectionConfiguration": {
+        "miroirServerConfig":{
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/miroir_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/miroir_data"
+          }
+        },
+        "appServerConfig": {
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/library_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-core/src/assets/library_data"
+          }
+        }
+      }
+    },
+    "deploymentMode":"monoUser",
+    "monoUserAutentification": false,
+    "monoUserVersionControl": false,
+    "versionControlForDataConceptLevel": false
+  }
+}

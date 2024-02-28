@@ -15,6 +15,10 @@
       },
       "storeSectionConfiguration": {
         "miroirServerConfig":{
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/admin"
+          },
           "model": {
             "emulatedServerType": "filesystem",
             "directory":"../miroir-standalone-app/tests/tmp/miroir_model"
@@ -25,6 +29,10 @@
           }
         },
         "appServerConfig": {
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory":"../miroir-standalone-app/tests/tmp/admin"
+          },
           "model": {
             "emulatedServerType": "filesystem",
             "directory":"../miroir-standalone-app/tests/tmp/library_model"

@@ -30,10 +30,12 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
     config: StoreSectionConfiguration,
   ): Promise<ActionVoidReturnType> {
     try {
+      log.info("createStore", JSON.stringify(config));
       if (config.emulatedServerType !== "sql") {
         throw new Error(loggerName + " createStore failed for serverType " + config.emulatedServerType);
       }
       await this.sequelize.createSchema(config.schema,{});
+      log.info("createStore DONE!");
     } catch (error) {
       return Promise.resolve({ status: "error", error: { errorType: "FailedToCreateStore", errorMessage: error}})
     }

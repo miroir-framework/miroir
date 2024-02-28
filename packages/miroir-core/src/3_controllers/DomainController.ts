@@ -29,8 +29,7 @@ import {
   MetaModel,
   ModelAction,
   TransactionalInstanceAction,
-  UndoRedoAction,
-  entityInstanceCollection
+  UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
 import { MiroirLoggerFactory } from '../4_services/Logger';
@@ -634,11 +633,6 @@ export class DomainController implements DomainControllerInterface {
             {}, // context update
             "handleAction",
             domainAction
-            // {
-            //   actionType: "transactionalInstanceAction",
-            //   deploymentUuid: domainAction.deploymentUuid,
-            //   instanceAction: domainAction.instanceAction,
-            // }
           );
         } catch (error) {
           log.warn(

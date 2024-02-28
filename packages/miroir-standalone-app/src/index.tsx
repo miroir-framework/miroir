@@ -41,9 +41,10 @@ import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServerFilesystem from "./assets/miroirConfig-realServer-filesystem.json";
+import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
+import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json";
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
-import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-indexedDb.json";
+import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
 import miroirConfig from "./assets/miroirConfig.json";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
@@ -70,15 +71,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
   "miroirConfigEmulatedServerIndexedDb": miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
   "miroirConfigRealServerIndexedDb": miroirConfigRealServerIndexedDb as any as MiroirConfigClient,
-  "miroirConfigRealServerFilesystem": miroirConfigRealServerFilesystem as any as MiroirConfigClient,
+  "miroirConfigRealServerFilesystemGit": miroirConfigRealServerFilesystemGit as any as MiroirConfigClient,
+  "miroirConfigRealServerFilesystemTmp": miroirConfigRealServerFilesystemTmp as any as MiroirConfigClient,
   "miroirConfigRealServerSql": miroirConfigRealServerSql as any as MiroirConfigClient,
 }
 
 // ##############################################################################################
 // ##############################################################################################
-const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+// const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystem"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
 // ##############################################################################################

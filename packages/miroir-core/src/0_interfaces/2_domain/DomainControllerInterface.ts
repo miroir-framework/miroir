@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { Uuid } from "../../0_interfaces/1_core/EntityDefinition.js";
-
 import {
   DomainAction,
   EntityInstance,
