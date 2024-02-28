@@ -6,7 +6,6 @@ import {
   DomainAction,
   DomainControllerInterface,
   DomainTransactionalInstanceAction,
-  DomainUndoRedoAction,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
@@ -31,6 +30,7 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  UndoRedoAction,
   entityInstanceCollection
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from '../0_interfaces/4-services/LoggerInterface';
@@ -92,30 +92,31 @@ export class DomainController implements DomainControllerInterface {
   // converts a Domain transactional action into a set of local cache actions and remote store actions
   async handleDomainUndoRedoAction(
     deploymentUuid: Uuid,
-    domainTransactionalAction: DomainUndoRedoAction,
+    undoRedoAction: UndoRedoAction,
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionName",
-      domainTransactionalAction["actionName"],
+      undoRedoAction["actionName"],
       "deployment",
       deploymentUuid,
       "action",
-      domainTransactionalAction
+      undoRedoAction
     );
     try {
-      switch (domainTransactionalAction.actionName) {
+      switch (undoRedoAction.actionName) {
         case "undo":
         case "redo": {
           this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
             "handleAction",
-            {
-              actionType: "undoRedoAction",
-              deploymentUuid,
-              actionName: domainTransactionalAction.actionName,
-            }
+            undoRedoAction
+            // {
+            //   actionType: "undoRedoAction",
+            //   deploymentUuid,
+            //   actionName: undoRedoAction.actionName,
+            // }
           );
 
           break;
@@ -123,7 +124,7 @@ export class DomainController implements DomainControllerInterface {
         default: {
           log.warn(
             "DomainController handleDomainUndoRedoAction cannot handle action name for",
-            domainTransactionalAction
+            undoRedoAction
           );
           break;
         }
@@ -131,11 +132,11 @@ export class DomainController implements DomainControllerInterface {
     } catch (error) {
       log.warn(
         "DomainController handleDomainUndoRedoAction caught exception when handling",
-        domainTransactionalAction["actionName"],
+        undoRedoAction["actionName"],
         "deployment",
         deploymentUuid,
         "action",
-        domainTransactionalAction,
+        undoRedoAction,
         "exception",
         error
       );
@@ -684,7 +685,7 @@ export class DomainController implements DomainControllerInterface {
         );
         return Promise.resolve();
       }
-      case "DomainUndoRedoAction": {
+      case "undoRedoAction": {
         await this.handleDomainUndoRedoAction(
           deploymentUuid,
           domainAction,

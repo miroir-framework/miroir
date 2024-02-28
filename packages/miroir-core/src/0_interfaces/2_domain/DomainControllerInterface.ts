@@ -13,7 +13,8 @@ import {
   modelActionAlterEntityAttribute,
   modelActionCreateEntity,
   modelActionDropEntity,
-  modelActionRenameEntity
+  modelActionRenameEntity,
+  undoRedoAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LocalCacheTransactionalInstanceActionWithDeployment } from "../4-services/LocalCacheInterface.js";
 import { RemoteStoreInterface } from "../4-services/RemoteStoreInterface.js";
@@ -62,13 +63,6 @@ export const UndoRedoActionNamesSchema = z.enum(
 export type UndoRedoActionName = z.infer<typeof UndoRedoActionNamesSchema>;
 
 // #############################################################################################
-export const domainUndoRedoActionSchema = z.object({
-  actionType: z.literal("DomainUndoRedoAction"),
-  actionName: UndoRedoActionNamesSchema,
-});
-export type DomainUndoRedoAction = z.infer<typeof domainUndoRedoActionSchema>;
-
-// #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const domainTransactionalInstanceActionSchema = z.object({
   actionType: z.literal("DomainTransactionalInstanceAction"),
@@ -83,7 +77,8 @@ export type DomainTransactionalInstanceAction = z.infer<typeof domainTransaction
 // #############################################################################################
 // without translation of Entity Updates in CUD updates
 export const DomainActionSchema = z.union([
-  domainUndoRedoActionSchema,
+  // domainUndoRedoActionSchema,
+  undoRedoAction,
   instanceAction,
   domainTransactionalInstanceActionSchema,
   modelAction,

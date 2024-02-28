@@ -276,8 +276,6 @@ export {
   DomainActionWithDeployment,
   DomainControllerInterface,
   DomainTransactionalInstanceAction,
-  DomainUndoRedoAction,
-  domainUndoRedoActionSchema,
   EntitiesDomainState,
   EntitiesDomainStateInstanceSelector,
   EntitiesDomainStateReducer,

@@ -227,8 +227,10 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainUndoRedoAction",
+              actionType: "undoRedoAction",
               actionName: "undo",
+              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              deploymentUuid:applicationDeploymentMiroir.uuid
             });
           }}
         >
@@ -239,8 +241,10 @@ export const HomePage = (props: RootComponentProps) => {
         <button
           onClick={async () => {
             await domainController.handleDomainAction(applicationDeploymentMiroir.uuid, {
-              actionType: "DomainUndoRedoAction",
+              actionType: "undoRedoAction",
               actionName: "redo",
+              endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+              deploymentUuid:applicationDeploymentMiroir.uuid
             });
           }}
         >
