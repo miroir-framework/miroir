@@ -15,7 +15,6 @@ import {
   MiroirLoggerFactory,
   ModelAction,
   ModelActionDropEntity,
-  ModelActionEntityUpdate,
   ModelActionRenameEntity,
   StoreControllerInterface,
   StoreControllerManagerInterface,

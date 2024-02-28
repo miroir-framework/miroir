@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { MetaEntity, Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
 import {
   CRUDActionName,
-  DomainAction,
   DomainControllerInterface,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -23,6 +22,7 @@ import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-
 import {
   ApplicationSection,
   ApplicationVersion,
+  DomainAction,
   EntityInstance,
   EntityInstanceCollection,
   InstanceAction,

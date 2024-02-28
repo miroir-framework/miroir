@@ -24,7 +24,6 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  // action: LocalCacheTransactionalInstanceActionWithDeployment | ModelAction;
   action: TransactionalInstanceAction | ModelAction;
   changes: Patch[];
   inverseChanges: Patch[];
