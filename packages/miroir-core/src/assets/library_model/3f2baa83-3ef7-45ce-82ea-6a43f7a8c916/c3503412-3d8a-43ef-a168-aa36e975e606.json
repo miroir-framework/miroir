@@ -35,7 +35,7 @@
         },
         "author": {
           "queryType": "selectObjectByRelation",
-          "parentName": "Publisher",
+          "parentName": "Author",
           "parentUuid": {
             "referenceType": "constant",
             "referenceUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"

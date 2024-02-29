@@ -301,7 +301,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             isAttributes={true}
             // label='OuterDialog'
             // label={props.defaultlabel??props.currentEntityDefinition?.name}
-            label={"TOTO"}
+            label={props.currentEntity?.name??"No Entity Found"}
             entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
