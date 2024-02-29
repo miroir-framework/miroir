@@ -62,6 +62,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
+  display: 'flex',
   overflowX: 'hidden',
 });
 
@@ -70,15 +71,19 @@ const closedMixin = (theme: Theme): CSSObject => ({
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
+
+  // display: "flex",
+  display: "none"
+  // overflowX: 'hidden',
+  // width: "0px",
+  // width: `calc(${theme.spacing(7)} + 1px)`,
+  // [theme.breakpoints.up('sm')]: {
+  //   width: `calc(${theme.spacing(8)} + 1px)`,
+  // },
 });
 
 const StyledDrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
+  // display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
@@ -115,10 +120,13 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
 
   return (
     <StyledDrawer
+      sx={{flexDirection:'column'}}
+
       variant="permanent"
+      // variant="persistent"
       open={props.open}
     >
-      <StyledDrawerHeader>
+      <StyledDrawerHeader sx={{alignItems: "end"}}>
         <IconButton onClick={()=>props.setOpen(false)}>
           {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
@@ -150,7 +158,7 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
         ))}
       </List>
       {/* </MuiDrawer> */}
-      </StyledDrawer>
+    </StyledDrawer>
 
   )
 }

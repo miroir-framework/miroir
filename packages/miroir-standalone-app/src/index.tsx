@@ -200,12 +200,12 @@ async function start(root:Root) {
             style: {display:"flex"}
           }
         },
-        MuiPaper: {
-          defaultProps:{
-            style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
-            // style: {display:"inline-flex"}
-          }
-        }
+        // MuiPaper: {
+        //   defaultProps:{
+        //     style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
+        //     // style: {display:"inline-flex"}
+        //   }
+        // }
       }
     });
     

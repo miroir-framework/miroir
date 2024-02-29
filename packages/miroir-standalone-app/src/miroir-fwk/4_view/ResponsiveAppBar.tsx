@@ -17,6 +17,8 @@ import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core
 
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
+import { drawerWidth } from './Drawer';
+import { useTheme } from '@emotion/react';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -27,18 +29,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 const pages = ['Page1', 'Page2', 'Page3'];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
-export interface ResponsiveAppBarProps {
-  handleDrawerOpen: ()=>void,
-  open: boolean,
-  children:any,
-}
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
+  // theme: any
 }
-
-const drawerWidth = 200;
-
 
 const StyledAppBar =
 // React.useEffect(
@@ -48,16 +43,25 @@ styled(
 )<AppBarProps>(
   ({ theme, open }) => ({
     zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(
-      ["margin", "width"], 
-      {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }
-    ),
+    // display: "flex",
+    // flexGrow: 1,
+    position: "static",
+    // flexDirection:"row",
+    // justifyContent: "space-between"
+    // p: 2,
+    // height: "100px",
+    // transition: theme.transitions.create(
+    //   ["margin", "width"], 
+    //   {
+    //     easing: theme.transitions.easing.sharp,
+    //     duration: theme.transitions.duration.leavingScreen,
+    //   }
+    // ),
     // ...(
     //   !open && {
-    //     marginLeft: `24px`,
+    //     width: "100%",
+    //     // marginLeft: `-${drawerWidth}px`,
+    //     // marginLeft: `240px`,
     //   }
     // ),
     ...(
@@ -77,9 +81,16 @@ styled(
 // ,[props.open])
 ;
 
+export interface ResponsiveAppBarProps {
+  handleDrawerOpen: ()=>void,
+  open: boolean,
+  children:any,
+}
 
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
+  const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -101,39 +112,45 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
   
 
   return (
-    <StyledAppBar position="fixed" open={props.open}>
-      {/* <Container maxWidth="xl"> */}
-        {/* <Toolbar disableGutters> */}
-        <Toolbar>
-        <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={props.handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(props.open && { display: 'none' }) }}
-          >
-          <MenuIcon />
-          </IconButton>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+    // <Offset>
+      // <StyledAppBar open={props.open}>
+      <StyledAppBar  open={props.open}>
+      {/* <StyledAppBar position="absolute" open={props.open}> */}
+      {/* <StyledAppBar position="static" open={props.open}> */}
+      {/* // <StyledAppBar open={props.open}> */}
+        {/* <Container maxWidth="xl"> */}
+          {/* <Toolbar disableGutters> */}
+          <Toolbar>
+          {/* <Box sx={{display:"flex"}}> */}
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={props.handleDrawerOpen}
+                edge="start"
+                sx={{ mr: 2, ...(props.open && { display: 'none' }), ...(!props.open && { display: 'flex' }) }}
+              >
+              <MenuIcon />
+            </IconButton>
+            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* </Box> */}
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="/"
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              open: {props.open?"true":"false"}
+            </Typography>
+          <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none'} }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -200,10 +217,10 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display: "flex" }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -230,8 +247,10 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
             </Menu>
           </Box>
         </Toolbar>
-      {/* </Container> */}
-    </StyledAppBar>
+        {/* </Container> */}
+      </StyledAppBar>
+
+    // </Offset>
   );
 }
 export default ResponsiveAppBar;

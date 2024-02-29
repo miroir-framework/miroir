@@ -274,17 +274,6 @@ export const MTableComponent = (props: TableComponentProps) => {
   // function onRowValueChanged(e:RowDataUpdatedEvent) {
   //   log.warn("onRowValueChanged",e)
   // }
-    const [dummyRowData] = useState([
-      {make: "Toyota", model: "Celica", price: 35000},
-      {make: "Ford", model: "Mondeo", price: 32000},
-      {make: "Porsche", model: "Boxster", price: 72000}
-  ]);
-
-  const [dummyColumnDefs] = useState([
-      { field: 'make' },
-      { field: 'model' },
-      { field: 'price' }
-  ]);
 
   return (
     <div>
@@ -301,7 +290,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             isAttributes={true}
             // label='OuterDialog'
             // label={props.defaultlabel??props.currentEntityDefinition?.name}
-            label={props.currentEntity?.name??"No Entity Found"}
+            label={props.currentEntity?.name??"No Entity Found!"}
             entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
