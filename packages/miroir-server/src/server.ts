@@ -19,9 +19,11 @@ import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
-import { cleanLevel, packageName } from "./constants";
+import { readFileSync } from 'fs';
+import log from 'loglevelnext';
 
-// import { generateZodSchemaFileFromJzodSchema } from './generateZodSchemaFileFromJzodSchema.js';
+const packageName = "server"
+const cleanLevel = "5"
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -30,8 +32,6 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
   "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
 }
 
-import log from 'loglevelnext';
-import { readFileSync } from 'fs';
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 
 MiroirLoggerFactory.setEffectiveLoggerFactory(
@@ -51,15 +51,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-// DEFUNCT (?)
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem.json', import.meta.url)).toString());
-// import configFileContents from "../config/miroirConfig.server-indexedDb.json";
-
-
-// const configFileContents = JSON.parse(fs.readFileSync(new URL('../config/miroirConfig.server-indexedDb.json')).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-mixed_filesystem-sql.json', import.meta.url)).toString());
-// const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-sql.json', import.meta.url)).toString());
-const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server-filesystem-new.json', import.meta.url)).toString());
+const configFileContents = JSON.parse(readFileSync(new URL('../config/miroirConfig.server.json', import.meta.url)).toString());
 
 
 const miroirConfig:MiroirConfigServer = configFileContents as MiroirConfigServer;
@@ -72,11 +64,6 @@ const app = express();
 app.use(express.json());
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
 
-// placeholder for the data
-const users = [];
-
-
-
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
@@ -87,32 +74,27 @@ const storeControllerManager = new StoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,
   ConfigurationService.StoreSectionFactoryRegister
 );
-// await storeControllerManager.addStoreController(
-//   "xxx",
-//   miroirConfig.server.miroirAdminConfig
-// );
-
-// const localAdminStoreController = storeControllerManager.getStoreController("xxx");
-
-// myLogger.info("found entity uuids:", await localAdminStoreController?.getEntityUuids());
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
-  (app as any)[op.method](op.url, async (request:Request<{}, any, any, any, Record<string, any>>, response:any, context:any) => {
-    const body = request.body;
-    
-    const result = await op.handler(
-      (response: any) => response.json.bind(response),
-      storeControllerManager,
-      op.method,
-      response, 
-      request.originalUrl, 
-      body, 
-      request.params
-    );
-    return result;
-  });
+  (app as any)[op.method](
+    op.url,
+    async (request: Request<{}, any, any, any, Record<string, any>>, response: any, context: any) => {
+      const body = request.body;
+
+      const result = await op.handler(
+        (response: any) => response.json.bind(response),
+        storeControllerManager,
+        op.method,
+        response,
+        request.originalUrl,
+        body,
+        request.params
+      );
+      return result;
+    }
+  );
 }
 
 // ##############################################################################################

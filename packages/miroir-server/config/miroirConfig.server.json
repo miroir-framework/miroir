@@ -1,0 +1,5 @@
+{
+  "server": {
+    "rootApiUrl":"http://localhost:3080"
+  }
+}
