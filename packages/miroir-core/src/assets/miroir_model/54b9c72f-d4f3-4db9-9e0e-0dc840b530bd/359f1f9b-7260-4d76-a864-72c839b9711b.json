@@ -302,6 +302,37 @@
               }
             }
           },
+          "selectObjectListByManyToManyRelationQuery": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "selectRootQuery"
+              }
+            },
+            "definition": {
+              "queryType": {
+                "type": "literal",
+                "definition": "selectObjectListByManyToManyRelation"
+              },
+              "objectListReference": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "queryObjectReference"
+                }
+              },
+              "objectListReferenceAttribute": {
+                "type": "simpleType",
+                "optional": true,
+                "definition": "string"
+              },
+              "AttributeOfRootListObjectToCompareToListReferenceUuid": {
+                "type": "simpleType",
+                "definition": "string"
+              }
+            }
+          },
           "selectQueryCombinerQuery": {
             "type": "object",
             "definition": {
@@ -349,6 +380,12 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "selectObjectListByRelationQuery"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "selectObjectListByManyToManyRelationQuery"
                 }
               }
             ]

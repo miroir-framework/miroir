@@ -538,7 +538,6 @@ export type MiroirConfigClient = {
 export type MiroirConfigServer = {
     server: {
         rootApiUrl: string;
-        miroirAdminConfig: StoreUnitConfiguration;
     };
 };
 export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";
@@ -624,6 +623,16 @@ export type SelectObjectListByRelationQuery = {
     objectReferenceAttribute?: string | undefined;
     AttributeOfListObjectToCompareToReferenceUuid: string;
 };
+export type SelectObjectListByManyToManyRelationQuery = {
+    label?: string | undefined;
+    applicationSection?: ApplicationSection | undefined;
+    parentName?: string | undefined;
+    parentUuid: QueryObjectReference;
+    queryType: "selectObjectListByManyToManyRelation";
+    objectListReference: QueryObjectReference;
+    objectListReferenceAttribute?: string | undefined;
+    AttributeOfRootListObjectToCompareToListReferenceUuid: string;
+};
 export type SelectQueryCombinerQuery = {
     queryType: "queryCombiner";
     rootQuery: MiroirSelectQuery;
@@ -632,7 +641,7 @@ export type SelectQueryCombinerQuery = {
         parameter: RecordOfTransformers;
     };
 };
-export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery;
+export type SelectObjectListQuery = SelectObjectListByEntityQuery | SelectObjectListByRelationQuery | SelectObjectListByManyToManyRelationQuery;
 export type MiroirSelectQuery = SelectObjectListQuery | SelectQueryCombinerQuery | SelectObjectQuery | {
     queryType: "literal";
     definition: string;
@@ -1118,7 +1127,7 @@ export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig>
 export const miroirConfigForMswClient: z.ZodType<MiroirConfigForMswClient> = z.object({emulateServer:z.literal(true), rootApiUrl:z.string(), miroirServerConfig:z.lazy(() =>storeUnitConfiguration), appServerConfig:z.lazy(() =>storeUnitConfiguration)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
 export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({client:z.union([z.lazy(() =>miroirConfigForMswClient), z.lazy(() =>miroirConfigForRestClient)])}).strict();
-export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({server:z.object({rootApiUrl:z.string(), miroirAdminConfig:z.lazy(() =>storeUnitConfiguration)}).strict()}).strict();
+export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({server:z.object({rootApiUrl:z.string()}).strict()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const commit: z.ZodType<Commit> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), date:z.date(), application:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceAction)]);
@@ -1131,8 +1140,9 @@ export const selectObjectByDirectReferenceQuery: z.ZodType<SelectObjectByDirectR
 export const selectObjectQuery: z.ZodType<SelectObjectQuery> = z.union([z.lazy(() =>selectObjectByRelationQuery), z.lazy(() =>selectObjectByDirectReferenceQuery)]);
 export const selectObjectListByEntityQuery: z.ZodType<SelectObjectListByEntityQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByEntity")}).strict();
 export const selectObjectListByRelationQuery: z.ZodType<SelectObjectListByRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByRelation"), objectReference:z.lazy(() =>queryObjectReference), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
+export const selectObjectListByManyToManyRelationQuery: z.ZodType<SelectObjectListByManyToManyRelationQuery> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.lazy(() =>queryObjectReference)}).strict().extend({queryType:z.literal("selectObjectListByManyToManyRelation"), objectListReference:z.lazy(() =>queryObjectReference), objectListReferenceAttribute:z.string().optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.string()}).strict();
 export const selectQueryCombinerQuery: z.ZodType<SelectQueryCombinerQuery> = z.object({queryType:z.literal("queryCombiner"), rootQuery:z.lazy(() =>miroirSelectQuery), subQuery:z.object({query:z.lazy(() =>miroirSelectQuery), parameter:z.lazy(() =>recordOfTransformers)}).strict()}).strict();
-export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery)]);
+export const selectObjectListQuery: z.ZodType<SelectObjectListQuery> = z.union([z.lazy(() =>selectObjectListByEntityQuery), z.lazy(() =>selectObjectListByRelationQuery), z.lazy(() =>selectObjectListByManyToManyRelationQuery)]);
 export const miroirSelectQuery: z.ZodType<MiroirSelectQuery> = z.union([z.lazy(() =>selectObjectListQuery), z.lazy(() =>selectQueryCombinerQuery), z.lazy(() =>selectObjectQuery), z.object({queryType:z.literal("literal"), definition:z.string()}).strict(), z.object({queryType:z.literal("queryContextReference"), queryReference:z.string()}).strict(), z.object({queryType:z.literal("wrapperReturningObject"), definition:z.record(z.string(),z.lazy(() =>miroirSelectQuery))}).strict(), z.object({queryType:z.literal("wrapperReturningList"), definition:z.array(z.lazy(() =>miroirSelectQuery))}).strict()]);
 export const miroirSelectQueriesRecord: z.ZodType<MiroirSelectQueriesRecord> = z.record(z.string(),z.lazy(() =>miroirSelectQuery));
 export const miroirCrossJoinQuery: z.ZodType<MiroirCrossJoinQuery> = z.object({queryType:z.literal("combineQuery"), a:z.string(), b:z.string()}).strict();

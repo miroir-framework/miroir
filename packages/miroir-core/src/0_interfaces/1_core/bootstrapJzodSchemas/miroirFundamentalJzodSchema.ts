@@ -686,10 +686,6 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
               "rootApiUrl": {
                 "type": "simpleType",
                 "definition": "string",
-              },
-              "miroirAdminConfig": {
-                "type": "schemaReference",
-                "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration"}
               }
             }
           }

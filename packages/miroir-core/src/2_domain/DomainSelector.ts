@@ -24,6 +24,7 @@ import {
   MiroirCustomQueryParams,
   MiroirSelectQuery,
   QueryObjectReference,
+  SelectObjectListByManyToManyRelationQuery,
   SelectObjectListByRelationQuery,
   SelectObjectQuery
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -210,82 +211,6 @@ export const selectEntityInstanceUuidIndexFromDomainState: DomainStateSelector<
 
 // ################################################################################################
 /**
- * returns an Entity Instance List, from a ListQuery
- * @param domainState 
- * @param selectorParams 
- * @returns 
- */
-export const selectEntityInstanceListFromListQueryAndDomainState: DomainStateSelector<
-  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainElement
-> = (
-  domainState: DomainState,
-  selectorParams: DomainModelGetSingleSelectObjectListQueryQueryParams
-): DomainElement => {
-  const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
-
-  switch (selectorParams.singleSelectQuery.select.queryType) {
-    case "selectObjectListByEntity": {
-      return selectedInstances;
-      break;
-    }
-    case "selectObjectListByRelation": {
-      // if (selectorParams.singleSelectQuery.select.objectReference) {
-      const relationQuery: SelectObjectListByRelationQuery = selectorParams.singleSelectQuery.select;
-      const reference = resolveContextReference(relationQuery.objectReference, selectorParams.queryParams, selectorParams.contextResults);
-
-      log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByRelation", JSON.stringify(selectedInstances))
-      switch (selectedInstances.elementType) {
-        case "instanceUuidIndex": {
-          return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-            Object.entries(selectedInstances.elementValue ?? {}).filter(
-              (i: [string, EntityInstance]) => {
-                const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-    
-                let otherIndex = undefined
-                if (
-                  relationQuery.objectReference?.referenceType == "queryContextReference" &&
-                  selectorParams?.contextResults?.elementType == "object" &&
-                  selectorParams?.contextResults.elementValue &&
-                  selectorParams?.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
-                ) {
-                  otherIndex = ((selectorParams?.contextResults?.elementValue[
-                    relationQuery.objectReference.referenceName
-                  ].elementValue as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
-                } else if (relationQuery.objectReference?.referenceType == "constant") {
-                  otherIndex = relationQuery.objectReference?.referenceUuid
-                }
-    
-    
-                return (i[1] as any)[localIndex] === otherIndex
-              }
-            )
-          )};
-          break;
-        }
-        case "object":
-        case "string":
-        case "instance":
-        case "instanceUuidIndexUuidIndex":
-        case "failure":
-        case "array":
-        default: {
-          throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation can not use reference");
-          break;
-        }
-      }
-    }
-    default: {
-      throw new Error(
-        "selectEntityInstancesFromListQueryAndDomainState could not handle query, selectorParams=" +
-          JSON.stringify(selectorParams.singleSelectQuery.select, undefined, 2)
-      );
-      break;
-    }
-  }
-};
-
-// ################################################################################################
-/**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param domainState 
  * @param query 
@@ -438,6 +363,170 @@ export const selectEntityInstanceFromObjectQueryAndDomainState:DomainStateSelect
 };
 
 // ################################################################################################
+/**
+ * returns an Entity Instance List, from a ListQuery
+ * @param domainState 
+ * @param selectorParams 
+ * @returns 
+ */
+export const selectEntityInstanceListFromListQueryAndDomainState: DomainStateSelector<
+  DomainModelGetSingleSelectObjectListQueryQueryParams, DomainElement
+> = (
+  domainState: DomainState,
+  selectorParams: DomainModelGetSingleSelectObjectListQueryQueryParams
+): DomainElement => {
+  log.info("selectEntityInstancesFromListQueryAndDomainState called with queryType", selectorParams.singleSelectQuery.select.queryType, "selectorParams", selectorParams)
+  const selectedInstances = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
+
+  switch (selectorParams.singleSelectQuery.select.queryType) {
+    case "selectObjectListByEntity": {
+      return selectedInstances;
+      break;
+    }
+    case "selectObjectListByRelation": {
+      // if (selectorParams.singleSelectQuery.select.objectReference) {
+      const relationQuery: SelectObjectListByRelationQuery = selectorParams.singleSelectQuery.select;
+      const reference = resolveContextReference(relationQuery.objectReference, selectorParams.queryParams, selectorParams.contextResults);
+
+      // log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByRelation", JSON.stringify(selectedInstances))
+      log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByRelation", selectedInstances)
+      switch (selectedInstances.elementType) {
+        case "instanceUuidIndex": {
+          return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+            Object.entries(selectedInstances.elementValue ?? {}).filter(
+              (i: [string, EntityInstance]) => {
+                const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
+    
+                let otherIndex = undefined
+                if (
+                  relationQuery.objectReference?.referenceType == "queryContextReference" &&
+                  selectorParams?.contextResults?.elementType == "object" &&
+                  selectorParams?.contextResults.elementValue &&
+                  selectorParams?.contextResults.elementValue[relationQuery.objectReference.referenceName ?? ""]
+                ) {
+                  otherIndex = ((selectorParams?.contextResults?.elementValue[
+                    relationQuery.objectReference.referenceName
+                  ].elementValue as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+                } else if (relationQuery.objectReference?.referenceType == "constant") {
+                  otherIndex = relationQuery.objectReference?.referenceUuid
+                }
+    
+    
+                return (i[1] as any)[localIndex] === otherIndex
+              }
+            )
+          )};
+          break;
+        }
+        case "object":
+        case "string":
+        case "instance":
+        case "instanceUuidIndexUuidIndex":
+        case "failure":
+        case "array":
+        default: {
+          throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation can not use reference");
+          break;
+        }
+      }
+    }
+    case "selectObjectListByManyToManyRelation": {
+      // if (selectorParams.singleSelectQuery.select.objectReference) {
+      const relationQuery: SelectObjectListByManyToManyRelationQuery = selectorParams.singleSelectQuery.select;
+      // const reference = resolveContextReference(relationQuery.objectReference, selectorParams.queryParams, selectorParams.contextResults);
+
+      // log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByRelation", JSON.stringify(selectedInstances))
+      log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation", selectedInstances)
+      switch (selectedInstances.elementType) {
+        case "instanceUuidIndex": {
+          return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+            Object.entries(selectedInstances.elementValue ?? {}).filter(
+              (selectedInstancesEntry: [string, EntityInstance]) => {
+                const localIndex = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "dummy";
+    
+                // let otherIndex = undefined
+                if (
+                  relationQuery.objectListReference?.referenceType == "queryContextReference" &&
+                  selectorParams?.contextResults?.elementType == "object" &&
+                  selectorParams?.contextResults.elementValue &&
+                  selectorParams?.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
+                ) {
+                  const otherList: DomainElement = ((selectorParams?.contextResults?.elementValue[
+                    relationQuery.objectListReference.referenceName
+                  ]) ?? {elementType: "void", elementValue: undefined });
+                  
+                  log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation found otherList", otherList);
+                  
+                  switch (otherList.elementType) {
+                    case "instanceUuidIndex": {
+                      // TODO: take into account!
+                      // [relationQuery.objectListReferenceAttribute ?? "uuid"];
+                      // const uuidToFind = (selectedInstancesEntry[1] as any)[localIndex]
+                      // const result = !!otherList.elementValue[uuidToFind] // ugly? inefficient?
+                      const result = Object.values( otherList.elementValue ).findIndex((v:any)=>v[localIndex] == selectedInstancesEntry[0]) >= 0
+                      log.info(
+                        "selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation search otherList for localIndex",
+                        localIndex,
+                        "on object",
+                        selectedInstancesEntry[1],
+                        "uuidToFind",
+                        (selectedInstancesEntry[1] as any)[localIndex],
+                        "otherList",
+                        otherList,
+                        "result",
+                        result
+                      );
+
+                      return result 
+                      // NEED ES2022 lib! return Object.hasOwn(otherList.elementValue,(i[1] as any)[localIndex]);
+                      
+                      break;
+                    }
+                    case "object":
+                    case "string":
+                    case "instance":
+                    case "instanceUuidIndexUuidIndex":
+                    case "failure":
+                    case "array":
+                    default: {
+                      throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation can not use objectListReference, elementType=" + otherList.elementType);
+                      break;
+                    }
+                  }
+                } else if (relationQuery.objectListReference?.referenceType == "constant") {
+                  // otherIndex = relationQuery.objectReference?.referenceUuid
+                  throw new Error("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects.");
+                }
+    
+    
+              }
+            )
+          )};
+          break;
+        }
+        case "object":
+        case "string":
+        case "instance":
+        case "instanceUuidIndexUuidIndex":
+        case "failure":
+        case "array":
+        default: {
+          throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByRelation can not use reference");
+          break;
+        }
+      }
+    }
+    default: {
+      throw new Error(
+        "selectEntityInstancesFromListQueryAndDomainState could not handle query, selectorParams=" +
+          JSON.stringify(selectorParams.singleSelectQuery.select, undefined, 2)
+      );
+      break;
+    }
+  }
+};
+
+// ################################################################################################
 export const innerSelectElementFromQueryAndDomainState = (
   domainState: DomainState,
   newFetchedData: DomainElementObject,
@@ -454,7 +543,8 @@ export const innerSelectElementFromQueryAndDomainState = (
       break;
     }
     case "selectObjectListByEntity":
-    case "selectObjectListByRelation": {
+    case "selectObjectListByRelation": 
+    case "selectObjectListByManyToManyRelation": {
       return selectEntityInstanceListFromListQueryAndDomainState(domainState, {
         queryType: "getSingleSelectQuery",
         contextResults: newFetchedData,
@@ -585,25 +675,22 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
   query: DomainManyQueriesWithDeploymentUuid,
 ): DomainElementObject => {
 
-  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", JSON.stringify(query, undefined, 2));
   log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, query", query);
   
-  const newFetchedData:DomainElementObject = {elementType: "object", elementValue: {...query.contextResults.elementValue}};
-  // log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", JSON.stringify(newFetchedData,circularReplacer(), 2));
-  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState begin, newFetchedData", newFetchedData);
+  const context:DomainElementObject = {elementType: "object", elementValue: {...query.contextResults.elementValue}};
+  log.info("########## DomainSelector selectByDomainManyQueriesFromDomainState will use context", context);
   
   for (const entry of Object.entries(query.fetchQuery?.select??{})) {
     let result = innerSelectElementFromQueryAndDomainState(
       domainState,
-      newFetchedData,
+      context,
       query.pageParams,
       {elementType: "object", elementValue: { ...query.pageParams.elementValue, ...query.queryParams.elementValue} },
       query.deploymentUuid,
       entry[1]
 
     );
-    newFetchedData.elementValue[entry[0]] = result;
-    // log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", JSON.stringify(result,circularReplacer(), 2));
+    context.elementValue[entry[0]] = result;
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState done for entry", entry[0], "query", entry[1], "result=", result);
   }
 
@@ -611,9 +698,9 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
     log.info("DomainSelector selectByDomainManyQueriesFromDomainState fetchQuery?.crossJoin", query.fetchQuery?.crossJoin);
 
     // performs a cross-join
-    newFetchedData.elementValue["crossJoin"] = {elementType: "instanceUuidIndex", elementValue: Object.fromEntries(
-      Object.values(newFetchedData.elementValue[query.fetchQuery?.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
-        Object.values(newFetchedData.elementValue[query.fetchQuery?.crossJoin?.b ?? ""] ?? {}).map((b) => [
+    context.elementValue["crossJoin"] = {elementType: "instanceUuidIndex", elementValue: Object.fromEntries(
+      Object.values(context.elementValue[query.fetchQuery?.crossJoin?.a ?? ""] ?? {}).flatMap((a) =>
+        Object.values(context.elementValue[query.fetchQuery?.crossJoin?.b ?? ""] ?? {}).map((b) => [
           a.uuid + "-" + b.uuid,
           Object.fromEntries(
             Object.entries(a)
@@ -632,9 +719,9 @@ export const selectByDomainManyQueriesFromDomainState:DomainStateSelector<
     "domainState",
     domainState,
     "newFetchedData",
-    newFetchedData
+    context
   );
-  return newFetchedData;
+  return context;
 };
 
 
