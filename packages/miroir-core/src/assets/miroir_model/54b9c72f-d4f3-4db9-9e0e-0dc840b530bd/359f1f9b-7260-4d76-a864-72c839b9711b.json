@@ -329,6 +329,7 @@
               },
               "AttributeOfRootListObjectToCompareToListReferenceUuid": {
                 "type": "simpleType",
+                "optional": true,
                 "definition": "string"
               }
             }

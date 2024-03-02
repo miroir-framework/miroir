@@ -44,6 +44,19 @@
             "referenceType": "queryContextReference",
             "referenceName": "booksOfAuthor"
           },
+          "objectListReferenceAttribute": "publisher"
+        },
+        "BooksOfPublishers": {
+          "queryType": "selectObjectListByManyToManyRelation",
+          "parentName": "Book",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
+          "objectListReference": {
+            "referenceType": "queryContextReference",
+            "referenceName": "publishersOfBooks"
+          },
           "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"
         }
       }
@@ -52,12 +65,38 @@
       "type": "list",
       "definition": [
         {
+          "type":"objectInstanceReportSection",
+          "definition": {
+            "label": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "fetchedDataReference": "author"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Author's (${author.name}) Books",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "booksOfAuthor"
+          }
+        },
+        {
           "type":"objectListReportSection",
           "definition": {
             "label": "Author's (${author.name}) Publishers",
-            "parentName": "Book",
+            "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "publishersOfBooks"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Author's (${author.name}) Publisher's Books",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "BooksOfPublishers"
           }
         }
       ]

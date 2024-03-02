@@ -17,6 +17,7 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   DomainElement,
   DomainElementObject,
+  DomainElementUuidIndex,
   EntityDefinition,
   EntityInstance,
   JzodElement,
@@ -439,69 +440,75 @@ export const selectEntityInstanceListFromListQueryAndDomainState: DomainStateSel
       log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation", selectedInstances)
       switch (selectedInstances.elementType) {
         case "instanceUuidIndex": {
-          return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
-            Object.entries(selectedInstances.elementValue ?? {}).filter(
-              (selectedInstancesEntry: [string, EntityInstance]) => {
-                const localIndex = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "dummy";
-    
-                // let otherIndex = undefined
-                if (
-                  relationQuery.objectListReference?.referenceType == "queryContextReference" &&
-                  selectorParams?.contextResults?.elementType == "object" &&
-                  selectorParams?.contextResults.elementValue &&
-                  selectorParams?.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
-                ) {
-                  const otherList: DomainElement = ((selectorParams?.contextResults?.elementValue[
-                    relationQuery.objectListReference.referenceName
-                  ]) ?? {elementType: "void", elementValue: undefined });
-                  
-                  log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation found otherList", otherList);
-                  
-                  switch (otherList.elementType) {
-                    case "instanceUuidIndex": {
-                      // TODO: take into account!
-                      // [relationQuery.objectListReferenceAttribute ?? "uuid"];
-                      // const uuidToFind = (selectedInstancesEntry[1] as any)[localIndex]
-                      // const result = !!otherList.elementValue[uuidToFind] // ugly? inefficient?
-                      const result = Object.values( otherList.elementValue ).findIndex((v:any)=>v[localIndex] == selectedInstancesEntry[0]) >= 0
-                      log.info(
-                        "selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation search otherList for localIndex",
-                        localIndex,
-                        "on object",
-                        selectedInstancesEntry[1],
-                        "uuidToFind",
-                        (selectedInstancesEntry[1] as any)[localIndex],
-                        "otherList",
-                        otherList,
-                        "result",
-                        result
-                      );
+          let otherList: DomainElement | undefined = undefined
+          if (
+            relationQuery.objectListReference?.referenceType == "queryContextReference" &&
+            selectorParams?.contextResults?.elementType == "object" &&
+            selectorParams?.contextResults.elementValue &&
+            selectorParams?.contextResults.elementValue[relationQuery.objectListReference.referenceName ?? ""]
+          ) {
+            otherList = ((selectorParams?.contextResults?.elementValue[
+              relationQuery.objectListReference.referenceName
+            ]) ?? {elementType: "void", elementValue: undefined });
+            
+            log.info("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation found otherList", otherList);
+            
+          } else if (relationQuery.objectListReference?.referenceType == "constant") {
+            // otherIndex = relationQuery.objectReference?.referenceUuid
+            throw new Error("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects.");
+          }
 
-                      return result 
-                      // NEED ES2022 lib! return Object.hasOwn(otherList.elementValue,(i[1] as any)[localIndex]);
-                      
-                      break;
+          if (otherList != undefined) {
+            return { "elementType": "instanceUuidIndex", "elementValue": Object.fromEntries(
+              Object.entries(selectedInstances.elementValue ?? {}).filter(
+                (selectedInstancesEntry: [string, EntityInstance]) => {
+                  const localOtherList: DomainElement = otherList as DomainElement;
+                  const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+                  const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+      
+                    switch ((localOtherList as DomainElement).elementType) {
+                      case "instanceUuidIndex": {
+                        // TODO: take into account!
+                        // [relationQuery.objectListReferenceAttribute ?? "uuid"];
+                        const result = Object.values( (localOtherList as DomainElementUuidIndex).elementValue ).findIndex((v:any)=>v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]) >= 0
+                        log.info(
+                          "selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation search otherList for attribute",
+                          otherListAttribute,
+                          "on object",
+                          selectedInstancesEntry[1],
+                          "uuidToFind",
+                          (selectedInstancesEntry[1] as any)[otherListAttribute],
+                          "otherList",
+                          localOtherList,
+                          "result",
+                          result
+                        );
+
+                        return result 
+                        
+                        break;
+                      }
+                      case "object":
+                      case "string":
+                      case "instance":
+                      case "instanceUuidIndexUuidIndex":
+                      case "failure":
+                      case "array":
+                      default: {
+                        throw new Error(
+                          "selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation can not use objectListReference, elementType=" +
+                            localOtherList.elementType
+                        );
+                        break;
+                      }
                     }
-                    case "object":
-                    case "string":
-                    case "instance":
-                    case "instanceUuidIndexUuidIndex":
-                    case "failure":
-                    case "array":
-                    default: {
-                      throw new Error("selectEntityInstanceListFromListQueryAndDomainState selectObjectListByManyToManyRelation can not use objectListReference, elementType=" + otherList.elementType);
-                      break;
-                    }
-                  }
-                } else if (relationQuery.objectListReference?.referenceType == "constant") {
-                  // otherIndex = relationQuery.objectReference?.referenceUuid
-                  throw new Error("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation provided constant for objectListReference. This cannot be a constant, it must be a reference to a List of Objects.");
+                  // let otherIndex = undefined
                 }
-    
-    
-              }
-            )
-          )};
+              )
+            )};
+          } else {
+            throw new Error("selectEntityInstancesFromListQueryAndDomainState selectObjectListByManyToManyRelation could not find list for objectListReference.");
+          }
           break;
         }
         case "object":
