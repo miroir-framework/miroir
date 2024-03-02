@@ -1217,7 +1217,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction")?.actionParameters,
       "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
-      "storeAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
+      "storeManagementAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
       "bundleAction": {
         "type": "union",
         "definition": [
@@ -1256,7 +1256,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "storeAction"
+              "relativePath": "storeManagementAction"
             }
           },
           {

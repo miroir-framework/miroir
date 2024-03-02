@@ -284,7 +284,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       }
                       if (miroirConfig && miroirConfig.client.emulateServer) {
                         await remoteStore.handleRemoteStoreAction("",{
-                          actionType: "storeAction",
+                          actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
@@ -296,7 +296,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
                         await remoteStore.handleRemoteStoreAction("",{
-                          actionType: "storeAction",
+                          actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
@@ -340,7 +340,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       }
                       if (miroirConfig && miroirConfig.client.emulateServer) {
                         await remoteStore.handleRemoteStoreAction("",{
-                          actionType: "storeAction",
+                          actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {
@@ -352,7 +352,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
                         await remoteStore.handleRemoteStoreAction("",{
-                          actionType: "storeAction",
+                          actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
                           configuration: {

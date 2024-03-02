@@ -30,8 +30,8 @@ export {
   Commit,
   DomainAction,
   ConceptLevel,
-  StoreAction,
-  storeAction,
+  StoreManagementAction,
+  storeManagementAction,
   Entity,
   entity,
   EntityArrayAttribute,
@@ -415,9 +415,8 @@ export {
   resetMiroirAndApplicationDatabases,
 } from './3_controllers/resetApplicationDatabase.js';
 export {
-  restActionRunnerImplementation,
-  initApplicationDeployment,
-  modelActionRunner,
+  restActionStoreRunnerImplementation,
+  modelActionStoreRunner,
 } from './3_controllers/ActionRunner.js';
 export {
   modelInitialize,

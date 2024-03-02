@@ -60,9 +60,9 @@ export class RestServerStub {
           try {
             const result = await h.handler(
               (response: any) => (localData: any) => HttpResponse.json(localData),
+              undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               storeControllerManager,
               h.method /* method */,
-              undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               this.rootApiUrl + h.url,
               body, // body
               params

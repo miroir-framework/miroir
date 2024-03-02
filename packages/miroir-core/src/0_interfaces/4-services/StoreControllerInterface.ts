@@ -7,16 +7,27 @@ import {
   ActionVoidReturnType,
   Application,
   ApplicationSection,
+  BundleAction,
   Entity,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
+  ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
+  StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
+import { RemoteStoreCRUDAction } from './RemoteStoreInterface.js';
+
+export type StoreControllerAction =
+  // | RemoteStoreCRUDAction
+  | ModelAction
+  | StoreManagementAction
+  // | BundleAction
+;
 
 
 // ###########################################################################################
@@ -189,5 +200,5 @@ export interface StoreControllerInterface
   deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
   deleteInstances(section: ApplicationSection, instances: EntityInstance[]): Promise<ActionVoidReturnType>;
 
-  // handleAction(storeAction: StoreAction): Promise<any>;
+  handleAction(storeManagementAction: StoreControllerAction): Promise<any>;
 }

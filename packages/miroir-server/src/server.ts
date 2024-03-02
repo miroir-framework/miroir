@@ -85,9 +85,9 @@ for (const op of restServerDefaultHandlers) {
 
       const result = await op.handler(
         (response: any) => response.json.bind(response),
+        response,
         storeControllerManager,
         op.method,
-        response,
         request.originalUrl,
         body,
         request.params

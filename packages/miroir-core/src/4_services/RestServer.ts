@@ -2,7 +2,7 @@ import { HttpMethod } from "../0_interfaces/1_core/Http";
 import { StoreOrBundleAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
-import { restActionRunnerImplementation, modelActionRunner } from "../3_controllers/ActionRunner";
+import { restActionStoreRunnerImplementation, modelActionStoreRunner } from "../3_controllers/ActionRunner";
 
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
@@ -30,9 +30,9 @@ function wrapResults(instances: EntityInstance[]): HttpResponseBodyFormat {
 export async function restMethodGetHandler
 (
   continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
   storeControllerManager: StoreControllerManagerInterface,
   method: HttpMethod | undefined, // unused!
-  response: any,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
   params: any,
@@ -115,9 +115,9 @@ export async function restMethodGetHandler
 // ################################################################################################
 export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
   storeControllerManager: StoreControllerManagerInterface,
   method: HttpMethod,
-  response: any,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
   params: any,
@@ -175,9 +175,9 @@ export async function restMethodsPostPutDeleteHandler(
 // ################################################################################################
 export async function restMethodEntityActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
   storeControllerManager: StoreControllerManagerInterface,
   method: HttpMethod,
-  response: any,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
   params: any,
@@ -196,7 +196,7 @@ export async function restMethodEntityActionRunnerHandler(
   
   log.debug("restMethodEntityActionRunnerHandler params", params, "body", body);
 
-  const result = await modelActionRunner(
+  const result = await modelActionStoreRunner(
     localMiroirStoreController,
     localAppStoreController,
     deploymentUuid,
@@ -209,9 +209,9 @@ export async function restMethodEntityActionRunnerHandler(
 // ################################################################################################
 export async function restActionRunner(
   continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
   storeControllerManager: StoreControllerManagerInterface,
   method: HttpMethod,
-  response: any,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
   params: any,
@@ -232,7 +232,7 @@ export async function restActionRunner(
 
   log.debug("restActionRunner params", params, "body", body);
 
-  const result = await restActionRunnerImplementation(
+  const result = await restActionStoreRunnerImplementation(
     actionName,
     body as StoreOrBundleAction,
     storeControllerManager,

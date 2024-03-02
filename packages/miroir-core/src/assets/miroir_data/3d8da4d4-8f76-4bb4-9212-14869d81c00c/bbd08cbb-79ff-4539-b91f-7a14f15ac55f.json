@@ -11,7 +11,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"storeAction"},
+            "actionType": {"type": "literal", "definition":"storeManagementAction"},
             "actionName": {"type": "literal", "definition":"createStore"},
             "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
             "configuration": { "type":"schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "storeUnitConfiguration" } },
@@ -32,7 +32,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"storeAction"},
+            "actionType": {"type": "literal", "definition":"storeManagementAction"},
             "actionName": {"type": "literal", "definition":"deleteStore"},
             "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
             "deploymentUuid": {
@@ -51,7 +51,7 @@
         "actionParameters" : {
           "type": "object",
           "definition": {
-            "actionType": { "type": "literal", "definition": "storeAction" },
+            "actionType": { "type": "literal", "definition": "storeManagementAction" },
             "actionName": { "type": "literal", "definition": "openStore" },
             "endpoint": { "type": "literal", "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" },
             "configuration": {
@@ -77,7 +77,7 @@
         "actionParameters": {
           "type": "object",
           "definition": {
-            "actionType": {"type": "literal", "definition":"storeAction"},
+            "actionType": {"type": "literal", "definition":"storeManagementAction"},
             "actionName": {"type": "literal", "definition":"closeStore"},
             "endpoint": {"type": "literal", "definition":"bbd08cbb-79ff-4539-b91f-7a14f15ac55f"},
             "deploymentUuid": {

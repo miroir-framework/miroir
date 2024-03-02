@@ -3,27 +3,27 @@ import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controlle
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
 import { RemoteStoreInterface } from "../../0_interfaces/4-services/RemoteStoreInterface";
 
-export default {}
-export type AsyncCalls = "handleRemoteStoreAction";
-export type SyncCalls = "handleAction"
-;
+// export default {}
+// export type AsyncCalls = "handleRemoteStoreAction";
+// export type SyncCalls = "handleAction"
+// ;
 
 
 export class CallUtils {
-  private asyncCallsMap: {[k in AsyncCalls]: (...args: any) => Promise<ActionReturnType>}
-  private syncCallsMap: {[k in SyncCalls]: (...args: any) => ActionReturnType}
+  // private asyncCallsMap: {[k in AsyncCalls]: (...args: any) => Promise<ActionReturnType>}
+  // private syncCallsMap: {[k in SyncCalls]: (...args: any) => ActionReturnType}
 
   constructor (
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
     private remoteStore: RemoteStoreInterface,
   ) {
-    this.asyncCallsMap = {
-      "handleRemoteStoreAction": remoteStore.handleRemoteStoreAction,
-    }
-    this.syncCallsMap = {
-      "handleAction": localCache.handleLocalCacheAction,
-    }
+    // this.asyncCallsMap = {
+    //   "handleRemoteStoreAction": remoteStore.handleRemoteStoreAction,
+    // }
+    // this.syncCallsMap = {
+    //   "handleAction": localCache.handleLocalCacheAction,
+    // }
   }
   
   // ######################################################################################
@@ -39,10 +39,10 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    fName: SyncCalls,
+    fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
-    const functionToCall = this.syncCallsMap[fName].bind(this.localCache);
+    const functionToCall = this.localCache.handleLocalCacheAction.bind(this.localCache);
     const result: ActionReturnType = functionToCall(...args);
     console.log("callSyncAction received result", result)
     if (result && result['status'] == "error") {
@@ -77,10 +77,10 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    fName: AsyncCalls,
+    fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
-    const functionToCall = this.asyncCallsMap[fName].bind(this.remoteStore);
+    const functionToCall = this.remoteStore.handleRemoteStoreAction.bind(this.remoteStore);
     const result: ActionReturnType = await functionToCall(...args);
     console.log("callAsyncAction received result", result)
     if (result['status'] == "error") {

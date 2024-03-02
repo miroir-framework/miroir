@@ -7,7 +7,7 @@ import {
   EntityInstanceCollection,
   StoreOrBundleAction,
   ModelAction,
-  StoreAction
+  StoreManagementAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName
@@ -32,9 +32,9 @@ export interface HttpResponseBodyFormat {
 // ################################################################################################
 export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
   storeControllerManager: StoreControllerManagerInterface,
   method: HttpMethod | undefined, // unused!
-  response: any,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
   params: any,
@@ -79,7 +79,7 @@ export interface RemoteStoreCRUDAction {
 export type RemoteStoreAction =
   | RemoteStoreCRUDAction
   | ModelAction
-  | StoreAction
+  | StoreManagementAction
   | BundleAction;
 
 // ################################################################################################

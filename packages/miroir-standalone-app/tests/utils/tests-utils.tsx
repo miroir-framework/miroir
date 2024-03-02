@@ -167,7 +167,7 @@ export async function miroirBeforeAll(
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
       const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
       await remoteStore.handleRemoteStoreAction("",{
-        actionType: "storeAction",
+        actionType: "storeManagementAction",
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
@@ -374,7 +374,7 @@ export async function miroirAfterAll(
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
       const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
       await remoteStore.handleRemoteStoreAction("",{
-        actionType: "storeAction",
+        actionType: "storeManagementAction",
         actionName: "closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         deploymentUuid: applicationDeploymentMiroir.uuid,

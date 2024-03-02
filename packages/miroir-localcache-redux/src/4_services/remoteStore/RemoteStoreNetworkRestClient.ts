@@ -10,7 +10,7 @@ import {
   RestClientCallReturnType,
   RestClientInterface,
   getLoggerName,
-  StoreAction,
+  StoreManagementAction,
   StoreOrBundleAction,
 } from "miroir-core";
 import { packageName } from "../../constants";
@@ -61,7 +61,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   } = {
     RemoteStoreCRUDAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
-    storeAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
+    storeManagementAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
     DomainTransactionalInstanceAction: {
       UpdateMetaModelInstance: { attribute: "update", result: "modelUpdate" }, // NO REMOTE ACTION IS SENT FOR UpdateMetaModelInstance! It is a localCache only operation (commit does the remote part)
       modelActionUpdateEntity: { attribute: "update", result: "modelUpdate" },
@@ -175,7 +175,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   async handleNetworkRemoteStoreAction(deploymentUuid: string, action: RemoteStoreAction): Promise<RestClientCallReturnType> {
     switch (action.actionType) {
       case "bundleAction":
-      case "storeAction": {
+      case "storeManagementAction": {
         return this.handleNetworkRemoteStoreOrBundleAction(deploymentUuid, action);
         break;
       }

@@ -13,6 +13,8 @@ import {
   EntityInstanceCollection,
   MetaModel,
   ModelActionAlterEntityAttribute,
+  ModelActionInitModel,
+  ModelActionInitModelParams,
   ModelActionRenameEntity,
   StoreSectionConfiguration
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -20,6 +22,7 @@ import { DataStoreApplicationType } from "../0_interfaces/3_controllers/Applicat
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
   AdminStoreInterface,
+  StoreControllerAction,
   StoreControllerInterface,
   StoreDataSectionInterface,
   StoreModelSectionInterface,
@@ -81,8 +84,6 @@ export async function storeSectionFactory (
 // #######################################################################################################################
 // #######################################################################################################################
 // #######################################################################################################################
-// #######################################################################################################################
-// #######################################################################################################################
 // MAIN CLASS: StoreController
 // #######################################################################################################################
 export class StoreController implements StoreControllerInterface {
@@ -101,6 +102,125 @@ export class StoreController implements StoreControllerInterface {
     return this.modelStoreSection.getStoreName();
   }
 
+  // #############################################################################################
+  async handleAction(storeManagementAction: StoreControllerAction): Promise<ActionReturnType> {
+    switch (storeManagementAction.actionType) {
+      case "modelAction": {
+        // const storeManagementAction: ModelAction = body;
+        // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
+        log.info("handleAction action", storeManagementAction);
+        switch (storeManagementAction.actionName) {
+          case "dropEntity": {
+            // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
+            await this.dropEntity(storeManagementAction.entityUuid);
+            break;
+          }
+          case "renameEntity": {
+            await this.renameEntityClean(storeManagementAction);
+            break;
+          }
+          case "resetModel": {
+            log.debug("handleAction resetModel update");
+            await this.clear();
+            // await appDataStoreProxy.clear();
+            log.trace("handleAction resetModel after dropped entities:", this.getEntityUuids());
+            break;
+          }
+          case "alterEntityAttribute": {
+            await this.alterEntityAttribute(storeManagementAction);
+            break;
+          }
+          case "resetData": {
+            log.debug("handleAction resetData update");
+            await this.clearDataInstances();
+            log.trace(
+              "handleAction resetData after cleared data contents for entities:",
+              this.getEntityUuids()
+            );
+            break;
+          }
+          case "initModel": {
+            const modelActionInitModel = storeManagementAction as ModelActionInitModel;
+            const params: ModelActionInitModelParams = modelActionInitModel.params;
+            log.debug("handleAction initModel params", params);
+      
+            await this.initApplicationDeploymentStore(params);
+            break;
+          }
+          // case "alterEntityAttribute":
+          case "commit":
+          case "rollback": {
+            throw new Error("handleAction could not handle action" + JSON.stringify(storeManagementAction));
+          }
+          case "createEntity": {
+            log.debug("handleAction applyModelEntityUpdates createEntity inserting", storeManagementAction.entities);
+            // await targetProxy.createEntity(update.entity, update.entityDefinition);
+            await this.createEntities(storeManagementAction.entities);
+            break;
+          }
+          default:
+            log.warn("handleAction could not handle action", storeManagementAction);
+            break;
+        }
+    
+        break;
+      }
+      case "storeManagementAction":
+        
+        break;
+    
+      default:
+        break;
+    }
+    log.debug("handleAction returning empty response.");
+    return Promise.resolve(ACTION_OK);
+  
+  }
+
+
+  // #############################################################################################
+  async initApplicationDeploymentStore(
+    // deploymentUuid: string,
+    // actionName: string,
+    // miroirStoreController: StoreControllerInterface,
+    // appStoreController: StoreControllerInterface,
+    params: ModelActionInitModelParams
+  ) {
+    log.info("ActionRunner.ts initApplicationDeploymentStore model/initModel params", params);
+    if (params.dataStoreType == "miroir") {
+      // TODO: improve, test is dirty
+      await this.initApplication(
+        // defaultMiroirMetaModel,
+        params.metaModel,
+        params.dataStoreType,
+        params.application,
+        params.applicationDeploymentConfiguration,
+        params.applicationModelBranch,
+        params.applicationVersion,
+        params.applicationStoreBasedConfiguration
+      );
+      log.info(
+        "ActionRunner.ts initApplicationDeploymentStore miroir model/initModel contents",
+        await this.getState()
+      );
+    } else {
+      // different Proxy object!!!!!!
+      await this.initApplication(
+        params.metaModel,
+        "app",
+        params.application,
+        params.applicationDeploymentConfiguration,
+        params.applicationModelBranch,
+        params.applicationVersion,
+        params.applicationStoreBasedConfiguration
+      );
+      log.info(
+        "ActionRunner.ts initApplicationDeploymentStore app model/initModel contents",
+        await this.getState()
+      );
+    }
+    log.debug("server post resetModel after initModel, entities:", this.getEntityUuids());
+  }
   // #############################################################################################
   async initApplication(
     metaModel:MetaModel,
