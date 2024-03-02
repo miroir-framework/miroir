@@ -123,7 +123,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   ): Promise<RestClientCallReturnType> {
     const callParams = this.getRestCallParams(
       action,
-      this.rootApiUrl + "/miroirWithDeployment/" + deploymentUuid + "/" + action.section.toString() + "/entity"
+      this.rootApiUrl + "/CRUD/" + deploymentUuid + "/" + action.section.toString() + "/entity"
     );
     // const args =
     log.debug(

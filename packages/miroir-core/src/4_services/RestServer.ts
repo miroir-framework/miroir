@@ -53,7 +53,7 @@ export async function restMethodGetHandler
 ) {
   // const localParams = params ?? request.params;
   log.info(
-    "restMethodGetHandler get miroirWithDeployment/ called using",
+    "restMethodGetHandler get CRUD/ called using",
     "method",
     method,
     "effectiveUrl",
@@ -83,7 +83,7 @@ export async function restMethodGetHandler
     deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   log.info(
-    "restMethodGetHandler get miroirWithDeployment/ using",
+    "restMethodGetHandler get CRUD/ using",
     // (targetStoreController as any)["applicationName"],
     "deployment",
     deploymentUuid,
@@ -187,40 +187,6 @@ export async function restMethodsPostPutDeleteHandler(
 }
 
 // ################################################################################################
-export async function restMethodModelActionRunnerHandler(
-  continuationFunction: (response:any) =>(arg0: any) => any,
-  response: any,
-  storeControllerManager: StoreControllerManagerInterface,
-  method: HttpMethod,
-  effectiveUrl: string, // log only, to remove?
-  body: HttpRequestBodyFormat,
-  params: any,
-):Promise<void> {
-  const actionName: string =
-  typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
-
-  const deploymentUuid: string =
-    typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
-
-  const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-  const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-  if (!localMiroirStoreController || !localAppStoreController) {
-    throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-  } 
-  
-  log.debug("restMethodEntityActionRunnerHandler params", params, "body", body);
-
-  const result = await modelActionStoreRunner(
-    localMiroirStoreController,
-    localAppStoreController,
-    deploymentUuid,
-    actionName,
-    body
-  );
-  return continuationFunction(response)(result)
-}
-
-// ################################################################################################
 export async function restMethodActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
@@ -283,28 +249,23 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   // CRUD operations (plain REST)
   {
     method: "get",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity/:parentUuid/all",
+    url: "/CRUD/:deploymentUuid/:section/entity/:parentUuid/all",
     handler: restMethodGetHandler
   },
   {
     method: "put",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+    url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },
   {
     method: "post",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+    url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },
   {
     method: "delete",
-    url: "/miroirWithDeployment/:deploymentUuid/:section/entity",
+    url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
-  },
-  {
-    method: "post",
-    url: "/modelWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodModelActionRunnerHandler
   },
   {
     method: "post",
