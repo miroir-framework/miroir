@@ -1,8 +1,21 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
-import { StoreOrBundleAction, ApplicationSection, EntityInstance, ActionReturnType } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  StoreOrBundleAction,
+  ApplicationSection,
+  EntityInstance,
+  ActionReturnType,
+  InstanceAction,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { HttpRequestBodyFormat, HttpResponseBodyFormat, RestServiceHandler } from "../0_interfaces/4-services/RemoteStoreInterface";
-import { restActionStoreRunnerImplementation, modelActionStoreRunner } from "../3_controllers/ActionRunner";
+import {
+  HttpRequestBodyFormat,
+  HttpResponseBodyFormat,
+  RestServiceHandler,
+} from "../0_interfaces/4-services/RemoteStoreInterface";
+import {
+  restStoreActionOrBundleActionRunnerImplementation,
+  modelActionStoreRunner,
+} from "../3_controllers/ActionRunner";
 
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
@@ -173,7 +186,7 @@ export async function restMethodsPostPutDeleteHandler(
 }
 
 // ################################################################################################
-export async function restMethodEntityActionRunnerHandler(
+export async function restMethodModelActionRunnerHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   storeControllerManager: StoreControllerManagerInterface,
@@ -207,7 +220,7 @@ export async function restMethodEntityActionRunnerHandler(
 }
 
 // ################################################################################################
-export async function restActionRunner(
+export async function restMethodActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   storeControllerManager: StoreControllerManagerInterface,
@@ -219,26 +232,48 @@ export async function restActionRunner(
   const actionName: string =
   typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
 
-
-
-  // const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-  // const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-  // if (!localMiroirStoreController || !localAppStoreController) {
-  //   throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-  // } 
-
-  // const deploymentUuid: string =
-  //   typeof params["deploymentUuid"] == "string" ? params["deploymentUuid"] : params["deploymentUuid"][0];
-
   log.debug("restActionRunner params", params, "body", body);
 
-  const result = await restActionStoreRunnerImplementation(
-    actionName,
-    body as StoreOrBundleAction,
-    storeControllerManager,
-    // miroirConfig,
-  );
-  return continuationFunction(response)(result)
+  const action: StoreOrBundleAction | InstanceAction = body as StoreOrBundleAction | InstanceAction;
+  switch (action.actionType) {
+    case "storeManagementAction":
+    case "bundleAction": {
+      const result = await restStoreActionOrBundleActionRunnerImplementation(
+        actionName,
+        body as StoreOrBundleAction,
+        storeControllerManager,
+      );
+      return continuationFunction(response)(result)
+      break;
+    }
+    case "instanceAction": {
+        const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+        const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+        if (!localMiroirStoreController || !localAppStoreController) {
+          throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+        } 
+        switch (action.deploymentUuid) {
+        case applicationDeploymentMiroir.uuid: {
+          const result = await localMiroirStoreController.handleAction(action)
+          return continuationFunction(response)(result)
+          break;
+        }
+        case applicationDeploymentLibrary.uuid: {
+          const result = await localAppStoreController.handleAction(action)
+          return continuationFunction(response)(result)
+          break;
+        }
+        default: {
+          throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
+          break;
+        }
+      }
+      break;
+    }
+    default:
+      throw new Error("RestServer restActionStoreRunner could not handle action " + action);
+      break;
+  }
 }
 
 // ################################################################################################
@@ -267,11 +302,11 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   {
     method: "post",
     url: "/modelWithDeployment/:deploymentUuid/:actionName",
-    handler: restMethodEntityActionRunnerHandler
+    handler: restMethodModelActionRunnerHandler
   },
   {
     method: "post",
     url: "/action/:actionName",
-    handler: restActionRunner
+    handler: restMethodActionHandler
   },
 ];

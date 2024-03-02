@@ -7,11 +7,11 @@ import {
   ActionVoidReturnType,
   Application,
   ApplicationSection,
-  BundleAction,
   Entity,
   EntityDefinition,
   EntityInstance,
   EntityInstanceCollection,
+  InstanceAction,
   MetaModel,
   ModelAction,
   ModelActionAlterEntityAttribute,
@@ -20,12 +20,12 @@ import {
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
-import { RemoteStoreCRUDAction } from './RemoteStoreInterface.js';
 
 export type StoreControllerAction =
   // | RemoteStoreCRUDAction
+  | InstanceAction
   | ModelAction
-  | StoreManagementAction
+  // | StoreManagementAction
   // | BundleAction
 ;
 

@@ -99,31 +99,31 @@ export async function modelActionStoreRunner(
  * @param action
  * @returns
  */
-export async function restActionStoreRunnerImplementation(
+export async function restStoreActionOrBundleActionRunnerImplementation(
   actionName: string,
   action: StoreOrBundleAction,
   storeControllerManager: StoreControllerManagerInterface
   // miroirConfig:MiroirConfigClient,
 ): Promise<void> {
-  log.info("###################################### restActionStoreRunnerImplementation started ", "actionName", actionName);
-  // log.debug('restActionStoreRunnerImplementation getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
+  log.info("###################################### restStoreActionOrBundleActionRunnerImplementation started ", "actionName", actionName);
+  // log.debug('restStoreActionOrBundleActionRunnerImplementation getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
 
-  log.info("restActionStoreRunnerImplementation action", JSON.stringify(action, undefined, 2));
+  log.info("restStoreActionOrBundleActionRunnerImplementation action", JSON.stringify(action, undefined, 2));
   switch (action.actionName) {
     // case "createBundle":
     // case "deleteBundle":
     //   break;
     case "createStore": {
-      log.warn("restActionStoreRunnerImplementation createStore does nothing!")
+      log.warn("restStoreActionOrBundleActionRunnerImplementation createStore does nothing!")
       break;
     }
     case "deleteStore": {
-      log.warn("restActionStoreRunnerImplementation deleteStore does nothing!")
+      log.warn("restStoreActionOrBundleActionRunnerImplementation deleteStore does nothing!")
       break;
     }
     case "openStore": {
-      // log.info('restActionStoreRunnerImplementation openStore',miroirConfig);
+      // log.info('restStoreActionOrBundleActionRunnerImplementation openStore',miroirConfig);
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       // TODO: addStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
@@ -146,24 +146,24 @@ export async function restActionStoreRunnerImplementation(
 
       await startLocalStoreControllers(localMiroirStoreController, localAppStoreController);
 
-      log.info("restActionStoreRunnerImplementation openStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("restStoreActionOrBundleActionRunnerImplementation openStore DONE!", storeControllerManager.getStoreControllers());
 
       break;
     }
     case "closeStore": {
-      log.info("restActionStoreRunnerImplementation closeStore");
+      log.info("restStoreActionOrBundleActionRunnerImplementation closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
       await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
       await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
 
-      log.info("restActionStoreRunnerImplementation closeStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("restStoreActionOrBundleActionRunnerImplementation closeStore DONE!", storeControllerManager.getStoreControllers());
 
       break;
     }
     default:
-      log.warn("restActionStoreRunnerImplementation could not handle actionName", actionName);
+      log.warn("restStoreActionOrBundleActionRunnerImplementation could not handle actionName", actionName);
       break;
   }
-  log.debug("restActionStoreRunnerImplementation returning empty response.");
+  log.debug("restStoreActionOrBundleActionRunnerImplementation returning empty response.");
   return Promise.resolve(undefined);
 }

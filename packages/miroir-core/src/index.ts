@@ -415,7 +415,7 @@ export {
   resetMiroirAndApplicationDatabases,
 } from './3_controllers/resetApplicationDatabase.js';
 export {
-  restActionStoreRunnerImplementation,
+  restStoreActionOrBundleActionRunnerImplementation as restActionStoreRunnerImplementation,
   modelActionStoreRunner,
 } from './3_controllers/ActionRunner.js';
 export {

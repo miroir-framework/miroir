@@ -152,31 +152,13 @@ export class DomainController implements DomainControllerInterface {
       "deleteInstance": "delete",
     }
     // if (actionMap.map((a) => a.toString()).includes(domainNonTransactionalInstanceAction.instanceAction.actionName)) {
-    if (Object.keys(actionMap).includes(instanceAction.actionName)) {
-      const objectsToTreat: EntityInstanceCollection[] = (instanceAction as any)["objects"]  as EntityInstanceCollection[]
-      for (const instances of objectsToTreat) {
-        // TODO: replace with parallel implementation Promise.all?
-        log.info(
-          "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-          deploymentUuid,
-          "handleDomainNonTransactionalInstanceAction sending to remote storage instances",
-          instances.parentName,
-          instances.instances
-        );
-        await this.callUtil.callRemoteAction(
-          {}, // context
-          {}, // context update
-          "handleRemoteStoreAction",
-          deploymentUuid,
-          {
-            actionType: "RemoteStoreCRUDAction",
-            actionName: actionMap[instanceAction.actionName] as CRUDActionName,
-            section: "data",
-            parentName: instances.parentName,
-            objects: instances.instances,
-          }
-        );
-      }
+      await this.callUtil.callRemoteAction(
+        {}, // context
+        {}, // context update
+        "handleRemoteStoreAction",
+        deploymentUuid,
+        instanceAction
+      );
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
         deploymentUuid,
@@ -196,16 +178,60 @@ export class DomainController implements DomainControllerInterface {
         "handleDomainNonTransactionalInstanceAction end",
         instanceAction
       );
-    } else {
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-        deploymentUuid,
-        "handleDomainNonTransactionalInstanceAction could not handle action name",
-        instanceAction.actionName,
-        "for action",
-        instanceAction
-      );
-    }
+    // if (Object.keys(actionMap).includes(instanceAction.actionName)) {
+    //   const objectsToTreat: EntityInstanceCollection[] = (instanceAction as any)["objects"]  as EntityInstanceCollection[]
+    //   for (const instances of objectsToTreat) {
+    //     // TODO: replace with parallel implementation Promise.all?
+    //     log.info(
+    //       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+    //       deploymentUuid,
+    //       "handleDomainNonTransactionalInstanceAction sending to remote storage instances",
+    //       instances.parentName,
+    //       instances.instances
+    //     );
+    //     await this.callUtil.callRemoteAction(
+    //       {}, // context
+    //       {}, // context update
+    //       "handleRemoteStoreAction",
+    //       deploymentUuid,
+    //       {
+    //         actionType: "RemoteStoreCRUDAction",
+    //         actionName: actionMap[instanceAction.actionName] as CRUDActionName,
+    //         section: "data",
+    //         parentName: instances.parentName,
+    //         objects: instances.instances,
+    //       }
+    //     );
+    //   }
+    //   log.info(
+    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+    //     deploymentUuid,
+    //     "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
+    //     instanceAction
+    //   );
+    //   await this.callUtil.callLocalCacheAction(
+    //     {}, // context
+    //     {}, // context update
+    //     "handleAction",
+    //     instanceAction
+    //   );
+
+    //   log.info(
+    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+    //     deploymentUuid,
+    //     "handleDomainNonTransactionalInstanceAction end",
+    //     instanceAction
+    //   );
+    // } else {
+    //   log.info(
+    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+    //     deploymentUuid,
+    //     "handleDomainNonTransactionalInstanceAction could not handle action name",
+    //     instanceAction.actionName,
+    //     "for action",
+    //     instanceAction
+    //   );
+    // }
     return Promise.resolve();
   }
 

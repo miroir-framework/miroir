@@ -2,9 +2,9 @@
   "uuid": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
   "parentName": "Endpoint",
   "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-  "name": "DeploymentEndpoint",
+  "name": "StoreManagementEndpoint",
   "version": "1",
-  "description": "Deployment Endpoint",
+  "description": "Store Management Endpoint",
   "definition": {
     "actions": [
       {

@@ -103,20 +103,20 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // #############################################################################################
-  async handleAction(storeManagementAction: StoreControllerAction): Promise<ActionReturnType> {
-    switch (storeManagementAction.actionType) {
+  async handleAction(storeControllerAction: StoreControllerAction): Promise<ActionReturnType> {
+    switch (storeControllerAction.actionType) {
       case "modelAction": {
         // const storeManagementAction: ModelAction = body;
         // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
-        log.info("handleAction action", storeManagementAction);
-        switch (storeManagementAction.actionName) {
+        log.info("handleAction action", storeControllerAction);
+        switch (storeControllerAction.actionName) {
           case "dropEntity": {
             // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
-            await this.dropEntity(storeManagementAction.entityUuid);
+            await this.dropEntity(storeControllerAction.entityUuid);
             break;
           }
           case "renameEntity": {
-            await this.renameEntityClean(storeManagementAction);
+            await this.renameEntityClean(storeControllerAction);
             break;
           }
           case "resetModel": {
@@ -127,7 +127,7 @@ export class StoreController implements StoreControllerInterface {
             break;
           }
           case "alterEntityAttribute": {
-            await this.alterEntityAttribute(storeManagementAction);
+            await this.alterEntityAttribute(storeControllerAction);
             break;
           }
           case "resetData": {
@@ -140,7 +140,7 @@ export class StoreController implements StoreControllerInterface {
             break;
           }
           case "initModel": {
-            const modelActionInitModel = storeManagementAction as ModelActionInitModel;
+            const modelActionInitModel = storeControllerAction as ModelActionInitModel;
             const params: ModelActionInitModelParams = modelActionInitModel.params;
             log.debug("handleAction initModel params", params);
       
@@ -150,40 +150,71 @@ export class StoreController implements StoreControllerInterface {
           // case "alterEntityAttribute":
           case "commit":
           case "rollback": {
-            throw new Error("handleAction could not handle action" + JSON.stringify(storeManagementAction));
+            throw new Error("handleAction could not handle action" + JSON.stringify(storeControllerAction));
           }
           case "createEntity": {
-            log.debug("handleAction applyModelEntityUpdates createEntity inserting", storeManagementAction.entities);
+            log.debug("handleAction applyModelEntityUpdates createEntity inserting", storeControllerAction.entities);
             // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            await this.createEntities(storeManagementAction.entities);
+            await this.createEntities(storeControllerAction.entities);
             break;
           }
           default:
-            log.warn("handleAction could not handle action", storeManagementAction);
+            log.warn("handleAction could not handle action", storeControllerAction);
             break;
         }
     
         break;
       }
-      case "storeManagementAction":
-        
+      case "instanceAction": {
+        // TODO: check await calls for errors!
+        switch (storeControllerAction.actionName) {
+          case "updateInstance": 
+          case "createInstance": {
+            for (const instanceCollection of storeControllerAction.objects) {
+              for (const instance of instanceCollection.instances) {
+                await this.upsertInstance(instanceCollection.applicationSection,instance)
+              }
+            }
+            break;
+          }
+          case "deleteInstance": {
+            for (const instanceCollection of storeControllerAction.objects) {
+              await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
+            }
+            break;
+          }
+          // case "updateInstance": {
+          //   break;
+          // }
+          case "replaceLocalCache": {
+            throw new Error("StoreController handleAction can not handle replaceLocalCache action!");
+            break;
+          }
+          case "getInstance": {
+            return this.getInstance(storeControllerAction.applicationSection,storeControllerAction.parentUuid, storeControllerAction.uuid)
+            break;
+          }
+          case "getInstances": {
+            return this.getInstances(storeControllerAction.applicationSection,storeControllerAction.parentUuid)
+            break;
+          }
+          default:
+            break;
+        }
         break;
-    
-      default:
+      }
+      default: {
+        throw new Error("StoreController handleAction could not handleAction " + storeControllerAction);
         break;
+      }
     }
     log.debug("handleAction returning empty response.");
     return Promise.resolve(ACTION_OK);
-  
   }
 
 
   // #############################################################################################
   async initApplicationDeploymentStore(
-    // deploymentUuid: string,
-    // actionName: string,
-    // miroirStoreController: StoreControllerInterface,
-    // appStoreController: StoreControllerInterface,
     params: ModelActionInitModelParams
   ) {
     log.info("ActionRunner.ts initApplicationDeploymentStore model/initModel params", params);

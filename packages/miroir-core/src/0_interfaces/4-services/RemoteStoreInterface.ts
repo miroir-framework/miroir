@@ -7,7 +7,8 @@ import {
   EntityInstanceCollection,
   StoreOrBundleAction,
   ModelAction,
-  StoreManagementAction
+  StoreManagementAction,
+  InstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName
@@ -78,6 +79,7 @@ export interface RemoteStoreCRUDAction {
 // ################################################################################################
 export type RemoteStoreAction =
   | RemoteStoreCRUDAction
+  | InstanceAction
   | ModelAction
   | StoreManagementAction
   | BundleAction;

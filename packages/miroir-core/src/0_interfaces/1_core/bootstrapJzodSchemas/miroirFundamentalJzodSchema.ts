@@ -16,7 +16,7 @@ const entityDefinitionCommit = JSON.parse(readFileSync(new URL('../../../../asse
 // const entityDefinitionEntityDefinition = JSON.parse(readFileSync(new URL('../../../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json', import.meta.url)).toString());
 import entityDefinitionBundleV1 from "../../../assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json" assert { type: "json" };
 import modelEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json" assert { type: "json" };
-import deploymentEndpoint from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json" assert { type: "json" };
+import storeManagementEndpoint from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json" assert { type: "json" };
 import instanceEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" assert { type: "json" };
 import undoRedoEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json" assert { type: "json" };
 import localCacheEndpointVersionV1 from "../../../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json" assert { type: "json" };
@@ -1111,7 +1111,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
               "errorType": {
                 "type": "union",
                 "definition": [
-                  ...deploymentEndpoint.definition.actions.filter(e=>!!e.actionErrors).map(e =>e.actionErrors),
+                  ...storeManagementEndpoint.definition.actions.filter(e=>!!e.actionErrors).map(e =>e.actionErrors),
                   ...instanceEndpointVersionV1.definition.actions.filter(e=>!!e.actionErrors).map(e =>e.actionErrors),
                 ]
               },
@@ -1217,7 +1217,7 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "transactionalInstanceAction": domainEndpointVersionV1.definition.actions.find(a => a.actionParameters.definition.actionType && a.actionParameters.definition.actionType.definition == "transactionalInstanceAction")?.actionParameters,
       "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
-      "storeManagementAction": { "type": "union", "definition": deploymentEndpoint.definition.actions.map(e=>e.actionParameters)},
+      "storeManagementAction": { "type": "union", "definition": storeManagementEndpoint.definition.actions.map(e=>e.actionParameters)},
       "bundleAction": {
         "type": "union",
         "definition": [
