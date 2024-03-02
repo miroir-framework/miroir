@@ -78,11 +78,12 @@ export interface RemoteStoreCRUDAction {
 
 // ################################################################################################
 export type RemoteStoreAction =
-  | RemoteStoreCRUDAction
+  | BundleAction
   | InstanceAction
   | ModelAction
+  | RemoteStoreCRUDAction
   | StoreManagementAction
-  | BundleAction;
+;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {

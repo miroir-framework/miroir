@@ -5,6 +5,7 @@ import {
   EntityInstance,
   ActionReturnType,
   InstanceAction,
+  ModelAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -234,7 +235,7 @@ export async function restMethodActionHandler(
 
   log.debug("restActionRunner params", params, "body", body);
 
-  const action: StoreOrBundleAction | InstanceAction = body as StoreOrBundleAction | InstanceAction;
+  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction;
   switch (action.actionType) {
     case "storeManagementAction":
     case "bundleAction": {
@@ -246,6 +247,7 @@ export async function restMethodActionHandler(
       return continuationFunction(response)(result)
       break;
     }
+    case "modelAction": 
     case "instanceAction": {
         const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
         const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
@@ -273,8 +275,8 @@ export async function restMethodActionHandler(
     default:
       throw new Error("RestServer restActionStoreRunner could not handle action " + action);
       break;
+    }
   }
-}
 
 // ################################################################################################
 export const restServerDefaultHandlers: RestServiceHandler[] = [

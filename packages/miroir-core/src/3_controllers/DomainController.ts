@@ -144,14 +144,7 @@ export class DomainController implements DomainControllerInterface {
     );
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
 
-    // CRUD actions. The same action is performed on the local cache and on the remote store for Data Instances,
-    // and only on the local cache for Model Instances (Model instance CRUD actions are grouped in transactions)
-    const actionMap: any = {
-      "createInstance": "create",
-      "updateInstance": "update",
-      "deleteInstance": "delete",
-    }
-    // if (actionMap.map((a) => a.toString()).includes(domainNonTransactionalInstanceAction.instanceAction.actionName)) {
+    // The same action is performed on the local cache and on the remote store for Data Instances.
       await this.callUtil.callRemoteAction(
         {}, // context
         {}, // context update
@@ -178,60 +171,6 @@ export class DomainController implements DomainControllerInterface {
         "handleDomainNonTransactionalInstanceAction end",
         instanceAction
       );
-    // if (Object.keys(actionMap).includes(instanceAction.actionName)) {
-    //   const objectsToTreat: EntityInstanceCollection[] = (instanceAction as any)["objects"]  as EntityInstanceCollection[]
-    //   for (const instances of objectsToTreat) {
-    //     // TODO: replace with parallel implementation Promise.all?
-    //     log.info(
-    //       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-    //       deploymentUuid,
-    //       "handleDomainNonTransactionalInstanceAction sending to remote storage instances",
-    //       instances.parentName,
-    //       instances.instances
-    //     );
-    //     await this.callUtil.callRemoteAction(
-    //       {}, // context
-    //       {}, // context update
-    //       "handleRemoteStoreAction",
-    //       deploymentUuid,
-    //       {
-    //         actionType: "RemoteStoreCRUDAction",
-    //         actionName: actionMap[instanceAction.actionName] as CRUDActionName,
-    //         section: "data",
-    //         parentName: instances.parentName,
-    //         objects: instances.instances,
-    //       }
-    //     );
-    //   }
-    //   log.info(
-    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-    //     deploymentUuid,
-    //     "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
-    //     instanceAction
-    //   );
-    //   await this.callUtil.callLocalCacheAction(
-    //     {}, // context
-    //     {}, // context update
-    //     "handleAction",
-    //     instanceAction
-    //   );
-
-    //   log.info(
-    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-    //     deploymentUuid,
-    //     "handleDomainNonTransactionalInstanceAction end",
-    //     instanceAction
-    //   );
-    // } else {
-    //   log.info(
-    //     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
-    //     deploymentUuid,
-    //     "handleDomainNonTransactionalInstanceAction could not handle action name",
-    //     instanceAction.actionName,
-    //     "for action",
-    //     instanceAction
-    //   );
-    // }
     return Promise.resolve();
   }
 

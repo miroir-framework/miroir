@@ -22,7 +22,6 @@ import {
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 
 export type StoreControllerAction =
-  // | RemoteStoreCRUDAction
   | InstanceAction
   | ModelAction
   // | StoreManagementAction
@@ -163,6 +162,8 @@ export interface StoreControllerInterface
   extends AdminStoreInterface,
     AbstractStoreSectionInterface,
     AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */ {
+
+  //  TODO: remove initApplication from interface!
   initApplication(
     metaModel: MetaModel,
     dataStoreType: DataStoreApplicationType,
@@ -173,32 +174,32 @@ export interface StoreControllerInterface
     applicationStoreBasedConfiguration: EntityInstance
   ): Promise<ActionReturnType>;
 
-  createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
-  deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
+  // createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
+  // deleteStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType>;
 
   createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
     entityDefinition: EntityDefinition
   ): Promise<ActionVoidReturnType>;
 
-  createDataStorageSpaceForInstancesOfEntity(
-    entity: Entity,
-    entityDefinition: EntityDefinition
-  ): Promise<ActionVoidReturnType>;
+  // createDataStorageSpaceForInstancesOfEntity(
+  //   entity: Entity,
+  //   entityDefinition: EntityDefinition
+  // ): Promise<ActionVoidReturnType>;
 
-  clearDataInstances(): Promise<ActionVoidReturnType>;
+  // clearDataInstances(): Promise<ActionVoidReturnType>;
 
-  getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
+  // getState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
   getDataState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
 
-  // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
-  getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionReturnType>;
-  // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
+  // // instance interface differs from the one in AbstractInstanceStoreSectionInterface: it has an ApplicationSection as first parameter
+  // getInstance(section: ApplicationSection, parentUuid: string, uuid: Uuid): Promise<ActionReturnType>;
+  // // getInstances(section: ApplicationSection, parentUuid:string):Promise<EntityInstanceCollection | undefined>;
   getInstances(section: ApplicationSection, parentUuid: string): Promise<ActionEntityInstanceCollectionReturnType>;
   upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
   deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
-  deleteInstances(section: ApplicationSection, instances: EntityInstance[]): Promise<ActionVoidReturnType>;
+  // deleteInstances(section: ApplicationSection, instances: EntityInstance[]): Promise<ActionVoidReturnType>;
 
   handleAction(storeManagementAction: StoreControllerAction): Promise<any>;
 }
