@@ -42,7 +42,7 @@ import {
   LoggerInterface,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
-  RemoteStoreInterface,
+  PersistenceInterface,
   reportBookInstance,
 } from "miroir-core";
 

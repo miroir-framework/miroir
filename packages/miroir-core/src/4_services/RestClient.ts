@@ -2,7 +2,7 @@
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/RemoteStoreInterface";
+import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";

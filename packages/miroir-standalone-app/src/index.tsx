@@ -152,7 +152,7 @@ async function start(root:Root) {
     const domainController: DomainControllerInterface = new DomainController(
       myMiroirContext,
       mReduxStore, // implements LocalCacheInterface
-      mReduxStore, // implements RemoteStoreInterface
+      mReduxStore, // implements PersistenceInterface
       new Endpoint(mReduxStore)
     );
 

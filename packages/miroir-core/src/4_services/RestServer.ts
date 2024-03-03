@@ -12,7 +12,7 @@ import {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   RestServiceHandler,
-} from "../0_interfaces/4-services/RemoteStoreInterface";
+} from "../0_interfaces/4-services/PersistenceInterface";
 import {
   restStoreActionOrBundleActionRunnerImplementation,
   modelActionStoreRunner,

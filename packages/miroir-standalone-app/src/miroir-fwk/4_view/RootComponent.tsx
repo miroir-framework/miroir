@@ -32,7 +32,7 @@ import {
   LoggerInterface,
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
-  RemoteStoreInterface,
+  PersistenceInterface,
   reportBookInstance,
 } from "miroir-core";
 
@@ -278,12 +278,12 @@ export const RootComponent = (props: RootComponentProps) => {
                 <span>
                 <button
                     onClick={async () => {
-                      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
+                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                       if (!miroirConfig) {
                         throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                       }
                       if (miroirConfig && miroirConfig.client.emulateServer) {
-                        await remoteStore.handleRemoteStoreAction("",{
+                        await remoteStore.handlePersistenceAction("",{
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -295,7 +295,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         })
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        await remoteStore.handleRemoteStoreAction("",{
+                        await remoteStore.handlePersistenceAction("",{
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -334,12 +334,12 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                   <button
                     onClick={async () => {
-                      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
+                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                       if (!miroirConfig) {
                         throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                       }
                       if (miroirConfig && miroirConfig.client.emulateServer) {
-                        await remoteStore.handleRemoteStoreAction("",{
+                        await remoteStore.handlePersistenceAction("",{
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -351,7 +351,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         })
                       } else {
                         const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        await remoteStore.handleRemoteStoreAction("",{
+                        await remoteStore.handlePersistenceAction("",{
                           actionType: "storeManagementAction",
                           actionName: "openStore",
                           endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -421,8 +421,8 @@ export const RootComponent = (props: RootComponentProps) => {
                   <button
                     onClick={async () => {
                       log.info("creating bundle")
-                      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
-                      await remoteStore.handleRemoteStoreAction("",{
+                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+                      await remoteStore.handlePersistenceAction("",{
                         actionType: "bundleAction",
                         actionName: "createBundle",
                       })

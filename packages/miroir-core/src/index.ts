@@ -332,9 +332,9 @@ export {
 export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
-  RemoteStoreInterface,
-  RemoteStoreAction,
-  RemoteStoreCRUDAction,
+  PersistenceInterface,
+  PersistenceAction,
+  RestPersistenceAction,
   RemoteStoreActionReturnType,
   // RemoteStoreOLDModelAction,
   RemoteStoreNetworkClientInterface,
@@ -342,7 +342,7 @@ export {
   RestClientInterface,
   RestMethodHandler,
   RestServiceHandler,
-} from "./0_interfaces/4-services/RemoteStoreInterface.js";
+} from "./0_interfaces/4-services/PersistenceInterface.js";
 export {
   AbstractStoreInterface,
   AbstractStoreSectionInterface,

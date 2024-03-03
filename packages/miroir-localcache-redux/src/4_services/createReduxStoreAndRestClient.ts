@@ -7,11 +7,11 @@ import {
   getLoggerName
 } from "miroir-core";
 
-import { RemoteStoreRestAccessReduxSaga } from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import { PersistenceReduxSaga } from "./persistence/PersistenceActionReduxSaga";
 import { packageName } from "../constants";
 import { ReduxStore } from "./ReduxStore";
 import { cleanLevel } from "./constants";
-import RemoteStoreNetworkRestClient from "./remoteStore/RemoteStoreNetworkRestClient";
+import RemoteStoreNetworkRestClient from "./persistence/PersistenceRestClient";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"createReduxStoreAndRestClient");
@@ -38,7 +38,7 @@ export function createReduxStoreAndRestClient(
     client
   );
 
-  const instanceSagas: RemoteStoreRestAccessReduxSaga = new RemoteStoreRestAccessReduxSaga(
+  const instanceSagas: PersistenceReduxSaga = new PersistenceReduxSaga(
     remoteStoreNetworkRestClient
   );
 

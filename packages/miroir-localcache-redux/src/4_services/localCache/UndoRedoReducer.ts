@@ -7,7 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
-  RemoteStoreCRUDAction,
+  RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction,
   getLoggerName
@@ -37,7 +37,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 function callNextReducer(
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<TransactionalInstanceAction | ModelAction | InstanceAction | RemoteStoreCRUDAction>
+  action: PayloadAction<TransactionalInstanceAction | ModelAction | InstanceAction | RestPersistenceAction>
 ): ReduxStateWithUndoRedo {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -394,7 +394,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
       InstanceAction | ModelAction | TransactionalInstanceAction | UndoRedoAction
-      // | RemoteStoreCRUDAction
+      // | RestPersistenceAction
     >
   ): ReduxStateWithUndoRedo => {
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));

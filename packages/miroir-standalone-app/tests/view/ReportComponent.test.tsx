@@ -19,7 +19,7 @@
 // } from "miroir-core";
 // import {
 //   RestServerStub,
-//   RemoteStoreRestAccessReduxSaga,
+//   PersistenceReduxSaga,
 //   ReduxStore,
 //   RemoteStoreNetworkRestClient,
 // } from "miroir-localcache-redux";
@@ -44,7 +44,7 @@
 // const client:RestClient = new RestClient(fetch);
 // const remoteStoreNetworkRestClient = new RemoteStoreNetworkRestClient(miroirConfig.rootApiUrl, client);
 // // const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
-// const instanceSagas: RemoteStoreRestAccessReduxSaga = new RemoteStoreRestAccessReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
+// const instanceSagas: PersistenceReduxSaga = new PersistenceReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
 // const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
 // mReduxStore.run();

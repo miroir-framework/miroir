@@ -11,7 +11,7 @@ import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirCont
 import {
   LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { RemoteStoreCRUDAction, RemoteStoreInterface } from '../0_interfaces/4-services/RemoteStoreInterface.js';
+import { RestPersistenceAction, PersistenceInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
 
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
@@ -59,13 +59,13 @@ export class DomainController implements DomainControllerInterface {
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: RemoteStoreInterface,
+    private remoteStore: PersistenceInterface,
     private endpoint: Endpoint
   ) {
     this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, remoteStore);
   }
 
-  getRemoteStore(): RemoteStoreInterface {
+  getRemoteStore(): PersistenceInterface {
     return this.remoteStore;
   }
   // ##############################################################################################
@@ -148,7 +148,7 @@ export class DomainController implements DomainControllerInterface {
       await this.callUtil.callRemoteAction(
         {}, // context
         {}, // context update
-        "handleRemoteStoreAction",
+        "handlePersistenceAction",
         deploymentUuid,
         instanceAction
       );
@@ -213,7 +213,7 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callRemoteAction(
             {}, // context
             {}, // context update
-            "handleRemoteStoreAction",
+            "handlePersistenceAction",
             modelAction.deploymentUuid,
             modelAction
           );
@@ -250,8 +250,8 @@ export class DomainController implements DomainControllerInterface {
             };
 
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version", newModelVersion);
-            const newModelVersionAction: RemoteStoreCRUDAction = {
-              actionType: "RemoteStoreCRUDAction",
+            const newModelVersionAction: RestPersistenceAction = {
+              actionType: "RestPersistenceAction",
               actionName: "create",
               section: sectionOfapplicationEntities,
               objects: [newModelVersion],
@@ -261,7 +261,7 @@ export class DomainController implements DomainControllerInterface {
             await this.callUtil.callRemoteAction(
               {}, // context
               {}, // context update
-              "handleRemoteStoreAction",
+              "handlePersistenceAction",
               deploymentUuid,
               newModelVersionAction
             );
@@ -277,10 +277,10 @@ export class DomainController implements DomainControllerInterface {
                       await this.callUtil.callRemoteAction(
                         {}, // context
                         {}, // context update
-                        "handleRemoteStoreAction",
+                        "handlePersistenceAction",
                         deploymentUuid,
                         {
-                          actionType: "RemoteStoreCRUDAction",
+                          actionType: "RestPersistenceAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
                           section: replayAction.instanceAction.applicationSection,
                           parentName: replayAction.instanceAction.objects[0].parentName,
@@ -294,7 +294,7 @@ export class DomainController implements DomainControllerInterface {
                   await this.callUtil.callRemoteAction(
                     {}, // context
                     {}, // context update
-                    "handleRemoteStoreAction",
+                    "handlePersistenceAction",
                     replayAction.deploymentUuid,
                     replayAction
                   );
@@ -359,8 +359,8 @@ export class DomainController implements DomainControllerInterface {
                   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit updating configuration",
                   updatedConfiguration
                 );
-                const newStoreBasedConfiguration: RemoteStoreCRUDAction = {
-                  actionType: "RemoteStoreCRUDAction",
+                const newStoreBasedConfiguration: RestPersistenceAction = {
+                  actionType: "RestPersistenceAction",
                   actionName: "update",
                   section: sectionOfapplicationEntities,
                   objects: [updatedConfiguration],
@@ -369,7 +369,7 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callRemoteAction(
                   {}, // context
                   {}, // context update
-                  "handleRemoteStoreAction",
+                  "handlePersistenceAction",
                   deploymentUuid,
                   newStoreBasedConfiguration
                 );
@@ -417,10 +417,10 @@ export class DomainController implements DomainControllerInterface {
             addResultToContextAsName: "dataEntitiesFromModelSection",
             expectedDomainElementType: "entityInstanceCollection",
           }, // context update
-          "handleRemoteStoreAction",
+          "handlePersistenceAction",
           deploymentUuid,
           {
-            actionType: "RemoteStoreCRUDAction",
+            actionType: "RestPersistenceAction",
             actionName: "read",
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -482,10 +482,10 @@ export class DomainController implements DomainControllerInterface {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
-                "handleRemoteStoreAction",
+                "handlePersistenceAction",
                 deploymentUuid,
                 {
-                  actionType: "RemoteStoreCRUDAction",
+                  actionType: "RestPersistenceAction",
                   actionName: "read",
                   parentName: e.entity.name,
                   parentUuid: e.entity.uuid,

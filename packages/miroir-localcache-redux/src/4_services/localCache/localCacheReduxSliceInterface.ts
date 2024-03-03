@@ -6,7 +6,7 @@ import {
   InstanceAction,
   LocalCacheAction,
   ModelAction,
-  RemoteStoreCRUDAction,
+  RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction,
   entityInstance
@@ -61,7 +61,7 @@ export type InnerReducerInterface = (
     | TransactionalInstanceAction
     | UndoRedoAction
     | InstanceAction
-    | RemoteStoreCRUDAction
+    | RestPersistenceAction
     | LocalCacheAction
   >
 ) => LocalCacheSliceState;
@@ -74,7 +74,7 @@ export type ReduxReducerWithUndoRedoInterface = (
     | TransactionalInstanceAction
     | UndoRedoAction
     | InstanceAction
-    | RemoteStoreCRUDAction
+    | RestPersistenceAction
     | LocalCacheAction
   >
 ) => ReduxStateWithUndoRedo;

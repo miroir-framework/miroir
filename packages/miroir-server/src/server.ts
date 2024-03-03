@@ -1,4 +1,3 @@
-// import bodyParser from 'body-parser';
 import express, { Request } from 'express';
 
 import {

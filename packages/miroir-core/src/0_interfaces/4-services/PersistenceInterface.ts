@@ -5,10 +5,9 @@ import {
   BundleAction,
   EntityInstance,
   EntityInstanceCollection,
-  StoreOrBundleAction,
+  InstanceAction,
   ModelAction,
-  StoreManagementAction,
-  InstanceAction
+  StoreManagementAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   CRUDActionName
@@ -66,8 +65,8 @@ export interface RestClientCallReturnType {
 }
 
 // ################################################################################################
-export interface RemoteStoreCRUDAction {
-  actionType: "RemoteStoreCRUDAction";
+export interface RestPersistenceAction {
+  actionType: "RestPersistenceAction";
   actionName: CRUDActionName;
   section: ApplicationSection,
   parentName?: string; //redundant with object list
@@ -77,11 +76,11 @@ export interface RemoteStoreCRUDAction {
 }
 
 // ################################################################################################
-export type RemoteStoreAction =
+export type PersistenceAction =
   | BundleAction
   | InstanceAction
   | ModelAction
-  | RemoteStoreCRUDAction
+  | RestPersistenceAction
   | StoreManagementAction
 ;
 
@@ -102,7 +101,7 @@ export interface RemoteStoreActionReturnType {
 export interface RemoteStoreNetworkClientInterface {
   handleNetworkRemoteStoreAction(
     deploymentUuid: string,
-    action: RemoteStoreAction,
+    action: PersistenceAction,
   ): Promise<RestClientCallReturnType>;
 }
 
@@ -112,10 +111,10 @@ export default {};
 /**
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
-export declare interface RemoteStoreInterface {
-  handleRemoteStoreAction(
+export declare interface PersistenceInterface {
+  handlePersistenceAction(
     deploymentUuid: string,
-    action: RemoteStoreAction
+    action: PersistenceAction
   ): Promise<ActionReturnType>;
 }
 

@@ -4,11 +4,11 @@ import {
 } from "@teroneko/redux-saga-promise";
 
 import { call } from "typed-redux-saga";
-import { RemoteStoreSagaGenReturnType } from "./4_services/remoteStore/RemoteStoreRestAccessSaga.js";
+import { PersistenceSagaGenReturnType } from "./4_services/persistence/PersistenceActionReduxSaga.js";
 
 // ###############################################################################
 export function handlePromiseActionForSaga(
-  saga: { (a: any): RemoteStoreSagaGenReturnType; bind?: any },
+  saga: { (a: any): PersistenceSagaGenReturnType; bind?: any },
   ...args: undefined[]
 ) {
   return function* (

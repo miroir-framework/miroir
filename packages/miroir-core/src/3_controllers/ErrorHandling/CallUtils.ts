@@ -1,10 +1,10 @@
 import { ActionReturnType, DomainElementType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
-import { RemoteStoreInterface } from "../../0_interfaces/4-services/RemoteStoreInterface";
+import { PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
 
 // export default {}
-// export type AsyncCalls = "handleRemoteStoreAction";
+// export type AsyncCalls = "handlePersistenceAction";
 // export type SyncCalls = "handleAction"
 // ;
 
@@ -16,10 +16,10 @@ export class CallUtils {
   constructor (
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: RemoteStoreInterface,
+    private remoteStore: PersistenceInterface,
   ) {
     // this.asyncCallsMap = {
-    //   "handleRemoteStoreAction": remoteStore.handleRemoteStoreAction,
+    //   "handlePersistenceAction": remoteStore.handlePersistenceAction,
     // }
     // this.syncCallsMap = {
     //   "handleAction": localCache.handleLocalCacheAction,
@@ -80,7 +80,7 @@ export class CallUtils {
     fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
-    const functionToCall = this.remoteStore.handleRemoteStoreAction.bind(this.remoteStore);
+    const functionToCall = this.remoteStore.handlePersistenceAction.bind(this.remoteStore);
     const result: ActionReturnType = await functionToCall(...args);
     console.log("callAsyncAction received result", result)
     if (result['status'] == "error") {

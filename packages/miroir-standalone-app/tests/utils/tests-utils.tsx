@@ -36,7 +36,7 @@ import {
   restServerDefaultHandlers,
   startLocalStoreControllers,
   StoreUnitConfiguration,
-  RemoteStoreInterface,
+  PersistenceInterface,
   ActionReturnType
 } from "miroir-core";
 import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
@@ -159,14 +159,14 @@ export async function miroirBeforeAll(
     const domainController = new DomainController(
       wrappedReduxStore.miroirContext,
       wrappedReduxStore.reduxStore, // implements LocalCacheInterface
-      wrappedReduxStore.reduxStore, // implements RemoteStoreInterface
+      wrappedReduxStore.reduxStore, // implements PersistenceInterface
       new Endpoint(wrappedReduxStore.reduxStore)
     );
 
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
-      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
-      await remoteStore.handleRemoteStoreAction("",{
+      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+      await remoteStore.handlePersistenceAction("",{
         actionType: "storeManagementAction",
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -372,8 +372,8 @@ export async function miroirAfterAll(
       throw new Error("miroirAfterAll could not close store controller: DomainController is undefined");
     } else {
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
-      const remoteStore:RemoteStoreInterface = domainController.getRemoteStore();
-      await remoteStore.handleRemoteStoreAction("",{
+      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+      await remoteStore.handlePersistenceAction("",{
         actionType: "storeManagementAction",
         actionName: "closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",

@@ -16,15 +16,12 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelAction,
-  RemoteStoreAction,
-  RemoteStoreInterface,
+  PersistenceAction,
+  PersistenceInterface,
   TransactionalInstanceAction,
   getLoggerName
 } from "miroir-core";
-import RemoteStoreRestAccessReduxSaga, {
-  RemoteStoreRestSagaGeneratedActionNames,
-  RemoteStoreRestSagaInputActionNamesArray
-} from "../4_services/remoteStore/RemoteStoreRestAccessSaga";
+import PersistenceReduxSaga from "./persistence/PersistenceActionReduxSaga";
 import { packageName } from '../constants';
 import { cleanLevel } from './constants';
 import {
@@ -104,20 +101,19 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
  * Local store implementation using Redux.
  * 
  */
-export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
+export class ReduxStore implements LocalCacheInterface, PersistenceInterface {
   private innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
   private sagaMiddleware: any;
 
   // ###############################################################################
-  constructor(public remoteStoreAccessReduxSaga: RemoteStoreRestAccessReduxSaga) {
+  constructor(public remoteStoreAccessReduxSaga: PersistenceReduxSaga) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
     this.sagaMiddleware = sagaMiddleware();
 
     const ignoredActionsList = [
-      ...RemoteStoreRestSagaInputActionNamesArray,
-      ...RemoteStoreRestSagaGeneratedActionNames,
+      "handlePersistenceAction",
       ...localCacheSliceGeneratedActionNames,
     ];
 
@@ -181,13 +177,13 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
   }
 
   // ###############################################################################
-  async handleRemoteStoreAction(
+  async handlePersistenceAction(
     deploymentUuid: string,
-    action: RemoteStoreAction,
+    action: PersistenceAction,
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.remoteStoreRestAccessSagaInputPromiseActions.handleRemoteStoreAction.creator(
+      this.remoteStoreAccessReduxSaga.PersistenceActionReduxSaga.handlePersistenceAction.creator(
         { deploymentUuid, action }
       )
     );
@@ -217,7 +213,7 @@ export class ReduxStore implements LocalCacheInterface, RemoteStoreInterface {
 
   // ###############################################################################
   private *rootSaga() {
-    // log.info("ReduxStore rootSaga running", this.RemoteStoreRestAccessReduxSaga);
-    yield all([this.remoteStoreAccessReduxSaga.instanceRootSaga.bind(this.remoteStoreAccessReduxSaga)()]);
+    // log.info("ReduxStore rootSaga running", this.PersistenceReduxSaga);
+    yield all([this.remoteStoreAccessReduxSaga.persistenceRootSaga.bind(this.remoteStoreAccessReduxSaga)()]);
   }
 }

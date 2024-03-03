@@ -10,12 +10,11 @@ import {
   ActionReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
-  RemoteStoreAction,
+  PersistenceAction,
   RemoteStoreActionReturnType,
   RemoteStoreNetworkClientInterface,
   RestClientCallReturnType,
-  getLoggerName,
-  stringTuple
+  getLoggerName
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
@@ -31,43 +30,23 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type RemoteStoreRestAccessReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
+export type PersistenceReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
 
-export type RemoteStoreSagaGenReturnType = Effect | Generator<RemoteStoreRestAccessReduxSagaReturnType>;
+export type PersistenceSagaGenReturnType = Effect | Generator<PersistenceReduxSagaReturnType>;
 
 
-export function getPromiseActionStoreActionNames(promiseActionNames:string[]):string[] {
-  return promiseActionNames 
+export function getPersistenceActionReduxEventNames(persistenceActionNames:string[]):string[] {
+  return persistenceActionNames 
     .reduce(
       (acc:string[],curr) => acc.concat([curr,'saga-' + curr,curr+'/rejected']),[]
     )
   ;
 }
 
-
-//#########################################################################################
-//# ACTION NAMES
-//#########################################################################################
-export const RemoteStoreRestSagaInputActionNamesObject = {
-  'handleRemoteStoreAction':'handleRemoteStoreAction',
-};
-export type RemoteStoreRestSagaInputActionName = keyof typeof RemoteStoreRestSagaInputActionNamesObject;
-export const RemoteStoreRestSagaInputActionNamesArray:RemoteStoreRestSagaInputActionName[] = 
-  Object.keys(RemoteStoreRestSagaInputActionNamesObject) as RemoteStoreRestSagaInputActionName[];
-export const RemoteStoreRestSagaGeneratedActionNames = getPromiseActionStoreActionNames(RemoteStoreRestSagaInputActionNamesArray);
-
-
-//#########################################################################################
-// events sent by the LocalCacheSlice, that can be intercepted and acted upon by the outside world
-export const RemoteStoreRestSagaOutputActionNames = stringTuple(
-  'instancesRefreshedForEntity', 'allInstancesRefreshed'
-);
-export type RemoteStoreRestSagaOutputActionTypeString = typeof RemoteStoreRestSagaOutputActionNames[number];
-
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class RemoteStoreRestAccessReduxSaga {
+export class PersistenceReduxSaga {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   constructor(
@@ -75,33 +54,33 @@ export class RemoteStoreRestAccessReduxSaga {
   ) {}
 
   //#########################################################################################
-  public remoteStoreRestAccessSagaInputPromiseActions: {
-    [property in RemoteStoreRestSagaInputActionName]: {
-      name: property;
-      creator: SagaPromiseActionCreator<any, any, property, ActionCreatorWithPayload<any, property>>;
-      generator: (a: any) => RemoteStoreSagaGenReturnType;
+  public PersistenceActionReduxSaga: {
+    "handlePersistenceAction": {
+      name: "handlePersistenceAction";
+      creator: SagaPromiseActionCreator<any, any, "handlePersistenceAction", ActionCreatorWithPayload<any, "handlePersistenceAction">>;
+      generator: (a: any) => PersistenceSagaGenReturnType;
     };
   } = {
-    handleRemoteStoreAction: {
-      name: "handleRemoteStoreAction",
+    handlePersistenceAction: {
+      name: "handlePersistenceAction",
       creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; action: RemoteStoreAction },
-        "handleRemoteStoreAction"
-      >("handleRemoteStoreAction"),
+        { deploymentUuid: string; action: PersistenceAction },
+        "handlePersistenceAction"
+      >("handlePersistenceAction"),
       generator: function* (
-        this: RemoteStoreRestAccessReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: RemoteStoreAction }>
+        this: PersistenceReduxSaga,
+        p: PayloadAction<{ deploymentUuid: string; action: PersistenceAction }>
       ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
         const { deploymentUuid, action } = p.payload;
         try {
-          log.info("handleRemoteStoreAction on action",action);
+          log.info("handlePersistenceAction on action",action);
           const clientResult: RestClientCallReturnType
            = yield* call(() =>
             this.remoteStoreNetworkClient.handleNetworkRemoteStoreAction(deploymentUuid, action)
           );
-          log.debug("handleRemoteStoreAction received clientResult", clientResult);
+          log.debug("handlePersistenceAction received clientResult", clientResult);
 
-            if (action.actionType == "RemoteStoreCRUDAction") {
+            if (action.actionType == "RestPersistenceAction") {
               const result:ActionReturnType = {
                 status: "ok",
                 returnedDomainElement: {
@@ -113,18 +92,18 @@ export class RemoteStoreRestAccessReduxSaga {
                   }
                 }
               };
-              log.debug("handleRemoteStoreAction received result", result.status);
+              log.debug("handlePersistenceAction received result", result.status);
               return yield result;
             } else {
               const result: ActionReturnType = {
               status: "ok",
               returnedDomainElement: { elementType: "void" }
             }
-            log.debug("handleRemoteStoreAction received result", result.status);
+            log.debug("handlePersistenceAction received result", result.status);
             return yield result;
           };
         } catch (e: any) {
-          log.error("handleRemoteStoreAction exception", e);
+          log.error("handlePersistenceAction exception", e);
           const result: ActionReturnType = {
             status: "error",
             error: {
@@ -140,14 +119,14 @@ export class RemoteStoreRestAccessReduxSaga {
   };
 
   //#########################################################################################
-  public *instanceRootSaga() {
+  public *persistenceRootSaga() {
     yield all([
-      ...Object.values(this.remoteStoreRestAccessSagaInputPromiseActions).map((a: any) =>
+      ...Object.values(this.PersistenceActionReduxSaga).map((a: any) =>
         takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
       ),
     ]);
   }
-}// end class RemoteStoreRestAccessReduxSaga
+}// end class PersistenceReduxSaga
 
-export default RemoteStoreRestAccessReduxSaga;
+export default PersistenceReduxSaga;
 

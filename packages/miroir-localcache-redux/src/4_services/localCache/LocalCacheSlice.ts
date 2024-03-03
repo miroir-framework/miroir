@@ -61,11 +61,11 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 //#########################################################################################
 // store actions are made visible to the outside world for potential interception by the transaction mechanism of undoableReducer
-export function getPromiseActionStoreActionNames(promiseActionNames: string[]): string[] {
+export function getPersistenceActionReduxEventNames(promiseActionNames: string[]): string[] {
   return promiseActionNames.reduce((acc: string[], curr) => acc.concat([curr, "saga-" + curr, curr + "/rejected"]), []);
 }
 
-export const localCacheSliceGeneratedActionNames = getPromiseActionStoreActionNames(localCacheSliceInputActionNames);
+export const localCacheSliceGeneratedActionNames = getPersistenceActionReduxEventNames(localCacheSliceInputActionNames);
 
 
 //#########################################################################################
