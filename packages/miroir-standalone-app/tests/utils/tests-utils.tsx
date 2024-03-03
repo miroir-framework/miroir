@@ -166,7 +166,7 @@ export async function miroirBeforeAll(
     if (!miroirConfig.client.emulateServer) {
       console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-      await remoteStore.handlePersistenceAction("",{
+      await remoteStore.handlePersistenceAction({
         actionType: "storeManagementAction",
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -373,7 +373,7 @@ export async function miroirAfterAll(
     } else {
       console.log('miroirAfterAll closing deployment:', applicationDeploymentMiroir.uuid); // TODO: really???
       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-      await remoteStore.handlePersistenceAction("",{
+      await remoteStore.handlePersistenceAction({
         actionType: "storeManagementAction",
         actionName: "closeStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",

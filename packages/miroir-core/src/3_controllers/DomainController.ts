@@ -147,7 +147,7 @@ export class DomainController implements DomainControllerInterface {
       await this.callUtil.callPersistenceAction(
         {}, // context
         {}, // context update
-        deploymentUuid,
+        // deploymentUuid,
         instanceAction
       );
       log.info(
@@ -209,7 +209,7 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
-            modelAction.deploymentUuid,
+            // modelAction.deploymentUuid,
             modelAction
           );
           break;
@@ -248,6 +248,7 @@ export class DomainController implements DomainControllerInterface {
             const newModelVersionAction: RestPersistenceAction = {
               actionType: "RestPersistenceAction",
               actionName: "create",
+              deploymentUuid,
               section: sectionOfapplicationEntities,
               objects: [newModelVersion],
             };
@@ -256,7 +257,7 @@ export class DomainController implements DomainControllerInterface {
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
-              deploymentUuid,
+              // deploymentUuid,
               newModelVersionAction
             );
             log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit new version created", newModelVersion);
@@ -271,10 +272,11 @@ export class DomainController implements DomainControllerInterface {
                       await this.callUtil.callPersistenceAction(
                         {}, // context
                         {}, // context update
-                        deploymentUuid,
+                        // deploymentUuid,
                         {
                           actionType: "RestPersistenceAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                          deploymentUuid,
                           section: replayAction.instanceAction.applicationSection,
                           parentName: replayAction.instanceAction.objects[0].parentName,
                           parentUuid: replayAction.instanceAction.objects[0].parentUuid,
@@ -287,7 +289,7 @@ export class DomainController implements DomainControllerInterface {
                   await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
-                    replayAction.deploymentUuid,
+                    // replayAction.deploymentUuid,
                     replayAction
                   );
                   break;
@@ -352,6 +354,7 @@ export class DomainController implements DomainControllerInterface {
                 const newStoreBasedConfiguration: RestPersistenceAction = {
                   actionType: "RestPersistenceAction",
                   actionName: "update",
+                  deploymentUuid,
                   section: sectionOfapplicationEntities,
                   objects: [updatedConfiguration],
                 };
@@ -359,7 +362,7 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // context update
-                  deploymentUuid,
+                  // deploymentUuid,
                   newStoreBasedConfiguration
                 );
               });
@@ -406,10 +409,11 @@ export class DomainController implements DomainControllerInterface {
             addResultToContextAsName: "dataEntitiesFromModelSection",
             expectedDomainElementType: "entityInstanceCollection",
           }, // context update
-          deploymentUuid,
+          // deploymentUuid,
           {
             actionType: "RestPersistenceAction",
             actionName: "read",
+            deploymentUuid,
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
             section: "model",
@@ -470,10 +474,11 @@ export class DomainController implements DomainControllerInterface {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
-                deploymentUuid,
+                // deploymentUuid,
                 {
                   actionType: "RestPersistenceAction",
                   actionName: "read",
+                  deploymentUuid,
                   parentName: e.entity.name,
                   parentUuid: e.entity.uuid,
                   section: e.section,

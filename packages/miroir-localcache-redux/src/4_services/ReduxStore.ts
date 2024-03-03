@@ -178,13 +178,14 @@ export class ReduxStore implements LocalCacheInterface, PersistenceInterface {
 
   // ###############################################################################
   async handlePersistenceAction(
-    deploymentUuid: string,
+    // deploymentUuid: string,
     action: PersistenceAction,
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
       // remote store access is accomplished through asynchronous sagas
       this.remoteStoreAccessReduxSaga.PersistenceActionReduxSaga.handlePersistenceAction.creator(
-        { deploymentUuid, action }
+        { action }
+        // { deploymentUuid, action }
       )
     );
     // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)

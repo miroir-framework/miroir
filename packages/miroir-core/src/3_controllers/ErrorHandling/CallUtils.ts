@@ -3,27 +3,14 @@ import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controlle
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
 import { PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
 
-// export default {}
-// export type AsyncCalls = "handlePersistenceAction";
-// export type SyncCalls = "handleAction"
-// ;
-
 
 export class CallUtils {
-  // private asyncCallsMap: {[k in AsyncCalls]: (...args: any) => Promise<ActionReturnType>}
-  // private syncCallsMap: {[k in SyncCalls]: (...args: any) => ActionReturnType}
 
   constructor (
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
     private remoteStore: PersistenceInterface,
   ) {
-    // this.asyncCallsMap = {
-    //   "handlePersistenceAction": remoteStore.handlePersistenceAction,
-    // }
-    // this.syncCallsMap = {
-    //   "handleAction": localCache.handleLocalCacheAction,
-    // }
   }
   
   // ######################################################################################
@@ -39,12 +26,11 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    // fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
     const functionToCall = this.localCache.handleLocalCacheAction.bind(this.localCache);
     const result: ActionReturnType = functionToCall(...args);
-    console.log("callSyncAction received result", result)
+    console.log("callLocalCacheAction received result", result)
     if (result && result['status'] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -77,20 +63,19 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    // fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
     const functionToCall = this.remoteStore.handlePersistenceAction.bind(this.remoteStore);
     const result: ActionReturnType = await functionToCall(...args);
-    console.log("callAsyncAction received result", result)
+    console.log("callPersistenceAction received result", result)
     if (result['status'] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: result.error.errorMessage };
-      // errorLogService.pushError(error);
+      this.errorLogService.pushError(error);
       throw error;
     } else {
-      // console.log("callAsyncAction ok", result);
+      // console.log("callPersistenceAction ok", result);
       const transformedResult = continuation.resultTransformation? continuation.resultTransformation(result, context): result;
 
       if (continuation.addResultToContextAsName) {

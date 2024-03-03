@@ -112,29 +112,27 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   }
 
   // ##################################################################################
-  async handleNetworkRemoteStoreAction(deploymentUuid: string, action: PersistenceAction): Promise<RestClientCallReturnType> {
+  async handleNetworkPersistenceAction(action: PersistenceAction): Promise<RestClientCallReturnType> {
     switch (action.actionType) {
       case "instanceAction": 
       case "bundleAction":
       case "modelAction":
       case "storeManagementAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
-        log.debug("handleNetworkRemoteInstanceAction", action, "callParams", callParams);
+        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation(callParams.url, callParams.args);
-        log.info("handleNetworkRemoteInstanceAction", action, "result", result);
+        log.info("handleNetworkPersistenceAction", action, "result", result);
         return result;
         break;
       }
       case "RestPersistenceAction": {
         const callParams = this.getRestCallParams(
           action,
-          this.rootApiUrl + "/CRUD/" + deploymentUuid + "/" + action.section.toString() + "/entity"
+          this.rootApiUrl + "/CRUD/" + action.deploymentUuid + "/" + action.section.toString() + "/entity"
         );
         log.debug(
-          "handleNetworkRemoteStoreCRUDAction action",
+          "handleNetworkPersistenceAction action",
           action,
-          "deploymentUuid",
-          deploymentUuid,
           "section",
           action.section,
           "callParams",
@@ -144,7 +142,7 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
             break;
       }
       default:
-        throw new Error("handleNetworkRemoteStoreAction could not handle action " + JSON.stringify(action,undefined,2));
+        throw new Error("handleNetworkPersistenceAction could not handle action " + JSON.stringify(action,undefined,2));
         break;
     }
   }

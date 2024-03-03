@@ -20,7 +20,7 @@ import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../constants';
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RemoteStoreRestAccessSaga");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -64,19 +64,19 @@ export class PersistenceReduxSaga {
     handlePersistenceAction: {
       name: "handlePersistenceAction",
       creator: promiseActionFactory<ActionReturnType>().create<
-        { deploymentUuid: string; action: PersistenceAction },
+        { action: PersistenceAction },
         "handlePersistenceAction"
       >("handlePersistenceAction"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ deploymentUuid: string; action: PersistenceAction }>
+        p: PayloadAction<{ action: PersistenceAction }>
       ): Generator<ActionReturnType | CallEffect<RestClientCallReturnType>> {
-        const { deploymentUuid, action } = p.payload;
+        const { action } = p.payload;
         try {
-          log.info("handlePersistenceAction on action",action);
+          log.info("handlePersistenceAction on action",JSON.stringify(action));
           const clientResult: RestClientCallReturnType
            = yield* call(() =>
-            this.remoteStoreNetworkClient.handleNetworkRemoteStoreAction(deploymentUuid, action)
+            this.remoteStoreNetworkClient.handleNetworkPersistenceAction(action)
           );
           log.debug("handlePersistenceAction received clientResult", clientResult);
 

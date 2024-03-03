@@ -1,3 +1,4 @@
+import { Uuid } from "../1_core/EntityDefinition.js";
 import { HttpMethod } from "../1_core/Http.js";
 import {
   ActionReturnType,
@@ -69,6 +70,7 @@ export interface RestPersistenceAction {
   actionType: "RestPersistenceAction";
   actionName: CRUDActionName;
   section: ApplicationSection,
+  deploymentUuid: Uuid,
   parentName?: string; //redundant with object list
   parentUuid?: string; //redundant with object list
   uuid?: string; //redundant with object list
@@ -99,8 +101,8 @@ export interface RemoteStoreActionReturnType {
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
 export interface RemoteStoreNetworkClientInterface {
-  handleNetworkRemoteStoreAction(
-    deploymentUuid: string,
+  handleNetworkPersistenceAction(
+    // deploymentUuid: string,
     action: PersistenceAction,
   ): Promise<RestClientCallReturnType>;
 }
@@ -113,7 +115,6 @@ export default {};
  */
 export declare interface PersistenceInterface {
   handlePersistenceAction(
-    deploymentUuid: string,
     action: PersistenceAction
   ): Promise<ActionReturnType>;
 }

@@ -1231,6 +1231,12 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
               "actionName": {
                 "type": "literal",
                 "definition": "createBundle"
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
               }
             }
           },
@@ -1244,7 +1250,13 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
               "actionName": {
                 "type": "literal",
                 "definition": "deleteBundle"
-              }
+              },
+              "deploymentUuid": {
+                "type": "simpleType",
+                "definition": "string",
+                "validations": [{ "type": "uuid" }],
+                "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+              },
             }
           }
         ]
