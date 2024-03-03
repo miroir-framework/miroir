@@ -100,7 +100,6 @@ export class DomainController implements DomainControllerInterface {
           this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleAction",
             undoRedoAction
           );
 
@@ -145,10 +144,9 @@ export class DomainController implements DomainControllerInterface {
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
 
     // The same action is performed on the local cache and on the remote store for Data Instances.
-      await this.callUtil.callRemoteAction(
+      await this.callUtil.callPersistenceAction(
         {}, // context
         {}, // context update
-        "handlePersistenceAction",
         deploymentUuid,
         instanceAction
       );
@@ -161,7 +159,6 @@ export class DomainController implements DomainControllerInterface {
       await this.callUtil.callLocalCacheAction(
         {}, // context
         {}, // context update
-        "handleAction",
         instanceAction
       );
 
@@ -202,7 +199,6 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleAction",
               modelAction,
           );
           break;
@@ -210,10 +206,9 @@ export class DomainController implements DomainControllerInterface {
         case "resetModel":
         case "resetData":
         case "initModel": {
-          await this.callUtil.callRemoteAction(
+          await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
-            "handlePersistenceAction",
             modelAction.deploymentUuid,
             modelAction
           );
@@ -258,10 +253,9 @@ export class DomainController implements DomainControllerInterface {
             };
 
             // in the case of the Miroir app, this should be done in the 'data' section
-            await this.callUtil.callRemoteAction(
+            await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
-              "handlePersistenceAction",
               deploymentUuid,
               newModelVersionAction
             );
@@ -274,10 +268,9 @@ export class DomainController implements DomainControllerInterface {
                 case "transactionalInstanceAction": {
                   // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                       //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
-                      await this.callUtil.callRemoteAction(
+                      await this.callUtil.callPersistenceAction(
                         {}, // context
                         {}, // context update
-                        "handlePersistenceAction",
                         deploymentUuid,
                         {
                           actionType: "RestPersistenceAction",
@@ -291,10 +284,9 @@ export class DomainController implements DomainControllerInterface {
                   break;
                 }
                 case "modelAction": {
-                  await this.callUtil.callRemoteAction(
+                  await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
-                    "handlePersistenceAction",
                     replayAction.deploymentUuid,
                     replayAction
                   );
@@ -318,7 +310,6 @@ export class DomainController implements DomainControllerInterface {
               .callLocalCacheAction(
                 {}, // context
                 {}, // context update
-                "handleAction",
                 {
                   actionType: "modelAction",
                   actionName: "commit",
@@ -334,7 +325,6 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callLocalCacheAction(
                   {}, // context
                   {}, // context update
-                  "handleAction",
                   {
                     actionType: "instanceAction",
                     actionName: "createInstance",
@@ -366,10 +356,9 @@ export class DomainController implements DomainControllerInterface {
                   objects: [updatedConfiguration],
                 };
                 // TODO: in the case of the Miroir app, this should be in the 'data'section
-                return this.callUtil.callRemoteAction(
+                return this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // context update
-                  "handlePersistenceAction",
                   deploymentUuid,
                   newStoreBasedConfiguration
                 );
@@ -411,13 +400,12 @@ export class DomainController implements DomainControllerInterface {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment", deploymentUuid);
     try {
       await this.callUtil
-        .callRemoteAction(
+        .callPersistenceAction(
           {}, // context
           {
             addResultToContextAsName: "dataEntitiesFromModelSection",
             expectedDomainElementType: "entityInstanceCollection",
           }, // context update
-          "handlePersistenceAction",
           deploymentUuid,
           {
             actionType: "RestPersistenceAction",
@@ -476,13 +464,12 @@ export class DomainController implements DomainControllerInterface {
               JSON.stringify(e, undefined, 2)
             );
             await this.callUtil
-              .callRemoteAction(
+              .callPersistenceAction(
                 {}, // context
                 {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
-                "handlePersistenceAction",
                 deploymentUuid,
                 {
                   actionType: "RestPersistenceAction",
@@ -506,7 +493,6 @@ export class DomainController implements DomainControllerInterface {
                 this.callUtil.callLocalCacheAction(
                   context, // context
                   {}, // context update
-                  "handleAction",
                   {
                     actionType: "instanceAction",
                     actionName: "replaceLocalCache",
@@ -521,7 +507,6 @@ export class DomainController implements DomainControllerInterface {
                   this.callUtil.callLocalCacheAction(
                     context, // context
                     {}, // context update
-                    "handleAction",
                     {
                       actionType: "modelAction",
                       actionName: "rollback",
@@ -596,7 +581,6 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
-            "handleAction",
             domainAction
           );
         } catch (error) {

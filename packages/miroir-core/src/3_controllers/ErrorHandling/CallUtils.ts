@@ -39,7 +39,7 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    fName: string,
+    // fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
     const functionToCall = this.localCache.handleLocalCacheAction.bind(this.localCache);
@@ -69,7 +69,7 @@ export class CallUtils {
  * convert errors to exceptions for controllers using store controllers, 
  * allowing them to interrupt their control flow without testing systematically for errors
  */ 
-  async callRemoteAction(
+  async callPersistenceAction(
     context: {[k:string]: any},
     continuation: {
       resultTransformation?: (action:ActionReturnType,context:{[k:string]: any}) => any,
@@ -77,7 +77,7 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    fName: string,
+    // fName: string,
     ...args: any[]
   ): Promise<Record<string, any>> {
     const functionToCall = this.remoteStore.handlePersistenceAction.bind(this.remoteStore);
