@@ -10,16 +10,19 @@ import { Provider } from 'react-redux';
 
 // As a basic setup, import your same slice reducers
 import {
+  ActionReturnType,
   ConfigurationService,
   DomainController,
   DomainControllerInterface,
   Endpoint,
-  StoreControllerInterface,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
+  PersistenceInterface,
+  StoreControllerInterface,
   StoreControllerManager,
+  StoreUnitConfiguration,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   applicationLibrary,
@@ -34,13 +37,10 @@ import {
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalStoreControllers,
-  StoreUnitConfiguration,
-  PersistenceInterface,
-  ActionReturnType
+  startLocalStoreControllers
 } from "miroir-core";
-import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndRestClient } from 'miroir-localcache-redux';
-import { CreateMswRestServerReturnType, createMswRestServer } from 'miroir-server-msw-stub';
+import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
+import { createMswRestServer } from 'miroir-server-msw-stub';
 import path from 'path';
 import { packageName } from '../../src/constants';
 import { cleanLevel } from '../../src/miroir-fwk/4_view/constants';
@@ -151,16 +151,20 @@ export async function miroirBeforeAll(
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll');
   try {
 
-    const wrappedReduxStore = await createReduxStoreAndRestClient(
-      miroirConfig as MiroirConfigClient,
+    const miroirContext = new MiroirContext(miroirConfig);
+
+    const {reduxStore} = await createReduxStoreAndPersistenceClient(
+      miroirConfig.client.emulateServer
+        ? miroirConfig.client.rootApiUrl
+        : miroirConfig.client["serverConfig"].rootApiUrl,
       fetch,
     );
 
     const domainController = new DomainController(
-      wrappedReduxStore.miroirContext,
-      wrappedReduxStore.reduxStore, // implements LocalCacheInterface
-      wrappedReduxStore.reduxStore, // implements PersistenceInterface
-      new Endpoint(wrappedReduxStore.reduxStore)
+      miroirContext,
+      reduxStore, // implements LocalCacheInterface
+      reduxStore, // implements PersistenceInterface
+      new Endpoint(reduxStore)
     );
 
     if (!miroirConfig.client.emulateServer) {
@@ -180,8 +184,8 @@ export async function miroirBeforeAll(
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
         domainController,
-        miroirContext: wrappedReduxStore.miroirContext,
-        reduxStore: wrappedReduxStore.reduxStore,
+        miroirContext: miroirContext,
+        reduxStore: reduxStore,
         localMiroirStoreController: undefined,
         localAppStoreController: undefined,
         localDataStoreWorker: undefined,
@@ -192,7 +196,8 @@ export async function miroirBeforeAll(
 
       const storeControllerManager = new StoreControllerManager(
         ConfigurationService.adminStoreFactoryRegister,
-        ConfigurationService.StoreSectionFactoryRegister
+        ConfigurationService.StoreSectionFactoryRegister,
+        reduxStore
       );
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
@@ -236,8 +241,8 @@ export async function miroirBeforeAll(
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
         domainController,
-        miroirContext: wrappedReduxStore.miroirContext,
-        reduxStore: wrappedReduxStore.reduxStore,
+        miroirContext: miroirContext,
+        reduxStore: reduxStore,
         storeControllerManager,
         localMiroirStoreController,
         localAppStoreController,

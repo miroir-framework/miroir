@@ -18,6 +18,7 @@ import {
   getLoggerName,
   LoggerInterface,
   MiroirConfigClient,
+  MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
   restServerDefaultHandlers,
@@ -36,7 +37,7 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
-import { createReduxStoreAndRestClient } from "miroir-localcache-redux";
+import { createReduxStoreAndPersistenceClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
@@ -78,9 +79,9 @@ const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
 
 // ##############################################################################################
 // ##############################################################################################
-// const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
@@ -137,17 +138,22 @@ async function start(root:Root) {
   miroirCoreStartup();
   miroirIndexedDbStoreSectionStartup();
 
-  const storeControllerManager = new StoreControllerManager(
-    ConfigurationService.adminStoreFactoryRegister,
-    ConfigurationService.StoreSectionFactoryRegister
-  );
-
 
   if (process.env.NODE_ENV === "development") {
-    const {
-      reduxStore: mReduxStore,
-      miroirContext: myMiroirContext,
-    } = await createReduxStoreAndRestClient(currentMiroirConfig, window.fetch.bind(window));
+    const myMiroirContext = new MiroirContext(currentMiroirConfig);
+
+    const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient(
+      currentMiroirConfig.client.emulateServer
+        ? currentMiroirConfig.client.rootApiUrl
+        : currentMiroirConfig.client["serverConfig"].rootApiUrl,
+      window.fetch.bind(window)
+    );
+    const storeControllerManager = new StoreControllerManager(
+      ConfigurationService.adminStoreFactoryRegister,
+      ConfigurationService.StoreSectionFactoryRegister,
+      mReduxStore
+    );
+  
 
     const domainController: DomainControllerInterface = new DomainController(
       myMiroirContext,

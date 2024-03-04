@@ -336,12 +336,12 @@ export {
   PersistenceAction,
   RestPersistenceAction,
   RemoteStoreActionReturnType,
-  // RemoteStoreOLDModelAction,
-  RemoteStoreNetworkClientInterface,
+  RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
   RestMethodHandler,
   RestServiceHandler,
+  StoreInterface,
 } from "./0_interfaces/4-services/PersistenceInterface.js";
 export {
   AbstractStoreInterface,
@@ -415,7 +415,7 @@ export {
   resetMiroirAndApplicationDatabases,
 } from './3_controllers/resetApplicationDatabase.js';
 export {
-  restStoreActionOrBundleActionRunnerImplementation as restActionStoreRunnerImplementation,
+  storeActionOrBundleActionStoreRunner,
   modelActionStoreRunner,
 } from './3_controllers/ActionRunner.js';
 export {

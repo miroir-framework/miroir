@@ -14,6 +14,7 @@ import {
   CRUDActionName
 } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
+import { LocalCacheInterface } from "./LocalCacheInterface.js";
 import { StoreControllerManagerInterface } from "./StoreControllerManagerInterface.js";
 
 
@@ -94,15 +95,16 @@ export interface RemoteStoreActionReturnType {
   instanceCollection?: EntityInstanceCollection;
 }
 
+export interface StoreInterface extends LocalCacheInterface, PersistenceInterface {};
+
 
 // ################################################################################################
 /**
  * Decorator for RestClientInterface, should eventually replace it entirely.
  * Should allow to hide implementation details, such as the use of REST and/or GraphQL
  */
-export interface RemoteStoreNetworkClientInterface {
+export interface RestPersistenceClientAndRestClientInterface {
   handleNetworkPersistenceAction(
-    // deploymentUuid: string,
     action: PersistenceAction,
   ): Promise<RestClientCallReturnType>;
 }

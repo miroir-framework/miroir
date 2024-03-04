@@ -1,5 +1,7 @@
 export { ReduxStore } from "./4_services/ReduxStore";
-export { createReduxStoreAndRestClient } from "./4_services/createReduxStoreAndRestClient";
+export {
+  createReduxStoreAndPersistenceClient,
+} from "./4_services/createReduxStoreAndPersistenceClient";
 export {
   getPersistenceActionReduxEventNames,
   LocalCacheSlice,
@@ -34,4 +36,4 @@ export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,
 } from "./4_services/persistence/PersistenceActionReduxSaga";
-export { RemoteStoreNetworkRestClient } from "./4_services/persistence/PersistenceRestClient";
+export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient";

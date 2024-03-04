@@ -1,5 +1,5 @@
 import { PayloadAction, createSelector } from "@reduxjs/toolkit";
-import produce, { Patch, applyPatches, enablePatches } from "immer";
+import { produce, Patch, applyPatches, enablePatches } from "immer";
 
 import {
   Commit,

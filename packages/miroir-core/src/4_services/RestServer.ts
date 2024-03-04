@@ -1,11 +1,11 @@
 import { HttpMethod } from "../0_interfaces/1_core/Http";
 import {
-  StoreOrBundleAction,
+  ActionReturnType,
   ApplicationSection,
   EntityInstance,
-  ActionReturnType,
   InstanceAction,
   ModelAction,
+  StoreOrBundleAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -14,8 +14,7 @@ import {
   RestServiceHandler,
 } from "../0_interfaces/4-services/PersistenceInterface";
 import {
-  restStoreActionOrBundleActionRunnerImplementation,
-  modelActionStoreRunner,
+  storeActionOrBundleActionStoreRunner
 } from "../3_controllers/ActionRunner";
 
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
@@ -187,7 +186,7 @@ export async function restMethodsPostPutDeleteHandler(
 }
 
 // ################################################################################################
-export async function restMethodActionHandler(
+export async function restActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   storeControllerManager: StoreControllerManagerInterface,
@@ -205,7 +204,7 @@ export async function restMethodActionHandler(
   switch (action.actionType) {
     case "storeManagementAction":
     case "bundleAction": {
-      const result = await restStoreActionOrBundleActionRunnerImplementation(
+      const result = await storeActionOrBundleActionStoreRunner(
         actionName,
         body as StoreOrBundleAction,
         storeControllerManager,
@@ -270,6 +269,6 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
   {
     method: "post",
     url: "/action/:actionName",
-    handler: restMethodActionHandler
+    handler: restActionHandler
   },
 ];

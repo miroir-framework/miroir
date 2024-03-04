@@ -1,4 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
+// import reduxJsToolkit from '@reduxjs/toolkit';
+// const { createEntityAdapter, createSlice, createSelector, configureStore } = reduxJsToolkit;
+
 import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
@@ -11,17 +14,15 @@ import {
   ActionReturnType,
   LocalCacheAction,
   LocalCacheInfo,
-  LocalCacheInterface,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   ModelAction,
   PersistenceAction,
-  PersistenceInterface,
+  StoreInterface,
   TransactionalInstanceAction,
   getLoggerName
 } from "miroir-core";
-import PersistenceReduxSaga from "./persistence/PersistenceActionReduxSaga";
 import { packageName } from '../constants';
 import { cleanLevel } from './constants';
 import {
@@ -37,6 +38,7 @@ import {
   ReduxStoreWithUndoRedo,
   localCacheSliceInputActionNamesObject,
 } from "./localCache/localCacheReduxSliceInterface";
+import PersistenceReduxSaga from "./persistence/PersistenceActionReduxSaga";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxStore");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -101,7 +103,7 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
  * Local store implementation using Redux.
  * 
  */
-export class ReduxStore implements LocalCacheInterface, PersistenceInterface {
+export class ReduxStore implements StoreInterface {
   private innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
   private sagaMiddleware: any;
@@ -182,12 +184,8 @@ export class ReduxStore implements LocalCacheInterface, PersistenceInterface {
     action: PersistenceAction,
   ): Promise<ActionReturnType> {
     const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // remote store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.PersistenceActionReduxSaga.handlePersistenceAction.creator(
-        { action }
-        // { deploymentUuid, action }
-      )
-    );
+      // persistent store access is accomplished through asynchronous sagas
+      this.remoteStoreAccessReduxSaga.PersistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
     // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
     return Promise.resolve(result);
   }

@@ -30,11 +30,13 @@
   },
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "dependencies": {
+    "cross-fetch": "^4.0.0",
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.4",
     "isomorphic-git": "^1.23.0",
     "loglevelnext": "^6.0.0",
     "miroir-core": "*",
+    "miroir-localcache-redux": "*",
     "miroir-server-msw-stub": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",

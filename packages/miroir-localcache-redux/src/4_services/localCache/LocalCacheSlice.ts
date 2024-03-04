@@ -1,6 +1,4 @@
 import {
-  ActionCreatorWithPayload,
-  Dictionary,
   EntityAdapter,
   PayloadAction,
   Slice,
@@ -8,7 +6,8 @@ import {
   createSlice
 } from "@reduxjs/toolkit";
 import equal from "fast-deep-equal";
-import { memoize as _memoize } from "lodash";
+import lodash from 'lodash';
+const { memoize: _memoize } = lodash;
 
 import {
   ACTION_OK,
@@ -236,10 +235,10 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
 //#########################################################################################
 // IMPLEMENTATION
 //#########################################################################################
-const getLocalCacheSliceEntityAdapter: (entityUuid: string) => EntityAdapter<EntityInstance> = _memoize(
+const getLocalCacheSliceEntityAdapter: (entityUuid: string) => EntityAdapter<EntityInstance, string> = _memoize(
   (entityUuid: string) => {
     // log.info("getEntityAdapter creating EntityAdapter For entity", parentName);
-    const result: EntityAdapter<EntityInstance> = createEntityAdapter<EntityInstance>({
+    const result: EntityAdapter<EntityInstance, string> = createEntityAdapter<EntityInstance, string>({
       // Assume IDs are stored in a field other than `book.id`
       selectId: (entity) => entity.uuid,
       // Keep the "all IDs" array sorted based on book titles
@@ -294,7 +293,7 @@ function getInitializedSectionEntityAdapter(
 //#########################################################################################
 // function ReplaceInstancesForDeploymentEntity(deploymentUuid: string, state: LocalCacheSliceState, action: PayloadAction<EntityInstanceCollection>) {
 // function equalEntityInstances(newOnes:EntityInstance[],oldOnes:{[k:string]:EntityInstance}) {
-function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Dictionary<EntityInstance>) {
+function equalEntityInstances(newOnes:EntityInstance[],oldOnes:Record<string, EntityInstance>) {
   for (const newOne of newOnes) {
     if (!oldOnes[newOne.uuid] || !equal(newOne,oldOnes[newOne.uuid])) {
       return false;
@@ -659,23 +658,12 @@ export const localCacheSliceObject: Slice<LocalCacheSliceState> = createSlice({
 });
 
 //#########################################################################################
-//# ACTION CREATORS
-//#########################################################################################
-// export const mInstanceSliceActionsCreators:{[actionCreatorName:string]:any} = {
-type LocalCacheSliceActionCreator<P> = ActionCreatorWithPayload<P, `${string}/${string}`>;
-
-const actionsCreators: {
-  [actionCreatorName: string]: LocalCacheSliceActionCreator<any>;
-} = {
-  ...localCacheSliceObject.actions,
-};
-
-//#########################################################################################
 //# SLICE OBJECT
 //#########################################################################################
 export const LocalCacheSlice = {
   reducer: localCacheSliceObject.reducer,
-  actionCreators: actionsCreators,
+  // actionCreators: actionsCreators,
+  actionCreators: {...localCacheSliceObject.actions},
   inputActionNames: localCacheSliceInputActionNamesObject,
 };
 

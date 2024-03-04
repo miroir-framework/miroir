@@ -10,13 +10,17 @@ import {
 import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
 import { StoreController, storeSectionFactory } from "./StoreController";
 
-import { ActionReturnType, ActionVoidReturnType, StoreUnitConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  ActionVoidReturnType,
+  StoreUnitConfiguration
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { ACTION_OK } from "../1_core/constants";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
 import { cleanLevel } from "./constants";
-import { ACTION_OK } from "../1_core/constants";
+import { StoreInterface } from "../0_interfaces/4-services/PersistenceInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -32,8 +36,14 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
 
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
-    private storeSectionFactoryRegister: StoreSectionFactoryRegister
+    private storeSectionFactoryRegister: StoreSectionFactoryRegister,
+    private reduxStore: StoreInterface,
   ) {}
+
+  // ################################################################################################
+  getReduxStore() {
+    return this.reduxStore;      
+  }
 
   // ################################################################################################
   async addStoreController(deploymentUuid: string, config: StoreUnitConfiguration): Promise<void> {

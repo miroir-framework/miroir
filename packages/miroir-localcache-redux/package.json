@@ -7,9 +7,10 @@
   "types": "dist/bundle.d.ts",
   "type": "module",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.0",
+    "@reduxjs/toolkit": "2.2.1",
     "@teroneko/redux-saga-promise": "^3.0.0",
     "fast-deep-equal": "^3.1.3",
+    "lodash": "^4.17.21",
     "miroir-core": "*",
     "redux-saga": "^1.2.1",
     "typed-redux-saga": "^1.5.0",

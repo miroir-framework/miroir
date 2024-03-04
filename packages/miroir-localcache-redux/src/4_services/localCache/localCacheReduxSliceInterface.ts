@@ -85,9 +85,9 @@ export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>; // TODO
 //# DATA TYPES
 //#########################################################################################
 export const ZEntityIdSchema = z.union([z.number(), z.string()]);
-export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance.optional());
+export const ZDictionarySchema = z.record(z.string().uuid(), entityInstance);
 export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
-export const ZEntityStateSchema = z.object({ ids: z.array(ZEntityIdSchema), entities: ZDictionarySchema });
+export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
 // export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?

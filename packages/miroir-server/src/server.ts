@@ -1,5 +1,7 @@
 import express, { Request } from 'express';
 
+import { fetch } from 'cross-fetch';
+
 import {
   ConfigurationService,
   LoggerFactoryInterface,
@@ -20,6 +22,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
+import { createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -69,9 +72,12 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
+const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
+
 const storeControllerManager = new StoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,
-  ConfigurationService.StoreSectionFactoryRegister
+  ConfigurationService.StoreSectionFactoryRegister,
+  mReduxStore
 );
 
 // ##############################################################################################

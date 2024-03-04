@@ -1,7 +1,7 @@
-import { ActionReturnType, DomainElementType } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, DomainElementType, LocalCacheAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
-import { PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
+import { PersistenceAction, PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
 
 
 export class CallUtils {
@@ -9,7 +9,7 @@ export class CallUtils {
   constructor (
     private errorLogService: ErrorLogServiceInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: PersistenceInterface,
+    private persistenceStore: PersistenceInterface,
   ) {
   }
   
@@ -26,10 +26,9 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    ...args: any[]
+    action: LocalCacheAction
   ): Promise<Record<string, any>> {
-    const functionToCall = this.localCache.handleLocalCacheAction.bind(this.localCache);
-    const result: ActionReturnType = functionToCall(...args);
+    const result: ActionReturnType = this.localCache.handleLocalCacheAction(action);
     console.log("callLocalCacheAction received result", result)
     if (result && result['status'] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
@@ -63,10 +62,9 @@ export class CallUtils {
       expectedDomainElementType?: DomainElementType,
       expectedValue?: any,
     },
-    ...args: any[]
+    action: PersistenceAction
   ): Promise<Record<string, any>> {
-    const functionToCall = this.remoteStore.handlePersistenceAction.bind(this.remoteStore);
-    const result: ActionReturnType = await functionToCall(...args);
+    const result: ActionReturnType = await this.persistenceStore.handlePersistenceAction(action);
     console.log("callPersistenceAction received result", result)
     if (result['status'] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.

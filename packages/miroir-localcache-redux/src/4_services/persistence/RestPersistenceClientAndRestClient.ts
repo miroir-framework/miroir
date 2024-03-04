@@ -4,7 +4,7 @@ import {
   MiroirLoggerFactory,
   PersistenceAction,
   RestPersistenceAction,
-  RemoteStoreNetworkClientInterface,
+  RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,
   RestClientInterface,
   getLoggerName
@@ -20,7 +20,7 @@ export const actionHttpMethods: { [P in string]: HttpMethod } = {
   delete: "delete",
 };
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"RemoteStoreNetworkRestClient");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"RestPersistenceClientAndRestClient");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -32,7 +32,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
  * Resolves a DomainNonTransactionalInstanceAction into a network query, using the proper protocol / address.
  *
  */
-export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInterface {
+export class RestPersistenceClientAndRestClient implements RestPersistenceClientAndRestClientInterface {
   private operationMethod: {
     [P in HttpMethod]: (endpoint: string, customConfig: any) => Promise<RestClientCallReturnType>;
   };
@@ -150,4 +150,4 @@ export class RemoteStoreNetworkRestClient implements RemoteStoreNetworkClientInt
   // ##################################################################################
 }
 
-export default RemoteStoreNetworkRestClient;
+export default RestPersistenceClientAndRestClient;
