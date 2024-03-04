@@ -6,39 +6,36 @@ import {
   promiseMiddleware
 } from "@teroneko/redux-saga-promise";
 import sagaMiddleware from 'redux-saga';
-import { all } from 'redux-saga/effects';
 
 
 import {
   ACTION_OK,
   ActionReturnType,
+  getLoggerName,
   LocalCacheAction,
   LocalCacheInfo,
+  LocalCacheInterface,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   ModelAction,
-  PersistenceAction,
-  StoreInterface,
-  TransactionalInstanceAction,
-  getLoggerName
+  TransactionalInstanceAction
 } from "miroir-core";
 import { packageName } from '../constants';
 import { cleanLevel } from './constants';
 import {
-  LocalCacheSlice,
+  localCacheSliceInputActionNamesObject,
+  ReduxReducerWithUndoRedoInterface,
+  ReduxStoreWithUndoRedo,
+} from "./localCache/localCacheReduxSliceInterface";
+import {
   currentModel,
+  LocalCacheSlice,
   localCacheSliceGeneratedActionNames
 } from "./localCache/LocalCacheSlice";
 import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer";
-import {
-  ReduxReducerWithUndoRedoInterface,
-  ReduxStoreWithUndoRedo,
-  localCacheSliceInputActionNamesObject,
-} from "./localCache/localCacheReduxSliceInterface";
-import PersistenceReduxSaga from "./persistence/PersistenceActionReduxSaga";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxStore");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -103,13 +100,16 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
  * Local store implementation using Redux.
  * 
  */
-export class ReduxStore implements StoreInterface {
-  private innerReduxStore: ReduxStoreWithUndoRedo;
+// export class ReduxStore implements StoreInterface {
+export class ReduxStore implements LocalCacheInterface {
+  public innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
-  private sagaMiddleware: any;
+  public sagaMiddleware: any;
 
   // ###############################################################################
-  constructor(public remoteStoreAccessReduxSaga: PersistenceReduxSaga) {
+  constructor(
+    // public persistenceReduxSaga: PersistenceReduxSaga
+  ) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
     this.sagaMiddleware = sagaMiddleware();
@@ -148,11 +148,6 @@ export class ReduxStore implements StoreInterface {
   }
 
   // ###############################################################################
-  public run(): void {
-    this.sagaMiddleware.run(this.rootSaga.bind(this));
-  }
-
-  // ###############################################################################
   public currentInfo(): LocalCacheInfo {
     // this.sagaMiddleware.run(this.rootSaga.bind(this));
     return {
@@ -179,19 +174,6 @@ export class ReduxStore implements StoreInterface {
   }
 
   // ###############################################################################
-  async handlePersistenceAction(
-    // deploymentUuid: string,
-    action: PersistenceAction,
-  ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.innerReduxStore.dispatch(
-      // persistent store access is accomplished through asynchronous sagas
-      this.remoteStoreAccessReduxSaga.PersistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
-    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
-    return Promise.resolve(result);
-  }
-  
-  
-  // ###############################################################################
   handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
     log.info("handleAction", action);
     
@@ -208,11 +190,5 @@ export class ReduxStore implements StoreInterface {
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
     // log.info("ReduxStore currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
-  }
-
-  // ###############################################################################
-  private *rootSaga() {
-    // log.info("ReduxStore rootSaga running", this.PersistenceReduxSaga);
-    yield all([this.remoteStoreAccessReduxSaga.persistenceRootSaga.bind(this.remoteStoreAccessReduxSaga)()]);
   }
 }

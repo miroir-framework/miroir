@@ -36,7 +36,7 @@ export class RestServerStub {
     miroirConfig: MiroirConfigClient,
   ) {
     log.info(
-      "RestServerStub constructor rootApiUrl",
+      "constructor rootApiUrl",
       rootApiUrl,
       "localIndexedDbDataStores",
     );

@@ -35,5 +35,5 @@ export {
 export {
   PersistenceReduxSaga,
   PersistenceSagaGenReturnType,
-} from "./4_services/persistence/PersistenceActionReduxSaga";
+} from "./4_services/persistence/PersistenceReduxSaga";
 export { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient";

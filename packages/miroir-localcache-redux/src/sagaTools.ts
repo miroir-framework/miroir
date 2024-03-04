@@ -4,7 +4,7 @@ import {
 } from "@teroneko/redux-saga-promise";
 
 import { call } from "typed-redux-saga";
-import { PersistenceSagaGenReturnType } from "./4_services/persistence/PersistenceActionReduxSaga.js";
+import { PersistenceSagaGenReturnType } from "./4_services/persistence/PersistenceReduxSaga.js";
 
 // ###############################################################################
 export function handlePromiseActionForSaga(

@@ -5,6 +5,7 @@ import {
 } from "@teroneko/redux-saga-promise";
 import { CallEffect, Effect } from 'redux-saga/effects';
 import { all, call, takeEvery } from "typed-redux-saga";
+import { AllEffect, all as allEffect } from 'redux-saga/effects';
 
 import {
   ACTION_OK,
@@ -12,6 +13,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceAction,
+  PersistenceInterface,
   RemoteStoreActionReturnType,
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
@@ -24,6 +26,7 @@ import {
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../constants';
+import { ReduxStore } from '../ReduxStore';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -51,16 +54,51 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class PersistenceReduxSaga {
+export class PersistenceReduxSaga implements PersistenceInterface{
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
+  private reduxStore: ReduxStore;
+
   constructor(
     private remoteStoreNetworkClient: RestPersistenceClientAndRestClientInterface | undefined,
     private storeControllerManager?: StoreControllerManagerInterface | undefined,
   ) {}
 
+    //#########################################################################################
+    public *persistenceRootSaga() {
+      yield all([
+        ...Object.values(this.persistenceActionReduxSaga).map((a: any) =>
+          takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
+        ),
+      ]);
+    }
+  
+    // ###############################################################################
+    private *rootSaga():Generator<AllEffect<any>, void, unknown> {
+      // log.info("ReduxStore rootSaga running", this.PersistenceReduxSaga);
+      yield allEffect([this.persistenceRootSaga()]);
+    }
+
+  // ###############################################################################
+  public run(reduxStore: ReduxStore): void {
+    this.reduxStore = reduxStore;
+    reduxStore.sagaMiddleware.run(this.rootSaga.bind(this));
+  }
+  
+  // ###############################################################################
+  async handlePersistenceAction(
+    // deploymentUuid: string,
+    action: PersistenceAction,
+  ): Promise<ActionReturnType> {
+    const result: ActionReturnType = await this.reduxStore.innerReduxStore.dispatch(
+      // persistent store access is accomplished through asynchronous sagas
+      this.persistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
+    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
+    return Promise.resolve(result);
+  }
+
   //#########################################################################################
-  public PersistenceActionReduxSaga: {
+  public persistenceActionReduxSaga: {
     "handlePersistenceAction": {
       name: "handlePersistenceAction";
       creator: SagaPromiseActionCreator<any, any, "handlePersistenceAction", ActionCreatorWithPayload<any, "handlePersistenceAction">>;
@@ -157,14 +195,6 @@ export class PersistenceReduxSaga {
     },
   };
 
-  //#########################################################################################
-  public *persistenceRootSaga() {
-    yield all([
-      ...Object.values(this.PersistenceActionReduxSaga).map((a: any) =>
-        takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
-      ),
-    ]);
-  }
 }// end class PersistenceReduxSaga
 
 export default PersistenceReduxSaga;

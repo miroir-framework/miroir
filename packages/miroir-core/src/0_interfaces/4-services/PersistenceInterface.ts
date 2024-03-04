@@ -95,9 +95,6 @@ export interface RemoteStoreActionReturnType {
   instanceCollection?: EntityInstanceCollection;
 }
 
-export interface StoreInterface extends LocalCacheInterface, PersistenceInterface {};
-
-
 // ################################################################################################
 /**
  * Decorator for RestClientInterface, should eventually replace it entirely.
@@ -121,3 +118,4 @@ export declare interface PersistenceInterface {
   ): Promise<ActionReturnType>;
 }
 
+export interface StoreInterface extends LocalCacheInterface, PersistenceInterface {};

@@ -8,6 +8,7 @@ import {
   LoggerInterface,
   MiroirConfigServer,
   MiroirLoggerFactory,
+  RestClient,
   SpecificLoggerOptionsMap,
   StoreControllerManager,
   defaultLevels,
@@ -22,7 +23,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
-import { createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
+import { PersistenceReduxSaga, ReduxStore, RestPersistenceClientAndRestClient, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -72,13 +73,27 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
+// const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
+
+const client: RestClient = new RestClient(fetch);
+const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
+
+const reduxStore: ReduxStore = new ReduxStore();
+
 
 const storeControllerManager = new StoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,
   ConfigurationService.StoreSectionFactoryRegister,
-  mReduxStore
 );
+
+const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+  undefined,
+  storeControllerManager
+);
+
+persistenceSaga.run(reduxStore)
+
+storeControllerManager.setPersistenceStore(persistenceSaga)
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS

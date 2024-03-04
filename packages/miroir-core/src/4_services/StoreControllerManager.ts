@@ -20,7 +20,8 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { MiroirLoggerFactory } from "./Logger";
 import { cleanLevel } from "./constants";
-import { StoreInterface } from "../0_interfaces/4-services/PersistenceInterface";
+import { PersistenceInterface } from "../0_interfaces/4-services/PersistenceInterface";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -33,16 +34,22 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export class StoreControllerManager implements StoreControllerManagerInterface {
   private storeControllers: { [deploymentUuid: Uuid]: StoreControllerInterface } = {};
+  private persistenceStore: PersistenceInterface;
 
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
-    private reduxStore: StoreInterface,
+    // private reduxStore: LocalCacheInterface,
   ) {}
 
   // ################################################################################################
-  getReduxStore() {
-    return this.reduxStore;      
+  setPersistenceStore(persistenceStore: PersistenceInterface)  {
+    this.persistenceStore = persistenceStore;
+  }
+
+  // ################################################################################################
+  getPersistenceStore(): PersistenceInterface {
+    return this.persistenceStore;
   }
 
   // ################################################################################################

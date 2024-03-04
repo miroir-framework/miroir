@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 
 import {
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
   ConfigurationService,
   defaultLevels,
   DomainController,
@@ -21,9 +23,12 @@ import {
   MiroirContext,
   miroirCoreStartup,
   MiroirLoggerFactory,
+  PersistenceInterface,
+  RestClient,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  StoreControllerManager
+  StoreControllerManager,
+  StoreUnitConfiguration
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -37,7 +42,7 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
-import { createReduxStoreAndPersistenceClient } from "miroir-localcache-redux";
+import { createReduxStoreAndPersistenceClient, PersistenceReduxSaga, ReduxStore, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
@@ -142,24 +147,33 @@ async function start(root:Root) {
   if (process.env.NODE_ENV === "development") {
     const myMiroirContext = new MiroirContext(currentMiroirConfig);
 
-    const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient(
+    const client: RestClient = new RestClient(window.fetch.bind(window));
+    const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(
       currentMiroirConfig.client.emulateServer
         ? currentMiroirConfig.client.rootApiUrl
         : currentMiroirConfig.client["serverConfig"].rootApiUrl,
-      window.fetch.bind(window)
+      client
     );
+
+    const reduxStore: ReduxStore = new ReduxStore();
+
+
     const storeControllerManager = new StoreControllerManager(
       ConfigurationService.adminStoreFactoryRegister,
       ConfigurationService.StoreSectionFactoryRegister,
-      mReduxStore
     );
-  
+
+    const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+        persistenceClientAndRestClient
+      );
+
+    persistenceSaga.run(reduxStore)
 
     const domainController: DomainControllerInterface = new DomainController(
       myMiroirContext,
-      mReduxStore, // implements LocalCacheInterface
-      mReduxStore, // implements PersistenceInterface
-      new Endpoint(mReduxStore)
+      reduxStore, // implements LocalCacheInterface
+      persistenceSaga, // implements PersistenceInterface
+      new Endpoint(reduxStore)
     );
 
     if (currentMiroirConfig.client.emulateServer) {
@@ -176,8 +190,25 @@ async function start(root:Root) {
   
       if (localDataStoreWorker) {
         log.warn("index.tsx localDataStoreWorkers listHandlers", localDataStoreWorker.listHandlers().map(h=>h.info.header));
-        localDataStoreWorker?.start();
+        await localDataStoreWorker?.start();
+      } else {
+        throw new Error("index.tsx localDataStoreWorker not found.");
+        
       }
+
+      const persistenceStore:PersistenceInterface = domainController.getRemoteStore();
+      await persistenceStore.handlePersistenceAction({
+        actionType: "storeManagementAction",
+        actionName: "openStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        configuration: {
+          [applicationDeploymentMiroir.uuid]: currentMiroirConfig.client.miroirServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentLibrary.uuid]: currentMiroirConfig.client.appServerConfig as StoreUnitConfiguration,
+        },
+        deploymentUuid: applicationDeploymentMiroir.uuid,
+      })
+
+
     }
 
     const theme = createTheme({
@@ -221,7 +252,7 @@ async function start(root:Root) {
       <StrictMode>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
-            <Provider store={mReduxStore.getInnerStore()}>
+            <Provider store={reduxStore.getInnerStore()}>
               <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
                 <RouterProvider router={router} />
                 {/* <RootComponent/> */}

@@ -59,14 +59,14 @@ export class DomainController implements DomainControllerInterface {
   constructor(
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
-    private remoteStore: PersistenceInterface,
+    private persistenceStore: PersistenceInterface,
     private endpoint: Endpoint
   ) {
-    this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, remoteStore);
+    this.callUtil = new CallUtils(miroirContext.errorLogService, localCache, persistenceStore);
   }
 
   getRemoteStore(): PersistenceInterface {
-    return this.remoteStore;
+    return this.persistenceStore;
   }
   // ##############################################################################################
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {

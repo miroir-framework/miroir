@@ -17,7 +17,8 @@ import {
 export declare interface LocalCacheInterface
 {
   // constructor
-  run(): void;
+  // run(): void;
+
   // view of current data state & transaction
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
   getState(): any; // TODO: local store should not directly expose its internal state!!

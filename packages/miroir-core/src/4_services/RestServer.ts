@@ -214,14 +214,22 @@ export async function restActionHandler(
     }
     case "modelAction": 
     case "instanceAction": {
-        const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-        const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-        if (!localMiroirStoreController || !localAppStoreController) {
-          throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-        } 
-        switch (action.deploymentUuid) {
+      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
+      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      const persistenceStore = storeControllerManager.getPersistenceStore();
+      if (!localMiroirStoreController || !localAppStoreController) {
+        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      } 
+      switch (action.deploymentUuid) {
         case applicationDeploymentMiroir.uuid: {
-          const result = await localMiroirStoreController.handleAction(action)
+          let result
+          if (persistenceStore) { // direct write to persistence store, in server
+            result = await persistenceStore.handlePersistenceAction(action)
+          }
+          if (localMiroirStoreController) { // using storeController, in client.
+            result = await localMiroirStoreController.handleAction(action)
+          }
+
           return continuationFunction(response)(result)
           break;
         }

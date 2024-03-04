@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 // import { SetupServerApi } from 'msw/lib/node';
 
 // As a basic setup, import your same slice reducers
+import fetch from 'cross-fetch';
 import {
   ActionReturnType,
   ConfigurationService,
@@ -20,6 +21,7 @@ import {
   MiroirContext,
   MiroirLoggerFactory,
   PersistenceInterface,
+  RestClient,
   StoreControllerInterface,
   StoreControllerManager,
   StoreUnitConfiguration,
@@ -39,7 +41,7 @@ import {
   restServerDefaultHandlers,
   startLocalStoreControllers
 } from "miroir-core";
-import { ReduxStore, ReduxStoreWithUndoRedo, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
+import { PersistenceReduxSaga, ReduxStore, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
 import path from 'path';
 import { packageName } from '../../src/constants';
@@ -153,17 +155,32 @@ export async function miroirBeforeAll(
 
     const miroirContext = new MiroirContext(miroirConfig);
 
-    const {reduxStore} = await createReduxStoreAndPersistenceClient(
+    const client: RestClient = new RestClient(fetch);
+    const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(
       miroirConfig.client.emulateServer
         ? miroirConfig.client.rootApiUrl
         : miroirConfig.client["serverConfig"].rootApiUrl,
-      fetch,
+      client
     );
 
-    const domainController = new DomainController(
+    const reduxStore: ReduxStore = new ReduxStore();
+
+
+    const storeControllerManager = new StoreControllerManager(
+      ConfigurationService.adminStoreFactoryRegister,
+      ConfigurationService.StoreSectionFactoryRegister,
+    );
+
+    const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
+        persistenceClientAndRestClient
+      );
+
+    persistenceSaga.run(reduxStore)
+
+    const domainController: DomainControllerInterface = new DomainController(
       miroirContext,
       reduxStore, // implements LocalCacheInterface
-      reduxStore, // implements PersistenceInterface
+      persistenceSaga, // implements PersistenceInterface
       new Endpoint(reduxStore)
     );
 
@@ -193,12 +210,6 @@ export async function miroirBeforeAll(
       });
     } else {
       let localMiroirStoreController, localAppStoreController;
-
-      const storeControllerManager = new StoreControllerManager(
-        ConfigurationService.adminStoreFactoryRegister,
-        ConfigurationService.StoreSectionFactoryRegister,
-        reduxStore
-      );
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {

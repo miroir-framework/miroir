@@ -2,13 +2,14 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   RestClient,
+  StoreControllerManagerInterface,
   getLoggerName
 } from "miroir-core";
 
 import { packageName } from "../constants";
 import { ReduxStore } from "./ReduxStore";
 import { cleanLevel } from "./constants";
-import { PersistenceReduxSaga } from "./persistence/PersistenceActionReduxSaga";
+import { PersistenceReduxSaga } from "./persistence/PersistenceReduxSaga";
 import RestPersistenceClientAndRestClient from "./persistence/RestPersistenceClientAndRestClient";
 
 
@@ -22,18 +23,28 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 export function createReduxStoreAndPersistenceClient(
   rootApiUrl: string,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
+  storeControllerManager?: StoreControllerManagerInterface
 ):{
   reduxStore: ReduxStore,
 } {
   const client: RestClient = new RestClient(fetch);
   const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(rootApiUrl, client);
 
-  const instanceSagas: PersistenceReduxSaga = new PersistenceReduxSaga(
-    persistenceClientAndRestClient
-  );
+  // let instanceSagas: PersistenceReduxSaga
+  // if (storeControllerManager) {
+  //   instanceSagas = new PersistenceReduxSaga(
+  //     undefined,
+  //     storeControllerManager
+  //   );
+  // } else {
+  //   instanceSagas = new PersistenceReduxSaga(
+  //     persistenceClientAndRestClient
+  //   );
+  // }
 
-  const reduxStore: ReduxStore = new ReduxStore(instanceSagas);
-  reduxStore.run();
+  // const reduxStore: ReduxStore = new ReduxStore(instanceSagas);
+  const reduxStore: ReduxStore = new ReduxStore();
+  // reduxStore.run();
 
 
   return { reduxStore }
