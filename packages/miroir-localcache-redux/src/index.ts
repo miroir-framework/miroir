@@ -1,4 +1,4 @@
-export { ReduxStore } from "./4_services/ReduxStore";
+export { LocalCache } from "./4_services/LocalCache";
 export {
   createReduxStoreAndPersistenceClient,
 } from "./4_services/createReduxStoreAndPersistenceClient";

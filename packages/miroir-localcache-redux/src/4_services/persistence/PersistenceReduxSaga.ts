@@ -17,7 +17,7 @@ import {
   RemoteStoreActionReturnType,
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
-  StoreControllerManagerInterface,
+  PersistenceStoreControllerManagerInterface,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
@@ -26,7 +26,7 @@ import {
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../constants';
-import { ReduxStore } from '../ReduxStore';
+import { LocalCache } from '../LocalCache';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -57,11 +57,11 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 export class PersistenceReduxSaga implements PersistenceInterface{
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
-  private reduxStore: ReduxStore;
+  private localCache: LocalCache;
 
   constructor(
     private remoteStoreNetworkClient: RestPersistenceClientAndRestClientInterface | undefined,
-    private storeControllerManager?: StoreControllerManagerInterface | undefined,
+    private persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined,
   ) {}
 
     //#########################################################################################
@@ -75,14 +75,14 @@ export class PersistenceReduxSaga implements PersistenceInterface{
   
     // ###############################################################################
     private *rootSaga():Generator<AllEffect<any>, void, unknown> {
-      // log.info("ReduxStore rootSaga running", this.PersistenceReduxSaga);
+      // log.info("LocalCache rootSaga running", this.PersistenceReduxSaga);
       yield allEffect([this.persistenceRootSaga()]);
     }
 
   // ###############################################################################
-  public run(reduxStore: ReduxStore): void {
-    this.reduxStore = reduxStore;
-    reduxStore.sagaMiddleware.run(this.rootSaga.bind(this));
+  public run(localCache: LocalCache): void {
+    this.localCache = localCache;
+    localCache.sagaMiddleware.run(this.rootSaga.bind(this));
   }
   
   // ###############################################################################
@@ -90,10 +90,10 @@ export class PersistenceReduxSaga implements PersistenceInterface{
     // deploymentUuid: string,
     action: PersistenceAction,
   ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.reduxStore.innerReduxStore.dispatch(
+    const result: ActionReturnType = await this.localCache.innerReduxStore.dispatch(
       // persistent store access is accomplished through asynchronous sagas
       this.persistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
-    // log.info("ReduxStore handleRemoteStoreModelAction", action, "returned", result)
+    // log.info("LocalCache handleRemoteStoreModelAction", action, "returned", result)
     return Promise.resolve(result);
   }
 
@@ -117,29 +117,29 @@ export class PersistenceReduxSaga implements PersistenceInterface{
       ): Generator<ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>> {
         const { action } = p.payload;
         try {
-          if (this.storeControllerManager) {
+          if (this.persistenceStoreControllerManager) {
           
             switch (action.actionType) {
               case 'storeManagementAction':
               case 'bundleAction': {
                 const result = yield* call(() =>storeActionOrBundleActionStoreRunner(action.actionName,
                   action,
-                  this.storeControllerManager as StoreControllerManagerInterface,
+                  this.persistenceStoreControllerManager as PersistenceStoreControllerManagerInterface,
                 ));
                 break;
               }
               case 'instanceAction':
               case 'modelAction': {
-                const localMiroirStoreController = this.storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-                const localAppStoreController = this.storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+                const localMiroirPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+                const localAppPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
 
-                if (!localMiroirStoreController || !localAppStoreController) {
-                  throw new Error("restMethodGetHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+                if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+                  throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
                 } 
                     if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
-                  const localStoreResult = yield* call(() =>localMiroirStoreController.handleAction(action));
+                  const localStoreResult = yield* call(() =>localMiroirPersistenceStoreController.handleAction(action));
                 } else {
-                  const localStoreResult = yield* call(() =>localAppStoreController.handleAction(action));
+                  const localStoreResult = yield* call(() =>localAppPersistenceStoreController.handleAction(action));
                 }
                 break;
               }

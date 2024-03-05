@@ -22,8 +22,8 @@ import {
   MiroirLoggerFactory,
   PersistenceInterface,
   RestClient,
-  StoreControllerInterface,
-  StoreControllerManager,
+  PersistenceStoreControllerInterface,
+  PersistenceStoreControllerManager,
   StoreUnitConfiguration,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
@@ -39,9 +39,9 @@ import {
   getLoggerName,
   resetAndInitMiroirAndApplicationDatabase,
   restServerDefaultHandlers,
-  startLocalStoreControllers
+  startLocalPersistenceStoreControllers
 } from "miroir-core";
-import { PersistenceReduxSaga, ReduxStore, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
+import { PersistenceReduxSaga, LocalCache, ReduxStoreWithUndoRedo, RestPersistenceClientAndRestClient } from 'miroir-localcache-redux';
 import { createMswRestServer } from 'miroir-server-msw-stub';
 import path from 'path';
 import { packageName } from '../../src/constants';
@@ -56,12 +56,12 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 export interface BeforeAllReturnType {
-  reduxStore: ReduxStore,
+  localCache: LocalCache,
   miroirContext: MiroirContext,
   domainController: DomainControllerInterface,
-  storeControllerManager?: StoreControllerManager | undefined,
-  localMiroirStoreController: StoreControllerInterface | undefined,
-  localAppStoreController: StoreControllerInterface | undefined,
+  persistenceStoreControllerManager?: PersistenceStoreControllerManager | undefined,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
   localDataStoreWorker: SetupWorkerApi | undefined,
   localDataStoreServer: any /**SetupServerApi*/ | undefined,
 }
@@ -69,11 +69,11 @@ export interface BeforeAllReturnType {
 
 // ################################################################################################
 export interface MiroirIntegrationTestEnvironment {
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   localDataStoreWorker?: SetupWorkerApi,
   localDataStoreServer?: any /**SetupServerApi*/,
-  reduxStore: ReduxStore,
+  localCache: LocalCache,
   domainController: DomainControllerInterface,
   miroirContext: MiroirContext,
 }
@@ -163,10 +163,10 @@ export async function miroirBeforeAll(
       client
     );
 
-    const reduxStore: ReduxStore = new ReduxStore();
+    const localCache: LocalCache = new LocalCache();
 
 
-    const storeControllerManager = new StoreControllerManager(
+    const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.adminStoreFactoryRegister,
       ConfigurationService.StoreSectionFactoryRegister,
     );
@@ -175,13 +175,13 @@ export async function miroirBeforeAll(
         persistenceClientAndRestClient
       );
 
-    persistenceSaga.run(reduxStore)
+    persistenceSaga.run(localCache)
 
     const domainController: DomainControllerInterface = new DomainController(
       miroirContext,
-      reduxStore, // implements LocalCacheInterface
+      localCache, // implements LocalCacheInterface
       persistenceSaga, // implements PersistenceInterface
-      new Endpoint(reduxStore)
+      new Endpoint(localCache)
     );
 
     if (!miroirConfig.client.emulateServer) {
@@ -202,14 +202,14 @@ export async function miroirBeforeAll(
       return Promise.resolve({
         domainController,
         miroirContext: miroirContext,
-        reduxStore: reduxStore,
-        localMiroirStoreController: undefined,
-        localAppStoreController: undefined,
+        localCache: localCache,
+        localMiroirPersistenceStoreController: undefined,
+        localAppPersistenceStoreController: undefined,
         localDataStoreWorker: undefined,
         localDataStoreServer: undefined,
       });
     } else {
-      let localMiroirStoreController, localAppStoreController;
+      let localMiroirPersistenceStoreController, localAppPersistenceStoreController;
 
       log.info("miroirBeforeAll emulated server config",miroirConfig)
       const deployments = {
@@ -217,20 +217,20 @@ export async function miroirBeforeAll(
         [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
       }
       for (const deployment of Object.entries(deployments)) {
-        await storeControllerManager.addStoreController(
+        await persistenceStoreControllerManager.addPersistenceStoreController(
           deployment[0],
           deployment[1]
         );
       }
 
-      const localMiroirStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreControllerTmp = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
+      const localMiroirPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+      const localAppPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
 
-      if (!localMiroirStoreControllerTmp || !localAppStoreControllerTmp) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      if (!localMiroirPersistenceStoreControllerTmp || !localAppPersistenceStoreControllerTmp) {
+        throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
       } else {
-        localMiroirStoreController = localMiroirStoreControllerTmp;
-        localAppStoreController = localAppStoreControllerTmp;
+        localMiroirPersistenceStoreController = localMiroirPersistenceStoreControllerTmp;
+        localAppPersistenceStoreController = localAppPersistenceStoreControllerTmp;
       }
 
       const {
@@ -240,23 +240,23 @@ export async function miroirBeforeAll(
         miroirConfig,
         'nodejs',
         restServerDefaultHandlers,
-        storeControllerManager,
+        persistenceStoreControllerManager,
         createRestServiceFromHandlers
       );
   
 
       localDataStoreServer?.listen();
-      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController)
+      await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
 
-      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirStoreController, circularReplacer()));
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');
       return Promise.resolve({
         domainController,
         miroirContext: miroirContext,
-        reduxStore: reduxStore,
-        storeControllerManager,
-        localMiroirStoreController,
-        localAppStoreController,
+        localCache: localCache,
+        persistenceStoreControllerManager,
+        localMiroirPersistenceStoreController,
+        localAppPersistenceStoreController,
         localDataStoreWorker,
         localDataStoreServer,
       });
@@ -273,8 +273,8 @@ export async function miroirBeforeAll(
 export async function miroirBeforeEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {
   
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach');
@@ -288,19 +288,19 @@ export async function miroirBeforeEach(
   } else {
     try {
       try {
-        const miroirModelStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.model)
-        const miroirDataStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.miroirServerConfig.data)
-        const libraryModelStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.appServerConfig.model)
-        const libraryDataStoreCreated: ActionReturnType = await localMiroirStoreController.createStore(miroirConfig.client.appServerConfig.data)
+        const miroirModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.miroirServerConfig.model)
+        const miroirDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.miroirServerConfig.data)
+        const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.model)
+        const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.createStore(miroirConfig.client.appServerConfig.data)
       } catch (error) {
         throw new Error("miroirBeforeEach could not create model and data stores");
       }
 
-      await localAppStoreController.clear();
-      await localMiroirStoreController.clear();
+      await localAppPersistenceStoreController.clear();
+      await localMiroirPersistenceStoreController.clear();
       try {
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication miroir START');
-        await localMiroirStoreController.initApplication(
+        await localMiroirPersistenceStoreController.initApplication(
           defaultMiroirMetaModel,
           'miroir',
           applicationMiroir,
@@ -316,7 +316,7 @@ export async function miroirBeforeEach(
       }
       try {
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeEach initApplication app START');
-        await localAppStoreController.initApplication(
+        await localAppPersistenceStoreController.initApplication(
           defaultMiroirMetaModel,
           'app',
           applicationLibrary,
@@ -334,10 +334,10 @@ export async function miroirBeforeEach(
       console.error('beforeEach',error);
       throw(error);
     }
-    // console.trace("miroirBeforeEach miroir model state", await localMiroirStoreController.getModelState());
-    // console.trace("miroirBeforeEach miroir data state", await localMiroirStoreController.getDataState());
-    // console.trace("miroirBeforeEach library app model state", await localAppStoreController.getModelState());
-    // console.trace("miroirBeforeEach library app data state", await localAppStoreController.getDataState());
+    // console.trace("miroirBeforeEach miroir model state", await localMiroirPersistenceStoreController.getModelState());
+    // console.trace("miroirBeforeEach miroir data state", await localMiroirPersistenceStoreController.getDataState());
+    // console.trace("miroirBeforeEach library app model state", await localAppPersistenceStoreController.getModelState());
+    // console.trace("miroirBeforeEach library app data state", await localAppPersistenceStoreController.getDataState());
   }
 
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done miroirBeforeEach');
@@ -350,8 +350,8 @@ export async function miroirBeforeEach(
 export async function miroirAfterEach(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 ):Promise<void> {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterEach');
   if (!miroirConfig.client.emulateServer) {
@@ -359,12 +359,12 @@ export async function miroirAfterEach(
   } else {
     try {
       // await localDataStore?.close();
-      // await localMiroirStoreController.clear();
-      // await localAppStoreController.clear();
-      const miroirModelStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
-      const miroirDataStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
-      const libraryModelStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.appServerConfig.model)
-      const libraryDataStoreCreated: ActionReturnType = await localMiroirStoreController.deleteStore(miroirConfig.client.appServerConfig.data)
+      // await localMiroirPersistenceStoreController.clear();
+      // await localAppPersistenceStoreController.clear();
+      const miroirModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.model)
+      const miroirDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.miroirServerConfig.data)
+      const libraryModelStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.appServerConfig.model)
+      const libraryDataStoreCreated: ActionReturnType = await localMiroirPersistenceStoreController.deleteStore(miroirConfig.client.appServerConfig.data)
     } catch (error) {
       console.error('Error afterEach',error);
     }
@@ -377,8 +377,8 @@ export async function miroirAfterEach(
 export async function miroirAfterAll(
   miroirConfig: MiroirConfigClient,
   domainController: DomainControllerInterface | undefined,
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   localDataStoreServer?: any /*SetupServerApi*/,
 ) {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirAfterAll');
@@ -400,8 +400,8 @@ export async function miroirAfterAll(
   } else {
     try {
       await (localDataStoreServer as any)?.close();
-      await localMiroirStoreController.close();
-      await localAppStoreController.close();
+      await localMiroirPersistenceStoreController.close();
+      await localAppPersistenceStoreController.close();
     } catch (error) {
       console.error('Error afterAll',error);
     }

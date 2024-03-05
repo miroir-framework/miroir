@@ -37,7 +37,7 @@ import {
   createUndoRedoReducer,
 } from "./localCache/UndoRedoReducer";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxStore");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"LocalCache");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -100,8 +100,8 @@ function exceptionToActionReturnType(f:()=>void): ActionReturnType {
  * Local store implementation using Redux.
  * 
  */
-// export class ReduxStore implements StoreInterface {
-export class ReduxStore implements LocalCacheInterface {
+// export class LocalCache implements StoreInterface {
+export class LocalCache implements LocalCacheInterface {
   public innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
   public sagaMiddleware: any;
@@ -119,7 +119,7 @@ export class ReduxStore implements LocalCacheInterface {
       ...localCacheSliceGeneratedActionNames,
     ];
 
-    log.info("ReduxStore ignoredActionsList", ignoredActionsList);
+    log.info("LocalCache ignoredActionsList", ignoredActionsList);
     this.innerReduxStore = configureStore({
       reducer: this.staticReducers,
       middleware: (getDefaultMiddleware) => {
@@ -188,7 +188,7 @@ export class ReduxStore implements LocalCacheInterface {
 
   // ###############################################################################
   currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
-    // log.info("ReduxStore currentTransaction called");
+    // log.info("LocalCache currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }
 }

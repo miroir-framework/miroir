@@ -6,8 +6,8 @@ import {
   ActionReturnType
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { StoreControllerInterface } from "../0_interfaces/4-services/StoreControllerInterface.js";
-import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface.js";
+import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";
@@ -16,7 +16,7 @@ import { cleanLevel } from "./constants.js";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 
-import { startLocalStoreControllers } from "../4_services/storeControllerTools.js";
+import { startLocalPersistenceStoreControllers } from "../4_services/PersistenceStoreControllerTools.js";
 import { ACTION_OK } from "../1_core/constants.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel, "ActionRunner");
@@ -30,14 +30,14 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
  * runs a model action: "modelActionUpdateEntity" ("create", "update" or "delete" an Entity), "resetModel" to start again from scratch, etc.
  * @param deploymentUuid
  * @param actionName
- * @param miroirDataStoreController
- * @param appDataStoreController
+ * @param miroirDataPersistenceStoreController
+ * @param appDataPersistenceStoreController
  * @param body
  * @returns
  */
 export async function modelActionStoreRunner(
-  miroirDataStoreController: StoreControllerInterface,
-  appDataStoreController: StoreControllerInterface,
+  miroirDataPersistenceStoreController: PersistenceStoreControllerInterface,
+  appDataPersistenceStoreController: PersistenceStoreControllerInterface,
   deploymentUuid: string,
   actionName: string,
   body: any
@@ -48,9 +48,9 @@ export async function modelActionStoreRunner(
     "actionName",
     actionName
   );
-  log.debug("modelActionStoreRunner getEntityUuids()", miroirDataStoreController.getEntityUuids());
-  const targetProxy: StoreControllerInterface =
-    deploymentUuid == applicationDeploymentMiroir.uuid ? miroirDataStoreController : appDataStoreController;
+  log.debug("modelActionStoreRunner getEntityUuids()", miroirDataPersistenceStoreController.getEntityUuids());
+  const targetProxy: PersistenceStoreControllerInterface =
+    deploymentUuid == applicationDeploymentMiroir.uuid ? miroirDataPersistenceStoreController : appDataPersistenceStoreController;
   const modelAction: ModelAction = body;
   // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
   log.info("modelActionStoreRunner action", modelAction);
@@ -65,9 +65,9 @@ export async function modelActionStoreRunner(
     }
     case "resetModel": {
       log.debug("modelActionStoreRunner resetModel update");
-      await miroirDataStoreController.handleAction(modelAction)
-      await appDataStoreController.handleAction(modelAction)
-      log.trace("modelActionStoreRunner resetModel after dropped entities:", miroirDataStoreController.getEntityUuids());
+      await miroirDataPersistenceStoreController.handleAction(modelAction)
+      await appDataPersistenceStoreController.handleAction(modelAction)
+      log.trace("modelActionStoreRunner resetModel after dropped entities:", miroirDataPersistenceStoreController.getEntityUuids());
       break;
     }
     case "initModel": {
@@ -76,9 +76,9 @@ export async function modelActionStoreRunner(
       log.debug("modelActionStoreRunner initModel params", params);
 
       if (params.dataStoreType == "miroir") {
-        await miroirDataStoreController.handleAction(modelActionInitModel)
+        await miroirDataPersistenceStoreController.handleAction(modelActionInitModel)
       } else {
-        await appDataStoreController.handleAction(modelActionInitModel)
+        await appDataPersistenceStoreController.handleAction(modelActionInitModel)
       }
       break;
     }
@@ -104,7 +104,7 @@ export async function modelActionStoreRunner(
 export async function storeActionOrBundleActionStoreRunner(
   actionName: string,
   action: StoreOrBundleAction,
-  storeControllerManager: StoreControllerManagerInterface
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 ): Promise<ActionReturnType> {
   log.info("###################################### storeActionOrBundleActionStoreRunner started ", "actionName", actionName);
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
@@ -127,37 +127,37 @@ export async function storeActionOrBundleActionStoreRunner(
       // log.info('storeActionOrBundleActionStoreRunner openStore',miroirConfig);
 
       // TODO: NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      // TODO: addStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
-      await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
-      await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
-      await storeControllerManager.addStoreController(
+      // TODO: addPersistenceStoreController takes deploymentUuid, not ApplicationSection as 1st parameter!
+      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentLibrary.uuid);
+      await persistenceStoreControllerManager.addPersistenceStoreController(
         applicationDeploymentMiroir.uuid,
         action.configuration[applicationDeploymentMiroir.uuid]
       );
-      await storeControllerManager.addStoreController(
+      await persistenceStoreControllerManager.addPersistenceStoreController(
         applicationDeploymentLibrary.uuid,
         action.configuration[applicationDeploymentLibrary.uuid]
       );
       // }
-      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      if (!localMiroirStoreController || !localAppStoreController) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+      if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+        throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
       }
 
-      await startLocalStoreControllers(localMiroirStoreController, localAppStoreController);
+      await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController);
 
-      log.info("storeActionOrBundleActionStoreRunner openStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("storeActionOrBundleActionStoreRunner openStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 
       break;
     }
     case "closeStore": {
       log.info("storeActionOrBundleActionStoreRunner closeStore");
       // NOT CLEAN, IMPLEMENTATION-DEPENDENT, METHOD SHOULD BE INJECTED
-      await storeControllerManager.deleteStoreController(applicationDeploymentLibrary.uuid);
-      await storeControllerManager.deleteStoreController(applicationDeploymentMiroir.uuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentLibrary.uuid);
+      await persistenceStoreControllerManager.deletePersistenceStoreController(applicationDeploymentMiroir.uuid);
 
-      log.info("storeActionOrBundleActionStoreRunner closeStore DONE!", storeControllerManager.getStoreControllers());
+      log.info("storeActionOrBundleActionStoreRunner closeStore DONE!", persistenceStoreControllerManager.getPersistenceStoreControllers());
 
       break;
     }

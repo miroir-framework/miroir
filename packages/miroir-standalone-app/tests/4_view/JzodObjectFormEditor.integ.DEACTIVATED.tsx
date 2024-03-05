@@ -71,7 +71,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, {} as DomainController, testEnvironment.localMiroirStoreController, testEnvironment.localAppStoreController);
+    await miroirBeforeEach(miroirConfig, {} as DomainController, testEnvironment.localMiroirPersistenceStoreController, testEnvironment.localAppPersistenceStoreController);
   }
 )
 
@@ -79,8 +79,8 @@ afterAll(
   async () => {
     await miroirAfterAll(
       miroirConfig,
-      testEnvironment.localMiroirStoreController,
-      testEnvironment.localAppStoreController,
+      testEnvironment.localMiroirPersistenceStoreController,
+      testEnvironment.localAppPersistenceStoreController,
       testEnvironment.localDataStoreServer
     );
   }
@@ -88,7 +88,7 @@ afterAll(
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, testEnvironment.localMiroirStoreController,testEnvironment.localAppStoreController);
+    await miroirAfterEach(miroirConfig, testEnvironment.localMiroirPersistenceStoreController,testEnvironment.localAppPersistenceStoreController);
   }
 )
 
@@ -167,7 +167,7 @@ describe(
               //  getData={()=>undefined}
               // onSubmit={(data:any,event:any)=>{console.log("onSubmit called", data, event)}}
             ></JzodObjectFormEditorWrapper>,
-            {store:testEnvironment.reduxStore.getInnerStore()}
+            {store:testEnvironment.localCache.getInnerStore()}
           );
   
           // ##########################################################################################################
@@ -220,7 +220,7 @@ describe(
     //           // jzodSchema={{type:"simpleType", definition:"string"}}
     //           // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
     //         ></JzodObjectFormEditorWrapper>,
-    //         {store:testEnvironment.reduxStore.getInnerStore()}
+    //         {store:testEnvironment.localCache.getInnerStore()}
     //       );
 
     //       // ##########################################################################################################
@@ -259,16 +259,16 @@ describe(
     //     try {
     //       console.log(expect.getState().currentTestName);
     //       const user = userEvent.setup()
-    //       await testEnvironment.localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-    //       await testEnvironment.localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
-    //       await testEnvironment.localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+    //       await testEnvironment.localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', book3 as EntityInstance);
+    //       await testEnvironment.localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
 
 
     //       const label = 'simpleElementString' 
@@ -288,7 +288,7 @@ describe(
     //           // jzodSchema={{type:"simpleType", definition:"string"}}
     //           // onSubmit={(data:any,event:any,error:any)=>{console.log("onSubmit called", data, event,error)}}
     //         ></JzodObjectFormEditorWrapper>,
-    //         {store:testEnvironment.reduxStore.getInnerStore()}
+    //         {store:testEnvironment.localCache.getInnerStore()}
     //       );
   
     //       await act(

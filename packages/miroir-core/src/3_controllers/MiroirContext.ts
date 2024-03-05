@@ -8,7 +8,7 @@ export class MiroirContext implements MiroirContextInterface {
   public errorLogService:ErrorLogServiceInterface;
 
   constructor(
-    public miroirConfig: MiroirConfigClient | undefined
+    public miroirConfig?: MiroirConfigClient | undefined
   ){
     this.errorLogService = new ErrorLogService();
   }

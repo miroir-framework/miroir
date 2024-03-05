@@ -27,7 +27,7 @@ import {
   RestClient,
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
-  StoreControllerManager,
+  PersistenceStoreControllerManager,
   StoreUnitConfiguration
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
@@ -42,7 +42,7 @@ import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePag
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
-import { createReduxStoreAndPersistenceClient, PersistenceReduxSaga, ReduxStore, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
+import { createReduxStoreAndPersistenceClient, PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient } from "miroir-localcache-redux";
 import { packageName } from "./constants";
 import { cleanLevel } from "./miroir-fwk/4_view/constants";
 
@@ -145,7 +145,7 @@ async function start(root:Root) {
 
 
   if (process.env.NODE_ENV === "development") {
-    const myMiroirContext = new MiroirContext(currentMiroirConfig);
+    const miroirContext = new MiroirContext(currentMiroirConfig);
 
     const client: RestClient = new RestClient(window.fetch.bind(window));
     const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient(
@@ -155,10 +155,10 @@ async function start(root:Root) {
       client
     );
 
-    const reduxStore: ReduxStore = new ReduxStore();
+    const localCache: LocalCache = new LocalCache();
 
 
-    const storeControllerManager = new StoreControllerManager(
+    const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.adminStoreFactoryRegister,
       ConfigurationService.StoreSectionFactoryRegister,
     );
@@ -167,13 +167,13 @@ async function start(root:Root) {
         persistenceClientAndRestClient
       );
 
-    persistenceSaga.run(reduxStore)
+    persistenceSaga.run(localCache)
 
     const domainController: DomainControllerInterface = new DomainController(
-      myMiroirContext,
-      reduxStore, // implements LocalCacheInterface
+      miroirContext,
+      localCache, // implements LocalCacheInterface
       persistenceSaga, // implements PersistenceInterface
-      new Endpoint(reduxStore)
+      new Endpoint(localCache)
     );
 
     if (currentMiroirConfig.client.emulateServer) {
@@ -184,7 +184,7 @@ async function start(root:Root) {
         currentMiroirConfig,
         'browser',
         restServerDefaultHandlers,
-        storeControllerManager,
+        persistenceStoreControllerManager,
         setupWorker
       );
   
@@ -252,8 +252,8 @@ async function start(root:Root) {
       <StrictMode>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
-            <Provider store={reduxStore.getInnerStore()}>
-              <MiroirContextReactProvider miroirContext={myMiroirContext} domainController={domainController}>
+            <Provider store={localCache.getInnerStore()}>
+              <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
                 <RouterProvider router={router} />
                 {/* <RootComponent/> */}
               </MiroirContextReactProvider>

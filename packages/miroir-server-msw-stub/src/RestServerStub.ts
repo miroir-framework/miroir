@@ -6,7 +6,7 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   RestServiceHandler,
-  StoreControllerManagerInterface,
+  PersistenceStoreControllerManagerInterface,
   getLoggerName
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants";
@@ -32,7 +32,7 @@ export class RestServerStub {
   constructor(
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
-    storeControllerManager: StoreControllerManagerInterface,
+    persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
     miroirConfig: MiroirConfigClient,
   ) {
     log.info(
@@ -59,9 +59,10 @@ export class RestServerStub {
           // log.info("RestServerStub received request",h.method, h.rootApiUrl + h.url, "body", body);
           try {
             const result = await h.handler(
+              false, // useDomainController: since we're emulating the REST server, we have direct access the persistenceStore
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
-              storeControllerManager,
+              persistenceStoreControllerManager,
               h.method /* method */,
               this.rootApiUrl + h.url,
               body, // body

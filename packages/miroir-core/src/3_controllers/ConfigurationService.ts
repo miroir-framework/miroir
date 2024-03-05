@@ -4,7 +4,7 @@
 import { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import { ApplicationSection, StoreSectionConfiguration } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { AdminStoreFactory, AdminStoreFactoryRegister, AdminStoreInterface, DataOrModelStoreInterface, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/StoreControllerInterface.js";
+import { AdminStoreFactory, AdminStoreFactoryRegister, AdminStoreInterface, DataOrModelStoreInterface, StoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { MiroirLoggerFactory } from "../4_services/Logger.js";
 import { packageName } from "../constants.js";
 import { getLoggerName } from "../tools.js";

@@ -15,7 +15,7 @@ import {
 } from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
-import { StoreControllerManagerInterface } from "./StoreControllerManagerInterface.js";
+import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
 
 
 // ################################################################################################
@@ -33,9 +33,10 @@ export interface HttpResponseBodyFormat {
 
 // ################################################################################################
 export type RestMethodHandler =  (
+  useDomainController: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
-  storeControllerManager: StoreControllerManagerInterface,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!

@@ -7,7 +7,7 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   RestServiceHandler,
-  StoreControllerManagerInterface,
+  PersistenceStoreControllerManagerInterface,
   getLoggerName
 } from "miroir-core";
 
@@ -34,7 +34,7 @@ export async function createMswRestServer(
   miroirConfig: MiroirConfigClient,
   platformType: "browser" | "nodejs",
   restServerHandlers: RestServiceHandler[],
-  storeControllerManager: StoreControllerManagerInterface,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   createRestServiceFromHandlers: (...handlers: Array<RequestHandler>) => any
 ):Promise<CreateMswRestServerReturnType>  {
   log.info("createMswRestServer", "platformType", platformType, "miroirConfig", miroirConfig);
@@ -45,7 +45,7 @@ export async function createMswRestServer(
     const restServerStub: RestServerStub = new RestServerStub(
       miroirConfig.client.rootApiUrl,
       restServerHandlers,
-      storeControllerManager,
+      persistenceStoreControllerManager,
       miroirConfig,
     );
     log.warn("######################### createMswRestServer handling operations", restServerHandlers);
@@ -66,8 +66,8 @@ export async function createMswRestServer(
   } else {
     log.warn("createMswRestServer non-emulated server will be queried on", miroirConfig.client.serverConfig.rootApiUrl);
     return Promise.resolve({
-      localMiroirStoreController: undefined,
-      localAppStoreController: undefined,
+      localMiroirPersistenceStoreController: undefined,
+      localAppPersistenceStoreController: undefined,
       localDataStoreWorker: undefined,
       localDataStoreServer: undefined,
     });

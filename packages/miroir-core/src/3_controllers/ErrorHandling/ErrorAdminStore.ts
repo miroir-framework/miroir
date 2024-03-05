@@ -1,5 +1,5 @@
 import { ActionReturnType, ActionVoidReturnType, StoreSectionConfiguration } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { AdminStoreInterface } from "../../0_interfaces/4-services/StoreControllerInterface";
+import { AdminStoreInterface } from "../../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 export class ErrorAdminStore implements AdminStoreInterface {
   constructor() {

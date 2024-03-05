@@ -49,12 +49,12 @@ finding transparent access to IndexedDb in browser and nodejs: using [level](htt
 
 - **refactoring to "clean" architecture** (on-going effort):
   - creating first packages: miroir-core and miroir-react.
-  - adding controllers, separating RemoteDataStoreController / LocalDataStoreController / "what would become the domain" layers.
+  - adding controllers, separating RemoteDataPersistenceStoreController / LocalDataPersistenceStoreController / "what would become the domain" layers.
   - **refactoring to use Promises at user / client level in the webapp**
 - **first try of interactive data edition in webapp.**
 - created tests at Redux Slice level, then **creating first "integration"-level tests** at react level (integration tests will be used from now on, until 2023-11)
 - adding ConfigurationService and MiroirContext for injecting application parameters, etc.
-- LocalDataStoreController allows to load persisted state through REST call
+- LocalDataPersistenceStoreController allows to load persisted state through REST call
 
 ## 2023-02
 

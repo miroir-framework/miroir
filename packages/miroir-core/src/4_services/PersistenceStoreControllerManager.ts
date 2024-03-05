@@ -2,13 +2,13 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import {
   AdminStoreFactoryRegister,
   InitApplicationParameters,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   StoreDataSectionInterface,
   StoreModelSectionInterface,
   StoreSectionFactoryRegister,
-} from "../0_interfaces/4-services/StoreControllerInterface";
-import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
-import { StoreController, storeSectionFactory } from "./StoreController";
+} from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { PersistenceStoreController, storeSectionFactory } from "./PersistenceStoreController";
 
 import {
   ActionVoidReturnType,
@@ -22,8 +22,12 @@ import { MiroirLoggerFactory } from "./Logger";
 import { cleanLevel } from "./constants";
 import { PersistenceInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import { DomainController } from "../3_controllers/DomainController";
+import { Endpoint } from "../3_controllers/Endpoint";
+import { MiroirContext } from "../3_controllers/MiroirContext";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreControllerManager");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceStoreControllerManager");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -32,14 +36,16 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-export class StoreControllerManager implements StoreControllerManagerInterface {
-  private storeControllers: { [deploymentUuid: Uuid]: StoreControllerInterface } = {};
+export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
+  private persistenceStoreControllers: { [deploymentUuid: Uuid]: PersistenceStoreControllerInterface } = {};
   private persistenceStore: PersistenceInterface;
+  private localCache: LocalCacheInterface;
+  private domainController: DomainController;
 
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
     private storeSectionFactoryRegister: StoreSectionFactoryRegister,
-    // private reduxStore: LocalCacheInterface,
+    // private localCache: LocalCacheInterface,
   ) {}
 
   // ################################################################################################
@@ -53,22 +59,37 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
   }
 
   // ################################################################################################
-  async addStoreController(deploymentUuid: string, config: StoreUnitConfiguration): Promise<void> {
-    log.info("addStoreController", deploymentUuid, config);
-    if (this.storeControllers[deploymentUuid]) {
-      log.info("addStoreController for", deploymentUuid, "already exists, doing nothing!");
+  setLocalCache(localCache: LocalCacheInterface)  {
+    this.localCache = localCache;
+  }
+
+  // ################################################################################################
+  getLocalCache(): LocalCacheInterface {
+    return this.localCache;
+  }
+
+  // ################################################################################################
+  getDomainController(): DomainControllerInterface {
+    return this.domainController;
+  }
+
+  // ################################################################################################
+  async addPersistenceStoreController(deploymentUuid: string, config: StoreUnitConfiguration): Promise<void> {
+    log.info("addPersistenceStoreController", deploymentUuid, config);
+    if (this.persistenceStoreControllers[deploymentUuid]) {
+      log.info("addPersistenceStoreController for", deploymentUuid, "already exists, doing nothing!");
     } else {
       const adminStoreFactory = this.adminStoreFactoryRegister.get(
         JSON.stringify({ storageType: config.admin.emulatedServerType })
       );
       if (!adminStoreFactory) {
         log.info(
-          "addStoreController no admin store factory found for",
+          "addPersistenceStoreController no admin store factory found for",
           deploymentUuid,
           JSON.stringify(this.adminStoreFactoryRegister, undefined, 2)
         );
         throw new Error(
-          "addStoreController no admin store factory found for server type " + config.admin.emulatedServerType
+          "addPersistenceStoreController no admin store factory found for server type " + config.admin.emulatedServerType
         );
       }
       const adminStore = await adminStoreFactory(config.admin);
@@ -77,57 +98,65 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
         "data",
         config.data
       )) as StoreDataSectionInterface;
-      log.info("addStoreController found dataStore", dataStore)
+      log.info("addPersistenceStoreController found dataStore", dataStore)
       const modelStore = (await storeSectionFactory(
         this.storeSectionFactoryRegister,
         "model",
         config.model,
         dataStore
       )) as StoreModelSectionInterface;
-      this.storeControllers[deploymentUuid] = new StoreController(adminStore, modelStore, dataStore);
+      this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
+
+      this.domainController = new DomainController(
+        new MiroirContext(),
+        this.localCache, // implements LocalCacheInterface
+        this.persistenceStore, // implements PersistenceInterface
+        new Endpoint(this.localCache)
+      );
+
     }
   }
 
   // ################################################################################################
-  getStoreControllers(): string[] {
-    return Object.keys(this.storeControllers);
+  getPersistenceStoreControllers(): string[] {
+    return Object.keys(this.persistenceStoreControllers);
   }
 
   // ################################################################################################
-  getStoreController(deploymentUuid: string): StoreControllerInterface | undefined {
-    return this.storeControllers[deploymentUuid];
+  getPersistenceStoreController(deploymentUuid: string): PersistenceStoreControllerInterface | undefined {
+    return this.persistenceStoreControllers[deploymentUuid];
   }
 
   // ################################################################################################
-  async deleteStoreController(deploymentUuid: string): Promise<void> {
-    if (this.storeControllers[deploymentUuid]) {
-      await this.storeControllers[deploymentUuid].close();
-      delete this.storeControllers[deploymentUuid];
+  async deletePersistenceStoreController(deploymentUuid: string): Promise<void> {
+    if (this.persistenceStoreControllers[deploymentUuid]) {
+      await this.persistenceStoreControllers[deploymentUuid].close();
+      delete this.persistenceStoreControllers[deploymentUuid];
     } else {
-      log.info("deleteStoreController for", deploymentUuid, "does not exist, doing nothing!");
+      log.info("deletePersistenceStoreController for", deploymentUuid, "does not exist, doing nothing!");
     }
   }
 
   // ################################################################################################
   async deployModule(
-    adminStoreController: StoreControllerInterface,
+    adminPersistenceStoreController: PersistenceStoreControllerInterface,
     newDeploymentUuid: Uuid,
     storeUnitConfiguration: StoreUnitConfiguration,
     initApplicationParameters: InitApplicationParameters,
   ): Promise<ActionVoidReturnType> {
-    // await adminStoreController.deleteStore(storeUnitConfiguration.admin);
-    // await adminStoreController.createStore(storeUnitConfiguration.admin);
-    await this.addStoreController(
+    // await adminPersistenceStoreController.deleteStore(storeUnitConfiguration.admin);
+    // await adminPersistenceStoreController.createStore(storeUnitConfiguration.admin);
+    await this.addPersistenceStoreController(
       newDeploymentUuid,
       storeUnitConfiguration
     );
-    const testLocalMiroirStoreController: StoreControllerInterface | undefined = this.getStoreController(newDeploymentUuid);
+    const testLocalMiroirPersistenceStoreController: PersistenceStoreControllerInterface | undefined = this.getPersistenceStoreController(newDeploymentUuid);
 
-    if (testLocalMiroirStoreController) {
-      await testLocalMiroirStoreController.clear();
+    if (testLocalMiroirPersistenceStoreController) {
+      await testLocalMiroirPersistenceStoreController.clear();
       try {
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication',initApplicationParameters.dataStoreType,"START");
-        await testLocalMiroirStoreController.initApplication(
+        await testLocalMiroirPersistenceStoreController.initApplication(
           initApplicationParameters.metaModel,
           initApplicationParameters.dataStoreType,
           initApplicationParameters.application,
@@ -143,7 +172,7 @@ export class StoreControllerManager implements StoreControllerManagerInterface {
       }
 
     } else { // TODO: inject interface to raise errors!
-      // throw new Error("deployModule could not find storeController for " + newDeploymentUuid);
+      // throw new Error("deployModule could not find persistenceStoreController for " + newDeploymentUuid);
       return { status: "error", error: { errorType: "FailedToDeployModule" } }
     }
     return ACTION_OK

@@ -10,11 +10,15 @@ import {
   MiroirLoggerFactory,
   RestClient,
   SpecificLoggerOptionsMap,
-  StoreControllerManager,
+  PersistenceStoreControllerManager,
   defaultLevels,
   getLoggerName,
   miroirCoreStartup,
-  restServerDefaultHandlers
+  restServerDefaultHandlers,
+  DomainController,
+  DomainControllerInterface,
+  Endpoint,
+  MiroirContext
 } from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -23,7 +27,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { readFileSync } from 'fs';
 import log from 'loglevelnext';
-import { PersistenceReduxSaga, ReduxStore, RestPersistenceClientAndRestClient, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
+import { PersistenceReduxSaga, LocalCache, RestPersistenceClientAndRestClient, createReduxStoreAndPersistenceClient } from 'miroir-localcache-redux';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -73,27 +77,28 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-// const { reduxStore: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
+// const { localCache: mReduxStore } = await createReduxStoreAndPersistenceClient("", fetch);
 
 const client: RestClient = new RestClient(fetch);
 const persistenceClientAndRestClient = new RestPersistenceClientAndRestClient("", client);
 
-const reduxStore: ReduxStore = new ReduxStore();
+const localCache: LocalCache = new LocalCache();
 
 
-const storeControllerManager = new StoreControllerManager(
+const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,
   ConfigurationService.StoreSectionFactoryRegister,
 );
 
 const persistenceSaga: PersistenceReduxSaga = new PersistenceReduxSaga(
   undefined,
-  storeControllerManager
+  persistenceStoreControllerManager
 );
 
-persistenceSaga.run(reduxStore)
+persistenceSaga.run(localCache)
 
-storeControllerManager.setPersistenceStore(persistenceSaga)
+persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
+persistenceStoreControllerManager.setLocalCache(localCache);
 
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
@@ -104,9 +109,10 @@ for (const op of restServerDefaultHandlers) {
       const body = request.body;
 
       const result = await op.handler(
+        true, // useDomainController: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
         (response: any) => response.json.bind(response),
         response,
-        storeControllerManager,
+        persistenceStoreControllerManager,
         op.method,
         request.originalUrl,
         body,

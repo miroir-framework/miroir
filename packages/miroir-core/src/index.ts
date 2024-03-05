@@ -324,8 +324,8 @@ export {
   SpecificLoggerOptionsMap,
 } from "./0_interfaces/4-services/LoggerInterface.js";
 export {
-  StoreControllerManagerInterface
-} from "./0_interfaces/4-services/StoreControllerManagerInterface.js";
+  PersistenceStoreControllerManagerInterface
+} from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface.js";
 export {
   LocalCacheInterface,
 } from './0_interfaces/4-services/LocalCacheInterface.js';
@@ -355,10 +355,10 @@ export {
   AbstractInstanceStoreSectionInterface,
   StorageSpaceHandlerInterface,
   DataOrModelStoreInterface,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   StoreSectionFactory,
   StoreSectionFactoryRegister,
-} from "./0_interfaces/4-services/StoreControllerInterface.js";
+} from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 export { } from './1_core/Report.js';
 export { ACTION_OK } from './1_core/constants.js';
 export { DomainController } from './3_controllers/DomainController';
@@ -427,16 +427,15 @@ export {
 export { ErrorLogService } from './3_controllers/ErrorHandling/ErrorLogService.js';
 export { CallUtils } from './3_controllers/ErrorHandling/CallUtils.js';
 export { MiroirContext } from './3_controllers/MiroirContext.js';
-export { RemoteDataStoreController } from './3_controllers/RemoteDataStoreController.js';
 export {
   MiroirLoggerFactory,
   templateLoggerOptionsFactory,
   testLogger
 } from './4_services/Logger.js';
 export {
-  StoreController,
-  StoreControllerFactoryReturnType,
-} from './4_services/StoreController.js';
+  PersistenceStoreController,
+  PersistenceStoreControllerFactoryReturnType,
+} from './4_services/PersistenceStoreController.js';
 export {
   RestClient
 } from './4_services/RestClient.js';
@@ -444,12 +443,12 @@ export {
   restServerDefaultHandlers
 } from './4_services/RestServer.js';
 export {
-  // createStoreControllers,
-  startLocalStoreControllers,
-} from './4_services/storeControllerTools.js';
+  // createPersistenceStoreControllers,
+  startLocalPersistenceStoreControllers,
+} from './4_services/PersistenceStoreControllerTools.js';
 export {
-  StoreControllerManager
-} from './4_services/StoreControllerManager.js';
+  PersistenceStoreControllerManager
+} from './4_services/PersistenceStoreControllerManager.js';
 export {
   generateRestServiceResponse,
 } from './4_services/RestTools.js';

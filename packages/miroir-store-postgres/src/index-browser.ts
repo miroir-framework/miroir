@@ -1,4 +1,4 @@
-import { StoreControllerInterface } from "miroir-core";
+import { PersistenceStoreControllerInterface } from "miroir-core";
 
 /**
  * Empty implementation, intended for use (of the miroir-store-postgres package) in the browser.
@@ -8,6 +8,6 @@ import { StoreControllerInterface } from "miroir-core";
  */
 export async function SqlStoreFactory (
   connectionString:string,
-):Promise<StoreControllerInterface | undefined> {
+):Promise<PersistenceStoreControllerInterface | undefined> {
   return Promise.resolve(undefined);
 }

@@ -20,7 +20,7 @@
 // import {
 //   RestServerStub,
 //   PersistenceReduxSaga,
-//   ReduxStore,
+//   LocalCache,
 //   RestPersistenceClientAndRestClient,
 // } from "miroir-localcache-redux";
 
@@ -46,7 +46,7 @@
 // // const remoteStoreClient = new RemoteStoreClient(miroirConfig.rootApiUrl, client);
 // const instanceSagas: PersistenceReduxSaga = new PersistenceReduxSaga(miroirConfig.rootApiUrl, remoteStoreNetworkRestClient);
 
-// const mReduxStore:ReduxStore = new ReduxStore(instanceSagas);
+// const mReduxStore:LocalCache = new LocalCache(instanceSagas);
 // mReduxStore.run();
 
 // const miroirContext = new MiroirContext();

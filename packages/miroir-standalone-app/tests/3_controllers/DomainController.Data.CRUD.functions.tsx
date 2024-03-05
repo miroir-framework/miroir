@@ -23,7 +23,7 @@ import {
   entityDefinitionBook,
   EntityInstance,
   getLoggerName,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   LoggerInterface,
   MetaEntity,
   MiroirConfigClient,
@@ -32,7 +32,7 @@ import {
   reportBookList,
   InstanceAction
 } from "miroir-core";
-import { ReduxStore } from "miroir-localcache-redux";
+import { LocalCache } from "miroir-localcache-redux";
 
 import {
   DisplayLoadingInfo,
@@ -52,9 +52,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export async function refreshAllInstancesTest(
   miroirConfig: MiroirConfigClient,
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
-  reduxStore: ReduxStore,
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
+  localCache: LocalCache,
   domainController: DomainControllerInterface,
   miroirContext: MiroirContext
 ) {
@@ -66,16 +66,16 @@ export async function refreshAllInstancesTest(
     // await localDataStore.clear();
     // await localDataStore.initModel();
     if (miroirConfig.client.emulateServer) {
-      await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-      await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-      await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-      await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-      await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-      await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-      await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-      await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-      // await localAppStoreController?.upsertInstance('data', book3 as Instance);
-      await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+      await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+      await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+      await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+      await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+      await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+      await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+      await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+      await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+      // await localAppPersistenceStoreController?.upsertInstance('data', book3 as Instance);
+      await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
     } else {
       const createAction: DomainAction = {
             actionType: "modelAction",
@@ -90,7 +90,7 @@ export async function refreshAllInstancesTest(
 
       await act(
         async () => {
-          await domainController.handleAction(createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+          await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
           await domainController.handleAction(
             {
               actionType: "modelAction",
@@ -98,7 +98,7 @@ export async function refreshAllInstancesTest(
               deploymentUuid: applicationDeploymentLibrary.uuid,
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             },
-            reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+            localCache.currentModel(applicationDeploymentLibrary.uuid)
           );
         }
       );
@@ -144,7 +144,7 @@ export async function refreshAllInstancesTest(
 
     // log.info(
     //   'after test preparation',
-    //   await localAppStoreController?.getState()
+    //   await localAppPersistenceStoreController?.getState()
     // );
     const {
       getByText,
@@ -157,7 +157,7 @@ export async function refreshAllInstancesTest(
         DisplayLoadingInfo={displayLoadingInfo}
         deploymentUuid={applicationDeploymentLibrary.uuid}
       />,
-      { store: reduxStore.getInnerStore() }
+      { store: localCache.getInnerStore() }
     );
 
     log.info("Refresh all Instances setup is finished.")
@@ -177,7 +177,7 @@ export async function refreshAllInstancesTest(
       });
     });
 
-    log.info("Refresh all Instances start", JSON.stringify(reduxStore.getState()));
+    log.info("Refresh all Instances start", JSON.stringify(localCache.getState()));
     
     await act(()=>user.click(screen.getByRole("button")));
 

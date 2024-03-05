@@ -17,7 +17,7 @@ import {
   storeActionOrBundleActionStoreRunner
 } from "../3_controllers/ActionRunner";
 
-import { StoreControllerManagerInterface } from "../0_interfaces/4-services/StoreControllerManagerInterface";
+import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { applicationDeploymentLibrary } from "../ApplicationDeploymentLibrary";
 import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
@@ -42,9 +42,10 @@ function wrapResults(instances: EntityInstance[]): HttpResponseBodyFormat {
 // ################################################################################################
 export async function restMethodGetHandler
 (
+  useDomainController: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
-  storeControllerManager: StoreControllerManagerInterface,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
@@ -72,18 +73,18 @@ export async function restMethodGetHandler
   const parentUuid: string =
     typeof params["parentUuid"] == "string" ? params["parentUuid"] : params["parentUuid"][0];
 
-  const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-  const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-  if (!localMiroirStoreController || !localAppStoreController) {
-    throw new Error("restMethodGetHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+    throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
   } 
 
-  const targetStoreController =
-    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
+  const targetPersistenceStoreController =
+    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppPersistenceStoreController : localMiroirPersistenceStoreController;
   // const targetProxy = deploymentUuid == applicationDeploymentLibrary.uuid?libraryAppFileSystemDataStore:miroirAppSqlServerProxy;
   log.info(
     "restMethodGetHandler get CRUD/ using",
-    // (targetStoreController as any)["applicationName"],
+    // (targetPersistenceStoreController as any)["applicationName"],
     "deployment",
     deploymentUuid,
     "applicationDeploymentLibrary.uuid",
@@ -96,7 +97,7 @@ export async function restMethodGetHandler
       ["section", "parentUuid"],
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
-        const getInstancesFunction = targetStoreController.getInstances.bind(targetStoreController);
+        const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController);
         const results: ActionReturnType = await getInstancesFunction(section, parentUuid)
         if (results.status != "ok") {
           throw new Error("restMethodGetHandler could not get instances for parentUuid: " + parentUuid + " error " + JSON.stringify(results.error));
@@ -127,9 +128,10 @@ export async function restMethodGetHandler
 
 // ################################################################################################
 export async function restMethodsPostPutDeleteHandler(
+  useDomainController: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
-  storeControllerManager: StoreControllerManagerInterface,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -146,14 +148,14 @@ export async function restMethodsPostPutDeleteHandler(
     typeof foundParams["section"] == "string" ? foundParams["section"] : foundParams["section"][0]
   ) as ApplicationSection;
 
-  const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-  const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-  if (!localMiroirStoreController || !localAppStoreController) {
-    throw new Error("restMethodsPostPutDeleteHandler could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
+  const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+  const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+  if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+    throw new Error("restMethodsPostPutDeleteHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
   } 
 
   const targetDataStore =
-    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppStoreController : localMiroirStoreController;
+    deploymentUuid == applicationDeploymentLibrary.uuid ? localAppPersistenceStoreController : localMiroirPersistenceStoreController;
 
   // THIS IS A COSTLY LOG!!!
   // log.trace(
@@ -187,9 +189,10 @@ export async function restMethodsPostPutDeleteHandler(
 
 // ################################################################################################
 export async function restActionHandler(
+  useDomainController: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
-  storeControllerManager: StoreControllerManagerInterface,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -207,40 +210,52 @@ export async function restActionHandler(
       const result = await storeActionOrBundleActionStoreRunner(
         actionName,
         body as StoreOrBundleAction,
-        storeControllerManager,
+        persistenceStoreControllerManager,
       );
       return continuationFunction(response)(result)
       break;
     }
     case "modelAction": 
     case "instanceAction": {
-      const localMiroirStoreController = storeControllerManager.getStoreController(applicationDeploymentMiroir.uuid);
-      const localAppStoreController = storeControllerManager.getStoreController(applicationDeploymentLibrary.uuid);
-      const persistenceStore = storeControllerManager.getPersistenceStore();
-      if (!localMiroirStoreController || !localAppStoreController) {
-        throw new Error("could not find controller:" + localMiroirStoreController + " " + localAppStoreController);
-      } 
-      switch (action.deploymentUuid) {
-        case applicationDeploymentMiroir.uuid: {
-          let result
-          if (persistenceStore) { // direct write to persistence store, in server
-            result = await persistenceStore.handlePersistenceAction(action)
+      const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+      const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+      const domainController = persistenceStoreControllerManager.getDomainController();
+      if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+        throw new Error("could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+      }
+      if (useDomainController) {
+        switch (action.deploymentUuid) {
+          case applicationDeploymentMiroir.uuid: {
+            const result = await domainController.handleAction(action)
+            return continuationFunction(response)(result)
+            break;
           }
-          if (localMiroirStoreController) { // using storeController, in client.
-            result = await localMiroirStoreController.handleAction(action)
+          case applicationDeploymentLibrary.uuid: {
+            const result = await domainController.handleAction(action)
+            return continuationFunction(response)(result)
+            break;
           }
-
-          return continuationFunction(response)(result)
-          break;
+          default: {
+            throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
+            break;
+          }
         }
-        case applicationDeploymentLibrary.uuid: {
-          const result = await localAppStoreController.handleAction(action)
-          return continuationFunction(response)(result)
-          break;
-        }
-        default: {
-          throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
-          break;
+      } else {
+        switch (action.deploymentUuid) {
+          case applicationDeploymentMiroir.uuid: {
+            const result = await localMiroirPersistenceStoreController.handleAction(action)
+            return continuationFunction(response)(result)
+            break;
+          }
+          case applicationDeploymentLibrary.uuid: {
+            const result = await localAppPersistenceStoreController.handleAction(action)
+            return continuationFunction(response)(result)
+            break;
+          }
+          default: {
+            throw new Error("RestServer restActionStoreRunner could not handle action " + action + " unknown deployment uuid=" + action.deploymentUuid);
+            break;
+          }
         }
       }
       break;

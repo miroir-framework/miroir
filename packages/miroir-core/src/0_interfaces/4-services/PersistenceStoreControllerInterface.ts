@@ -21,7 +21,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 import { DataStoreApplicationType } from '../3_controllers/ApplicationControllerInterface.js';
 
-export type StoreControllerAction =
+export type PersistenceStoreControllerAction =
   | InstanceAction
   | ModelAction
   // | StoreManagementAction
@@ -158,7 +158,7 @@ export interface InitApplicationParameters {
 // ###############################################################################################################
 // store Controller
 // TODO: remove AdminStoreInterface?
-export interface StoreControllerInterface
+export interface PersistenceStoreControllerInterface
   extends AbstractStoreSectionInterface,
   AdminStoreInterface,
   AbstractEntityStoreSectionInterface /**, AbstractInstanceStoreSectionInterface */
@@ -188,5 +188,5 @@ export interface StoreControllerInterface
   upsertInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
   deleteInstance(section: ApplicationSection, instance: EntityInstance): Promise<ActionVoidReturnType>;
 
-  handleAction(storeManagementAction: StoreControllerAction): Promise<any>;
+  handleAction(storeManagementAction: PersistenceStoreControllerAction): Promise<any>;
 }

@@ -22,12 +22,12 @@ import { DataStoreApplicationType } from "../0_interfaces/3_controllers/Applicat
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import {
   AdminStoreInterface,
-  StoreControllerAction,
-  StoreControllerInterface,
+  PersistenceStoreControllerAction,
+  PersistenceStoreControllerInterface,
   StoreDataSectionInterface,
   StoreModelSectionInterface,
   StoreSectionFactoryRegister,
-} from "../0_interfaces/4-services/StoreControllerInterface.js";
+} from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer.js";
 import { packageName } from "../constants.js";
@@ -39,7 +39,7 @@ import { ACTION_OK } from "../1_core/constants.js";
 import entityEntity from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json";
 import entityEntityDefinition from "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
 
-const loggerName: string = getLoggerName(packageName, cleanLevel,"StoreController");
+const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceStoreController");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   (value: LoggerInterface) => {
@@ -48,9 +48,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // #######################################################################################################################
-export interface StoreControllerFactoryReturnType {
-  localMiroirStoreController: StoreControllerInterface,
-  localAppStoreController: StoreControllerInterface,
+export interface PersistenceStoreControllerFactoryReturnType {
+  localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
+  localAppPersistenceStoreController: PersistenceStoreControllerInterface,
 }
 
 
@@ -61,12 +61,12 @@ export async function storeSectionFactory (
   config: StoreSectionConfiguration,
   dataStore?: StoreDataSectionInterface,
 ):Promise<StoreDataSectionInterface | StoreModelSectionInterface> {
-  log.info('StoreController storeSectionFactory called for', section, config, StoreSectionFactoryRegister);
+  log.info('PersistenceStoreController storeSectionFactory called for', section, config, StoreSectionFactoryRegister);
   if (section == 'model' && !dataStore) {
-    throw new Error('StoreController storeSectionFactory model section factory must receive data section store.')
+    throw new Error('PersistenceStoreController storeSectionFactory model section factory must receive data section store.')
   }
   const storeFactoryRegisterKey:string = JSON.stringify({storageType:config.emulatedServerType,section});
-  log.info("StoreController storeSectionFactory storeFactoryRegisterKey", storeFactoryRegisterKey);
+  log.info("PersistenceStoreController storeSectionFactory storeFactoryRegisterKey", storeFactoryRegisterKey);
   const foundStoreSectionFactory = StoreSectionFactoryRegister.get(storeFactoryRegisterKey);
   if (foundStoreSectionFactory) {
     if (section == 'model') {
@@ -84,9 +84,9 @@ export async function storeSectionFactory (
 // #######################################################################################################################
 // #######################################################################################################################
 // #######################################################################################################################
-// MAIN CLASS: StoreController
+// MAIN CLASS: PersistenceStoreController
 // #######################################################################################################################
-export class StoreController implements StoreControllerInterface {
+export class PersistenceStoreController implements PersistenceStoreControllerInterface {
   private logHeader: string;
 
   constructor(
@@ -94,7 +94,7 @@ export class StoreController implements StoreControllerInterface {
     private modelStoreSection:StoreModelSectionInterface,
     private dataStoreSection:StoreDataSectionInterface,
   ){
-    this.logHeader = 'StoreController '+ modelStoreSection.getStoreName();
+    this.logHeader = 'PersistenceStoreController '+ modelStoreSection.getStoreName();
   }
 
   // #########################################################################################
@@ -103,20 +103,20 @@ export class StoreController implements StoreControllerInterface {
   }
 
   // #############################################################################################
-  async handleAction(storeControllerAction: StoreControllerAction): Promise<ActionReturnType> {
-    switch (storeControllerAction.actionType) {
+  async handleAction(persistenceStoreControllerAction: PersistenceStoreControllerAction): Promise<ActionReturnType> {
+    switch (persistenceStoreControllerAction.actionType) {
       case "modelAction": {
         // const storeManagementAction: ModelAction = body;
         // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
-        log.info("handleAction action", storeControllerAction);
-        switch (storeControllerAction.actionName) {
+        log.info("handleAction action", persistenceStoreControllerAction);
+        switch (persistenceStoreControllerAction.actionName) {
           case "dropEntity": {
             // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
-            await this.dropEntity(storeControllerAction.entityUuid);
+            await this.dropEntity(persistenceStoreControllerAction.entityUuid);
             break;
           }
           case "renameEntity": {
-            await this.renameEntityClean(storeControllerAction);
+            await this.renameEntityClean(persistenceStoreControllerAction);
             break;
           }
           case "resetModel": {
@@ -127,7 +127,7 @@ export class StoreController implements StoreControllerInterface {
             break;
           }
           case "alterEntityAttribute": {
-            await this.alterEntityAttribute(storeControllerAction);
+            await this.alterEntityAttribute(persistenceStoreControllerAction);
             break;
           }
           case "resetData": {
@@ -140,7 +140,7 @@ export class StoreController implements StoreControllerInterface {
             break;
           }
           case "initModel": {
-            const modelActionInitModel = storeControllerAction as ModelActionInitModel;
+            const modelActionInitModel = persistenceStoreControllerAction as ModelActionInitModel;
             const params: ModelActionInitModelParams = modelActionInitModel.params;
             log.debug("handleAction initModel params", params);
       
@@ -150,16 +150,16 @@ export class StoreController implements StoreControllerInterface {
           // case "alterEntityAttribute":
           case "commit":
           case "rollback": {
-            throw new Error("handleAction could not handle action" + JSON.stringify(storeControllerAction));
+            throw new Error("handleAction could not handle action" + JSON.stringify(persistenceStoreControllerAction));
           }
           case "createEntity": {
-            log.debug("handleAction applyModelEntityUpdates createEntity inserting", storeControllerAction.entities);
+            log.debug("handleAction applyModelEntityUpdates createEntity inserting", persistenceStoreControllerAction.entities);
             // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            await this.createEntities(storeControllerAction.entities);
+            await this.createEntities(persistenceStoreControllerAction.entities);
             break;
           }
           default:
-            log.warn("handleAction could not handle action", storeControllerAction);
+            log.warn("handleAction could not handle action", persistenceStoreControllerAction);
             break;
         }
     
@@ -167,10 +167,10 @@ export class StoreController implements StoreControllerInterface {
       }
       case "instanceAction": {
         // TODO: check await calls for errors!
-        switch (storeControllerAction.actionName) {
+        switch (persistenceStoreControllerAction.actionName) {
           case "updateInstance": 
           case "createInstance": {
-            for (const instanceCollection of storeControllerAction.objects) {
+            for (const instanceCollection of persistenceStoreControllerAction.objects) {
               for (const instance of instanceCollection.instances) {
                 await this.upsertInstance(instanceCollection.applicationSection,instance)
               }
@@ -178,7 +178,7 @@ export class StoreController implements StoreControllerInterface {
             break;
           }
           case "deleteInstance": {
-            for (const instanceCollection of storeControllerAction.objects) {
+            for (const instanceCollection of persistenceStoreControllerAction.objects) {
               await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
             }
             break;
@@ -187,15 +187,15 @@ export class StoreController implements StoreControllerInterface {
           //   break;
           // }
           case "replaceLocalCache": {
-            throw new Error("StoreController handleAction can not handle replaceLocalCache action!");
+            throw new Error("PersistenceStoreController handleAction can not handle replaceLocalCache action!");
             break;
           }
           case "getInstance": {
-            return this.getInstance(storeControllerAction.applicationSection,storeControllerAction.parentUuid, storeControllerAction.uuid)
+            return this.getInstance(persistenceStoreControllerAction.applicationSection,persistenceStoreControllerAction.parentUuid, persistenceStoreControllerAction.uuid)
             break;
           }
           case "getInstances": {
-            return this.getInstances(storeControllerAction.applicationSection,storeControllerAction.parentUuid)
+            return this.getInstances(persistenceStoreControllerAction.applicationSection,persistenceStoreControllerAction.parentUuid)
             break;
           }
           default:
@@ -204,7 +204,7 @@ export class StoreController implements StoreControllerInterface {
         break;
       }
       default: {
-        throw new Error("StoreController handleAction could not handleAction " + storeControllerAction);
+        throw new Error("PersistenceStoreController handleAction could not handleAction " + persistenceStoreControllerAction);
         break;
       }
     }

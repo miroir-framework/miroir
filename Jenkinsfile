@@ -62,11 +62,11 @@ pipeline {
           sh 'cd "${target_build_dir}" && npm run build -w miroir-standalone-app'
         }
       }
-      stage('tests-LocalStoreController') { 
+      stage('tests-LocalPersistenceStoreController') { 
         steps {
-          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app  -- LocalStoreController'
-          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- LocalStoreController'
-          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- LocalStoreController'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-indexedDb npm run test -w miroir-standalone-app  -- LocalPersistenceStoreController'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-filesystem npm run test -w miroir-standalone-app -- LocalPersistenceStoreController'
+          sh 'cd "${target_build_dir}" && VITE_MIROIR_LOG_CONFIG_FILENAME=./tests/specificLoggersConfig_info VITE_MIROIR_TEST_CONFIG_FILENAME=./tests/miroirConfig.test-ci-emulatedServer-dockerized-sql npm run test -w miroir-standalone-app -- LocalPersistenceStoreController'
         }
       }
       stage('tests-DomainController-indexedDb') { 

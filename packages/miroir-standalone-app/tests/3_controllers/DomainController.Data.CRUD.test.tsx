@@ -26,7 +26,7 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   EntityInstance,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirContext,
@@ -54,7 +54,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
-import { ReduxStore } from "miroir-localcache-redux";
+import { LocalCache } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
 import { loglevelnext } from '../../src/loglevelnextImporter';
@@ -91,11 +91,11 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-let localMiroirStoreController: StoreControllerInterface;
-let localAppStoreController: StoreControllerInterface;
+let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localDataStoreWorker: SetupWorkerApi | undefined;
-let reduxStore: ReduxStore;
+let localCache: LocalCache;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 
@@ -107,11 +107,11 @@ beforeAll(
       setupServer,
     );
     if (wrapped) {
-      if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
-        localMiroirStoreController = wrapped.localMiroirStoreController;
-        localAppStoreController = wrapped.localAppStoreController;
+      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
+        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      reduxStore = wrapped.reduxStore;
+      localCache = wrapped.localCache;
       miroirContext = wrapped.miroirContext;
       domainController = wrapped.domainController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
@@ -126,19 +126,19 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirStoreController,localAppStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(miroirConfig, domainController, localMiroirStoreController,localAppStoreController,localDataStoreServer);
+    await miroirAfterAll(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, localMiroirStoreController, localAppStoreController);
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
   }
 )
 
@@ -150,9 +150,9 @@ describe.sequential('DomainController.Data.CRUD',
       async() => {
         await refreshAllInstancesTest(
           miroirConfig,
-          localMiroirStoreController,
-          localAppStoreController,
-          reduxStore,
+          localMiroirPersistenceStoreController,
+          localAppPersistenceStoreController,
+          localCache,
           domainController,
           miroirContext,
         );
@@ -172,16 +172,16 @@ describe.sequential('DomainController.Data.CRUD',
           // await localDataStore.clear();
           // await localDataStore.initModel();
           if (miroirConfig.client.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-            // await localAppStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
-            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+            // await localAppPersistenceStoreController?.upsertInstance('data',book3.parentUuid, book3 as Instance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
               actionType: "modelAction",
@@ -198,7 +198,7 @@ describe.sequential('DomainController.Data.CRUD',
               async () => {
                 await domainController.handleAction(
                   createAction,
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   {
@@ -207,7 +207,7 @@ describe.sequential('DomainController.Data.CRUD',
                     deploymentUuid: applicationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -261,7 +261,7 @@ describe.sequential('DomainController.Data.CRUD',
               deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
-            {store:reduxStore.getInnerStore()}
+            {store:localCache.getInnerStore()}
           );
   
           // ##########################################################################################################
@@ -385,16 +385,16 @@ describe.sequential('DomainController.Data.CRUD',
           const user = userEvent.setup()
 
           if (miroirConfig.client.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            await localAppStoreController.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', book2 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', book3 as EntityInstance);
-            await localAppStoreController.upsertInstance('data', book4 as EntityInstance);
+            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppPersistenceStoreController.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', author1 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', author2 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', author3 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', book1 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', book2 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', book3 as EntityInstance);
+            await localAppPersistenceStoreController.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
               actionType: "modelAction",
@@ -409,7 +409,7 @@ describe.sequential('DomainController.Data.CRUD',
 
             await act(
               async () => {
-                await domainController.handleAction(createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleAction(
                   {
                     actionName: "commit",
@@ -417,7 +417,7 @@ describe.sequential('DomainController.Data.CRUD',
                     deploymentUuid: applicationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -471,7 +471,7 @@ describe.sequential('DomainController.Data.CRUD',
               deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
-            {store:reduxStore.getInnerStore()}
+            {store:localCache.getInnerStore()}
           );
   
           // ##########################################################################################################
@@ -595,16 +595,16 @@ describe.sequential('DomainController.Data.CRUD',
           // await localDataStore.clear();
           // await localDataStore.initModel();
           if (miroirConfig.client.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
+            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book3 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
           } else {
             const createAction: DomainAction = {
               actionType: "modelAction",
@@ -619,7 +619,7 @@ describe.sequential('DomainController.Data.CRUD',
 
             await act(
               async () => {
-                await domainController.handleAction(createAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+                await domainController.handleAction(createAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
                 await domainController.handleAction(
                   {
                     actionName: "commit",
@@ -627,7 +627,7 @@ describe.sequential('DomainController.Data.CRUD',
                     deploymentUuid: applicationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -682,7 +682,7 @@ describe.sequential('DomainController.Data.CRUD',
               deploymentUuid={applicationDeploymentLibrary.uuid}
             />
             ,
-            {store:reduxStore.getInnerStore()}
+            {store:localCache.getInnerStore()}
           );
   
           // ##########################################################################################################

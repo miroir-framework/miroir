@@ -243,7 +243,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         }
       } else {
         log.warn(
-          "StoreController dropEntity sublevel for entityEntityDefinition does not exist",
+          "PersistenceStoreController dropEntity sublevel for entityEntityDefinition does not exist",
           entityEntityDefinition.uuid,
           this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
         );

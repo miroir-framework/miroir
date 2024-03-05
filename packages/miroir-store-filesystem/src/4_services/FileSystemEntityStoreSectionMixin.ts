@@ -178,7 +178,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         }
       } else {
         log.warn(
-          "StoreController dropEntity entity entityEntityDefinition does not exist",
+          "PersistenceStoreController dropEntity entity entityEntityDefinition does not exist",
           entityEntityDefinition.uuid,
           "existing entities",
           this.getEntityUuids()

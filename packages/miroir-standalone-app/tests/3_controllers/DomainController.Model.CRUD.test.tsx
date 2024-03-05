@@ -12,7 +12,7 @@ import {
   DomainControllerInterface,
   EntityDefinition,
   EntityInstance,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   MetaEntity,
   MiroirConfigClient,
   MiroirContext,
@@ -40,7 +40,7 @@ import {
   reportReportList
 } from "miroir-core";
 
-import { ReduxStore } from "miroir-localcache-redux";
+import { LocalCache } from "miroir-localcache-redux";
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
   DisplayLoadingInfo,
@@ -80,11 +80,11 @@ miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
 
-let localMiroirStoreController: StoreControllerInterface;
-let localAppStoreController: StoreControllerInterface;
+let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let localDataStoreWorker: SetupWorkerApi | undefined;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
-let reduxStore: ReduxStore;
+let localCache: LocalCache;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 
@@ -97,11 +97,11 @@ beforeAll(
     );
 
     if (wrapped) {
-      if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
-        localMiroirStoreController = wrapped.localMiroirStoreController;
-        localAppStoreController = wrapped.localAppStoreController;
+      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
+        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      reduxStore = wrapped.reduxStore;
+      localCache = wrapped.localCache;
       miroirContext = wrapped.miroirContext;
       domainController = wrapped.domainController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
@@ -114,19 +114,19 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirStoreController,localAppStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
 afterAll(
   async () => {
-    await miroirAfterAll(miroirConfig, domainController, localMiroirStoreController,localAppStoreController,localDataStoreServer);
+    await miroirAfterAll(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController,localDataStoreServer);
   }
 )
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, localMiroirStoreController,localAppStoreController);
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController,localAppPersistenceStoreController);
   }
 )
 
@@ -155,7 +155,7 @@ describe.sequential(
               instancesApplicationSection="model"
             />
             ,
-            {store:reduxStore.getInnerStore()}
+            {store:localCache.getInnerStore()}
           );
   
           await act(
@@ -220,7 +220,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -274,7 +274,7 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAction,
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -361,7 +361,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -416,7 +416,7 @@ describe.sequential(
   
           await act(
             async () => {
-              await domainController.handleAction(createAction,reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(createAction,localCache.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -448,7 +448,7 @@ describe.sequential(
   
           // ##########################################################################################################
           console.log('add Entity step 3: committing Author Entity to remote store, Author Entity must be present in the Entity list afterwards.')
-          // log.info('reduxStore.currentModel(applicationDeploymentLibrary.uuid)',reduxStore.currentModel(applicationDeploymentLibrary.uuid))
+          // log.info('localCache.currentModel(applicationDeploymentLibrary.uuid)',localCache.currentModel(applicationDeploymentLibrary.uuid))
           await act(
             async () => {
               await domainController.handleAction(
@@ -458,7 +458,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -490,7 +490,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -562,7 +562,7 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAction,
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -577,7 +577,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -595,8 +595,8 @@ describe.sequential(
                 deploymentUuid={applicationDeploymentLibrary.uuid}
                 instancesApplicationSection="model"
               />,
-            {store:reduxStore.getInnerStore()}
-            // {store:reduxStore.getInnerStore(),loadingStateService:loadingStateService}
+            {store:localCache.getInnerStore()}
+            // {store:localCache.getInnerStore(),loadingStateService:loadingStateService}
           );
           
   
@@ -641,7 +641,7 @@ describe.sequential(
                   entityUuid: entityAuthor.uuid,
                   entityDefinitionUuid: entityDefinitionAuthor.uuid,
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
               console.log("remove Author entity step 2: removing Author entity from local store DONE")
             }
@@ -674,7 +674,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
               console.log("remove Author entity step 3: commit to remote store DONE")
             }
@@ -736,16 +736,16 @@ describe.sequential(
           const user = userEvent.setup()
   
           if (miroirConfig.client.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
+            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            // await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
+          } else {  // remote server, cannot use localAppPersistenceStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
@@ -775,11 +775,11 @@ describe.sequential(
               async () => {
                 await domainController.handleAction(
                   createActionAuthor,
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   createActionBook,
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   {
@@ -788,7 +788,7 @@ describe.sequential(
                     deploymentUuid: applicationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -842,7 +842,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -893,7 +893,7 @@ describe.sequential(
           ;
           await act(
             async () => {
-              await domainController.handleAction(updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(updateAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -932,7 +932,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -996,16 +996,16 @@ describe.sequential(
           const user = userEvent.setup()
   
           if (miroirConfig.client.emulateServer) {
-            await localAppStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
-            await localAppStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
-            // await localAppStoreController?.upsertInstance('model', reportBookList as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', author3 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book1 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book2 as EntityInstance);
-            await localAppStoreController?.upsertInstance('data', book4 as EntityInstance);
-          } else {  // remote server, cannot use localAppStoreController to initiate store, using DomainController
+            await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity, entityDefinitionAuthor as EntityDefinition);
+            await localAppPersistenceStoreController.createEntity(entityBook as MetaEntity, entityDefinitionBook as EntityDefinition);
+            // await localAppPersistenceStoreController?.upsertInstance('model', reportBookList as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', author3 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book2 as EntityInstance);
+            await localAppPersistenceStoreController?.upsertInstance('data', book4 as EntityInstance);
+          } else {  // remote server, cannot use localAppPersistenceStoreController to initiate store, using DomainController
             const createActionAuthor: DomainAction = {
               actionType: "modelAction",
               actionName: "createEntity",
@@ -1035,11 +1035,11 @@ describe.sequential(
               async () => {
                 await domainController.handleAction(
                   createActionAuthor,
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   createActionBook,
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
                 await domainController.handleAction(
                   {
@@ -1048,7 +1048,7 @@ describe.sequential(
                     deploymentUuid: applicationDeploymentLibrary.uuid,
                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   },
-                  reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                  localCache.currentModel(applicationDeploymentLibrary.uuid)
                 );
               }
             );
@@ -1102,7 +1102,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -1163,7 +1163,7 @@ describe.sequential(
           ;
           await act(
             async () => {
-              await domainController.handleAction(updateAction, reduxStore.currentModel(applicationDeploymentLibrary.uuid));
+              await domainController.handleAction(updateAction, localCache.currentModel(applicationDeploymentLibrary.uuid));
             }
           );
   
@@ -1202,7 +1202,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -1279,7 +1279,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentMiroir.uuid}
               instancesApplicationSection="data"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -1340,7 +1340,7 @@ describe.sequential(
 
           await act(
             async () => {
-              await domainController.handleAction(updateAction, reduxStore.currentModel(applicationDeploymentMiroir.uuid));
+              await domainController.handleAction(updateAction, localCache.currentModel(applicationDeploymentMiroir.uuid));
             }
           );
   
@@ -1379,7 +1379,7 @@ describe.sequential(
                   deploymentUuid: applicationDeploymentMiroir.uuid,
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                 },
-                reduxStore.currentModel(applicationDeploymentMiroir.uuid)
+                localCache.currentModel(applicationDeploymentMiroir.uuid)
               );
             }
           );

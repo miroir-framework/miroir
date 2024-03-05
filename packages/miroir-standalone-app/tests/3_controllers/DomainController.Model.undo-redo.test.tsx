@@ -13,7 +13,7 @@ import {
   MiroirConfigClient,
   MiroirContext,
   MiroirLoggerFactory,
-  StoreControllerInterface,
+  PersistenceStoreControllerInterface,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultLevels,
@@ -25,7 +25,7 @@ import {
   entityReport,
   miroirCoreStartup
 } from "miroir-core";
-import { ReduxStore } from "miroir-localcache-redux";
+import { LocalCache } from "miroir-localcache-redux";
 
 import { TestUtilsTableComponent } from "miroir-standalone-app/tests/utils/TestUtilsTableComponent";
 import {
@@ -76,11 +76,11 @@ miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
-let localMiroirStoreController: StoreControllerInterface;
-let localAppStoreController: StoreControllerInterface;
+let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
+let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
 let localDataStoreServer: any /**SetupServerApi | undefined */;
 let localDataStoreWorker: SetupWorkerApi | undefined;
-let reduxStore: ReduxStore;
+let localCache: LocalCache;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
 
@@ -91,11 +91,11 @@ beforeAll(
       setupServer,
     );
     if (wrapped) {
-      if (wrapped.localMiroirStoreController && wrapped.localAppStoreController) {
-        localMiroirStoreController = wrapped.localMiroirStoreController;
-        localAppStoreController = wrapped.localAppStoreController;
+      if (wrapped.localMiroirPersistenceStoreController && wrapped.localAppPersistenceStoreController) {
+        localMiroirPersistenceStoreController = wrapped.localMiroirPersistenceStoreController;
+        localAppPersistenceStoreController = wrapped.localAppPersistenceStoreController;
       }
-      reduxStore = wrapped.reduxStore;
+      localCache = wrapped.localCache;
       miroirContext = wrapped.miroirContext;
       domainController = wrapped.domainController;
       localDataStoreWorker = wrapped.localDataStoreWorker as SetupWorkerApi;
@@ -108,7 +108,7 @@ beforeAll(
 
 beforeEach(
   async () => {
-    await miroirBeforeEach(miroirConfig, domainController, localMiroirStoreController, localAppStoreController);
+    await miroirBeforeEach(miroirConfig, domainController, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
   }
 )
 
@@ -117,8 +117,8 @@ afterAll(
     await miroirAfterAll(
       miroirConfig,
       domainController,
-      localMiroirStoreController,
-      localAppStoreController,
+      localMiroirPersistenceStoreController,
+      localAppPersistenceStoreController,
       localDataStoreServer
     );
   }
@@ -126,7 +126,7 @@ afterAll(
 
 afterEach(
   async () => {
-    await miroirAfterEach(miroirConfig, domainController, localMiroirStoreController, localAppStoreController);
+    await miroirAfterEach(miroirConfig, domainController, localMiroirPersistenceStoreController, localAppPersistenceStoreController);
   }
 )
 
@@ -159,7 +159,7 @@ describe.sequential(
               deploymentUuid={applicationDeploymentLibrary.uuid}
               instancesApplicationSection="model"
             />,
-            {store:reduxStore.getInnerStore(),}
+            {store:localCache.getInnerStore(),}
           );
   
           // ##########################################################################################################
@@ -226,11 +226,11 @@ describe.sequential(
             async () => {
               await domainController.handleAction(
                 createAuthorAction,
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
               await domainController.handleAction(
                 createBookAction,
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );
@@ -482,7 +482,7 @@ describe.sequential(
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   deploymentUuid: applicationDeploymentLibrary.uuid,
                 },
-                reduxStore.currentModel(applicationDeploymentLibrary.uuid)
+                localCache.currentModel(applicationDeploymentLibrary.uuid)
               );
             }
           );

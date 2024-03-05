@@ -34,7 +34,7 @@ export class FileSystemAdminStore extends FileSystemStore implements AdminStoreI
 
   // ##############################################################################################
   async createStore(config: StoreSectionConfiguration): Promise<ActionVoidReturnType> {
-    // does not need to do anything, new IndexedDb() is done in the storeSectionFactory, thus called by StoreControllerManager.addStoreController, where storeSectionFactory is called
+    // does not need to do anything, new IndexedDb() is done in the storeSectionFactory, thus called by PersistenceStoreControllerManager.addPersistenceStoreController, where storeSectionFactory is called
     return Promise.resolve(ACTION_OK)
   }
 
