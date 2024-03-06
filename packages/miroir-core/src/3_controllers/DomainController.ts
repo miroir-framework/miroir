@@ -20,6 +20,7 @@ import entityEntity from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873
 import entityApplicationVersion from '../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json';
 
 import {
+  ActionVoidReturnType,
   ApplicationSection,
   ApplicationVersion,
   DomainAction,
@@ -39,6 +40,7 @@ import { Endpoint } from './Endpoint.js';
 import { CallUtils } from './ErrorHandling/CallUtils.js';
 import { metaModelEntities, miroirModelEntities } from './ModelInitializer';
 import { cleanLevel } from './constants.js';
+import { ACTION_OK } from '../1_core/constants.js';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainController");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -84,7 +86,7 @@ export class DomainController implements DomainControllerInterface {
     deploymentUuid: Uuid,
     undoRedoAction: UndoRedoAction,
     currentModel: MetaModel
-  ): Promise<void> {
+  ): Promise<ActionVoidReturnType> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainUndoRedoAction start actionName",
       undoRedoAction["actionName"],
@@ -125,14 +127,14 @@ export class DomainController implements DomainControllerInterface {
         error
       );
     }
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
   async handleInstanceAction(
     deploymentUuid: Uuid,
     instanceAction: InstanceAction
-  ): Promise<void> {
+  ): Promise<ActionVoidReturnType> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainNonTransactionalInstanceAction deployment",
       deploymentUuid,
@@ -168,7 +170,7 @@ export class DomainController implements DomainControllerInterface {
         "handleDomainNonTransactionalInstanceAction end",
         instanceAction
       );
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -177,7 +179,7 @@ export class DomainController implements DomainControllerInterface {
     deploymentUuid: Uuid,
     modelAction: ModelAction,
     currentModel: MetaModel
-  ): Promise<void> {
+  ): Promise<ActionVoidReturnType> {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionName=",
       modelAction["actionName"],
@@ -202,7 +204,6 @@ export class DomainController implements DomainControllerInterface {
             await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
-              // replayAction.deploymentUuid,
               modelAction
             );
             log.info("handleModelAction running for non-transactional action DONE!")
@@ -220,7 +221,6 @@ export class DomainController implements DomainControllerInterface {
           await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
-            // modelAction.deploymentUuid,
             modelAction
           );
           break;
@@ -283,7 +283,6 @@ export class DomainController implements DomainControllerInterface {
                       await this.callUtil.callPersistenceAction(
                         {}, // context
                         {}, // context update
-                        // deploymentUuid,
                         {
                           actionType: "RestPersistenceAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
@@ -300,7 +299,6 @@ export class DomainController implements DomainControllerInterface {
                   await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
-                    // replayAction.deploymentUuid,
                     {
                       ...replayAction,
                       "transactional": false
@@ -376,7 +374,6 @@ export class DomainController implements DomainControllerInterface {
                 return this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // context update
-                  // deploymentUuid,
                   newStoreBasedConfiguration
                 );
               });
@@ -402,7 +399,7 @@ export class DomainController implements DomainControllerInterface {
         error
       );
     }
-    return Promise.resolve();
+    return Promise.resolve(ACTION_OK);
   }
 
   //####################################################################################
@@ -413,7 +410,7 @@ export class DomainController implements DomainControllerInterface {
    * performs remote update before local update, so that whenever remote update fails, local value is not modified (going into the "catch").
    * @returns undefined when loading is finished
    */
-  public async loadConfigurationFromRemoteDataStore(deploymentUuid: string): Promise<void> {
+  public async loadConfigurationFromRemoteDataStore(deploymentUuid: string): Promise<ActionVoidReturnType> {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment", deploymentUuid);
     try {
       await this.callUtil
@@ -552,14 +549,14 @@ export class DomainController implements DomainControllerInterface {
           return context;
         });
 
-      return Promise.resolve();
-    } catch (error) {
-      log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
-    }
+      } catch (error) {
+        log.warn("DomainController loadConfigurationFromRemoteDataStore caught error:", error);
+      }
+      return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
-  async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<void> {
+  async handleAction(domainAction: DomainAction, currentModel: MetaModel): Promise<ActionVoidReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
       "handleAction",
@@ -577,23 +574,20 @@ export class DomainController implements DomainControllerInterface {
 
     switch (domainAction.actionType) {
       case "modelAction": {
-        await this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
-        return Promise.resolve();
+        return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
       }
       case "instanceAction": {
-        await this.handleInstanceAction(
+        return this.handleInstanceAction(
           domainAction.deploymentUuid,
           domainAction
         );
-        return Promise.resolve();
       }
       case "undoRedoAction": {
-        await this.handleDomainUndoRedoAction(
+        return this.handleDomainUndoRedoAction(
           domainAction.deploymentUuid,
           domainAction,
           currentModel
         );
-        return Promise.resolve();
       }
       case "transactionalInstanceAction": {
         try {
@@ -614,7 +608,7 @@ export class DomainController implements DomainControllerInterface {
             error
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(ACTION_OK);
         break;
       }
       default:
@@ -623,5 +617,6 @@ export class DomainController implements DomainControllerInterface {
           domainAction
         );
     }
+    return Promise.resolve(ACTION_OK)
   }
 }

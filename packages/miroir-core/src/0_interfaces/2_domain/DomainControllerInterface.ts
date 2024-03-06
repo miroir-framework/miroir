@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  ActionVoidReturnType,
   DomainAction,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -71,7 +72,7 @@ export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstanc
 // ###################################################################################
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
-  handleAction(action: DomainAction, currentModel?: MetaModel): Promise<void>;
+  handleAction(action: DomainAction, currentModel?: MetaModel): Promise<ActionVoidReturnType>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?
