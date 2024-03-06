@@ -7,6 +7,7 @@ import {
   LocalCacheAction,
   MetaModel,
   ModelAction,
+  ModelActionReplayableAction,
   TransactionalInstanceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
 
@@ -24,7 +25,7 @@ export declare interface LocalCacheInterface
   getState(): any; // TODO: local store should not directly expose its internal state!!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
-  currentTransaction():(TransactionalInstanceAction | ModelAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+  currentTransaction():(TransactionalInstanceAction | ModelActionReplayableAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
 
   // ##############################################################################################
   handleLocalCacheAction(action:LocalCacheAction):ActionReturnType;

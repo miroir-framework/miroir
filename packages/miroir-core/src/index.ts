@@ -140,6 +140,8 @@ export {
   miroirSelectQueriesRecord,
   ModelAction,
   modelAction,
+  modelActionReplayableAction,
+  ModelActionReplayableAction,
   ModelActionAlterEntityAttribute,
   modelActionAlterEntityAttribute,
   ModelActionRenameEntity,
@@ -190,18 +192,6 @@ from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js"
 
 export {
   miroirJzodSchemaBootstrapZodSchema,
-  // EntityAttributeCoreSchema,
-  // EntityAttributeCore,
-  // EntityArrayAttributeSchema,
-  // EntityArrayAttribute,
-  // EntityAttributeExpandedType,
-  // EntityAttributeExpandedTypeSchema,
-  // EntityAttributeSchema,
-  // EntityAttribute,
-  // EntityAttributeTypeSchema,
-  // EntityAttributeType,
-  // EntityAttributePartialSchema,
-  // EntityAttributePartial,
   InstanceDictionaryNum,
   InstanceDictionary,
   MetaEntitySchema,
@@ -210,8 +200,6 @@ export {
   Uuid,
 } from './0_interfaces/1_core/EntityDefinition.js';
 export {
-  // ApplicationConceptLevelSchema,
-  // ApplicationConceptLevel,
   ApplicationSectionOpposite,
   EntityInstanceWithNameSchema,
   EntityInstanceWithName,
@@ -230,13 +218,6 @@ export {
   // StoreBasedConfigurationSchema,
   // StoreBasedConfiguration,
 } from './0_interfaces/1_core/MiroirConfig';
-// export {
-//   ApplicationModelSchema,
-//   MiroirApplicationModel,
-// } from './0_interfaces/1_core/Model.js';
-// export {
-//   MiroirApplicationVersionOLD_DO_NOT_USE,
-// } from './0_interfaces/1_core/ModelVersion.js';
 export {
   ClientFileStorage,
   ApplicationDeploymentSchema,

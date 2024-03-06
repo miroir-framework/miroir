@@ -19,6 +19,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ModelAction,
+  ModelActionReplayableAction,
   TransactionalInstanceAction
 } from "miroir-core";
 import { packageName } from '../constants';
@@ -187,7 +188,7 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
-  currentTransaction(): (TransactionalInstanceAction | ModelAction)[] {
+  currentTransaction(): (TransactionalInstanceAction | ModelActionReplayableAction)[] {
     // log.info("LocalCache currentTransaction called");
     return this.innerReduxStore.getState().pastModelPatches.map((p) => p.action);
   }

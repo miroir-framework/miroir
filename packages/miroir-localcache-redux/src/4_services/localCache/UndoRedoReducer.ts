@@ -7,6 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ModelAction,
+  ModelActionReplayableAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction,
@@ -120,7 +121,7 @@ function callUndoRedoReducer(
 const callNextReducerWithUndoRedo = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelAction | TransactionalInstanceAction>
+  action: PayloadAction<ModelActionReplayableAction | TransactionalInstanceAction>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -158,7 +159,7 @@ const callNextReducerWithUndoRedo = (
 const callNextReducerWithUndoRedoForModelAction = (
   innerReducer: InnerReducerInterface,
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<ModelAction | TransactionalInstanceAction>
+  action: PayloadAction<ModelActionReplayableAction | TransactionalInstanceAction>
 ): ReduxStateWithUndoRedo => {
   const { currentTransaction, previousModelSnapshot, pastModelPatches, presentModelSnapshot, futureModelPatches } =
     state;
@@ -250,14 +251,32 @@ function handleModelAction(
       };
       break;
     }
+    case "initModel":
+    case "resetModel":
+    case "resetData": {
+      return callNextReducer(innerReducer, state, action as any);
+      // log.debug("reduceWithUndoRedo handleModelAction nothing to do for action", JSON.stringify(action.payload, null, 2))
+      break;
+    }
+    case "alterEntityAttribute":
+    case "renameEntity":
+    case "createEntity":
+    case "dropEntity": {
+      if (action.payload.transactional == false) {
+        return callNextReducer(innerReducer, state, action as any);        
+      } else {
+        const localAction: PayloadAction<ModelActionReplayableAction> = action as PayloadAction<ModelActionReplayableAction>;
+        return callNextReducerWithUndoRedoForModelAction(
+          innerReducer,
+          state,
+          localAction
+        );
+      }
+    }
     default: {
       // TODO: explicitly handle DomainModelEntityUpdateActions by using their actionName!
-      // log.warn('UndoRedoReducer handleAction default case for DomainTransactionalInstanceAction action.payload.actionName', action.payload.domainAction.actionName, action);
-      return callNextReducerWithUndoRedoForModelAction(
-        innerReducer,
-        state,
-        action
-      );
+      log.warn('UndoRedoReducer handleAction default case for DomainTransactionalInstanceAction action.payload.actionName', JSON.stringify(action.payload, undefined, 2));
+      return callNextReducer(innerReducer, state, action as any);        
       break;
     }
   }

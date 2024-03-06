@@ -1218,6 +1218,23 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "domainAction": { "type": "union", "definition": domainEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "localCacheAction": { "type": "union", "definition": localCacheEndpointVersionV1.definition.actions.map(e=>e.actionParameters)},
       "storeManagementAction": { "type": "union", "definition": storeManagementEndpoint.definition.actions.map(e=>e.actionParameters)},
+      "modelActionReplayableAction": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionAlterEntityAttribute" }
+          },
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionCreateEntity" }
+          },
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionDropEntity" }
+          },
+          {
+            "type": "schemaReference", "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "modelActionRenameEntity" }
+          }
+        ]
+      },
       "bundleAction": {
         "type": "union",
         "definition": [

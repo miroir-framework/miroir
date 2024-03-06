@@ -179,7 +179,7 @@ export class DomainController implements DomainControllerInterface {
     currentModel: MetaModel
   ): Promise<void> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction start actionName",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction START actionName=",
       modelAction["actionName"],
       "deployment",
       deploymentUuid,
@@ -196,6 +196,17 @@ export class DomainController implements DomainControllerInterface {
         case 'createEntity':
         case 'renameEntity':
         case 'dropEntity': {
+          if (modelAction.transactional == false) {
+            // the modelAction is not transactional, we update the persistentStore directly
+            log.info("handleModelAction running for non-transactional action!")
+            await this.callUtil.callPersistenceAction(
+              {}, // context
+              {}, // context update
+              // replayAction.deploymentUuid,
+              modelAction
+            );
+            log.info("handleModelAction running for non-transactional action DONE!")
+          }
           await this.callUtil.callLocalCacheAction(
             {}, // context
             {}, // context update
@@ -290,7 +301,10 @@ export class DomainController implements DomainControllerInterface {
                     {}, // context
                     {}, // context update
                     // replayAction.deploymentUuid,
-                    replayAction
+                    {
+                      ...replayAction,
+                      "transactional": false
+                    }
                   );
                   break;
                 }

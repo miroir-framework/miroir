@@ -177,6 +177,9 @@ export async function miroirBeforeAll(
 
     persistenceSaga.run(localCache)
 
+    persistenceStoreControllerManager.setPersistenceStore(persistenceSaga); // useless?
+    persistenceStoreControllerManager.setLocalCache(localCache);
+
     const domainController: DomainControllerInterface = new DomainController(
       miroirContext,
       localCache, // implements LocalCacheInterface
@@ -223,6 +226,7 @@ export async function miroirBeforeAll(
         );
       }
 
+
       const localMiroirPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
       const localAppPersistenceStoreControllerTmp = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
 
@@ -247,6 +251,19 @@ export async function miroirBeforeAll(
 
       localDataStoreServer?.listen();
       await startLocalPersistenceStoreControllers(localMiroirPersistenceStoreController, localAppPersistenceStoreController)
+
+      console.warn('miroirBeforeAll: emulateServer is true in miroirConfig, a real server is used, tests results depend on the availability of the server.');
+      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+      await remoteStore.handlePersistenceAction({
+        actionType: "storeManagementAction",
+        actionName: "openStore",
+        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+        configuration: {
+          [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig as StoreUnitConfiguration,
+        },
+        deploymentUuid: applicationDeploymentMiroir.uuid,
+      })
 
       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ localDataStore.open',JSON.stringify(localMiroirPersistenceStoreController, circularReplacer()));
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ miroirBeforeAll DONE');

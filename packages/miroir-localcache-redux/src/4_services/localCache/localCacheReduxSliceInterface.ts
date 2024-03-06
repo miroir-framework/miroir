@@ -6,6 +6,7 @@ import {
   InstanceAction,
   LocalCacheAction,
   ModelAction,
+  ModelActionReplayableAction,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction,
@@ -24,7 +25,7 @@ import { z } from "zod";
  * 
  */
 export interface ReduxStateChanges {
-  action: TransactionalInstanceAction | ModelAction;
+  action: TransactionalInstanceAction | ModelActionReplayableAction;
   changes: Patch[];
   inverseChanges: Patch[];
 }

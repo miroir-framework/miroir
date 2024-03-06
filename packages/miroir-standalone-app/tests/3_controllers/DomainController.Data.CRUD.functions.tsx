@@ -140,7 +140,7 @@ export async function refreshAllInstancesTest(
       );
     }
 
-    log.info("Refresh all Instances setup is finished.")
+    // log.info("Refresh all Instances setup is finished.")
 
     // log.info(
     //   'after test preparation',
@@ -177,7 +177,7 @@ export async function refreshAllInstancesTest(
       });
     });
 
-    log.info("Refresh all Instances start", JSON.stringify(localCache.getState()));
+    log.info("Refresh all Instances start test", JSON.stringify(localCache.getState()));
     
     await act(()=>user.click(screen.getByRole("button")));
 
