@@ -728,6 +728,89 @@ export type MiroirCustomQueryParams = {
     name: "jsonata";
     definition: string;
 };
+export type LocalCacheEntityInstancesSelectorParams = {
+    deploymentUuid?: string | undefined;
+    applicationSection?: ApplicationSection | undefined;
+    entityUuid?: string | undefined;
+    instanceUuid?: string | undefined;
+};
+export type LocalCacheQueryParams = {
+    queryType: "LocalCacheEntityInstancesSelectorParams";
+    definition: LocalCacheEntityInstancesSelectorParams;
+};
+export type DomainSingleSelectObjectQueryWithDeployment = {
+    queryType: "domainSingleSelectQueryWithDeployment";
+    deploymentUuid: string;
+    select: SelectObjectQuery;
+};
+export type DomainSingleSelectObjectListQueryWithDeployment = {
+    queryType: "domainSingleSelectQueryWithDeployment";
+    deploymentUuid: string;
+    select: SelectObjectListQuery;
+};
+export type DomainSingleSelectQueryWithDeployment = {
+    queryType: "domainSingleSelectQueryWithDeployment";
+    deploymentUuid: string;
+    select: MiroirSelectQuery;
+};
+export type DomainModelRootQuery = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+};
+export type DomainModelGetSingleSelectObjectQueryQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getSingleSelectQuery";
+    singleSelectQuery: DomainSingleSelectObjectQueryWithDeployment;
+};
+export type DomainModelGetSingleSelectObjectListQueryQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getSingleSelectQuery";
+    singleSelectQuery: DomainSingleSelectObjectListQueryWithDeployment;
+};
+export type DomainModelGetSingleSelectQueryQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getSingleSelectQuery";
+    singleSelectQuery: DomainSingleSelectQueryWithDeployment;
+};
+export type DomainManyQueriesWithDeploymentUuid = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "DomainManyQueries";
+    deploymentUuid: string;
+    fetchQuery: MiroirFetchQuery;
+};
+export type DomainModelGetEntityDefinitionQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getEntityDefinition";
+    deploymentUuid: string;
+    entityUuid: string;
+};
+export type DomainModelGetFetchParamJzodSchemaQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getFetchParamsJzodSchema";
+    fetchParams: DomainManyQueriesWithDeploymentUuid;
+};
+export type DomainModelGetSingleSelectQueryJzodSchemaQueryParams = {
+    pageParams: DomainElementObject;
+    queryParams: DomainElementObject;
+    contextResults: DomainElementObject;
+    queryType: "getSingleSelectQueryJzodSchema";
+    singleSelectQuery: DomainSingleSelectQueryWithDeployment;
+};
+export type DomainModelQueryJzodSchemaParams = DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
+export type MiroirSelectorQueryParams = DomainSingleSelectQueryWithDeployment | DomainModelGetSingleSelectQueryQueryParams | DomainManyQueriesWithDeploymentUuid | LocalCacheQueryParams | MiroirCustomQueryParams | DomainModelQueryJzodSchemaParams;
 export type ______________________________________________actions_____________________________________________ = never;
 export type ActionError = {
     status: "error";
@@ -1169,6 +1252,21 @@ export const domainElement: z.ZodType<DomainElement> = z.union([z.lazy(() =>doma
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
 export const miroirCustomQueryParams: z.ZodType<MiroirCustomQueryParams> = z.object({queryType:z.literal("custom"), name:z.literal("jsonata"), definition:z.string()}).strict();
+export const localCacheEntityInstancesSelectorParams: z.ZodType<LocalCacheEntityInstancesSelectorParams> = z.object({deploymentUuid:z.string().uuid().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), entityUuid:z.string().uuid().optional(), instanceUuid:z.string().uuid().optional()}).strict();
+export const localCacheQueryParams: z.ZodType<LocalCacheQueryParams> = z.object({queryType:z.literal("LocalCacheEntityInstancesSelectorParams"), definition:z.lazy(() =>localCacheEntityInstancesSelectorParams)}).strict();
+export const domainSingleSelectObjectQueryWithDeployment: z.ZodType<DomainSingleSelectObjectQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectQuery)}).strict();
+export const domainSingleSelectObjectListQueryWithDeployment: z.ZodType<DomainSingleSelectObjectListQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>selectObjectListQuery)}).strict();
+export const domainSingleSelectQueryWithDeployment: z.ZodType<DomainSingleSelectQueryWithDeployment> = z.object({queryType:z.literal("domainSingleSelectQueryWithDeployment"), deploymentUuid:z.string().uuid(), select:z.lazy(() =>miroirSelectQuery)}).strict();
+export const domainModelRootQuery: z.ZodType<DomainModelRootQuery> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict();
+export const domainModelGetSingleSelectObjectQueryQueryParams: z.ZodType<DomainModelGetSingleSelectObjectQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectObjectQueryWithDeployment)}).strict();
+export const domainModelGetSingleSelectObjectListQueryQueryParams: z.ZodType<DomainModelGetSingleSelectObjectListQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectObjectListQueryWithDeployment)}).strict();
+export const domainModelGetSingleSelectQueryQueryParams: z.ZodType<DomainModelGetSingleSelectQueryQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQuery"), singleSelectQuery:z.lazy(() =>domainSingleSelectQueryWithDeployment)}).strict();
+export const domainManyQueriesWithDeploymentUuid: z.ZodType<DomainManyQueriesWithDeploymentUuid> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("DomainManyQueries"), deploymentUuid:z.string().uuid(), fetchQuery:z.lazy(() =>miroirFetchQuery)}).strict();
+export const domainModelGetEntityDefinitionQueryParams: z.ZodType<DomainModelGetEntityDefinitionQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getEntityDefinition"), deploymentUuid:z.string().uuid(), entityUuid:z.string().uuid()}).strict();
+export const domainModelGetFetchParamJzodSchemaQueryParams: z.ZodType<DomainModelGetFetchParamJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getFetchParamsJzodSchema"), fetchParams:z.lazy(() =>domainManyQueriesWithDeploymentUuid)}).strict();
+export const domainModelGetSingleSelectQueryJzodSchemaQueryParams: z.ZodType<DomainModelGetSingleSelectQueryJzodSchemaQueryParams> = z.object({pageParams:z.lazy(() =>domainElementObject), queryParams:z.lazy(() =>domainElementObject), contextResults:z.lazy(() =>domainElementObject)}).strict().extend({queryType:z.literal("getSingleSelectQueryJzodSchema"), singleSelectQuery:z.lazy(() =>domainSingleSelectQueryWithDeployment)}).strict();
+export const domainModelQueryJzodSchemaParams: z.ZodType<DomainModelQueryJzodSchemaParams> = z.union([z.lazy(() =>domainModelGetEntityDefinitionQueryParams), z.lazy(() =>domainModelGetFetchParamJzodSchemaQueryParams), z.lazy(() =>domainModelGetSingleSelectQueryJzodSchemaQueryParams)]);
+export const miroirSelectorQueryParams: z.ZodType<MiroirSelectorQueryParams> = z.union([z.lazy(() =>domainSingleSelectQueryWithDeployment), z.lazy(() =>domainModelGetSingleSelectQueryQueryParams), z.lazy(() =>domainManyQueriesWithDeploymentUuid), z.lazy(() =>localCacheQueryParams), z.lazy(() =>miroirCustomQueryParams), z.lazy(() =>domainModelQueryJzodSchemaParams)]);
 export const ______________________________________________actions_____________________________________________: z.ZodType<______________________________________________actions_____________________________________________> = z.never();
 export const actionError: z.ZodType<ActionError> = z.object({status:z.literal("error"), error:z.object({errorType:z.union([z.enum(["FailedToCreateStore","FailedToDeployModule"]), z.literal("FailedToDeleteStore"), z.literal("FailedToCreateInstance"), z.literal("FailedToGetInstance"), z.literal("FailedToGetInstances")]), errorMessage:z.string().optional(), error:z.object({errorMessage:z.string().optional(), stack:z.array(z.string().optional())}).strict().optional()}).strict()}).strict();
 export const actionVoidSuccess: z.ZodType<ActionVoidSuccess> = z.object({status:z.literal("ok"), returnedDomainElement:z.lazy(() =>domainElementVoid)}).strict();

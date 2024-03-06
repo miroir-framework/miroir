@@ -1087,9 +1087,407 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
           }
         }
       },
+      "localCacheEntityInstancesSelectorParams": {
+        "type": "object",
+        "definition": {
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "applicationSection": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "entityUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "instanceUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          }
+        }
+      },
+      "localCacheQueryParams": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "LocalCacheEntityInstancesSelectorParams",
+          },
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "localCacheEntityInstancesSelectorParams"
+            }
+          }
+        }
+      },
+      "domainSingleSelectObjectQueryWithDeployment": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "domainSingleSelectQueryWithDeployment",
+          },
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "select": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "selectObjectQuery"
+            }
+          }
+        }
+      },
+      "domainSingleSelectObjectListQueryWithDeployment": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "domainSingleSelectQueryWithDeployment",
+          },
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "select": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "selectObjectListQuery"
+            }
+          }
+        }
+      },
+      "domainSingleSelectQueryWithDeployment": {
+        "type": "object",
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "domainSingleSelectQueryWithDeployment",
+          },
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "select": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirSelectQuery"
+            }
+          }
+        }
+      },
+      "domainModelRootQuery": {
+        "type": "object",
+        "definition": {
+          "pageParams": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementObject"
+            }
+          },
+          "queryParams": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementObject"
+            }
+          },
+          "contextResults": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainElementObject"
+            }
+          }
+        }
+      },
+      "domainModelGetSingleSelectObjectQueryQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getSingleSelectQuery",
+          },
+          "singleSelectQuery": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainSingleSelectObjectQueryWithDeployment"
+            }
+          }
+        }
+      },
+      "domainModelGetSingleSelectObjectListQueryQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getSingleSelectQuery",
+          },
+          "singleSelectQuery": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainSingleSelectObjectListQueryWithDeployment"
+            }
+          }
+        }
+      },
+      "domainModelGetSingleSelectQueryQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getSingleSelectQuery",
+          },
+          "singleSelectQuery": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainSingleSelectQueryWithDeployment"
+            }
+          }
+        }
+      },
+      "domainManyQueriesWithDeploymentUuid": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "DomainManyQueries",
+          },
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "fetchQuery": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirFetchQuery"
+            }
+          }
+        }
+      },
+      "domainModelGetEntityDefinitionQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getEntityDefinition",
+          },
+          "deploymentUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          },
+          "entityUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [{ "type": "uuid" }],
+            "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+          }
+        }
+      },
+      "domainModelGetFetchParamJzodSchemaQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getFetchParamsJzodSchema",
+          },
+          "fetchParams": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainManyQueriesWithDeploymentUuid"
+            }
+          }
+        }
+      },
+      "domainModelGetSingleSelectQueryJzodSchemaQueryParams": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "domainModelRootQuery"
+          }
+        },
+        "definition": {
+          "queryType": {
+            "type": "literal",
+            "definition": "getSingleSelectQueryJzodSchema",
+          },
+          "singleSelectQuery": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainSingleSelectQueryWithDeployment"
+            }
+          }
+        }
+      },
+      "domainModelQueryJzodSchemaParams": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainModelGetEntityDefinitionQueryParams"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainModelGetFetchParamJzodSchemaQueryParams"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainModelGetSingleSelectQueryJzodSchemaQueryParams"
+            }
+          }
+        ]
+      },
+      "miroirSelectorQueryParams": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainSingleSelectQueryWithDeployment"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainModelGetSingleSelectQueryQueryParams"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainManyQueriesWithDeploymentUuid"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "localCacheQueryParams"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirCustomQueryParams"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainModelQueryJzodSchemaParams"
+            }
+          }
+        ]
+      },
       "______________________________________________actions_____________________________________________": {
         "type": "simpleType",
         "definition": "never"
+
+
+
+
 
 
 

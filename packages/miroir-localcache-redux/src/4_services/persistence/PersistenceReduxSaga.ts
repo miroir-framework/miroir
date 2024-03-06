@@ -54,7 +54,7 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 //#########################################################################################
 //# SLICE
 //#########################################################################################
-export class PersistenceReduxSaga implements PersistenceInterface{
+export class PersistenceReduxSaga implements PersistenceInterface {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
   private localCache: LocalCache;
@@ -64,20 +64,20 @@ export class PersistenceReduxSaga implements PersistenceInterface{
     private persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface | undefined,
   ) {}
 
-    //#########################################################################################
-    public *persistenceRootSaga() {
-      yield all([
-        ...Object.values(this.persistenceActionReduxSaga).map((a: any) =>
-          takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
-        ),
-      ]);
-    }
-  
-    // ###############################################################################
-    private *rootSaga():Generator<AllEffect<any>, void, unknown> {
-      // log.info("LocalCache rootSaga running", this.PersistenceReduxSaga);
-      yield allEffect([this.persistenceRootSaga()]);
-    }
+  //#########################################################################################
+  public *persistenceRootSaga() {
+    yield all([
+      ...Object.values(this.persistenceActionReduxSaga).map((a: any) =>
+        takeEvery(a.creator, handlePromiseActionForSaga(a.generator))
+      ),
+    ]);
+  }
+
+  // ###############################################################################
+  private *rootSaga():Generator<AllEffect<any>, void, unknown> {
+    // log.info("LocalCache rootSaga running", this.PersistenceReduxSaga);
+    yield allEffect([this.persistenceRootSaga()]);
+  }
 
   // ###############################################################################
   public run(localCache: LocalCache): void {

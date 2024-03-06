@@ -5,19 +5,18 @@ import { JzodElement } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
+  Entity,
   EntityDefinition,
-  MetaEntity,
+  EntityInstance,
   LocalCacheQueryParams,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
   Uuid,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getLoggerName,
-  EntityInstance,
-  MetaModel,
-  Entity
+  getLoggerName
 } from "miroir-core";
 import { ReduxStateWithUndoRedo, selectModelForDeployment } from "miroir-localcache-redux";
 
@@ -26,12 +25,12 @@ import {
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 
 
+import { packageName } from '../../constants';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../JzodTools';
 import { JzodElementDisplay } from './JzodElementDisplay';
 import {
   useCurrentModel
 } from "./ReduxHooks";
-import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionEntityInstance");
