@@ -113,6 +113,7 @@ for (const op of restServerDefaultHandlers) {
         (response: any) => response.json.bind(response),
         response,
         persistenceStoreControllerManager,
+        localCache,
         op.method,
         request.originalUrl,
         body,

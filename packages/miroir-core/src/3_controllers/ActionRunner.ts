@@ -35,7 +35,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
  * @param body
  * @returns
  */
-export async function modelActionStoreRunner(
+export async function modelActionStoreRunnerNotUsed(
   miroirDataPersistenceStoreController: PersistenceStoreControllerInterface,
   appDataPersistenceStoreController: PersistenceStoreControllerInterface,
   deploymentUuid: string,
@@ -43,37 +43,37 @@ export async function modelActionStoreRunner(
   body: any
 ): Promise<ActionReturnType> {
   log.info(
-    "###################################### modelActionStoreRunner started deploymentUuid",
+    "###################################### modelActionStoreRunnerNotUsed started deploymentUuid",
     deploymentUuid,
     "actionName",
     actionName
   );
-  log.debug("modelActionStoreRunner getEntityUuids()", miroirDataPersistenceStoreController.getEntityUuids());
-  const targetProxy: PersistenceStoreControllerInterface =
+  log.debug("modelActionStoreRunnerNotUsed getEntityUuids()", miroirDataPersistenceStoreController.getEntityUuids());
+  const persistenceStoreController: PersistenceStoreControllerInterface =
     deploymentUuid == applicationDeploymentMiroir.uuid ? miroirDataPersistenceStoreController : appDataPersistenceStoreController;
   const modelAction: ModelAction = body;
-  // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
-  log.info("modelActionStoreRunner action", modelAction);
+  // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
+  log.info("modelActionStoreRunnerNotUsed action", modelAction);
   switch (modelAction.actionName) {
     case "alterEntityAttribute":
     case "createEntity":
     case "renameEntity": 
     case "resetData":
     case "dropEntity": {
-      await targetProxy.handleAction(modelAction)
+      await persistenceStoreController.handleAction(modelAction)
       break;
     }
     case "resetModel": {
-      log.debug("modelActionStoreRunner resetModel update");
+      log.debug("modelActionStoreRunnerNotUsed resetModel update");
       await miroirDataPersistenceStoreController.handleAction(modelAction)
       await appDataPersistenceStoreController.handleAction(modelAction)
-      log.trace("modelActionStoreRunner resetModel after dropped entities:", miroirDataPersistenceStoreController.getEntityUuids());
+      log.trace("modelActionStoreRunnerNotUsed resetModel after dropped entities:", miroirDataPersistenceStoreController.getEntityUuids());
       break;
     }
     case "initModel": {
       const modelActionInitModel = body as ModelActionInitModel;
       const params: ModelActionInitModelParams = modelActionInitModel.params;
-      log.debug("modelActionStoreRunner initModel params", params);
+      log.debug("modelActionStoreRunnerNotUsed initModel params", params);
 
       if (params.dataStoreType == "miroir") {
         await miroirDataPersistenceStoreController.handleAction(modelActionInitModel)
@@ -84,13 +84,13 @@ export async function modelActionStoreRunner(
     }
     case "commit":
     case "rollback": {
-      throw new Error("modelActionStoreRunner could not handle action" + JSON.stringify(modelAction));
+      throw new Error("modelActionStoreRunnerNotUsed could not handle action" + JSON.stringify(modelAction));
     }
     default:
-      log.warn("modelActionStoreRunner could not handle actionName", actionName);
+      log.warn("modelActionStoreRunnerNotUsed could not handle actionName", actionName);
       break;
   }
-  log.debug("modelActionStoreRunner returning empty response.");
+  log.debug("modelActionStoreRunnerNotUsed returning empty response.");
   return Promise.resolve(ACTION_OK);
 }
 

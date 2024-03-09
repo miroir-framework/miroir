@@ -2,9 +2,12 @@ import { HttpMethod } from "../0_interfaces/1_core/Http";
 import {
   ActionReturnType,
   ApplicationSection,
+  DomainElement,
+  DomainManyQueriesWithDeploymentUuid,
   EntityInstance,
   InstanceAction,
   ModelAction,
+  QueryAction,
   StoreOrBundleAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -26,6 +29,8 @@ import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
+import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainSelector";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -46,6 +51,7 @@ export async function restMethodGetHandler
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
@@ -132,6 +138,7 @@ export async function restMethodsPostPutDeleteHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -193,6 +200,7 @@ export async function restActionHandler(
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
   method: HttpMethod,
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat,
@@ -203,7 +211,7 @@ export async function restActionHandler(
 
   log.debug("restActionRunner params", params, "body", body);
 
-  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction;
+  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction ;
   switch (action.actionType) {
     case "storeManagementAction":
     case "bundleAction": {
@@ -217,6 +225,7 @@ export async function restActionHandler(
     }
     case "modelAction": 
     case "instanceAction": {
+      // TODO: code somewhat duplicated in PersistenceReduxSaga.handlePersistenceAction!
       const localMiroirPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
       const localAppPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
       const domainController = persistenceStoreControllerManager.getDomainController();
@@ -261,10 +270,37 @@ export async function restActionHandler(
       break;
     }
     default:
-      throw new Error("RestServer restActionStoreRunner could not handle action " + action);
+      throw new Error("RestServer restActionStoreRunner could not handle action " + JSON.stringify(action,undefined,2));
       break;
     }
   }
+
+  // ################################################################################################
+export async function queryHandler(
+  useDomainController: boolean,
+  continuationFunction: (response:any) =>(arg0: any) => any,
+  response: any,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
+  method: HttpMethod,
+  effectiveUrl: string, // log only, to remove?
+  body: HttpRequestBodyFormat,
+  params: any,
+):Promise<void> {
+  log.info("restActionRunner params", params, "body", body);
+
+  const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
+  const domainState = localCache.getDomainState();
+  // log.info("localCacheSliceObject handleDomainEntityAction queryAction domainState=", JSON.stringify(domainState, undefined, 2))
+  const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, query);
+  const result:ActionReturnType = {
+    status: "ok",
+    returnedDomainElement: queryResult
+  }
+  log.info("localCacheSliceObject handleDomainEntityAction queryAction result=", JSON.stringify(result, undefined,2))
+
+  return continuationFunction(response)(result);
+}
 
 // ################################################################################################
 export const restServerDefaultHandlers: RestServiceHandler[] = [
@@ -293,5 +329,10 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     method: "post",
     url: "/action/:actionName",
     handler: restActionHandler
+  },
+  {
+    method: "post",
+    url: "/query",
+    handler: queryHandler
   },
 ];

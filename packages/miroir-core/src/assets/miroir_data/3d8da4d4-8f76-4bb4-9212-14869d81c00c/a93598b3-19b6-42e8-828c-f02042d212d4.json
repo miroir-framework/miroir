@@ -1,0 +1,136 @@
+{
+  "uuid": "a93598b3-19b6-42e8-828c-f02042d212d4",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "endpointUuid": "a93598b3-19b6-42e8-828c-f02042d212d4",
+  "name": "PersistenceEndpoint",
+  "version": "1",
+  "description": "Persistence Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"RestPersistenceAction"},
+            "actionName": {"type": "enum", "definition": ["create", "read", "update", "delete"]},
+            "endpoint": {"type": "literal", "definition":"a93598b3-19b6-42e8-828c-f02042d212d4"},
+            "section": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationSection"
+              }
+            },
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            },
+            "parentName": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "extra": { "id":1, "defaultLabel": "Parent Name", "editable": false }
+            },
+            "parentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Parent Uuid", "editable": false }
+            },
+            "uuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "optional": true,
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            },
+            "objects": {
+              "type": "array",
+              "optional": true,
+              "definition": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "entityInstance"
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedToUndo"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "queryAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "bundleAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "instanceAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "modelAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "schemaReference",
+          "optional": false,
+          "definition": {
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "storeManagementAction"
+          }
+        },
+        "actionErrors": {
+          "type":"literal", "definition": "FailedHandleQueryAction"
+        }
+      }
+    ]
+  }
+}

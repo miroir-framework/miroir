@@ -1,4 +1,5 @@
 import {
+  DomainState,
   LocalCacheInfo
 } from "../2_domain/DomainControllerInterface";
 
@@ -22,10 +23,12 @@ export declare interface LocalCacheInterface
 
   // view of current data state & transaction
   getInnerStore(): any; // TODO: local store should not expose its implementation!!
-  getState(): any; // TODO: local store should not directly expose its internal state!!
+  getState(): any; // TODO: local store should not directly expose its internal state!! Actual type is LocacCacheSliceState!
   currentInfo(): LocalCacheInfo;
   currentModel(deploymentUuid:string): MetaModel;
   currentTransaction():(TransactionalInstanceAction | ModelActionReplayableAction)[]; // any so as not to constrain implementation of cache and transaction mechanisms.
+
+  getDomainState():DomainState;
 
   // ##############################################################################################
   handleLocalCacheAction(action:LocalCacheAction):ActionReturnType;

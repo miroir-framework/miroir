@@ -11,7 +11,7 @@ import { MiroirContextInterface } from '../0_interfaces/3_controllers/MiroirCont
 import {
   LocalCacheInterface
 } from "../0_interfaces/4-services/LocalCacheInterface.js";
-import { RestPersistenceAction, PersistenceInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
+import { PersistenceInterface } from '../0_interfaces/4-services/PersistenceInterface.js';
 
 
 import applicationDeploymentMiroir from '../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json';
@@ -29,6 +29,7 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -59,6 +60,7 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
   constructor(
+    private hasDirectAccessToPersistenceStore: boolean,
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStore: PersistenceInterface,
@@ -190,8 +192,22 @@ export class DomainController implements DomainControllerInterface {
     );
     try {
       switch (modelAction.actionName) {
+        case 'remoteLocalCacheRollback': {
+          if (this.hasDirectAccessToPersistenceStore) {
+            log.info("handleModelAction reloading current configuration from local PersistenceStore!")
+            await this.loadConfigurationFromPersistenceStore(deploymentUuid);
+            log.info("handleModelAction reloading current configuration from local PersistenceStore DONE!")
+          } else {
+            await this.callUtil.callPersistenceAction(
+              {}, // context
+              {}, // context update
+              modelAction
+            );
+          }
+          break;
+        }
         case "rollback": {
-          await this.loadConfigurationFromRemoteDataStore(deploymentUuid);
+          await this.loadConfigurationFromPersistenceStore(deploymentUuid);
           break;
         }
         case 'alterEntityAttribute':
@@ -260,6 +276,7 @@ export class DomainController implements DomainControllerInterface {
               actionType: "RestPersistenceAction",
               actionName: "create",
               deploymentUuid,
+              endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
               section: sectionOfapplicationEntities,
               objects: [newModelVersion],
             };
@@ -286,6 +303,7 @@ export class DomainController implements DomainControllerInterface {
                         {
                           actionType: "RestPersistenceAction",
                           actionName: replayAction.instanceAction.actionName.toString() as CRUDActionName,
+                          endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                           deploymentUuid,
                           section: replayAction.instanceAction.applicationSection,
                           parentName: replayAction.instanceAction.objects[0].parentName,
@@ -366,6 +384,7 @@ export class DomainController implements DomainControllerInterface {
                 const newStoreBasedConfiguration: RestPersistenceAction = {
                   actionType: "RestPersistenceAction",
                   actionName: "update",
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   deploymentUuid,
                   section: sectionOfapplicationEntities,
                   objects: [updatedConfiguration],
@@ -410,7 +429,7 @@ export class DomainController implements DomainControllerInterface {
    * performs remote update before local update, so that whenever remote update fails, local value is not modified (going into the "catch").
    * @returns undefined when loading is finished
    */
-  public async loadConfigurationFromRemoteDataStore(deploymentUuid: string): Promise<ActionVoidReturnType> {
+  public async loadConfigurationFromPersistenceStore(deploymentUuid: string): Promise<ActionVoidReturnType> {
     log.info("DomainController loadConfigurationFromRemoteDataStore called for deployment", deploymentUuid);
     try {
       await this.callUtil
@@ -424,6 +443,7 @@ export class DomainController implements DomainControllerInterface {
           {
             actionType: "RestPersistenceAction",
             actionName: "read",
+            endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             deploymentUuid,
             parentName: entityEntity.name,
             parentUuid: entityEntity.uuid,
@@ -485,10 +505,10 @@ export class DomainController implements DomainControllerInterface {
                   addResultToContextAsName: "entityInstanceCollection",
                   expectedDomainElementType: "entityInstanceCollection",
                 }, // context update
-                // deploymentUuid,
                 {
                   actionType: "RestPersistenceAction",
                   actionName: "read",
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   deploymentUuid,
                   parentName: e.entity.name,
                   parentUuid: e.entity.uuid,
@@ -581,6 +601,34 @@ export class DomainController implements DomainControllerInterface {
           domainAction.deploymentUuid,
           domainAction
         );
+      }
+      case "queryAction": {
+        // if (this.hasDirectAccessToPersistenceStore) {
+        //   const result = await this.callUtil.callLocalCacheAction(
+        //     {}, // context
+        //     {}, // context update
+        //     domainAction
+        //   );
+        //   log.info("handleAction queryAction callLocalCacheAction Result=", result);
+        //   // return result;
+        // } else {
+        // queryActions only exist on the client
+        // they are translated to "query" Rest calls and the result is placed in the local cache.
+        const result = this.callUtil.callPersistenceAction(
+          {}, // context
+          {}, // context update
+          domainAction
+        );
+        log.info("handleAction queryAction callPersistenceAction Result=", result);
+        // return result;
+        // }
+        
+        return ACTION_OK;
+        // return this.handleQueryAction(
+        //   domainAction.deploymentUuid,
+        //   domainAction
+        // );
+        break;
       }
       case "undoRedoAction": {
         return this.handleDomainUndoRedoAction(

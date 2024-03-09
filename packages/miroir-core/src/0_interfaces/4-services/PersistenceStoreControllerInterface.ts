@@ -16,6 +16,7 @@ import {
   ModelAction,
   ModelActionAlterEntityAttribute,
   ModelActionRenameEntity,
+  QueryAction,
   StoreManagementAction,
   StoreSectionConfiguration
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -24,8 +25,6 @@ import { DataStoreApplicationType } from '../3_controllers/ApplicationController
 export type PersistenceStoreControllerAction =
   | InstanceAction
   | ModelAction
-  // | StoreManagementAction
-  // | BundleAction
 ;
 
 

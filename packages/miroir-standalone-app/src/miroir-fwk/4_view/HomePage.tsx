@@ -354,7 +354,7 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span>
       <p />
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             log.info("fetching instances from datastore for deployment", applicationDeploymentMiroir);
@@ -374,7 +374,7 @@ export const HomePage = (props: RootComponentProps) => {
         >
           fetch Miroir & App configurations from database
         </button>
-      </span>
+      </span> */}
       {/* <p />
       <span>
         <button

@@ -2,18 +2,12 @@ import { applicationDeploymentLibrary } from "../../src/ApplicationDeploymentLib
 
 import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import {
-  DomainManyQueriesWithDeploymentUuid,
-  DomainModelQueryJzodSchemaParams,
-  RecordOfJzodElement
-} from "../../src/0_interfaces/2_domain/DomainSelectorInterface";
-import {
-  selectByDomainManyQueriesFromDomainState,
-  selectJzodSchemaByDomainModelQueryFromDomainState,
+  selectByDomainManyQueriesFromDomainState
 } from "../../src/2_domain/DomainSelector";
 
-import { EntityDefinition, JzodElement, DomainElement } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import domainStateImport from "./domainState.json";
+import { DomainElement, DomainManyQueriesWithDeploymentUuid } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { circularReplacer } from "../../src/tools";
+import domainStateImport from "./domainState.json";
 
 const domainState: DomainState = domainStateImport as DomainState;
 

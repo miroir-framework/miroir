@@ -167,6 +167,8 @@ export {
   modelActionCreateEntity,
   ModelActionDropEntity,
   modelActionDropEntity,
+  PersistenceAction,
+  RestPersistenceAction,
   SelectObjectQuery,
   selectObjectQuery,
   SelectObjectListQuery,
@@ -320,8 +322,6 @@ export {
   HttpRequestBodyFormat,
   HttpResponseBodyFormat,
   PersistenceInterface,
-  PersistenceAction,
-  RestPersistenceAction,
   RemoteStoreActionReturnType,
   RestPersistenceClientAndRestClientInterface,
   RestClientCallReturnType,
@@ -343,6 +343,7 @@ export {
   StorageSpaceHandlerInterface,
   DataOrModelStoreInterface,
   PersistenceStoreControllerInterface,
+  PersistenceStoreControllerAction,
   StoreSectionFactory,
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface.js";
@@ -403,7 +404,7 @@ export {
 } from './3_controllers/resetApplicationDatabase.js';
 export {
   storeActionOrBundleActionStoreRunner,
-  modelActionStoreRunner,
+  modelActionStoreRunnerNotUsed,
 } from './3_controllers/ActionRunner.js';
 export {
   modelInitialize,

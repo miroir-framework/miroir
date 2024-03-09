@@ -3,21 +3,22 @@ import {
   SagaPromiseActionCreator,
   promiseActionFactory
 } from "@teroneko/redux-saga-promise";
-import { CallEffect, Effect } from 'redux-saga/effects';
+import { AllEffect, CallEffect, Effect, all as allEffect } from 'redux-saga/effects';
 import { all, call, takeEvery } from "typed-redux-saga";
-import { AllEffect, all as allEffect } from 'redux-saga/effects';
 
 import {
   ACTION_OK,
   ActionReturnType,
+  EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceAction,
   PersistenceInterface,
+  PersistenceStoreControllerAction,
+  PersistenceStoreControllerManagerInterface,
   RemoteStoreActionReturnType,
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
-  PersistenceStoreControllerManagerInterface,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   getLoggerName,
@@ -25,8 +26,8 @@ import {
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools';
 import { packageName } from '../../constants';
-import { cleanLevel } from '../constants';
 import { LocalCache } from '../LocalCache';
+import { cleanLevel } from '../constants';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"PersistenceActionReduxSaga");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -117,7 +118,7 @@ export class PersistenceReduxSaga implements PersistenceInterface {
       ): Generator<ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>> {
         const { action } = p.payload;
         try {
-          if (this.persistenceStoreControllerManager) {
+          if (this.persistenceStoreControllerManager) { // direct access to store controller, action is executed locally
           
             switch (action.actionType) {
               case 'storeManagementAction':
@@ -136,14 +137,53 @@ export class PersistenceReduxSaga implements PersistenceInterface {
                 if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
                   throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
                 } 
-                    if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
+                if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
                   const localStoreResult = yield* call(() =>localMiroirPersistenceStoreController.handleAction(action));
                 } else {
                   const localStoreResult = yield* call(() =>localAppPersistenceStoreController.handleAction(action));
                 }
                 break;
               }
-              case 'RestPersistenceAction':
+              case 'RestPersistenceAction': {
+                const localMiroirPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentMiroir.uuid);
+                const localAppPersistenceStoreController = this.persistenceStoreControllerManager.getPersistenceStoreController(applicationDeploymentLibrary.uuid);
+
+                if (!localMiroirPersistenceStoreController || !localAppPersistenceStoreController) {
+                  throw new Error("restMethodGetHandler could not find controller:" + localMiroirPersistenceStoreController + " " + localAppPersistenceStoreController);
+                } 
+                const actionMap: {[k: string]: "createInstance" | "deleteInstance" | "updateInstance" | "getInstances"} = {
+                  "create": "createInstance",
+                  "delete": "deleteInstance",
+                  "update": "updateInstance",
+                  "read": "getInstances"
+                }
+                const localStoreAction: PersistenceStoreControllerAction = {
+                  actionType: "instanceAction",
+                  actionName: actionMap[action.actionName],
+                  applicationSection: action.section,
+                  parentName: action.parentName??"",
+                  parentUuid: action.parentUuid??"",
+                  deploymentUuid: action.deploymentUuid,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  objects: [{ // type issue: read action does not have "objects" attribute
+                    parentName: action.parentName??"",
+                    parentUuid: action.parentUuid??"",
+                    applicationSection:action.section,
+                    instances: (Array.isArray(action.objects)?action.objects:[]) as EntityInstance[]
+                  }]
+                } as PersistenceStoreControllerAction
+                log.info("PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction", JSON.stringify(action, undefined, 2), "localStoreAction=", JSON.stringify(localStoreAction,undefined, 2))
+                let localStoreResult: ActionReturnType
+                if (action.deploymentUuid == applicationDeploymentMiroir.uuid) {
+                  localStoreResult = yield* call(() =>localMiroirPersistenceStoreController.handleAction(localStoreAction));
+                } else {
+                  localStoreResult = yield* call(() =>localAppPersistenceStoreController.handleAction(localStoreAction));
+                }
+                log.info("PersistenceActionReduxSaga handlePersistenceAction handle RestPersistenceAction result", JSON.stringify(localStoreResult, undefined, 2))
+                return yield localStoreResult;
+                break;
+              }
+              case 'queryAction':
               default: {
                 throw new Error("PersistenceActionReduxSaga handlePersistenceAction could not handle action " + JSON.stringify(action));
                 break;
@@ -152,32 +192,52 @@ export class PersistenceReduxSaga implements PersistenceInterface {
             return yield ACTION_OK;
           }
 
-          if (this.remoteStoreNetworkClient != undefined) {
-            log.info("handlePersistenceAction on action",JSON.stringify(action));
+          if (this.remoteStoreNetworkClient != undefined) { // indirect access to a remote storeController through the network
+            log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
             const clientResult: RestClientCallReturnType
              = yield* call(() =>
               (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
             );
-            log.debug("handlePersistenceAction received clientResult", clientResult);
+            log.debug("handlePersistenceAction from remoteStoreNetworkClient received clientResult", clientResult);
   
-            if (action.actionType == "RestPersistenceAction") {
-              const result:ActionReturnType = {
-                status: "ok",
-                returnedDomainElement: {
-                  elementType: "entityInstanceCollection",
-                  elementValue: {
-                    parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
-                    applicationSection: action.section,
-                    instances: clientResult.data.instances
+            switch (action.actionType) {
+              case 'RestPersistenceAction': {
+                const result:ActionReturnType = {
+                  status: "ok",
+                  returnedDomainElement: {
+                    elementType: "entityInstanceCollection",
+                    elementValue: {
+                      parentUuid: action.parentUuid??"", // TODO: action.parentUuid should not be optional!
+                      applicationSection: action.section,
+                      instances: clientResult.data.instances
+                    }
                   }
-                }
-              };
-              log.debug("handlePersistenceAction received result", result.status);
-              return yield result;
-            } else {
-              log.debug("handlePersistenceAction received result", clientResult.status);
-              return yield ACTION_OK;
-            };
+                };
+                log.debug("handlePersistenceAction remoteStoreNetworkClient received result", result.status);
+                return yield result;
+                break;
+              }
+              case 'queryAction': {
+                log.info("handlePersistenceAction calling remoteStoreNetworkClient on action",JSON.stringify(action));
+                const clientResult: RestClientCallReturnType = yield* call(() =>
+                  (this.remoteStoreNetworkClient as RestPersistenceClientAndRestClientInterface).handleNetworkPersistenceAction(action)
+                );
+                log.info("handlePersistenceAction received from remoteStoreNetworkClient clientResult", clientResult);
+                log.debug("handlePersistenceAction remoteStoreNetworkClient received result", clientResult.status);
+                return yield clientResult.data;
+    
+                break;
+              }
+              case 'bundleAction':
+              case 'instanceAction':
+              case 'modelAction':
+              case 'storeManagementAction':
+              default: {
+                log.debug("handlePersistenceAction received result", clientResult.status);
+                return yield ACTION_OK;
+                break;
+              }
+            }
           }
         } catch (e: any) {
           log.error("handlePersistenceAction exception", e);

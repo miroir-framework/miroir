@@ -16,6 +16,10 @@
       },
       "storeSectionConfiguration": {
         "miroirServerConfig": {
+          "admin": {
+            "emulatedServerType": "indexedDb",
+            "indexedDbName":"miroir-uuid-indexedDb"
+          },
           "model": {
             "emulatedServerType": "indexedDb",
             "indexedDbName":"miroir-uuid-indexedDb"
@@ -26,7 +30,10 @@
           }
         },
         "appServerConfig": {
-          "model": {
+          "admin": {
+            "emulatedServerType": "indexedDb",
+            "indexedDbName":"miroir-uuid-indexedDb"
+          },          "model": {
             "emulatedServerType": "indexedDb",
             "indexedDbName":"library-uuid-indexedDb"
           },

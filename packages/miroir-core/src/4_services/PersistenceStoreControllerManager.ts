@@ -108,6 +108,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
 
       this.domainController = new DomainController(
+        true, // we are on the server, use localCache for queries
         new MiroirContext(),
         this.localCache, // implements LocalCacheInterface
         this.persistenceStore, // implements PersistenceInterface

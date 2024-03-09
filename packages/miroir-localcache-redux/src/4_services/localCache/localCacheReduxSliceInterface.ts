@@ -55,29 +55,24 @@ export interface ReduxStateWithUndoRedo {
   queriesResultsCache: QueriesResultsCache,
 }
 
+export type InnerReducerAction =
+  | ModelAction
+  | TransactionalInstanceAction
+  | UndoRedoAction
+  | InstanceAction
+  | RestPersistenceAction
+  | LocalCacheAction
+;
+
 export type InnerReducerInterface = (
   state: LocalCacheSliceState,
-  action: PayloadAction<
-    | ModelAction
-    | TransactionalInstanceAction
-    | UndoRedoAction
-    | InstanceAction
-    | RestPersistenceAction
-    | LocalCacheAction
-  >
+  action: PayloadAction<InnerReducerAction>
 ) => LocalCacheSliceState;
 
 // TODO: make action type explicit!
 export type ReduxReducerWithUndoRedoInterface = (
   state: ReduxStateWithUndoRedo,
-  action: PayloadAction<
-    | ModelAction
-    | TransactionalInstanceAction
-    | UndoRedoAction
-    | InstanceAction
-    | RestPersistenceAction
-    | LocalCacheAction
-  >
+  action: PayloadAction<InnerReducerAction>
 ) => ReduxStateWithUndoRedo;
 
 export type ReduxStoreWithUndoRedo = Store<ReduxStateWithUndoRedo, any>; // TODO: precise the type of Actions!
@@ -91,7 +86,6 @@ export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-// export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: EntityState<EntityInstance> }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 export type LocalCacheSliceState = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 
 export const localCacheSliceName: string = "localCache";

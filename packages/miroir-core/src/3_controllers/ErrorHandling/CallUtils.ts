@@ -1,7 +1,7 @@
-import { ActionReturnType, DomainElementType, LocalCacheAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionReturnType, DomainElementType, LocalCacheAction, PersistenceAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LocalCacheInterface } from "../../0_interfaces/4-services/LocalCacheInterface";
-import { PersistenceAction, PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
+import { PersistenceInterface } from "../../0_interfaces/4-services/PersistenceInterface";
 
 
 export class CallUtils {

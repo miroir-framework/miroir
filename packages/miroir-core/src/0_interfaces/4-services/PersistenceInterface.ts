@@ -1,18 +1,11 @@
-import { Uuid } from "../1_core/EntityDefinition.js";
 import { HttpMethod } from "../1_core/Http.js";
 import {
   ActionReturnType,
-  ApplicationSection,
-  BundleAction,
+  DomainManyQueriesWithDeploymentUuid,
   EntityInstance,
   EntityInstanceCollection,
-  InstanceAction,
-  ModelAction,
-  StoreManagementAction
+  PersistenceAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  CRUDActionName
-} from "../2_domain/DomainControllerInterface.js";
 import { MError } from "../3_controllers/ErrorLogServiceInterface.js";
 import { LocalCacheInterface } from "./LocalCacheInterface.js";
 import { PersistenceStoreControllerManagerInterface } from "./PersistenceStoreControllerManagerInterface.js";
@@ -23,6 +16,7 @@ export interface HttpRequestBodyFormat {
   instances?: EntityInstance[];
   crudInstances?: EntityInstance[];
   modelUpdate?: any;
+  query?: DomainManyQueriesWithDeploymentUuid;
   other?: any;
 };
 
@@ -37,6 +31,7 @@ export type RestMethodHandler =  (
   continuationFunction: (response:any) =>(arg0: any) => any,
   response: any,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  localCache: LocalCacheInterface,
   method: HttpMethod | undefined, // unused!
   effectiveUrl: string, // log only, to remove?
   body: HttpRequestBodyFormat | undefined, // unused!
@@ -66,27 +61,6 @@ export interface RestClientCallReturnType {
   headers: Headers;
   url: string;
 }
-
-// ################################################################################################
-export interface RestPersistenceAction {
-  actionType: "RestPersistenceAction";
-  actionName: CRUDActionName;
-  section: ApplicationSection,
-  deploymentUuid: Uuid,
-  parentName?: string; //redundant with object list
-  parentUuid?: string; //redundant with object list
-  uuid?: string; //redundant with object list
-  objects?: EntityInstance[];
-}
-
-// ################################################################################################
-export type PersistenceAction =
-  | BundleAction
-  | InstanceAction
-  | ModelAction
-  | RestPersistenceAction
-  | StoreManagementAction
-;
 
 // ################################################################################################
 export interface RemoteStoreActionReturnType {

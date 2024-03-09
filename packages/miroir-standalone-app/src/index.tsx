@@ -84,10 +84,10 @@ const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
 
 // ##############################################################################################
 // ##############################################################################################
-const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
+// const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
 // ##############################################################################################
@@ -170,6 +170,7 @@ async function start(root:Root) {
     persistenceSaga.run(localCache)
 
     const domainController: DomainControllerInterface = new DomainController(
+      false, // we are on the client, we have to use persistenceStore to execute (remote) Queries
       miroirContext,
       localCache, // implements LocalCacheInterface
       persistenceSaga, // implements PersistenceInterface
@@ -185,6 +186,7 @@ async function start(root:Root) {
         'browser',
         restServerDefaultHandlers,
         persistenceStoreControllerManager,
+        localCache,
         setupWorker
       );
   

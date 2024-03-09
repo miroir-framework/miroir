@@ -181,6 +181,7 @@ export async function miroirBeforeAll(
     persistenceStoreControllerManager.setLocalCache(localCache);
 
     const domainController: DomainControllerInterface = new DomainController(
+      false, // we are on the client, we have to use persistenceStore to execute (remote) Queries
       miroirContext,
       localCache, // implements LocalCacheInterface
       persistenceSaga, // implements PersistenceInterface
@@ -245,6 +246,7 @@ export async function miroirBeforeAll(
         'nodejs',
         restServerDefaultHandlers,
         persistenceStoreControllerManager,
+        localCache,
         createRestServiceFromHandlers
       );
   

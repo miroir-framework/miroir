@@ -28,6 +28,7 @@ import {
   applicationVersionLibraryInitialVersion,
   defaultMiroirMetaModel,
   DomainControllerInterface,
+  DomainManyQueriesWithDeploymentUuid,
   getLoggerName,
   LoggerInterface,
   MiroirConfigForRestClient,
@@ -279,6 +280,9 @@ export const RootComponent = (props: RootComponentProps) => {
                 <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+                      log.info(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                      );
                       if (!miroirConfig) {
                         throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                       }
@@ -311,23 +315,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       // .then(
                       // async () => {
                       log.info(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
                       );
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        deploymentUuid:applicationDeploymentMiroir.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        deploymentUuid:applicationDeploymentLibrary.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
-                      });
-                
-                      // }
-                      // );
                     }}
                   >
                     Open database
@@ -338,31 +327,9 @@ export const RootComponent = (props: RootComponentProps) => {
                       if (!miroirConfig) {
                         throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                       }
-                      if (miroirConfig && miroirConfig.client.emulateServer) {
-                        await remoteStore.handlePersistenceAction({
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
-                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
-                          },
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
-                        })
-                      } else {
-                        const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        await remoteStore.handlePersistenceAction({
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
-                            [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
-                          },
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
-                        })
-                      }
-
+                      log.info(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                      );
                       await domainController.handleAction({
                         actionType: "modelAction",
                         actionName: "initModel",
@@ -438,9 +405,64 @@ export const RootComponent = (props: RootComponentProps) => {
                   <button
                     onClick={async () => {
                       await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "remoteLocalCacheRollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid:applicationDeploymentMiroir.uuid,
+                      });
+                      await domainController.handleAction({
+                        actionType: "modelAction",
+                        actionName: "remoteLocalCacheRollback",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid:applicationDeploymentLibrary.uuid,
+                      });
                     }}
                   >
                     upload App configuration to database
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const query:DomainManyQueriesWithDeploymentUuid = {
+                        queryType: "DomainManyQueries",
+                        deploymentUuid: applicationDeploymentLibrary.uuid,
+                        contextResults: {
+                          elementType: "object",
+                          elementValue: {}
+                        },
+                        pageParams: {
+                          elementType: "object",
+                          elementValue: {}
+                        },
+                        queryParams: {
+                          elementType: "object",
+                          elementValue: {}
+                        },
+                        fetchQuery: {
+                          "select": {
+                            "authors": {
+                              "queryType": "selectObjectListByEntity",
+                              "parentName": "Author",
+                              "parentUuid": {
+                                "referenceType": "constant",
+                                "referenceUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                              }
+                            }
+                          }
+                        }
+                      } 
+                      await domainController.handleAction({
+                        actionType: "queryAction",
+                        actionName: "runQuery",
+                        deploymentUuid:query.deploymentUuid,
+                        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        query: query
+                      });
+                
+                      // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+                    }}
+                  >
+                    send query to database
                   </button>
                 </span>
                 </span>

@@ -16,6 +16,7 @@ import {
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import {
+  InnerReducerAction,
   InnerReducerInterface,
   LocalCacheSliceState,
   ReduxReducerWithUndoRedoInterface,
@@ -412,8 +413,7 @@ export function createUndoRedoReducer(innerReducer: InnerReducerInterface): Redu
   return (
     state: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(innerReducer),
     action: PayloadAction<
-      InstanceAction | ModelAction | TransactionalInstanceAction | UndoRedoAction
-      // | RestPersistenceAction
+      InnerReducerAction
     >
   ): ReduxStateWithUndoRedo => {
     // log.info("reduceWithUndoRedo received action " + action.type + " " + JSON.stringify(action, undefined, 2));

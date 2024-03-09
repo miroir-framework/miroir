@@ -115,6 +115,22 @@
           "type": "object",
           "definition": {
             "actionType": {"type": "literal", "definition":"modelAction"},
+            "actionName": {"type": "literal", "definition":"remoteLocalCacheRollback"},
+            "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
+            "deploymentUuid": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }],
+              "extra": { "id":1, "defaultLabel": "Deployment", "editable": false }
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "type": "object",
+          "definition": {
+            "actionType": {"type": "literal", "definition":"modelAction"},
             "actionName": {"type": "literal", "definition":"resetModel"},
             "endpoint": {"type": "literal", "definition":"7947ae40-eb34-4149-887b-15a9021e714e"},
             "deploymentUuid": {

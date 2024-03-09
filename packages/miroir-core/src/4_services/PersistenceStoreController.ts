@@ -107,7 +107,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     switch (persistenceStoreControllerAction.actionType) {
       case "modelAction": {
         // const storeManagementAction: ModelAction = body;
-        // log.info('modelActionStoreRunner action', JSON.stringify(update,undefined,2));
+        // log.info('modelActionStoreRunnerNotUsed action', JSON.stringify(update,undefined,2));
         log.info("handleAction action", persistenceStoreControllerAction);
         switch (persistenceStoreControllerAction.actionName) {
           case "dropEntity": {

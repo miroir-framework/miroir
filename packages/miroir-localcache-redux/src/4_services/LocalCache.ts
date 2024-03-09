@@ -11,6 +11,7 @@ import sagaMiddleware from 'redux-saga';
 import {
   ACTION_OK,
   ActionReturnType,
+  DomainState,
   getLoggerName,
   LocalCacheAction,
   LocalCacheInfo,
@@ -18,7 +19,6 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ModelAction,
   ModelActionReplayableAction,
   TransactionalInstanceAction
 } from "miroir-core";
@@ -32,7 +32,8 @@ import {
 import {
   currentModel,
   LocalCacheSlice,
-  localCacheSliceGeneratedActionNames
+  localCacheSliceGeneratedActionNames,
+  localCacheStateToDomainState
 } from "./localCache/LocalCacheSlice";
 import {
   createUndoRedoReducer,
@@ -149,6 +150,11 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
+  getDomainState():DomainState {
+    return localCacheStateToDomainState(this.innerReduxStore.getState().presentModelSnapshot);
+  }
+
+  // ###############################################################################
   public currentInfo(): LocalCacheInfo {
     // this.sagaMiddleware.run(this.rootSaga.bind(this));
     return {
@@ -176,15 +182,17 @@ export class LocalCache implements LocalCacheInterface {
 
   // ###############################################################################
   handleLocalCacheAction(action: LocalCacheAction): ActionReturnType {
-    log.info("handleAction", action);
+    log.info("LocalCache handleAction", action);
     
-    return exceptionToActionReturnType(() =>
+    const result:ActionReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(
         LocalCacheSlice.actionCreators[localCacheSliceInputActionNamesObject.handleAction](
           action
         )
       )
     );
+    log.info("LocalCache handleAction result=", result);
+    return result;
   }
 
   // ###############################################################################

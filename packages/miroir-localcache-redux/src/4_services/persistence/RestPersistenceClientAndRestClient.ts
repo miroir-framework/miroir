@@ -57,6 +57,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
   } = {
     RestPersistenceAction: { "*": { attribute: "objects", result: "crudInstances" } },
     modelAction: { "*": { action: true } },
+    queryAction: { "*": { attribute: "query", result: "query" } },
     instanceAction: { "*": { action: true } },
     storeManagementAction: { "*": { action: true } }, // TODO: remove, there must be no impact when adding/removing an actionType
   };
@@ -119,6 +120,14 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       case "modelAction":
       case "storeManagementAction": {
         const callParams = this.getRestCallParams(action, this.rootApiUrl + "/action/" + action.actionName);
+        log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
+        const result = await callParams.operation(callParams.url, callParams.args);
+        log.info("handleNetworkPersistenceAction", action, "result", result);
+        return result;
+        break;
+      }
+      case "queryAction": {
+        const callParams = this.getRestCallParams(action, this.rootApiUrl + "/query");
         log.debug("handleNetworkPersistenceAction", action, "callParams", callParams);
         const result = await callParams.operation(callParams.url, callParams.args);
         log.info("handleNetworkPersistenceAction", action, "result", result);

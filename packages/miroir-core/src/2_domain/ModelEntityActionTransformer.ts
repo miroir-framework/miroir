@@ -174,6 +174,7 @@ export class ModelEntityActionTransformer{
         }
       }
       case "initModel":
+      case "remoteLocalCacheRollback":
       case "commit":
       case "rollback":
       case "resetModel":

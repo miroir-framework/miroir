@@ -7,7 +7,8 @@ import {
   MiroirLoggerFactory,
   RestServiceHandler,
   PersistenceStoreControllerManagerInterface,
-  getLoggerName
+  getLoggerName,
+  LocalCacheInterface
 } from "miroir-core";
 import { cleanLevel, packageName } from "./constants";
 
@@ -33,6 +34,7 @@ export class RestServerStub {
     private rootApiUrl: string,
     restServerHandlers: RestServiceHandler[],
     persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+    localCache: LocalCacheInterface,
     miroirConfig: MiroirConfigClient,
   ) {
     log.info(
@@ -63,6 +65,7 @@ export class RestServerStub {
               (response: any) => (localData: any) => HttpResponse.json(localData),
               undefined /* response object provided by Express Rest interface, which is not needed by MSW, that uses class HttpResponse*/,
               persistenceStoreControllerManager,
+              localCache,
               h.method /* method */,
               this.rootApiUrl + h.url,
               body, // body
