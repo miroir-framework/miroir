@@ -89,7 +89,7 @@ const StyledMain =
 // React.useEffect(
 styled(
   Main, 
-  {shouldForwardProp: (prop) => prop !== "open"}
+  // {shouldForwardProp: (prop) => prop !== "open"}
 )(
   ({ theme, open }) => ({
     // zIndex: theme.zIndex.drawer + 1,
@@ -133,7 +133,7 @@ styled(
 
 export const RootComponent = (props: RootComponentProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
-  const [drawerIsOpen, setDrawerIsOpen] = useState(false);
+  const [drawerIsOpen, setDrawerIsOpen] = useState(true);
 
   const handleDrawerOpen = () => {
     setDrawerIsOpen(true);

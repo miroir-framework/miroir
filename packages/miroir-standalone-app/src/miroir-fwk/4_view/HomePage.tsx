@@ -13,31 +13,29 @@ import {
   ApplicationSection,
   DomainControllerInterface,
   DomainManyQueriesWithDeploymentUuid,
+  Entity,
   EntityDefinition,
   EntityInstance,
   LoggerInterface,
-  MetaEntity,
+  MetaModel,
   MiroirFetchQuery,
   MiroirLoggerFactory,
   ObjectListReportSection,
   Report,
-  DomainElement,
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   defaultMiroirMetaModel,
   entityAuthor,
   entityBook,
+  entityDefinitionAuthor,
+  entityDefinitionBook,
   getLoggerName,
   queryVersionBundleProducerV1,
   reportEntityDefinitionList,
   reportEntityList,
   reportReportList,
   resetAndInitMiroirAndApplicationDatabase,
-  selectByDomainManyQueriesFromDomainState,
-  MetaModel,
-  Entity,
-  entityDefinitionBook,
-  entityDefinitionAuthor
+  selectByDomainManyQueriesFromDomainState
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -47,7 +45,7 @@ import {
   useMiroirContextService
 } from "../../miroir-fwk/4_view/MiroirContextReactProvider";
 import { Importer } from './Importer';
-import { useCurrentModel, useDomainStateCleanSelector, useDomainStateSelector } from "./ReduxHooks";
+import { useCurrentModel, useDomainStateCleanSelector } from "./ReduxHooks";
 
 
 // import entityPublisher from "../../assets/library_model/";

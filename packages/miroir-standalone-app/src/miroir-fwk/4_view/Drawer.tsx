@@ -44,6 +44,9 @@ import {
   MiroirLoggerFactory,
   PersistenceInterface,
   reportBookInstance,
+  reportBookList,
+  reportEntityList,
+  reportReportList,
 } from "miroir-core";
 
 import { useDomainControllerService, useMiroirContext, useMiroirContextService } from './MiroirContextReactProvider';
@@ -115,6 +118,34 @@ const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
   }),
 );
 
+
+const sideBarItems = [
+  {
+    text: "Miroir Entities",
+    section: "model",
+    application: applicationDeploymentMiroir.uuid,
+    reportUuid: reportEntityList.uuid,
+  },
+  {
+    text: "Miroir Reports",
+    section: "data",
+    application: applicationDeploymentMiroir.uuid,
+    reportUuid: reportReportList.uuid,
+  },
+  {
+    text: "Library Books",
+    section: "data",
+    application: applicationDeploymentLibrary.uuid,
+    reportUuid: reportBookList.uuid,
+  }
+  // {
+  //   text: "Library Entities",
+  //   section: "model",
+  //   application: applicationDeploymentLibrary.uuid,
+  //   reportUuid: reportEntityList.uuid,
+  // }
+];
+
 export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   const theme = useTheme();
 
@@ -132,6 +163,26 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
         </IconButton>
       </StyledDrawerHeader>
       <Divider />
+      <List>
+        {sideBarItems.map((i, index) => (
+          <ListItem key={i.text} disablePadding>
+            <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={i.text} />
+              </ListItemButton>
+            </Link>
+            {/* <ListItemButton>
+              <ListItemIcon>
+                <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>Countries</Link>
+              </ListItemIcon>
+              <ListItemText primary={i.text} />
+            </ListItemButton> */}
+          </ListItem>
+        ))}
+      </List>
       <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem key={text} disablePadding>
