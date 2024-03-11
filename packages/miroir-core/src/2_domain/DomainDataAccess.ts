@@ -32,10 +32,12 @@ import {
   EntityDefinition,
   EntityInstance,
   JzodSchema,
+  Menu,
   MetaModel,
   Report,
   StoreBasedConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { entityMenu } from "../index.js";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"DomainDataAccess");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -108,6 +110,14 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]
           // ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
           ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as ApplicationVersion[]
+          : []
+        ),
+        menus: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]
+          // ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityApplicationVersion.uuid]) as MiroirApplicationVersionOLD_DO_NOT_USE[]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == applicationDeploymentMiroir.uuid?"data":"model"][entityMenu.uuid]) as Menu[]
           : []
         ),
         applicationVersionCrossEntityDefinition: [],

@@ -43,7 +43,8 @@ import instanceConfigurationReference from '../assets/miroir_data/7990c0c9-86c3-
 
 // import { Report, } from "../0_interfaces/1_core/Report.js";
 import { JzodSchemaDefinition } from "../0_interfaces/1_core/JzodSchemaDefinition.js";
-import { Entity, EntityDefinition, JzodSchema, MetaModel, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Entity, EntityDefinition, JzodSchema, Menu, MetaModel, Report } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
 
 // TODO: define current configuration!
 export const defaultMiroirMetaModel: MetaModel = {
@@ -56,6 +57,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityEntity as Entity,
     entityEntityDefinition as Entity,
     EntityJzodSchema as Entity,
+    entityMenu as Entity,
     entityReport as Entity,
     entityStoreBasedConfiguration as Entity,
     entityApplicationVersion as Entity,
@@ -68,11 +70,15 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionEntity as EntityDefinition,
     entityDefinitionEntityDefinition as EntityDefinition,
     entityDefinitionJzodSchema as EntityDefinition,
+    entityDefinitionMenu as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
     entityDefinitionStoreBasedConfiguration as EntityDefinition,
   ],
   jzodSchemas: [
     jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+  ],
+  menus: [
+    menuDefaultMiroir as Menu,
   ],
   applicationVersions:[
     applicationVersionInitialMiroirVersion
@@ -86,6 +92,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportEntityDefinitionList as Report,
     reportEntityList as Report,
     reportJzodSchemaList as Report,
+    reportMenuList as Report,
     reportReportList as Report,
   ],
   applicationVersionCrossEntityDefinition: [

@@ -44,7 +44,7 @@ import { ReportUrlParamKeys } from './routes/ReportPage';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 import { uploadBooksAndReports } from './uploadBooksAndReports';
-import { Drawer, drawerWidth } from "./Drawer";
+import { Sidebar, drawerWidth } from "./Sidebar";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -174,10 +174,10 @@ export const RootComponent = (props: RootComponentProps) => {
           <Grid
             item
           >
-          <Drawer
+          <Sidebar
             open={drawerIsOpen}
             setOpen={setDrawerIsOpen}
-          ></Drawer>
+          ></Sidebar>
           </Grid>
           <Grid
             item

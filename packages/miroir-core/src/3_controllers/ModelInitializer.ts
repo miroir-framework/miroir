@@ -55,6 +55,7 @@ import { packageName } from '../constants';
 import { getLoggerName } from '../tools';
 import { cleanLevel } from './constants';
 import { Application, EntityDefinition, EntityInstance, MetaModel } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { entityDefinitionMenu, entityMenu, menuDefaultMiroir, reportMenuList } from '..';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ModelInitializer");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -135,6 +136,10 @@ export async function modelInitialize(
     await persistenceStoreController.createEntity(entityEndpointVersion as MetaEntity, entityDefinitionEndpoint as EntityDefinition);
     log.info(logHeader, 'created entity Endpoint',persistenceStoreController.getEntityUuids());
     
+    // bootstrap Menu
+    await persistenceStoreController.createEntity(entityMenu as MetaEntity, entityDefinitionMenu as EntityDefinition);
+    log.info(logHeader, 'created entity Menu',persistenceStoreController.getEntityUuids());
+    
     // bootstrap EntityStoreBasedConfiguration
     await persistenceStoreController.createEntity(entityStoreBasedConfiguration as MetaEntity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
     log.info(logHeader, 'created entity StoreBasedConfiguration',persistenceStoreController.getEntityUuids());
@@ -164,10 +169,12 @@ export async function modelInitialize(
     await persistenceStoreController.upsertInstance('data', reportApplicationDeploymentConfigurationList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportApplicationModelBranchList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportApplicationVersionList as EntityInstance);
+    await persistenceStoreController.upsertInstance('data', reportMenuList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportReportList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportJzodSchema as EntityInstance);
     // await persistenceStoreController.upsertInstance('data', reportQueryList as EntityInstance);
     await persistenceStoreController.upsertInstance('data', reportQueryVersionList as EntityInstance);
+    await persistenceStoreController.upsertInstance('data', menuDefaultMiroir as EntityInstance);
     
 
     await persistenceStoreController.upsertInstance('data', application);

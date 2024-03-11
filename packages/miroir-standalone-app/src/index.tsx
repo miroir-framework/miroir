@@ -86,8 +86,8 @@ const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
 // ##############################################################################################
 // const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
-const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
+const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit"
+// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
 // const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
 // ##############################################################################################
 // ##############################################################################################

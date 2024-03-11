@@ -17,7 +17,7 @@ import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core
 
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
-import { drawerWidth } from './Drawer';
+import { drawerWidth } from './Sidebar';
 import { useTheme } from '@emotion/react';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");

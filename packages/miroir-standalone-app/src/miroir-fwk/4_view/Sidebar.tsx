@@ -2,15 +2,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MailIcon from '@mui/icons-material/Mail';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow
-} from "@mui/material";
-import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -20,42 +11,27 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import { useState } from 'react';
-import { Link, Outlet, Params, useParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { Link } from 'react-router-dom';
 
 
 import {
   applicationDeploymentLibrary,
   applicationDeploymentMiroir,
-  applicationLibrary,
-  applicationMiroir,
-  applicationModelBranchLibraryMasterBranch,
-  applicationModelBranchMiroirMasterBranch,
-  applicationStoreBasedConfigurationLibrary,
-  applicationStoreBasedConfigurationMiroir,
-  applicationVersionInitialMiroirVersion,
-  applicationVersionLibraryInitialVersion,
-  defaultMiroirMetaModel,
   DomainControllerInterface,
-  getLoggerName,
-  LoggerInterface,
-  MiroirConfigForRestClient,
-  MiroirLoggerFactory,
-  PersistenceInterface,
-  reportBookInstance,
+  DomainElementObject,
+  DomainManyQueriesWithDeploymentUuid,
+  menuDefaultMiroir,
   reportBookList,
   reportEntityList,
+  reportMenuList,
   reportReportList,
+  selectByDomainManyQueriesFromDomainState
 } from "miroir-core";
+import { useMemo } from 'react';
+import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
+import { useDomainStateSelector } from './ReduxHooks';
 
-import { useDomainControllerService, useMiroirContext, useMiroirContextService } from './MiroirContextReactProvider';
-import ResponsiveAppBar from './ResponsiveAppBar';
-import { ReportUrlParamKeys } from './routes/ReportPage';
 
-import { uploadBooksAndReports } from './uploadBooksAndReports';
-import { packageName } from '../../constants';
-import { cleanLevel } from './constants';
 
 export const drawerWidth = 200;
 
@@ -100,7 +76,7 @@ export interface ResponsiveAppBarProps {
   children:any,
 }
 
-// const Drawer = MuiDrawer;
+// const Sidebar = MuiDrawer;
 const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: drawerWidth,
@@ -119,36 +95,74 @@ const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 );
 
 
-const sideBarItems = [
+const sideBarDefaultItems: any[] = [
   {
-    text: "Miroir Entities",
+    label: "Miroir Entities",
     section: "model",
     application: applicationDeploymentMiroir.uuid,
     reportUuid: reportEntityList.uuid,
   },
   {
-    text: "Miroir Reports",
+    label: "Miroir Reports",
     section: "data",
     application: applicationDeploymentMiroir.uuid,
     reportUuid: reportReportList.uuid,
   },
-  {
-    text: "Library Books",
-    section: "data",
-    application: applicationDeploymentLibrary.uuid,
-    reportUuid: reportBookList.uuid,
-  }
   // {
-  //   text: "Library Entities",
-  //   section: "model",
+  //   label: "Miroir Menus",
+  //   section: "data",
+  //   application: applicationDeploymentMiroir.uuid,
+  //   reportUuid: reportMenuList.uuid,
+  // },
+  // {
+  //   label: "Library Books",
+  //   section: "data",
   //   application: applicationDeploymentLibrary.uuid,
-  //   reportUuid: reportEntityList.uuid,
+  //   reportUuid: reportBookList.uuid,
   // }
+  // {
 ];
 
-export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
+let count = 0;
+export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   const theme = useTheme();
 
+  const domainController: DomainControllerInterface = useDomainControllerService();
+  const context = useMiroirContext();
+  const miroirConfig = context.getMiroirConfig();
+
+  const domainFetchQueryParams: DomainManyQueriesWithDeploymentUuid = useMemo(
+    () => ({
+      queryType: "DomainManyQueries",
+      deploymentUuid: applicationDeploymentMiroir.uuid,
+      applicationSection: "data",
+      pageParams: { elementType: "object", elementValue: {} },
+      queryParams: { elementType: "object", elementValue: {} },
+      contextResults: { elementType: "object", elementValue: {} },
+      fetchQuery: {
+        select: {
+          menus: {
+            // "queryType": "selectObjectListByEntity",
+            queryType: "selectObjectByDirectReference",
+            parentName: "Menu",
+            parentUuid: {
+              referenceType: "constant",
+              referenceUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+            },
+            instanceUuid: {
+              referenceType: "constant",
+              referenceUuid: menuDefaultMiroir.uuid,
+            }
+          },
+        },
+      },
+    }),
+    []
+  );
+
+  const domainElementObject: DomainElementObject = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
+  // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
+  console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition);
   return (
     <StyledDrawer
       sx={{flexDirection:'column'}}
@@ -163,17 +177,22 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
         </IconButton>
       </StyledDrawerHeader>
       <Divider />
+      count: {count}
       <List>
-        {sideBarItems.map((i, index) => (
-          <ListItem key={i.text} disablePadding>
-            <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
-              <ListItemButton>
+        {((domainElementObject?.elementValue?.menus?.elementValue as any)?.definition??sideBarDefaultItems).map((i: any, index: number) => (
+        // {(sideBarDefaultItems).map((i: any, index: number) => (
+          <ListItem key={i.label} disablePadding>
+            {/* <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}> */}
+              <ListItemButton
+                component={Link}
+                to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}
+              >
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={i.text} />
+                <ListItemText primary={i.label} />
               </ListItemButton>
-            </Link>
+            {/* </Link> */}
             {/* <ListItemButton>
               <ListItemIcon>
                 <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>Countries</Link>
@@ -183,7 +202,7 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           </ListItem>
         ))}
       </List>
-      <List>
+      {/* <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
@@ -194,9 +213,9 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
+      </List> */}
       <Divider />
-      <List>
+      {/* <List>
         {['All mail', 'Trash', 'Spam'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
@@ -207,7 +226,7 @@ export const Drawer = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
+      </List> */}
       {/* </MuiDrawer> */}
     </StyledDrawer>
 
