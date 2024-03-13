@@ -12,6 +12,7 @@ import {
   ApplicationDeploymentConfiguration,
   ApplicationSection,
   DomainControllerInterface,
+  DomainElement,
   DomainManyQueriesWithDeploymentUuid,
   Entity,
   EntityDefinition,
@@ -30,6 +31,7 @@ import {
   entityDefinitionAuthor,
   entityDefinitionBook,
   getLoggerName,
+  getSelectorParams,
   queryVersionBundleProducerV1,
   reportEntityDefinitionList,
   reportEntityList,
@@ -211,8 +213,8 @@ export const HomePage = (props: RootComponentProps) => {
       fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
     }),[miroirMetaModel])
   
-    // const producedBundle : DomainElement = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
-    const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    const producedBundle : DomainElement = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<DomainManyQueriesWithDeploymentUuid>(bundleProducerQuery));
   
     log.info("producedBundle1",producedBundle)
   

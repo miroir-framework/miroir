@@ -26,8 +26,12 @@
     "bundle": true,
     "treeshake": true,
     "target": "node20",
-    "format": ["esm"],
-    "entry": ["src/index.ts"]
+    "format": [
+      "esm"
+    ],
+    "entry": [
+      "src/index.ts"
+    ]
   },
   "exports": {
     ".": {
@@ -39,6 +43,7 @@
   "dependencies": {
     "@miroir-framework/jzod": "0.6.3",
     "@miroir-framework/jzod-ts": "^0.6.3",
+    "reselect": "^5.1.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

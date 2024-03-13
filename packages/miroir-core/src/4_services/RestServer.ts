@@ -30,6 +30,7 @@ import { cleanLevel } from "./constants";
 
 import applicationDeploymentMiroir from "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json";
 import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { getSelectorParams, selectByDomainManyQueriesFromDomainStateNew } from "../2_domain/DomainSelectorNew";
 import { selectByDomainManyQueriesFromDomainState } from "../2_domain/DomainSelector";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RestServer");
@@ -292,6 +293,7 @@ export async function queryHandler(
   const query: DomainManyQueriesWithDeploymentUuid = body.query as DomainManyQueriesWithDeploymentUuid ;
   const domainState = localCache.getDomainState();
   // log.info("localCacheSliceObject handleDomainEntityAction queryAction domainState=", JSON.stringify(domainState, undefined, 2))
+  // const queryResult: DomainElement = selectByDomainManyQueriesFromDomainStateNew(domainState, getSelectorParams(query));
   const queryResult: DomainElement = selectByDomainManyQueriesFromDomainState(domainState, query);
   const result:ActionReturnType = {
     status: "ok",

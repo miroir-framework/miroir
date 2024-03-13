@@ -10,6 +10,7 @@ export {
   selectModelForDeployment,
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
 export {
+  applyDomainStateSelectorNew,
   applyDomainStateSelector,
   applyDomainStateCleanSelector,
   selectDomainState,

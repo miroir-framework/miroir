@@ -284,6 +284,9 @@ export {
 } from './0_interfaces/2_domain/DomainControllerInterface.js';
 export {
   DomainStateSelector,
+  DomainStateSelectorNew,
+  DomainStateSelectorMap,
+  DomainStateSelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
@@ -376,6 +379,19 @@ export {
   selectFetchQueryJzodSchemaFromDomainState,
   selectJzodSchemaBySingleSelectQueryFromDomainState,
 } from './2_domain/DomainSelector.js';
+export {
+  cleanupResultsFromQueryNew,
+  // getSelectorMapNew,
+  getSelectorParams,
+  selectByDomainManyQueriesFromDomainStateNew,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  selectEntityJzodSchemaFromDomainStateNew,
+  selectEntityInstanceUuidIndexFromDomainStateNew,
+  selectEntityInstanceFromObjectQueryAndDomainStateNew,
+  selectEntityInstanceListFromListQueryAndDomainStateNew,
+  selectFetchQueryJzodSchemaFromDomainStateNew,
+  selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+} from './2_domain/DomainSelectorNew.js';
 export {
   ModelEntityActionTransformer
 } from './2_domain/ModelEntityActionTransformer.js';

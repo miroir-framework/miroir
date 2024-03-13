@@ -7,6 +7,7 @@ import {
   ApplicationSection,
   DomainElement,
   DomainStateSelector,
+  DomainStateSelectorNew,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -26,6 +27,7 @@ import {
   ReduxStateWithUndoRedo,
   applyDomainStateCleanSelector,
   applyDomainStateSelector,
+  applyDomainStateSelectorNew,
   selectEntityInstanceUuidIndexFromLocalCache,
   selectInstanceArrayForDeploymentSectionEntity,
   selectModelForDeployment
@@ -33,6 +35,7 @@ import {
 
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
+import { DomainStateSelectorParams } from "miroir-core/src/0_interfaces/2_domain/DomainSelectorInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReduxHooks");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -54,6 +57,22 @@ export function useDomainStateSelector<P extends MiroirSelectorQueryParams, T >(
     }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, query)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelectorNew<P, T>,
+  selectorParams:DomainStateSelectorParams<P>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
+): T {
+  const innerSelector = useMemo(
+    () => {
+      return applyDomainStateSelectorNew(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
   );
   return result
 }

@@ -15,21 +15,20 @@ import { Link } from 'react-router-dom';
 
 
 import {
-  applicationDeploymentLibrary,
   applicationDeploymentMiroir,
   DomainControllerInterface,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
+  DomainStateSelectorParams,
+  getSelectorParams,
   menuDefaultMiroir,
-  reportBookList,
   reportEntityList,
   reportMenuList,
-  reportReportList,
-  selectByDomainManyQueriesFromDomainState
+  selectByDomainManyQueriesFromDomainStateNew
 } from "miroir-core";
 import { useMemo } from 'react';
 import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
-import { useDomainStateSelector } from './ReduxHooks';
+import { useDomainStateSelectorNew } from './ReduxHooks';
 
 
 
@@ -102,18 +101,18 @@ const sideBarDefaultItems: any[] = [
     application: applicationDeploymentMiroir.uuid,
     reportUuid: reportEntityList.uuid,
   },
-  {
-    label: "Miroir Reports",
-    section: "data",
-    application: applicationDeploymentMiroir.uuid,
-    reportUuid: reportReportList.uuid,
-  },
   // {
-  //   label: "Miroir Menus",
+  //   label: "Miroir Reports",
   //   section: "data",
   //   application: applicationDeploymentMiroir.uuid,
-  //   reportUuid: reportMenuList.uuid,
+  //   reportUuid: reportReportList.uuid,
   // },
+  {
+    label: "Miroir Menus",
+    section: "data",
+    application: applicationDeploymentMiroir.uuid,
+    reportUuid: reportMenuList.uuid,
+  },
   // {
   //   label: "Library Books",
   //   section: "data",
@@ -125,14 +124,16 @@ const sideBarDefaultItems: any[] = [
 
 let count = 0;
 export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
+  count++;
   const theme = useTheme();
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContext();
   const miroirConfig = context.getMiroirConfig();
 
-  const domainFetchQueryParams: DomainManyQueriesWithDeploymentUuid = useMemo(
-    () => ({
+  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+    (): DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> => 
+    getSelectorParams({
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
       applicationSection: "data",
@@ -160,18 +161,23 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
     []
   );
 
-  const domainElementObject: DomainElementObject = useDomainStateSelector(selectByDomainManyQueriesFromDomainState, domainFetchQueryParams);
+  const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
+    selectByDomainManyQueriesFromDomainStateNew,
+    domainFetchQueryParams
+  );
   // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
-  console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition);
+  // console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition);
+  const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
+  const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
   return (
     <StyledDrawer
-      sx={{flexDirection:'column'}}
+      sx={drawerSx}
 
       variant="permanent"
       // variant="persistent"
       open={props.open}
     >
-      <StyledDrawerHeader sx={{alignItems: "end"}}>
+      <StyledDrawerHeader sx={styledDrawerSx}>
         <IconButton onClick={()=>props.setOpen(false)}>
           {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
@@ -179,10 +185,9 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
       <Divider />
       count: {count}
       <List>
+        {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {((domainElementObject?.elementValue?.menus?.elementValue as any)?.definition??sideBarDefaultItems).map((i: any, index: number) => (
-        // {(sideBarDefaultItems).map((i: any, index: number) => (
           <ListItem key={i.label} disablePadding>
-            {/* <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}> */}
               <ListItemButton
                 component={Link}
                 to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}
@@ -192,28 +197,9 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
                 </ListItemIcon>
                 <ListItemText primary={i.label} />
               </ListItemButton>
-            {/* </Link> */}
-            {/* <ListItemButton>
-              <ListItemIcon>
-                <Link to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>Countries</Link>
-              </ListItemIcon>
-              <ListItemText primary={i.text} />
-            </ListItemButton> */}
           </ListItem>
         ))}
       </List>
-      {/* <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List> */}
       <Divider />
       {/* <List>
         {['All mail', 'Trash', 'Spam'].map((text, index) => (

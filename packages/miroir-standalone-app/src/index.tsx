@@ -1,7 +1,7 @@
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { setupWorker } from 'msw/browser';
-import { StrictMode } from "react";
+import { StrictMode, useMemo } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import {
@@ -28,7 +28,8 @@ import {
   restServerDefaultHandlers,
   SpecificLoggerOptionsMap,
   PersistenceStoreControllerManager,
-  StoreUnitConfiguration
+  StoreUnitConfiguration,
+  StoreOrBundleAction
 } from "miroir-core";
 import { createMswRestServer } from "miroir-server-msw-stub";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -133,6 +134,40 @@ const router = createBrowserRouter([
 ]);
 
 
+const themeParams = {
+  palette: {
+    primary: {
+      main: blue[500],
+    },
+  },
+  spacing: 2,
+  components: {
+    MuiList: {
+      defaultProps:{
+        style: {border: `0`,}
+        // style: {border: `10px dashed ${blue[500]}`,}
+      }
+    },
+    MuiDialog: {
+      defaultProps:{
+        // style: {maxWidth: "100vw",display:"inline-flex"}
+        // style: {maxWidth: "100vw"}
+        style: {display:"inline-flex", justifyContent:'center', alignItems:"center"}
+      }
+    },
+    MuiDialogTitle: {
+      defaultProps:{
+        style: {display:"flex"}
+      }
+    },
+    // MuiPaper: {
+    //   defaultProps:{
+    //     style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
+    //     // style: {display:"inline-flex"}
+    //   }
+    // }
+  }
+};
 
 // ###################################################################################
 async function start(root:Root) {
@@ -199,54 +234,20 @@ async function start(root:Root) {
       }
 
       const persistenceStore:PersistenceInterface = domainController.getRemoteStore();
-      await persistenceStore.handlePersistenceAction({
+      const openStoreAction: StoreOrBundleAction = {
         actionType: "storeManagementAction",
         actionName: "openStore",
         endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
         configuration: {
-          [applicationDeploymentMiroir.uuid]: currentMiroirConfig.client.miroirServerConfig as StoreUnitConfiguration,
-          [applicationDeploymentLibrary.uuid]: currentMiroirConfig.client.appServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentMiroir.uuid]: (currentMiroirConfig.client as any).miroirServerConfig as StoreUnitConfiguration,
+          [applicationDeploymentLibrary.uuid]: (currentMiroirConfig.client as any).appServerConfig as StoreUnitConfiguration,
         },
         deploymentUuid: applicationDeploymentMiroir.uuid,
-      })
-
-
+      };
+      await persistenceStore.handlePersistenceAction(openStoreAction)
     }
 
-    const theme = createTheme({
-      palette: {
-        primary: {
-          main: blue[500],
-        },
-      },
-      spacing: 2,
-      components: {
-        MuiList: {
-          defaultProps:{
-            style: {border: `0`,}
-            // style: {border: `10px dashed ${blue[500]}`,}
-          }
-        },
-        MuiDialog: {
-          defaultProps:{
-            // style: {maxWidth: "100vw",display:"inline-flex"}
-            // style: {maxWidth: "100vw"}
-            style: {display:"inline-flex", justifyContent:'center', alignItems:"center"}
-          }
-        },
-        MuiDialogTitle: {
-          defaultProps:{
-            style: {display:"flex"}
-          }
-        },
-        // MuiPaper: {
-        //   defaultProps:{
-        //     style: {maxHeight:"90vh",maxWidth:"90vw",display:"inline-flex"}
-        //     // style: {display:"inline-flex"}
-        //   }
-        // }
-      }
-    });
+    const theme = createTheme(themeParams);
     
     theme.spacing(10);
 

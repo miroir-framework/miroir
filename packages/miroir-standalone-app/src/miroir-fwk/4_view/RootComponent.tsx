@@ -131,6 +131,8 @@ styled(
 // ,[props.open])
 ;
 
+const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
+
 export const RootComponent = (props: RootComponentProps) => {
   const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
@@ -147,11 +149,12 @@ export const RootComponent = (props: RootComponentProps) => {
   const context = useMiroirContext();
   const miroirConfig = context.getMiroirConfig();
 
+
   return (
     <div> 
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
-      <Box sx={{ display: 'flex', flexGrow: 1,flexDirection:"column" }}>
+      <Box sx={boxParams}>
       {/* <CssBaseline /> */}
       <Grid
         container
@@ -247,9 +250,9 @@ export const RootComponent = (props: RootComponentProps) => {
                   </TableBody>
                 </Table>
               </div>
-                <p/>
-                params: {JSON.stringify(params)}
-                <p/>
+                {/* <p/>
+                  params: {JSON.stringify(params)}
+                <p/> */}
                 <span>
                   <button
                     onClick={async () => {

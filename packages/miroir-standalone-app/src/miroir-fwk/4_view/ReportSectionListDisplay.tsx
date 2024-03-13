@@ -336,13 +336,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   log.info("ReportSectionListDisplay columnDefs",columnDefs);
   
   return (
-    <div className="MiroirReport-global" style={{ display: "flex" }}>
-      <span>rendered ReportSectionListDisplay: {count} times.</span>
+    <div className="MiroirReport-global" style={{ display: "block" }}>
+      <div> rendered ReportSectionListDisplay: {count} times.</div>
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {props?.currentMiroirEntity ? (
         !!columnDefs ? (
           // columnDefs?.length > 0
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div>
             <div>{/* colonnes: {JSON.stringify(columnDefs)} */}</div>
             <JsonObjectFormEditorDialog
               showButton={true}
