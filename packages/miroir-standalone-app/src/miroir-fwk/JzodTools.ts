@@ -1,5 +1,5 @@
 import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
-import { MetaModel } from "miroir-core/src";
+import { MetaModel, miroirFundamentalJzodSchema } from "miroir-core";
 import { JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
@@ -9,14 +9,20 @@ export function resolveJzodSchemaReference(
   currentModel?: MetaModel,
   relativeReferenceJzodContext?: JzodObject | JzodReference,
 ): JzodElement {
-  const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition.absolutePath
+  // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
+  const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition
+    .absolutePath
     ? {
         type: "object",
         definition:
-          (currentModel?(currentModel as any).jzodSchemas:[]).find((s:JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ??
-          {},
+          (currentModel
+            // ? (currentModel as any).jzodSchemas
+            // : []
+            ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas]
+            : [miroirFundamentalJzodSchema]
+          ).find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ?? {},
       }
-    : relativeReferenceJzodContext??jzodReference;
+    : relativeReferenceJzodContext ?? jzodReference;
   const targetJzodSchema = jzodReference?.definition.relativePath
     ? absoluteReferenceTargetJzodSchema?.type == "object" && absoluteReferenceTargetJzodSchema?.definition
       ? absoluteReferenceTargetJzodSchema?.definition[jzodReference?.definition.relativePath]

@@ -1,4 +1,6 @@
-// export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
+export {miroirFundamentalJzodSchema} from "./0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+
+// export {miroirFundamentalJzodSchema}
 
 export {
   ActionError,

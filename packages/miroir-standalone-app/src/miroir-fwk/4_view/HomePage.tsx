@@ -202,21 +202,21 @@ export const HomePage = (props: RootComponentProps) => {
     setDisplayedReportUuid("");
   };
 
-    // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
-    const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
-      queryType: "DomainManyQueries",
-      deploymentUuid: applicationDeploymentMiroir.uuid,
-      applicationSection: "data",
-      pageParams: { elementType: "object", elementValue: {} },
-      contextResults: { elementType: "object", elementValue: {} },
-      queryParams: { elementType: "object", elementValue: { "applicationVersion": { elementType: "instanceUuid", elementValue: "695826c2-aefa-4f5f-a131-dee46fe21c13" } } },
-      fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
-    }),[miroirMetaModel])
+    // // const bundleProducerQuery: MiroirSelectQuery = useMemo(()=>queryVersionBundleProducerV1.definition,[])
+    // const bundleProducerQuery: DomainManyQueriesWithDeploymentUuid = useMemo(()=>({
+    //   queryType: "DomainManyQueries",
+    //   deploymentUuid: applicationDeploymentMiroir.uuid,
+    //   applicationSection: "data",
+    //   pageParams: { elementType: "object", elementValue: {} },
+    //   contextResults: { elementType: "object", elementValue: {} },
+    //   queryParams: { elementType: "object", elementValue: { "applicationVersion": { elementType: "instanceUuid", elementValue: "695826c2-aefa-4f5f-a131-dee46fe21c13" } } },
+    //   fetchQuery: queryVersionBundleProducerV1.definition as MiroirFetchQuery
+    // }),[miroirMetaModel])
   
-    const producedBundle : DomainElement = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
-    // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<DomainManyQueriesWithDeploymentUuid>(bundleProducerQuery));
+    // const producedBundle : DomainElement = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, bundleProducerQuery);
+    // // const producedBundle : any = useDomainStateCleanSelector(selectByDomainManyQueriesFromDomainState, getSelectorParams<DomainManyQueriesWithDeploymentUuid>(bundleProducerQuery));
   
-    log.info("producedBundle1",producedBundle)
+    // log.info("producedBundle1",producedBundle)
   
 
   return (

@@ -186,10 +186,10 @@ export const JzodElementEditor = (
     props.listKey,
     "type=",
     elementJzodSchema?.type,
-    "jzodSchema=",
-    elementJzodSchema,
     "initialValue=",
     props.innerProps.initialValuesObject,
+    "jzodSchema=",
+    elementJzodSchema,
     "itemsOrder", itemsOrder,
     "props=",
     props
@@ -198,7 +198,7 @@ export const JzodElementEditor = (
 
   switch (elementJzodSchema?.type) {
     case "array":{
-      log.info();
+      log.info("############################################### JzodElementEditor array");
       
       // const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
       //   ((elementJzodSchema as JzodArray).definition
@@ -214,104 +214,124 @@ export const JzodElementEditor = (
       // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
 
-      log.info("JzodElementEditor array","resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
+      log.info("JzodElementEditor array",props.innerProps.initialValuesObject, "resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 
       
       return (
         <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
           {displayedLabel}:{" {"}{" "}
-          <ExpandOrFold 
+          <ExpandOrFold
             hiddenFormItems={hiddenFormItems}
             setHiddenFormItems={setHiddenFormItems}
             listKey={props.listKey}
           ></ExpandOrFold>
-          {JSON.stringify(itemsOrder)}
+          <div>itemsOrder {JSON.stringify(itemsOrder)}</div>
           <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
             {/* {props.innerProps.initialValuesObject.map((attribute: JzodElement, index: number) => { */}
-            {(itemsOrder as number[]).map(((i:number)=>[i,props.innerProps.initialValuesObject[i]])).map((attributeParam: [number, JzodElement]) => {
-              const index:number = attributeParam[0];
-              const attribute = attributeParam[1];
-              // HACK HACK HACK
-              // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElement definition.
-              // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
-              // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
-              const currentAttributeJzodSchema =
-                resolvedJzodSchema.type == "union" && attribute.type
-                  // ? props.currentEnumJzodSchemaResolver[attribute.type]
-                  ? props.currentEnumJzodSchemaResolver(attribute.type, attribute.definition)
-                  : targetJzodSchema; // Union of jzodElements
-              log.info(
-                "JzodElementEditor array [",
-                index,
-                "]",
-                attribute,
-                "type",
-                attribute.type,
-                "found schema",
-                currentAttributeJzodSchema
-              );
-              return (
-                <div
-                  key={props.listKey + "." + index}
-                  style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
-                >
-                  <button
-                    style={{ border: 0, backgroundColor: "transparent" }}
-                    disabled={index == itemsOrder.length - 1}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      
-                      const currentItemIndex:number = index;
-                      let newItemsOrder = itemsOrder.slice();
-                      const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
-                      newItemsOrder.splice(currentItemIndex+1, 0, cutOut);
-                      setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
-                      log.info("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
-                      setItemsOrder(newItemsOrder);
-                    }}
+            {(itemsOrder as number[])
+              .map((i: number) => [i, props.innerProps.initialValuesObject[i]])
+              .map((attributeParam: [number, JzodElement]) => {
+                const index: number = attributeParam[0];
+                const attribute = attributeParam[1];
+                // HACK HACK HACK
+                // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElement definition.
+                // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
+                // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
+                const currentAttributeJzodSchema =
+                  resolvedJzodSchema.type == "union" && attribute.type
+                    ? // ? props.currentEnumJzodSchemaResolver[attribute.type]
+                      props.currentEnumJzodSchemaResolver(attribute.type, attribute.definition)
+                    : targetJzodSchema; // Union of jzodElements
+                log.info(
+                  "JzodElementEditor array [",
+                  index,
+                  "]",
+                  attribute,
+                  "type",
+                  attribute.type,
+                  "found schema",
+                  currentAttributeJzodSchema
+                );
+                return (
+                  <div
+                    key={props.listKey + "." + index}
+                    style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
                   >
-                    {"v"}
-                  </button>
-                  <button
-                    style={{ border: 0, backgroundColor: "transparent" }}
-                    disabled={index == 0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      
-                      const currentItemIndex:number = index;
-                      let newItemsOrder = itemsOrder.slice();
-                      const cutOut = newItemsOrder.splice(currentItemIndex,1)[0];
-                      newItemsOrder.splice(currentItemIndex-1, 0, cutOut);
-                      setformHelperState(Object.assign(formHelperState,{[props.listKey]:newItemsOrder}));
-                      log.info("JzodElementEditor array moving item",currentItemIndex,"in object with items",itemsOrder,"cutOut",cutOut,"new order",newItemsOrder);
-                      setItemsOrder(newItemsOrder);
-                    }}
-                  >
-                    {"^"}
-                  </button>
-                  <JzodElementEditor
-                    name={"" + index}
-                    listKey={props.listKey + "." + index}
-                    currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-                    indentLevel={usedIndentLevel}
-                    innerProps={{
-                      // label:targetJzodSchema?.extra?.defaultLabel,
-                      label: currentAttributeJzodSchema?.extra?.defaultLabel,
-                      initialValuesObject: props.innerProps.initialValuesObject
-                        ? props.innerProps.initialValuesObject[index]
-                        : undefined,
-                      showButton: true,
-                      currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
-                      currentApplicationSection: props.innerProps.currentApplicationSection,
-                      elementJzodSchema: currentAttributeJzodSchema,
-                      rootJzodSchema: props.innerProps.rootJzodSchema,
-                    }}
-                  />
-                </div>
-              );
-            })}
+                    <button
+                      style={{ border: 0, backgroundColor: "transparent" }}
+                      disabled={index == itemsOrder.length - 1}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        const currentItemIndex: number = index;
+                        let newItemsOrder = itemsOrder.slice();
+                        const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
+                        newItemsOrder.splice(currentItemIndex + 1, 0, cutOut);
+                        setformHelperState(Object.assign(formHelperState, { [props.listKey]: newItemsOrder }));
+                        log.info(
+                          "JzodElementEditor array moving item",
+                          currentItemIndex,
+                          "in object with items",
+                          itemsOrder,
+                          "cutOut",
+                          cutOut,
+                          "new order",
+                          newItemsOrder
+                        );
+                        setItemsOrder(newItemsOrder);
+                      }}
+                    >
+                      {"v"}
+                    </button>
+                    <button
+                      style={{ border: 0, backgroundColor: "transparent" }}
+                      disabled={index == 0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        const currentItemIndex: number = index;
+                        let newItemsOrder = itemsOrder.slice();
+                        const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
+                        newItemsOrder.splice(currentItemIndex - 1, 0, cutOut);
+                        setformHelperState(Object.assign(formHelperState, { [props.listKey]: newItemsOrder }));
+                        log.info(
+                          "JzodElementEditor array moving item",
+                          currentItemIndex,
+                          "in object with items",
+                          itemsOrder,
+                          "cutOut",
+                          cutOut,
+                          "new order",
+                          newItemsOrder
+                        );
+                        setItemsOrder(newItemsOrder);
+                      }}
+                    >
+                      {"^"}
+                    </button>
+                    <JzodElementEditor
+                      name={"" + index}
+                      listKey={props.listKey + "." + index}
+                      currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                      indentLevel={usedIndentLevel}
+                      innerProps={{
+                        // label:targetJzodSchema?.extra?.defaultLabel,
+                        label: currentAttributeJzodSchema?.extra?.defaultLabel,
+                        initialValuesObject: props.innerProps.initialValuesObject
+                          ? props.innerProps.initialValuesObject[index]
+                          : undefined,
+                        showButton: true,
+                        currentDeploymentUuid: props.innerProps.currentDeploymentUuid,
+                        currentApplicationSection: props.innerProps.currentApplicationSection,
+                        elementJzodSchema: currentAttributeJzodSchema,
+                        rootJzodSchema: props.innerProps.rootJzodSchema,
+                      }}
+                    />
+                  </div>
+                );
+              })}
           </div>
           {"}"}
         </div>

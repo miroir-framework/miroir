@@ -363,7 +363,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             />
             {props.displayedDeploymentDefinition ? (
               <div>
-                {/* <span>{JSON.stringify(props.select)}</span> */}
+                <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div>
                 <MTableComponent
                   type={props.tableComponentReportType}
                   displayedDeploymentDefinition={props.displayedDeploymentDefinition}
@@ -372,7 +372,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   currentEntityDefinition={props.currentMiroirEntityDefinition}
                   // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={columnDefs}
-                  instancesToDisplay={instancesToDisplay??{}}
+                  instancesToDisplay={instancesToDisplay}
                   // instancesToDisplay={instancesToDisplay}
                   displayTools={true}
                   onRowEdit={onEditFormObject}

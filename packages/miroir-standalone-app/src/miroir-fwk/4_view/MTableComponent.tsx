@@ -174,11 +174,13 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const handleDialogTableRowFormOpen = useCallback((a?:any,event?:any) => {
     event?.stopPropagation();
+    log.info('MTableComponent handleDialogTableRowFormOpen called with props',props);
     log.info('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
     
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
-      setdialogFormObject(props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:{});
+      // setdialogFormObject(props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:{});
+      setdialogFormObject(a);
       log.info('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
