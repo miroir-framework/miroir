@@ -85,6 +85,11 @@
               "optional": true,
               "validations": [{ "type": "uuid" }],
               "extra": { "id":1, "defaultLabel": "Uuid", "editable": false }
+            },
+            "icon": {
+              "type": "simpleType",
+              "definition": "string",
+              "validations": [{ "type": "uuid" }]
             }
           }
         }

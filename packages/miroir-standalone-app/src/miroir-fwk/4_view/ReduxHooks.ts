@@ -32,6 +32,7 @@ import {
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateCleanSelector,
+  applyDomainStateCleanSelectorNew,
   applyDomainStateJzodSchemaSelector,
   applyDomainStateSelector,
   applyDomainStateSelectorNew,
@@ -77,6 +78,22 @@ export function useDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T
   const innerSelector = useMemo(
     () => {
       return applyDomainStateSelectorNew(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDomainStateCleanSelectorNew<P extends MiroirSelectorQueryParams, T >(
+  domainStateSelector:DomainStateSelectorNew<P, DomainElement>,
+  selectorParams:DomainStateSelectorParams<P>,
+  customQueryInterpreter?: { [k: string]: (query:MiroirSelectorQueryParams) => T }
+): T {
+  const innerSelector = useMemo(
+    () => {
+      return applyDomainStateCleanSelectorNew(domainStateSelector);
     }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)

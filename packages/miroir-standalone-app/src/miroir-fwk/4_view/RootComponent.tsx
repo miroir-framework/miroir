@@ -44,7 +44,7 @@ import { ReportUrlParamKeys } from './routes/ReportPage';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 import { uploadBooksAndReports } from './uploadBooksAndReports';
-import { Sidebar, drawerWidth } from "./Sidebar";
+import { Sidebar, SidebarWidth } from "./Sidebar";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"RootComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -69,8 +69,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  // marginLeft: `-${drawerWidth}px`,
-  // marginLeft: `${drawerWidth}px`,
+  // marginLeft: `-${SidebarWidth}px`,
+  // marginLeft: `${SidebarWidth}px`,
   // marginLeft: `24px`,
   // ...(open && {
   //   transition: theme.transitions.create('margin', {
@@ -110,14 +110,14 @@ styled(
     // ...(
     //   !open && {
     //     width: "100%",
-    //     // marginLeft: `-${drawerWidth}px`,
+    //     // marginLeft: `-${SidebarWidth}px`,
     //     // marginLeft: `240px`,
     //   }
     // ),
     ...(
       open && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
+        width: `calc(100% - ${SidebarWidth}px)`,
+        marginLeft: `${SidebarWidth}px`,
         transition: theme.transitions.create(
           ["margin", "width"], {
             easing: theme.transitions.easing.easeOut,

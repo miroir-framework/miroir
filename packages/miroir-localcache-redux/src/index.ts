@@ -14,6 +14,7 @@ export {
   applyDomainStateSelectorNew,
   applyDomainStateSelector,
   applyDomainStateCleanSelector,
+  applyDomainStateCleanSelectorNew,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   selectDomainState,

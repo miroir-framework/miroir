@@ -29,16 +29,18 @@ import {
   reportMenuList,
   selectByDomainManyQueriesFromDomainStateNew
 } from "miroir-core";
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useDomainControllerService, useMiroirContext } from './MiroirContextReactProvider';
 import { useDomainStateSelectorNew } from './ReduxHooks';
+import { AutoStories } from '@mui/icons-material';
+import { Icon } from '@mui/material';
 
 
 
-export const drawerWidth = 200;
+export const SidebarWidth = 200;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  width: SidebarWidth,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -81,7 +83,7 @@ export interface ResponsiveAppBarProps {
 // const Sidebar = MuiDrawer;
 const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
-    width: drawerWidth,
+    width: SidebarWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
@@ -126,6 +128,18 @@ const sideBarDefaultItems: any[] = [
 ];
 
 let count = 0;
+const muiIcons = {
+  "AutoStories": AutoStories
+}
+// interface IconProps {
+//   icon?: keyof typeof MUIcon;
+// }
+// const IconComp: React.FC<IconProps> = ({
+//  icon,
+// }) => {
+//    const Icon = icon && MUIcon[icon];
+//    return ({Icon && <Icon />})
+// }
 export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   count++;
   const theme = useTheme();
@@ -177,6 +191,10 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   // console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition);
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
+
+
+  // const dynIcon = React.createElement(AutoStories, {});
+
   return (
     <StyledDrawer
       sx={drawerSx}
@@ -201,7 +219,8 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
                 to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}
               >
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                  <Icon>{i.icon}</Icon>
                 </ListItemIcon>
                 <ListItemText primary={i.label} />
               </ListItemButton>

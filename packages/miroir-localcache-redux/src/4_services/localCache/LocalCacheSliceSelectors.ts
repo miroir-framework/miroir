@@ -112,6 +112,25 @@ export function applyDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzo
 }
 
 
+// ################################################################################################
+export function applyDomainStateCleanSelectorNew<P extends MiroirSelectorQueryParams>( // TODO: memoize?
+  domainStateSelector: DomainStateSelectorNew<P, DomainElement>
+): (
+  reduxState: ReduxStateWithUndoRedo,
+  params: DomainStateSelectorParams<P>
+) => any { 
+  const cleanupFunction = (domainState: DomainState, params: DomainStateSelectorParams<P>):DomainElement => {
+    const partial:DomainElement = domainStateSelector(domainState, params);
+    const result:any = cleanupResultsFromQuery(partial)
+    return result;
+  }
+
+  return createSelector(
+    [selectDomainStatePlain, selectDomainStateSelectorParams],
+    cleanupFunction
+  )
+}
+
 
 
 
@@ -181,7 +200,6 @@ export function applyDomainStateCleanSelector<P extends MiroirSelectorQueryParam
     cleanupFunction
   )
 }
-
 
 // ################################################################################################
 /**

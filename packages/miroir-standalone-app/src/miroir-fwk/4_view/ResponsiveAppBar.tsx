@@ -17,7 +17,7 @@ import { LoggerInterface, MiroirLoggerFactory, getLoggerName } from 'miroir-core
 
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
-import { drawerWidth } from './Sidebar';
+import { SidebarWidth } from './Sidebar';
 import { useTheme } from '@emotion/react';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
@@ -60,14 +60,14 @@ styled(
     // ...(
     //   !open && {
     //     width: "100%",
-    //     // marginLeft: `-${drawerWidth}px`,
+    //     // marginLeft: `-${SidebarWidth}px`,
     //     // marginLeft: `240px`,
     //   }
     // ),
     ...(
       open && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
+        width: `calc(100% - ${SidebarWidth}px)`,
+        marginLeft: `${SidebarWidth}px`,
         transition: theme.transitions.create(
           ["margin", "width"], {
             easing: theme.transitions.easing.easeOut,
