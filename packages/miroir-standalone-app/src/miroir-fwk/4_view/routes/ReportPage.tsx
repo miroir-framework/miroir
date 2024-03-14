@@ -80,7 +80,7 @@ export const ReportPage = () => {
   }), [])
   const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
 
-  const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
+  // const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
 
   if (params.applicationSection) {
     log.info("ReportPage rendering count",count,"params", params,);

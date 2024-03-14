@@ -17,12 +17,21 @@ import {
   selectFetchQueryJzodSchemaFromDomainState,
   DomainElementObject,
   selectByDomainManyQueriesFromDomainStateNew,
-  DomainStateSelectorParams
+  DomainStateSelectorParams,
+  MiroirSelectorQueryParams,
+  DomainStateSelectorMap,
+  getSelectorMap,
+  selectJzodSchemaByDomainModelQueryFromDomainStateNew,
+  selectFetchQueryJzodSchemaFromDomainStateNew,
+  DomainStateJzodSchemaSelectorParams,
+  DomainModelQueryJzodSchemaParams,
+  DomainStateJzodSchemaSelectorMap,
+  getJzodSchemaSelectorMap,
 } from "miroir-core";
 
 
 
-import { useDomainStateSelector, useDomainStateSelectorNew } from './ReduxHooks';
+import { useDomainStateJzodSchemaSelector, useDomainStateSelector, useDomainStateSelectorNew } from './ReduxHooks';
 import { ReportSectionView } from './ReportSectionView';
 import { ReportUrlParamKeys } from './routes/ReportPage';
 
@@ -68,6 +77,11 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
     props.reportSection.fetchQuery
   );
   
+  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams,any> = useMemo(
+    () => getSelectorMap(),
+    []
+  )
+
   const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(() => getSelectorParams(
     {
       queryType: "DomainManyQueries",
@@ -77,30 +91,43 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
       queryParams: { elementType: "object", elementValue: {}},
       contextResults: { elementType: "object", elementValue: {} },
       fetchQuery: props.reportSection.fetchQuery
-    }
-  ), [props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
-
-  const domainElementObject: DomainElementObject = useDomainStateSelectorNew(selectByDomainManyQueriesFromDomainStateNew, domainFetchQueryParams);
-
-  const fetchedDataJzodSchemaParams: DomainModelGetFetchParamJzodSchemaQueryParams = useMemo(()=>({
-    queryType: "getFetchParamsJzodSchema",
-    pageParams: {
-      elementType: "object",
-      elementValue: {
-        applicationSection: {elementType: "string", elementValue: props.applicationSection??"data"},
-        deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid??""},
-        instanceUuid: {elementType: "string", elementValue: props.instanceUuid??""},
-      }
     },
-    queryParams: { elementType: "object", elementValue: {} },
-    contextResults: { elementType: "object", elementValue: {} },
-    fetchParams: domainFetchQueryParams.query,
-  }),[domainFetchQueryParams])
+    selectorMap
+  ), [selectorMap, props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
 
-  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelector(
-    selectFetchQueryJzodSchemaFromDomainState,
-    fetchedDataJzodSchemaParams
+  const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
+    selectorMap.selectByDomainManyQueriesFromDomainStateNew,
+    domainFetchQueryParams
   );
+
+  const jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = useMemo(
+    () => getJzodSchemaSelectorMap(),
+    []
+  )
+
+  const fetchedDataJzodSchemaParams: DomainStateJzodSchemaSelectorParams<DomainModelQueryJzodSchemaParams> = useMemo(()=>({
+    selectorMap: jzodSchemaSelectorMap,
+    query: {
+      queryType: "getFetchParamsJzodSchema",
+      pageParams: {
+        elementType: "object",
+        elementValue: {
+          applicationSection: {elementType: "string", elementValue: props.applicationSection??"data"},
+          deploymentUuid: {elementType: "string", elementValue: props.deploymentUuid??""},
+          instanceUuid: {elementType: "string", elementValue: props.instanceUuid??""},
+        }
+      },
+      queryParams: { elementType: "object", elementValue: {} },
+      contextResults: { elementType: "object", elementValue: {} },
+      fetchParams: domainFetchQueryParams.query,
+    }
+  }),[jzodSchemaSelectorMap])
+
+  // const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateSelectorNew(
+  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDomainStateJzodSchemaSelector(
+    selectFetchQueryJzodSchemaFromDomainStateNew,
+    fetchedDataJzodSchemaParams
+  ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 
   log.info(
     "RootReportSectionView props.reportSection?.fetchQuery",

@@ -136,6 +136,8 @@ export {
   localCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   StoreOrBundleAction,
+  Menu,
+  menu,
   MiroirConfigForMswClient,
   miroirConfigForMswClient,
   MiroirConfigForRestClient,
@@ -287,6 +289,9 @@ export {
   DomainStateSelectorNew,
   DomainStateSelectorMap,
   DomainStateSelectorParams,
+  DomainStateJzodSchemaSelector,
+  DomainStateJzodSchemaSelectorMap,
+  DomainStateJzodSchemaSelectorParams,
   RecordOfJzodElement,
   RecordOfJzodObject,
 } from './0_interfaces/2_domain/DomainSelectorInterface.js';
@@ -381,7 +386,8 @@ export {
 } from './2_domain/DomainSelector.js';
 export {
   cleanupResultsFromQueryNew,
-  // getSelectorMapNew,
+  getJzodSchemaSelectorMap,
+  getSelectorMap,
   getSelectorParams,
   selectByDomainManyQueriesFromDomainStateNew,
   selectJzodSchemaByDomainModelQueryFromDomainStateNew,

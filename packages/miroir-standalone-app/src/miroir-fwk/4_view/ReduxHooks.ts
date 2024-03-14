@@ -2,21 +2,27 @@ import { useMemo } from "react";
 
 import { useSelector } from "react-redux";
 
-import { JzodAttribute } from "@miroir-framework/jzod-ts";
+// import { JzodAttribute } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
   DomainElement,
+  DomainModelQueryJzodSchemaParams,
+  DomainStateJzodSchemaSelector,
+  DomainStateJzodSchemaSelectorParams,
   DomainStateSelector,
   DomainStateSelectorNew,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
+  JzodAttribute,
+  JzodElement,
   LocalCacheEntityInstancesSelectorParams,
   LocalCacheQueryParams,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   MiroirSelectorQueryParams,
+  RecordOfJzodElement,
   Uuid,
   applicationDeploymentMiroir,
   entityEntityDefinition,
@@ -26,6 +32,7 @@ import {
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateCleanSelector,
+  applyDomainStateJzodSchemaSelector,
   applyDomainStateSelector,
   applyDomainStateSelectorNew,
   selectEntityInstanceUuidIndexFromLocalCache,
@@ -72,6 +79,22 @@ export function useDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T
       return applyDomainStateSelectorNew(domainStateSelector);
     }, [domainStateSelector]);
   const result: T = useSelector((state: ReduxStateWithUndoRedo) =>
+    innerSelector(state, selectorParams)
+  );
+  return result
+}
+
+// ################################################################################################
+export function useDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodSchemaParams>(
+  domainStateSelector:DomainStateJzodSchemaSelector<Q>,
+  selectorParams:DomainStateJzodSchemaSelectorParams<Q>,
+  customQueryInterpreter?: { [k: string]: (query:DomainModelQueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
+): RecordOfJzodElement | JzodElement | undefined {
+  const innerSelector = useMemo(
+    () => {
+      return applyDomainStateJzodSchemaSelector(domainStateSelector);
+    }, [domainStateSelector]);
+  const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
   );
   return result

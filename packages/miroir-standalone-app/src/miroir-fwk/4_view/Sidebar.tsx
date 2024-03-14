@@ -19,9 +19,12 @@ import {
   DomainControllerInterface,
   DomainElementObject,
   DomainManyQueriesWithDeploymentUuid,
+  DomainStateSelectorMap,
   DomainStateSelectorParams,
+  getSelectorMap,
   getSelectorParams,
   menuDefaultMiroir,
+  MiroirSelectorQueryParams,
   reportEntityList,
   reportMenuList,
   selectByDomainManyQueriesFromDomainStateNew
@@ -131,6 +134,11 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   const context = useMiroirContext();
   const miroirConfig = context.getMiroirConfig();
 
+  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams,any> = useMemo(
+    () => getSelectorMap(),
+    []
+  )
+
   const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
     (): DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> => 
     getSelectorParams({
@@ -157,12 +165,12 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           },
         },
       },
-    }),
-    []
+    }, selectorMap),
+    [selectorMap]
   );
 
   const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
-    selectByDomainManyQueriesFromDomainStateNew,
+    selectorMap.selectByDomainManyQueriesFromDomainStateNew,
     domainFetchQueryParams
   );
   // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;

@@ -5,6 +5,7 @@ import {
   EntityInstancesUuidIndex,
   JzodSchemaDefinition,
   LoggerInterface,
+  Menu,
   MetaEntity,
   MetaModel,
   MiroirLoggerFactory,
@@ -16,6 +17,7 @@ import {
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
+  entityMenu,
   entityReport,
   entityStoreBasedConfiguration,
   getLoggerName,
@@ -76,6 +78,26 @@ const selectJzodSchemas = (reduxState: ReduxStateWithUndoRedo, params: MiroirSel
             : "model"
           : undefined,
       entityUuid: entityJzodSchema.uuid,
+    },
+  });
+  // log.info('selectJzodSchemas',result);
+
+  return result;
+};
+// ################################################################################################
+const selectMenus = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
+  const result = selectEntityInstanceUuidIndexFromLocalCache(reduxState, {
+    queryType: "LocalCacheEntityInstancesSelectorParams",
+    definition: {
+      deploymentUuid:
+        params.queryType == "LocalCacheEntityInstancesSelectorParams" ? params.definition.deploymentUuid : undefined,
+      applicationSection:
+        params.queryType == "LocalCacheEntityInstancesSelectorParams"
+          ? params.definition.deploymentUuid == applicationDeploymentMiroir.uuid
+            ? "data"
+            : "model"
+          : undefined,
+      entityUuid: entityMenu.uuid,
     },
   });
   // log.info('selectJzodSchemas',result);
@@ -156,6 +178,7 @@ export const selectModelForDeployment: () => (
       selectEntities,
       selectEntityDefinitions,
       selectJzodSchemas,
+      selectMenus,
       selectReports,
       selectSelectorParams,
     ],
@@ -165,6 +188,7 @@ export const selectModelForDeployment: () => (
       entities: EntityInstancesUuidIndex,
       entityDefinitions: EntityInstancesUuidIndex,
       jzodSchemas: EntityInstancesUuidIndex,
+      menus: EntityInstancesUuidIndex,
       reports: EntityInstancesUuidIndex,
       params: MiroirSelectorQueryParams
     ) => {
@@ -177,6 +201,7 @@ export const selectModelForDeployment: () => (
         entities: (entities ? Object.values(entities) : []) as MetaEntity[],
         entityDefinitions: (entityDefinitions ? Object.values(entityDefinitions) : []) as EntityDefinition[],
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as JzodSchemaDefinition[],
+        menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
       } as MetaModel;
       // log.info("selectModelForDeployment",params,result);

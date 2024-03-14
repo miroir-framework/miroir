@@ -202,7 +202,8 @@ export const RootComponent = (props: RootComponentProps) => {
                       </TableCell>
                       <TableCell>
                         {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/66a09068-52c3-48bc-b8dd-76575bbc8e72`}>Authors</Link> */}
-                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/${reportBookInstance.uuid}/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book Instance (NEW)</Link>
+                        {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/c3503412-3d8a-43ef-a168-aa36e975e606/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link> */}
+                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/${reportBookInstance.uuid}/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
                         {/* <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/74b010b6-afee-44e7-8590-5f0849e4a5c9`}>Books (intermediate)</Link> */}
                       </TableCell>
                       <TableCell>
@@ -238,10 +239,6 @@ export const RootComponent = (props: RootComponentProps) => {
                         {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2`}>Author</Link> */}
                         {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Book</Link> */}
                         <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494`}>Penguin</Link>
-                      </TableCell>
-                      <TableCell>
-                        {/* <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link> */}
-                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/c3503412-3d8a-43ef-a168-aa36e975e606/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
                       </TableCell>
                       {/* <TableCell>
                         <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/9ad64893-5f8f-4eaf-91aa-ffae110f88c8/150bacfd-06d0-4ecb-828d-f5275494448a`}>Test Instance</Link>
@@ -280,7 +277,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                 <p />
                 <span>
-                <button
+                {/* <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                       log.info(
@@ -323,8 +320,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     Open database
-                  </button>
-                  <button
+                </button> */}
+                  {/* <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                       if (!miroirConfig) {
@@ -387,8 +384,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     Init database
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={async () => {
                       log.info("creating bundle")
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
@@ -401,11 +398,11 @@ export const RootComponent = (props: RootComponentProps) => {
                   }
                   >
                     create Library Application Bundle
-                  </button>
+                  </button> */}
                 </span>
                 <p />
                 <span>
-                  <button
+                  {/* <button
                     onClick={async () => {
                       await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
                       await domainController.handleAction({
@@ -423,8 +420,8 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     upload App configuration to database
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={async () => {
                       const query:DomainManyQueriesWithDeploymentUuid = {
                         queryType: "DomainManyQueries",
@@ -466,7 +463,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     send query to database
-                  </button>
+                  </button> */}
                 </span>
                 </span>
                 <p/>

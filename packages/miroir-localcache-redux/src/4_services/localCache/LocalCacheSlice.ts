@@ -37,6 +37,8 @@ import {
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
+  entityMenu,
+  Menu,
   entityReport,
   entityStoreBasedConfiguration,
   getLoggerName
@@ -206,6 +208,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
       const entities = state[getLocalCacheSliceIndex(deploymentUuid, metaModelSection, entityEntity.uuid)];
       const entityDefinitions = state[getLocalCacheSliceIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)];
       const jzodSchemas = state[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)];
+      const menus = state[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityMenu.uuid)];
       const reports = state[getLocalCacheSliceIndex(deploymentUuid, modelSection, entityReport.uuid)];
       const result = {
         applicationVersions: (applicationVersions && applicationVersions.entities
@@ -218,6 +221,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
         entities: (entities && entities.entities? Object.values(entities.entities):[]) as MetaEntity[],
         entityDefinitions: (entityDefinitions && entityDefinitions.entities? Object.values(entityDefinitions.entities):[]) as EntityDefinition[],
         jzodSchemas: (jzodSchemas && jzodSchemas.entities? Object.values(jzodSchemas.entities): []) as JzodSchema[],
+        menus: (menus && menus.entities? Object.values(menus.entities): []) as Menu[],
         reports: (reports && reports.entities? Object.values(reports.entities):[]) as Report[],
       }
       // log.info("called currentModel(", deploymentUuid, ") entities:", entities, Object.values(entities.entities));

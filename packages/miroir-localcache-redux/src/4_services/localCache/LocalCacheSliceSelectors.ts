@@ -18,6 +18,11 @@ import {
   cleanupResultsFromQuery,
   DomainStateSelectorNew,
   DomainStateSelectorParams,
+  DomainModelQueryJzodSchemaParams,
+  DomainStateJzodSchemaSelector,
+  DomainStateJzodSchemaSelectorParams,
+  JzodElement,
+  RecordOfJzodElement,
 } from "miroir-core";
 import { getLocalCacheSliceIndex, localCacheStateToDomainState } from "./LocalCacheSlice";
 import { ReduxStateWithUndoRedo, LocalCacheSliceState } from "./localCacheReduxSliceInterface";
@@ -33,14 +38,25 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 );
 
 // ################################################################################################
-export const selectSelectorParams = (reduxState: ReduxStateWithUndoRedo,params:MiroirSelectorQueryParams) => {
+export const selectSelectorParams = (reduxState: ReduxStateWithUndoRedo, params: MiroirSelectorQueryParams) => {
   return params;
-}
+};
 
 // ################################################################################################
-export const selectDomainStateSelectorParams = <P extends MiroirSelectorQueryParams>(reduxState: ReduxStateWithUndoRedo,params:DomainStateSelectorParams<P>) => {
+export const selectDomainStateSelectorParams = <P extends MiroirSelectorQueryParams>(
+  reduxState: ReduxStateWithUndoRedo,
+  params: DomainStateSelectorParams<P>
+) => {
   return params;
-}
+};
+
+// ################################################################################################
+export const selectDomainStateJzodSchemaSelectorParams = <Q extends DomainModelQueryJzodSchemaParams>(
+  reduxState: ReduxStateWithUndoRedo,
+  params: DomainStateJzodSchemaSelectorParams<Q>
+) => {
+  return params;
+};
 // ################################################################################################
 const selectSelectorReduxState = (reduxState: ReduxStateWithUndoRedo,params:MiroirSelectorQueryParams) => {
   return reduxState;
@@ -70,12 +86,27 @@ const selectPresentModelSnapshot = (reduxState: ReduxStateWithUndoRedo,  params:
 // ################################################################################################
 export function applyDomainStateSelectorNew<P extends MiroirSelectorQueryParams, T>( // TODO: memoize?
   domainStateSelector: DomainStateSelectorNew<P, T>
+// ): DomainStateSelectorNew<P, T>
 ): (
   reduxState: ReduxStateWithUndoRedo,
   params: DomainStateSelectorParams<P>
 ) => T { 
   return createSelector(
     [selectDomainStatePlain, selectDomainStateSelectorParams],
+    domainStateSelector
+  )
+}
+
+export function applyDomainStateJzodSchemaSelector<Q extends DomainModelQueryJzodSchemaParams>( // TODO: memoize?
+  domainStateSelector: DomainStateJzodSchemaSelector<Q>
+// ): DomainStateJzodSchemaSelector<Q> {
+): (
+  reduxState: ReduxStateWithUndoRedo,
+  params: DomainStateJzodSchemaSelectorParams<Q>
+// ) => any { 
+) => RecordOfJzodElement | JzodElement | undefined { 
+  return createSelector(
+    [selectDomainStatePlain, selectDomainStateJzodSchemaSelectorParams],
     domainStateSelector
   )
 }

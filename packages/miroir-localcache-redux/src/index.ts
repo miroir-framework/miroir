@@ -10,9 +10,12 @@ export {
   selectModelForDeployment,
 } from "./4_services/localCache/LocalCacheSliceModelSelector";
 export {
+  applyDomainStateJzodSchemaSelector,
   applyDomainStateSelectorNew,
   applyDomainStateSelector,
   applyDomainStateCleanSelector,
+  selectDomainStateJzodSchemaSelectorParams,
+  selectDomainStateSelectorParams,
   selectDomainState,
   selectDomainStatePlain,
   selectEntityInstanceUuidIndexFromLocalCache,
