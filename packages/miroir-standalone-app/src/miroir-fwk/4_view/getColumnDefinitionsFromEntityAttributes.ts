@@ -95,12 +95,12 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
   }
 }
 
-export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema: JzodElement | undefined): ColDef<any>[] {
+export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema: JzodElement | undefined, viewAttributes?: string[]): ColDef<any>[] {
   switch (jzodSchema?.type) {
     case "object": {
-      return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) =>
-        getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1])
-      );
+      return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
+        ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
+        .map((e: [string, any]) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1]));
     }
     break;
   default: {

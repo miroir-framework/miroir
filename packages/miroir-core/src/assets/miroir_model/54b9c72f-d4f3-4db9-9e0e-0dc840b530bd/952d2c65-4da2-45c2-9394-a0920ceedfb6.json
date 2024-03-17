@@ -7,6 +7,12 @@
   "conceptLevel":"Model",
   "name":"Report",
   "icon": "Interests",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "type",
+    "application"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -193,6 +199,7 @@
                   "definition": {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "reportSection"
                     }
                   }
@@ -236,6 +243,7 @@
                 "definition": {
                   "type": "schemaReference",
                   "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "objectListReportSection"
                   }
                 }
@@ -249,24 +257,28 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "gridReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "listReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectListReportSection"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "objectInstanceReportSection"
                 }
               }
@@ -305,6 +317,7 @@
               "section": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "reportSection"
                 }
               }
@@ -313,6 +326,7 @@
         },
         "definition": {
           "eager": true,
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "rootReportSection"
         },
         "extra": { "id": 9, "defaultLabel": "Definition", "editable": true }

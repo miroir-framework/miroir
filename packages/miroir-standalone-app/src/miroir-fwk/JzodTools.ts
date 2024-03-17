@@ -1,55 +1,7 @@
 import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
-import { MetaModel, miroirFundamentalJzodSchema } from "miroir-core";
+import { MetaModel, miroirFundamentalJzodSchema, resolveJzodSchemaReference } from "miroir-core";
 import { JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-
-// ################################################################################################
-export function resolveJzodSchemaReference(
-  jzodReference?: JzodReference,
-  currentModel?: MetaModel,
-  relativeReferenceJzodContext?: JzodObject | JzodReference,
-): JzodElement {
-  // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
-  const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition
-    .absolutePath
-    ? {
-        type: "object",
-        definition:
-          (currentModel
-            // ? (currentModel as any).jzodSchemas
-            // : []
-            ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas]
-            : [miroirFundamentalJzodSchema]
-          ).find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ?? {},
-      }
-    : relativeReferenceJzodContext ?? jzodReference;
-  const targetJzodSchema = jzodReference?.definition.relativePath
-    ? absoluteReferenceTargetJzodSchema?.type == "object" && absoluteReferenceTargetJzodSchema?.definition
-      ? absoluteReferenceTargetJzodSchema?.definition[jzodReference?.definition.relativePath]
-      : absoluteReferenceTargetJzodSchema?.type == "schemaReference" && absoluteReferenceTargetJzodSchema?.context
-      ? absoluteReferenceTargetJzodSchema?.context[jzodReference?.definition.relativePath]
-      : undefined
-    : absoluteReferenceTargetJzodSchema;
-
-
-  if (!targetJzodSchema) {
-    console.error(
-      "JzodElementEditor resolveJzodSchemaReference failed for jzodSchema",
-      jzodReference,
-      "result",
-      targetJzodSchema,
-      "absoluteReferenceTargetJzodSchema",
-      absoluteReferenceTargetJzodSchema,
-      "currentModel",
-      currentModel,
-      "rootJzodSchema",
-      relativeReferenceJzodContext
-    );
-    throw new Error("resolveJzodSchemaReference could not resolve reference " + JSON.stringify(jzodReference));
-  }
-
-  return targetJzodSchema;
-}
 
 
 // #####################################################################################################
@@ -62,8 +14,9 @@ export function getCurrentEnumJzodSchemaResolver(
   // relativeReferenceJzodSchema: JzodObject,
 // ):JzodElementRecord  {
 ):JzodEnumSchemaToJzodElementResolver  {
-  return (type: string, definition?: any) =>
-    (currentMiroirModel.entities.length == 0
+  return (type: string, definition?: any) => {
+    console.log("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition)
+    return (currentMiroirModel.entities.length == 0
       ? ({} as JzodElementRecord)
       : {
           array: resolveJzodSchemaReference(
@@ -157,4 +110,5 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
         })[type];
+  }
 }

@@ -3,7 +3,9 @@ import { jzodToTsCode } from "@miroir-framework/jzod-ts";
 // import * as fs from "fs";
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 // import ModelEntityUpdateCreateMetaModelInstanceSchema from "../dist/src/0_interfaces/2_domain/ModelUpdateInterface.js";
-import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+import * as f from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+// import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+import path from "path";
 // import { ModelEntityUpdateCreateMetaModelInstanceSchema } from "../dist//0_interfaces/2_domain/ModelUpdateInterface.ts";
 
 // import { getLoggerName, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
@@ -51,6 +53,7 @@ export async function generateZodSchemaFileFromJzodSchema(
   // const newFileContents = `import { JzodObject, jzodObject } from "@miroir-framework/jzod-ts";
   const newFileContents = newFileContentsNotFormated;
 
+  console.log("generateZodSchemaFileFromJzodSchema targetFileName:", targetFileName);
   if (targetFileName && existsSync(targetFileName)) {
     const oldFileContents = readFileSync(targetFileName).toString()
     if (newFileContents != oldFileContents)  {
@@ -66,27 +69,13 @@ export async function generateZodSchemaFileFromJzodSchema(
 
 // ################################################################################################
 const jzodSchemaConversion
-// : {
-//   // jzodElement: JzodElement,
-//   // targetFileName: string,
-//   // jzodSchemaVariableName:string,
-// }[]
 = [
   {
-    jzodElement: miroirFundamentalJzodSchema.definition,
+    jzodElement: f.miroirFundamentalJzodSchema.definition,
+    targetDirectory: "./src/0_interfaces/1_core/preprocessor-generated",
     targetFileName: "./src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
     jzodSchemaVariableName: "miroirFundamentalType",
   },
-  // {
-  //   jzodElement: test.definition,
-  //   targetFileName: "./src/0_interfaces/1_core/preprocessor-generated/test.ts",
-  //   jzodSchemaVariableName: "test",
-  // },
-  // {
-  //   jzodObject: miroirJzodSchemaBootstrap.definition as any as JzodObject,
-  //   targetFileName: "C://Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/jzodSchema.ts",
-  //   jzodSchemaVariableName: "jzodSchema",
-  // }
 ];
 
 
@@ -95,11 +84,27 @@ const jzodSchemaConversion
 // console.log("####### convertedZodSchema",JSON.stringify(convertedZodSchema, null, 2));
 
 try {
+  const miroirFundamentalJzodSchemaFilePath = path.join(jzodSchemaConversion[0].targetDirectory,"miroirFundamentalJzodSchema.ts")
+  const miroirFundamentalJzodSchemaJson = "export const miroirFundamentalJzodSchema = " + JSON.stringify(f.miroirFundamentalJzodSchema, undefined, 2);
+  console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFilePath",miroirFundamentalJzodSchemaFilePath);
+  if (miroirFundamentalJzodSchemaFilePath && existsSync(miroirFundamentalJzodSchemaFilePath)) {
+    const oldFileContents = readFileSync(miroirFundamentalJzodSchemaFilePath).toString()
+    if (miroirFundamentalJzodSchemaJson != oldFileContents)  { // TODO: do deep equal
+      console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName miroirFundamentalJzodSchemaJson",miroirFundamentalJzodSchemaJson);
+      writeFileSync(miroirFundamentalJzodSchemaFilePath,miroirFundamentalJzodSchemaJson);
+    } else {
+      console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchemaFileName old contents equal new contents, no file generation needed.");
+    }
+  } else {
+    writeFileSync(miroirFundamentalJzodSchemaFilePath,miroirFundamentalJzodSchemaJson);
+  }
+
   for (const schema of jzodSchemaConversion) {
     await generateZodSchemaFileFromJzodSchema(schema.jzodElement,schema.targetFileName,schema.jzodSchemaVariableName)
     console.info("GENERATED",schema.targetFileName);
   }
-  
+
+
 } catch (error) {
   console.error("could not generate TS files from Jzod schemas", error);
   

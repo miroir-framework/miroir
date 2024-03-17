@@ -39,6 +39,7 @@ const entityInstanceSchema = z.object({
   defaultLabel: z.string().optional(),
   definition: jzodReference,
 })
+
 export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = {
   "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
   "parentName": "JzodSchema",
@@ -1728,4 +1729,8 @@ export const miroirFundamentalJzodSchema:z.infer<typeof entityInstanceSchema> = 
       "relativePath": "miroirAllFundamentalTypesUnion"
     }
   }
+}
+
+export default {
+  miroirFundamentalJzodSchema
 }

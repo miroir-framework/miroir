@@ -344,6 +344,7 @@
               "rootQuery": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirSelectQuery"
                 }
               },
@@ -353,6 +354,7 @@
                   "query": {
                     "type": "schemaReference",
                     "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "miroirSelectQuery"
                     }
                   },
@@ -398,18 +400,21 @@
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectListQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectQueryCombinerQuery"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "selectObjectQuery"
                 }
               },
@@ -425,6 +430,7 @@
                 "definition": {
                   "queryType": {
                     "type": "literal",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "definition": "queryContextReference"
                   },
                   "queryReference": {
@@ -445,6 +451,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "miroirSelectQuery"
                       }
                     }
@@ -463,6 +470,7 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "miroirSelectQuery"
                       }
                     }
@@ -476,6 +484,7 @@
             "definition": {
               "type": "schemaReference",
               "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "miroirSelectQuery"
               }
             }
@@ -505,6 +514,7 @@
               "select": {
                 "type": "schemaReference",
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirSelectQueriesRecord"
                 }
               },
@@ -512,6 +522,7 @@
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirCrossJoinQuery"
                 }
               }
@@ -520,6 +531,7 @@
         },
         "definition": {
           "eager": true,
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "miroirFetchQuery"
         }
       }

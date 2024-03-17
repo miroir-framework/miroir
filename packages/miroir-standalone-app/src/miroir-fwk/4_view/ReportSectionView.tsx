@@ -61,7 +61,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
   );
   log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
-  const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+  // const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
 
   const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
     [applicationDeploymentMiroir.uuid]: {
@@ -154,9 +154,9 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
     return result;
   };
 
-  const interpolateExpression = (stringToInterpolate: string | undefined)=> {
+  const interpolateExpression = (stringToInterpolate: string | undefined, label?: string)=> {
     const reg = /\$\{([^}]*)\}/g
-    const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no string"
+    const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no " + label??"label"
     log.info("interpolateExpression result",result);
     return result;
   }
@@ -251,17 +251,18 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                       <ReportSectionListDisplay
                         tableComponentReportType="EntityInstance"
                         label={"EntityInstance-" + currentReportTargetEntity?.name}
-                        defaultlabel={interpolateExpression(props.reportSection.definition?.label)}
+                        defaultlabel={interpolateExpression(props.reportSection.definition?.label,"report label")}
                         styles={styles}
+                        deploymentUuid={props.deploymentUuid}
                         chosenApplicationSection={props.applicationSection as ApplicationSection}
                         displayedDeploymentDefinition={displayedDeploymentDefinition}
                         domainElementObject={props.domainElementObject}
                         fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                         section={props.reportSection}
-                        currentModel={currentModel}
+                        // currentModel={currentModel}
                         // currentMiroirReportSectionObjectList={props.reportSection}
-                        currentMiroirEntity={currentReportTargetEntity}
-                        currentMiroirEntityDefinition={currentReportTargetEntityDefinition}
+                        // currentReportTargerEntity={currentReportTargetEntity}
+                        // currentReportTargetEntityDefinition={currentReportTargetEntityDefinition}
                       />
                     :
                     <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>

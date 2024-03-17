@@ -369,6 +369,11 @@ export {
   // getReportSectionTargetEntityUuid,
 } from './1_core/Report.js';
 export {
+  // getReportSectionTargetEntityUuid,
+  resolveJzodSchemaReference,
+  resolveReferencesForJzodSchemaAndValueObject,
+} from './1_core/Jzod.js';
+export {
   selectEntityInstances,
   selectEntityInstancesFromJzodAttribute,
   selectEntityUuidFromJzodAttribute,

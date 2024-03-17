@@ -10,30 +10,72 @@ import { JzodObject } from "@miroir-framework/jzod-ts";
 
 import {
   ApplicationDeploymentConfiguration,
+  ApplicationDeploymentSchema,
   DomainControllerInterface,
   Entity,
+  EntityDefinition,
   EntityInstancesUuidIndex,
   InstanceAction,
   LoggerInterface,
   MetaEntity,
+  MetaModel,
   MiroirLoggerFactory,
-  getLoggerName
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
+  applicationSection,
+  domainElementObject,
+  entity,
+  entityDefinition,
+  getLoggerName,
+  jzodObject,
+  objectListReportSection,
+  reportEntityDefinitionList,
+  reportEntityList
 } from "miroir-core";
 
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes";
-import { ReportSectionDisplayEntityInstancePropsSchema } from "../ReportSectionListInterface";
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from "./JsonObjectFormEditorDialog";
 import { MTableComponent } from "./MTableComponent";
-import { TableComponentType } from "./MTableComponentInterface";
+import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface";
 import { useDomainControllerService, useMiroirContextInnerFormOutput } from './MiroirContextReactProvider';
 import { packageName } from "../../constants";
 import { cleanLevel } from "./constants";
+import { useCurrentModel } from "./ReduxHooks";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ReportSectionListDisplay");
 let log:LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) => {
   log = value;
+});
+
+
+// ################################################################################################
+export const ReportSectionDisplayCorePropsSchema = z.object({
+  styles: z.any().optional(),
+  label: z.string(),
+  defaultlabel: z.string().optional(),
+  displayedDeploymentDefinition: ApplicationDeploymentSchema.optional(),
+  section: objectListReportSection, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  domainElementObject: domainElementObject, // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  fetchedDataJzodSchema: z.record(jzodObject.optional()).optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+  chosenApplicationSection: applicationSection.optional(), // ugly, this is due to the need of calling hooks in the same order, irrelevant of tableComponentReportType. Should be in ReportSectionDisplayEntityInstancePropsSchema.
+});
+
+export const ReportSectionDisplayEntityInstancePropsSchema = ReportSectionDisplayCorePropsSchema.extend({
+  tableComponentReportType: z.literal(TableComponentTypeSchema.enum.EntityInstance),
+  chosenApplicationSection: applicationSection,
+  deploymentUuid: z.string().uuid()
+  // currentModel: z.any(),
+  // currentMiroirEntity: MetaEntitySchema.optional(),
+  // currentReportTargerEntity: entity.optional(),
+  // currentReportTargetEntityDefinition: entityDefinition.optional(),
+});
+
+export const ReportSectionDisplayJsonArrayPropsSchema = ReportSectionDisplayCorePropsSchema.extend({
+  tableComponentReportType: z.literal(TableComponentTypeSchema.enum.JSON_ARRAY),
+  columnDefs: z.array(z.any()),
+  rowData: z.array(z.any()),
 });
 
 // ##########################################################################################
@@ -127,13 +169,124 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   count++;
   log.info('ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   prevProps = props;
-
+  
   // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
   log.info('ReportSectionListDisplay props',props);
 
+  // ##############################################################################################
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  
+  const currentModel = props.deploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+
+  const displayedDeploymentDefinition: ApplicationDeploymentConfiguration | undefined = deployments.find(
+    (d) => d.uuid == props.deploymentUuid
+  );
+  log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+
   const domainController: DomainControllerInterface = useDomainControllerService();
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
+  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
+    [applicationDeploymentMiroir.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          ),
+          entities: miroirMetaModel.entities,
+          entityDefinitions: miroirMetaModel.entityDefinitions,
+        },
+      "data": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentLibrary.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: libraryAppModel.reports,
+        entities: libraryAppModel.entities,
+        entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+  }), [miroirMetaModel, libraryAppModel]);
 
+  const { availableReports, entities, entityDefinitions } =
+    displayedDeploymentDefinition && props.chosenApplicationSection
+      ? mapping[displayedDeploymentDefinition?.uuid][props.chosenApplicationSection]
+      : { availableReports: [], entities: [], entityDefinitions: [] as EntityDefinition[] };
+
+  log.info("ReportSectionView availableReports",availableReports);
+
+  const currentReportTargetEntity: Entity | undefined =
+    props.section?.type === "objectListReportSection" 
+      ? entities?.find(
+          (e) =>
+            e?.uuid === (props.section?.definition as any)["parentUuid"]
+        )
+      : undefined;
+  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+    entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+
+  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
+    props.fetchedDataJzodSchema &&
+    // props.select?.fetchedDataReference &&
+    props.section.type == "objectListReportSection" &&
+    props.section.definition.fetchedDataReference &&
+    props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
+      ? props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
+      : currentReportTargetEntityDefinition?.jzodSchema
+    ,[props, props.fetchedDataJzodSchema, props.section.definition.fetchedDataReference]
+  )
+
+  const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
+    // props.fetchedDataJzodSchema &&
+    // props.select?.fetchedDataReference &&
+    // props.section.type == "objectListReportSection" &&
+    // props.section.definition.fetchedDataReference &&
+    // props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]?
+    // props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]:
+    currentReportTargetEntityDefinition?.viewAttributes
+    ,[props, props.fetchedDataJzodSchema, props.section.definition.fetchedDataReference]
+  )
+
+  const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
+    () => ({
+      columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+        instancesToDisplayJzodSchema??{type:"object", definition:{}},
+        instancesToDisplayViewAttributes
+      ),
+    }),
+    [instancesToDisplayJzodSchema]
+  );
+  log.info(
+    "ReportSectionListDisplay",
+    count,
+    "instancesToDisplayViewAttributes",
+    instancesToDisplayViewAttributes,
+    "props.fetchedDataJzodSchema",
+    props.fetchedDataJzodSchema,
+    "props.section.definition.fetchedDataReference",
+    props.section.definition.fetchedDataReference,
+    "props.currentMiroirEntityDefinition?.jzodSchema",
+    currentReportTargetEntityDefinition?.jzodSchema,
+    "instancesToDisplayJzodSchema",
+    instancesToDisplayJzodSchema,
+    "columnDefs",
+    columnDefs,
+    prevColumnDefs === columnDefs,
+    equal(prevColumnDefs, columnDefs)
+  );
+
+  // ##############################################################################################
   const onSubmitInnerFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(
     async (data,event) => {
       const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
@@ -182,7 +335,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                 ],
               }
-            },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
+            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
           );
         } else {
           const createAction: InstanceAction = {
@@ -238,7 +391,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                 ],
               }
-            },props.tableComponentReportType == "EntityInstance"?props.currentModel:{}
+            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
           );
         } else {
           const updateAction: InstanceAction = {
@@ -281,42 +434,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     []
   )
 
-  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
-    props.fetchedDataJzodSchema &&
-    // props.select?.fetchedDataReference &&
-    props.section.type == "objectListReportSection" &&
-    props.section.definition.fetchedDataReference &&
-    props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
-      ? props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
-      : props?.currentMiroirEntityDefinition?.jzodSchema
-    ,[props, props.fetchedDataJzodSchema, props.section.definition.fetchedDataReference]
-  )
-  const columnDefs: { columnDefs: ColDef<any>[] } = useMemo(
-    () => ({
-      columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
-        instancesToDisplayJzodSchema??{type:"object", definition:{}}
-      ),
-    }),
-    [instancesToDisplayJzodSchema]
-  );
-  log.info(
-    "ReportSectionListDisplay",
-    count,
-    "props.fetchedDataJzodSchema",
-    props.fetchedDataJzodSchema,
-    "props.section.definition.fetchedDataReference",
-    props.section.definition.fetchedDataReference,
-    "props.currentMiroirEntityDefinition?.jzodSchema",
-    props.currentMiroirEntityDefinition?.jzodSchema,
-    "instancesToDisplayJzodSchema",
-    instancesToDisplayJzodSchema,
-    "columnDefs",
-    columnDefs,
-    prevColumnDefs === columnDefs,
-    equal(prevColumnDefs, columnDefs)
-  );
+  // ##############################################################################################
   prevColumnDefs = columnDefs;
-  prevJzodSchema = props.currentMiroirEntityDefinition?.jzodSchema;
+  prevJzodSchema = currentReportTargetEntityDefinition?.jzodSchema;
 
 
   const instancesToDisplay: EntityInstancesUuidIndex = useMemo(() =>
@@ -331,15 +451,25 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ,[props]
   );
 
+  // const currentReportTargetEntity: Entity | undefined =
+  // props.section?.type === "objectListReportSection" 
+  //   ? entities?.find(
+  //       (e) =>
+  //         e?.uuid === (props.reportSection?.definition as any)["parentUuid"]
+  //     )
+  //   : undefined;
+  // const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+  // entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+
   log.info("ReportSectionListDisplay instancesToDisplay",instancesToDisplay);
-  log.info("ReportSectionListDisplay props.currentMiroirEntity",props?.currentMiroirEntity);
+  log.info("ReportSectionListDisplay props.currentMiroirEntity",currentReportTargetEntity);
   log.info("ReportSectionListDisplay columnDefs",columnDefs);
   
   return (
     <div className="MiroirReport-global" style={{ display: "block" }}>
       <div> rendered ReportSectionListDisplay: {count} times.</div>
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
-      {props?.currentMiroirEntity ? (
+      {currentReportTargetEntity ? (
         !!columnDefs ? (
           // columnDefs?.length > 0
           // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -348,28 +478,28 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             <JsonObjectFormEditorDialog
               showButton={true}
               isAttributes={true}
-              label={props.defaultlabel ?? props.currentMiroirEntityDefinition?.name}
-              entityDefinitionJzodSchema={props.currentMiroirEntityDefinition?.jzodSchema as JzodObject}
+              label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
+              entityDefinitionJzodSchema={currentReportTargetEntityDefinition?.jzodSchema as JzodObject}
               currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
               currentApplicationSection={props.chosenApplicationSection}
               initialValuesObject={defaultFormValues(
                 props.tableComponentReportType,
-                props.currentMiroirEntityDefinition?.jzodSchema as JzodObject,
+                currentReportTargetEntityDefinition?.jzodSchema as JzodObject,
                 [],
-                props.currentMiroirEntity,
+                currentReportTargetEntity,
                 props.displayedDeploymentDefinition
               )}
               onSubmit={onSubmitOuterDialog}
             />
             {props.displayedDeploymentDefinition ? (
               <div>
-                <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div>
+                {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
                 <MTableComponent
                   type={props.tableComponentReportType}
                   displayedDeploymentDefinition={props.displayedDeploymentDefinition}
                   styles={props.styles}
-                  currentEntity={props.currentMiroirEntity}
-                  currentEntityDefinition={props.currentMiroirEntityDefinition}
+                  currentEntity={currentReportTargetEntity}
+                  currentEntityDefinition={currentReportTargetEntityDefinition}
                   // reportSectionListDefinition={props.currentMiroirReportSectionObjectList}
                   columnDefs={columnDefs}
                   instancesToDisplay={instancesToDisplay}

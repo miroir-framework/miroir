@@ -40,11 +40,12 @@ export default (path, options) =>({
   ],
   // preset:'ts-jest/presets/default-esm',
   "transform": {
-    "^.+\\.tsx?$": [
+    "^.+\\.ts?$": [
       "ts-jest",
       {
         // useESM:true,
         // tsconfig: "../../tsconfig.json"
+        // Plugin: [ "plugin-syntax-import-attributes"],
         tsconfig: 
         {
           resolveJsonModule: true,
@@ -52,15 +53,17 @@ export default (path, options) =>({
           allowSyntheticDefaultImports:true,
           allowJs: true,
           moduleResolution: "node",
+          module:"commonjs",
+          // pl
           // module: "ESNext",
           // target: "ES2017",
                 // rootDir: "./src/",
-          traceResolution: true,
-          module:"commonjs"
+          traceResolution: true
         },
       }
     ],
-    "^.+\\.js?$": ["babel-jest"],
+    // "^.+\\.js?$": [ "babel-jest", "plugin-syntax-import-attributes"],
+    "^.+\\.js?$": [ "babel-jest"],
   },
   // moduleNameMapper: {
   //   "^miroir-fwk\/(.+)$": "<rootDir>/src/$1",

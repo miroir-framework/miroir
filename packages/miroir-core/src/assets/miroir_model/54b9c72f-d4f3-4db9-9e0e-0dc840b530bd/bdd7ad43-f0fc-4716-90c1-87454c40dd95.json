@@ -57,6 +57,14 @@
         "optional": true,
         "extra": { "id": 8, "defaultLabel": "Description", "editable": true }
       },
+      "viewAttributes": {
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "simpleType",
+          "definition": "string"
+        }
+      },
       "jzodSchema": {
         "type": "schemaReference",
         "definition": {

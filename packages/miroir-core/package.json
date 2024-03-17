@@ -18,6 +18,7 @@
     "devBuild": "npm run preBuild && npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "preBuild": "copyfiles -u 1 src/**/*.json tmp/ && tsc ./src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.ts --rootDir . --baseUrl . --module ESnext --target ES2017 --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/ || node ./tools/generate-ts-types.mjs",
+    "preTest": "tsc ./tests/1_core/jzod.test.ts --rootDir . --baseUrl . --module ESnext --target ES2017 --moduleResolution node --allowSyntheticDefaultImports --resolveJsonModule --outdir ./tmp/",
     "test": "cross-env NODE_ENV=test jest --verbose --silent=false -t"
   },
   "tsup": {
@@ -47,6 +48,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-import-attributes": "^7.23.3",
     "@jest/globals": "^29.3.1",
     "@types/jest": "^29.2.4",
     "copyfiles": "^2.4.1",
