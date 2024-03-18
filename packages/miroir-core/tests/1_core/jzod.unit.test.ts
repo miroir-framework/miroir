@@ -27,7 +27,7 @@
 // import { JzodElement, resolveReferencesForJzodSchemaAndValueObject } from "miroir-core";
 // import * as miroirFundamentalJzodSchema from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { JzodElement } from "../../src/index.js";
-import { resolveReferencesForJzodSchemaAndValueObject} from "../../src/1_core/Jzod";
+import { resolveReferencesForJzodSchemaAndValueObject} from "../../src/1_core/Jzod.js";
 
 export const miroirFundamentalJzodSchema = {
   "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -7381,7 +7381,7 @@ function testResolve(
   testValueObject: any,
   expectedResult: JzodElement,
 ){
-  console.log("running test", testId, "...")
+  console.log("######################################### running test", testId, "...")
   const testResult = resolveReferencesForJzodSchemaAndValueObject(
     testSchema,
     testValueObject,
@@ -7416,83 +7416,83 @@ describe(
       () => {
 
         const tests: {[k: string]: testFormat} = {
-          // test1: {
-          //   testSchema: {
-          //     type: "literal",
-          //     definition: "myLiteral"
-          //   },
-          //   expectedResult: {
-          //     type: "literal",
-          //     definition: "myLiteral"
-          //   },
-          //   testValueObject: "myLiteral",
-          // },
-          // test2: {
-          //   testSchema: {
-          //     type: "simpleType",
-          //     definition: "string"
-          //   },
-          //   expectedResult: {
-          //     type: "simpleType",
-          //     definition: "string"
-          //   },
-          //   testValueObject: "myString",
-          // },
-          // test3: {
-          //   testSchema: {
-          //     type: "schemaReference",
-          //     context: {
-          //       a: {
-          //         type: "simpleType",
-          //         definition: "string"
-          //       }
-          //     },
-          //     definition: {
-          //       "relativePath": "a"
-          //     }
-          //   },
-          //   expectedResult: {
-          //     type: "simpleType",
-          //     definition: "string"
-          //   },
-          //   testValueObject: "myString",
-          // },
-          // test4: {
-          //   testSchema: {
-          //     type: "schemaReference", 
-          //     context: {
-          //       "myObject": {
-          //         type: "object",
-          //         definition: {
-          //           a: {
-          //             type: "union",
-          //             definition: [
-          //               {
-          //                 type: "simpleType",
-          //                 definition: "string",
-          //               },
-          //               {
-          //                 type: "schemaReference",
-          //                 definition: { relativePath: "myObject"}
-          //               }
-          //             ]
-          //           }
-          //         }
-          //       }
-          //     },
-          //     definition: { relativePath: "myObject" }
-          //   },
-          //   expectedResult: {
-          //     type: "object",
-          //     definition: {
-          //       a: {
-          //         type: "simpleType",
-          //         definition: "string"
-          //       }
-          //     }
-          //   },
-          //   testValueObject: {a: "myString"},
-          // },
+          test1: {
+            testSchema: {
+              type: "literal",
+              definition: "myLiteral"
+            },
+            expectedResult: {
+              type: "literal",
+              definition: "myLiteral"
+            },
+            testValueObject: "myLiteral",
+          },
+          test2: {
+            testSchema: {
+              type: "simpleType",
+              definition: "string"
+            },
+            expectedResult: {
+              type: "simpleType",
+              definition: "string"
+            },
+            testValueObject: "myString",
+          },
+          test3: {
+            testSchema: {
+              type: "schemaReference",
+              context: {
+                a: {
+                  type: "simpleType",
+                  definition: "string"
+                }
+              },
+              definition: {
+                "relativePath": "a"
+              }
+            },
+            expectedResult: {
+              type: "simpleType",
+              definition: "string"
+            },
+            testValueObject: "myString",
+          },
+          test4: {
+            testSchema: {
+              type: "schemaReference", 
+              context: {
+                "myObject": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "simpleType",
+                          definition: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject"}
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              definition: { relativePath: "myObject" }
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "simpleType",
+                  definition: "string"
+                }
+              }
+            },
+            testValueObject: {a: "myString"},
+          },
           test5: {
             testSchema: {
               type: "schemaReference", 
@@ -7533,6 +7533,172 @@ describe(
               }
             },
             testValueObject: {a: {a: "myString"}},
+          },
+          test6: {
+            testSchema: {
+              type: "schemaReference", 
+              context: {
+                "myObject": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "simpleType",
+                          definition: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject"}
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              definition: { relativePath: "myObject" }
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "object",
+                      definition: {
+                        a: {
+                          type: "simpleType",
+                          definition: "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            testValueObject: { a: { a: { a: "myString" } } },
+          },
+          test7: {
+            testSchema: {
+              type: "schemaReference", 
+              context: {
+                "myObject": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "simpleType",
+                          definition: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: { relativePath: "myObject"}
+                        }
+                      ]
+                    }
+                  }
+                },
+                "myRecord": {
+                  type: "record",
+                  definition: {
+                    type: "schemaReference",
+                    definition: { relativePath: "myObject"}
+                  }
+                }
+              },
+              definition: { relativePath: "myRecord" }
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                "r1": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "object",
+                      definition: {
+                        a: {
+                          type: "simpleType",
+                          definition: "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "r2": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "simpleType",
+                      definition: "string"
+                    }
+                  }
+                }
+              }
+            },
+            testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+          },
+          test8: { // result must be identical to test7, but this time the schemaReference is places inside the record, not the other way around
+            testSchema: {
+              type: "record",
+              definition: {
+                type: "schemaReference", 
+                context: {
+                  "myObject": {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "union",
+                        definition: [
+                          {
+                            type: "simpleType",
+                            definition: "string",
+                          },
+                          {
+                            type: "schemaReference",
+                            definition: { relativePath: "myObject"}
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                definition: { relativePath: "myObject" }
+              }
+            },
+            expectedResult: {
+              type: "object",
+              definition: {
+                "r1": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "object",
+                      definition: {
+                        a: {
+                          type: "simpleType",
+                          definition: "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "r2": {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "simpleType",
+                      definition: "string"
+                    }
+                  }
+                }
+              }
+            },
+            testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
           },
         };
 

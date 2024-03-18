@@ -25,14 +25,10 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 
 
 export interface ResolvedJzodSchemaReturnTypeOK {
-  // relativeReferenceJzodContext?: JzodObject | JzodReference,
-  // relativeReferenceJzodContext?: {[k:string]: JzodElement},
   status: "ok",
   element: JzodElement
 }
 export interface ResolvedJzodSchemaReturnTypeError {
-  // relativeReferenceJzodContext?: JzodObject | JzodReference,
-  // relativeReferenceJzodContext?: {[k:string]: JzodElement},
   status: "error",
   error: string
 }
@@ -43,10 +39,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   jzodSchema: JzodElement,
   valueObject: any,
   currentModel?: MetaModel,
-  // relativeReferenceJzodContext?: JzodObject | JzodReference,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): ResolvedJzodSchemaReturnType {
-// ): JzodElement {
   log.info(
     "resolveReferencesForJzodSchemaAndValueObject called for valueObject",
     JSON.stringify(valueObject, null, 2),
@@ -173,7 +167,36 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       // break;
     }
     case "record": {
-      // break
+      if ( typeof valueObject != "object") {
+        throw new Error(
+          "resolveReferencesForJzodSchemaAndValueObject object schema " +
+            JSON.stringify(jzodSchema) +
+            " for value " +
+            JSON.stringify(valueObject)
+        );
+      }
+      const definition: {[k:string]: JzodElement} = Object.fromEntries(
+        Object.entries(valueObject).map(
+          (e: [string, any]) => {
+            const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
+              jzodSchema.definition,
+              e[1],
+              currentModel,
+              relativeReferenceJzodContext
+            )
+            if (resultSchemaTmp.status == "ok") {
+              return [
+                e[0],
+                resultSchemaTmp.element,
+              ]
+            } else {
+              return [e[0],{ type: "simpleType", definition: "never" }]
+            }
+          }
+        ) as [string, JzodElement][]
+      );
+      log.info("resolveReferencesForJzodSchemaAndValueObject record, converting to object definition", JSON.stringify(definition, null, 2))
+      return {status: "ok", element: { type: "object", definition } };
     }
     case "intersection":
     case "promise":
