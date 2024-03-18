@@ -416,7 +416,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     for (const entity of dataSectionFilteredEntities) {
       const entityDefinition: EntityDefinition | undefined = dataSectionEntityDefinitions.returnedDomainElement.elementValue.instances.find(
-        (d: EntityDefinition) => d.entityUuid == entity.uuid
+        (d: EntityInstance) => (d as EntityDefinition).entityUuid == entity.uuid
       ) as EntityDefinition;
       if (entityDefinition) {
         await this.createDataStorageSpaceForInstancesOfEntity(entity, entityDefinition);

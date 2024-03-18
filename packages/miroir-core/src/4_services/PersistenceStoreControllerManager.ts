@@ -38,9 +38,9 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 // ################################################################################################
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
   private persistenceStoreControllers: { [deploymentUuid: Uuid]: PersistenceStoreControllerInterface } = {};
-  private persistenceStore: PersistenceInterface;
-  private localCache: LocalCacheInterface;
-  private domainController: DomainController;
+  private persistenceStore: PersistenceInterface | undefined;
+  private localCache: LocalCacheInterface | undefined;
+  private domainController: DomainController | undefined;
 
   constructor(
     private adminStoreFactoryRegister: AdminStoreFactoryRegister,
@@ -55,7 +55,12 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
 
   // ################################################################################################
   getPersistenceStore(): PersistenceInterface {
-    return this.persistenceStore;
+    if (this.persistenceStore) {
+      return this.persistenceStore;
+    } else {
+      throw new Error("PersistenceStoreControllerManager getPersistenceStore no persistenceStore yet!");
+      
+    }
   }
 
   // ################################################################################################
@@ -65,12 +70,20 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
 
   // ################################################################################################
   getLocalCache(): LocalCacheInterface {
-    return this.localCache;
+    if (this.localCache) {
+      return this.localCache;
+    } else {
+      throw new Error("PersistenceStoreControllerManager getLocalCache no localCache yet!");
+    }
   }
 
   // ################################################################################################
   getDomainController(): DomainControllerInterface {
-    return this.domainController;
+    if (this.domainController) {
+      return this.domainController;
+    } else {
+      throw new Error("PersistenceStoreControllerManager getDomainController no domainController yet!");
+    }
   }
 
   // ################################################################################################
@@ -107,13 +120,22 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
       )) as StoreModelSectionInterface;
       this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(adminStore, modelStore, dataStore);
 
-      this.domainController = new DomainController(
-        true, // we are on the server, use localCache for queries
-        new MiroirContext(),
-        this.localCache, // implements LocalCacheInterface
-        this.persistenceStore, // implements PersistenceInterface
-        new Endpoint(this.localCache)
-      );
+      if (this.localCache && this.persistenceStore) {
+        this.domainController = new DomainController(
+          true, // we are on the server, use localCache for queries
+          new MiroirContext(),
+          this.localCache, // implements LocalCacheInterface
+          this.persistenceStore, // implements PersistenceInterface
+          new Endpoint(this.localCache)
+        );
+      } else {
+        throw new Error(
+          "PersistenceStoreControllerManager getLocalCache no localCache or persitenceStore yet! localCache=" +
+            this.localCache +
+            " persistenceStore=" +
+            this.persistenceStore
+        );
+      }
 
     }
   }

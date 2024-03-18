@@ -23,9 +23,9 @@
           "extra": {
             "type": "object",
             "definition": {
-              "id": { "type": "simpleType", "definition": "number" },
-              "defaultLabel": { "type": "simpleType", "definition": "string" },
-              "editable": { "type": "simpleType", "definition": "boolean" }
+              "id": { "type": "simpleType", "definition": "number", "optional": true },
+              "defaultLabel": { "type": "simpleType", "definition": "string", "optional": true },
+              "editable": { "type": "simpleType", "definition": "boolean", "optional": true }
             },
             "optional": true
           }

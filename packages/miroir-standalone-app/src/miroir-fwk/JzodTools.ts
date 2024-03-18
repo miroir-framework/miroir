@@ -1,6 +1,5 @@
-import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
-import { MetaModel, miroirFundamentalJzodSchema, resolveJzodSchemaReference } from "miroir-core";
-import { JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
+import { MetaModel, resolveJzodSchemaReference } from "miroir-core";
 
 
 

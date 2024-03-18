@@ -377,10 +377,10 @@ const domainStateSelector = (domainState: DomainState, params: any) => domainSta
 const domainStateSelectorParams = (domainState: DomainState, params: any) => params;
 
 
-let selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams,any> = {}
+let selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = {}
 let jzodSchemaSelectorMap: DomainStateJzodSchemaSelectorMap = {}
 
-export function getSelectorMap(): DomainStateSelectorMap<MiroirSelectorQueryParams,any> {
+export function getSelectorMap(): DomainStateSelectorMap<MiroirSelectorQueryParams> {
   // return selectorMap;
   return {
     "selectEntityInstanceUuidIndexFromDomainStateNew": createSelector([domainStateSelector,domainStateSelectorParams],selectEntityInstanceUuidIndexFromDomainStateNew),
@@ -400,7 +400,7 @@ export function getJzodSchemaSelectorMap(): DomainStateJzodSchemaSelectorMap {
   }
 }
 
-export function getSelectorParams<Q extends MiroirSelectorQueryParams>(query:Q, selectorMap?:DomainStateSelectorMap<MiroirSelectorQueryParams,any>): DomainStateSelectorParams<Q> {
+export function getSelectorParams<Q extends MiroirSelectorQueryParams>(query:Q, selectorMap?:DomainStateSelectorMap<MiroirSelectorQueryParams>): DomainStateSelectorParams<Q> {
   return {
     query,
     selectorMap: selectorMap??getSelectorMap(),
@@ -422,8 +422,8 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
   selectorParams: DomainStateSelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams>
 ): DomainElement => {
   log.info("selectEntityInstanceListFromListQueryAndDomainStateNew called with queryType", selectorParams.query.singleSelectQuery.select.queryType, "selectorParams", selectorParams)
-  const localSelectorMap:DomainStateSelectorMap<MiroirSelectorQueryParams, any> = selectorParams?.selectorMap??selectorMap;
-  const selectedInstances = localSelectorMap.selectEntityInstanceUuidIndexFromDomainStateNew(domainState, selectorParams);
+  const localSelectorMap:DomainStateSelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> = selectorParams?.selectorMap??selectorMap;
+  const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndexFromDomainStateNew(domainState, selectorParams);
 
   switch (selectorParams.query.singleSelectQuery.select.queryType) {
     case "selectObjectListByEntity": {
@@ -592,7 +592,7 @@ export const innerSelectElementFromQueryAndDomainStateNew = (
   newFetchedData: DomainElementObject,
   pageParams: DomainElementObject,
   queryParams: DomainElementObject,
-  selectorMap:DomainStateSelectorMap<MiroirSelectorQueryParams, any>,
+  selectorMap:DomainStateSelectorMap<MiroirSelectorQueryParams>,
   // pageParams: Record<string, any>,
   // queryParams: Record<string, any>,
   deploymentUuid: Uuid,
@@ -752,7 +752,7 @@ export const selectByDomainManyQueriesFromDomainStateNew:DomainStateSelectorNew<
   
   const context:DomainElementObject = {elementType: "object", elementValue: {...selectorParams.query.contextResults.elementValue}};
   log.info("########## DomainSelector selectByDomainManyQueriesFromDomainStateNew will use context", context);
-  const localSelectorMap:DomainStateSelectorMap<MiroirSelectorQueryParams, any> = selectorParams?.selectorMap??selectorMap;
+  const localSelectorMap:DomainStateSelectorMap<DomainManyQueriesWithDeploymentUuid> = selectorParams?.selectorMap??selectorMap;
 
   for (const entry of Object.entries(selectorParams.query.fetchQuery?.select??{})) {
     let result = innerSelectElementFromQueryAndDomainStateNew(
@@ -760,7 +760,7 @@ export const selectByDomainManyQueriesFromDomainStateNew:DomainStateSelectorNew<
       context,
       selectorParams.query.pageParams,
       {elementType: "object", elementValue: { ...selectorParams.query.pageParams.elementValue, ...selectorParams.query.queryParams.elementValue} },
-      localSelectorMap,
+      localSelectorMap as any,
       selectorParams.query.deploymentUuid,
       entry[1]
 

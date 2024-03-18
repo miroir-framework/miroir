@@ -54,8 +54,9 @@ export default (path, options) =>({
           allowJs: true,
           moduleResolution: "node",
           module:"commonjs",
+          // module:"ES2022",
           // pl
-          // module: "ESNext",
+          // module: "ES2017",
           // target: "ES2017",
                 // rootDir: "./src/",
           traceResolution: true

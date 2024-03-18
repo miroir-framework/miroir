@@ -2,10 +2,10 @@ import { List, ListItem } from "@mui/material";
 import { useMemo } from "react";
 
 import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
-import { ApplicationSection, Entity, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName } from "miroir-core";
+import { ApplicationSection, Entity, EntityInstancesUuidIndex, LoggerInterface, MiroirLoggerFactory, Uuid, applicationDeploymentMiroir, getLoggerName, resolveJzodSchemaReference } from "miroir-core";
 
 import { packageName } from "../../constants";
-import { JzodEnumSchemaToJzodElementResolver, resolveJzodSchemaReference } from "../JzodTools";
+import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
 import { EntityInstanceLink } from "./EntityInstanceLink";
 import { MTableComponent } from "./MTableComponent";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";

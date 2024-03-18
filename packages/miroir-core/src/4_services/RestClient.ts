@@ -65,7 +65,7 @@ export class RestClient implements RestClientInterface {
         }
       }
       throw new Error(response.statusText)
-    } catch (err) {
+    } catch (err: any) {
       return Promise.reject(err.message ? err.message : data)
     }
   }

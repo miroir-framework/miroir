@@ -4,11 +4,12 @@ import {
   ApplicationSection,
   DomainElement,
   DomainManyQueriesWithDeploymentUuid,
-  EntityInstance,
+  EntityInstance as string,
   InstanceAction,
   ModelAction,
   QueryAction,
   StoreOrBundleAction,
+  EntityInstance,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -41,7 +42,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
   }
 );
 
-function wrapResults(instances: EntityInstance[]): HttpResponseBodyFormat {
+// function wrapResults(instances: string[]): HttpResponseBodyFormat {
+function wrapResults(instances: any[]): HttpResponseBodyFormat {
   return { instances };
 }
 
@@ -182,14 +184,16 @@ export async function restMethodsPostPutDeleteHandler(
     ["section"],
     body?.crudInstances ?? [],
     ["post", "put"].includes(method)
-      ? async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+      ? async (section: ApplicationSection, instance: EntityInstance): Promise<HttpResponseBodyFormat> => {
         const boundToCall = targetDataStore.upsertInstance.bind(targetDataStore);
-        await boundToCall(section, parentUuid);
+        await boundToCall(section, instance);
         return wrapResults([]);
       }
-      : async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+      : async (section: ApplicationSection, instance: EntityInstance): Promise<HttpResponseBodyFormat> => {
         const boundToCall = targetDataStore.deleteInstance.bind(targetDataStore)
-        return wrapResults(await boundToCall(section, parentUuid));
+        // return wrapResults(await boundToCall(section, instance));
+        await boundToCall(section, instance);
+        return wrapResults([]);
       },
     continuationFunction(response)
   );
