@@ -35,6 +35,27 @@
       "icon": "list"
     },
     {
+      "label": "Library Entities",
+      "section": "model",
+      "application": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+      "icon": "category"
+    },
+    {
+      "label": "Library Entity Definitions",
+      "section": "model",
+      "application": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
+      "icon": "category"
+    },
+    {
+      "label": "Library Tests",
+      "section": "data",
+      "application": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      "reportUuid": "931dd036-dfce-4e47-868e-36dba3654816",
+      "icon": "category"
+    },
+    {
       "label": "Library Books",
       "section": "data",
       "application": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",

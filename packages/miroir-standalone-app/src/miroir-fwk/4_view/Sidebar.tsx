@@ -148,7 +148,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   const context = useMiroirContext();
   const miroirConfig = context.getMiroirConfig();
 
-  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams,any> = useMemo(
+  const selectorMap: DomainStateSelectorMap<MiroirSelectorQueryParams> = useMemo(
     () => getSelectorMap(),
     []
   )

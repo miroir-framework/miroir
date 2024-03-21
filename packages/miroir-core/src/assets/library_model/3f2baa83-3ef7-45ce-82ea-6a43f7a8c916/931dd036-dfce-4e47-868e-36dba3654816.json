@@ -7,12 +7,25 @@
   "defaultLabel": "List of Library Tests Instances",
   "type": "list",
   "definition": {
-    "type":"objectListReportSection",
-    "definition": {
-      "parentName": "Test",
-      "parentUuid": {
-        "referenceType": "constant",
-        "referenceUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
+    "reportParameters": {},
+    "fetchQuery": {
+      "select": {
+        "tests": {
+          "queryType": "selectObjectListByEntity",
+          "parentName": "Test",
+          "parentUuid": {
+            "referenceType": "constant",
+            "referenceUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
+          }
+        }
+      }
+    },
+    "section": {
+      "type":"objectListReportSection",
+      "definition": {
+        "parentName": "Test",
+        "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+        "fetchedDataReference": "tests"
       }
     }
   }

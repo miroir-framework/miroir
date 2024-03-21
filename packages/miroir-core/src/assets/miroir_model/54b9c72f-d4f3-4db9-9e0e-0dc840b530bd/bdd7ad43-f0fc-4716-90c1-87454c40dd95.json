@@ -7,6 +7,13 @@
   "name": "EntityDefinition",
   "conceptLevel": "MetaModel",
   "description": "definition of an entity",
+  "viewAttributes": [
+    "name",
+    "description",
+    "entityUuid",
+    "viewAttributes",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

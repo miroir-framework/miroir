@@ -543,6 +543,9 @@ export const HomePage = (props: RootComponentProps) => {
         displayedApplicationSection ? (
           <div>
             {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
+            <div>
+              reportUuid: {displayedReportUuid}
+            </div>
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}

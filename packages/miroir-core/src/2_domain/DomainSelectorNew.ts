@@ -924,10 +924,6 @@ export const selectEntityJzodSchemaFromDomainStateNew = (
  */
 export const selectFetchQueryJzodSchemaFromDomainStateNew = (
   domainState: DomainState,
-  // query: DomainModelGetFetchParamJzodSchemaQueryParams
-  // export type DomainModelQueryJzodSchemaParams = 
-  // DomainModelGetEntityDefinitionQueryParams | DomainModelGetFetchParamJzodSchemaQueryParams | DomainModelGetSingleSelectQueryJzodSchemaQueryParams;
-
   selectorParams: DomainStateJzodSchemaSelectorParams<DomainModelGetFetchParamJzodSchemaQueryParams>
 ):  RecordOfJzodObject | undefined => {
   const localFetchParams: DomainManyQueriesWithDeploymentUuid = selectorParams.query.fetchParams

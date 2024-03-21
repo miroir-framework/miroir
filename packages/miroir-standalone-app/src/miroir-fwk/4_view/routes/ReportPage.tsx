@@ -10,7 +10,12 @@ import {
   Report,
   DomainElementObject,
   getLoggerName,
-  MetaModel
+  MetaModel,
+  applicationDeploymentLibrary,
+  applicationDeploymentMiroir,
+  reportEntityDefinitionList,
+  reportEntityList,
+  ApplicationDeploymentConfiguration
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -57,6 +62,11 @@ export const ReportPage = () => {
   const errorLog = useErrorLogService();
   const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
 
+  const deployments = [applicationDeploymentMiroir, applicationDeploymentLibrary] as ApplicationDeploymentConfiguration[];
+
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+
   log.info("ReportPage currentModel", currentModel);
 
   const defaultReport: Report = useMemo(()=> ({
@@ -78,7 +88,52 @@ export const ReportPage = () => {
       }
     }
   }), [])
-  const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
+
+  const displayedDeploymentDefinition:ApplicationDeploymentConfiguration | undefined = deployments.find(d=>d.uuid == params.deploymentUuid);
+
+  const localApplicationSection: ApplicationSection = (params.applicationSection == "data"?"data":"model") as ApplicationSection;
+
+  const mapping = useMemo(() => ({ // displayedDeploymentDefinition, displayedApplicationSection
+    [applicationDeploymentMiroir.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => [reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+          ),
+          entities: miroirMetaModel.entities,
+          entityDefinitions: miroirMetaModel.entityDefinitions,
+        },
+      "data": {
+        availableReports: miroirMetaModel.reports.filter(
+          (r) => ![reportEntityList.uuid, reportEntityDefinitionList.uuid].includes(r.uuid)
+        ),
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+    },
+    [applicationDeploymentLibrary.uuid]: {
+      "model": {
+        availableReports: miroirMetaModel.reports,
+        entities: miroirMetaModel.entities,
+        entityDefinitions: miroirMetaModel.entityDefinitions,
+      },
+      "data": {
+        availableReports: libraryAppModel.reports,
+        entities: libraryAppModel.entities,
+        entityDefinitions: libraryAppModel.entityDefinitions,
+      },
+    },
+  }), [miroirMetaModel, libraryAppModel]);
+
+  const { availableReports, entities, entityDefinitions } =
+    displayedDeploymentDefinition && params.applicationSection
+      ? mapping[displayedDeploymentDefinition?.uuid][localApplicationSection]
+      : { availableReports: [], entities: [], entityDefinitions: [] };
+
+      log.info("HomePage availableReports",availableReports);
+
+  const currentMiroirReport: Report = availableReports?.find(r=>r.uuid === params.reportUuid)??defaultReport;
+
+  // const currentMiroirReport: Report = currentModel.reports?.find((r:Report) => r.uuid === params.reportUuid)??defaultReport;
 
   // const emptyResultsFromQuery: DomainElementObject = useMemo(()=> ({ elementType: "object", elementValue: {}}), []);
 
@@ -89,7 +144,8 @@ export const ReportPage = () => {
         <Box>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </Box>
-        <span>ReportPage displayed:{count}</span>
+        <div>ReportPage displayed:{count}</div>
+        <div>ReportPage reportUuid: {params.reportUuid} </div>
         {
           params.deploymentUuid &&
           params.applicationSection 

@@ -1,6 +1,8 @@
 import {
   CellClickedEvent,
-  CellValueChangedEvent
+  CellValueChangedEvent,
+  ColDef,
+  ColGroupDef
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useMemo, useState } from 'react';
@@ -66,6 +68,16 @@ const applicationDeploymentLibrary: ApplicationDeploymentConfiguration = {
 
 let count=0
 let prevProps:TableComponentProps;
+const autoSizeStrategy = {
+  type: 'fitGridWidth',
+  defaultMinWidth: 100,
+  columnLimits: [
+      {
+          colId: 'country',
+          minWidth: 900
+      }
+  ]
+};
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
   log.info("MTableComponent",props);
@@ -197,7 +209,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     setdialogFormIsOpen(false);
   },[]);
 
-  const defaultColDef=useMemo(()=>({
+  const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
     editable: true,
     sortable: true,
     filter: true,
@@ -206,11 +218,14 @@ export const MTableComponent = (props: TableComponentProps) => {
   }),[]);
 
 
-  const columnDefs = useMemo(()=>[
+  // const columnDefs:(ColDef | ColGroupDef)[] = useMemo<(ColDef | ColGroupDef)[]>(()=>[
+  const columnDefs:(ColDef | ColGroupDef)[] = useMemo(()=>[
     {
-      field: 'tools',
+      field: '',
       cellRenderer: ToolsCellRenderer,
       editable:false,
+      width: 80,
+      // width: "10px",
       // sort:'asc',
       // cellEditorParams: {
       //   entityUuid: entityPublisher.uuid
@@ -237,10 +252,16 @@ export const MTableComponent = (props: TableComponentProps) => {
   const onCellClicked = useCallback((event:CellClickedEvent)=> {
     // event.stopPropagation();
     log.warn("onCellClicked",event,event.colDef.field)
-    if (props.type == 'EntityInstance' && event.colDef.field && event.colDef.field != 'tools') {
+    if (props.type == "EntityInstance" && event.colDef.field && event.colDef.field != "tools") {
       // log.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
-      const columnDefinitionAttributeEntry = Object.entries(props.currentEntityDefinition?.jzodSchema.definition??{}).find((a:[string,any])=>a[0] == event.colDef.field);
-      if (columnDefinitionAttributeEntry && (columnDefinitionAttributeEntry[1] as any).type == "simpleType" && (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity) {
+      const columnDefinitionAttributeEntry = Object.entries(
+        props.currentEntityDefinition?.jzodSchema.definition ?? {}
+      ).find((a: [string, any]) => a[0] == event.colDef.field);
+      if (
+        columnDefinitionAttributeEntry &&
+        (columnDefinitionAttributeEntry[1] as any).type == "simpleType" &&
+        (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
+      ) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
         // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
         navigate(
@@ -251,7 +272,10 @@ export const MTableComponent = (props: TableComponentProps) => {
           }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
-        log.info('onCellClicked cell is not an Entity Instance uuid, no navigation occurs.',columnDefinitionAttributeEntry);
+        log.info(
+          "onCellClicked cell is not an Entity Instance uuid, no navigation occurs.",
+          columnDefinitionAttributeEntry
+        );
       }
     }
   },[props,])
@@ -314,6 +338,7 @@ export const MTableComponent = (props: TableComponentProps) => {
             {/* <div id="tata" className="ag-theme-alpine"> */}
             <AgGridReact
                 columnDefs={columnDefs}
+                // autoSizeStrategy={autoSizeStrategy}
                 rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
                 // rowData={gridData}
                 getRowId={(params) => {

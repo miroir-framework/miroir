@@ -7,6 +7,12 @@
   "conceptLevel":"Model",
   "name":"Menu",
   "icon": "Interests",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

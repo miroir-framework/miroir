@@ -20,18 +20,21 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:string,jzodSchema: JzodElement): ColDef<any> {
+export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
+  name: string,
+  jzodSchema: JzodElement
+): ColDef<any> {
   switch (name) {
     case "gender": {
       log.info("column gender", name, jzodSchema);
 
-      return ({
+      return {
         field: "gender",
         cellRenderer: GenderCellRenderer,
         cellEditor: GenderCellEditor,
         cellEditorPopup: true,
         editable: true,
-      });
+      };
       break;
     }
     case "publisher": {
@@ -76,7 +79,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
       log.info("column conceptLevel", name, jzodSchema);
       return {
         field: name,
-        headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
+        headerName: jzodSchema.extra?.defaultLabel ? jzodSchema.extra?.defaultLabel : name,
       };
     }
     default: {
@@ -87,7 +90,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
         cellRendererParams: {
           columnName: name,
         },
-        headerName: jzodSchema.extra?.defaultLabel?jzodSchema.extra?.defaultLabel:name,
+        headerName: jzodSchema.extra?.defaultLabel ? jzodSchema.extra?.defaultLabel : name,
         // "sort":'asc'
       };
       break;
@@ -95,19 +98,35 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(name:st
   }
 }
 
-export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(jzodSchema: JzodElement | undefined, viewAttributes?: string[]): ColDef<any>[] {
+export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+  jzodSchema: JzodElement | undefined,
+  viewAttributes?: string[]
+): ColDef<any>[] {
   switch (jzodSchema?.type) {
-    case "object": {
-      return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
-        ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
-        .map((e: [string, any]) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1]));
+    case "object":
+      {
+        const schemaKeys = Object.keys(jzodSchema.definition)
+        if (viewAttributes) {
+          return viewAttributes
+          .filter(
+           (a:string) => [a, schemaKeys.find(b => b == a)]
+          )
+          .map(
+            (a: string) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(a, jzodSchema.definition[a])
+          )
+        } else {
+          return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
+            // ?.filter((e: [string, any]) => viewAttributes == undefined || viewAttributes.includes(e[0]))
+            .map((e: [string, any]) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(e[0], e[1]));
+          
+        }
+      }
+      break;
+    default: {
+      return [];
+      break;
     }
-    break;
-  default: {
-    return [];
-    break;
   }
-}
   // return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
   //   switch (e[0]) {
   //     case "gender": {

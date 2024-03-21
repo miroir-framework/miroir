@@ -96,7 +96,7 @@ export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:J
   return jzodUnion.discriminator
     ? {
         [jzodUnion.discriminator]:jzodUnion.definition.map(
-          (e) => {
+          (e: JzodElement) => {
             const resolvedSchema =
               e.type == "schemaReference" ? resolveJzodSchemaReference(e, currentModel, rootJzodSchema) : e;
             return e.type;

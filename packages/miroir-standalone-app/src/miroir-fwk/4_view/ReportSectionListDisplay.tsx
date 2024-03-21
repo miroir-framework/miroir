@@ -238,7 +238,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
     props.fetchedDataJzodSchema &&
-    // props.select?.fetchedDataReference &&
     props.section.type == "objectListReportSection" &&
     props.section.definition.fetchedDataReference &&
     props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
@@ -248,12 +247,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   )
 
   const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
-    // props.fetchedDataJzodSchema &&
-    // props.select?.fetchedDataReference &&
-    // props.section.type == "objectListReportSection" &&
-    // props.section.definition.fetchedDataReference &&
-    // props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]?
-    // props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]:
     currentReportTargetEntityDefinition?.viewAttributes
     ,[props, props.fetchedDataJzodSchema, props.section.definition.fetchedDataReference]
   )
@@ -516,7 +509,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           <span>No elements in the report</span>
         )
       ) : (
-        <span>no report to display</span>
+        <span style={{color: "red"}}>no report to display</span>
       )}
     </div>
   );
