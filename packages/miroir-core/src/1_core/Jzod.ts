@@ -1,5 +1,14 @@
 // import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
-import { JzodElement, JzodObject, JzodReference, JzodSchema, MetaModel, jzodElement } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { getMiroirFundamentalJzodSchema } from "../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+import {
+  EntityDefinition,
+  JzodElement,
+  JzodObject,
+  JzodReference,
+  JzodSchema,
+  MetaModel,
+  jzodElement,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 // import {miroirFundamentalJzodSchema} from "../0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
 // import miroirFundamentalJzodSchema from "../../dist/index.js";
 // import { miroirFundamentalJzodSchema } from "miroir-core";
@@ -13,9 +22,9 @@ import { packageName } from "../constants";
 import { getLoggerName } from "../tools";
 import { cleanLevel } from "./constants";
 
-
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema.js";
+
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"Jzod");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -51,7 +60,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
   switch (jzodSchema?.type) {
     case "schemaReference": {
       const newContext = {...relativeReferenceJzodContext, ...jzodSchema.context}
-      const resultJzodSchema = resolveJzodSchemaReference2(jzodSchema, miroirFundamentalJzodSchema,currentModel, newContext)
+      const resultJzodSchema = resolveJzodSchemaReference2(miroirFundamentalJzodSchema, jzodSchema, currentModel, newContext)
       log.info(
         "resolveReferencesForJzodSchemaAndValueObject schemaReference resultJzodSchema",
         JSON.stringify(resultJzodSchema, null, 2),
@@ -104,7 +113,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
     }
     case "union":{
       const concreteJzodSchemas = jzodSchema.definition.map((a: JzodElement) =>
-        a.type == "schemaReference" ? resolveJzodSchemaReference2(a, miroirFundamentalJzodSchema, currentModel, relativeReferenceJzodContext) : a
+        a.type == "schemaReference" ? resolveJzodSchemaReference2(miroirFundamentalJzodSchema, a, currentModel, relativeReferenceJzodContext) : a
       );
       log.info(
         "resolveReferencesForJzodSchemaAndValueObject called for union",
@@ -357,8 +366,8 @@ export function resolveReferencesForJzodSchemaAndValueObject(
 
 // ################################################################################################
 export function resolveJzodSchemaReference2(
-  jzodReference: JzodReference,
   miroirFundamentalJzodSchema: JzodSchema,
+  jzodReference: JzodReference,
   currentModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodElement {

@@ -158,7 +158,7 @@ export const HomePage = (props: RootComponentProps) => {
       ? mapping[displayedDeploymentDefinition?.uuid][displayedApplicationSection]
       : { availableReports: [], entities: [], entityDefinitions: [] };
 
-      log.info("HomePage availableReports",availableReports);
+  log.info("HomePage availableReports",availableReports);
 
   const currentMiroirReport: Report | undefined = availableReports?.find(r=>r.uuid === displayedReportUuid);
   const currentMiroirReportSectionObjectList: ObjectListReportSection | undefined =
@@ -543,9 +543,9 @@ export const HomePage = (props: RootComponentProps) => {
         displayedApplicationSection ? (
           <div>
             {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
-            <div>
+            {/* <div>
               reportUuid: {displayedReportUuid}
-            </div>
+            </div> */}
             <RootReportSectionView
               reportSection={currentMiroirReport?.definition}
               applicationSection={displayedApplicationSection}

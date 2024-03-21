@@ -1673,7 +1673,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
             "extra": {
               "id": 9,
               "defaultLabel": "Application",
-              // "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "editable": false
             }
           },
@@ -1689,7 +1689,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
               "id": 10,
               "defaultLabel": "Branch",
               // "description": "The Branch of this Application Version",
-              // "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+              "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
               "editable": false
             }
           },
@@ -1706,7 +1706,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
               "id": 11,
               "defaultLabel": "Previous Application Version",
               // "description": "Previous version of the application on this Branch.",
-              // "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
               "editable": false
             }
           },
@@ -1952,7 +1952,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
             "extra": {
               "id": 8,
               "defaultLabel": "Application",
-              // "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "editable": true
             }
           },
@@ -2792,7 +2792,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
             "extra": {
               "id": 9,
               "defaultLabel": "Application",
-              // "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
               "editable": true
             }
           },
@@ -3584,7 +3584,7 @@ export const miroirFundamentalJzodSchema: JzodSchema = {
             "extra": {
               "id": 8,
               "defaultLabel": "Previous Commit",
-              // "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
+              "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
               "editable": false
             }
           },

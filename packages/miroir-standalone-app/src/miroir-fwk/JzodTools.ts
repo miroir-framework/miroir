@@ -1,6 +1,54 @@
-import { JzodElement, JzodObject } from "@miroir-framework/jzod-ts";
-import { MetaModel, resolveJzodSchemaReference } from "miroir-core";
+import {
+  EntityDefinition,
+  JzodElement,
+  JzodObject,
+  JzodSchema,
+  MetaModel,
+  domainEndpointVersionV1,
+  entityDefinitionApplication,
+  entityDefinitionApplicationVersion,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
+  getMiroirFundamentalJzodSchema,
+  instanceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema,
+  localCacheEndpointVersionV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  resolveJzodSchemaReference,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1,
+} from "miroir-core";
 
+const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+  entityDefinitionBundleV1 as EntityDefinition,
+  entityDefinitionCommit as EntityDefinition,
+  modelEndpointV1,
+  storeManagementEndpoint,
+  instanceEndpointVersionV1,
+  undoRedoEndpointVersionV1,
+  localCacheEndpointVersionV1,
+  domainEndpointVersionV1,
+  queryEndpointVersionV1,
+  persistenceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+  entityDefinitionApplication as EntityDefinition,
+  entityDefinitionApplicationVersion as EntityDefinition,
+  entityDefinitionEntity as EntityDefinition,
+  entityDefinitionEntityDefinition as EntityDefinition,
+  entityDefinitionJzodSchema as EntityDefinition,
+  entityDefinitionMenu  as EntityDefinition,
+  entityDefinitionQueryVersionV1 as EntityDefinition,
+  entityDefinitionReport as EntityDefinition,
+  // jzodSchemajzodMiroirBootstrapSchema as any,
+);
 
 
 // #####################################################################################################
@@ -19,6 +67,7 @@ export function getCurrentEnumJzodSchemaResolver(
       ? ({} as JzodElementRecord)
       : {
           array: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodArray" },
@@ -27,6 +76,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           simpleType: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: {
@@ -45,6 +95,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           enum: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodEnum" },
@@ -53,6 +104,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           union: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodUnion" },
@@ -61,6 +113,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           record: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodRecord" },
@@ -69,6 +122,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           object: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodObject" },
@@ -77,6 +131,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           function: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodFunction" },
@@ -85,6 +140,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           lazy: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLazy" },
@@ -93,6 +149,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           literal: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodLiteral" },
@@ -101,6 +158,7 @@ export function getCurrentEnumJzodSchemaResolver(
             // relativeReferenceJzodSchema,
           ),
           schemaReference: resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
             {
               type: "schemaReference",
               definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "jzodReference" },
@@ -108,6 +166,7 @@ export function getCurrentEnumJzodSchemaResolver(
             currentMiroirModel
             // relativeReferenceJzodSchema,
           ),
-        })[type];
+        } as JzodElementRecord
+        )[type];
   }
 }

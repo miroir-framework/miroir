@@ -33,6 +33,11 @@ export const miroirFundamentalJzodSchema = {
                 "definition": "string",
                 "optional": true
               },
+              "targetEntity": {
+                "type": "simpleType",
+                "definition": "string",
+                "optional": true
+              },
               "editable": {
                 "type": "simpleType",
                 "definition": "boolean",

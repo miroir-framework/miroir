@@ -144,8 +144,8 @@ export const ReportPage = () => {
         <Box>
           <h3>erreurs: {JSON.stringify(errorLog)}</h3>
         </Box>
-        <div>ReportPage displayed:{count}</div>
-        <div>ReportPage reportUuid: {params.reportUuid} </div>
+        {/* <div>ReportPage displayed:{count}</div>
+        <div>ReportPage reportUuid: {params.reportUuid} </div> */}
         {
           params.deploymentUuid &&
           params.applicationSection 

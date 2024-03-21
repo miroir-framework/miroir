@@ -8,19 +8,43 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Checkbox } from "@mui/material";
 
-import { JzodElement, JzodObject, JzodUnion } from "@miroir-framework/jzod-ts";
 import {
   ApplicationSection,
   EntityAttribute,
+  EntityDefinition,
   EntityInstanceWithName,
   EntityInstancesUuidIndex,
+  JzodElement,
+  JzodObject,
+  JzodSchema,
+  JzodUnion,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
   applicationDeploymentMiroir,
+  domainEndpointVersionV1,
+  entityDefinitionApplication,
+  entityDefinitionApplicationVersion,
+  entityDefinitionBundleV1,
+  entityDefinitionCommit,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionJzodSchema,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
   getLoggerName,
+  getMiroirFundamentalJzodSchema,
+  instanceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema,
+  localCacheEndpointVersionV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
   resolveJzodSchemaReference,
+  storeManagementEndpoint,
+  undoRedoEndpointVersionV1,
 } from "miroir-core";
 
 import { JzodEnumSchemaToJzodElementResolver } from "../JzodTools";
@@ -28,6 +52,7 @@ import { useMiroirContextformHelperState } from "./MiroirContextReactProvider";
 import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
 import { packageName } from "../../constants";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");
@@ -92,13 +117,40 @@ export interface JzodElementEditorProps {
 
 
 // ################################################################################################
+const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
+  entityDefinitionBundleV1 as EntityDefinition,
+  entityDefinitionCommit as EntityDefinition,
+  modelEndpointV1,
+  storeManagementEndpoint,
+  instanceEndpointVersionV1,
+  undoRedoEndpointVersionV1,
+  localCacheEndpointVersionV1,
+  domainEndpointVersionV1,
+  queryEndpointVersionV1,
+  persistenceEndpointVersionV1,
+  jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+  entityDefinitionApplication as EntityDefinition,
+  entityDefinitionApplicationVersion as EntityDefinition,
+  entityDefinitionEntity as EntityDefinition,
+  entityDefinitionEntityDefinition as EntityDefinition,
+  entityDefinitionJzodSchema as EntityDefinition,
+  entityDefinitionMenu  as EntityDefinition,
+  entityDefinitionQueryVersionV1 as EntityDefinition,
+  entityDefinitionReport as EntityDefinition,
+  // jzodSchemajzodMiroirBootstrapSchema as any,
+);
+
+
+
+
+// ################################################################################################
 export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MetaModel) {
   return jzodUnion.discriminator
     ? {
         [jzodUnion.discriminator]:jzodUnion.definition.map(
           (e: JzodElement) => {
             const resolvedSchema =
-              e.type == "schemaReference" ? resolveJzodSchemaReference(e, currentModel, rootJzodSchema) : e;
+              e.type == "schemaReference" ? resolveJzodSchemaReference(miroirFundamentalJzodSchema, e, currentModel, rootJzodSchema) : e;
             return e.type;
           }
         )
@@ -123,7 +175,7 @@ export const ExpandOrFold = (
     <button
       // style={{maxHeight:"20px",maxWidth:"20px"}}
       // style={{display:"inline-flex"}}
-      style={{border:0, backgroundColor:"transparent"}}
+      style={{ border: 0, backgroundColor: "transparent" }}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -133,7 +185,11 @@ export const ExpandOrFold = (
         });
       }}
     >
-      {props.hiddenFormItems[props.listKey]?<ExpandMore sx={{maxWidth:"15px",maxHeight:"15px"}}/>:<ExpandLess sx={{maxWidth:"15px",maxHeight:"15px"}}/>}
+      {props.hiddenFormItems[props.listKey] ? (
+        <ExpandMore sx={{ maxWidth: "15px", maxHeight: "15px" }} />
+      ) : (
+        <ExpandLess sx={{ maxWidth: "15px", maxHeight: "15px" }} />
+      )}
     </button>
   );
 }
@@ -209,12 +265,20 @@ export const JzodElementEditor = (
       // );
       const resolvedJzodSchema =
         elementJzodSchema.definition.type == "schemaReference"
-          // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.innerProps.rootJzodSchema)
-          ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, {} as JzodObject)
+          ? // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.innerProps.rootJzodSchema)
+            resolveJzodSchemaReference(
+              miroirFundamentalJzodSchema,
+              elementJzodSchema.definition,
+              currentModel,
+              {} as JzodObject
+            )
           : elementJzodSchema.definition;
 
       // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
-      const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
+      const targetJzodSchema =
+        resolvedJzodSchema.type == "union"
+          ? props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition)
+          : resolvedJzodSchema;
 
       log.info("array",props.innerProps.initialValuesObject, "resolvedJzodSchema",resolvedJzodSchema,"targetJzodSchema",targetJzodSchema);
 
@@ -231,7 +295,7 @@ export const JzodElementEditor = (
           <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
             {/* {props.innerProps.initialValuesObject.map((attribute: JzodElement, index: number) => { */}
             {(itemsOrder as number[])
-              .map((i: number) => [i, props.innerProps.initialValuesObject[i]])
+              .map((i: number):[number, JzodElement] => [i, props.innerProps.initialValuesObject[i]])
               .map((attributeParam: [number, JzodElement]) => {
                 const index: number = attributeParam[0];
                 const attribute = attributeParam[1];
@@ -341,7 +405,7 @@ export const JzodElementEditor = (
       break;
     }
     case "schemaReference": {
-      const resolvedJzodSchema = resolveJzodSchemaReference(elementJzodSchema, currentModel)
+      const resolvedJzodSchema = resolveJzodSchemaReference(miroirFundamentalJzodSchema, elementJzodSchema, currentModel)
       log.info("schemaReference","resolvedJzodSchema",resolvedJzodSchema);
 
       const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition):resolvedJzodSchema;
@@ -372,8 +436,13 @@ export const JzodElementEditor = (
       // log.info("JzodElementEditor record","jzodSchema",jzodSchema);
       const targetJzodSchema =
         elementJzodSchema.definition.type == "schemaReference"
-          // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.innerProps.rootJzodSchema)
-          ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, {} as JzodObject)
+          ? // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.innerProps.rootJzodSchema)
+            resolveJzodSchemaReference(
+              miroirFundamentalJzodSchema,
+              elementJzodSchema.definition,
+              currentModel,
+              {} as JzodObject
+            )
           : elementJzodSchema.definition;
       log.info("record",props.listKey,"targetJzodSchema", targetJzodSchema);
       // const discriminants=getUnionDiscriminantValues(targetJzodSchema, props.innerProps.rootJzodSchema, currentModel)
@@ -381,7 +450,7 @@ export const JzodElementEditor = (
         <div style={{ display: "inline-flex", flexDirection: "column", marginLeft:`calc(${usedIndentLevel}*(${indentShift}))`}}>
           {
             Object.entries(props.innerProps.initialValuesObject).map(
-              (attribute:[string,JzodElement],index: number) => {
+              (attribute:[string,any],index: number): JSX.Element  => {
                 // const currentAttributeJzodSchema:JzodElement = props.currentEnumJzodSchemaResolver[attribute[1].type]; // Union of jzodElements 
                 let currentAttributeJzodSchema:JzodElement
                 if (attribute[1].type) {
@@ -437,14 +506,25 @@ export const JzodElementEditor = (
       let resolvedJzodSchema: JzodObject;
       if (elementJzodSchema.extend) {
         if (elementJzodSchema.extend.type == "schemaReference") {
-          const resolvedExtend = resolveJzodSchemaReference(elementJzodSchema.extend, currentModel,{} as JzodObject)
+          const resolvedExtend = resolveJzodSchemaReference(
+            miroirFundamentalJzodSchema,
+            elementJzodSchema.extend,
+            currentModel,
+            {} as JzodObject
+          );
           if (resolvedExtend.type == "object") {
             resolvedJzodSchema = { ...elementJzodSchema, definition: { ...elementJzodSchema.definition, ...resolvedExtend.definition } }
           } else {
-            throw new Error("JzodElementEditor extend clause for object schema is not an object. Schema: " + JSON.stringify(elementJzodSchema));
+            throw new Error(
+              "JzodElementEditor extend clause for object schema is not an object. Schema: " +
+                JSON.stringify(elementJzodSchema)
+            );
           }
         } else {
-          resolvedJzodSchema = { ...elementJzodSchema, definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition } }
+          resolvedJzodSchema = {
+            ...elementJzodSchema,
+            definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition },
+          };
         }
       } else {
         resolvedJzodSchema = elementJzodSchema;
@@ -464,7 +544,7 @@ export const JzodElementEditor = (
             {/* {Object.entries(props.innerProps.initialValuesObject).map((attribute: [string, JzodElement]) => { */}
             {
               itemsOrder
-                .map((i) => [i, props.innerProps.initialValuesObject[i]])
+                .map((i): [string, JzodElement] => [i, props.innerProps.initialValuesObject[i]])
                 .map((attribute: [string, JzodElement]) => {
                   // const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
                   const currentAttributeDefinition = resolvedJzodSchema.definition[attribute[0]];

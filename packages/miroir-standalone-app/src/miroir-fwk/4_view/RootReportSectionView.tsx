@@ -142,22 +142,22 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   log.info('RootReportSectionView props.reportSection',props.reportSection);
 
   if (props.applicationSection) {
+    {/* <div>
+      <div>
+        deploymentUuid:
+        {props.deploymentUuid}
+      </div>
+      <div>
+        section: 
+        {props.applicationSection}
+      </div>
+      <div>
+        application:
+        {props.applicationSection}
+      </div>
+    </div> */}
     return (
       <div>
-        <div>
-          <div>
-            deploymentUuid:
-            {props.deploymentUuid}
-          </div>
-          <div>
-            section: 
-            {props.applicationSection}
-          </div>
-          <div>
-            application:
-            {props.applicationSection}
-          </div>
-        </div>
         <div>RootReportSectionView rendered {count}</div>
         <ReportSectionView
           domainElementObject={domainElementObject}
