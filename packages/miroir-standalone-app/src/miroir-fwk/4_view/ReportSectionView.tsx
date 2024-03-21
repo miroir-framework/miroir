@@ -156,7 +156,7 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
 
   const interpolateExpression = (stringToInterpolate: string | undefined, label?: string)=> {
     const reg = /\$\{([^}]*)\}/g
-    const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no " + label??"label"
+    const result = stringToInterpolate?stringToInterpolate.replace(reg,(expression, ...args)=>`${evaluateExpression(args[0])}`):"no " + label
     log.info("interpolateExpression result",result);
     return result;
   }
@@ -167,22 +167,16 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
         {/* params:{JSON.stringify(params)}
         <p /> */}
         {/* <p>ReportSection</p> */}
-        {
-          props.applicationSection &&
-          props.reportSection
-          ? (
+        {props.applicationSection && props.reportSection ? (
           <div>
-            {
-              props.reportSection?.type === "grid" ? (
-                <div>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          grid not supported yet!
-                        </td>
-                      </tr>
-                      {/* {
+            {props.reportSection?.type === "grid" ? (
+              <div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>grid not supported yet!</td>
+                    </tr>
+                    {/* {
                         props.reportSection.definition.map(
                           (reportSection, index) => {
                             return (
@@ -200,89 +194,86 @@ export const ReportSectionView = (props: ReportSectionEntityInstanceProps) => {
                           }
                         )
                       } */}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                // <div>Not a list!!</div>
-                <div></div>
-              )
-            }
-            {
-              props.reportSection?.type === "list" ? (
-                <div>
-                  <table>
-                    <tbody>
-                      {
-                        props.reportSection?.definition.map(
-                          (innerReportSection, index) => {
-                            return (
-                              <tr key={index}>
-                                <td>
-                                  <ReportSectionView
-                                    domainElementObject={props.domainElementObject}
-                                    fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                                    deploymentUuid={props.deploymentUuid}
-                                    applicationSection={props.applicationSection}
-                                    reportSection={innerReportSection}
-                                    // instanceUuid={props.instanceUuid}
-                                  />
-                                </td>
-                              </tr>
-                            )
-                          }
-                        )
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                // <div>Not a list!!</div>
-                <div></div>
-              )
-            }
-            {
-              props.reportSection.type === "objectListReportSection" ? (
-                <div>
-                  {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
-                  {
-                    (currentReportTargetEntity &&
-                    currentReportTargetEntityDefinition) || props.domainElementObject ?
-                      <ReportSectionListDisplay
-                        tableComponentReportType="EntityInstance"
-                        label={"EntityInstance-" + currentReportTargetEntity?.name}
-                        defaultlabel={interpolateExpression(props.reportSection.definition?.label,"report label")}
-                        styles={styles}
-                        deploymentUuid={props.deploymentUuid}
-                        chosenApplicationSection={props.applicationSection as ApplicationSection}
-                        displayedDeploymentDefinition={displayedDeploymentDefinition}
-                        domainElementObject={props.domainElementObject}
-                        fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                        section={props.reportSection}
-                        // currentModel={currentModel}
-                        // currentMiroirReportSectionObjectList={props.reportSection}
-                        // currentReportTargerEntity={currentReportTargetEntity}
-                        // currentReportTargetEntityDefinition={currentReportTargetEntityDefinition}
-                      />
-                    :
-                    <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>
-                  }
-               </div>
-              ) : <div></div>
-            }
-            {
-              props.reportSection.type === "objectInstanceReportSection" ? (
-                <div>
-                  <ReportSectionEntityInstance
-                    domainElement={props.domainElementObject}
-                    instance={props.domainElementObject.elementValue?(props.domainElementObject.elementValue as any)[props.reportSection.definition.fetchedDataReference??""].elementValue:undefined}
-                    applicationSection={props.applicationSection as ApplicationSection}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              // <div>Not a list!!</div>
+              <div></div>
+            )}
+            {props.reportSection?.type === "list" ? (
+              <div>
+                <table>
+                  <tbody>
+                    {props.reportSection?.definition.map((innerReportSection, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <ReportSectionView
+                              domainElementObject={props.domainElementObject}
+                              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
+                              deploymentUuid={props.deploymentUuid}
+                              applicationSection={props.applicationSection}
+                              reportSection={innerReportSection}
+                              // instanceUuid={props.instanceUuid}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              // <div>Not a list!!</div>
+              <div></div>
+            )}
+            {props.reportSection.type === "objectListReportSection" ? (
+              <div>
+                {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
+                {(currentReportTargetEntity && currentReportTargetEntityDefinition) || props.domainElementObject ? (
+                  <ReportSectionListDisplay
+                    tableComponentReportType="EntityInstance"
+                    label={"EntityInstance-" + currentReportTargetEntity?.name}
+                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, "report label")}
+                    styles={styles}
                     deploymentUuid={props.deploymentUuid}
-                    entityUuid={props.reportSection.definition.parentUuid}
+                    chosenApplicationSection={props.applicationSection as ApplicationSection}
+                    displayedDeploymentDefinition={displayedDeploymentDefinition}
+                    domainElementObject={props.domainElementObject}
+                    fetchedDataJzodSchema={props.fetchedDataJzodSchema}
+                    section={props.reportSection}
+                    // currentModel={currentModel}
+                    // currentMiroirReportSectionObjectList={props.reportSection}
+                    // currentReportTargerEntity={currentReportTargetEntity}
+                    // currentReportTargetEntityDefinition={currentReportTargetEntityDefinition}
                   />
-               </div>
-              ) : <div></div>
-            }
+                ) : (
+                  <div>error on object list {JSON.stringify(currentReportTargetEntity)}</div>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )}
+            {props.reportSection.type === "objectInstanceReportSection" ? (
+              <div>
+                <ReportSectionEntityInstance
+                  domainElement={props.domainElementObject}
+                  instance={
+                    props.domainElementObject.elementValue
+                      ? (props.domainElementObject.elementValue as any)[
+                          props.reportSection.definition.fetchedDataReference ?? ""
+                        ].elementValue
+                      : undefined
+                  }
+                  applicationSection={props.applicationSection as ApplicationSection}
+                  deploymentUuid={props.deploymentUuid}
+                  entityUuid={props.reportSection.definition.parentUuid}
+                />
+              </div>
+            ) : (
+              <div></div>
+            )}
           </div>
         ) : (
           <div>Oops.</div>

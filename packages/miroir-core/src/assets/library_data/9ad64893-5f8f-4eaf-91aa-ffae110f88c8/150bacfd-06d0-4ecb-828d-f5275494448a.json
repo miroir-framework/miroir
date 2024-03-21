@@ -1,0 +1,83 @@
+{
+  "uuid": "150bacfd-06d0-4ecb-828d-f5275494448a",
+  "parentName": "Test",
+  "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+  "name": "Test instance",
+  "try": {
+    "a": "on a réussi!",
+    "b": {
+      "inB1": "on a encore réussi!",
+      "inB2": "on a encore réussi 2!"
+    },
+    "c": [
+      "a",
+      "bbbb",
+      "c"
+    ],
+    "d": {
+      "type": "object",
+      "definition": {
+        "optional": {
+          "type": "simpleType",
+          "definition": "boolean",
+          "optional": false
+        },
+        "extra": {
+          "optional": true,
+          "type": "object",
+          "definition": {
+            "id": {
+              "type": "simpleType",
+              "definition": "number"
+            },
+            "defaultLabel": {
+              "type": "simpleType",
+              "definition": "string"
+            },
+            "editable": {
+              "type": "simpleType",
+              "definition": "boolean"
+            }
+          }
+        },
+        "type": {
+          "type": "literal",
+          "definition": "object"
+        },
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+              "relativePath": "jzodElement"
+            }
+          }
+        }
+      }
+    },
+    "e": {
+      "type": "schemaReference",
+      "definition": {
+        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+        "relativePath": "jzodReference"
+      },
+      "optional": true,
+      "extra": {
+        "id": "5",
+        "defaultLabel": "E",
+        "editable": true
+      }
+    },
+    "f": {
+      "type": "array",
+      "definition": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+          "relativePath": "jzodElement"
+        }
+      }
+    }
+  }
+}

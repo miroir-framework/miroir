@@ -7508,7 +7508,7 @@ function testResolve(
   )
   expect(testResult.status).toEqual("ok");
   if (testResult.status == "ok") {
-    console.log("test", testId, "has result", testResult.element);
+    console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
     expect(testResult.element).toEqual(expectedResult);
   }
 }
@@ -7534,240 +7534,325 @@ describe(
       'miroir entity definition object format',
       () => {
 
-        const tests: {[k: string]: testFormat} = {
-          test010: {
+        const tests: { [k: string]: testFormat } = {
+          // // plain literal!
+          // test010: {
+          //   testSchema: {
+          //     type: "literal",
+          //     definition: "myLiteral"
+          //   },
+          //   expectedResult: {
+          //     type: "literal",
+          //     definition: "myLiteral"
+          //   },
+          //   testValueObject: "myLiteral",
+          // },
+          // // simpleType
+          // test020: {
+          //   testSchema: {
+          //     type: "simpleType",
+          //     definition: "string"
+          //   },
+          //   expectedResult: {
+          //     type: "simpleType",
+          //     definition: "string"
+          //   },
+          //   testValueObject: "myString",
+          // },
+          // // schemaReference (plain, simpleType, non-recursive)
+          // test030: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       a: {
+          //         type: "simpleType",
+          //         definition: "string"
+          //       }
+          //     },
+          //     definition: {
+          //       "relativePath": "a"
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "simpleType",
+          //     definition: "string"
+          //   },
+          //   testValueObject: "myString",
+          // },
+          // // schemaReference: object, recursive, 1-level valueObject
+          // test040: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "simpleType",
+          //         definition: "string"
+          //       }
+          //     }
+          //   },
+          //   testValueObject: {a: "myString"},
+          // },
+          // // schemaReference: object, recursive, 2-level valueObject
+          // test050: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "simpleType",
+          //             definition: "string"
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: {a: {a: "myString"}},
+          // },
+          // // schemaReference: object, recursive, 3-level valueObject
+          // test060: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       "myObject": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject"}
+          //               }
+          //             ]
+          //           }
+          //         }
+          //       }
+          //     },
+          //     definition: { relativePath: "myObject" }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       a: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               a: {
+          //                 type: "simpleType",
+          //                 definition: "string"
+          //               }
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: { a: { a: { a: "myString" } } },
+          // },
+          // // schemaReference: record of recursive object, with 2-level valueObject
+          // test070: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     context: {
+          //       myObject: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "union",
+          //             definition: [
+          //               {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //               {
+          //                 type: "schemaReference",
+          //                 definition: { relativePath: "myObject" },
+          //               },
+          //             ],
+          //           },
+          //         },
+          //       },
+          //       myRecord: {
+          //         type: "record",
+          //         definition: {
+          //           type: "schemaReference",
+          //           definition: { relativePath: "myObject" },
+          //         },
+          //       },
+          //     },
+          //     definition: { relativePath: "myRecord" },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       r1: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               a: {
+          //                 type: "simpleType",
+          //                 definition: "string",
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //       r2: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "simpleType",
+          //             definition: "string",
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+          // },
+          // // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+          // test080: {
+          //   testSchema: {
+          //     type: "record",
+          //     definition: {
+          //       type: "schemaReference",
+          //       context: {
+          //         "myObject": {
+          //           type: "object",
+          //           definition: {
+          //             a: {
+          //               type: "union",
+          //               definition: [
+          //                 {
+          //                   type: "simpleType",
+          //                   definition: "string",
+          //                 },
+          //                 {
+          //                   type: "schemaReference",
+          //                   definition: { relativePath: "myObject"}
+          //                 }
+          //               ]
+          //             }
+          //           }
+          //         }
+          //       },
+          //       definition: { relativePath: "myObject" }
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       "r1": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               a: {
+          //                 type: "simpleType",
+          //                 definition: "string"
+          //               }
+          //             }
+          //           }
+          //         }
+          //       },
+          //       "r2": {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "simpleType",
+          //             definition: "string"
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+          // },
+          // // array of simpleType
+          // test090: {
+          //   testSchema: {
+          //     type: "array",
+          //     definition: {
+          //       type: "simpleType",
+          //       definition: "string"
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "array",
+          //     definition: {
+          //       type: "simpleType",
+          //       definition: "string"
+          //     }
+          //   },
+          //   testValueObject: ["1", "2", "3"],
+          // },
+          // array of schemaReference / object
+          test100: {
             testSchema: {
-              type: "literal",
-              definition: "myLiteral"
-            },
-            expectedResult: {
-              type: "literal",
-              definition: "myLiteral"
-            },
-            testValueObject: "myLiteral",
-          },
-          test020: {
-            testSchema: {
-              type: "simpleType",
-              definition: "string"
-            },
-            expectedResult: {
-              type: "simpleType",
-              definition: "string"
-            },
-            testValueObject: "myString",
-          },
-          test030: {
-            testSchema: {
-              type: "schemaReference",
-              context: {
-                a: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              },
+              type: "array",
               definition: {
-                "relativePath": "a"
-              }
-            },
-            expectedResult: {
-              type: "simpleType",
-              definition: "string"
-            },
-            testValueObject: "myString",
-          },
-          test040: {
-            testSchema: {
-              type: "schemaReference", 
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              }
-            },
-            testValueObject: {a: "myString"},
-          },
-          test050: {
-            testSchema: {
-              type: "schemaReference", 
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "simpleType",
-                      definition: "string"
-                    }
-                  }
-                }
-              }
-            },
-            testValueObject: {a: {a: "myString"}},
-          },
-          test060: {
-            testSchema: {
-              type: "schemaReference", 
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              definition: { relativePath: "myObject" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "object",
-                      definition: {
-                        a: {
-                          type: "simpleType",
-                          definition: "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            testValueObject: { a: { a: { a: "myString" } } },
-          },
-          test070: {
-            testSchema: {
-              type: "schemaReference", 
-              context: {
-                "myObject": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "union",
-                      definition: [
-                        {
-                          type: "simpleType",
-                          definition: "string",
-                        },
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "myObject"}
-                        }
-                      ]
-                    }
-                  }
-                },
-                "myRecord": {
-                  type: "record",
-                  definition: {
-                    type: "schemaReference",
-                    definition: { relativePath: "myObject"}
-                  }
-                }
-              },
-              definition: { relativePath: "myRecord" }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                "r1": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "object",
-                      definition: {
-                        a: {
-                          type: "simpleType",
-                          definition: "string"
-                        }
-                      }
-                    }
-                  }
-                },
-                "r2": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "simpleType",
-                      definition: "string"
-                    }
-                  }
-                }
-              }
-            },
-            testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-          },
-          test080: { // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-            testSchema: {
-              type: "record",
-              definition: {
-                type: "schemaReference", 
+                type: "schemaReference",
                 context: {
-                  "myObject": {
+                  myObject: {
                     type: "object",
                     definition: {
                       a: {
@@ -7779,105 +7864,251 @@ describe(
                           },
                           {
                             type: "schemaReference",
-                            definition: { relativePath: "myObject"}
-                          }
-                        ]
-                      }
-                    }
-                  }
+                            definition: { relativePath: "myObject" },
+                          },
+                        ],
+                      },
+                    },
+                  },
                 },
-                definition: { relativePath: "myObject" }
-              }
+                definition: { relativePath: "myObject" },
+              },
             },
             expectedResult: {
-              type: "object",
+              type: "array",
               definition: {
-                "r1": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "object",
-                      definition: {
-                        a: {
-                          type: "simpleType",
-                          definition: "string"
-                        }
-                      }
-                    }
-                  }
-                },
-                "r2": {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "simpleType",
-                      definition: "string"
-                    }
-                  }
-                }
-              }
+                type: "simpleType",
+                definition: "string",
+              },
             },
-            testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+            testValueObject: [
+              { a: "myString" },
+              // { a: { a: "myString" } }
+            ],
           },
-          test500: {
-            testSchema: {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "jzodElement"
-              }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                type: {
-                  type: "literal",
-                  definition: "literal"
-                },
-                definition: {
-                  type: "simpleType",
-                  definition: "string"
-                }
-              }
-            },
-            testValueObject: { type: "literal", definition: "myLiteral"},
-          },
-          test510: {
-            testSchema: {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "jzodElement"
-              }
-            },
-            expectedResult: {
-              type: "object",
-              definition: {
-                type: {
-                  type: "literal",
-                  definition: "simpleType"
-                },
-                definition: {
-                  type: "enum",
-                  definition: [
-                    "any",
-                    "bigint",
-                    "boolean",
-                    "date",
-                    "never",
-                    "null",
-                    "number",
-                    "string",
-                    "uuid",
-                    "undefined",
-                    "unknown",
-                    "void"
-                  ]
-                }
-              }
-            },
-            testValueObject: { type: "simpleType", definition: "string"},
-          },
+          // array of union Type
+          // // JzodSchema: literal
+          // test500: {
+          //   testSchema: {
+          //     "type": "schemaReference",
+          //     "definition": {
+          //       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       "relativePath": "jzodElement"
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       type: {
+          //         type: "literal",
+          //         definition: "literal"
+          //       },
+          //       definition: {
+          //         type: "simpleType",
+          //         definition: "string"
+          //       }
+          //     }
+          //   },
+          //   testValueObject: { type: "literal", definition: "myLiteral"},
+          // },
+          // // JzodSchema: string
+          // test510: {
+          //   testSchema: {
+          //     "type": "schemaReference",
+          //     "definition": {
+          //       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       "relativePath": "jzodElement"
+          //     }
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       type: {
+          //         type: "literal",
+          //         definition: "simpleType"
+          //       },
+          //       definition: {
+          //         type: "enum",
+          //         definition: [
+          //           "any",
+          //           "bigint",
+          //           "boolean",
+          //           "date",
+          //           "never",
+          //           "null",
+          //           "number",
+          //           "string",
+          //           "uuid",
+          //           "undefined",
+          //           "unknown",
+          //           "void"
+          //         ]
+          //       }
+          //     }
+          //   },
+          //   testValueObject: { type: "simpleType", definition: "string"},
+          // },
+          // // JzodSchema: object, simpleType attributes
+          // test520: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "jzodElement",
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       type: {
+          //         type: "literal",
+          //         definition: "object",
+          //       },
+          //       definition: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               type: {
+          //                 type: "literal",
+          //                 definition: "simpleType",
+          //               },
+          //               definition: {
+          //                 type: "enum",
+          //                 definition: [
+          //                   "any",
+          //                   "bigint",
+          //                   "boolean",
+          //                   "date",
+          //                   "never",
+          //                   "null",
+          //                   "number",
+          //                   "string",
+          //                   "uuid",
+          //                   "undefined",
+          //                   "unknown",
+          //                   "void",
+          //                 ],
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   testValueObject: { type: "object", definition: { a: { type: "simpleType", definition: "string" } } },
+          // },
+          // // JzodSchema: schema reference with simple attribute
+          // test530: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "jzodElement",
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       type: {
+          //         type: "literal",
+          //         definition: "schemaReference",
+          //       },
+          //       definition: {
+          //         type: "object",
+          //         definition: {
+          //           absolutePath: {
+          //             type: "simpleType",
+          //             definition: "string",
+          //             optional: true,
+          //           },
+          //           relativePath: {
+          //             type: "simpleType",
+          //             definition: "string",
+          //             optional: true
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   testValueObject: {
+          //     type: "schemaReference",
+          //     definition: { absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "jzodElement" },
+          //   },
+          // },
+          // // JzodSchema: schema reference for object with extend clause
+          // test540: {
+          //   testSchema: {
+          //     type: "schemaReference",
+          //     definition: {
+          //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          //       relativePath: "jzodElement",
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "object",
+          //     definition: {
+          //       type: {
+          //         type: "literal",
+          //         definition: "schemaReference",
+          //       },
+          //       context: {
+          //         type: "object",
+          //         definition: {
+          //           a: {
+          //             type: "object",
+          //             definition: {
+          //               type: {
+          //                 type: "literal",
+          //                 definition: "simpleType",
+          //               },
+          //               definition: {
+          //                 type: "enum",
+          //                 definition: [
+          //                   "any",
+          //                   "bigint",
+          //                   "boolean",
+          //                   "date",
+          //                   "never",
+          //                   "null",
+          //                   "number",
+          //                   "string",
+          //                   "uuid",
+          //                   "undefined",
+          //                   "unknown",
+          //                   "void",
+          //                 ],
+          //               },
+          //             },
+          //           },
+          //         },
+          //       },
+          //       definition: {
+          //         type: "object",
+          //         definition: {
+          //           relativePath: {
+          //             type: "simpleType",
+          //             definition: "string",
+          //             optional: true,
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          //   testValueObject: {
+          //     type: "schemaReference",
+          //     context: {
+          //       a: {
+          //         type: "simpleType",
+          //         definition: "string",
+          //       },
+          //     },
+          //     definition: {
+          //       relativePath: "a",
+          //     },
+          //   },
+          // },
         };
 
         for (const test of Object.entries(tests)) {
@@ -7886,69 +8117,5 @@ describe(
         }
       }
     )
-
-    // // ###########################################################################################
-    // it(
-    //   'miroir entity definition TS type generation',
-    //   () => {
-
-    //     // // const jzodBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaSetToZodSchemaAndDescriptionRecord(jzodBootstrapSchema);
-
-    //     // // // export const miroirJzodSchemaBootstrapZodSchema:ZodSchemaAndDescriptionRecord<ZodTypeAny> = jzodSchemaObjectToZodSchemaAndDescriptionRecord(miroirJzodSchemaBootstrap.definition as JzodObject);
-    //     // // const globalReferences = ()=>({
-    //     // //   "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": jzodElementSchemaToZodSchemaAndDescription (
-    //     // //     miroirJzodSchemaBootstrap.definition as JzodObject,
-    //     // //     miroirJzodSchemaBootstrapZodSchema,
-    //     // //   )
-    //     // // });
-
-    //     // // console.log("miroir entity definition TS type generation","globalReferences",globalReferences);
-        
-    //     // // const entityDefinitionEntityDefinitionZodSchema: ZodSchemaAndDescription = jzodElementSchemaToZodSchemaAndDescription(
-    //     // //   entityDefinitionEntityDefinitionLocal.jzodSchema,
-    //     // //   miroirJzodSchemaBootstrapZodSchema,
-    //     // //   globalReferences
-    //     // // );
-
-    //     // // console.log("miroir entity definition TS type generation","globalReferences 1e8dab4b-65a3-4686-922e-ce89a2d62aa9",(globalReferences["1e8dab4b-65a3-4686-922e-ce89a2d62aa9"].zodSchema as AnyZodObject).shape);
-
-    //     // // console.log("entityDefinitionEntityDefinitionZodSchema",entityDefinitionEntityDefinitionZodSchema.zodText);
-
-    //     // const generatedZodSchemasFile = "C://Users/nono/Documents/devhome/miroir-app/packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/convertedJzodSchemas.ts";
-
-    //     // if (generatedZodSchemasFile) {
-    //     //   if (fs.existsSync(generatedZodSchemasFile)) {
-    //     //     // fs.rmSync(path)
-    //     //     fs.writeFileSync(
-    //     //       generatedZodSchemasFile,
-    //     //       jzodToTsCode(
-    //     //         miroirJzodSchemaBootstrap.definition as JzodObject,
-    //     //         true
-    //     //         // "entityDefinitionEntityDefinition",
-    //     //         // entityDefinitionEntityDefinitionLocal.jzodSchema,
-    //     //         // entityDefinitionEntityDefinitionZodSchema
-    //     //       )
-    //     //     );
-    //     //   } else {
-    //     //     throw new Error("could not find file " + generatedZodSchemasFile);
-            
-    //     //   }
-    //     // }
-
-    //     // // expect(entityDefinitionEntityDefinitionZodSchema.zodSchema.parse(entityDefinitionEntityDefinition)).toBeTruthy();
-
-    //     // // const attributesNewAttribute: any = entityDefinitionEntityDefinition.attributesNew.find((e:any)=>e.name == "attributesNew");
-    //     // // // const attributesNewType = entityDefinitionEntityDefinition.attributesNew.find((e:any)=>e.name == "attributesNew").type;
-    //     // // console.log("attributesNewAttribute",JSON.stringify(attributesNewAttribute));
-
-    //     // // const convertedAttributesNewJzodZodSchema:ZodSchemaAndDescription<ZodTypeAny> = jzodElementSchemaToZodSchemaAndDescription("attributesNew",attributesNewAttribute.type,()=>jzodBootstrapZodSchema);
-    //     // // console.log("convertedAttributesNewJzodZodSchema",convertedAttributesNewJzodZodSchema.description);
-
-    //     // // expect(convertedAttributesNewJzodZodSchema.zodSchema.parse(entityDefinitionEntityDefinition.attributesNew)).toBeTruthy();
-
-    //     // // // type entityDefinitionTsType = z.infer<typeof entityDefinitionEntityDefinitionZodSchema.zodSchema>;
-    //     // // // const toto:entityDefinitionTsType = entityDefinitionEntityDefinition;
-    //   }
-    // )
   }
 )

@@ -39,7 +39,8 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then(
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 
-export type PersistenceReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
+// export type PersistenceReduxSagaReturnType = RemoteStoreActionReturnType | RestClientCallReturnType;
+export type PersistenceReduxSagaReturnType = ActionReturnType | CallEffect<ActionReturnType> | CallEffect<RestClientCallReturnType>;
 
 export type PersistenceSagaGenReturnType = Effect | Generator<PersistenceReduxSagaReturnType>;
 
@@ -58,7 +59,7 @@ export function getPersistenceActionReduxEventNames(persistenceActionNames:strin
 export class PersistenceReduxSaga implements PersistenceInterface {
   // TODO:!!!!!!!!!!! Model instances or data instances? They must be treated differently regarding to caching, transactions, undo/redo, etc.
   // TODO: do not use client directly, it is a dependence on implementation. Use an interface to hide Rest/graphql implementation.
-  private localCache: LocalCache;
+  private localCache: LocalCache | undefined;
 
   constructor(
     private remoteStoreNetworkClient: RestPersistenceClientAndRestClientInterface | undefined,
@@ -91,11 +92,15 @@ export class PersistenceReduxSaga implements PersistenceInterface {
     // deploymentUuid: string,
     action: PersistenceAction,
   ): Promise<ActionReturnType> {
-    const result: ActionReturnType = await this.localCache.innerReduxStore.dispatch(
-      // persistent store access is accomplished through asynchronous sagas
-      this.persistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
-    // log.info("LocalCache handleRemoteStoreModelAction", action, "returned", result)
-    return Promise.resolve(result);
+    if (this.localCache) {
+      const result: ActionReturnType = await this.localCache.innerReduxStore.dispatch(
+        // persistent store access is accomplished through asynchronous sagas
+        this.persistenceActionReduxSaga.handlePersistenceAction.creator( { action } ));
+      // log.info("LocalCache handleRemoteStoreModelAction", action, "returned", result)
+      return Promise.resolve(result);
+    } else {
+      throw new Error("PersistenceReduxSaga handlePersitentAction localCache not defined yet!");
+    }
   }
 
   //#########################################################################################

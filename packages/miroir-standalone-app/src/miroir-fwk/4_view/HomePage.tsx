@@ -302,8 +302,7 @@ export const HomePage = (props: RootComponentProps) => {
       <p />
       <span>
         <button
-          onClick={
-            resetAndInitMiroirAndApplicationDatabase.bind(domainController)
+          onClick={ async () =>resetAndInitMiroirAndApplicationDatabase.bind(domainController)
           //   async () => {
           //   await domainController.handleAction({
           //     actionType: "DomainTransactionalInstanceAction",

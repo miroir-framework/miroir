@@ -277,7 +277,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   </button>
                 <p />
                 <span>
-                {/* <button
+                <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
                       log.info(
@@ -320,7 +320,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     }}
                   >
                     Open database
-                </button> */}
+                </button>
                   {/* <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();

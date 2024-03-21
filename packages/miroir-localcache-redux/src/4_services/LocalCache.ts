@@ -86,7 +86,7 @@ function roughSizeOfObject( object: any ) {
 function exceptionToActionReturnType(f:()=>void): ActionReturnType {
   try {
     f()
-  } catch (e) {
+  } catch (e: any) {
     return {
       status: "error",
       error: {
@@ -123,7 +123,7 @@ export class LocalCache implements LocalCacheInterface {
 
     log.info("LocalCache ignoredActionsList", ignoredActionsList);
     this.innerReduxStore = configureStore({
-      reducer: this.staticReducers,
+      reducer: this.staticReducers as any, // TODO: determine real type! now it says state parameter can be ReduxStoreWithUndoRedo | undefined. How could it be undefined?
       middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware(
           {

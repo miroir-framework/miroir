@@ -25,15 +25,18 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "id": {
                 "type": "simpleType",
-                "definition": "number"
+                "definition": "number",
+                "optional": true
               },
               "defaultLabel": {
                 "type": "simpleType",
-                "definition": "string"
+                "definition": "string",
+                "optional": true
               },
               "editable": {
                 "type": "simpleType",
-                "definition": "boolean"
+                "definition": "boolean",
+                "optional": true
               }
             },
             "optional": true
