@@ -3,7 +3,7 @@
   "parentName":"Report",
   "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "name":"EntityDefinitionList",
-  "defaultLabel": "List of Entity Definitions",
+  "defaultLabel": "Entity Definitions",
   "definition": {
     "reportParameters": {},
     "fetchQuery": {
@@ -22,10 +22,10 @@
     "section": {
       "type":"objectListReportSection",
       "definition": {
+        "label": "Entity Definitions",
         "parentName": "Entity Definition",
         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-        "fetchedDataReference": "entityDefinitions",
-        "label": "List of Entity Definitions"
+        "fetchedDataReference": "entityDefinitions"
       }
     }
   }

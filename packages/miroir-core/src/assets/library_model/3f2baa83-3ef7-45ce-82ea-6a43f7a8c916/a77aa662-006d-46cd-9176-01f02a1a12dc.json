@@ -25,6 +25,7 @@
       "definition": {
         "parentName": "Publisher",
         "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+        "label": "Publishers",
         "fetchedDataReference": "publishers"
       }
     }
