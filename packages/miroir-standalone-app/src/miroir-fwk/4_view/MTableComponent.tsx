@@ -15,7 +15,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeploymentConfiguration, LoggerInterface, MiroirLoggerFactory, getLoggerName
+  ApplicationDeploymentConfiguration, EntityInstance, LoggerInterface, MiroirLoggerFactory, entityInstance, getLoggerName
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -25,7 +25,7 @@ import {
 } from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
 import { JsonObjectFormEditorDialog, JsonObjectFormEditorDialogInputs } from './JsonObjectFormEditorDialog';
-import { TableComponentProps, TableComponentTypeSchema } from './MTableComponentInterface';
+import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface';
 import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionListDisplay';
 import { packageName } from '../../constants';
@@ -80,7 +80,7 @@ const autoSizeStrategy = {
 };
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-  log.info("MTableComponent",props);
+  log.info("MTableComponent refreshing with props",props);
   
 
   // const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
@@ -97,27 +97,56 @@ export const MTableComponent = (props: TableComponentProps) => {
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
   // log.info('MTableComponent 8');
 
-  const instancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] } = useMemo(
+  // const displayedValues = useMemo(() => props.instancesToDisplay, [ props.instancesToDisplay])
+
+  // const instancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] } = useMemo(
+  //   () => ({
+  //     instancesWithStringifiedJsonAttributes: Object.values(props.instancesToDisplay??{}).map((i:EntityInstance) =>
+  //       Object.fromEntries(
+  //         Object.entries(i).map((e) => {
+  //           const currentAttributeDefinition = props.type == TableComponentTypeSchema.enum.EntityInstance?Object.entries(
+  //             props.currentEntityDefinition?.jzodSchema.definition??{}
+  //           ).find((a) => a[0] == e[0]):undefined;
+  //           return [
+  //             e[0],
+  //             Array.isArray(currentAttributeDefinition) && currentAttributeDefinition.length > 1 && (currentAttributeDefinition[1] as any).type == "object"
+  //               ? JSON.stringify(e[1])
+  //               : e[1],
+  //           ];
+  //         })
+  //       )
+  //     ),
+  //   }),
+  //   [props?.instancesToDisplay]
+  // );
+  // log.info("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+
+  const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
+    // always use object, not array, to ensure correct refresh!
     () => ({
-      instancesWithStringifiedJsonAttributes: Object.values(props.instancesToDisplay?props.instancesToDisplay:{}).map((i) =>
-        Object.fromEntries(
+      tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {}).map((i: EntityInstance) => ({
+        rawValue: i,
+        displayedValue: Object.fromEntries(
           Object.entries(i).map((e) => {
-            const currentAttributeDefinition = props.type == TableComponentTypeSchema.enum.EntityInstance?Object.entries(
-              props.currentEntityDefinition?.jzodSchema.definition??{}
-            ).find((a) => a[0] == e[0]):undefined;
+            const currentAttributeDefinition =
+              props.type == TableComponentTypeSchema.enum.EntityInstance
+                ? Object.entries(props.currentEntityDefinition?.jzodSchema.definition ?? {}).find((a) => a[0] == e[0])
+                : undefined;
             return [
               e[0],
-              Array.isArray(currentAttributeDefinition) && currentAttributeDefinition.length > 1 && (currentAttributeDefinition[1] as any).type == "object"
+              Array.isArray(currentAttributeDefinition) &&
+              currentAttributeDefinition.length > 1 &&
+              (currentAttributeDefinition[1] as any).type == "object"
                 ? JSON.stringify(e[1])
                 : e[1],
             ];
           })
-        )
-      ),
+        ),
+      })),
     }),
     [props?.instancesToDisplay]
   );
-  log.info("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+  log.info("MTableComponent tableComponentRows", tableComponentRows);
 
   
   const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
@@ -184,15 +213,18 @@ export const MTableComponent = (props: TableComponentProps) => {
     handleDialogTableRowFormClose('');
   },[props])
 
-  const handleDialogTableRowFormOpen = useCallback((a?:any,event?:any) => {
+  const handleDialogTableRowFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     event?.stopPropagation();
+    // const editedObject = props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:a;
     log.info('MTableComponent handleDialogTableRowFormOpen called with props',props);
-    log.info('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, 'passed value',a);
+    // log.info('MTableComponent handleDialogTableRowFormOpen called with props.instancesToDisplay',props.instancesToDisplay);
+    // log.info("MTableComponent handleDialogTableRowFormOpen instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+    log.info('MTableComponent handleDialogTableRowFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
-      // setdialogFormObject(props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:{});
-      setdialogFormObject(a);
+      setdialogFormObject(a.rawValue);
+      // setdialogFormObject(a);
       log.info('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
@@ -200,7 +232,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       log.info('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
-  },[]);
+  },[props.instancesToDisplay]);
 
   const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
@@ -339,7 +371,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             <AgGridReact
                 columnDefs={columnDefs}
                 // autoSizeStrategy={autoSizeStrategy}
-                rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+                // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+                rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
                 // rowData={gridData}
                 getRowId={(params) => {
                   // log.info("MtableComponent getRowId", params);

@@ -109,36 +109,36 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   // }
 })
 
-// ################################################################################################
-export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
-  // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
-  const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
-  log.info("DefaultCellRenderer",valueToDisplay, props);
+// // ################################################################################################
+// export const DefaultCellRenderer =  memo((props: ICellRendererParams) => {
+//   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
+//   const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
+//   log.info("DefaultCellRenderer",valueToDisplay, props);
 
-  if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
-    return (
-      <span>
-        {JSON.stringify(valueToDisplay)}
-      </span>
-    )
-  } else {
-    return (
-      <div>
-        {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
-        {/* {props.data?props.data:'null value'} */}
-        {valueToDisplay?valueToDisplay:'null value'}
-      </div>
-    );
-  }
-})
+//   if (Array.isArray(valueToDisplay) || _isObject(valueToDisplay)) {
+//     return (
+//       <span>
+//         {JSON.stringify(valueToDisplay)}
+//       </span>
+//     )
+//   } else {
+//     return (
+//       <div>
+//         {/* {props.value && props.value["value"]?props.value["value"]:(props.value?props.value:'null value')} */}
+//         {/* {props.data?props.data:'null value'} */}
+//         {valueToDisplay?valueToDisplay:'null value'}
+//       </div>
+//     );
+//   }
+// })
 
 // ################################################################################################
 export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
   // const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
   const valueToDisplay =
-    props.colDef?.field && props.data && props.data[props.colDef?.field]
-      ? props.data[props.colDef?.field]
+    props.colDef?.field && props.data && props.data.displayedValue && props.data.displayedValue[props.colDef?.field]
+      ? props.data.displayedValue[props.colDef?.field]
       : `attribute ${props.colDef?.field} does not exist on object`;
   log.info("DefaultCellRenderer2",valueToDisplay, props);
 

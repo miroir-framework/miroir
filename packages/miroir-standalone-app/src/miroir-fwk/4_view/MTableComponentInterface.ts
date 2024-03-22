@@ -4,6 +4,7 @@ import {
   ApplicationDeploymentSchema,
   entity,
   entityDefinition,
+  entityInstance,
   entityInstancesUuidIndex
 } from "miroir-core";
 
@@ -11,14 +12,14 @@ export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"])
 
 export type TableComponentType = z.infer<typeof TableComponentTypeSchema>;
 
-export const TableComponentCellSchema = z.object({
-  link: z.string().optional(),
-  value: z.any(),
-});
-export type TableComponentCell = z.infer<typeof TableComponentCellSchema>;
+// export const TableComponentCellSchema = z.object({
+//   link: z.string().optional(),
+//   value: z.any(),
+// });
+// export type TableComponentCell = z.infer<typeof TableComponentCellSchema>;
 
-export const TableComponentRowSchema = z.record(TableComponentCellSchema);
-export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
+// export const TableComponentRowSchema = z.record(TableComponentCellSchema);
+// export type TableComponentRow = z.infer<typeof TableComponentRowSchema>;
 
 export const tableComponentCorePropsSchema = z.object({
   columnDefs: z.object({ columnDefs: z.array(z.any()) }),
@@ -51,3 +52,16 @@ export const TableComponentPropsSchema = z.union([
 ]);
 
 export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
+
+export const tableComponentRowSchema = z.object({
+  displayedValue: z.any(),
+  rawValue: entityInstance,
+})
+
+export const tableComponentRowArraySchema = z.array(
+  tableComponentRowSchema
+)
+
+// export const tableComponentRows = 
+export type TableComponentRow = z.infer<typeof tableComponentRowSchema>;
+export type TableComponentRowArraySchema = z.infer<typeof tableComponentRowArraySchema>;

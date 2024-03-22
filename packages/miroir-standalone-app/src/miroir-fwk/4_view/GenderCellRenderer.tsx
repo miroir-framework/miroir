@@ -22,20 +22,22 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
-export const ToolsCellRenderer:React.MemoExoticComponent<(props: ICellRendererParams) => JSX.Element> = memo((props: ICellRendererParams) => {
-  return (
-    <span>
-      <button onClick={
-        ()=>{
-          console.log('ToolsCellRenderer calling onClick!');
-          (props as any)['onClick'](props.data);
-        } 
-      }>
-        <Icon>create</Icon>
-      </button>
-    </span>
-  )
-})
+export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererParams) => JSX.Element> = memo(
+  (props: ICellRendererParams) => {
+    return (
+      <span>
+        <button
+          onClick={() => {
+            console.log("ToolsCellRenderer calling onClick!");
+            (props as any)["onClick"](props.data);
+          }}
+        >
+          <Icon>create</Icon>
+        </button>
+      </span>
+    );
+  }
+);
 
 const GenderCellRenderer = memo((props: ICellRendererParams) => {
   const imageForMood = (mood: string) =>

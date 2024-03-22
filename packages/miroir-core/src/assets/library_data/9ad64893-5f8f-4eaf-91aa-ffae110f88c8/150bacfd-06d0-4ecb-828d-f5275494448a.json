@@ -4,7 +4,7 @@
   "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
   "name": "Test instance",
   "try": {
-    "a": "on a réussi!",
+    "a": "TESTTEST on a réussi!",
     "b": {
       "inB1": "on a encore réussi!",
       "inB2": "on a encore réussi 2!"

@@ -243,6 +243,8 @@ export const JzodElementEditor = (
     props.listKey,
     "type=",
     elementJzodSchema?.type,
+    "typeof initialValue=",
+    typeof props.innerProps.initialValuesObject,
     "initialValue=",
     props.innerProps.initialValuesObject,
     "jzodSchema=",
@@ -521,15 +523,24 @@ export const JzodElementEditor = (
             );
           }
         } else {
-          resolvedJzodSchema = {
-            ...elementJzodSchema,
-            definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition },
-          };
+          if (elementJzodSchema.extend.type == "object") {
+            resolvedJzodSchema = { ...elementJzodSchema, definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition } as Record<string, JzodElement> }
+          } else {
+            throw new Error(
+              "JzodElementEditor extend clause for object schema is not an object. Schema: " +
+                JSON.stringify(elementJzodSchema)
+            );
+          }
+          // resolvedJzodSchema = {
+          //   ...elementJzodSchema,
+          //   definition: { ...elementJzodSchema.definition, ...elementJzodSchema.extend.definition },
+          // };
         }
       } else {
         resolvedJzodSchema = elementJzodSchema;
       }
-      log.info("object", props.listKey, "found resolvedJzodSchema:",resolvedJzodSchema);
+      log.info("object", props.listKey, "found resolvedJzodSchema after resolving 'extend' clause:",resolvedJzodSchema);
+      log.info("object", props.listKey, "found value:",props.innerProps.initialValuesObject, "itemsOrder", itemsOrder);
       
       return (
         <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
