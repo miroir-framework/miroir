@@ -1918,6 +1918,21 @@ export const miroirFundamentalJzodSchema = {
               "editable": true
             }
           },
+          "defaultInstanceDetailsReportUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 9,
+              "defaultLabel": "Default Report used to display instances of this Entity",
+              "editable": false
+            }
+          },
           "viewAttributes": {
             "type": "array",
             "optional": true,
@@ -1933,7 +1948,7 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "jzodObject"
             },
             "extra": {
-              "id": 9,
+              "id": 11,
               "defaultLabel": "Jzod Schema",
               "editable": true
             }

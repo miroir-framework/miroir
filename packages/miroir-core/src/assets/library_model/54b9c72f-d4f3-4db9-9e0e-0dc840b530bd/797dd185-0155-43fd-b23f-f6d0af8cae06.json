@@ -7,6 +7,13 @@
   "conceptLevel":"Model",
   "name":"Book",
   "icon": "Book",
+  "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+  "viewAttributes": [
+    "name",
+    "author",
+    "publisher",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

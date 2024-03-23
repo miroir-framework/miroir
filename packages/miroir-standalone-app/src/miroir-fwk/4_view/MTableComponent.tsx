@@ -15,7 +15,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeploymentConfiguration, EntityInstance, LoggerInterface, MiroirLoggerFactory, entityInstance, getLoggerName
+  ApplicationDeploymentConfiguration, EntityDefinition, EntityInstance, JzodElement, JzodRecord, JzodSchema, LoggerInterface, MetaModel, MiroirLoggerFactory, applicationDeploymentMiroir, entityInstance, getLoggerName
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -82,50 +82,31 @@ const autoSizeStrategy = {
 export const MTableComponent = (props: TableComponentProps) => {
   log.info("MTableComponent refreshing with props",props);
   
-
-  // const [gridData,setGridData] = useState(props.rowData.instancesWithStringifiedJsonAttributes);
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
-  const errorLog = useErrorLogService();
-  // log.info('MTableComponent 5');
-  // const domainController: DomainControllerInterface = useDomainControllerService();
-  // log.info('MTableComponent 6');
-
+  // const errorLog = useErrorLogService();
+  
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
-  // log.info('MTableComponent 7');
+  log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
-  // log.info('MTableComponent 8');
 
-  // const displayedValues = useMemo(() => props.instancesToDisplay, [ props.instancesToDisplay])
 
-  // const instancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAttributes: any[] } = useMemo(
-  //   () => ({
-  //     instancesWithStringifiedJsonAttributes: Object.values(props.instancesToDisplay??{}).map((i:EntityInstance) =>
-  //       Object.fromEntries(
-  //         Object.entries(i).map((e) => {
-  //           const currentAttributeDefinition = props.type == TableComponentTypeSchema.enum.EntityInstance?Object.entries(
-  //             props.currentEntityDefinition?.jzodSchema.definition??{}
-  //           ).find((a) => a[0] == e[0]):undefined;
-  //           return [
-  //             e[0],
-  //             Array.isArray(currentAttributeDefinition) && currentAttributeDefinition.length > 1 && (currentAttributeDefinition[1] as any).type == "object"
-  //               ? JSON.stringify(e[1])
-  //               : e[1],
-  //           ];
-  //         })
-  //       )
-  //     ),
-  //   }),
-  //   [props?.instancesToDisplay]
-  // );
-  // log.info("MTableComponent instancesWithStringifiedJsonAttributes", instancesWithStringifiedJsonAttributes);
+  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
+  
+  // const currentModel = contextDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
+  const currentModel = useCurrentModel(contextDeploymentUuid);
+  log.info("MTableComponent currentModel", currentModel);
 
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
     // always use object, not array, to ensure correct refresh!
     () => ({
       tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {}).map((i: EntityInstance) => ({
         rawValue: i,
+        jzodSchema: props.type == TableComponentTypeSchema.enum.EntityInstance
+          ? props.currentEntityDefinition.jzodSchema.definition
+          : { },
         displayedValue: Object.fromEntries(
           Object.entries(i).map((e) => {
             const currentAttributeDefinition =
@@ -149,8 +130,6 @@ export const MTableComponent = (props: TableComponentProps) => {
   log.info("MTableComponent tableComponentRows", tableComponentRows);
 
   
-  const currentModel = useCurrentModel(applicationDeploymentLibrary.uuid);
-  log.info("MTableComponent currentModel", currentModel);
 
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
     // event?.stopPropagation();
@@ -225,11 +204,11 @@ export const MTableComponent = (props: TableComponentProps) => {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(a.rawValue);
       // setdialogFormObject(a);
-      log.info('ReportComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
+      log.info('MTableComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:undefined}));
       setdialogFormObject(undefined);
-      log.info('ReportComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+      log.info('MTableComponent handleDialogTableRowFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
     }
     setdialogFormIsOpen(true);
   },[props.instancesToDisplay]);
@@ -250,18 +229,12 @@ export const MTableComponent = (props: TableComponentProps) => {
   }),[]);
 
 
-  // const columnDefs:(ColDef | ColGroupDef)[] = useMemo<(ColDef | ColGroupDef)[]>(()=>[
   const columnDefs:(ColDef | ColGroupDef)[] = useMemo(()=>[
     {
       field: '',
       cellRenderer: ToolsCellRenderer,
       editable:false,
       width: 80,
-      // width: "10px",
-      // sort:'asc',
-      // cellEditorParams: {
-      //   entityUuid: entityPublisher.uuid
-      // },
       cellRendererParams: {
         onClick:handleDialogTableRowFormOpen
       },
@@ -283,7 +256,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   const onCellClicked = useCallback((event:CellClickedEvent)=> {
     // event.stopPropagation();
-    log.warn("onCellClicked",event,event.colDef.field)
+    log.warn("onCellClicked event.colDef.field",event.colDef.field,"event",event,"props", props)
     if (props.type == "EntityInstance" && event.colDef.field && event.colDef.field != "tools") {
       // log.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
       const columnDefinitionAttributeEntry = Object.entries(
@@ -295,13 +268,21 @@ export const MTableComponent = (props: TableComponentProps) => {
         (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
       ) {
         const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
+
+        const targetEntityDefinition:EntityDefinition | undefined = currentModel.entityDefinitions.find((e)=> e.entityUuid == event.colDef.cellRendererParams.entityUuid);
+
         // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
         navigate(
-          `/instance/${contextDeploymentUuid}/${
+          `/report/${contextDeploymentUuid}/${
             (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
               ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
               : context.applicationSection
-          }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
+          }/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[event.colDef.field]}`
+          // `/instance/${contextDeploymentUuid}/${
+          //   (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
+          //     ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
+          //     : context.applicationSection
+          // }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
         );
       } else {
         log.info(

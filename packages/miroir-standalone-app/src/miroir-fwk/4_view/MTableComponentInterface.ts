@@ -5,7 +5,9 @@ import {
   entity,
   entityDefinition,
   entityInstance,
-  entityInstancesUuidIndex
+  entityInstancesUuidIndex,
+  jzodElement,
+  jzodSchema
 } from "miroir-core";
 
 export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"]);
@@ -33,8 +35,8 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   displayedDeploymentDefinition: ApplicationDeploymentSchema,
   currentEntity: entity.optional(),
-  currentEntityDefinition: entityDefinition.optional(),
-  // reportSectionListDefinition: objectListReportSection,
+  // currentEntityDefinition: entityDefinition.optional(),
+  currentEntityDefinition: entityDefinition,
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof tableComponentEntityInstancePropsSchema>;
@@ -56,6 +58,7 @@ export type TableComponentProps = z.infer<typeof TableComponentPropsSchema>;
 export const tableComponentRowSchema = z.object({
   displayedValue: z.any(),
   rawValue: entityInstance,
+  jzodSchema: z.record(jzodElement),
 })
 
 export const tableComponentRowArraySchema = z.array(

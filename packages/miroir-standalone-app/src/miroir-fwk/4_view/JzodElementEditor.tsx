@@ -53,6 +53,8 @@ import { useCurrentModel, useEntityInstanceUuidIndexFromLocalCache } from "./Red
 import { cleanLevel } from "./constants";
 import { packageName } from "../../constants";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import styled from "@emotion/styled";
+import { Label } from "@mui/icons-material";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JzodElementEditor");
@@ -72,6 +74,17 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
 //   // height: '80vh',
 //   color: theme.palette.text.secondary,
 // }));
+
+const labelStyle = {
+  paddingRight: "10px"
+}
+
+const StyledLabel = styled('label')(
+  ({ theme }) => ({
+    ...theme,
+    paddingRight: "10px"
+  })
+)
 
 const indentShift =  "1em + 4px";
 
@@ -637,7 +650,7 @@ export const JzodElementEditor = (
             <tbody>
               <tr>
                 <td>
-                  <label htmlFor={props.listKey}>{displayedLabel}: </label>
+                  <StyledLabel htmlFor={props.listKey}>{displayedLabel}: </StyledLabel>
                 </td>
                 <td>
                   <Select 
@@ -667,7 +680,7 @@ export const JzodElementEditor = (
             <>
                 {/* {props.listKey} - {label}:{" "} */}
                 {/* {displayedLabel}:{" "} */}
-                <label htmlFor={props.listKey}>{displayedLabel}</label>
+                <StyledLabel htmlFor={props.listKey}>{displayedLabel}</StyledLabel>
                 <input
                   // {...register(props.listKey, {required:true})}
                   {...register(props.listKey)}
@@ -734,7 +747,7 @@ export const JzodElementEditor = (
             <>
                 {/* {props.listKey} - {label}:{" "} */}
                 {/* {displayedLabel}:{" "} */}
-                <label htmlFor={props.listKey}>{displayedLabel}: </label>
+                <StyledLabel htmlFor={props.listKey}>{displayedLabel}: </StyledLabel>
                 <input
                   // {...register(props.listKey, {required:true})}
                   {...register(props.listKey)}
@@ -754,20 +767,29 @@ export const JzodElementEditor = (
     }
     case "union": {
       // const defaultValue=JSON.stringify(formState.defaultValues)
-      const defaultValue=JSON.stringify(props.innerProps.initialValuesObject)
+      const defaultValue =
+        typeof props.innerProps.initialValuesObject == "string"
+          ? props.innerProps.initialValuesObject
+          : JSON.stringify(props.innerProps.initialValuesObject);
       return (
         <>
-            <label htmlFor={props.listKey}>union!!! {props.listKey}: {displayedLabel}</label>
-            <div>a</div>
-            <input
-              {...register(props.listKey)}
-              form={"form." + props.name}
-              id={props.listKey}
-              name={props.name}
-              onChange={(e)=>{log.info("JzodElementEditor union onChange!",props.name,e.target.value);setValue(props.listKey,JSON.parse(e.target.value))}}
-              defaultValue={defaultValue}
-            />
-            <div>b</div>
+          <StyledLabel style={labelStyle} htmlFor={props.listKey}>
+            {/* {props.listKey} union: {displayedLabel} */}
+            {/* {props.listKey} union: {defaultValue} */}
+          </StyledLabel>
+          {/* <div>a</div> */}
+          <input
+            {...register(props.listKey)}
+            form={"form." + props.name}
+            id={props.listKey}
+            name={props.name}
+            onChange={(e) => {
+              log.info("JzodElementEditor union onChange!", props.name, e.target.value);
+              setValue(props.listKey, JSON.parse(e.target.value));
+            }}
+            defaultValue={defaultValue}
+          />
+          {/* <div>b</div> */}
         </>
       );
 

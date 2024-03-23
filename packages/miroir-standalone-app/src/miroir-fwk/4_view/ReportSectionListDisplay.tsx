@@ -462,7 +462,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     <div className="MiroirReport-global" style={{ display: "block" }}>
       <div> rendered ReportSectionListDisplay: {count} times.</div>
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
-      {currentReportTargetEntity ? (
+      {currentReportTargetEntity && currentReportTargetEntityDefinition ? (
         !!columnDefs ? (
           // columnDefs?.length > 0
           // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -484,7 +484,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               )}
               onSubmit={onSubmitOuterDialog}
             />
-            {props.displayedDeploymentDefinition ? (
+            {props.displayedDeploymentDefinition? (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
                 <MTableComponent

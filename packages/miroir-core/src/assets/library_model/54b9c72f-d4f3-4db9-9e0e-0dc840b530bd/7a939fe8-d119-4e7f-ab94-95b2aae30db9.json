@@ -8,6 +8,13 @@
   "name": "Publisher",
   "description": "Publisher",
   "icon": "building",
+  "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+  "viewAttributes": [
+    "name",
+    "country",
+    "icon",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

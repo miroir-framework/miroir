@@ -122,12 +122,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   if (instance) {
     return (
       <div> 
-        <p>
+        {/* <p>
         ReportSectionEntityInstance
-        </p>
-        <span>
-          Entity Instance Attribute Values:
-        </span>
+        </p> */}
+        <h1>
+          {currentReportTargetEntity?.name} details: {instance.name}
+        </h1>
           {
             currentReportTargetEntity && currentReportTargetEntityDefinition && props.applicationSection?
               <div>

@@ -7,6 +7,13 @@
   "conceptLevel":"Model",
   "name":"Author",
   "description": "author",
+  "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+  "viewAttributes": [
+    "name",
+    "country",
+    "icon",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

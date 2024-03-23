@@ -8,6 +8,12 @@
   "name": "Country",
   "description": "Country",
   "icon": "building",
+  "viewAttributes": [
+    "name",
+    "iso3166-1Alpha-2",
+    "icon",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {

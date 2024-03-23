@@ -41,6 +41,7 @@ import {
   useMiroirContextService
 } from './MiroirContextReactProvider';
 import { cleanLevel } from "./constants";
+import { TableComponentRow } from "./MTableComponentInterface";
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"SelectEntityInstanceEditor");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -55,11 +56,14 @@ const KEY_ENTER = 'Enter';
 const KEY_TAB = 'Tab';
 
 // ################################################################################################
-export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => {
+export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<TableComponentRow>) => {
   const context = useMiroirContextService();
-
+  
   const deploymentUuid = context.deploymentUuid;
-  const entityUuid = (props as any)['entityUuid'];
+  // const entityUuid = props.data?.rawValue.parentUuid;
+  const entityUuid = props.colDef?.cellRendererParams.entityUuid;
+  // const targetObjectUuid = props.data?.rawValue.uuid;
+  log.info("EntityInstanceCellRenderer called for field",props.colDef?.field,"with deploymentUuid",context.deploymentUuid,"entityUuid",entityUuid,"props:", props,"value",props.value);
   
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
@@ -94,18 +98,19 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
   const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
   ) as EntityInstanceWithName[];
-  const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == props.value);
+  log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
+  const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == (props.data?.rawValue as any)[props.colDef?.field??""]);
 
-    return (
-      <span>
-        {instanceToDisplay
-          ? instanceToDisplay["name"]
-          : (currentMiroirEntityDefinition ? currentMiroirEntityDefinition["name"] : "entity definition not found") +
-            " " +
-            props.value +
-            " not known."}
-      </span>
-    );
+  return (
+    <span>
+      {instanceToDisplay
+        ? instanceToDisplay["name"]
+        : (currentMiroirEntityDefinition ? currentMiroirEntityDefinition["name"] : "entity definition not found") +
+          " " +
+          props.value +
+          " not known."}
+    </span>
+  );
   // }
 })
 
@@ -133,7 +138,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams) => 
 // })
 
 // ################################################################################################
-export const DefaultCellRenderer2 =  memo((props: ICellRendererParams) => {
+export const DefaultCellRenderer2 =  memo((props: ICellRendererParams<TableComponentRow>) => {
   // const valueToDisplay = props.value && props.value["value"]?props.value["value"]:props.value;
   // const valueToDisplay = props.data && props.data["value"]?props.data["value"]:props.data;
   const valueToDisplay =

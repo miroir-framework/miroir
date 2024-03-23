@@ -74,9 +74,8 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 // not used
-const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
+const reorderObjectField = (dataParam:any, orderUpdatePathParam:string[], newOrder:string[]):any=>{
   log.info(
-    logHeader,
     "handleAddObjectDialogFormSubmit reorderField",
     orderUpdatePathParam.length,
     "path",
@@ -91,16 +90,15 @@ const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam
   if (orderUpdatePathParam.length == 1) {
     const newFieldValue = newOrder.reduce((acc,curr)=>({...acc,[curr]:dataParam[orderUpdatePathParam[0]][curr]}),{})
     const result = {[orderUpdatePathParam[0]]:newFieldValue}
-    log.info(logHeader,"handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
+    log.info("handleAddObjectDialogFormSubmit reorderField final",newFieldValue,"result",result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
       return undefined
     } else {
-      const recursiveReorder = reorderObjectField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
+      const recursiveReorder = reorderObjectField(dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
       const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
       log.info(
-        logHeader,
         "handleAddObjectDialogFormSubmit reorderField",
         orderUpdatePathParam.length,
         "path",
@@ -119,9 +117,13 @@ const reorderObjectField = (logHeader:string,dataParam:any, orderUpdatePathParam
   }
 }
 
-const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam:string[], newOrder:number[]):any=>{
+const reorderArrayField = (
+  // logHeader: string,
+  dataParam: any,
+  orderUpdatePathParam: string[],
+  newOrder: number[]
+): any => {
   log.info(
-    logHeader,
     "handleAddObjectDialogFormSubmit reorderField",
     orderUpdatePathParam.length,
     "path",
@@ -134,18 +136,21 @@ const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam
 
   // return dataParam;
   if (orderUpdatePathParam.length == 1) {
-    const newFieldValue = newOrder.reduce((acc,curr)=>([...acc,dataParam[orderUpdatePathParam[0]][curr]]),[])
-    const result = {...dataParam,[orderUpdatePathParam[0]]:newFieldValue}
-    log.info(logHeader,"handleAddObjectDialogFormSubmit reorderArrayField final",newFieldValue,"result",result);
+    const newFieldValue = newOrder.reduce((acc, curr:number) => [...acc, dataParam[orderUpdatePathParam[0]][curr]], []);
+    const result = { ...dataParam, [orderUpdatePathParam[0]]: newFieldValue };
+    log.info("handleAddObjectDialogFormSubmit reorderArrayField final", newFieldValue, "result", result);
     return result;
   } else {
     if (orderUpdatePathParam.length == 0) {
-      return undefined
+      return undefined;
     } else {
-      const recursiveReorder = reorderArrayField(logHeader,dataParam[orderUpdatePathParam[0]],orderUpdatePathParam.slice(1),newOrder)
-      const result:any = {...dataParam, [orderUpdatePathParam[0]]:recursiveReorder};
+      const recursiveReorder = reorderArrayField(
+        dataParam[orderUpdatePathParam[0]],
+        orderUpdatePathParam.slice(1),
+        newOrder
+      );
+      const result: any = { ...dataParam, [orderUpdatePathParam[0]]: recursiveReorder };
       log.info(
-        logHeader,
         "handleAddObjectDialogFormSubmit reorderField",
         orderUpdatePathParam.length,
         "path",
@@ -162,11 +167,11 @@ const reorderArrayField = (logHeader:string, dataParam:any, orderUpdatePathParam
       return result;
     }
   }
-}
+};
 
 // #####################################################################################################
 export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProps) {
-  const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
+  // const logHeader = "JsonObjectFormEditorDialog " + (props.label ? props.label + " " : "");
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
@@ -187,7 +192,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const { errors } = formState;
   log.info(
-    logHeader,
     "called with props",
     props,
     "formState",
@@ -206,7 +210,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
     log.info(
-      logHeader,
       "handleAddObjectDialogFormOpen",
       label,
       "called, props.formObject",
@@ -221,7 +224,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   },[props]);
 
   const handleAddObjectDialogFormClose = useCallback((value: string) => {
-    log.info(logHeader, "handleAddObjectDialogFormClose", value);
+    log.info("handleAddObjectDialogFormClose", value);
 
     setAddObjectdialogFormIsOpen(false);
     if (!props.showButton) {
@@ -232,7 +235,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const handleAddObjectDialogFormSubmit: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data, event) => {
     const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
     log.info(
-      logHeader,
       "handleAddObjectDialogFormSubmit called for buttonType",
       buttonType,
       "props",
@@ -252,15 +254,14 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       const orderUpdatePath = orderUpdate.split(".").slice(1);
       const newOrder:number[] = Object.values(formHelperState)[0] as number[];
 
-      log.info(logHeader,"handleAddObjectDialogFormSubmit calling reorderField",data);
+      log.info("handleAddObjectDialogFormSubmit calling reorderField",data);
       
-      const reorderedDataValue = reorderArrayField(logHeader, data, orderUpdatePath, newOrder);
+      const reorderedDataValue = reorderArrayField(data, orderUpdatePath, newOrder);
       // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
       // reorderedDataValue = {...data,reorderedField}
       delete reorderedDataValue["ROOT"]; // WHY HAS ROOT BEEN ADDED???? BUG?
       const newVersion = structuredClone(reorderedDataValue)
       log.info(
-        logHeader,
         "handleAddObjectDialogFormSubmit after reorderArrayField",
         "newOrder",
         newOrder,
@@ -287,7 +288,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       handleAddObjectDialogFormClose("");
     } else {
       log.warn(
-        logHeader,
         "handleAddObjectDialogFormSubmit now closing dialog form",
         props.label,
         "buttonType",
@@ -306,7 +306,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   // if (dialogFormIsOpen && getValues()['uuid'] != props.formObject['uuid']) {
   if (formIsOpen && getValues()["uuid"] != props.initialValuesObject["uuid"]) {
-    log.info(logHeader, "reset form!");
+    log.info("reset form!");
     reset(props.initialValuesObject);
   }
 
