@@ -10,13 +10,9 @@
     "copy-all": "npm run copy-files && npm run copy-config",
     "help": "vite-node -h",
     "build-tsup": "npm run copy-all && tsup --watch --target=node20 --format esm src/server.ts",
-    "devOld": "node ./dist/server.js localhost 3080",
     "dev": "nodemon ./dist/server.js localhost 3080",
-    "build-vite": "npm run copy-all && vite build",
-    "build-webpack": "npm run copy-all && webpack",
-    "build": "npm run build-webpack",
+    "build": "npm run build-tsup",
     "build5": "npm run copy-all && webpack",
-    "dev-nodemon": "npm run copy-all && concurrently \"npx tsc --watch\" \"nodemon -q dist/src/server.js  localhost 3080\"",
     "test": "cross-env NODE_ENV=test vitest"
   },
   "repository": {

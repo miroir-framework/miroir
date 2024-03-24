@@ -37,7 +37,7 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
       await this.sequelize.createSchema(config.schema,{});
       log.info("createStore DONE!");
     } catch (error) {
-      return Promise.resolve({ status: "error", error: { errorType: "FailedToCreateStore", errorMessage: error}})
+      return Promise.resolve({ status: "error", error: { errorType: "FailedToCreateStore", errorMessage: error as string}})
     }
     return Promise.resolve(ACTION_OK)
   }
@@ -52,7 +52,7 @@ export class SqlDbAdminStore extends SqlDbStore implements AdminStoreInterface {
       }
       await this.sequelize.dropSchema(config.schema,{});
     } catch (error) {
-      return Promise.resolve({ status: "error", error: { errorType: "FailedToDeleteStore", errorMessage: error}})
+      return Promise.resolve({ status: "error", error: { errorType: "FailedToDeleteStore", errorMessage: error as string}})
     }
     return Promise.resolve(ACTION_OK)
   }

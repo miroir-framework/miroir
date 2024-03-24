@@ -238,7 +238,9 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           entityDefinitions
         );
 
-        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter((i:EntityDefinition) => i.entityUuid == entityUuid)) {
+        for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter(
+          (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
+        )) {
           await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
       } else {

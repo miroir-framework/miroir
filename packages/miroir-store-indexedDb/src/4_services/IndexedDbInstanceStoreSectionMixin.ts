@@ -66,7 +66,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
           },
         });
       } catch (error) {
-        return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: error}}
+        return { status: "error", error: { errorType: "FailedToGetInstances", errorMessage: error as string}}
       }
     }
 

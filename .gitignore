@@ -38,3 +38,4 @@ packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/tests/tmp/*
 package-lock.json
 packages/*/package-lock.json
+.vitest

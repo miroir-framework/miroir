@@ -172,7 +172,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         // }
 
         for (const entityDefinition of entityDefinitions.returnedDomainElement.elementValue.instances.filter(
-          (i: EntityDefinition) => i.entityUuid == entityUuid
+          (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
         )) {
           await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
         }
