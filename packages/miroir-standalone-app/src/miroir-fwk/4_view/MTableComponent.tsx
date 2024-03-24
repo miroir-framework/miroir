@@ -15,7 +15,18 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
-  ApplicationDeploymentConfiguration, EntityDefinition, EntityInstance, JzodElement, JzodRecord, JzodSchema, LoggerInterface, MetaModel, MiroirLoggerFactory, applicationDeploymentMiroir, entityInstance, getLoggerName
+  ApplicationDeploymentConfiguration,
+  EntityDefinition,
+  EntityInstance,
+  JzodElement,
+  JzodRecord,
+  JzodSchema,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+  applicationDeploymentMiroir,
+  entityInstance,
+  getLoggerName,
 } from "miroir-core";
 
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
@@ -125,7 +136,7 @@ export const MTableComponent = (props: TableComponentProps) => {
         ),
       })),
     }),
-    [props?.instancesToDisplay]
+    [props]
   );
   log.info("MTableComponent tableComponentRows", tableComponentRows);
 
@@ -357,7 +368,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 // rowData={gridData}
                 getRowId={(params) => {
                   // log.info("MtableComponent getRowId", params);
-                  return params.data?.uuid ? params.data?.uuid : params.data?.id;
+                  return params.data?.rawValue.uuid ? params.data?.rawValue.uuid : params.data?.rawValue.id;
                 }}
                 defaultColDef={defaultColDef}
                 onCellClicked={onCellClicked}
