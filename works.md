@@ -193,3 +193,48 @@ Global review of approach, reframed for the use of a meta-language (Jzod).
 - 
 
 ## 2023-12
+
+### studies & design
+
+- evaluating architectural concepts for Domain level: Deployments, Bundles, Actions and Endpoints.
+
+
+### development: 52 commits (miroir)
+
+- refactor domain level: introducing Actions and Endpoints.
+- transferring store parameters to client-defined configuration.
+- first version of "delpoyApplication" action.
+- technical: using vite 4.5, tsup for build.
+
+## 2024-01
+
+Remark: started teaching the "Website design & implementation" class.
+
+### studies & design
+
+Look for a "ubiquitous" query language, that can be executed on client, server and (relational) database or NoSQL (as background maintenance job)
+
+### development: 43 commits (miroir)
+
+## 2024-02
+
+Remark: continued teaching the "Website design & implementation" class.
+
+### studies & design
+
+### development: 77 commits (miroir)
+
+- Miroir Query Language!!! Queries!
+- have Query interface on REST
+- implement basic blocs for alterEntityAttribute ModelAction
+- refactor existing code to ModelActions (tbc.)
+
+## 2024-03
+
+### studies & design
+
+### development: 34 commits (miroir)
+
+- Refactor ("simplify") LocalStoreController and DomainController: use ModelActions (continued)
+- started using styled components
+- 

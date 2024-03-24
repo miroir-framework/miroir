@@ -19,6 +19,8 @@ import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
 import { SidebarWidth } from './Sidebar';
 import { useTheme } from '@emotion/react';
+import { Icon } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"ResponsiveAppBar");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -131,7 +133,7 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
               >
               <MenuIcon />
             </IconButton>
-            <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
           {/* </Box> */}
             <Typography
               variant="h6"
@@ -148,7 +150,16 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
                 textDecoration: 'none',
               }}
             >
-              open: {props.open?"true":"false"}
+              <Link to={`/home`}>
+                <Icon
+                  sx={{
+                    mr: 2,
+                    color: 'white',
+                  }}
+                >home</Icon>
+              </Link>
+
+              {/* open: {props.open?"true":"false"} */}
             </Typography>
           <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none'} }}>
             <IconButton
