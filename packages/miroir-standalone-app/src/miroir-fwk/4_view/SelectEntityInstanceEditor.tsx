@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import {
   Entity,
   EntityDefinition,
+  EntityInstance,
   EntityInstanceWithName,
   LocalCacheQueryParams,
   LoggerInterface,
@@ -63,7 +64,18 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   // const entityUuid = props.data?.rawValue.parentUuid;
   const entityUuid = props.colDef?.cellRendererParams.entityUuid;
   // const targetObjectUuid = props.data?.rawValue.uuid;
-  log.info("EntityInstanceCellRenderer called for field",props.colDef?.field,"with deploymentUuid",context.deploymentUuid,"entityUuid",entityUuid,"props:", props,"value",props.value);
+  log.info(
+    "EntityInstanceCellRenderer called for field",
+    props.colDef?.field,
+    "with deploymentUuid",
+    context.deploymentUuid,
+    "entityUuid",
+    entityUuid,
+    "props:",
+    props,
+    "value",
+    props.value
+  );
   
   // const currentModelSelectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const currentModelSelectorParams:LocalCacheQueryParams = useMemo(
@@ -81,7 +93,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
     localSelectModelForDeployment(state, currentModelSelectorParams)
   ) as MetaModel
 
-  const currentMiroirEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined = props.colDef?.cellRendererParams.entityDefinition??currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
   
   // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const selectorParams:LocalCacheQueryParams = useMemo(
@@ -99,7 +111,11 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
     selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
   ) as EntityInstanceWithName[];
   log.info("EntityInstanceCellRenderer instancesToDisplay",instancesToDisplay);
-  const instanceToDisplay = instancesToDisplay.find(i=>i.uuid == (props.data?.rawValue as any)[props.colDef?.field??""]);
+  const instanceToDisplay: EntityInstanceWithName = (
+    props.colDef?.cellRendererParams.entityDefinition
+      ? props.data?.rawValue
+      : instancesToDisplay.find((i) => i.uuid == (props.data?.rawValue as any)[props.colDef?.field ?? ""])
+  ) as EntityInstanceWithName;
 
   return (
     <span>

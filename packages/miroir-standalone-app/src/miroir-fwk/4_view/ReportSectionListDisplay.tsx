@@ -255,10 +255,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     () => ({
       columnDefs: getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
         instancesToDisplayJzodSchema??{type:"object", definition:{}},
-        instancesToDisplayViewAttributes
+        instancesToDisplayViewAttributes,
+        currentReportTargetEntityDefinition
       ),
     }),
-    [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes]
+    [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
   );
   log.info(
     "ReportSectionListDisplay",

@@ -36,16 +36,16 @@ export interface JzodElementDisplayProps {
 
 export function JzodElementDisplay(props: JzodElementDisplayProps){
 
-  const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
-    {
-      queryType: "LocalCacheEntityInstancesSelectorParams",
-      definition: {
-        deploymentUuid: props.deploymentUuid,
-        applicationSection: props.applicationSection as ApplicationSection,
-        entityUuid: props.entityUuid,
-      }
-    }
-  );
+  // const instancesToDisplayUuidIndex: EntityInstancesUuidIndex | undefined = useEntityInstanceUuidIndexFromLocalCache(
+  //   {
+  //     queryType: "LocalCacheEntityInstancesSelectorParams",
+  //     definition: {
+  //       deploymentUuid: props.deploymentUuid,
+  //       applicationSection: props.applicationSection as ApplicationSection,
+  //       entityUuid: props.entityUuid,
+  //     }
+  //   }
+  // );
 
   // const instance:any = instancesToDisplayUuidIndex && props.instanceUuid?instancesToDisplayUuidIndex[props.instanceUuid]:undefined;
 
@@ -251,8 +251,12 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
           <div>
             {displayName}:
             <EntityInstanceLink
-              deploymentUuid={targetJzodSchema.extra?.targetEntityApplication == "metaModel"?applicationDeploymentMiroir.uuid:props.deploymentUuid}
-              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection == "model"?"model":"data"}
+              deploymentUuid={
+                targetJzodSchema.extra?.targetEntityApplication == "metaModel"
+                  ? applicationDeploymentMiroir.uuid
+                  : props.deploymentUuid
+              }
+              applicationSection={targetJzodSchema.extra?.targetEntityApplicationSection == "model" ? "model" : "data"}
               entityUuid={targetJzodSchema?.extra?.targetEntity}
               instanceUuid={props.element}
               key={props.name}

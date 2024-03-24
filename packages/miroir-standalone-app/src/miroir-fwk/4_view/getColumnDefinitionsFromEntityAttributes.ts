@@ -2,7 +2,7 @@ import { ColDef } from "ag-grid-community";
 
 import { JzodElement } from "@miroir-framework/jzod-ts";
 
-import { LoggerInterface, MiroirLoggerFactory, entityAuthor, entityPublisher, getLoggerName } from "miroir-core";
+import { EntityDefinition, JzodObject, LoggerInterface, MiroirLoggerFactory, entityAuthor, entityPublisher, getLoggerName } from "miroir-core";
 
 import { GenderCellEditor } from "../../miroir-fwk/4_view/GenderCellEditor";
 import {
@@ -20,13 +20,45 @@ MiroirLoggerFactory.asyncCreateLogger(loggerName).then((value: LoggerInterface) 
   log = value;
 });
 
+// ################################################################################################
 export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
   name: string,
-  jzodSchema: JzodElement
+  jzodSchema: JzodElement,
+  jzodObjectSchema?: JzodObject,
+  entityDefinition?: EntityDefinition | undefined,
 ): ColDef<any> {
   switch (name) {
+    case "name": {
+      log.info(
+        "getColumnDefinitionsFromEntityDefinitionJzodElemenSchema name column",
+        name,
+        "jzodSchema",
+        jzodSchema,
+        "jzodObjectSchema",
+        jzodObjectSchema,
+        "entityDefinition",
+        entityDefinition
+      );
+
+      return {
+        field: "name",
+        cellRenderer: EntityInstanceCellRenderer,
+        cellEditor: SelectEntityInstanceEditor,
+        cellEditorPopup: true,
+        editable: true,
+        // sort:'asc',
+        cellEditorParams: {
+          entityUuid: entityDefinition?.uuid??"",
+        },
+        cellRendererParams: {
+          entityUuid: entityDefinition?.uuid??"",
+          entityDefinition
+        },
+      };
+      break;
+    }
     case "gender": {
-      log.info("column gender", name, jzodSchema);
+      log.info("column", name, jzodSchema);
 
       return {
         field: "gender",
@@ -38,7 +70,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       break;
     }
     case "publisher": {
-      log.info("column publisher", name, jzodSchema);
+      log.info("column", name, jzodSchema);
 
       return {
         field: "publisher",
@@ -57,7 +89,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       break;
     }
     case "author": {
-      log.info("column author", name, jzodSchema);
+      log.info("column", name, jzodSchema);
 
       return {
         field: "author",
@@ -83,7 +115,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       };
     }
     default: {
-      log.info("column default", name, jzodSchema);
+      log.info("column default:", name, jzodSchema);
       return {
         field: name,
         cellRenderer: DefaultCellRenderer2,
@@ -98,9 +130,11 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
   }
 }
 
+// ################################################################################################
 export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
   jzodSchema: JzodElement | undefined,
-  viewAttributes?: string[]
+  viewAttributes?: string[],
+  entityDefinition?: EntityDefinition | undefined
 ): ColDef<any>[] {
   switch (jzodSchema?.type) {
     case "object":
@@ -112,7 +146,7 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
            (a:string) => [a, schemaKeys.find(b => b == a)]
           )
           .map(
-            (a: string) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(a, jzodSchema.definition[a])
+            (a: string) => getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(a, jzodSchema.definition[a], jzodSchema as JzodObject, entityDefinition)
           )
         } else {
           return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})

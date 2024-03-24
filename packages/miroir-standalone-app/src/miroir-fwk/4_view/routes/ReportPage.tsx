@@ -150,15 +150,15 @@ export const ReportPage = () => {
           params.deploymentUuid &&
           params.applicationSection 
           ? (
-            params.instanceUuid
-              ? <RootReportSectionView
-                  reportSection={currentMiroirReport?.definition}
-                  applicationSection={params.applicationSection as ApplicationSection}
-                  deploymentUuid={params.deploymentUuid}
-                  instanceUuid={params.instanceUuid}
-                />
-              : 
-                <div>No instance</div>
+            // params.instanceUuid?
+              <RootReportSectionView
+                reportSection={currentMiroirReport?.definition}
+                applicationSection={params.applicationSection as ApplicationSection}
+                deploymentUuid={params.deploymentUuid}
+                instanceUuid={params.instanceUuid}
+              />
+              // : 
+              //   <div>No instance</div>
           ) : (
             <div>Oops.</div>
           )

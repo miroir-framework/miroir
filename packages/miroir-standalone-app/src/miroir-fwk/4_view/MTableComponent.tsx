@@ -273,33 +273,38 @@ export const MTableComponent = (props: TableComponentProps) => {
       const columnDefinitionAttributeEntry = Object.entries(
         props.currentEntityDefinition?.jzodSchema.definition ?? {}
       ).find((a: [string, any]) => a[0] == event.colDef.field);
-      if (
-        columnDefinitionAttributeEntry &&
-        (columnDefinitionAttributeEntry[1] as any).type == "simpleType" &&
-        (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
-      ) {
-        const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
-
-        const targetEntityDefinition:EntityDefinition | undefined = currentModel.entityDefinitions.find((e)=> e.entityUuid == event.colDef.cellRendererParams.entityUuid);
-
-        // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
+      if (event.colDef.field == "name") {
+        // display current Entity Details for Entity Instance
         navigate(
           `/report/${contextDeploymentUuid}/${
-            (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
-              ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
-              : context.applicationSection
-          }/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[event.colDef.field]}`
-          // `/instance/${contextDeploymentUuid}/${
-          //   (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
-          //     ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
-          //     : context.applicationSection
-          // }/${(columnDefinitionAttribute as any)?.extra?.targetEntity}/${event.data[event.colDef.field]}`
+            ["MetaModel", "model"].includes(props.currentEntityDefinition.conceptLevel as any)? "model": context.applicationSection
+          }/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
         );
+
       } else {
-        log.info(
-          "onCellClicked cell is not an Entity Instance uuid, no navigation occurs.",
-          columnDefinitionAttributeEntry
-        );
+        if (
+          columnDefinitionAttributeEntry &&
+          (columnDefinitionAttributeEntry[1] as any).type == "simpleType" &&
+          (columnDefinitionAttributeEntry[1] as any).extra?.targetEntity
+        ) {
+          const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
+  
+          const targetEntityDefinition:EntityDefinition | undefined = currentModel.entityDefinitions.find((e)=> e.entityUuid == event.colDef.cellRendererParams.entityUuid);
+  
+          // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
+          navigate(
+            `/report/${contextDeploymentUuid}/${
+              (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection
+                ? (columnDefinitionAttribute as any)?.extra.targetEntityApplicationSection
+                : context.applicationSection
+            }/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[event.colDef.field]}`
+          );
+        } else {
+          log.info(
+            "onCellClicked cell is not an Entity Instance uuid, no navigation occurs.",
+            columnDefinitionAttributeEntry
+          );
+        }
       }
     }
   },[props,])
