@@ -243,7 +243,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
       ? props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
       : currentReportTargetEntityDefinition?.jzodSchema
-    ,[props, props.fetchedDataJzodSchema, props.section.definition.fetchedDataReference]
+    ,[props, props.fetchedDataJzodSchema, props.section.type, props.section.definition.fetchedDataReference]
   )
 
   const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
@@ -258,7 +258,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         instancesToDisplayViewAttributes
       ),
     }),
-    [instancesToDisplayJzodSchema]
+    [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes]
   );
   log.info(
     "ReportSectionListDisplay",
