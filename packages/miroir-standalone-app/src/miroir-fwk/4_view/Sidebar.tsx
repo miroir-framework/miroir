@@ -154,11 +154,11 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   )
 
   const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
-    (): DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> => 
-    getSelectorParams({
+    () => 
+    getSelectorParams<DomainManyQueriesWithDeploymentUuid>({
       queryType: "DomainManyQueries",
       deploymentUuid: applicationDeploymentMiroir.uuid,
-      applicationSection: "data",
+      // applicationSection: "data",
       pageParams: { elementType: "object", elementValue: {} },
       queryParams: { elementType: "object", elementValue: {} },
       contextResults: { elementType: "object", elementValue: {} },
@@ -188,7 +188,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
     domainFetchQueryParams
   );
   // const defaultMiroirMenu = (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition;
-  // console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition);
+  console.log("Sidebar refresh", count++, "found miroir menu:", domainElementObject, domainElementObject?.elementValue?.menus?.elementValue);
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
@@ -198,35 +198,57 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
   return (
     <StyledDrawer
       sx={drawerSx}
-
       variant="permanent"
       // variant="persistent"
       open={props.open}
     >
       <StyledDrawerHeader sx={styledDrawerSx}>
-        <IconButton onClick={()=>props.setOpen(false)}>
-          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        <IconButton onClick={() => props.setOpen(false)}>
+          {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </StyledDrawerHeader>
       <Divider />
       count: {count}
-      <List>
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
-        {((domainElementObject?.elementValue?.menus?.elementValue as any)?.definition??sideBarDefaultItems).map((i: any, index: number) => (
-          <ListItem key={i.label} disablePadding>
-              <ListItemButton
-                component={Link}
-                to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}
-              >
-                <ListItemIcon>
-                  {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                  <Icon>{i.icon}</Icon>
-                </ListItemIcon>
-                <ListItemText primary={i.label} />
-              </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+        {
+          (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
+          <List>
+            {(
+              (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
+              ).map((i: any, index: number) => (
+              <ListItem key={i.label} disablePadding>
+                <ListItemButton component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                  <ListItemIcon>
+                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                    <Icon>{i.icon}</Icon>
+                  </ListItemIcon>
+                  <ListItemText primary={i.label} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          :
+          <List>
+            {(
+              (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
+              ).flatMap((menuSection: any, index: number) => (
+                menuSection.items.map(
+                  (curr:any, index: number) => (
+                    <ListItem key={curr.label + index} disablePadding>
+                      <ListItemButton component={Link} to={`/report/${curr.application}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
+                        <ListItemIcon>
+                          {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                          <Icon>{curr.icon}</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary={curr.label} />
+                      </ListItemButton>
+                    </ListItem>
+                  ), 
+                ).concat([<Divider />])
+              )
+            )}
+          </List>
+        }
       <Divider />
       {/* <List>
         {['All mail', 'Trash', 'Spam'].map((text, index) => (
@@ -242,7 +264,6 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
       </List> */}
       {/* </MuiDrawer> */}
     </StyledDrawer>
-
-  )
+  );
 }
 

@@ -1955,6 +1955,152 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "menuItem": {
+        "type": "object",
+        "definition": {
+          "label": {
+            "type": "simpleType",
+            "definition": "string"
+          },
+          "section": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "applicationSection"
+            }
+          },
+          "application": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Uuid",
+              "editable": false
+            }
+          },
+          "reportUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Uuid",
+              "editable": false
+            }
+          },
+          "instanceUuid": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true,
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "extra": {
+              "id": 1,
+              "defaultLabel": "Uuid",
+              "editable": false
+            }
+          },
+          "icon": {
+            "type": "simpleType",
+            "definition": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ]
+          }
+        }
+      },
+      "menuItemArray": {
+        "type": "array",
+        "definition": {
+          "type": "schemaReference",
+          "definition": {
+            "relativePath": "menuItem"
+          }
+        }
+      },
+      "sectionOfMenu": {
+        "type": "object",
+        "definition": {
+          "title": {
+            "type": "simpleType",
+            "definition": "string"
+          },
+          "label": {
+            "type": "simpleType",
+            "definition": "string"
+          },
+          "items": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "menuItemArray"
+            }
+          }
+        }
+      },
+      "simpleMenu": {
+        "type": "object",
+        "definition": {
+          "menuType": {
+            "type": "literal",
+            "definition": "simpleMenu"
+          },
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "menuItemArray"
+            }
+          }
+        }
+      },
+      "complexMenu": {
+        "type": "object",
+        "definition": {
+          "menuType": {
+            "type": "literal",
+            "definition": "complexMenu"
+          },
+          "definition": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "sectionOfMenu"
+              }
+            }
+          }
+        }
+      },
+      "menuDefinition": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "simpleMenu"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "complexMenu"
+            }
+          }
+        ]
+      },
       "menu": {
         "type": "object",
         "definition": {
@@ -2040,74 +2186,157 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "definition": {
-            "type": "array",
-            "definition": {
-              "type": "object",
-              "definition": {
-                "label": {
-                  "type": "simpleType",
-                  "definition": "string"
-                },
-                "section": {
+            "type": "schemaReference",
+            "context": {
+              "menuItem": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  },
+                  "section": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    }
+                  },
+                  "application": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  "reportUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  "instanceUuid": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "optional": true,
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ],
+                    "extra": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  },
+                  "icon": {
+                    "type": "simpleType",
+                    "definition": "string",
+                    "validations": [
+                      {
+                        "type": "uuid"
+                      }
+                    ]
+                  }
+                }
+              },
+              "menuItemArray": {
+                "type": "array",
+                "definition": {
                   "type": "schemaReference",
                   "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "applicationSection"
+                    "relativePath": "menuItem"
                   }
-                },
-                "application": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "extra": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "reportUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "extra": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "instanceUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "optional": true,
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "extra": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "icon": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ]
                 }
+              },
+              "sectionOfMenu": {
+                "type": "object",
+                "definition": {
+                  "title": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  },
+                  "label": {
+                    "type": "simpleType",
+                    "definition": "string"
+                  },
+                  "items": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "menuItemArray"
+                    }
+                  }
+                }
+              },
+              "simpleMenu": {
+                "type": "object",
+                "definition": {
+                  "menuType": {
+                    "type": "literal",
+                    "definition": "simpleMenu"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "menuItemArray"
+                    }
+                  }
+                }
+              },
+              "complexMenu": {
+                "type": "object",
+                "definition": {
+                  "menuType": {
+                    "type": "literal",
+                    "definition": "complexMenu"
+                  },
+                  "definition": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "sectionOfMenu"
+                      }
+                    }
+                  }
+                }
+              },
+              "menuDefinition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "simpleMenu"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "complexMenu"
+                    }
+                  }
+                ]
               }
+            },
+            "definition": {
+              "relativePath": "menuDefinition"
             }
           }
         }

@@ -84,18 +84,22 @@ export const RootReportSectionView = (props: ReportSectionEntityInstanceProps) =
   )
 
   // const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(() => getSelectorParams(
-  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(() => getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
-    {
-      queryType: "DomainManyQueries",
-      deploymentUuid: props.deploymentUuid,
-      // applicationSection: props.applicationSection,
-      pageParams: paramsAsdomainElements,
-      queryParams: { elementType: "object", elementValue: {}},
-      contextResults: { elementType: "object", elementValue: {} },
-      fetchQuery: props.reportSection.fetchQuery
-    },
-    selectorMap
-  ), [selectorMap, props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]);
+  const domainFetchQueryParams: DomainStateSelectorParams<DomainManyQueriesWithDeploymentUuid> = useMemo(
+    () =>
+      getSelectorParams<DomainManyQueriesWithDeploymentUuid>(
+        {
+          queryType: "DomainManyQueries",
+          deploymentUuid: props.deploymentUuid,
+          // applicationSection: props.applicationSection,
+          pageParams: paramsAsdomainElements,
+          queryParams: { elementType: "object", elementValue: {} },
+          contextResults: { elementType: "object", elementValue: {} },
+          fetchQuery: props.reportSection.fetchQuery,
+        },
+        selectorMap
+      ),
+    [selectorMap, props.deploymentUuid, props.applicationSection, props.reportSection?.fetchQuery]
+  );
 
   const domainElementObject: DomainElementObject = useDomainStateSelectorNew(
     selectorMap.selectByDomainManyQueriesFromDomainStateNew as DomainStateSelectorNew<DomainManyQueriesWithDeploymentUuid, any>,

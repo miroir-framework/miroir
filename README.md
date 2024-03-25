@@ -26,8 +26,29 @@ npm run build5 -w miroir-core -w miroir-localcache-redux -w miroir-server-msw-st
 
 # From binary packages
 
-
 TBW
+
+## Development process
+
+Use of the server is not mandatory to develop on the client, as MSW can be used to simulate the server.
+
+build server in backround (useful when developing the server):
+
+```sh
+ npm run build-tsup -w miroir-server
+```
+
+launch server:
+
+```sh
+npm run dev -w miroir-server
+```
+
+launch client:
+
+```sh
+npm run startDev -w miroir-standalone-app
+```
 
 ## Organization
 
