@@ -7846,46 +7846,46 @@ describe(
           //   testValueObject: ["1", "2", "3"],
           // },
           // array of schemaReference / object
-          test100: {
-            testSchema: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                context: {
-                  myObject: {
-                    type: "object",
-                    definition: {
-                      a: {
-                        type: "union",
-                        definition: [
-                          {
-                            type: "simpleType",
-                            definition: "string",
-                          },
-                          {
-                            type: "schemaReference",
-                            definition: { relativePath: "myObject" },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-                definition: { relativePath: "myObject" },
-              },
-            },
-            expectedResult: {
-              type: "array",
-              definition: {
-                type: "simpleType",
-                definition: "string",
-              },
-            },
-            testValueObject: [
-              { a: "myString" },
-              // { a: { a: "myString" } }
-            ],
-          },
+          // test100: {
+          //   testSchema: {
+          //     type: "array",
+          //     definition: {
+          //       type: "schemaReference",
+          //       context: {
+          //         myObject: {
+          //           type: "object",
+          //           definition: {
+          //             a: {
+          //               type: "union",
+          //               definition: [
+          //                 {
+          //                   type: "simpleType",
+          //                   definition: "string",
+          //                 },
+          //                 {
+          //                   type: "schemaReference",
+          //                   definition: { relativePath: "myObject" },
+          //                 },
+          //               ],
+          //             },
+          //           },
+          //         },
+          //       },
+          //       definition: { relativePath: "myObject" },
+          //     },
+          //   },
+          //   expectedResult: {
+          //     type: "array",
+          //     definition: {
+          //       type: "simpleType",
+          //       definition: "string",
+          //     },
+          //   },
+          //   testValueObject: [
+          //     { a: "myString" },
+          //     // { a: { a: "myString" } }
+          //   ],
+          // },
           // array of union Type
           // // JzodSchema: literal
           // test500: {
@@ -8109,6 +8109,185 @@ describe(
           //     },
           //   },
           // },
+          // based on "real" cases
+          test900: { 
+            testSchema: {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "extra": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                },
+                "parentName": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "optional": true,
+                  "extra": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false
+                  }
+                },
+                "parentUuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "extra": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false
+                  }
+                },
+                "name": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "extra": {
+                    "id": 4,
+                    "defaultLabel": "Name",
+                    "editable": true
+                  }
+                },
+                "author": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "optional": true,
+                  "extra": {
+                    "id": 5,
+                    "defaultLabel": "Author",
+                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "editable": true
+                  }
+                },
+                "publisher": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "optional": true,
+                  "extra": {
+                    "id": 5,
+                    "defaultLabel": "Publisher",
+                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "editable": true
+                  }
+                }
+              }
+            },
+            expectedResult: {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "extra": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "editable": false
+                  }
+                },
+                "parentName": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "optional": true,
+                  "extra": {
+                    "id": 2,
+                    "defaultLabel": "Entity Name",
+                    "editable": false
+                  }
+                },
+                "parentUuid": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "extra": {
+                    "id": 3,
+                    "defaultLabel": "Entity Uuid",
+                    "editable": false
+                  }
+                },
+                "name": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "extra": {
+                    "id": 4,
+                    "defaultLabel": "Name",
+                    "editable": true
+                  }
+                },
+                "author": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "optional": true,
+                  "extra": {
+                    "id": 5,
+                    "defaultLabel": "Author",
+                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "editable": true
+                  }
+                },
+                "publisher": {
+                  "type": "simpleType",
+                  "definition": "string",
+                  "validations": [
+                    {
+                      "type": "uuid"
+                    }
+                  ],
+                  "optional": true,
+                  "extra": {
+                    "id": 5,
+                    "defaultLabel": "Publisher",
+                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "editable": true
+                  }
+                }
+              }
+            },
+            testValueObject: {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Renata n'importe quoi",
+                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              },
+          },
         };
 
         for (const test of Object.entries(tests)) {

@@ -48,6 +48,7 @@ styled(
     // display: "flex",
     // flexGrow: 1,
     position: "static",
+    minHeight: 0,
     // flexDirection:"row",
     // justifyContent: "space-between"
     // p: 2,
@@ -77,7 +78,15 @@ styled(
           }
         ),
       }
-    )
+    ),
+    [theme.breakpoints.between('xs', 'sm')]: {
+      padding: '0 0px',
+      minHeight: "0px"
+    },
+    [theme.breakpoints.up('md')]: {
+      padding: '0 0px',
+      minHeight: "0px"
+    },
   })
 );
 // ,[props.open])
@@ -114,15 +123,8 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
   
 
   return (
-    // <Offset>
-      // <StyledAppBar open={props.open}>
-      <StyledAppBar  open={props.open}>
-      {/* <StyledAppBar position="absolute" open={props.open}> */}
-      {/* <StyledAppBar position="static" open={props.open}> */}
-      {/* // <StyledAppBar open={props.open}> */}
-        {/* <Container maxWidth="xl"> */}
-          {/* <Toolbar disableGutters> */}
-          <Toolbar>
+    <StyledAppBar  open={props.open}>
+      <Toolbar disableGutters={false}>
           {/* <Box sx={{display:"flex"}}> */}
             <IconButton
                 color="inherit"
@@ -135,7 +137,7 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
             </IconButton>
             {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
           {/* </Box> */}
-            <Typography
+            {/* <Typography
               variant="h6"
               noWrap
               component="a"
@@ -149,7 +151,7 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
                 color: 'inherit',
                 textDecoration: 'none',
               }}
-            >
+            > */}
               <Link to={`/home`}>
                 <Icon
                   sx={{
@@ -160,7 +162,7 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
               </Link>
 
               {/* open: {props.open?"true":"false"} */}
-            </Typography>
+            {/* </Typography> */}
           <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none'} }}>
             <IconButton
               size="large"
@@ -257,11 +259,8 @@ export function ResponsiveAppBar(props:ResponsiveAppBarProps) {
               ))}
             </Menu>
           </Box>
-        </Toolbar>
-        {/* </Container> */}
-      </StyledAppBar>
-
-    // </Offset>
+      </Toolbar>
+    </StyledAppBar>
   );
 }
 export default ResponsiveAppBar;

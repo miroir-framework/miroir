@@ -386,7 +386,6 @@ export function getMiroirFundamentalJzodSchema(
         "entity": entityDefinitionEntity.jzodSchema as JzodObject,
         "entityDefinition": entityDefinitionEntityDefinitionV1.jzodSchema as JzodObject,
         ...(entityDefinitionMenu.jzodSchema.definition.definition as any).context,
-        // "menuDefinition": entityDefinitionMenu.jzodSchema.definition.definition.definition,
         "menu": entityDefinitionMenu.jzodSchema as JzodObject,
         ...Object.fromEntries(
           Object.entries((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context).filter(e => 

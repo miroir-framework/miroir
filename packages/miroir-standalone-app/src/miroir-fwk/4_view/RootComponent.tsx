@@ -177,10 +177,10 @@ export const RootComponent = (props: RootComponentProps) => {
           <Grid
             item
           >
-          <Sidebar
-            open={drawerIsOpen}
-            setOpen={setDrawerIsOpen}
-          ></Sidebar>
+            <Sidebar
+              open={drawerIsOpen}
+              setOpen={setDrawerIsOpen}
+            ></Sidebar>
           </Grid>
           <Grid
             item
@@ -188,111 +188,75 @@ export const RootComponent = (props: RootComponentProps) => {
             <StyledMain
               open = {drawerIsOpen}
             >
-              {/* <div>
-                <Table>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>
-                        new uuid: {uuidv4()}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Link to={`/home`}>Home</Link>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/${reportBookInstance.uuid}/caef8a59-39eb-48b5-ad59-a7642d3a1e8f`}>Et dans l'éternité</Link>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/08176cc7-43ae-4fca-91b7-bf869d19e4b9`}>Countries</Link>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/report/${applicationDeploymentLibrary.uuid}/data/6d9faa54-643c-4aec-87c3-32635ad95902/ce7b601d-be5f-4bc6-a5af-14091594046a`}>Paul Veyne</Link>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667`}>Folio</Link>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/instance/${applicationDeploymentLibrary.uuid}/data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494`}>Penguin</Link>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div> */}
-                {/* <p/>
-                  params: {JSON.stringify(params)}
-                <p/> */}
-                <span>
-                  <button
-                    onClick={async () => {
-                      log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
-                      await domainController.handleAction(
-                        {
-                          actionType: "modelAction",
-                          actionName: "rollback",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid:applicationDeploymentMiroir.uuid,
-                        }
-                      );
-                      await domainController.handleAction(
-                        {
-                          actionType: "modelAction",
-                          actionName: "rollback",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid:applicationDeploymentLibrary.uuid,
-                        }
-                      );
+            <span>
+              <button
+                onClick={async () => {
+                  log.info("fetching instances from datastore for deployment",applicationDeploymentMiroir)
+                  await domainController.handleAction(
+                    {
+                      actionType: "modelAction",
+                      actionName: "rollback",
+                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      deploymentUuid:applicationDeploymentMiroir.uuid,
                     }
+                  );
+                  await domainController.handleAction(
+                    {
+                      actionType: "modelAction",
+                      actionName: "rollback",
+                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      deploymentUuid:applicationDeploymentLibrary.uuid,
+                    }
+                  );
+                }
+              }
+              >
+                fetch Miroir & App configurations from database
+              </button>
+              <button
+                onClick={async () => {
+                  const remoteStore:PersistenceInterface = domainController.getRemoteStore();
+                  log.info(
+                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                  );
+                  if (!miroirConfig) {
+                    throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
                   }
-                  >
-                    fetch Miroir & App configurations from database
-                  </button>
-                <p />
-                <span>
-                <button
-                    onClick={async () => {
-                      const remoteStore:PersistenceInterface = domainController.getRemoteStore();
-                      log.info(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                      );
-                      if (!miroirConfig) {
-                        throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
-                      }
-                      if (miroirConfig && miroirConfig.client.emulateServer) {
-                        await remoteStore.handlePersistenceAction({
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
-                            [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
-                          },
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
-                        })
-                      } else {
-                        const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
-                        await remoteStore.handlePersistenceAction({
-                          actionType: "storeManagementAction",
-                          actionName: "openStore",
-                          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-                          configuration: {
-                            [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
-                            [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
-                          },
-                          deploymentUuid: applicationDeploymentMiroir.uuid,
-                        })
-                      }
+                  if (miroirConfig && miroirConfig.client.emulateServer) {
+                    await remoteStore.handlePersistenceAction({
+                      actionType: "storeManagementAction",
+                      actionName: "openStore",
+                      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                      configuration: {
+                        [applicationDeploymentMiroir.uuid]: miroirConfig.client.miroirServerConfig,
+                        [applicationDeploymentLibrary.uuid]: miroirConfig.client.appServerConfig,
+                      },
+                      deploymentUuid: applicationDeploymentMiroir.uuid,
+                    })
+                  } else {
+                    const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
+                    await remoteStore.handlePersistenceAction({
+                      actionType: "storeManagementAction",
+                      actionName: "openStore",
+                      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+                      configuration: {
+                        [applicationDeploymentMiroir.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.miroirServerConfig,
+                        [applicationDeploymentLibrary.uuid]: localMiroirConfig.serverConfig.storeSectionConfiguration.appServerConfig,
+                      },
+                      deploymentUuid: applicationDeploymentMiroir.uuid,
+                    })
+                  }
 
-                      // TODO: transactional action must not autocommit! initModel neither?!
-                      // .then(
-                      // async () => {
-                      log.info(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                      );
-                    }}
-                  >
-                    Open database
-                </button>
+                  // TODO: transactional action must not autocommit! initModel neither?!
+                  // .then(
+                  // async () => {
+                  log.info(
+                    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                  );
+                }}
+              >
+                Open database
+              </button>
                   {/* <button
                     onClick={async () => {
                       const remoteStore:PersistenceInterface = domainController.getRemoteStore();
@@ -437,8 +401,6 @@ export const RootComponent = (props: RootComponentProps) => {
                     send query to database
                   </button> */}
                 </span>
-                </span>
-                <p/>
               <Outlet></Outlet>
             </StyledMain>
           </Grid>

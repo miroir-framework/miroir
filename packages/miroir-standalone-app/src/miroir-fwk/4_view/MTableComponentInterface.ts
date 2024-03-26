@@ -7,7 +7,8 @@ import {
   entityInstance,
   entityInstancesUuidIndex,
   jzodElement,
-  jzodSchema
+  jzodSchema,
+  metaModel
 } from "miroir-core";
 
 export const TableComponentTypeSchema = z.enum(["EntityInstance", "JSON_ARRAY"]);
@@ -29,6 +30,9 @@ export const tableComponentCorePropsSchema = z.object({
   styles: z.any().optional(),
   children: z.any(),
   displayTools: z.boolean(),
+  currentModel: metaModel,
+  defaultFormValuesObject: z.any(),
+  miroirFundamentalJzodSchema:jzodSchema,
 });
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({

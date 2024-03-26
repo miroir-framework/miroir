@@ -210,6 +210,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
       <Divider />
       count: {count}
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
+        {/* TODO: DRY the menuSection display!*/}
         {
           (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
           <List>
@@ -244,7 +245,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
                       </ListItemButton>
                     </ListItem>
                   ), 
-                ).concat([<Divider />])
+                ).concat([<Divider key={menuSection.label + "Divider"}/>])
               )
             )}
           </List>

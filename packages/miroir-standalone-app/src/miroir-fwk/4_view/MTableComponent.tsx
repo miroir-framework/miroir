@@ -13,7 +13,6 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
-import { JzodObject } from '@miroir-framework/jzod-ts';
 import {
   ApplicationDeploymentConfiguration,
   EntityDefinition,
@@ -21,6 +20,7 @@ import {
   JzodElement,
   JzodRecord,
   JzodSchema,
+  JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -337,7 +337,7 @@ export const MTableComponent = (props: TableComponentProps) => {
       {/* <span>{props.type}</span>
       <br /> */}
       {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
-      {props.type == "EntityInstance" ? (
+      {props.type == "EntityInstance"? (
         <div>
           <JsonObjectFormEditorDialog
             showButton={false}
@@ -349,18 +349,19 @@ export const MTableComponent = (props: TableComponentProps) => {
             entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
-            initialValuesObject={
-              dialogFormObject
-                ? dialogFormObject
-                : defaultFormValues(
-                    props.type,
-                    props.currentEntityDefinition?.jzodSchema as JzodObject,
-                    [],
-                    props.currentEntity,
-                    props.displayedDeploymentDefinition
-                  )
+            miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
+            currentModel={props.currentModel}
+            defaultFormValuesObject={
+              dialogFormObject??props.defaultFormValuesObject
+                // : defaultFormValues(
+                //     props.type,
+                //     props.currentEntityDefinition?.jzodSchema as JzodObject,
+                //     [],
+                //     props.currentEntity,
+                //     props.displayedDeploymentDefinition
+                //   )
             }
-            onSubmit={onSubmitTableRowFormDialog}
+            // onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}
           />
           <div id="tata" className="ag-theme-alpine" style={props.styles}>

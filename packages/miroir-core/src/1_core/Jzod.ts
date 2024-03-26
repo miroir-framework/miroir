@@ -72,40 +72,57 @@ export function resolveReferencesForJzodSchemaAndValueObject(
     }
     case "object": {
       if ( typeof valueObject != "object") {
-        throw new Error(
-          "resolveReferencesForJzodSchemaAndValueObject object schema " +
-            JSON.stringify(jzodSchema) +
-            " for value " +
-            JSON.stringify(valueObject)
-        );
+        return ({
+          status: "error",
+          error: "resolveReferencesForJzodSchemaAndValueObject object schema " +
+              JSON.stringify(jzodSchema) +
+              " for value " +
+              JSON.stringify(valueObject)
+        })
+        // throw new Error(
+        //   "resolveReferencesForJzodSchemaAndValueObject object schema " +
+        //     JSON.stringify(jzodSchema) +
+        //     " for value " +
+        //     JSON.stringify(valueObject)
+        // );
       }
+
+      const resolvedObjectEntries:[string, JzodElement][] = Object.entries(valueObject).map(
+        (e: [string, any]) => {
+          let resultSchema
+          if (jzodSchema.definition[e[0]]) {
+            const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
+              miroirFundamentalJzodSchema,
+              jzodSchema.definition[e[0]],
+              e[1],
+              currentModel,
+              relativeReferenceJzodContext
+            )
+            log.info("resolveReferencesForJzodSchemaAndValueObject object attribute",e,"result",resultSchemaTmp)
+            if (resultSchemaTmp.status == "ok") {
+              return [
+                e[0],
+                resultSchemaTmp.element,
+              ]
+            } else {
+              return [e[0],{ type: "simpleType", definition: "never" }]
+            }
+          } else {
+            throw new Error(
+              "resolveReferencesForJzodSchemaAndValueObject error on resolving object, valueObject attribute " +
+                e[0] +
+                " not present in definition of type " +
+                JSON.stringify(jzodSchema)
+            );
+          }
+        } 
+      );
+      log.info("resolveReferencesForJzodSchemaAndValueObject object resolved entries result",resolvedObjectEntries)
+
       // TODO: inheritance!!!
       const result = {
         ...jzodSchema,
-        definition: Object.fromEntries(
-          Object.entries(valueObject).map(
-            (e: [string, any]) => {
-              let resultSchema
-              if (jzodSchema.definition[e[0]]) {
-                const resultSchemaTmp = resolveReferencesForJzodSchemaAndValueObject(
-                  miroirFundamentalJzodSchema,
-                  jzodSchema.definition[e[0]],
-                  e[1],
-                  currentModel,
-                  relativeReferenceJzodContext
-                )
-                if (resultSchemaTmp.status == "ok") {
-                  return [
-                    e[0],
-                    resultSchemaTmp.element,
-                  ]
-                } else {
-                  return [e[0],{ type: "simpleType", definition: "never" }]
-                }
-              }
-            }
-          ) as [string, JzodElement][]
-        ),
+        definition: Object.fromEntries(resolvedObjectEntries),
       } as JzodElement;
       log.info("resolveReferencesForJzodSchemaAndValueObject object result", JSON.stringify(result, null, 2))
       return {status: "ok", element: result};

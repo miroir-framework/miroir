@@ -36,6 +36,12 @@
         "validations": [{ "type": "uuid" }],
         "extra": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
       },
+      "conceptLevel": {
+        "type": "enum",
+        "definition": ["MetaModel", "Model", "Data"],
+        "optional": true,
+        "extra": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+      },
       "name": {
         "type": "simpleType",
         "definition": "string",

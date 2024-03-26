@@ -1,3 +1,7 @@
 .MuiDialog-container {
   display: inline-flex!important;
 }
+
+.MuiToolbar-gutters {
+  height: 0px!important;
+}

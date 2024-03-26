@@ -147,6 +147,21 @@ const themeParams = {
     toolbar: {
       paddingRight: 24, // keep right padding when drawer closed
     },
+    MuiContainer: { // no effect?
+      defaultProps: {
+        disableGutters: true,
+      },
+    },
+    MuiToolbar: { // no effect
+      defaultProps: {
+        disableGutters: true,
+      },
+    },
+    MuiGridContainer: { // no effect?
+      defaultProps: {
+        disableGutters: true,
+      },
+    },
     // toolbarIcon: {
     //   display: 'flex',
     //   alignItems: 'center',
