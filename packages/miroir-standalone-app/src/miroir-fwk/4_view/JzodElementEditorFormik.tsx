@@ -56,7 +56,6 @@ import { packageName } from "../../constants";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import styled from "@emotion/styled";
 import { Label } from "@mui/icons-material";
-import { ExpandOrFold } from "./JzodElementEditor";
 import { Field } from "formik";
 
 
@@ -103,23 +102,24 @@ export interface JzodElementFormEditorCorePropsFormik {
   label?: string;
   name: string,
   listKey: string,
+  rootLesslistKey: string,
   indentLevel?:number,
   resolvedJzodSchema: JzodElement | undefined,
-  initialValuesObject: any,
+  // initialValuesObject: any,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
   formik: any,
 }
 
-export interface JzodElementEditorWithButtonPropsFormik extends JzodElementFormEditorCorePropsFormik {
-  showButton: true;
-}
+// export interface JzodElementEditorWithButtonPropsFormik extends JzodElementFormEditorCorePropsFormik {
+//   showButton: true;
+// }
 
-export interface JzodElementEditorWithoutButtonPropsFormik extends JzodElementFormEditorCorePropsFormik {
-  showButton: false;
-}
+// export interface JzodElementEditorWithoutButtonPropsFormik extends JzodElementFormEditorCorePropsFormik {
+//   showButton: false;
+// }
 
-export type JzodElementEditorPropsFormik = JzodElementEditorWithButtonPropsFormik | JzodElementEditorWithoutButtonPropsFormik
+export type JzodElementEditorPropsFormik = JzodElementFormEditorCorePropsFormik
 
 
 // ################################################################################################
@@ -149,56 +149,56 @@ const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
 
 
 
-// // ################################################################################################
-// export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MetaModel) {
-//   return jzodUnion.discriminator
-//     ? {
-//         [jzodUnion.discriminator]:jzodUnion.definition.map(
-//           (e: JzodElement) => {
-//             const resolvedSchema =
-//               e.type == "schemaReference" ? resolveJzodSchemaReference(miroirFundamentalJzodSchema, e, currentModel, rootJzodSchema) : e;
-//             return e.type;
-//           }
-//         )
-//       }
-//     : {};
-// }
+// ################################################################################################
+export function getUnionDiscriminantValues(jzodUnion:JzodUnion, rootJzodSchema:JzodObject, currentModel:MetaModel) {
+  return jzodUnion.discriminator
+    ? {
+        [jzodUnion.discriminator]:jzodUnion.definition.map(
+          (e: JzodElement) => {
+            const resolvedSchema =
+              e.type == "schemaReference" ? resolveJzodSchemaReference(miroirFundamentalJzodSchema, e, currentModel, rootJzodSchema) : e;
+            return e.type;
+          }
+        )
+      }
+    : {};
+}
 
-// // ################################################################################################
-// export const ExpandOrFold = (
-//   props: {
-//     hiddenFormItems: {[k: string]: boolean},
-//     // setHiddenFormItems: any,
-//     setHiddenFormItems: React.Dispatch<
-//       React.SetStateAction<{
-//         [k: string]: boolean;
-//       }>
-//     >,
-//     listKey: string,
-//   }
-// ): JSX.Element => {
-//   return (
-//     <button
-//       // style={{maxHeight:"20px",maxWidth:"20px"}}
-//       // style={{display:"inline-flex"}}
-//       style={{ border: 0, backgroundColor: "transparent" }}
-//       onClick={(e) => {
-//         e.stopPropagation();
-//         e.preventDefault();
-//         props.setHiddenFormItems({
-//           ...props.hiddenFormItems,
-//           [props.listKey]: props.hiddenFormItems[props.listKey] ? false : true,
-//         });
-//       }}
-//     >
-//       {props.hiddenFormItems[props.listKey] ? (
-//         <ExpandMore sx={{ maxWidth: "15px", maxHeight: "15px" }} />
-//       ) : (
-//         <ExpandLess sx={{ maxWidth: "15px", maxHeight: "15px" }} />
-//       )}
-//     </button>
-//   );
-// }
+// ################################################################################################
+export const ExpandOrFold = (
+  props: {
+    hiddenFormItems: {[k: string]: boolean},
+    // setHiddenFormItems: any,
+    setHiddenFormItems: React.Dispatch<
+      React.SetStateAction<{
+        [k: string]: boolean;
+      }>
+    >,
+    listKey: string,
+  }
+): JSX.Element => {
+  return (
+    <button
+      // style={{maxHeight:"20px",maxWidth:"20px"}}
+      // style={{display:"inline-flex"}}
+      style={{ border: 0, backgroundColor: "transparent" }}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        props.setHiddenFormItems({
+          ...props.hiddenFormItems,
+          [props.listKey]: props.hiddenFormItems[props.listKey] ? false : true,
+        });
+      }}
+    >
+      {props.hiddenFormItems[props.listKey] ? (
+        <ExpandMore sx={{ maxWidth: "15px", maxHeight: "15px" }} />
+      ) : (
+        <ExpandLess sx={{ maxWidth: "15px", maxHeight: "15px" }} />
+      )}
+    </button>
+  );
+}
 
 let count = 0;
 // #####################################################################################################
@@ -206,7 +206,7 @@ export const JzodElementEditorFormik = (
   props: JzodElementEditorPropsFormik
 ): JSX.Element => {
   count++;
-  log.info("JzodElementEditorFormik count", count, props)
+  // log.info("JzodElementEditorFormik count", count, props)
   // const formMethods = useFormContext();
   // const { register, handleSubmit, reset, trigger, watch, setValue, getValues, formState } = formMethods;
   // const { register, setValue } = formMethods;
@@ -223,15 +223,6 @@ export const JzodElementEditorFormik = (
   //   [props]
   // )
   const [hiddenFormItems,setHiddenFormItems] = useState<{[k:string]:boolean}>({})
-  const [itemsOrder, setItemsOrder] = useState<any[]>(
-    Array.isArray(props.initialValuesObject)
-      ? props.initialValuesObject.map((e, k) => k)
-      : (
-        typeof(props.initialValuesObject) == "object" && props.initialValuesObject !== null
-        ? Object.keys(props.initialValuesObject)
-        : []
-      )
-  );
 
   // const localCacheQuery: LocalCacheQueryParams = useMemo(
   //   () => ({
@@ -259,22 +250,43 @@ export const JzodElementEditorFormik = (
   const displayedLabel: string = props.label??props.name;
 
   const usedIndentLevel: number = props.indentLevel?props.indentLevel:0;
-
   log.info(
-    "JzodElementEditorFormik rendering",
+    "rendering",
     props.listKey,
     "type=",
     props.resolvedJzodSchema?.type,
-    "typeof initialValue=",
-    typeof props.initialValuesObject,
-    "initialValue=",
-    props.initialValuesObject,
+    // "typeof initialValue=",
+    // typeof props.initialValuesObject,
+    // "initialValue=",
+    // props.initialValuesObject,
     "jzodSchema=",
     props.resolvedJzodSchema,
-    "itemsOrder",
-    itemsOrder,
     "props=",
     props
+  );
+
+  const currentValue = props.listKey == "ROOT"? props.formik.values:props.formik.values[props.rootLesslistKey];
+  const [itemsOrder, setItemsOrder] = useState<any[]>(
+    props.resolvedJzodSchema?.type == "object" && typeof(currentValue) == "object" && currentValue !== null?
+      Object.keys(currentValue)
+    :
+      (
+        Array.isArray(currentValue)?currentValue.map((e:any, k:number) => k):[]
+      )
+  );
+      // Array.isArray(props.formik.values[props.rootLesslistKey])
+      //   ? props.formik.values[props.rootLesslistKey].map((e:any, k:number) => k)
+      //   : (
+      //     typeof(props.formik.values[props.rootLesslistKey]) == "object" && props.formik.values[props.rootLesslistKey] !== null
+      //     ? Object.keys(props.formik.values[props.rootLesslistKey])
+      //     : []
+      //   )
+
+  log.info(
+    "rendering",
+    props.listKey,
+    "itemsOrder",
+    itemsOrder,
   );
   
   // return (
@@ -343,8 +355,8 @@ export const JzodElementEditorFormik = (
         // } else {
         //   resolvedJzodSchema = elementJzodSchema;
         // }
-        log.info("object", props.listKey, "found resolvedJzodSchema after resolving 'extend' clause:",resolvedJzodSchema);
-        log.info("object", props.listKey, "found value:",props.initialValuesObject, "itemsOrder", itemsOrder);
+        // log.info("object", props.listKey, "found resolvedJzodSchema after resolving 'extend' clause:",resolvedJzodSchema);
+        // log.info("object", props.listKey, "found value:",props.initialValuesObject, "itemsOrder", itemsOrder);
         
         return (
           <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
@@ -362,7 +374,8 @@ export const JzodElementEditorFormik = (
               {/* {Object.entries(props.initialValuesObject).map((attribute: [string, JzodElement]) => { */}
               {
                 itemsOrder
-                  .map((i): [string, JzodElement] => [i, props.initialValuesObject[i]])
+                  // .map((i): [string, JzodElement] => [i, props.initialValuesObject[i]])
+                  .map((i): [string, JzodElement] => [i, props.formik.values[props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + i[0]):i[0]]])
                   .map((attribute: [string, JzodElement]) => {
                     // const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
                     const currentAttributeDefinition = resolvedJzodSchema.definition[attribute[0]];
@@ -374,12 +387,13 @@ export const JzodElementEditorFormik = (
                         <JzodElementEditorFormik
                           name={attribute[0]}
                           listKey={props.listKey + "." + attribute[0]}
+                          rootLesslistKey={props.rootLesslistKey.length > 0? props.rootLesslistKey + "." + attribute[0]:attribute[0]}
                           indentLevel={usedIndentLevel}
                           label={currentAttributeDefinition?.extra?.defaultLabel}
-                          initialValuesObject={props.initialValuesObject
-                            ? props.initialValuesObject[attribute[0]]
-                            : undefined}
-                          showButton={true}
+                          // initialValuesObject={props.initialValuesObject
+                          //   ? props.initialValuesObject[attribute[0]]
+                          //   : undefined}
+                          // showButton={true}
                           currentDeploymentUuid={props.currentDeploymentUuid}
                           currentApplicationSection={props.currentApplicationSection}
                           resolvedJzodSchema={currentAttributeDefinition}
@@ -407,15 +421,18 @@ export const JzodElementEditorFormik = (
           case "string":{
             return (
               <>
-                <label htmlFor={props.listKey}>{displayedLabel}: </label>
+                <label htmlFor={props.listKey}>{props.rootLesslistKey}: </label>
+                {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
                 <input
-                  key={props.listKey}
-                  form={"form." + props.name}
+                  // key={props.listKey}
+                  // form={"form." + props.name}
                   type="text"
-                  id={props.listKey}
+                  id={props.rootLesslistKey}
                   name={props.name}
-                  {...props.formik.getFieldProps(props.listKey)}
-                  defaultValue={props.initialValuesObject}
+                  // {...props.formik.getFieldProps(props.listKey)}
+                  // defaultValue={props.initialValuesObject}
+                  onChange={props.formik.handleChange}
+                  value={props.formik.values[props.rootLesslistKey]}
                 />
               </>
             );
@@ -436,8 +453,11 @@ export const JzodElementEditorFormik = (
                         // {...register(props.listKey)}
                         name={props.listKey}
                         id={props.listKey}
-                        defaultChecked={props.initialValuesObject}
+                        defaultChecked={props.formik.values[props.rootLesslistKey]}
+                        // defaultChecked={props.initialValuesObject}
                         {...props.formik.getFieldProps(props.listKey)}
+                        // onChange={props.formik.handleChange}
+                        // value={props.formik.values[props.rootLesslistKey]}
                       />
                     </td>
                   </tr>
@@ -448,7 +468,7 @@ export const JzodElementEditorFormik = (
             break;
           }
           case "number": {
-            const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
+            // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
             // log.info("JzodElementEditorFormik number!",props.listKey,"props.initialValuesObject",props.initialValuesObject)
             return (
               <>
@@ -458,6 +478,8 @@ export const JzodElementEditorFormik = (
                   form={"form." + props.name}
                   name={props.name}
                   {...props.formik.getFieldProps(props.listKey)}
+                  // onChange={props.formik.handleChange}
+                  // value={props.formik.values[props.rootLesslistKey]}
                   // onChange={(e) => {
                   //   log.info("JzodElementEditorFormik number onChange!", props.name, e.target.value);
                   // }}
@@ -471,7 +493,7 @@ export const JzodElementEditorFormik = (
           case "uuid":
           default: {
             // const defaultValue=formState.defaultValues?formState.defaultValues[props.name]:'no value found!'
-            const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
+            // const defaultValue:number | undefined=props.initialValuesObject?(props.initialValuesObject as any as number):undefined;
             return (
               <>
                 <label htmlFor={props.listKey}>{displayedLabel}: </label>
@@ -481,6 +503,7 @@ export const JzodElementEditorFormik = (
                   form={"form." + props.name}
                   name={props.name}
                   {...props.formik.getFieldProps(props.listKey)}
+                  // value={props.formik.values[props.rootLesslistKey]}
                   // onChange={(e) => {
                   //   log.info("JzodElementEditorFormik number onChange!", props.name, e.target.value);
                   //   // setValue(props.listKey, e.target.value);

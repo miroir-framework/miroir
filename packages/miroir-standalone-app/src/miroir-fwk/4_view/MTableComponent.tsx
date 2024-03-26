@@ -5,9 +5,8 @@ import {
   ColGroupDef
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SubmitHandler } from 'react-hook-form';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -32,6 +31,7 @@ import {
 import EntityEditor from '../../miroir-fwk/4_view/EntityEditor';
 import {
   useErrorLogService,
+  useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from '../../miroir-fwk/4_view/MiroirContextReactProvider';
 import { ToolsCellRenderer } from './GenderCellRenderer';
@@ -41,6 +41,7 @@ import { useCurrentModel } from './ReduxHooks';
 import { defaultFormValues } from './ReportSectionListDisplay';
 import { packageName } from '../../constants';
 import { cleanLevel } from './constants';
+import { Button } from '@mui/material';
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"MtableComponent");
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -98,9 +99,12 @@ export const MTableComponent = (props: TableComponentProps) => {
   const contextDeploymentUuid = context.deploymentUuid;
   // const errorLog = useErrorLogService();
   
+  const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
   log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
   const [dialogFormIsOpen, setdialogFormIsOpen] = useState(false);
+  // const [rowData, setRowData] = useState<any[]>([]);
 
 
   // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
@@ -136,12 +140,22 @@ export const MTableComponent = (props: TableComponentProps) => {
         ),
       })),
     }),
-    [props]
+    [props.instancesToDisplay]
   );
   log.info("MTableComponent tableComponentRows", tableComponentRows);
+  
+  // useEffect(
+  //   ()=>{
+  //     log.info("MTableComponent setRowData tableComponentRows", tableComponentRows);
+  //     setRowData(tableComponentRows.tableComponentRowUuidIndexSchema)
+  //   },[tableComponentRows]
+  // )
 
+  // const tableComponentRowsCopy = tableComponentRows.tableComponentRowUuidIndexSchema.slice()
+  // log.info("MTableComponent tableComponentRowsCopy", tableComponentRowsCopy);
   
 
+  // ##############################################################################################
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
     // event?.stopPropagation();
     log.warn("onCellValueChanged",event, 'contextDeploymentUuid',contextDeploymentUuid)
@@ -191,7 +205,10 @@ export const MTableComponent = (props: TableComponentProps) => {
     // }
   },[props,currentModel,])
 
-  const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
+  // ##############################################################################################
+  // const onSubmitTableRowFormDialog: SubmitHandler<JsonObjectFormEditorDialogInputs> = useCallback(async (data,event) => {
+  // const onSubmitTableRowFormDialog: (data:JsonObjectFormEditorDialogInputs, event:React.BaseSyntheticEvent)=>void = useCallback(async (data,event) => {
+  const onSubmitTableRowFormDialog: (data:JsonObjectFormEditorDialogInputs)=>void = useCallback(async (data) => {
     // event?.stopPropagation();
     log.info('MTableComponent onSubmitTableRowFormDialog called with data',data);
     
@@ -203,6 +220,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     handleDialogTableRowFormClose('');
   },[props])
 
+  // ##############################################################################################
   const handleDialogTableRowFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
     event?.stopPropagation();
     // const editedObject = props.instancesToDisplay?props.instancesToDisplay[a["uuid"]]:a;
@@ -224,6 +242,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     setdialogFormIsOpen(true);
   },[props.instancesToDisplay]);
 
+  // ##############################################################################################
   const handleDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
     event?.stopPropagation();
     log.info('ReportComponent handleDialogTableRowFormClose',value);
@@ -231,6 +250,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     setdialogFormIsOpen(false);
   },[]);
 
+  // ##############################################################################################
   const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
     editable: true,
     sortable: true,
@@ -265,6 +285,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   );
   prevProps = props;
 
+  // ##############################################################################################
   const onCellClicked = useCallback((event:CellClickedEvent)=> {
     // event.stopPropagation();
     log.warn("onCellClicked event.colDef.field",event.colDef.field,"event",event,"props", props)
@@ -329,6 +350,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   // function onRowValueChanged(e:RowDataUpdatedEvent) {
   //   log.warn("onRowValueChanged",e)
   // }
+  // const againRowData:any[] = Object.values(props.instancesToDisplay??{});
 
   return (
     <div>
@@ -339,10 +361,16 @@ export const MTableComponent = (props: TableComponentProps) => {
       {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
       {props.type == "EntityInstance"? (
         <div>
+          <div>
+            Entity Instance
+          </div>
+
           <JsonObjectFormEditorDialog
             showButton={false}
             isOpen={dialogFormIsOpen}
             isAttributes={true}
+            addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
+            setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
             // label='OuterDialog'
             // label={props.defaultlabel??props.currentEntityDefinition?.name}
             label={props.currentEntity?.name??"No Entity Found!"}
@@ -353,29 +381,25 @@ export const MTableComponent = (props: TableComponentProps) => {
             currentModel={props.currentModel}
             defaultFormValuesObject={
               dialogFormObject??props.defaultFormValuesObject
-                // : defaultFormValues(
-                //     props.type,
-                //     props.currentEntityDefinition?.jzodSchema as JzodObject,
-                //     [],
-                //     props.currentEntity,
-                //     props.displayedDeploymentDefinition
-                //   )
             }
-            // onSubmit={onSubmitTableRowFormDialog}
+            onSubmit={onSubmitTableRowFormDialog}
             onClose={handleDialogTableRowFormClose}
           />
           <div id="tata" className="ag-theme-alpine" style={props.styles}>
             {/* <div id="tata" className="ag-theme-alpine"> */}
-            <AgGridReact
+            {
+              // tableComponentRows.tableComponentRowUuidIndexSchema.length > 0?
+              <AgGridReact
                 columnDefs={columnDefs}
                 // autoSizeStrategy={autoSizeStrategy}
                 // rowData={instancesWithStringifiedJsonAttributes.instancesWithStringifiedJsonAttributes}
+                // rowData={tableComponentRowsCopy}
                 rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
                 // rowData={gridData}
-                getRowId={(params) => {
-                  // log.info("MtableComponent getRowId", params);
-                  return params.data?.rawValue.uuid ? params.data?.rawValue.uuid : params.data?.rawValue.id;
-                }}
+                // getRowId={(params) => {
+                //   // log.info("MtableComponent getRowId", params);
+                //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
+                // }}
                 defaultColDef={defaultColDef}
                 onCellClicked={onCellClicked}
                 onCellValueChanged={onCellValueChanged}
@@ -386,10 +410,18 @@ export const MTableComponent = (props: TableComponentProps) => {
                 // onCellDoubleClicked={onCellDoubleClicked}
                 // onRowValueChanged={onRowValueChanged}
               ></AgGridReact>
+            // :
+            //   <div>
+            //     No data to display
+            //   </div>
+            }
           </div>
         </div>
       ) : (
         <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
+          <div>
+            Not EntityInstance
+          </div>
           {/* MtableComponent {props.type} {JSON.stringify(props.columnDefs.columnDefs)} {JSON.stringify(props.rowData)} */}
           {/* <AgGridReact
             columnDefs={dummyColumnDefs}
