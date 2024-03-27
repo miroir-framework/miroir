@@ -103,6 +103,7 @@ export interface JzodElementFormEditorCorePropsFormik {
   name: string,
   listKey: string,
   rootLesslistKey: string,
+  rootLesslistKeyArray: string[],
   indentLevel?:number,
   resolvedJzodSchema: JzodElement | undefined,
   // initialValuesObject: any,
@@ -170,9 +171,9 @@ export const ExpandOrFold = (
     hiddenFormItems: {[k: string]: boolean},
     // setHiddenFormItems: any,
     setHiddenFormItems: React.Dispatch<
-      React.SetStateAction<{
-        [k: string]: boolean;
-      }>
+    React.SetStateAction<{
+      [k: string]: boolean;
+    }>
     >,
     listKey: string,
   }
@@ -200,6 +201,36 @@ export const ExpandOrFold = (
   );
 }
 
+// ################################################################################################
+function getValue(valueObject:any, path: string[]) {
+  // if (path.length > 0) {
+    // const length = path.length
+    log.info("getValue called with", valueObject, "path", path)
+    return path.reduce((acc, curr, index) => {
+      if (index == path.length && (acc == undefined || acc[curr] == undefined)) {
+        throw new Error(
+          "getValue value object=" +
+            valueObject +
+            ", path=" +
+            path +
+            " either attribute " +
+            curr +
+            " not found in " +
+            acc +
+            " or not last in path but leading to undefined " +
+            curr[acc]
+        );
+      } else {
+        return acc[curr];
+      }
+      // if (acc) {
+      // } else {
+      // }
+    }, valueObject);
+    // } else {
+  //   return valueObject
+  // }
+}
 let count = 0;
 // #####################################################################################################
 export const JzodElementEditorFormik = (
@@ -212,7 +243,7 @@ export const JzodElementEditorFormik = (
   // const { register, setValue } = formMethods;
 
   // const [selectedOption, setSelectedOption] = useState({label:props.name,value:props.initialValuesObject});
-  // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+  const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   // const props: JzodElementEditorProps = useMemo(
   //   () => (
@@ -265,7 +296,15 @@ export const JzodElementEditorFormik = (
     props
   );
 
-  const currentValue = props.listKey == "ROOT"? props.formik.values:props.formik.values[props.rootLesslistKey];
+  // const currentValue = props.listKey == "ROOT"? props.formik.values:props.formik.values[props.rootLesslistKey];
+  const currentValue = getValue(props.formik.values,props.rootLesslistKeyArray);
+  log.info(
+    "rendering",
+    props.listKey,
+    "currentValue",
+    currentValue,
+  );
+
   const [itemsOrder, setItemsOrder] = useState<any[]>(
     props.resolvedJzodSchema?.type == "object" && typeof(currentValue) == "object" && currentValue !== null?
       Object.keys(currentValue)
@@ -376,6 +415,7 @@ export const JzodElementEditorFormik = (
                 itemsOrder
                   // .map((i): [string, JzodElement] => [i, props.initialValuesObject[i]])
                   .map((i): [string, JzodElement] => [i, props.formik.values[props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + i[0]):i[0]]])
+                  // .map((i): [string, JzodElement] => [i, getValue(props.formik.values,[...props.rootLesslistKeyArray,i[0]])])
                   .map((attribute: [string, JzodElement]) => {
                     // const currentAttributeDefinition = elementJzodSchema.definition[attribute[0]];
                     const currentAttributeDefinition = resolvedJzodSchema.definition[attribute[0]];
@@ -388,6 +428,7 @@ export const JzodElementEditorFormik = (
                           name={attribute[0]}
                           listKey={props.listKey + "." + attribute[0]}
                           rootLesslistKey={props.rootLesslistKey.length > 0? props.rootLesslistKey + "." + attribute[0]:attribute[0]}
+                          rootLesslistKeyArray={[...props.rootLesslistKeyArray,attribute[0]]}
                           indentLevel={usedIndentLevel}
                           label={currentAttributeDefinition?.extra?.defaultLabel}
                           // initialValuesObject={props.initialValuesObject
@@ -414,14 +455,188 @@ export const JzodElementEditorFormik = (
         );
         break;
       }
-      case "function":
-      case "array":
+      case "array": {
+        log.info("############################################### JzodElementEditorFormik array rootLesslistKey", props.rootLesslistKey, "values", props.formik.values);
+        // let resolvedJzodSchema: JzodElement = props.resolvedJzodSchema;
+
+        
+        // const columnDefs: any[] = getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
+        //   ((elementJzodSchema as JzodArray).definition
+        //     ? (elementJzodSchema as JzodArray).definition
+        //     : {}) as JzodObject
+        // );
+        // const resolvedJzodSchema =
+        //   elementJzodSchema.definition.type == "schemaReference"
+        //     ? // ? resolveJzodSchemaReference(elementJzodSchema.definition, currentModel, props.rootJzodSchema)
+        //       resolveJzodSchemaReference(
+        //         miroirFundamentalJzodSchema,
+        //         elementJzodSchema.definition,
+        //         currentModel,
+        //         {} as JzodObject
+        //       )
+        //     : elementJzodSchema.definition;
+
+        // const targetJzodSchema = resolvedJzodSchema.type == 'union'?props.currentEnumJzodSchemaResolver[elementJzodSchema?.type]:resolvedJzodSchema;
+        // const targetJzodSchema = props.resolvedJzodSchema;
+        // const targetJzodSchema =
+        //   resolvedJzodSchema.type == "union"
+        //     ? props.currentEnumJzodSchemaResolver(elementJzodSchema?.type, elementJzodSchema?.definition)
+        //     : resolvedJzodSchema;
+
+        // const arrayValueObject = props.formik.values[props.rootLesslistKey];
+        const arrayValueObject = getValue(props.formik.values,props.rootLesslistKeyArray);
+        log.info("array",arrayValueObject, "resolvedJzodSchema",props.resolvedJzodSchema);
+
+        
+        return (
+          <div style={{ marginLeft: `calc(${usedIndentLevel}*(${indentShift}))` }}>
+            {displayedLabel}:{" ["}{" "}
+            <ExpandOrFold
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
+              listKey={props.listKey}
+            ></ExpandOrFold>
+            {/* <div>itemsOrder {JSON.stringify(itemsOrder)}</div> */}
+            <div id={props.listKey + ".inner"} style={{ display: hiddenFormItems[props.listKey] ? "none" : "block" }}>
+              {/* {props.initialValuesObject.map((attribute: JzodElement, index: number) => { */}
+              {(itemsOrder as number[])
+                .map((i: number):[number, JzodElement] => [i, arrayValueObject[i]])
+                .map((attributeParam: [number, JzodElement]) => {
+                  const index: number = attributeParam[0];
+                  const attribute = attributeParam[1];
+                  // HACK HACK HACK
+                  // in the case of a union type, the concrete type of each member has to be resolved, as in the case of the jzodElement definition.
+                  // A proper solution should be devised, such as detecting that a type is displayed (here this could be problematic in general when a
+                  // "type" attribute is defined in a value, "type" becomes a reserved word by Jzod, this is not good.)
+                  // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
+
+                  // const currentAttributeJzodSchema: JzodElement = props.resolvedJzodSchema.definition
+
+                  // const currentAttributeJzodSchema =
+                  //   resolvedJzodSchema.type == "union" && attribute.type
+                  //     ? // ? props.currentEnumJzodSchemaResolver[attribute.type]
+                  //       props.currentEnumJzodSchemaResolver(attribute.type, attribute.definition)
+                  //     : targetJzodSchema; // Union of jzodElements
+                  log.info(
+                    "array [",
+                    index,
+                    "]",
+                    attribute,
+                    "type",
+                    attribute.type,
+                    "found schema",
+                    props.resolvedJzodSchema
+                  );
+                  return (
+                    <div
+                      key={props.listKey + "." + index}
+                      style={{ marginLeft: `calc((${usedIndentLevel} + 1)*(${indentShift}))` }}
+                    >
+                      <button
+                        style={{ border: 0, backgroundColor: "transparent" }}
+                        disabled={index == itemsOrder.length - 1}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+
+                          const currentItemIndex: number = index;
+                          let newItemsOrder = itemsOrder.slice();
+                          const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
+                          newItemsOrder.splice(currentItemIndex + 1, 0, cutOut);
+                          setformHelperState(Object.assign(formHelperState, { [props.listKey]: newItemsOrder }));
+                          log.info(
+                            "JzodElementEditorFormik array moving item",
+                            currentItemIndex,
+                            "in object with items",
+                            itemsOrder,
+                            "cutOut",
+                            cutOut,
+                            "new order",
+                            newItemsOrder
+                          );
+                          setItemsOrder(newItemsOrder);
+                        }}
+                      >
+                        {"v"}
+                      </button>
+                      <button
+                        style={{ border: 0, backgroundColor: "transparent" }}
+                        disabled={index == 0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+
+                          const currentItemIndex: number = index;
+                          let newItemsOrder = itemsOrder.slice();
+                          const cutOut = newItemsOrder.splice(currentItemIndex, 1)[0];
+                          newItemsOrder.splice(currentItemIndex - 1, 0, cutOut);
+                          setformHelperState(Object.assign(formHelperState, { [props.listKey]: newItemsOrder }));
+                          log.info(
+                            "JzodElementEditorFormik array moving item",
+                            currentItemIndex,
+                            "in object with items",
+                            itemsOrder,
+                            "cutOut",
+                            cutOut,
+                            "new order",
+                            newItemsOrder
+                          );
+                          setItemsOrder(newItemsOrder);
+                        }}
+                      >
+                        {"^"}
+                      </button>
+                      <JzodElementEditorFormik
+                        name={"" + index}
+                        listKey={props.listKey + "." + index}
+                        // currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
+                        indentLevel={usedIndentLevel}
+                        label={props.resolvedJzodSchema?.extra?.defaultLabel}
+                        // initialValuesObject={props.initialValuesObject
+                        //     ? props.initialValuesObject[index]
+                        //     : undefined}
+                        // showButton={true}
+                        currentDeploymentUuid={props.currentDeploymentUuid}
+                        currentApplicationSection={props.currentApplicationSection}
+                        // elementJzodSchema={currentAttributeJzodSchema}
+                        // rootJzodSchema={props.rootJzodSchema}
+
+                        rootLesslistKey={props.rootLesslistKey.length > 0? (props.rootLesslistKey + "." + index):("" +index)}
+                        rootLesslistKeyArray={[...props.rootLesslistKeyArray,""+index]}
+
+                        // name={attribute[0]}
+                        // listKey={props.listKey + "." + attribute[0]}
+                        // indentLevel={usedIndentLevel}
+                        // label={currentAttributeDefinition?.extra?.defaultLabel}
+                        // initialValuesObject={props.initialValuesObject
+                        //   ? props.initialValuesObject[attribute[0]]
+                        //   : undefined}
+                        // showButton={true}
+                        // currentDeploymentUuid={props.currentDeploymentUuid}
+                        // currentApplicationSection={props.currentApplicationSection}
+                        resolvedJzodSchema={props.resolvedJzodSchema?.definition as any} // TODO: wrong type seen for props.resolvedJzodSchema! (cannot be undefined, really)
+                        formik={props.formik}
+                        // elementJzodSchema={currentAttributeDefinition}
+                        // rootJzodSchema={props.rootJzodSchema}
+                        // register={props.register}
+                        // setValue={props.setValue}
+                    />
+                    </div>
+                  );
+                })}
+            </div>
+            {"]"}
+          </div>
+        );
+        break;
+
+      }
       case "simpleType": {
         switch (props.resolvedJzodSchema.definition) {
           case "string":{
             return (
               <>
-                <label htmlFor={props.listKey}>{props.rootLesslistKey}: </label>
+                <label htmlFor={props.listKey}>{displayedLabel}: </label>
                 {/* <label htmlFor={props.listKey}>{displayedLabel}: </label> */}
                 <input
                   // key={props.listKey}
@@ -429,10 +644,10 @@ export const JzodElementEditorFormik = (
                   type="text"
                   id={props.rootLesslistKey}
                   name={props.name}
-                  // {...props.formik.getFieldProps(props.listKey)}
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
                   // defaultValue={props.initialValuesObject}
                   onChange={props.formik.handleChange}
-                  value={props.formik.values[props.rootLesslistKey]}
+                  value={currentValue}
                 />
               </>
             );
@@ -477,7 +692,7 @@ export const JzodElementEditorFormik = (
                 <input
                   form={"form." + props.name}
                   name={props.name}
-                  {...props.formik.getFieldProps(props.listKey)}
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
                   // onChange={props.formik.handleChange}
                   // value={props.formik.values[props.rootLesslistKey]}
                   // onChange={(e) => {
@@ -502,7 +717,7 @@ export const JzodElementEditorFormik = (
                   id={props.listKey}
                   form={"form." + props.name}
                   name={props.name}
-                  {...props.formik.getFieldProps(props.listKey)}
+                  {...props.formik.getFieldProps(props.rootLesslistKey)}
                   // value={props.formik.values[props.rootLesslistKey]}
                   // onChange={(e) => {
                   //   log.info("JzodElementEditorFormik number onChange!", props.name, e.target.value);
@@ -518,9 +733,29 @@ export const JzodElementEditorFormik = (
         }
         break;
       }
+      case "literal": {
+        return (
+          <>
+            <label htmlFor={props.listKey}>{displayedLabel}: </label>
+            <input
+              // {...register(props.listKey)}
+              id={props.listKey}
+              form={"form." + props.name}
+              name={props.name}
+              {...props.formik.getFieldProps(props.rootLesslistKey)}
+              // value={props.formik.values[props.rootLesslistKey]}
+              // onChange={(e) => {
+              //   log.info("JzodElementEditorFormik number onChange!", props.name, e.target.value);
+              //   // setValue(props.listKey, e.target.value);
+              // }}
+              // defaultValue={defaultValue}
+            />
+          </>
+        );
+      }
       case "enum":
+      case "function":
       case "lazy":
-      case "literal":
       case "intersection":
       case "map":
       case "promise":
@@ -531,7 +766,7 @@ export const JzodElementEditorFormik = (
       case "union": {
         return (
           <div>
-            default case!
+            default case: {props.resolvedJzodSchema.type}
             {/* <div>
               found schema: {JSON.stringify(props.resolvedJzodSchema, null, 2)}
             </div>

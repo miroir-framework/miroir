@@ -26,7 +26,16 @@
 // import { miroirJzodSchemaBootstrapZodSchema } from "../../src/0_interfaces/1_core/EntityDefinition";
 // import { JzodElement, resolveReferencesForJzodSchemaAndValueObject } from "miroir-core";
 // import * as miroirFundamentalJzodSchema from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { Entity, EntityDefinition, EntityInstance, JzodElement, JzodSchema, Menu, MetaModel, Report } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  Entity,
+  EntityDefinition,
+  EntityInstance,
+  JzodElement,
+  JzodSchema,
+  Menu,
+  MetaModel,
+  Report,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { MiroirModel } from '../../src/0_interfaces/1_core/Model';
 
 import { resolveReferencesForJzodSchemaAndValueObject} from "../../src/1_core/Jzod";
@@ -7504,12 +7513,16 @@ function testResolve(
     testSchema,
     testValueObject,
     defaultMiroirMetaModel,
+    defaultMiroirMetaModel,
     {}
   )
-  expect(testResult.status).toEqual("ok");
   if (testResult.status == "ok") {
+    expect(testResult.status).toEqual("ok");
     console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
     expect(testResult.element).toEqual(expectedResult);
+  } else {
+    console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
+    expect(testResult.status).toEqual("ok");
   }
 }
 
@@ -7845,7 +7858,7 @@ describe(
           //   },
           //   testValueObject: ["1", "2", "3"],
           // },
-          // array of schemaReference / object
+          // // array of schemaReference / object
           // test100: {
           //   testSchema: {
           //     type: "array",
@@ -7875,18 +7888,23 @@ describe(
           //     },
           //   },
           //   expectedResult: {
-          //     type: "array",
-          //     definition: {
-          //       type: "simpleType",
-          //       definition: "string",
-          //     },
+          //     "type": "array",
+          //     "definition": {
+          //       "type": "object",
+          //       "definition": {
+          //         "a": {
+          //           "type": "simpleType",
+          //           "definition": "string"
+          //         }
+          //       }
+          //     }
           //   },
           //   testValueObject: [
           //     { a: "myString" },
           //     // { a: { a: "myString" } }
           //   ],
           // },
-          // array of union Type
+          // // array of union Type
           // // JzodSchema: literal
           // test500: {
           //   testSchema: {
@@ -8109,184 +8127,507 @@ describe(
           //     },
           //   },
           // },
+          // // based on "real" cases
+          // test900: {
+          //   testSchema: {
+          //     "type": "object",
+          //     "definition": {
+          //       "uuid": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "extra": {
+          //           "id": 1,
+          //           "defaultLabel": "Uuid",
+          //           "editable": false
+          //         }
+          //       },
+          //       "parentName": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 2,
+          //           "defaultLabel": "Entity Name",
+          //           "editable": false
+          //         }
+          //       },
+          //       "parentUuid": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "extra": {
+          //           "id": 3,
+          //           "defaultLabel": "Entity Uuid",
+          //           "editable": false
+          //         }
+          //       },
+          //       "name": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "extra": {
+          //           "id": 4,
+          //           "defaultLabel": "Name",
+          //           "editable": true
+          //         }
+          //       },
+          //       "author": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 5,
+          //           "defaultLabel": "Author",
+          //           "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          //           "editable": true
+          //         }
+          //       },
+          //       "publisher": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 5,
+          //           "defaultLabel": "Publisher",
+          //           "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          //           "editable": true
+          //         }
+          //       }
+          //     }
+          //   },
+          //   expectedResult: {
+          //     "type": "object",
+          //     "definition": {
+          //       "uuid": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "extra": {
+          //           "id": 1,
+          //           "defaultLabel": "Uuid",
+          //           "editable": false
+          //         }
+          //       },
+          //       "parentName": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 2,
+          //           "defaultLabel": "Entity Name",
+          //           "editable": false
+          //         }
+          //       },
+          //       "parentUuid": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "extra": {
+          //           "id": 3,
+          //           "defaultLabel": "Entity Uuid",
+          //           "editable": false
+          //         }
+          //       },
+          //       "name": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "extra": {
+          //           "id": 4,
+          //           "defaultLabel": "Name",
+          //           "editable": true
+          //         }
+          //       },
+          //       "author": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 5,
+          //           "defaultLabel": "Author",
+          //           "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          //           "editable": true
+          //         }
+          //       },
+          //       "publisher": {
+          //         "type": "simpleType",
+          //         "definition": "string",
+          //         "validations": [
+          //           {
+          //             "type": "uuid"
+          //           }
+          //         ],
+          //         "optional": true,
+          //         "extra": {
+          //           "id": 5,
+          //           "defaultLabel": "Publisher",
+          //           "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          //           "editable": true
+          //         }
+          //       }
+          //     }
+          //   },
+          //   testValueObject: {
+          //     "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+          //     "parentName": "Book",
+          //     "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          //     "name": "Renata n'importe quoi",
+          //     "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+          //     "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+          //   },
+          // },
           // based on "real" cases
-          test900: { 
+          test910: {
             testSchema: {
-              "type": "object",
-              "definition": {
-                "uuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
+              type: "schemaReference",
+              context: {
+                menuItem: {
+                  type: "object",
+                  definition: {
+                    label: {
+                      type: "simpleType",
+                      definition: "string",
+                    },
+                    section: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "applicationSection",
+                      },
+                    },
+                    application: {
+                      type: "simpleType",
+                      definition: "string",
+                      validations: [
+                        {
+                          type: "uuid",
+                        },
+                      ],
+                      extra: {
+                        id: 1,
+                        defaultLabel: "Uuid",
+                        editable: false,
+                      },
+                    },
+                    reportUuid: {
+                      type: "simpleType",
+                      definition: "string",
+                      validations: [
+                        {
+                          type: "uuid",
+                        },
+                      ],
+                      extra: {
+                        id: 1,
+                        defaultLabel: "Uuid",
+                        editable: false,
+                      },
+                    },
+                    instanceUuid: {
+                      type: "simpleType",
+                      definition: "string",
+                      optional: true,
+                      validations: [
+                        {
+                          type: "uuid",
+                        },
+                      ],
+                      extra: {
+                        id: 1,
+                        defaultLabel: "Uuid",
+                        editable: false,
+                      },
+                    },
+                    icon: {
+                      type: "simpleType",
+                      definition: "string",
+                      validations: [
+                        {
+                          type: "uuid",
+                        },
+                      ],
+                    },
+                  },
+                },
+                menuItemArray: {
+                  type: "array",
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "menuItem",
+                    },
+                  },
+                },
+                sectionOfMenu: {
+                  type: "object",
+                  definition: {
+                    title: {
+                      type: "simpleType",
+                      definition: "string",
+                    },
+                    label: {
+                      type: "simpleType",
+                      definition: "string",
+                    },
+                    items: {
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "menuItemArray",
+                      },
+                    },
+                  },
+                },
+                simpleMenu: {
+                  type: "object",
+                  definition: {
+                    menuType: {
+                      type: "literal",
+                      definition: "simpleMenu",
+                    },
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "menuItemArray",
+                      },
+                    },
+                  },
+                },
+                complexMenu: {
+                  type: "object",
+                  definition: {
+                    menuType: {
+                      type: "literal",
+                      definition: "complexMenu",
+                    },
+                    definition: {
+                      type: "array",
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "sectionOfMenu",
+                        },
+                      },
+                    },
+                  },
+                },
+                menuDefinition: {
+                  type: "union",
+                  discriminator: "menuType",
+                  definition: [
                     {
-                      "type": "uuid"
-                    }
-                  ],
-                  "extra": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "parentName": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "optional": true,
-                  "extra": {
-                    "id": 2,
-                    "defaultLabel": "Entity Name",
-                    "editable": false
-                  }
-                },
-                "parentUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "simpleMenu",
+                      },
+                    },
                     {
-                      "type": "uuid"
-                    }
+                      type: "schemaReference",
+                      definition: {
+                        relativePath: "complexMenu",
+                      },
+                    },
                   ],
-                  "extra": {
-                    "id": 3,
-                    "defaultLabel": "Entity Uuid",
-                    "editable": false
-                  }
                 },
-                "name": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "extra": {
-                    "id": 4,
-                    "defaultLabel": "Name",
-                    "editable": true
-                  }
-                },
-                "author": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "optional": true,
-                  "extra": {
-                    "id": 5,
-                    "defaultLabel": "Author",
-                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                    "editable": true
-                  }
-                },
-                "publisher": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "optional": true,
-                  "extra": {
-                    "id": 5,
-                    "defaultLabel": "Publisher",
-                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                    "editable": true
-                  }
-                }
-              }
+              },
+              definition: {
+                relativePath: "menuDefinition",
+              },
             },
             expectedResult: {
               "type": "object",
               "definition": {
-                "uuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
+                "menuType": {
+                  "type": "literal",
+                  "definition": "complexMenu"
+                },
+                "definition": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "simpleType",
+                        "definition": "string"
+                      },
+                      "label": {
+                        "type": "simpleType",
+                        "definition": "string"
+                      },
+                      "items": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "label": {
+                              "type": "simpleType",
+                              "definition": "string"
+                            },
+                            "section": {
+                              "type": "literal",
+                              "definition": "model"
+                            },
+                            "application": {
+                              "type": "simpleType",
+                              "definition": "string",
+                              "validations": [
+                                {
+                                  "type": "uuid"
+                                }
+                              ],
+                              "extra": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            },
+                            "reportUuid": {
+                              "type": "simpleType",
+                              "definition": "string",
+                              "validations": [
+                                {
+                                  "type": "uuid"
+                                }
+                              ],
+                              "extra": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "editable": false
+                              }
+                            },
+                            "icon": {
+                              "type": "simpleType",
+                              "definition": "string",
+                              "validations": [
+                                {
+                                  "type": "uuid"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
                     }
-                  ],
-                  "extra": {
-                    "id": 1,
-                    "defaultLabel": "Uuid",
-                    "editable": false
-                  }
-                },
-                "parentName": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "optional": true,
-                  "extra": {
-                    "id": 2,
-                    "defaultLabel": "Entity Name",
-                    "editable": false
-                  }
-                },
-                "parentUuid": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "extra": {
-                    "id": 3,
-                    "defaultLabel": "Entity Uuid",
-                    "editable": false
-                  }
-                },
-                "name": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "extra": {
-                    "id": 4,
-                    "defaultLabel": "Name",
-                    "editable": true
-                  }
-                },
-                "author": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "optional": true,
-                  "extra": {
-                    "id": 5,
-                    "defaultLabel": "Author",
-                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                    "editable": true
-                  }
-                },
-                "publisher": {
-                  "type": "simpleType",
-                  "definition": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "optional": true,
-                  "extra": {
-                    "id": 5,
-                    "defaultLabel": "Publisher",
-                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                    "editable": true
                   }
                 }
               }
             },
             testValueObject: {
-                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
-                "parentName": "Book",
-                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-                "name": "Renata n'importe quoi",
-                "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
-                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
-              },
+              menuType: "complexMenu",
+              definition: [
+                {
+                  title: "Miroir",
+                  label: "miroir",
+                  items: [
+                    {
+                      label: "Miroir Entities",
+                      section: "model",
+                      application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                      reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                      icon: "category",
+                    },
+                    {
+                      label: "Miroir Entity Definitions",
+                      section: "model",
+                      application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                      reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                      icon: "category",
+                    },
+                    {
+                      label: "Miroir Reports",
+                      section: "data",
+                      application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                      reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                      icon: "list",
+                    },
+                    {
+                      label: "Miroir Menus",
+                      section: "data",
+                      application: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                      reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                      icon: "list",
+                    },
+                  ],
+                },
+                {
+                  title: "Library",
+                  label: "library",
+                  items: [
+                    {
+                      label: "Library Entities",
+                      section: "model",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                      icon: "category",
+                    },
+                    {
+                      label: "Library Entity Definitions",
+                      section: "model",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+                      icon: "category",
+                    },
+                    {
+                      label: "Library Tests",
+                      section: "data",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
+                      icon: "category",
+                    },
+                    {
+                      label: "Library Books",
+                      section: "data",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                      icon: "auto_stories",
+                    },
+                    {
+                      label: "Library Authors",
+                      section: "data",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                      icon: "star",
+                    },
+                    {
+                      label: "Library Publishers",
+                      section: "data",
+                      application: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                      reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                      icon: "account_balance",
+                    },
+                  ],
+                },
+              ],
+            },
           },
         };
 

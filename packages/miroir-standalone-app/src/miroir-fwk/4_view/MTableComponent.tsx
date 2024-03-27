@@ -107,11 +107,11 @@ export const MTableComponent = (props: TableComponentProps) => {
   // const [rowData, setRowData] = useState<any[]>([]);
 
 
-  // const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
   // const libraryAppModel: MetaModel = useCurrentModel(applicationDeploymentLibrary.uuid);
   
   // const currentModel = contextDeploymentUuid == applicationDeploymentLibrary.uuid? libraryAppModel:miroirMetaModel;
-  const currentModel = useCurrentModel(contextDeploymentUuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(applicationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
   log.info("MTableComponent currentModel", currentModel);
 
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
@@ -310,7 +310,9 @@ export const MTableComponent = (props: TableComponentProps) => {
         ) {
           const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
   
-          const targetEntityDefinition:EntityDefinition | undefined = currentModel.entityDefinitions.find((e)=> e.entityUuid == event.colDef.cellRendererParams.entityUuid);
+          const targetEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions.find(
+            (e) => e.entityUuid == event.colDef.cellRendererParams.entityUuid
+          );
   
           // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
           navigate(
@@ -378,7 +380,8 @@ export const MTableComponent = (props: TableComponentProps) => {
             currentDeploymentUuid={contextDeploymentUuid}
             currentApplicationSection={context.applicationSection}
             miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
-            currentModel={props.currentModel}
+            currentAppModel={currentModel}
+            currentMiroirModel={miroirMetaModel}
             defaultFormValuesObject={
               dialogFormObject??props.defaultFormValuesObject
             }

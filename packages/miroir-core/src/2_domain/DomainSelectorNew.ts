@@ -421,7 +421,12 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
   domainState: DomainState,
   selectorParams: DomainStateSelectorParams<DomainModelGetSingleSelectObjectListQueryQueryParams>
 ): DomainElement => {
-  log.info("selectEntityInstanceListFromListQueryAndDomainStateNew called with queryType", selectorParams.query.singleSelectQuery.select.queryType, "selectorParams", selectorParams)
+  log.info(
+    "selectEntityInstanceListFromListQueryAndDomainStateNew called with queryType",
+    selectorParams.query.singleSelectQuery.select.queryType,
+    "selectorParams",
+    selectorParams
+  );
   const localSelectorMap:DomainStateSelectorMap<DomainModelGetSingleSelectObjectListQueryQueryParams> = selectorParams?.selectorMap??selectorMap;
   const selectedInstances: DomainElement = localSelectorMap.selectEntityInstanceUuidIndexFromDomainStateNew(domainState, selectorParams);
 
@@ -474,7 +479,10 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
         case "instanceUuidIndexUuidIndex":
         case "array":
         default: {
-          throw new Error("selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByRelation can not use reference");
+          throw new Error(
+            "selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByRelation can not use reference instances with type" +
+              selectedInstances.elementType
+          );
           break;
         }
       }
@@ -516,7 +524,7 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
                   const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
                   const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
       
-                    switch ((localOtherList as DomainElement).elementType) {
+                    switch (localOtherList.elementType) {
                       case "instanceUuidIndex": {
                         // TODO: take into account!
                         // [relationQuery.objectListReferenceAttribute ?? "uuid"];
@@ -549,8 +557,8 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
                       case "array":
                       default: {
                         throw new Error(
-                          "selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByManyToManyRelation can not use objectListReference, elementType=" +
-                            localOtherList.elementType
+                          "selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByManyToManyRelation can not use objectListReference, selectedInstances elementType=" +
+                          selectedInstances.elementType + " other list elementType" + localOtherList.elementType
                         );
                         break;
                       }
@@ -560,7 +568,10 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
               )
             )} as DomainElementUuidIndex;
           } else {
-            throw new Error("selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByManyToManyRelation could not find list for objectListReference.");
+            throw new Error(
+              "selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByManyToManyRelation could not find list for objectListReference, selectedInstances elementType=" +
+                selectedInstances.elementType
+            );
           }
           break;
         }
@@ -571,7 +582,7 @@ export const selectEntityInstanceListFromListQueryAndDomainStateNew: DomainState
         case "failure":
         case "array":
         default: {
-          throw new Error("selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByRelation can not use reference");
+          throw new Error("selectEntityInstanceListFromListQueryAndDomainStateNew selectObjectListByRelation can not use reference with elementType=" + selectedInstances.elementType);
           break;
         }
       }

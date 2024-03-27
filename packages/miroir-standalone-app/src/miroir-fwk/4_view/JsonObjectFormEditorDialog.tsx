@@ -51,7 +51,8 @@ export interface JsonObjectFormEditorCoreDialogProps {
   defaultFormValuesObject: any,
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection,
-  currentModel: MetaModel,
+  currentAppModel: MetaModel,
+  currentMiroirModel: MetaModel,
   addObjectdialogFormIsOpen: boolean,
   setAddObjectdialogFormIsOpen: (a:boolean) => void,
   onCreateFormObject?: (a: any) => void,
@@ -236,8 +237,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     async (data:any) => {
       // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
       log.info(
-        // "handleAddObjectDialogFormSubmit called for buttonType",
-        // buttonType,
         "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
         data,
         "props",
@@ -304,16 +303,17 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     () => props.miroirFundamentalJzodSchema &&
     props.entityDefinitionJzodSchema &&
     props.defaultFormValuesObject &&
-    props.currentModel ?
+    props.currentAppModel ?
     resolveReferencesForJzodSchemaAndValueObject(
       props.miroirFundamentalJzodSchema,
       props.entityDefinitionJzodSchema,
       props.defaultFormValuesObject,
-      props.currentModel,
+      props.currentAppModel,
+      props.currentMiroirModel,
     ): undefined,
     [props]
   )
-  log.info("called resolveReferencesForJzodSchemaAndValueObject, resolvedJzodSchema",resolvedJzodSchema)
+  log.info("called resolveReferencesForJzodSchemaAndValueObject for valueObject",props.defaultFormValuesObject,"jzodSchema",props.entityDefinitionJzodSchema," resolvedJzodSchema",resolvedJzodSchema)
   // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
   //   props.currentDeploymentUuid,
   //   props.currentApplicationSection,
@@ -408,6 +408,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
             name={'ROOT'}
             listKey={'ROOT'}
             rootLesslistKey=""
+            rootLesslistKeyArray={[]}
             // currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
             label={props.label}
             // initialValuesObject={props.defaultFormValuesObject}

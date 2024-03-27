@@ -46,27 +46,29 @@ import entityDefinitionReportV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4
 
 
 
-const miroirFundamentalJzodSchema = getMiroirFundamentalJzodSchema(
-  entityDefinitionBundleV1,
-  entityDefinitionCommit,
-  modelEndpointVersionV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  domainEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
-  entityDefinitionApplicationV1,
-  entityDefinitionApplicationVersionV1,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinitionV1,
-  entityDefinitionJzodSchemaV1,
-  entityDefinitionMenu ,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReportV1,
-)
+const miroirFundamentalJzodSchema = 
+  getMiroirFundamentalJzodSchema(
+    entityDefinitionBundleV1,
+    entityDefinitionCommit,
+    modelEndpointVersionV1,
+    storeManagementEndpoint,
+    instanceEndpointVersionV1,
+    undoRedoEndpointVersionV1,
+    localCacheEndpointVersionV1,
+    domainEndpointVersionV1,
+    queryEndpointVersionV1,
+    persistenceEndpointVersionV1,
+    jzodSchemajzodMiroirBootstrapSchema,
+    entityDefinitionApplicationV1,
+    entityDefinitionApplicationVersionV1,
+    entityDefinitionEntity,
+    entityDefinitionEntityDefinitionV1,
+    entityDefinitionJzodSchemaV1,
+    entityDefinitionMenu ,
+    entityDefinitionQueryVersionV1,
+    entityDefinitionReportV1,
+  )
+;
 
 console.log("generateZodSchemaFileFromJzodSchema miroirFundamentalJzodSchema:", miroirFundamentalJzodSchema);
 
