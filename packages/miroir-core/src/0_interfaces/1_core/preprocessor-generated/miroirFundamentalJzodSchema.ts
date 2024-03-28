@@ -311,6 +311,7 @@ export const miroirFundamentalJzodSchema = {
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
+        "subDiscriminator": "definition",
         "definition": [
           {
             "type": "schemaReference",
@@ -888,6 +889,11 @@ export const miroirFundamentalJzodSchema = {
             "definition": "union"
           },
           "discriminator": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true
+          },
+          "subDiscriminator": {
             "type": "simpleType",
             "definition": "string",
             "optional": true
@@ -2086,6 +2092,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "menuDefinition": {
         "type": "union",
+        "discriminator": "menuType",
         "definition": [
           {
             "type": "schemaReference",
@@ -2319,6 +2326,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "menuDefinition": {
                 "type": "union",
+                "discriminator": "menuType",
                 "definition": [
                   {
                     "type": "schemaReference",

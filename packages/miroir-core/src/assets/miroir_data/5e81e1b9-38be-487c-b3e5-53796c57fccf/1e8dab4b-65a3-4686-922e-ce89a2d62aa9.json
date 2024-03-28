@@ -280,6 +280,7 @@
       "jzodElement": {
         "type": "union",
         "discriminator": "type",
+        "subDiscriminator": "definition",
         "definition": [
           {
             "type": "schemaReference",
@@ -837,6 +838,11 @@
             "definition": "union"
           },
           "discriminator": {
+            "type": "simpleType",
+            "definition": "string",
+            "optional": true
+          },
+          "subDiscriminator": {
             "type": "simpleType",
             "definition": "string",
             "optional": true

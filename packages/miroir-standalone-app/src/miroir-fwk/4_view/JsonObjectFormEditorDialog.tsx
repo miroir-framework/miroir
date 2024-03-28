@@ -1,10 +1,9 @@
 import _ from "lodash";
 
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { Button, Dialog, DialogTitle, Paper, styled } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
+import { useCallback, useMemo } from "react";
 // import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { Formik, useFormik } from "formik";
+import { Formik } from "formik";
 
 import {
   ApplicationSection,
@@ -15,18 +14,14 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  applicationDeploymentMiroir,
   getLoggerName,
   resolveReferencesForJzodSchemaAndValueObject
 } from "miroir-core";
 
-import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../JzodTools";
+import { packageName } from "../../constants";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { useMiroirContextInnerFormOutput, useMiroirContextformHelperState } from "./MiroirContextReactProvider";
-import { useCurrentModel } from "./ReduxHooks";
 import { cleanLevel } from "./constants";
-import { packageName } from "../../constants";
-import { JzodElementEditorFormik } from "./JzodElementEditorFormik";
 
 
 const loggerName: string = getLoggerName(packageName, cleanLevel,"JsonObjectFormEditorDialog");
@@ -205,6 +200,29 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
 
   const formIsOpen = props.addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
+  const resolvedJzodSchema = useMemo(
+    () => props.miroirFundamentalJzodSchema &&
+    props.entityDefinitionJzodSchema &&
+    props.defaultFormValuesObject &&
+    props.currentAppModel ?
+    resolveReferencesForJzodSchemaAndValueObject(
+      props.miroirFundamentalJzodSchema,
+      props.entityDefinitionJzodSchema,
+      props.defaultFormValuesObject,
+      props.currentAppModel,
+      props.currentMiroirModel,
+    ): undefined,
+    [props]
+  )
+  log.info(
+    "called resolveReferencesForJzodSchemaAndValueObject for valueObject",
+    props.defaultFormValuesObject,
+    "jzodSchema",
+    props.entityDefinitionJzodSchema,
+    " resolvedJzodSchema",
+    resolvedJzodSchema
+  );
+
   // ##############################################################################################
   const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
     log.info(
@@ -299,21 +317,6 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     [props]
   );
 
-  const resolvedJzodSchema = useMemo(
-    () => props.miroirFundamentalJzodSchema &&
-    props.entityDefinitionJzodSchema &&
-    props.defaultFormValuesObject &&
-    props.currentAppModel ?
-    resolveReferencesForJzodSchemaAndValueObject(
-      props.miroirFundamentalJzodSchema,
-      props.entityDefinitionJzodSchema,
-      props.defaultFormValuesObject,
-      props.currentAppModel,
-      props.currentMiroirModel,
-    ): undefined,
-    [props]
-  )
-  log.info("called resolveReferencesForJzodSchemaAndValueObject for valueObject",props.defaultFormValuesObject,"jzodSchema",props.entityDefinitionJzodSchema," resolvedJzodSchema",resolvedJzodSchema)
   // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
   //   props.currentDeploymentUuid,
   //   props.currentApplicationSection,
@@ -404,7 +407,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
           // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
           onSubmit={formik.handleSubmit}
         >
-          <JzodElementEditorFormik
+          <JzodElementEditor
             name={'ROOT'}
             listKey={'ROOT'}
             rootLesslistKey=""
