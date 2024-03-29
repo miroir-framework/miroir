@@ -1,8 +1,10 @@
 import _ from "lodash";
 
 import { Dialog, DialogTitle, Paper, styled } from "@mui/material";
-import { useCallback, useMemo } from "react";
-// import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+
 import { Formik } from "formik";
 
 import {
@@ -197,6 +199,19 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
+  // const [codeEditorValue, setCodeEditorValue] = useState(props.defaultFormValuesObject?JSON.stringify(props.defaultFormValuesObject, null, 2):"");
+  // const [codeEditorValue, setCodeEditorValue] = useState(dialogOuterFormObject?JSON.stringify(dialogOuterFormObject, null, 2):"");
+  // const [codeEditorChangedValue, setCodeEditorChangedValue] = useState(false);
+
+  const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
+    log.info('edit code received value:', values);
+    // setCodeEditorValue(values);
+    // setCodeEditorChangedValue(true);
+    setdialogOuterFormObject(JSON.parse(values))
+    log.info('edit code done');
+    // setformHelperState(values);
+    // handleAddObjectDialogFormSubmit(values)
+  }, []);
 
   const formIsOpen = props.addObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
@@ -223,21 +238,21 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
     resolvedJzodSchema
   );
 
-  // ##############################################################################################
-  const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
-    log.info(
-      "handleAddObjectDialogFormOpen",
-      label,
-      "called, props.formObject",
-      props.defaultFormValuesObject,
-      "passed value",
-      a
-    );
+  // // ##############################################################################################
+  // const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
+  //   log.info(
+  //     "handleAddObjectDialogFormOpen",
+  //     label,
+  //     "called, props.formObject",
+  //     props.defaultFormValuesObject,
+  //     "passed value",
+  //     a
+  //   );
 
-    props.setAddObjectdialogFormIsOpen(true);
-    // reset(props.defaultFormValuesObject);
-    setdialogOuterFormObject(a);
-  },[props]);
+  //   props.setAddObjectdialogFormIsOpen(true);
+  //   // reset(props.defaultFormValuesObject);
+  //   setdialogOuterFormObject(a);
+  // },[props]);
 
   // ##############################################################################################
   const handleAddObjectDialogFormClose = useCallback((value: string) => {
@@ -264,6 +279,11 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       );
       // event?.stopPropagation();
       // let newVersion = {...data,...data['ROOT']};
+
+      // const effectiveData = codeEditorChangedValue? JSON.parse(codeEditorValue): data
+      const effectiveData = dialogOuterFormObject;
+      log.info("handleAddObjectDialogFormSubmit called with effectiveData", effectiveData);
+
       let reorderedDataValue: any;
       let result: any;
       if (formHelperState && Object.keys(formHelperState).length > 0) {
@@ -272,9 +292,10 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         const orderUpdatePath = orderUpdate.split(".").slice(1);
         const newOrder: number[] = Object.values(formHelperState)[0] as number[];
 
-        log.info("handleAddObjectDialogFormSubmit calling reorderField", data);
+        
+        log.info("handleAddObjectDialogFormSubmit calling reorderField");
 
-        const reorderedDataValue = reorderArrayField(data, orderUpdatePath, newOrder);
+        const reorderedDataValue = reorderArrayField(effectiveData, orderUpdatePath, newOrder);
         // const targetField = orderUpdateFields.slice(1).reduce((acc,curr)=>acc[curr],data);
         // reorderedDataValue = {...data,reorderedField}
         delete reorderedDataValue["ROOT"]; // WHY HAS ROOT BEEN ADDED???? BUG?
@@ -291,7 +312,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
         );
         result = props.onSubmit(newVersion);
       } else {
-        const newVersion = _.merge(data, data["ROOT"]);
+        const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
         delete newVersion["ROOT"];
         log.info(
           // "handleAddObjectDialogFormSubmit called for buttonType",
@@ -314,9 +335,15 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       // }
       return result;
     },
-    [props]
+    [props,JSON.stringify(dialogOuterFormObject, null, 2)]
   );
 
+  // const setCodeEditorValueWrapper = useCallback(
+  //   (a:any) => {
+  //     setCodeEditorValue(a)
+  //   },
+  //   [setCodeEditorValue]
+  // )
   // const selectList:EntityInstanceWithName[] = useLocalCacheInstancesForJzodAttribute(
   //   props.currentDeploymentUuid,
   //   props.currentApplicationSection,
@@ -340,26 +367,18 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
       {/* <span> */}
         {props.showButton ? (
           <h3>
-            Show Button!
-            {/* {props.label}
-            <Button
-              sx={{marginLeft: "10px"}}
-              variant="outlined"
-              onClick={(event) => {
-                event?.stopPropagation();
-                handleAddObjectDialogFormButtonClick(props?.label, props?.defaultFormValuesObject);
-              }}
-            >
-              <AddBoxIcon />
-            </Button> */}
+            Show Button! (Button is no more supported by JzonsObjectFormEditorDialog, this is a bug)
           </h3>
         ) : (
           <div></div>
         )}
       {/* </span> */}
-      {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && props.defaultFormValuesObject ? (
+      {/* {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && props.defaultFormValuesObject ? ( */}
+      {props.currentDeploymentUuid && props.currentApplicationSection && !props.showButton && props?.isOpen && dialogOuterFormObject ? (
         <Formik
-          initialValues={props.defaultFormValuesObject}
+          // initialValues={props.defaultFormValuesObject}
+          enableReinitialize={true}
+          initialValues={dialogOuterFormObject}
           onSubmit={
             async (values, { setSubmitting, setErrors }) => {
               log.info("onSubmit formik", values)
@@ -369,6 +388,7 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
                   await props.onCreateFormObject(values)
                   await props.onSubmit(values);
                 } else {
+                  setformHelperState(values);
                   await handleAddObjectDialogFormSubmit(values)
                 }
               } catch (e) {
@@ -385,51 +405,69 @@ export function JsonObjectFormEditorDialog(props: JsonObjectFormEditorDialogProp
               }
             }
           }
+          handleChange= {
+            async (e: ChangeEvent<any>) => {
+              log.info("onChange formik", e);
+              // try {
+              //   //  Send values somehow
+              //   if (props.onCreateFormObject) {
+              //     await props.onCreateFormObject(values)
+              //     await props.onSubmit(values);
+              //   } else {
+              //     await handleAddObjectDialogFormSubmit(values)
+              //   }
+              // } catch (e) {
+              //   log.error(e)
+              //   //  Map and show the errors in your form
+              //   // const [formErrors, unknownErrors] = mapErrorsFromRequest(e)
+          
+              //   // setErrors(formErrors)
+              //   // this.setState({
+              //   //   unknownErrors,
+              //   // })
+              // } finally {
+              //   setSubmitting(false)
+              // }
+            }
+
+          }
         >
-        {(
-          formik
-      //     {
-      //    values,
-      //    errors,
-      //    touched,
-      //    handleChange,
-      //    handleBlur,
-      //    handleSubmit,
-      //    isSubmitting,
-      //    /* and other goodies */
-      //  }
-       ) => (
-        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-        <DialogTitle>{props.label} add / edit Element</DialogTitle>
-        <span>form: {"form." + props.label}, JsonObjectFormEditorDialog count {count}</span>
-        <form
-          id={"form." + props.label}
-          // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
-          onSubmit={formik.handleSubmit}
-        >
-          <JzodElementEditor
-            name={'ROOT'}
-            listKey={'ROOT'}
-            rootLesslistKey=""
-            rootLesslistKeyArray={[]}
-            // currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-            label={props.label}
-            // initialValuesObject={props.defaultFormValuesObject}
-            // showButton={true}
-            currentDeploymentUuid={props.currentDeploymentUuid}
-            currentApplicationSection={props.currentApplicationSection}
-            resolvedJzodSchema={resolvedJzodSchema?.status == "ok"?resolvedJzodSchema.element:undefined}
-            formik={formik}
-            // elementJzodSchema={props.entityDefinitionJzodSchema}
-            // rootJzodSchema={props.entityDefinitionJzodSchema}
-            // register={register}
-            // setValue={setValue}
-          />
-          {/* {errors.exampleRequired && <span>This field is required</span>} */}
-          <button type="submit" name={props.label} form={"form." + props.label}>submit form.{props.label}</button>
-        </form>
-      </Dialog>
-         )}
+        {
+          (
+            formik
+          ) => (
+            <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
+              <DialogTitle>{props.label} add / edit Element</DialogTitle>
+              <span>form: {"form." + props.label}, JsonObjectFormEditorDialog count {count}</span>
+              <form
+                id={"form." + props.label}
+                // onSubmit={handleSubmit(handleAddObjectDialogFormSubmit)}
+                onSubmit={formik.handleSubmit}
+              >
+                {
+                  // props.defaultFormValuesObject?
+                  dialogOuterFormObject?
+                  <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
+                  :<></>
+                }
+                
+                <JzodElementEditor
+                  name={'ROOT'}
+                  listKey={'ROOT'}
+                  rootLesslistKey=""
+                  rootLesslistKeyArray={[]}
+                  label={props.label}
+                  currentDeploymentUuid={props.currentDeploymentUuid}
+                  currentApplicationSection={props.currentApplicationSection}
+                  resolvedJzodSchema={resolvedJzodSchema?.status == "ok"?resolvedJzodSchema.element:undefined}
+                  formik={formik}
+                />
+                {/* {errors.exampleRequired && <span>This field is required</span>} */}
+                <button type="submit" name={props.label} form={"form." + props.label}>submit form.{props.label}</button>
+              </form>
+            </Dialog>
+          )
+        }
         </Formik>
         // </FormProvider>
       ) : (

@@ -33,6 +33,7 @@ export const tableComponentCorePropsSchema = z.object({
   currentModel: metaModel,
   defaultFormValuesObject: z.any(),
   miroirFundamentalJzodSchema:jzodSchema,
+  // setCurrentObjectValue: z.function().args(z.any()),
 });
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({

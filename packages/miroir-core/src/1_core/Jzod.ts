@@ -41,7 +41,7 @@ export interface ResolvedJzodSchemaReturnTypeError {
 export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
 
 
-export function resolveObjectExtendClaus(
+export function resolveObjectExtendClause(
   miroirFundamentalJzodSchema: JzodSchema,
   jzodObject: JzodObject,
   // valueObject: any,
@@ -247,7 +247,7 @@ export function resolveReferencesForJzodSchemaAndValueObject(
       );
       const concreteUnrolledJzodSchemas: JzodElement[] = concreteJzodSchemas.map((j: JzodElement) => {
         if (j.type == "object") {
-          return resolveObjectExtendClaus(
+          return resolveObjectExtendClause(
             miroirFundamentalJzodSchema,
             j,
             currentModel,
@@ -312,17 +312,6 @@ export function resolveReferencesForJzodSchemaAndValueObject(
               relativeReferenceJzodContext
             );
             return subElementSchema;
-            // if (subElementSchema.status != "ok") {
-            //   return subElementSchema
-            //   // throw new Error(
-            //   //   "resolveReferencesForJzodSchemaAndValueObject called for union-type value object with discriminator=" +
-            //   //     jzodSchema.discriminator +
-            //   //     " valueObject[discriminator]=" +
-            //   //     valueObject[discriminator]
-            //   // );
-                
-            // }
-            // return {status: "ok", element: subElementSchema};
           }
 
           if (!valueObject[discriminator]) {

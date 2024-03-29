@@ -99,6 +99,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   const contextDeploymentUuid = context.deploymentUuid;
   // const errorLog = useErrorLogService();
   
+  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
 
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
@@ -232,6 +233,8 @@ export const MTableComponent = (props: TableComponentProps) => {
     if (a) {
       // setdialogFormObject(Object.assign({},dialogFormObject?dialogFormObject:{},{[label]:a}));
       setdialogFormObject(a.rawValue);
+      // props.setCurrentObjectValue(a.rawValue)
+      setdialogOuterFormObject(a.rawValue)
       // setdialogFormObject(a);
       log.info('MTableComponent handleDialogTableRowFormOpen parameter is defined dialogFormObject',dialogFormObject);
     } else {
@@ -366,32 +369,31 @@ export const MTableComponent = (props: TableComponentProps) => {
           <div>
             Entity Instance
           </div>
-
-          <JsonObjectFormEditorDialog
-            showButton={false}
-            isOpen={dialogFormIsOpen}
-            isAttributes={true}
-            addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
-            setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
-            // label='OuterDialog'
-            // label={props.defaultlabel??props.currentEntityDefinition?.name}
-            label={props.currentEntity?.name??"No Entity Found!"}
-            entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
-            currentDeploymentUuid={contextDeploymentUuid}
-            currentApplicationSection={context.applicationSection}
-            miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
-            currentAppModel={currentModel}
-            currentMiroirModel={miroirMetaModel}
-            defaultFormValuesObject={
-              dialogFormObject??props.defaultFormValuesObject
+          {
+                dialogFormObject? (
+                  <JsonObjectFormEditorDialog
+                    showButton={false}
+                    isOpen={dialogFormIsOpen}
+                    isAttributes={true}
+                    addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
+                    setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
+                    label={props.currentEntity?.name??"No Entity Found!"}
+                    entityDefinitionJzodSchema={props.currentEntityDefinition?.jzodSchema as JzodObject}
+                    currentDeploymentUuid={contextDeploymentUuid}
+                    currentApplicationSection={context.applicationSection}
+                    miroirFundamentalJzodSchema={props.miroirFundamentalJzodSchema}
+                    currentAppModel={currentModel}
+                    currentMiroirModel={miroirMetaModel}
+                    defaultFormValuesObject={
+                      dialogFormObject??props.defaultFormValuesObject
+                    }
+                    onSubmit={onSubmitTableRowFormDialog}
+                    onClose={handleDialogTableRowFormClose}
+                  />
+                )
+                :<></>
             }
-            onSubmit={onSubmitTableRowFormDialog}
-            onClose={handleDialogTableRowFormClose}
-          />
-          <div id="tata" className="ag-theme-alpine" style={props.styles}>
-            {/* <div id="tata" className="ag-theme-alpine"> */}
-            {
-              // tableComponentRows.tableComponentRowUuidIndexSchema.length > 0?
+            <div id="tata" className="ag-theme-alpine" style={props.styles}>
               <AgGridReact
                 columnDefs={columnDefs}
                 // autoSizeStrategy={autoSizeStrategy}
@@ -413,12 +415,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                 // onCellDoubleClicked={onCellDoubleClicked}
                 // onRowValueChanged={onRowValueChanged}
               ></AgGridReact>
-            // :
-            //   <div>
-            //     No data to display
-            //   </div>
-            }
-          </div>
+            </div>
         </div>
       ) : (
         <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
