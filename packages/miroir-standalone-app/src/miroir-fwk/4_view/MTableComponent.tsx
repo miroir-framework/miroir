@@ -92,7 +92,7 @@ const autoSizeStrategy = {
 };
 // ################################################################################################
 export const MTableComponent = (props: TableComponentProps) => {
-  log.info("MTableComponent refreshing with props",props);
+  log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
   
   const navigate = useNavigate();
   const context = useMiroirContextService();
@@ -317,7 +317,6 @@ export const MTableComponent = (props: TableComponentProps) => {
             (e) => e.entityUuid == event.colDef.cellRendererParams.entityUuid
           );
   
-          // const targetEntity = currentModel.entities.find(e=>e.uuid == columnDefinitionAttribute.extra?.targetEntity);
           navigate(
             `/report/${contextDeploymentUuid}/${
               (columnDefinitionAttribute as any)?.extra?.targetEntityApplicationSection

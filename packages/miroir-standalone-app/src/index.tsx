@@ -40,7 +40,6 @@ import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage";
 import { HomePage } from "./miroir-fwk/4_view/HomePage";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider";
 import { RootComponent } from "./miroir-fwk/4_view/RootComponent";
-import { EntityInstancePage } from "./miroir-fwk/4_view/routes/EntityInstancePage";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage";
 import { miroirAppStartup } from "./startup";
 
@@ -123,11 +122,6 @@ const router = createBrowserRouter([
       {
         path: "report/:deploymentUuid/:applicationSection/:reportUuid/:instanceUuid",
         element: <ReportPage />,
-        // errorElement: <ErrorPage />,
-      },
-      {
-        path: "instance/:deploymentUuid/:applicationSection/:entityUuid/:instanceUuid",
-        element: <EntityInstancePage />,
         // errorElement: <ErrorPage />,
       },
     ]

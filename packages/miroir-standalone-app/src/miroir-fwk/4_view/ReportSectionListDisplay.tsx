@@ -299,6 +299,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
+  // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
+  // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";
+  const currentApplicationSection = props.chosenApplicationSection??"data";
+
   const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
     props.fetchedDataJzodSchema &&
     props.section.type == "objectListReportSection" &&
@@ -325,7 +329,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
   );
   log.info(
-    "ReportSectionListDisplay",
+    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay rendering",
     count,
     "instancesToDisplayViewAttributes",
     instancesToDisplayViewAttributes,
@@ -377,7 +381,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               instanceAction: {
                 actionType: "instanceAction",
                 actionName: "createInstance",
-                applicationSection: "model",
+                // applicationSection: "model",
+                applicationSection: currentApplicationSection,
                 deploymentUuid: props.displayedDeploymentDefinition.uuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 objects: [
@@ -398,14 +403,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           const createAction: InstanceAction = {
             actionType: "instanceAction",
             actionName: "createInstance",
-            applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+            applicationSection: currentApplicationSection,
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             objects: [
               {
                 parentName: data.name,
                 parentUuid: data.parentUuid,
-                applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
+                applicationSection:currentApplicationSection,
                 instances: [
                   data 
                 ],

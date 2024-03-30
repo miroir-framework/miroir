@@ -93,8 +93,12 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
     localSelectModelForDeployment(state, currentModelSelectorParams)
   ) as MetaModel
 
-  const currentMiroirEntityDefinition: EntityDefinition | undefined = props.colDef?.cellRendererParams.entityDefinition??currentModel.entityDefinitions?.find(e=>e?.entityUuid === entityUuid);
+  const currentMiroirEntityDefinition: EntityDefinition | undefined =
+    props.colDef?.cellRendererParams.entityDefinition ??
+    currentModel.entityDefinitions?.find((e) => e?.entityUuid == entityUuid)
+  ;
   
+  log.info("EntityInstanceCellRenderer currentMiroirEntityDefinition", currentMiroirEntityDefinition)
   // const selectorParams:EntityInstanceUuidIndexSelectorParams = useMemo(
   const selectorParams:LocalCacheQueryParams = useMemo(
     () => ({

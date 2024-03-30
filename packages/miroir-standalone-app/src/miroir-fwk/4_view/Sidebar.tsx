@@ -23,6 +23,7 @@ import {
   DomainStateSelectorParams,
   getSelectorMap,
   getSelectorParams,
+  Menu,
   menuDefaultMiroir,
   MiroirSelectorQueryParams,
   reportEntityList,
@@ -99,12 +100,13 @@ const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 );
 
 
-const sideBarDefaultItems: any[] = [
+const sideBarDefaultItems = [
   {
     label: "Miroir Entities",
     section: "model",
     application: applicationDeploymentMiroir.uuid,
     reportUuid: reportEntityList.uuid,
+    "icon": "category",
   },
   // {
   //   label: "Miroir Reports",
@@ -117,6 +119,7 @@ const sideBarDefaultItems: any[] = [
     section: "data",
     application: applicationDeploymentMiroir.uuid,
     reportUuid: reportMenuList.uuid,
+    "icon": "category",
   },
   // {
   //   label: "Library Books",
@@ -207,18 +210,19 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
           {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </StyledDrawerHeader>
-      <Divider />
       count: {count}
+      <Divider />
         {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
         {/* TODO: DRY the menuSection display!*/}
         {
+          !(domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType ||
           (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.menuType == "simpleMenu"?
-          <List>
+          <List disablePadding dense>
             {(
               (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
               <ListItem key={i.label} disablePadding>
-                <ListItemButton component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.application}/${i.section}/${i.reportUuid}/xxxxxx`}>
                   <ListItemIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     <Icon>{i.icon}</Icon>
@@ -229,7 +233,7 @@ export const Sidebar = (props: {open:boolean, setOpen: (v:boolean)=>void}) => {
             ))}
           </List>
           :
-          <List>
+          <List disablePadding dense>
             {(
               (domainElementObject?.elementValue?.menus?.elementValue as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (

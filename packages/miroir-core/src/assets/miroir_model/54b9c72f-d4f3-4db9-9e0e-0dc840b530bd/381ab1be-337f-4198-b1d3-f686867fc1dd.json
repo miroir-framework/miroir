@@ -53,7 +53,7 @@
         "optional": true,
         "definition": "string",
         "validations": [{ "type": "uuid" }],
-        "extra": { "id": 6, "defaultLabel": "Application", "editable": false }
+        "extra": { "id": 6, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }
       },
       "name": {
         "type": "simpleType",
@@ -65,7 +65,7 @@
         "definition": "string",
         "validations": [{ "type": "uuid" }],
         "optional": true,
-        "extra": { "id":8, "defaultLabel": "Application", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": true }
+        "extra": { "id":8, "defaultLabel": "Application", "editable": true }
       },
       "description": {
         "type": "simpleType",

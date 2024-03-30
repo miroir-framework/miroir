@@ -27,18 +27,52 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
   jzodObjectSchema?: JzodObject,
   entityDefinition?: EntityDefinition | undefined,
 ): ColDef<any> {
+
+  if (jzodSchema?.extra?.targetEntity) {
+    const result =  {
+      // field: "publisher",
+      field: name,
+      cellRenderer: EntityInstanceCellRenderer,
+      cellEditor: SelectEntityInstanceEditor,
+      cellEditorPopup: true,
+      editable: true,
+      // sort:'asc',
+      cellEditorParams: {
+        entityUuid: jzodSchema?.extra?.targetEntity,
+      },
+      cellRendererParams: {
+        entityUuid: jzodSchema?.extra?.targetEntity,
+      },
+    };
+    // log.info(
+    //   "column with targetEntity named",
+    //   name,
+    //   "jzodSchema",
+    //   jzodSchema,
+    //   "targetEntity",
+    //   jzodSchema?.extra?.targetEntity,
+    //   "entityPublisher.uuid",
+    //   entityPublisher.uuid,
+    //   entityPublisher.uuid == jzodSchema?.extra?.targetEntity,
+    //   "result",
+    //   result
+    // );
+
+    return result;
+  }
+  // log.info(
+  //   "getColumnDefinitionsFromEntityDefinitionJzodElemenSchema name column",
+  //   name,
+  //   "jzodSchema",
+  //   jzodSchema,
+  //   "jzodObjectSchema",
+  //   jzodObjectSchema,
+  //   "entityDefinition",
+  //   entityDefinition
+  // );
+
   switch (name) {
     case "name": {
-      log.info(
-        "getColumnDefinitionsFromEntityDefinitionJzodElemenSchema name column",
-        name,
-        "jzodSchema",
-        jzodSchema,
-        "jzodObjectSchema",
-        jzodObjectSchema,
-        "entityDefinition",
-        entityDefinition
-      );
 
       return {
         field: "name",
@@ -58,8 +92,6 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       break;
     }
     case "gender": {
-      log.info("column", name, jzodSchema);
-
       return {
         field: "gender",
         cellRenderer: GenderCellRenderer,
@@ -69,53 +101,15 @@ export function getColumnDefinitionsFromEntityDefinitionJzodElemenSchema(
       };
       break;
     }
-    case "publisher": {
-      log.info("column", name, jzodSchema);
-
-      return {
-        field: "publisher",
-        cellRenderer: EntityInstanceCellRenderer,
-        cellEditor: SelectEntityInstanceEditor,
-        cellEditorPopup: true,
-        editable: true,
-        // sort:'asc',
-        cellEditorParams: {
-          entityUuid: entityPublisher.uuid,
-        },
-        cellRendererParams: {
-          entityUuid: entityPublisher.uuid,
-        },
-      };
-      break;
-    }
-    case "author": {
-      log.info("column", name, jzodSchema);
-
-      return {
-        field: "author",
-        cellRenderer: EntityInstanceCellRenderer,
-        cellEditor: SelectEntityInstanceEditor,
-        cellEditorPopup: true,
-        editable: true,
-        // sort:'asc',
-        cellEditorParams: {
-          entityUuid: entityAuthor.uuid,
-        },
-        cellRendererParams: {
-          entityUuid: entityAuthor.uuid,
-        },
-      };
-      break;
-    }
     case "conceptLevel": {
-      log.info("column conceptLevel", name, jzodSchema);
+      // log.info("column conceptLevel", name, jzodSchema);
       return {
         field: name,
         headerName: jzodSchema.extra?.defaultLabel ? jzodSchema.extra?.defaultLabel : name,
       };
     }
     default: {
-      log.info("column default:", name, jzodSchema);
+      // log.info("column default:", name, jzodSchema);
       return {
         field: name,
         cellRenderer: DefaultCellRenderer2,
@@ -161,78 +155,4 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
       break;
     }
   }
-  // return Object.entries(jzodSchema.definition ? jzodSchema.definition : {})?.map((e: [string, any]) => {
-  //   switch (e[0]) {
-  //     case "gender": {
-  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column gender", e);
-
-  //       return {
-  //         field: "gender",
-  //         cellRenderer: GenderCellRenderer,
-  //         cellEditor: GenderCellEditor,
-  //         cellEditorPopup: true,
-  //         editable: true,
-  //       };
-  //       break;
-  //     }
-  //     case "publisher": {
-  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column publisher", e);
-
-  //       return {
-  //         field: "publisher",
-  //         cellRenderer: EntityInstanceCellRenderer,
-  //         cellEditor: SelectEntityInstanceEditor,
-  //         cellEditorPopup: true,
-  //         editable: true,
-  //         // sort:'asc',
-  //         cellEditorParams: {
-  //           entityUuid: entityPublisher.uuid,
-  //         },
-  //         cellRendererParams: {
-  //           entityUuid: entityPublisher.uuid,
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "author": {
-  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column author", e);
-
-  //       return {
-  //         field: "author",
-  //         cellRenderer: EntityInstanceCellRenderer,
-  //         cellEditor: SelectEntityInstanceEditor,
-  //         cellEditorPopup: true,
-  //         editable: true,
-  //         // sort:'asc',
-  //         cellEditorParams: {
-  //           entityUuid: entityAuthor.uuid,
-  //         },
-  //         cellRendererParams: {
-  //           entityUuid: entityAuthor.uuid,
-  //         },
-  //       };
-  //       break;
-  //     }
-  //     case "conceptLevel": {
-  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column conceptLevel", e);
-  //       return {
-  //         field: e[1].name,
-  //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
-  //       };
-  //     }
-  //     default: {
-  //       log.info("getColumnDefinitionsFromEntityDefinitionJzodObjectSchema column default", e);
-  //       return {
-  //         field: e[0],
-  //         cellRenderer: DefaultCellRenderer,
-  //         cellRendererParams: {
-  //           columnName: e[0],
-  //         },
-  //         headerName: e[1].extra?.defaultLabel?e[1].extra?.defaultLabel:e[1].name,
-  //         // "sort":'asc'
-  //       };
-  //       break;
-  //     }
-  //   }
-  // });
 }
