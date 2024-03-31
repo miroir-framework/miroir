@@ -30,7 +30,8 @@
           "definition": {
             "label": "My User",
             "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
-            "fetchedDataReference": "user"
+            "fetchedDataReference": "user",
+            "sortByAttribute": "name"
           }
         }
       ]

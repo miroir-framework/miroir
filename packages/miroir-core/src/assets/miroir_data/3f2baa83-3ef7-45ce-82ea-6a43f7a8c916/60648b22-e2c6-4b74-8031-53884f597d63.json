@@ -24,7 +24,8 @@
         "label": "Application Model Branches",
         "parentName": "ApplicationModelBranch",
         "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-        "fetchedDataReference": "applicationModelBranches"
+        "fetchedDataReference": "applicationModelBranches",
+        "sortByAttribute": "name"
       }
     }
   }

@@ -91,7 +91,8 @@
             "label": "Publisher's (${publisher.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfPublisher"
+            "fetchedDataReference": "booksOfPublisher",
+            "sortByAttribute": "name"
           }
         },
         {
@@ -100,7 +101,8 @@
             "label": "Author's (${author.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfAuthor"
+            "fetchedDataReference": "booksOfAuthor",
+            "sortByAttribute": "name"
           }
         }
       ]

@@ -376,9 +376,6 @@ export const MTableComponent = (props: TableComponentProps) => {
       {/* <span>rowData: {JSON.stringify(props.rowData.instancesWithStringifiedJsonAttributes)}</span> */}
       {props.type == "EntityInstance"? (
         <div>
-          <div>
-            Entity Instance
-          </div>
           {
                 dialogFormObject? (
                   <JsonObjectFormEditorDialog

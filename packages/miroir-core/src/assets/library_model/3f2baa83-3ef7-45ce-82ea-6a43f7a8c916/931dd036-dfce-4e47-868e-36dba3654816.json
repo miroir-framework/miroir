@@ -26,7 +26,8 @@
         "parentName": "Test",
         "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
         "label": "Tests",
-        "fetchedDataReference": "tests"
+        "fetchedDataReference": "tests",
+        "sortByAttribute": "name"
       }
     }
   }

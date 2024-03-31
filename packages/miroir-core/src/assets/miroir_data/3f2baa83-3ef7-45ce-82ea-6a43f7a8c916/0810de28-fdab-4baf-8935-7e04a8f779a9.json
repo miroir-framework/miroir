@@ -25,7 +25,8 @@
         "label": "Application Versions",
         "parentName": "ApplicationVersion",
         "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-        "fetchedDataReference": "applicationVersions"
+        "fetchedDataReference": "applicationVersions",
+        "sortByAttribute": "name"
       }
     }
   }

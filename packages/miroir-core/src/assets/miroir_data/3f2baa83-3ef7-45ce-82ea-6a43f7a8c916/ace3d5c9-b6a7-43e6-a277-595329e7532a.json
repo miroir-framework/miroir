@@ -24,7 +24,8 @@
         "label": "Endpoints",
         "parentName": "Endpoint",
         "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-        "fetchedDataReference": "endpoints"
+        "fetchedDataReference": "endpoints",
+        "sortByAttribute": "name"
       }
     }
   }

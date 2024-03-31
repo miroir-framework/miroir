@@ -25,7 +25,8 @@
         "label": "Entity Definitions",
         "parentName": "Entity Definition",
         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-        "fetchedDataReference": "entityDefinitions"
+        "fetchedDataReference": "entityDefinitions",
+        "sortByAttribute": "name"
       }
     }
   }

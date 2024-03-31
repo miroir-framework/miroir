@@ -78,7 +78,8 @@
             "label": "Author's (${author.name}) Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "booksOfAuthor"
+            "fetchedDataReference": "booksOfAuthor",
+            "sortByAttribute": "name"
           }
         },
         {
@@ -87,7 +88,8 @@
             "label": "Author's (${author.name}) Publishers",
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-            "fetchedDataReference": "publishersOfBooks"
+            "fetchedDataReference": "publishersOfBooks",
+            "sortByAttribute": "name"
           }
         },
         {
@@ -96,7 +98,8 @@
             "label": "Author's (${author.name}) Publisher's Books",
             "parentName": "Book",
             "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-            "fetchedDataReference": "BooksOfPublishers"
+            "fetchedDataReference": "BooksOfPublishers",
+            "sortByAttribute": "name"
           }
         }
       ]
